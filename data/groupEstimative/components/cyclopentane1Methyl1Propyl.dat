@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopentane, 1-methyl-1-propyl-  (C9H18, CAS 16631-63-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopentane1Methyl1Propyl;
+formula     C9H18;
+CAS         16631-63-3;
+InChIKey    HICYLMKNNFKEMK-UHFFFAOYSA-N;
+MW          126.243;      // g/mol [origin=calculated method=formula-sum]
+Tc          620.82;      // K   [origin=predictive method=joback]
+Pc          28.999;      // bar [origin=predictive method=joback]
+omega       0.3104;      // -   [origin=predictive method=lee-kesler]
+Tb          421.04;      // K   [origin=predictive method=joback]
+HvapTb      34734.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-115.768 1.28244 -0.0011258 4.334e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH2_ring; count 4; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methyl-1-propyl-cyclopentane" "1-methyl-1-propylcyclopentane" );
+gibbsFormation
+{
+    dHf_298   -153370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     525.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=55960.0
+    phase     gas;
+}

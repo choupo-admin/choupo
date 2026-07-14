@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4,5,5-tetramethylheptane  (C11H24, CAS 61868-58-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2455Tetramethylheptane;
+formula     C11H24;
+CAS         61868-58-4;
+InChIKey    JVYVKEOAYQAABU-UHFFFAOYSA-N;
+MW          156.313;      // g/mol [origin=calculated method=formula-sum]
+Tc          626.27;      // K   [origin=predictive method=joback]
+Pc          19.948;      // bar [origin=predictive method=joback]
+omega       0.3888;      // -   [origin=predictive method=lee-kesler]
+Tb          447.17;      // K   [origin=predictive method=joback]
+HvapTb      38008.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-34.948 1.18652 -0.0007528 1.906e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 2; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 2; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "agn-pc-02z3a1" );
+gibbsFormation
+{
+    dHf_298   -289680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     526.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=39700.0
+    phase     gas;
+}

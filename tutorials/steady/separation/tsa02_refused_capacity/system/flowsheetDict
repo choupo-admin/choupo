@@ -1,0 +1,19 @@
+units
+(
+    {
+        name        co2tsa;
+        type        tsaTwinBed;
+        in          feed;
+        outputs     ( cleanHe regenerationGas );
+        operation
+        {
+            adsorbent       zeolite13X_tsaAnchor;
+            mAdsPerColumn   1 kg;
+            tCycle          300 s;
+            T_ads           298 K;
+            T_regen         398 K;
+            lightKey        He;
+            purgeRatio      0.10;
+        }
+    }
+);

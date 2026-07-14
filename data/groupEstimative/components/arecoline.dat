@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: arecoline  (C8H13NO2, CAS 63-75-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        arecoline;
+formula     C8H13NO2;
+CAS         63-75-2;
+InChIKey    HJJPJSXJAXAIPN-UHFFFAOYSA-N;
+MW          155.197;      // g/mol [origin=calculated method=formula-sum]
+Tc          678.72;      // K   [origin=predictive method=joback]
+Pc          32.690;      // bar [origin=predictive method=joback]
+omega       0.5347;      // -   [origin=predictive method=lee-kesler]
+Tb          477.39;      // K   [origin=predictive method=joback]
+HvapTb      44372.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-34.01 0.87564 -0.00053244 1.113e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH=C; count 1; } { group CH3N; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 1-methyl-3,6-dihydro-2h-pyridine-5-carboxylate" "arecholine" "methylarecaidin" "arecaline" "arecolin" "methylarecaiden" "arekolin" "arecoline base" "arecaidine methyl ester" "3-pyridinecarboxylic acid, 1,2,5,6-tetrahydro-1-methyl-, methyl ester" "methyl 1-methyl-1,2,5,6-tetrahydropyridine-3-carboxylate" "n-methyltetrahydronicotinic acid, methyl ester" );
+gibbsFormation
+{
+    dHf_298   -331070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     483.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-118520.0
+    phase     gas;
+}

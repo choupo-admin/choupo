@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "Multi-salt symmetric eNRTL (Song & Chen 2009) -- NaCl+KCl Harned sweep at 4 mol/kg";
+verbosity     3;

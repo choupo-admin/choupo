@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dienestrol  (C18H18O2, CAS 84-17-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dienestrol;
+formula     C18H18O2;
+CAS         84-17-3;
+InChIKey    NFDFQCUYFHCNBW-SCGPFSFSSA-N;
+MW          266.34;      // g/mol [origin=calculated method=formula-sum]
+Tc          1094.78;      // K   [origin=predictive method=joback]
+Pc          28.536;      // bar [origin=predictive method=joback]
+omega       1.0364;      // -   [origin=predictive method=lee-kesler]
+Tb          834.12;      // K   [origin=predictive method=joback]
+HvapTb      86318.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-126.87 1.90504 -0.00170272 6.186e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH=C; count 2; } { group ACH; count 8; } { group AC; count 2; } { group ACOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH; count 2; } { group dC; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group OH_phenol; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[(2e,4e)-4-(4-hydroxyphenyl)hexa-2,4-dien-3-yl]phenol" "dehydrostilbestrol" "dienestrolum" "synestrol" "dienoestrol bp" "alpha-dienestrol" "(e,e)-dienestrol" "dienestrolo" "dienestrol, (e,e)-isomer" "prestwick_52" "dienoestrol" "oestrasid" );
+gibbsFormation
+{
+    dHf_298   -81550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     675.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=159600.0
+    phase     gas;
+}

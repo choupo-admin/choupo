@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-bis(trifluoromethyl)-4-methyl-5-phenyloxazolidine hydrate  (C12H11F6NO, CAS 30184-88-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22BisTrifluoromethyl4Methyl5PhenyloxazolidineHydrate;
+formula     C12H11F6NO;
+CAS         30184-88-4;
+InChIKey    ZNPHPNNGNBZVNM-UHFFFAOYSA-N;
+MW          299.214;      // g/mol [origin=calculated method=formula-sum]
+Tc          775.21;      // K   [origin=predictive method=joback]
+Pc          22.762;      // bar [origin=predictive method=joback]
+omega       0.6450;      // -   [origin=predictive method=lee-kesler]
+Tb          571.68;      // K   [origin=predictive method=joback]
+HvapTb      46844.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-118.68 1.74152 -0.0015769 5.74e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH-O; count 1; } { group CHNH; count 1; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 2; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group F; count 6; } { group O_ring; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-methyl-5-phenyl-2,2-bis(trifluoromethyl)-1,3-oxazolidine" "oxazolidine, 2,2-bis(trifluoromethyl)-4-methyl-5-phenyl-, hydrate" );
+gibbsFormation
+{
+    dHf_298   -1307790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     506.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-983380.0
+    phase     gas;
+}

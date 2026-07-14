@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: decanoic acid, mixed esters with hexanoic acid, octanoic acid and trimethylolpropane  (C30H62O9, CAS 68130-52-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        decanoicAcidMixedEstersWithHexanoicAcidOctanoicAcidAndTrimet;
+formula     C30H62O9;
+CAS         68130-52-9;
+InChIKey    ZJZWENHCONOIDY-UHFFFAOYSA-N;
+MW          566.817;      // g/mol [origin=calculated method=formula-sum]
+Tc          2627.88;      // K   [origin=predictive method=joback]
+Pc          6.925;      // bar [origin=predictive method=joback]
+omega       -0.3981;      // -   [origin=predictive method=lee-kesler]
+Tb          1600.04;      // K   [origin=predictive method=joback]
+HvapTb      183489.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (103.272 2.61548 -0.0008446 -1.205e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 22; } { group C; count 1; } { group OH; count 3; } { group COOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 22; } { group C; count 1; } { group OH; count 3; } { group COOH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "decanoic acid;2-ethyl-2-(hydroxymethyl)propane-1,3-diol;hexanoic acid;octanoic acid" "decanoic acid mixed esters with hexanoic acid octanoic acid and trimethylolpropane" "trimethylolpropane, caproic acid, caprylic acid, capric acid mixed esters" "decanoic acid; 2-ethyl-2-(hydroxymethyl)propane-1,3-diol; hexanoic acid; octanoic acid" );
+gibbsFormation
+{
+    dHf_298   -2513640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1920.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1551910.0
+    phase     gas;
+}

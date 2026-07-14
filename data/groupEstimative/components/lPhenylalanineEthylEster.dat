@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: l-phenylalanine, ethyl ester  (C11H15NO2, CAS 1795-96-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lPhenylalanineEthylEster;
+formula     C11H15NO2;
+CAS         1795-96-6;
+InChIKey    CJGXMNONHNZEQQ-UHFFFAOYSA-N;
+MW          193.246;      // g/mol [origin=calculated method=formula-sum]
+Tc          827.89;      // K   [origin=predictive method=joback]
+Pc          28.505;      // bar [origin=predictive method=joback]
+omega       0.7402;      // -   [origin=predictive method=lee-kesler]
+Tb          608.27;      // K   [origin=predictive method=joback]
+HvapTb      60016.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.798 0.98292 -0.0005578 9.86e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group CHNH2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-azanyl-3-phenyl-propanoate" "ethyl (2s)-2-amino-3-phenylpropanoate" "ethyl phenylalaninate" "phenylalanine, ethylester" "ethyl 3-phenyl-dl-alaninate" "ethyl 2-amino-3-phenylpropanoate" "alanine, phenyl-, ethyl ester, l-" "2-amino-3-phenylpropionic acid, ethyl ester" "brd-a06475750-003-01-1" "alanine,phenyl-, ethyl ester, dl- (8ci); (?a'a a'a currency)-phenylalanine ethyl ester; dl-phenylalanine ethyl ester; ethyl2-amino-3-phenylpropanoate; o-ethyl-dl-phenylalanine" );
+gibbsFormation
+{
+    dHf_298   -322610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     571.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-92210.0
+    phase     gas;
+}

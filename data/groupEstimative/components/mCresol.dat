@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: m-cresol  (C7H8O, CAS 108-39-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        mCresol;
+formula     C7H8O;
+CAS         108-39-4;
+InChIKey    RLSSMJSEOOYNOY-UHFFFAOYSA-N;
+MW          108.14;      // g/mol [origin=calculated method=formula-sum]
+Tc          696.98;      // K   [origin=predictive method=joback]
+Pc          50.299;      // bar [origin=predictive method=joback]
+omega       0.4643;      // -   [origin=predictive method=lee-kesler]
+Tb          467.06;      // K   [origin=predictive method=joback]
+HvapTb      46466.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-46.3 0.74452 -0.00064456 2.307e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group ACCH3; count 1; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylphenol" "phenol, 3-methyl-" "3-hydroxytoluene" "m-methylphenol" "meta-cresol" "m-kresol" "m-oxytoluene" "m-toluol" "3-cresol" "metacresol" "m-cresylic acid" "1-hydroxy-3-methylbenzene" );
+gibbsFormation
+{
+    dHf_298   -128590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     348.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-34150.0
+    phase     gas;
+}

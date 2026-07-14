@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-fluorobenzo(a,i)pyrene  (C24H13F, CAS 61735-77-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3FluorobenzoAIPyrene;
+formula     C24H13F;
+CAS         61735-77-1;
+InChIKey    RFZRVBKLYCYBKA-UHFFFAOYSA-N;
+MW          320.366;      // g/mol [origin=calculated method=formula-sum]
+Tc          1146.07;      // K   [origin=predictive method=joback]
+Pc          21.197;      // bar [origin=predictive method=joback]
+omega       0.9878;      // -   [origin=predictive method=lee-kesler]
+Tb          886.77;      // K   [origin=predictive method=joback]
+HvapTb      81351.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-130.0 1.9759 -0.00178332 6.421e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 13; } { group AC; count 10; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 13; } { group dC_ring; count 11; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-fluorobenzo(rst)pentaphene" "benzo(rst)pentaphene, 3-fluoro-" );
+gibbsFormation
+{
+    dHf_298   354270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     438.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=548140.0
+    phase     gas;
+}

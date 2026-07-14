@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9,9'-biphenanthryl  (C28H18, CAS 20532-03-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        99Biphenanthryl;
+formula     C28H18;
+CAS         20532-03-0;
+InChIKey    UPAPZXUZBAAZCB-UHFFFAOYSA-N;
+MW          354.452;      // g/mol [origin=calculated method=formula-sum]
+Tc          1268.54;      // K   [origin=predictive method=joback]
+Pc          18.515;      // bar [origin=predictive method=joback]
+omega       0.9714;      // -   [origin=predictive method=lee-kesler]
+Tb          989.44;      // K   [origin=predictive method=joback]
+HvapTb      91682.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-158.95 2.2532 -0.00184052 5.978e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 18; } { group AC; count 10; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 18; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9-phenanthren-9-ylphenanthrene" "9,9'-biphenanthrene" );
+gibbsFormation
+{
+    dHf_298   570210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     573.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=797780.0
+    phase     gas;
+}

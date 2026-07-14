@@ -31,7 +31,7 @@ Class
 Description
     Aqueous- (or other-solvent-) solution thermo of a MOLECULAR solute,
     keyed by the ordered pair (solute, solvent).  The molecular-solute
-    sibling of the ionic electrolyte/ions.dat reference tier.
+    sibling of the ionic species/aqueous/ reference tier.
 
     A heat of solution is defined as `crystal -> species dissolved IN
     water`: its definition names a second species, so by the data-

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-isooctoxyl propylamine  (C11H25NO, CAS 5397-31-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3IsooctoxylPropylamine;
+formula     C11H25NO;
+CAS         5397-31-9;
+InChIKey    DVFGEIYOLIFSRX-UHFFFAOYSA-N;
+MW          187.327;      // g/mol [origin=calculated method=formula-sum]
+Tc          721.48;      // K   [origin=predictive method=joback]
+Pc          20.181;      // bar [origin=predictive method=joback]
+omega       0.7610;      // -   [origin=predictive method=lee-kesler]
+Tb          545.79;      // K   [origin=predictive method=joback]
+HvapTb      52743.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.198 1.05344 -0.0005102 7.54e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 1; } { group CH2O; count 1; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 1; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(2-ethylhexoxy)propan-1-amine" "2-ethylhexyloxypropylamine" "3-(2-ethylhexyloxy)propylamine" "3-((2-ethylhexyl)oxy)propylamine" "3-(2-ethylhexoxy)propylamine" "2-ethylhexyl 3-aminopropyl ether" "propylamine, 3-(2-ethylhexoxy)-" "3-((2-ethylhexyl)oxy)propan-1-amine" "1-propanamine, 3-[(2-ethylhexyl)oxy]-" "3-[(2-ethylhexyl)oxy]propylamine" "3-[(2-ethylhexyl)oxy]propan-1-amine" "3-((ethylhexyl)oxy)propylamine" );
+gibbsFormation
+{
+    dHf_298   -374080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     637.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=750.0
+    phase     gas;
+}

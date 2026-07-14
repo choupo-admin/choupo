@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclohexacosane  (C26H52, CAS 297-16-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclohexacosane;
+formula     C26H52;
+CAS         297-16-5;
+InChIKey    ALEIPJVXVUPION-UHFFFAOYSA-N;
+MW          364.702;      // g/mol [origin=calculated method=formula-sum]
+Tc          1178.29;      // K   [origin=predictive method=joback]
+Pc          11.291;      // bar [origin=predictive method=joback]
+omega       0.5004;      // -   [origin=predictive method=lee-kesler]
+Tb          904.10;      // K   [origin=predictive method=joback]
+HvapTb      77648.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-194.71 2.4304 -0.000599 -2.62e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 26; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 26; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -628510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1579.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-41800.0
+    phase     gas;
+}

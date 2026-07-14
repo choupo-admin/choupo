@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,6,9,12-tetraoxatetradeca-1,13-diene  (C10H18O4, CAS 765-12-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        36912Tetraoxatetradeca113Diene;
+formula     C10H18O4;
+CAS         765-12-8;
+InChIKey    CYIGRWUIQAVBFG-UHFFFAOYSA-N;
+MW          202.25;      // g/mol [origin=calculated method=formula-sum]
+Tc          679.61;      // K   [origin=predictive method=joback]
+Pc          21.394;      // bar [origin=predictive method=joback]
+omega       0.7555;      // -   [origin=predictive method=lee-kesler]
+Tb          511.44;      // K   [origin=predictive method=joback]
+HvapTb      46154.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (89.816 0.661 -0.000122 -7.66e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2=CH; count 2; } { group CH2O; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group dCH2; count 2; } { group dCH; count 2; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-bis(2-ethenoxyethoxy)ethane" "rapi-cure dve-3" "triethylene glycol divinyl ether" "tri(ethylene glycol) divinyl ether" "divinyl ether of triethylene glycol" "triethyleneglycol divinyl ether" "2-[2-(2-ethenoxyethoxy)ethoxy]ethoxyethene" "1,6-hexanedithiol-triethyleneglycol divinyl ether copolymer; dve 3; rapi-cure dve 3; rapi-cure dvf;rapidcure chve 3; triethylene glycol divinyl ether" );
+gibbsFormation
+{
+    dHf_298   -527750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     581.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-211000.0
+    phase     gas;
+}

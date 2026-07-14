@@ -1,0 +1,20 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    nacl_100C              aw_1m            0.9670             1e-4
+diag    nacl_100C              gamma_AAD_pct    0.2851             1e-4
+diag    nacl_100C              gamma_nMeas      1.0000             1e-4
+diag    nacl_100C              gamma_pm_1m      0.6221             1e-4
+diag    nacl_100C              gamma_pm_3m      0.6760             1e-4
+diag    nacl_100C              phi_1m           0.9327             1e-4
+diag    nacl_150C              aw_1m            0.9679             1e-4
+diag    nacl_150C              gamma_AAD_pct    0.0425             1e-4
+diag    nacl_150C              gamma_nMeas      1.0000             1e-4
+diag    nacl_150C              gamma_pm_1m      0.5593             1e-4
+diag    nacl_150C              gamma_pm_3m      0.5736             1e-4
+diag    nacl_150C              phi_1m           0.9054             1e-4
+diag    nacl_200C              aw_1m            0.9693             1e-4
+diag    nacl_200C              gamma_AAD_pct    0.4317             1e-4
+diag    nacl_200C              gamma_nMeas      1.0000             1e-4
+diag    nacl_200C              gamma_pm_1m      0.4801             1e-4
+diag    nacl_200C              gamma_pm_3m      0.4526             1e-4
+diag    nacl_200C              phi_1m           0.8641             1e-4

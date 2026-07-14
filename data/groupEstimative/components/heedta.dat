@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heedta  (C10H18N2O7, CAS 150-39-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heedta;
+formula     C10H18N2O7;
+CAS         150-39-0;
+InChIKey    URDCARMUOSMFFI-UHFFFAOYSA-N;
+MW          278.261;      // g/mol [origin=calculated method=formula-sum]
+Tc          1202.27;      // K   [origin=predictive method=joback]
+Pc          30.090;      // bar [origin=predictive method=joback]
+omega       1.9706;      // -   [origin=predictive method=lee-kesler]
+Tb          981.99;      // K   [origin=predictive method=joback]
+HvapTb      110111.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.493 1.388 -0.0009936 2.764e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group OH; count 1; } { group CH2N; count 2; } { group COOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 7; } { group OH; count 1; } { group COOH; count 3; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[bis(2-hydroxy-2-oxoethyl)amino]ethyl-(2-hydroxyethyl)amino]ethanoic acid" "hedta" "versenol" "detarol" "chel dm acid" "n-(2-hydroxyethyl)ethylenediaminetriacetic acid" "hamp-ol acid" "n-(hydroxyethyl)ethylenediaminetriacetic acid" "2-hydroxyethylenediamine triacetate" "(2-hydroxyethyl)ethylenediaminetriacetic acid" "oxyethylethylenediaminetriacetic acid" "n-hydroxyethylenediaminetriacetic acid" );
+gibbsFormation
+{
+    dHf_298   -1317710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     787.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-913670.0
+    phase     gas;
+}

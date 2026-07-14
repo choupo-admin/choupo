@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopentadecanol  (C15H30O, CAS 4727-17-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopentadecanol;
+formula     C15H30O;
+CAS         4727-17-7;
+InChIKey    FFVHXGZXDRXFLQ-UHFFFAOYSA-N;
+MW          226.404;      // g/mol [origin=calculated method=formula-sum]
+Tc          922.51;      // K   [origin=predictive method=joback]
+Pc          21.918;      // bar [origin=predictive method=joback]
+omega       0.7558;      // -   [origin=predictive method=lee-kesler]
+Tb          692.96;      // K   [origin=predictive method=joback]
+HvapTb      67640.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-117.15 1.4985 -0.000486 -8.24e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 14; } { group CH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 14; } { group CH_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hydroxycyclopentadecane" "exaltol;normuscol" "cyclopentadecan-1-ol" );
+gibbsFormation
+{
+    dHf_298   -506280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     939.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-145850.0
+    phase     gas;
+}

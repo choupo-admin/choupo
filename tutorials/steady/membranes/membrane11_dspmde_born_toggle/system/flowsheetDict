@@ -23,24 +23,7 @@
   DSPM.  Toggling poreDielectric is a single, visible switch.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed_born
-    {
-        F            200.0 kmol/h;
-        T            298.15 K;
-        P            10.0 bar;
-        // 50 mM NaCl: c = 50 mol/m3; aqueous basis z_NaCl ~ 50/55500 = 9.0e-4.
-        molarComposition  { water 0.99910;  NaCl 0.00090; }
-    }
-    feed_noBorn
-    {
-        F            200.0 kmol/h;
-        T            298.15 K;
-        P            10.0 bar;
-        molarComposition  { water 0.99910;  NaCl 0.00090; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

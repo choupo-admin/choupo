@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-ethylphenylacetylene  (C10H10, CAS 40307-11-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Ethylphenylacetylene;
+formula     C10H10;
+CAS         40307-11-7;
+InChIKey    ZNTJVJSUNSUMPP-UHFFFAOYSA-N;
+MW          130.19;      // g/mol [origin=calculated method=formula-sum]
+Tc          672.10;      // K   [origin=predictive method=joback]
+Pc          34.039;      // bar [origin=predictive method=joback]
+omega       0.3191;      // -   [origin=predictive method=lee-kesler]
+Tb          450.18;      // K   [origin=predictive method=joback]
+HvapTb      40650.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.029 0.72152 -0.00048029 1.2679e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethyl-4-ethynyl-benzene" "1-ethyl-4-ethynylbenzene" "benzene, 1-ethyl-4-ethynyl-" "1-ethyl-4-eth-1-ynylbenzene" "p-ethylphenylacetylene" "1-ethyl,4-ethynyl-benzene" "l718" "benzene, 1-ethyl-4-ethynyl-;1-ethyl-4-ethynyl-benzene;1-ethynyl-4-ethylbenzene;4- ethylphenylacetylene;" );
+gibbsFormation
+{
+    dHf_298   267230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     402.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=359170.0
+    phase     gas;
+}

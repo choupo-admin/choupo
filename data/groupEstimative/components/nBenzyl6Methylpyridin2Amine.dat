@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-benzyl-6-methylpyridin-2-amine  (C13H14N2, CAS 70644-47-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nBenzyl6Methylpyridin2Amine;
+formula     C13H14N2;
+CAS         70644-47-2;
+InChIKey    FJZQUYGOKRVORO-UHFFFAOYSA-N;
+MW          198.269;      // g/mol [origin=calculated method=formula-sum]
+Tc          909.31;      // K   [origin=predictive method=joback]
+Pc          30.693;      // bar [origin=predictive method=joback]
+omega       0.6873;      // -   [origin=predictive method=lee-kesler]
+Tb          659.25;      // K   [origin=predictive method=joback]
+HvapTb      62392.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-53.589 1.13148 -0.00073662 1.819e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH2NH; count 1; } { group C5H3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 3; } { group NH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-methyl-n-(phenylmethyl)pyridin-2-amine" "2-benzylamino-6-methylpyridine" "2-pyridinamine, 6-methyl-n-(phenylmethyl)-" "(6-methyl(2-pyridyl))benzylamine" "n-(benzyl)-6-methylpyridin-2-amine" "6-methyl-n-(phenylmethyl)-2-pyridinamine" "2-pyridinamine,6-methyl-n-(phenylmethyl)-" "2-picoline,6-benzylamino- (6ci); 2-(benzylamino)-6-methylpyridine;6-(benzylamino)-2-picoline; n-benzyl-6-methyl-2-aminopyridine;n-benzyl-6-methyl-2-pyridinamine" );
+gibbsFormation
+{
+    dHf_298   236200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     496.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=440210.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-chloro-n,n-dimethylbenzamide  (C9H10ClNO, CAS 14062-80-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4ChloroNNDimethylbenzamide;
+formula     C9H10ClNO;
+CAS         14062-80-7;
+InChIKey    FARSXMMESQDZMY-UHFFFAOYSA-N;
+MW          183.635;      // g/mol [origin=calculated method=formula-sum]
+Tc          762.34;      // K   [origin=predictive method=joback]
+Pc          32.954;      // bar [origin=predictive method=joback]
+omega       0.5878;      // -   [origin=predictive method=lee-kesler]
+Tb          540.92;      // K   [origin=predictive method=joback]
+HvapTb      51740.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.34 0.82314 -0.00054426 1.3386e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group ACCl; count 1; } { group CON_CH3_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-chloranyl-n,n-dimethyl-benzamide" "n,n-dimethyl p-chlorobenzamide" "benzamide, 4-chloro-n,n-dimethyl-" "n,n-dimethyl 4-chlorobenzamide" "agn-pc-00gtju" "p-chloro-n,n-dimethylbenzamide" "n,n-dimethyl-4-chlorobenzamide" "n,n-dimethyl 4-chlorobenzamide," "benzamide,4-chloro-n,n-dimethyl-" "(4-chlorophenyl)-n,n-dimethylcarboxamide" );
+gibbsFormation
+{
+    dHf_298   -64820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     470.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97610.0
+    phase     gas;
+}

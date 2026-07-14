@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octadecanethiol  (C18H38S, CAS 2885-00-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octadecanethiol;
+formula     C18H38S;
+CAS         2885-00-9;
+InChIKey    QJAOYSPHSNGHNC-UHFFFAOYSA-N;
+MW          286.562;      // g/mol [origin=calculated method=formula-sum]
+Tc          847.04;      // K   [origin=predictive method=joback]
+Pc          12.040;      // bar [origin=predictive method=joback]
+omega       0.8505;      // -   [origin=predictive method=lee-kesler]
+Tb          674.30;      // K   [origin=predictive method=joback]
+HvapTb      62399.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.417 1.74112 -0.0009778 2.086e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 16; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 17; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "octadecane-1-thiol" "1-octadecanethiol" "stearyl mercaptan" "octadecyl mercaptan" "n-octadecyl mercaptan" "1-mercaptooctadecane" "mercaptan c18" "octadecylmercaptan" "octadeca mercaptan" "octadecanthiol" "nanothinks(tm) 18" "1-octadecanethiol solution" );
+gibbsFormation
+{
+    dHf_298   -376370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     919.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=130070.0
+    phase     gas;
+}

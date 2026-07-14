@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cis-2-hexene  (C6H12, CAS 7688-21-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cis2Hexene;
+formula     C6H12;
+CAS         7688-21-3;
+InChIKey    RYPKRALMXUUNKS-HYXAFXHYSA-N;
+MW          84.162;      // g/mol [origin=calculated method=formula-sum]
+Tc          513.49;      // K   [origin=predictive method=joback]
+Pc          32.954;      // bar [origin=predictive method=joback]
+omega       0.2739;      // -   [origin=predictive method=lee-kesler]
+Tb          341.04;      // K   [origin=predictive method=joback]
+HvapTb      28908.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.748 0.59384 -0.0003864 1.076e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH=CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z)-hex-2-ene" "2-hexene, (z)-" "2-hexene, cis-" "(z)-2-hexene" "2-hexene, (2z)-" "2-hexene-cis" "(2z)-hex-2-ene" );
+gibbsFormation
+{
+    dHf_298   -49950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     383.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=79860.0
+    phase     gas;
+}

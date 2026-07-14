@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dioctadecylamine  (C36H75N, CAS 112-99-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dioctadecylamine;
+formula     C36H75N;
+CAS         112-99-2;
+InChIKey    HKUFIYBZNQSHQS-UHFFFAOYSA-N;
+MW          522.003;      // g/mol [origin=calculated method=formula-sum]
+Tc          1395.23;      // K   [origin=predictive method=joback]
+Pc          4.603;      // bar [origin=predictive method=joback]
+omega       -0.0728;      // -   [origin=predictive method=lee-kesler]
+Tb          1073.45;      // K   [origin=predictive method=joback]
+HvapTb      102166.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.046 3.50004 -0.0019832 4.277e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 33; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 34; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-octadecyloctadecan-1-amine" "distearylamine" "1-octadecanamine, n-octadecyl-" "doda" "dioctadecyl amine" "n-octadecyl-1-octadecanamine" "1-octadecanamine,n-octadecyl-" "1-octadecanamine, n -octadecyl-" );
+gibbsFormation
+{
+    dHf_298   -732900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1598.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=341630.0
+    phase     gas;
+}

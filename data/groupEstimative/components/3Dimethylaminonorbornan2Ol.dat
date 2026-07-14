@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-dimethylaminonorbornan-2-ol  (C9H17NO, CAS 57070-90-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Dimethylaminonorbornan2Ol;
+formula     C9H17NO;
+CAS         57070-90-3;
+InChIKey    RELHKQZXRPAJSE-UHFFFAOYSA-N;
+MW          155.241;      // g/mol [origin=calculated method=formula-sum]
+Tc          704.68;      // K   [origin=predictive method=joback]
+Pc          31.811;      // bar [origin=predictive method=joback]
+omega       0.8101;      // -   [origin=predictive method=lee-kesler]
+Tb          518.55;      // K   [origin=predictive method=joback]
+HvapTb      53730.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-104.42 1.25594 -0.000892 2.554e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 4; } { group OH; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 4; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(dimethylamino)bicyclo[2.2.1]heptan-3-ol" "bicyclo(2.2.1)heptan-2-ol, 3-(dimethylamino)-, (endo,endo)-" "3-(dimethylamino)bicyclo[2.2.1]heptan-2-ol" "(1r,2r,3s,4s)-2-(dimethylamino)bicyclo[2.2.1]heptan-3-ol" "bicyclo[2.2.1]heptan-2-ol,3-(dimethylamino)-(endo,endo)-" "bicyclo(2.2.1)heptan-2-ol, 3-(dimethylamino)-2-exo-, 3-endo-" "bicyclo[2.2.1]heptan-2-ol, 3-(dimethylamino)-, 2-exo, 3-endo-" );
+gibbsFormation
+{
+    dHf_298   -215030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     328.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=92840.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,4,4',5-pentachlorobiphenyl  (C12H5Cl5, CAS 74472-37-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23445Pentachlorobiphenyl;
+formula     C12H5Cl5;
+CAS         74472-37-0;
+InChIKey    SXZSFWHOSHAKMN-UHFFFAOYSA-N;
+MW          326.422;      // g/mol [origin=calculated method=formula-sum]
+Tc          1008.49;      // K   [origin=predictive method=joback]
+Pc          25.820;      // bar [origin=predictive method=joback]
+omega       0.6747;      // -   [origin=predictive method=lee-kesler]
+Tb          739.57;      // K   [origin=predictive method=joback]
+HvapTb      72093.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (60.12 0.7225 -0.0004582 1.031e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 2; } { group ACCl; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 5; } { group dC_ring; count 7; } { group Cl; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4-tetrakis(chloranyl)-5-(4-chlorophenyl)benzene" "1,1'-biphenyl, 2,3,4,4',5-pentachloro-" "2,3,4,5,4'-pentachloro-biphenyl" "1,1'-biphenyl,2,3,4,4',5-pentachloro-" "1,2,3,4-tetrachloro-5-(4-chlorophenyl)benzene" "2,3,4,4',5-pentachlorobiphenyl;2,3,4,5,4'-pentachlorobiphenyl;4'-chloro-2,3,4,5-tetrachlorobiphenyl;cb 114;pcb 114;2,3,4,4',5-pentachlorobiphenyl;1,1'-biphenyl, 2,3,4,4',5-pentachloro-;2,3,4,4',5-pentachloro-1,1'-biphenyl;2,3,4,4',5-pentachlorobiphenyl;1,2,3,4-tetrachloro-5-(4-chlorophenyl)benzene;" );
+gibbsFormation
+{
+    dHf_298   46000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     546.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=167180.0
+    phase     gas;
+}

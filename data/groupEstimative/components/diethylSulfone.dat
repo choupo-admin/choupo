@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethyl sulfone  (C4H10O2S, CAS 597-35-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C4H10O2S (delta S+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        diethylSulfone;
+formula     C4H10O2S;
+CAS         597-35-3;
+InChIKey    MBDUIEKYVPVZJH-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          122.182;      // g/mol [origin=calculated method=formula-sum]
+Tc          405.38;      // K   [origin=predictive method=joback]
+Pc          44.682;      // bar [origin=predictive method=joback]
+omega       0.3960;      // -   [origin=predictive method=lee-kesler]
+Tb          270.12;      // K   [origin=predictive method=joback]
+HvapTb      36316.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.892 0.42304 -0.0001684 8e-10);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2SuCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dO_oth; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethylsulfonylethane" "ethyl sulfone" "ethane, 1,1'-sulfonylbis-" "diethylsulfone" "diethyl sulphone" "ethyl sulfone (8ci)" "1-(ethylsulfonyl)ethane" "ethane,1'-sulfonylbis-" "ethane,1,1'-sulfonylbis-" "3',4'-dipropionylhelveticosol" "ethane, 1,1'-sulfonylbis- (9ci)" "card-20(22)-enolide, 3-((2,6-dideoxy-3,4-bis-o-(1-oxopropyl)-beta-d-ribo-hexopyranosyl)oxy)-5,14,19-trihydroxy-" );
+gibbsFormation
+{
+    dHf_298   -621110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     570.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-518860.0
+    phase     gas;
+}

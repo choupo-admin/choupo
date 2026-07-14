@@ -1,0 +1,82 @@
+/*---------------------------------------------------------------------------*\
+  Osmotic and mean activity coefficients of uni-univalent electrolytes in
+  water at 25 C -- CRITICALLY EVALUATED (internally consistent) values.
+
+  PRIMARY: W. J. Hamer & Y.-C. Wu, J. Phys. Chem. Ref. Data 1 (1972) 1047,
+  DOI 10.1063/1.3253108 (NBS).  Tables 4 (HCl), 16 (NaCl), 19 (NaOH),
+  28 (KCl), 29 (KBr).  gamma = mean ionic activity coefficient gamma_pm,
+  phi = molal osmotic coefficient, both dimensionless, molality mol/kg.
+  Li-Cl (Table 9) is ALSO here, but the catalogue Li-Cl Pitzer pair was
+  REFIT to this very table -- for LiCl this file is a fit-consistency
+  check, NOT independent validation (see the propsDict note).
+\*---------------------------------------------------------------------------*/
+
+nacl
+(
+    { m 0.1; gamma 0.779; phi 0.933; }
+    { m 0.5; gamma 0.681; phi 0.921; }
+    { m 1.0; gamma 0.657; phi 0.936; }
+    { m 2.0; gamma 0.668; phi 0.984; }
+    { m 3.0; gamma 0.714; phi 1.045; }
+    { m 4.0; gamma 0.783; phi 1.116; }
+    { m 5.0; gamma 0.874; phi 1.191; }
+    { m 6.0; gamma 0.986; phi 1.270; }
+);
+
+kcl
+(
+    { m 0.1; gamma 0.768; phi 0.927; }
+    { m 0.5; gamma 0.649; phi 0.900; }
+    { m 1.0; gamma 0.604; phi 0.898; }
+    { m 2.0; gamma 0.573; phi 0.912; }
+    { m 3.0; gamma 0.568; phi 0.936; }
+    { m 4.0; gamma 0.576; phi 0.965; }
+    { m 4.5; gamma 0.584; phi 0.981; }
+);
+
+kbr
+(
+    { m 0.1; gamma 0.771; phi 0.928; }
+    { m 0.5; gamma 0.658; phi 0.906; }
+    { m 1.0; gamma 0.617; phi 0.907; }
+    { m 2.0; gamma 0.593; phi 0.927; }
+    { m 3.0; gamma 0.595; phi 0.954; }
+    { m 4.0; gamma 0.608; phi 0.985; }
+    { m 5.0; gamma 0.626; phi 1.015; }
+);
+
+licl
+(
+    { m 0.1; gamma 0.789; phi 0.940; }
+    { m 0.5; gamma 0.739; phi 0.964; }
+    { m 1.0; gamma 0.775; phi 1.020; }
+    { m 2.0; gamma 0.924; phi 1.145; }
+    { m 3.0; gamma 1.157; phi 1.284; }
+    { m 4.0; gamma 1.499; phi 1.441; }
+    { m 5.0; gamma 2.00;  phi 1.613; }
+    { m 6.0; gamma 2.73;  phi 1.794; }
+);
+
+hcl
+(
+    { m 0.1; gamma 0.797; phi 0.944; }
+    { m 0.5; gamma 0.759; phi 0.974; }
+    { m 1.0; gamma 0.811; phi 1.038; }
+    { m 2.0; gamma 1.009; phi 1.186; }
+    { m 3.0; gamma 1.316; phi 1.346; }
+    { m 4.0; gamma 1.757; phi 1.513; }
+    { m 5.0; gamma 2.38;  phi 1.682; }
+    { m 6.0; gamma 3.23;  phi 1.849; }
+);
+
+naoh
+(
+    { m 0.1; gamma 0.775; phi 0.931; }
+    { m 0.5; gamma 0.685; phi 0.928; }
+    { m 1.0; gamma 0.674; phi 0.954; }
+    { m 2.0; gamma 0.714; phi 1.023; }
+    { m 3.0; gamma 0.794; phi 1.105; }
+    { m 4.0; gamma 0.911; phi 1.200; }
+    { m 5.0; gamma 1.076; phi 1.310; }
+    { m 6.0; gamma 1.302; phi 1.434; }
+);

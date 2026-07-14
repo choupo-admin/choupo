@@ -1,0 +1,79 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Component: L-(+)-Tartaric acid (C4H6O6), the wine-industry organic diacid.
+  CAS 87-69-4.  MW 150.087 g/mol.
+
+  A NON-VOLATILE crystalline organic solid at ambient (mp ~171 C): never enters
+  the vapour (K = 0), no Antoine block.  The product of the natural (wine) route
+  to tartaric acid and a feed acid in food / pharma exercises.
+
+  CURATION NOTE -- the formation datum was REVISED.  An older value of
+  -1272.2 kJ/mol (Swietoslawski, 1928, pre-war bomb calorimetry) is ~39 kJ/mol
+  too low; it is SUPERSEDED here by the modern calorimetric value of Kochergina,
+  Volkov, Krutov & Krutova (2006).  The dissociated ions (HC4H4O6-, C4H4O6-2)
+  live in the electrolyte catalogue (data/standards/species/aqueous/, same
+  Kochergina source), so a DISSOLVED tartrate derives its enthalpy from the ions;
+  this molecular crystal is the SOLID datum.
+\*---------------------------------------------------------------------------*/
+
+name        tartaricAcid;
+formula     C4H6O6;
+CAS         87-69-4;
+MW          150.087;            // kg/kmol  (L-(+)-tartaric acid)
+
+nonvolatile true;               // crystalline organic acid; never to the vapour (K = 0) --
+                                //   the `phase solid` datum routes it on the solid line in
+                                //   liquid streams too (same as glucose/sucrose), no gas leg
+dissociation 1;                 // molecular (the dissociated HTart-/Tart2- ions live in ions.dat)
+
+solid
+{
+    rho_p   1788.0;             // crystal density [kg/m^3] (L-(+)-tartaric acid)
+}
+
+// Solid-phase formation datum (crystalline H2Tart).  PRIMARY: Kochergina,
+// Volkov, Krutov & Krutova, "The Standard Enthalpies of Formation of Citric and
+// Tartaric Acids and Their Dissociation Products in Aqueous Solutions",
+// Russ. J. Phys. Chem. 80 (2006) 899-903, Table 5 (combustion + solution
+// calorimetry, mean of two methods).  Supersedes Swietoslawski 1928 (-1272.2).
+gibbsFormation
+{
+    dHf_298   -1311200;        // J/mol  crystalline [Kochergina et al. 2006, Tab.5: -1311.2 +/- 1.1 kJ/mol]
+    s_298     204.3;           // J/(mol*K) third-law -- LITERATURE estimate (Domalski-Hearing class), VERIFY;
+                               //   the HEAT OF REACTION uses only dHf + Cp, so s_298 enters only K_eq / Gibbs.
+    phase     solid;
+}
+
+// REAL solid heat capacity.  PRIMARY: Satoh & Sogabe, Sci. Pap. Inst. Phys.
+// Chem. Res. (Tokyo) 1939 -- Cp(s) ~ 184.5 J/(mol*K) near 323 K.  Held constant
+// (single-coefficient) as a near-ambient approximation; refit before high-T duty.
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = a0 + a1*T + a2*T^2  [J/(mol*K)]
+    coefficients  ( 184.5  0.0  0.0 );
+    Trange        ( 298  350 );        // [Satoh & Sogabe 1939; constant approximation -- FLAGGED]
+}
+
+// Liquid / dissolved Cp -- the SENSIBLE heat when the solute travels in an aqueous
+// (liquid) stream (the datum stays the solid line via `nonvolatile true`).  PROXY:
+// the solid Cp held constant -- FLAGGED; Apelblat & Manzurola 2001 carry the
+// aqueous apparent molar Cp to refit against before a Cp-sensitive duty.
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  ( 184.5  0.0  0.0 );
+    Trange        ( 298  400 );        // [Satoh 1939 solid Cp used as a liquid/aqueous PROXY -- FLAGGED]
+}
+
+// ENERGY-BALANCE SCOPE.  Tartaric acid closes an energy balance on THREE rungs,
+// all on the same elements floor:
+//   (1) SOLID crystal     -- gibbsFormation (above) + solidHeatCapacity;
+//   (2) DISSOLVED NEUTRAL  -- the aqueous rung via solution/tartaricAcid-water.dat
+//       (dHsoln +15.3 kJ/mol, Kochergina) => h_aq = Hf_crystal + dHsoln = -1295.9
+//       kJ/mol, with NO ideal-gas/Watson vapour leg (a decomposing solid has none);
+//   (3) DISSOCIATED        -- the HTart-/Tart2- ions in electrolyte/ions.dat.
+// The crystallisation heat emerges as h_solid - h_aq ~ -dHsoln from one number.
+
+groups
+{
+    unifac ( { group CH; count 2; } { group OH; count 2; } { group COOH; count 2; } );   // added from data/groupEstimative (UNIFAC decomposition; vocab-checked vs groups.dat)
+}

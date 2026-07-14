@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,6,9,12,15,18-hexaoxahexatriacontan-1-ol  (C30H62O7, CAS 2420-29-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        369121518Hexaoxahexatriacontan1Ol;
+formula     C30H62O7;
+CAS         2420-29-3;
+InChIKey    BGTZEQVWUZNMIY-UHFFFAOYSA-N;
+MW          534.819;      // g/mol [origin=calculated method=formula-sum]
+Tc          1479.68;      // K   [origin=predictive method=joback]
+Pc          5.926;      // bar [origin=predictive method=joback]
+omega       -0.0095;      // -   [origin=predictive method=lee-kesler]
+Tb          1112.70;      // K   [origin=predictive method=joback]
+HvapTb      113513.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (133.909 2.50862 -0.0009726 2.68e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 22; } { group CH2O; count 5; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 29; } { group OH; count 1; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-[2-[2-(2-octadecoxyethoxy)ethoxy]ethoxy]ethoxy]ethoxy]ethanol" "octadecylhexaglycol" "polyoxyethylene (6) stearyl ether" "c18e6" "hexaethylene glycol monooctadecyl ether" "peg-6 stearyl ether" "steareth-6" "hexaethylene glycol, monostearyl ether" "polyethylene glycol 300 stearyl ether" "ethanol,2-[2-[2-[2-[2-[2-(octadecyloxy)ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]-;hexa(ethylene glycol) octadecyl ether; hexaethyleneglycol monooctadecyl ether" );
+gibbsFormation
+{
+    dHf_298   -1608080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1443.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-565100.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzilic acid  (C14H12O3, CAS 76-93-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzilicAcid;
+formula     C14H12O3;
+CAS         76-93-7;
+InChIKey    UKXSKSHDVLQNKG-UHFFFAOYSA-N;
+MW          228.247;      // g/mol [origin=calculated method=formula-sum]
+Tc          1046.48;      // K   [origin=predictive method=joback]
+Pc          34.602;      // bar [origin=predictive method=joback]
+omega       1.2932;      // -   [origin=predictive method=lee-kesler]
+Tb          807.74;      // K   [origin=predictive method=joback]
+HvapTb      83857.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-92.23 1.3866 -0.001075 3.161e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group ACH; count 10; } { group AC; count 2; } { group OH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-oxidanyl-2,2-diphenyl-ethanoic acid" "diphenylglycolic acid" "benzylic acid" "2-hydroxy-2,2-diphenylacetic acid" "hydroxy(diphenyl)acetic acid" "diphenylhydroxyacetic acid" "glycolic acid, diphenyl-" "hydroxydiphenylacetic acid" "2,2-diphenyl-2-hydroxyacetic acid" "hydroxy(diphenyl)essigs" "alpha-hydroxy-2,2-diphenylacetic acid" "acide diphenylhydroxyacetique" );
+gibbsFormation
+{
+    dHf_298   -370480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     553.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-186070.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heneicosane  (C21H44, CAS 629-94-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heneicosane;
+formula     C21H44;
+CAS         629-94-7;
+InChIKey    FNAZRRHPUDJQCJ-UHFFFAOYSA-N;
+MW          296.583;      // g/mol [origin=calculated method=formula-sum]
+Tc          841.95;      // K   [origin=predictive method=joback]
+Pc          9.561;      // bar [origin=predictive method=joback]
+omega       0.8074;      // -   [origin=predictive method=lee-kesler]
+Tb          680.08;      // K   [origin=predictive method=joback]
+HvapTb      62340.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.201 1.99884 -0.0011186 2.387e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 19; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 19; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "henicosane" "n-heneicosane" "ai3-36479" "CH3-[CH2]19-ch3" "eicosane, methyl-" "CH3-(CH2)19-CH3" "heneicosane; n-heneicosane; henicosane;" "henicosan" "henicosane #" "heneicosane, 98%" "heneicosane, analytical standard" "HY-W089845" );
+gibbsFormation
+{
+    dHf_298   -476770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     974.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=125940.0
+    phase     gas;
+}

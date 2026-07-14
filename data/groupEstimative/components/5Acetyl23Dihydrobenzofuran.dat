@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-acetyl-2,3-dihydrobenzofuran  (C10H10O2, CAS 90843-31-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Acetyl23Dihydrobenzofuran;
+formula     C10H10O2;
+CAS         90843-31-5;
+InChIKey    MMVUJVASBDVNGJ-UHFFFAOYSA-N;
+MW          162.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          789.50;      // K   [origin=predictive method=joback]
+Pc          36.290;      // bar [origin=predictive method=joback]
+omega       0.6011;      // -   [origin=predictive method=lee-kesler]
+Tb          557.27;      // K   [origin=predictive method=joback]
+HvapTb      52932.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-43.01 0.90232 -0.00066032 1.9326e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACCH2; count 1; } { group CH3CO; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2,3-dihydro-1-benzofuran-5-yl)ethanone" "5-acetyl-2,3-dihydrobenzo[b]furan" "1-(2,3-dihydrobenzo[b]furan-5-yl)ethan-1-one" "5-acetyl-2,3-dihydrobenzo(b)furan" "1-(2,3-dihydro-benzofuran-5-yl)-ethanone" "1-(2,3-dihydrobenzofuran-5-yl)ethanone" "5-acetylcoumaran" "1-(2,3-dihydro-5-benzofuranyl)ethanone" "1-(2,3-dihydro-5-benzofuranyl)-ethanone" "1-(2,3-dihydro-benzofuran-5-yl)ethanone" );
+gibbsFormation
+{
+    dHf_298   -187580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     354.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-20110.0
+    phase     gas;
+}

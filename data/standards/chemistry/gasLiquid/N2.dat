@@ -1,0 +1,6 @@
+recordType gasLiquidEquilibrium;
+schemaVersion 1;
+
+gas N2; reaction "N2(g) = N2"; dissolved "N2";
+      logK25 -3.1864; analytic ( -58.453 0.001818 3199 17.909 -27460 ); Tc 126.2; Pc 33.5; omega 0.039; source "USGS PHREEQC phreeqc.dat (public domain); primary not stated in db";
+

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butane-1,3-diol;dimethyl 2-(2-ethylhexyl)pentanedioate;dimethyl hexanedioate  (C27H52O10, CAS 70983-42-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butane13DiolDimethyl22EthylhexylPentanedioateDimethylHexaned;
+formula     C27H52O10;
+CAS         70983-42-5;
+InChIKey    YWPBNTMMRJGVNJ-UHFFFAOYSA-N;
+MW          536.703;      // g/mol [origin=calculated method=formula-sum]
+Tc          1640.55;      // K   [origin=predictive method=joback]
+Pc          7.081;      // bar [origin=predictive method=joback]
+omega       0.1049;      // -   [origin=predictive method=lee-kesler]
+Tb          1236.08;      // K   [origin=predictive method=joback]
+HvapTb      138106.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (167.153 2.02304 -0.0003074 -3.346e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 7; } { group CH2; count 10; } { group CH; count 3; } { group OH; count 2; } { group CH2COO; count 3; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 7; } { group CH2; count 13; } { group CH; count 3; } { group OH; count 2; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexanedioic acid, 1,6-dimethyl ester, polymer with 1,3-butanediol and 1,5-dimethyl pentanedioate, 2-ethylhexyl ester" "hexanedioic acid, dimethyl ester, polymer with 1,3-butanediol and dimethyl pentanedioate, 2-ethylhexyl ester" );
+gibbsFormation
+{
+    dHf_298   -2413270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1701.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1555500.0
+    phase     gas;
+}

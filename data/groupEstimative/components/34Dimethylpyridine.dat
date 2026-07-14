@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,4-Dimethylpyridine  (C7H9N, CAS 583-58-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34Dimethylpyridine;
+formula     C7H9N;
+CAS         583-58-4;
+InChIKey    NURQLCJSMXZBPC-UHFFFAOYSA-N;
+MW          107.156;      // g/mol [origin=calculated method=formula-sum]
+Tc          671.71;      // K   [origin=predictive method=joback]
+Pc          40.415;      // bar [origin=predictive method=joback]
+omega       0.3372;      // -   [origin=predictive method=lee-kesler]
+Tb          445.12;      // K   [origin=predictive method=joback]
+HvapTb      40324.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.02 0.5642 -0.00033042 7.45e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C5H3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4-lutidine" "pyridine, 3,4-dimethyl-" "3,4-lutidene" "BRN 0106583" "5-20-06-00054 (Beilstein Handbook Reference)" "3,4-dimethylpyridine; nsc 4675" "3,4lutidine" "NSC4675" "3,4dimethylpyridin" "3,4dimetilpiridina" "3,4-dimethyl-pyridine" "pyridine, 3,4dimethyl" );
+gibbsFormation
+{
+    dHf_298   70040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     328.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=187890.0
+    phase     gas;
+}

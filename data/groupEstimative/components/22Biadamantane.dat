@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2'-biadamantane  (C20H30, CAS 29542-62-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Biadamantane;
+formula     C20H30;
+CAS         29542-62-9;
+InChIKey    FFLXOPFAPWKULC-UHFFFAOYSA-N;
+MW          270.46;      // g/mol [origin=calculated method=formula-sum]
+Tc          917.96;      // K   [origin=predictive method=joback]
+Pc          16.797;      // bar [origin=predictive method=joback]
+omega       0.5790;      // -   [origin=predictive method=lee-kesler]
+Tb          687.50;      // K   [origin=predictive method=joback]
+HvapTb      58700.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-303.23 2.684 -0.002071 6.5e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group CH; count 10; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 10; } { group CH_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-adamantyl)adamantane" "2-(adamantan-2-yl)adamantane" "2,2'-bitricyclo[3.3.1.13,7]decane" "2,2'-biadamantane(8ci);2,2'-biadamantyl;" );
+gibbsFormation
+{
+    dHf_298   -113010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     263.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=426980.0
+    phase     gas;
+}

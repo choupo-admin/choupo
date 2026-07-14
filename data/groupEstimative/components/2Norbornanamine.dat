@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-norbornanamine  (C7H13N, CAS 822-98-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Norbornanamine;
+formula     C7H13N;
+CAS         822-98-0;
+InChIKey    JEPPYVOSGKWVSJ-UHFFFAOYSA-N;
+MW          111.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          663.56;      // K   [origin=predictive method=joback]
+Pc          40.007;      // bar [origin=predictive method=joback]
+omega       0.3872;      // -   [origin=predictive method=lee-kesler]
+Tb          445.37;      // K   [origin=predictive method=joback]
+HvapTb      41506.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-96.65 0.9964 -0.000739 2.236e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 2; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group CH_ring; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bicyclo[2.2.1]heptan-3-amine" "bicyclo[2.2.1]heptan-2-amine" "endo-2-aminonorbornane" "bicyclo[2.2.1]hept-2-ylamine" "bicyclo[2.2.1]heptan-2-amine, exo-" "exo-2-aminonorbornane" "bicyclo(2.2.1)heptan-2-amine" "(1s,2s,4s)-bicyclo[2.2.1]heptan-2-amine" "bicyclo[2.2.1]heptan-2-amine, (1s,2s,4s)-" "exo-2-bornanamine" "bicyclo[2.2.1]heptan-2-amine,(1r,2s,4s)-" "2-norbornanamine(6ci,7ci,8ci); 2-aminonorbornane; 2-norbornylamine; norbornylamine; [bicyclo[2.2.1]heptan-2-yl]amine" );
+gibbsFormation
+{
+    dHf_298   -34920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     277.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=176200.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-diethyl-2,6-heptadienal  (C11H18O, CAS 85136-07-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24Diethyl26Heptadienal;
+formula     C11H18O;
+CAS         85136-07-8;
+InChIKey    QAFGEOHWEQLURJ-UHFFFAOYSA-N;
+MW          166.264;      // g/mol [origin=calculated method=formula-sum]
+Tc          685.16;      // K   [origin=predictive method=joback]
+Pc          22.828;      // bar [origin=predictive method=joback]
+omega       0.5812;      // -   [origin=predictive method=lee-kesler]
+Tb          500.22;      // K   [origin=predictive method=joback]
+HvapTb      45780.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.257 1.02914 -0.0006798 1.837e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group CH2=CH; count 1; } { group CH=C; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4-diethylhepta-2,6-dienal" "(2e,4s)-2,4-diethylhepta-2,6-dienal;(2e)-2,4-diethylhepta-2,6-dienal;2,4-diethylhepta-2,6-dienal;(2e,4r)-2,4-diethylhepta-2,6-dienal;(e)-2,4-diethylhepta-2,6-dienal;" );
+gibbsFormation
+{
+    dHf_298   -128370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     578.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=99290.0
+    phase     gas;
+}

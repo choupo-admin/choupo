@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-methyldecanolide  (C11H20O2, CAS 7011-83-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Methyldecanolide;
+formula     C11H20O2;
+CAS         7011-83-8;
+InChIKey    ALWUKGXLBSQSMA-UHFFFAOYSA-N;
+MW          184.279;      // g/mol [origin=calculated method=formula-sum]
+Tc          703.51;      // K   [origin=predictive method=joback]
+Pc          22.806;      // bar [origin=predictive method=joback]
+omega       0.6163;      // -   [origin=predictive method=lee-kesler]
+Tb          516.48;      // K   [origin=predictive method=joback]
+HvapTb      46249.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-81.935 1.43684 -0.0012328 4.599e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group C; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-hexyl-5-methyl-oxolan-2-one" "2(3h)-furanone, 5-hexyldihydro-5-methyl-" "dihydrojasmone lactone" "gamma-methyl-gamma-decanolactone" "gamma-methyldecalactone" "gamma-methyl decalactone" "5-hexyl-5-methyldihydrofuran-2(3h)-one" "5-hexyldihydro-5-methyl-2(3h)-furanone" "5-hexyldihydro-5-methylfuran-2(3h)-one" "4-hydroxy-4-methyldecanoic acid gamma-lactone" "decanoic acid, 4-hydroxy-4-methyl-, gamma-lactone" ".gamma.-methyldecalactone" );
+gibbsFormation
+{
+    dHf_298   -499610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     615.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-213370.0
+    phase     gas;
+}

@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): 1,3-benzenediol, compd. with 1,3,5,7-tetraazatricyclo(3.3.1.13,7)decane (1:1)  (C12H18N4O2, CAS 13423-47-7)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           13BenzenediolCompdWith1357Tetraazatricyclo331137Decane11;
+formula        C12H18N4O2;
+CAS            13423-47-7;
+InChIKey       CIMLIXQVXBAFPF-UHFFFAOYSA-N;
+MW             250.302;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: 1,3-benzenediol, compd. with 1,3,5,7-tetraazatricyclo(3.3.1.13,7)decane (1:1)

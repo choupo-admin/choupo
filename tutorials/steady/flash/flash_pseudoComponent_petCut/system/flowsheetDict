@@ -9,16 +9,7 @@
   gibbsFormation).
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            420.0 K;
-        P              1.0 bar;
-        molarComposition  { toluene 0.55;  petCut_C7plus 0.45; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

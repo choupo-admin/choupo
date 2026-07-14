@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: peg-3 lauramide  (C16H33NO3, CAS 20138-28-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        peg3Lauramide;
+formula     C16H33NO3;
+CAS         20138-28-7;
+InChIKey    SIFSGJHNINUHSG-UHFFFAOYSA-N;
+MW          287.444;      // g/mol [origin=calculated method=formula-sum]
+Tc          962.66;      // K   [origin=predictive method=joback]
+Pc          14.759;      // bar [origin=predictive method=joback]
+omega       1.2884;      // -   [origin=predictive method=lee-kesler]
+Tb          784.32;      // K   [origin=predictive method=joback]
+HvapTb      83481.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.284 1.54282 -0.0007959 1.3566e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group CONHCH2; count 1; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 14; } { group OH; count 1; } { group O; count 1; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-[2-(2-hydroxyethyloxy)ethyl]dodecanamide" "dodecanamide, n-(2-(2-hydroxyethoxy)ethyl)-" "dodecanamide, n-[2-(2-hydroxyethoxy)ethyl]-" "peg-5 lauramide" "peg-6 lauramide" "polyethylene glycol (5) lauryl amide" "ethoxylated monoethanolamide of lauric acid" "polyoxyethylene (3) lauryl amide" "polyoxyethylene (5) lauryl amide" "polyoxyethylene (6) lauryl amide" "lauric monoethanolamide, ethoxylate" "polyethylene glycol (3) lauryl amide" );
+gibbsFormation
+{
+    dHf_298   -717130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     908.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-197510.0
+    phase     gas;
+}

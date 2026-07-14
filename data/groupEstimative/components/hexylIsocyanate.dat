@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexyl isocyanate  (C7H13NO, CAS 2525-62-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexylIsocyanate;
+formula     C7H13NO;
+CAS         2525-62-4;
+InChIKey    ANJPRQPHZGHVQB-UHFFFAOYSA-N;
+MW          127.187;      // g/mol [origin=calculated method=formula-sum]
+Tc          603.23;      // K   [origin=predictive method=joback]
+Pc          30.323;      // bar [origin=predictive method=joback]
+omega       0.5287;      // -   [origin=predictive method=lee-kesler]
+Tb          426.43;      // K   [origin=predictive method=joback]
+HvapTb      40708.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCd; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-isocyanatohexane" "hexane, 1-isocyanato-" "1-hexyl isocyanate" "hexylmonoisocyanate" "hexyl monoisocyanate" "hexanisocyanate" "n-hexylisocyanate" "isocyanic acid hexyl ester" "isocyanicacid, hexyl ester (6ci,7ci,8ci); 1-hexyl isocyanate; 1-isocyanatohexane; hexylisocyanate; n-hexyl isocyanate" );
+// formation datum unavailable (element entropy missing): dHf_298=-193220.0 dGf_298=None

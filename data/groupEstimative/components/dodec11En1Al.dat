@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dodec-11-en-1-al  (C12H22O, CAS 51148-68-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dodec11En1Al;
+formula     C12H22O;
+CAS         51148-68-6;
+InChIKey    LRLMEXPRIMROMY-UHFFFAOYSA-N;
+MW          182.307;      // g/mol [origin=calculated method=formula-sum]
+Tc          688.85;      // K   [origin=predictive method=joback]
+Pc          19.683;      // bar [origin=predictive method=joback]
+omega       0.7221;      // -   [origin=predictive method=lee-kesler]
+Tb          519.50;      // K   [origin=predictive method=joback]
+HvapTb      48356.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.389 1.0983 -0.0006449 1.469e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group CH2=CH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 9; } { group dCH2; count 1; } { group dCH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodec-11-enal" "11-dodecenal" "11-dodecen-1-al" );
+gibbsFormation
+{
+    dHf_298   -251160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     637.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=38480.0
+    phase     gas;
+}

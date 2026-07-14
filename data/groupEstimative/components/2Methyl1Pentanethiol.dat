@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methyl-1-pentanethiol  (C6H14S, CAS 1633-89-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methyl1Pentanethiol;
+formula     C6H14S;
+CAS         1633-89-2;
+InChIKey    ZUPLFMMTGJBSMK-UHFFFAOYSA-N;
+MW          118.238;      // g/mol [origin=calculated method=formula-sum]
+Tc          592.57;      // K   [origin=predictive method=joback]
+Pc          33.724;      // bar [origin=predictive method=joback]
+omega       0.3406;      // -   [origin=predictive method=lee-kesler]
+Tb          399.30;      // K   [origin=predictive method=joback]
+HvapTb      35299.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.643 0.60704 -0.0003282 6.53e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylpentane-1-thiol" "1-pentanethiol, 2-methyl-" );
+gibbsFormation
+{
+    dHf_298   -133970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     442.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=26590.0
+    phase     gas;
+}

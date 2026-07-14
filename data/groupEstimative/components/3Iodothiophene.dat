@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-iodothiophene  (C4H3IS, CAS 10486-61-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Iodothiophene;
+formula     C4H3IS;
+CAS         10486-61-0;
+InChIKey    WGKRMQIQXMJVFZ-UHFFFAOYSA-N;
+MW          210.028;      // g/mol [origin=calculated method=formula-sum]
+Tc          725.45;      // K   [origin=predictive method=joback]
+Pc          54.066;      // bar [origin=predictive method=joback]
+omega       0.2331;      // -   [origin=predictive method=lee-kesler]
+Tb          455.34;      // K   [origin=predictive method=joback]
+HvapTb      41495.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.8 0.42391 -0.00038422 1.363e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group I; count 1; } { group C4H3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 1; } { group I; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-iodanylthiophene" "thiophene, 3-iodo-" "3-iodothiophene, stab. with copper" "3-thienyl iodide" "thien-3-yl iodide" "agn-pc-00e9xq" "3-thienyl iodide;3-iodthiophen;" );
+gibbsFormation
+{
+    dHf_298   181150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     328.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=175330.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(2-methylphenyl)naphthalene  (C17H14, CAS 14476-01-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12MethylphenylNaphthalene;
+formula     C17H14;
+CAS         14476-01-8;
+InChIKey    DRFPSPRQWNZEMK-UHFFFAOYSA-N;
+MW          218.299;      // g/mol [origin=calculated method=formula-sum]
+Tc          928.22;      // K   [origin=predictive method=joback]
+Pc          25.689;      // bar [origin=predictive method=joback]
+omega       0.5787;      // -   [origin=predictive method=lee-kesler]
+Tb          670.86;      // K   [origin=predictive method=joback]
+HvapTb      60952.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-83.22 1.33832 -0.00096604 2.734e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 11; } { group AC; count 4; } { group ACCH3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "naphthalene, 1-(2-methylphenyl)-" );
+gibbsFormation
+{
+    dHf_298   246980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     484.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=404470.0
+    phase     gas;
+}

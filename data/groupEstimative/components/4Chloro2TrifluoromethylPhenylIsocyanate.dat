@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-chloro-2-(trifluoromethyl)phenyl isocyanate  (C8H3ClF3NO, CAS 16588-69-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Chloro2TrifluoromethylPhenylIsocyanate;
+formula     C8H3ClF3NO;
+CAS         16588-69-5;
+InChIKey    SBDPJLJFODHSFF-UHFFFAOYSA-N;
+MW          221.562;      // g/mol [origin=calculated method=formula-sum]
+Tc          726.39;      // K   [origin=predictive method=joback]
+Pc          32.137;      // bar [origin=predictive method=joback]
+omega       0.6053;      // -   [origin=predictive method=lee-kesler]
+Tb          517.96;      // K   [origin=predictive method=joback]
+HvapTb      47172.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACCl; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group C; count 1; } { group dCd; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 3; } { group Cl; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-chloranyl-1-isocyanato-2-(trifluoromethyl)benzene" "4-chloro-1-isocyanato-2-(trifluoromethyl)benzene" "5-chloro-2-isocyanatobenzotrifluoride" "4-chloro-2-(trifluoromethyl)benzenisocyanate" "4-chloro-2-(trifluoromethyl)phenylisocyanate" "benzene,4-chloro-1-isocyanato-2-(trifluoromethyl)-" "isocyanicacid, 4-chloro-a,a,a-trifluoro-o-tolyl ester (8ci);2-trifluoromethyl-4-chlorophenyl isocyanate;4-chloro-1-isocyanato-2-trifluoromethyl-benzene;4-chloro-2-(trifluoromethyl)phenyl isocyanate;" );
+// formation datum unavailable (element entropy missing): dHf_298=-613090.0 dGf_298=None

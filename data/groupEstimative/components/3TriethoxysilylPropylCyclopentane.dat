@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(triethoxysilyl)propyl cyclopentane  (C14H30O3Si, CAS 102056-64-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C14H30O3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        3TriethoxysilylPropylCyclopentane;
+formula     C14H30O3Si;
+CAS         102056-64-4;
+InChIKey    WILIUQPZJIGQLX-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          274.476;      // g/mol [origin=calculated method=formula-sum]
+Tc          787.77;      // K   [origin=predictive method=joback]
+Pc          15.343;      // bar [origin=predictive method=joback]
+omega       0.6922;      // -   [origin=predictive method=lee-kesler]
+Tb          603.86;      // K   [origin=predictive method=joback]
+HvapTb      54539.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (46.996 1.06976 -0.0001174 -1.867e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 7; } { group CH; count 1; } { group CH2O; count 3; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-cyclopentylpropyl(triethoxy)silane" "(3-cyclopentylpropyl)(triethoxy)silane" );
+gibbsFormation
+{
+    dHf_298   -780090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     811.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-316210.0
+    phase     gas;
+}

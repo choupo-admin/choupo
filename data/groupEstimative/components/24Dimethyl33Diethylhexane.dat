@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-dimethyl-3,3-diethylhexane  (C12H26, CAS 62184-92-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24Dimethyl33Diethylhexane;
+formula     C12H26;
+CAS         62184-92-3;
+InChIKey    OXAROVXPKXMTIV-UHFFFAOYSA-N;
+MW          170.34;      // g/mol [origin=calculated method=formula-sum]
+Tc          647.65;      // K   [origin=predictive method=joback]
+Pc          18.341;      // bar [origin=predictive method=joback]
+omega       0.4346;      // -   [origin=predictive method=lee-kesler]
+Tb          470.05;      // K   [origin=predictive method=joback]
+HvapTb      40234.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-35.857 1.28152 -0.0008072 2.025e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 3; } { group CH; count 2; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 3; } { group CH; count 2; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3-diethyl-2,4-dimethyl-hexane" "3,3-diethyl-2,4-dimethylhexane" );
+gibbsFormation
+{
+    dHf_298   -310320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     565.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=48120.0
+    phase     gas;
+}

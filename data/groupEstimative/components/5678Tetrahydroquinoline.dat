@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5,6,7,8-tetrahydroquinoline  (C9H11N, CAS 10500-57-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5678Tetrahydroquinoline;
+formula     C9H11N;
+CAS         10500-57-9;
+InChIKey    YQDGQEKUTLYWJU-UHFFFAOYSA-N;
+MW          133.194;      // g/mol [origin=calculated method=formula-sum]
+Tc          754.04;      // K   [origin=predictive method=joback]
+Pc          40.210;      // bar [origin=predictive method=joback]
+omega       0.3930;      // -   [origin=predictive method=lee-kesler]
+Tb          506.56;      // K   [origin=predictive method=joback]
+HvapTb      45170.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-76.14 0.92196 -0.00066842 1.959e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group C5H3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "quinoline, 5,6,7,8-tetrahydro-" "2,3-cyclohexeno pyridine" "5,6,7,8-tetrahydro-quinoline" "g00034-watson-int" "5,7,8-tetrahydroquinoline" "quinoline,6,7,8-tetrahydro-" "5,6,7,8-tetra-hydroquinoline" );
+gibbsFormation
+{
+    dHf_298   115740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     378.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=261090.0
+    phase     gas;
+}

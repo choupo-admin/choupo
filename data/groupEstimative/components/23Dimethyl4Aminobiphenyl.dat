@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2',3-dimethyl-4-aminobiphenyl  (C14H15N, CAS 13394-86-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23Dimethyl4Aminobiphenyl;
+formula     C14H15N;
+CAS         13394-86-0;
+InChIKey    HSQVHYANHDSFFI-UHFFFAOYSA-N;
+MW          197.281;      // g/mol [origin=calculated method=formula-sum]
+Tc          909.94;      // K   [origin=predictive method=joback]
+Pc          28.054;      // bar [origin=predictive method=joback]
+omega       0.6523;      // -   [origin=predictive method=lee-kesler]
+Tb          660.75;      // K   [origin=predictive method=joback]
+HvapTb      63937.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.26 1.05944 -0.00064248 1.427e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 7; } { group AC; count 2; } { group ACCH3; count 2; } { group ACNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-4-(2-methylphenyl)aniline" "3,2'-dimethyl-4-aminobiphenyl" "3,2'-dmab" "(m,o'-bitolyl)-4-amine" "2',3-dimethyl-(1,1'-biphenyl)-4-amine" "3,2'-dimethyl-4-aminodiphenyl" "3,2'-dimethyl-4-biphenylamine" "4-amino-3,2'-dimethylbiphenyl" "2',3-dimethyl-4-amino-1,1'-biphenyl" "4-biphenylamine, 3,2'-dimethyl-" "58109-32-3 (hydrochloride)" "n-methyl-1,1-diphenyl-methanamine;" );
+gibbsFormation
+{
+    dHf_298   140150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     521.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=329380.0
+    phase     gas;
+}

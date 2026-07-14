@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-carbomethoxyhomocubane  (C11H12O2, CAS 40317-63-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Carbomethoxyhomocubane;
+formula     C11H12O2;
+CAS         40317-63-3;
+InChIKey    VZNFAXUDGDVVBT-UHFFFAOYSA-N;
+MW          176.215;      // g/mol [origin=calculated method=formula-sum]
+Tc          705.66;      // K   [origin=predictive method=joback]
+Pc          30.090;      // bar [origin=predictive method=joback]
+omega       0.5819;      // -   [origin=predictive method=lee-kesler]
+Tb          503.81;      // K   [origin=predictive method=joback]
+HvapTb      43942.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-234.36 2.01852 -0.0022258 9.519e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 7; } { group C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 7; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl pentacyclo[4.3.0.02,5.03,8.04,7]nonane-4-carboxylate" );
+gibbsFormation
+{
+    dHf_298   -232470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     7.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=79100.0
+    phase     gas;
+}

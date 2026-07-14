@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene-1,3-dicarboxylic acid;butane-1,4-diol;2,3-dimethylterephthalic acid;hexane-1,6-diol  (C28H40O12, CAS 56529-00-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzene13DicarboxylicAcidButane14Diol23DimethylterephthalicA;
+formula     C28H40O12;
+CAS         56529-00-1;
+InChIKey    DGBGUIQABREZKW-UHFFFAOYSA-N;
+MW          568.616;      // g/mol [origin=calculated method=formula-sum]
+Tc          3199.45;      // K   [origin=predictive method=joback]
+Pc          12.363;      // bar [origin=predictive method=joback]
+omega       -0.3015;      // -   [origin=predictive method=lee-kesler]
+Tb          1868.48;      // K   [origin=predictive method=joback]
+HvapTb      221376.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (128.84 1.98864 -0.00046124 -2.27e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group ACH; count 6; } { group AC; count 4; } { group ACCH3; count 2; } { group OH; count 4; } { group COOH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 10; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group OH; count 4; } { group COOH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-benzenedicarboxylic acid, polymer with 1,4-butanediol, 1,4-dimethyl 1,4-benzenedicarboxylate and 1,6-hexanediol" "1,3-benzenedicarboxylic acid, polymer with 1,4-butanediol, dimethyl 1,4-benzenedicarboxylate and 1,6-hexanediol" "benzene-1,3-dicarboxylic acid; butane-1,4-diol; 2,3-dimethylterephthalic acid; hexane-1,6-diol" );
+gibbsFormation
+{
+    dHf_298   -2538930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1748.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1866020.0
+    phase     gas;
+}

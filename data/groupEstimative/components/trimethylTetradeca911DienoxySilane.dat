@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimethyl(tetradeca-9,11-dienoxy)silane  (C17H34OSi, CAS 68516-30-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C17H34OSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        trimethylTetradeca911DienoxySilane;
+formula     C17H34OSi;
+CAS         68516-30-3;
+InChIKey    PXNGSVGFGMWPNX-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          282.543;      // g/mol [origin=calculated method=formula-sum]
+Tc          794.13;      // K   [origin=predictive method=joback]
+Pc          12.031;      // bar [origin=predictive method=joback]
+omega       0.6841;      // -   [origin=predictive method=lee-kesler]
+Tb          620.70;      // K   [origin=predictive method=joback]
+HvapTb      56056.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.389 1.38948 -0.0005428 1.39e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 8; } { group CH=CH; count 2; } { group CH2O; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 9; } { group dCH; count 4; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e,z)-trimethyl(9,11-tetradecadienyloxy)silane" "silane, trimethyl[(9z,11e)-9,11-tetradecadienyloxy]-" "silane, trimethyl[(9z,11e)-9,11-tetradecadien-1-yloxy]-" "trimethyl-[(9e,11e)-tetradeca-9,11-dienoxy]silane" );
+gibbsFormation
+{
+    dHf_298   -403610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     942.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=42940.0
+    phase     gas;
+}

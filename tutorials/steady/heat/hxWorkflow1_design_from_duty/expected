@@ -1,0 +1,39 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  coldOut                F                2.22027777778      1e-4
+stream  coldTube               F                2.22027777778      1e-4
+stream  hotOut                 F                1.66527777778      1e-4
+stream  hotShell               F                1.66527777778      1e-4
+kpi     hx                     C_cold           167630.972222      1e-4
+kpi     hx                     C_hot            125728.472222      1e-4
+kpi     hx                     C_r              0.750031277368     1e-4
+kpi     hx                     LMTD             16.7868881533      1e-4
+kpi     hx                     NTU              1.0053658663       1e-4
+kpi     hx                     Nu_shell         195.331265319      1e-4
+kpi     hx                     Nu_tube          416.603846461      1e-4
+kpi     hx                     Pr_shell         3.16405821902      1e-4
+kpi     hx                     Pr_tube          5.87094963164      1e-4
+kpi     hx                     Q                1888506.69951      1e-4
+kpi     hx                     Q_kW             1888.50669951      1e-4
+kpi     hx                     R_inner          7.48332688451e-05  1e-4
+kpi     hx                     R_outer          0.000134481447053  1e-4
+kpi     hx                     R_wall           3.26515488161e-05  1e-4
+kpi     hx                     Re_shell         46621.2411789      1e-4
+kpi     hx                     Re_tube          71696.3575727      1e-4
+kpi     hx                     T_cold_in        300                1e-4
+kpi     hx                     T_cold_out       311.265857821      1e-4
+kpi     hx                     T_hot_in         330                1e-4
+kpi     hx                     T_hot_out        314.979482641      1e-4
+kpi     hx                     U                4132.80752663      1e-4
+kpi     hx                     UA               126403.114395      1e-4
+kpi     hx                     area             30.5852894383      1e-4
+kpi     hx                     controllingResistanceCode 1                  1e-4
+kpi     hx                     dP_shell_kPa     60.4763575213      1e-4
+kpi     hx                     dP_tube_kPa      145.234602574      1e-4
+kpi     hx                     effectiveness    0.50068391196      1e-4
+kpi     hx                     f_shell          0.230739896566     1e-4
+kpi     hx                     f_tube           0.00482783943856   1e-4
+kpi     hx                     h_inner          15868.6105569      1e-4
+kpi     hx                     h_outer          7435.96995656      1e-4
+kpi     hx                     nBaffles         15                 1e-4

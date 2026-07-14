@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-ethyl-2-(prop-2-enoxymethyl)propane-1,3-diol; 2-(2-hydroxyethoxy)ethanol; 2-(2-hydroxyethylsulfanyl)ethanol  (C17H38O8S, CAS 59424-37-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Ethyl2Prop2EnoxymethylPropane13Diol22HydroxyethoxyEthanol22;
+formula     C17H38O8S;
+CAS         59424-37-2;
+InChIKey    CZHFHJSPVWALPO-UHFFFAOYSA-N;
+MW          402.543;      // g/mol [origin=calculated method=formula-sum]
+Tc          1719.52;      // K   [origin=predictive method=joback]
+Pc          16.935;      // bar [origin=predictive method=joback]
+omega       0.4095;      // -   [origin=predictive method=lee-kesler]
+Tb          1251.51;      // K   [origin=predictive method=joback]
+HvapTb      163769.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (143.953 1.38421 -0.0001863 -2.324e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 9; } { group C; count 1; } { group CH2=CH; count 1; } { group OH; count 5; } { group CH2O; count 1; } { group C2H5O2; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 13; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 6; } { group O; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethyl-2-(prop-2-enoxymethyl)propane-1,3-diol;2-(2-hydroxyethyloxy)ethanol;2-(2-hydroxyethylsulfanyl)ethanol" "1,3-propanediol, 2-ethyl-2-((2-propen-1-yloxy)methyl)-, polymer with 2,2'-oxybis(ethanol) and 2,2'-thiobis(ethanol)" "1,3-propanediol, 2-ethyl-2-((2-propenyloxy)methyl)-, polymer with 2,2'-oxybis(ethanol) and 2,2'-thiobis(ethanol)" );
+gibbsFormation
+{
+    dHf_298   -1636720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1379.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1024380.0
+    phase     gas;
+}

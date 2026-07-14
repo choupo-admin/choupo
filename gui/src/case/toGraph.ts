@@ -269,7 +269,11 @@ export function flowsheetToGraph(
     nodes.push({
       id: `stream:${f}`,
       type: "streamTerminal",
-      data: { name: f, role: "feed", stream: view.streams[f] ?? null },
+      // A feed is a plant INPUT: seed its terminal with the authored state, or
+      // the ambient default (25 C / 1 atm) when the case carries it in 0/ we do
+      // not yet read here -- never a blank 0 K / 0 Pa.
+      data: { name: f, role: "feed",
+              stream: view.streams[f] ?? { F: 0, T: AMBIENT_T, P: AMBIENT_P, composition: {} } },
       position: positions.get(f)!,
     });
   }
@@ -290,7 +294,7 @@ export function flowsheetToGraph(
     nodes.push({
       id: `stream:${p}`,
       type: "streamTerminal",
-      data: { name: p, role: "product", stream: null },
+      data: { name: p, role: "product", stream: view.streams[p] ?? null },
       position: positions.get(p)!,
     });
   }
@@ -637,19 +641,118 @@ export function flowsheetToGraph(
 // consumer side -- a single name, just like the C++ engine treats it after
 // flattening.  The longest-path layout then draws a back-edge that visually
 // closes the recycle loop.
+// Normalise BOTH connection grammars to edges {name, from, to}: the named-edge
+// dict `connections { liquor { from A; to B; } }` (the KEY is the stream ID) and
+// the legacy anonymous list `connections ( { from; to; } )`.  Shared by every
+// consumer that walks the graph, so no reader ever iterates a dict as a list.
+export function readEdges(
+  flowsheet: JsonDict,
+): { name: string; from: string; to: string }[] {
+  const raw = flowsheet["connections"];
+  const edges: { name: string; from: string; to: string }[] = [];
+  if (Array.isArray(raw)) {
+    for (const c of raw as JsonDict[])
+      edges.push({ name: "", from: String((c as JsonDict)["from"] ?? ""), to: String((c as JsonDict)["to"] ?? "") });
+  } else if (raw && typeof raw === "object") {
+    for (const [name, v] of Object.entries(raw as JsonDict))
+      if (v && typeof v === "object" && !Array.isArray(v))
+        edges.push({ name, from: String((v as JsonDict)["from"] ?? ""), to: String((v as JsonDict)["to"] ?? "") });
+  }
+  return edges;
+}
+
+// `units` is EITHER inline dict blocks (a flat case) OR a WORD list of dignified
+// folder names (a composite: three unit ops in their own folders).  Return the
+// folder names, or [] when `units` is inline / absent.
+// Resolve a fractal MEMBER's flowsheetDict text from the case rawFiles, mirroring
+// the engine's resolveMemberBase: a member `<name>` may live directly at
+// `<name>/`, under `sectors/<name>/` (a real sector), or `unitOperations/<name>/`
+// (a dignified unit op) -- each with the dict at `system/flowsheetDict` or the lean
+// `flowsheetDict`.
+function memberFlowsheetText(
+  rawFiles: { [relPath: string]: string } | undefined, child: string,
+): string | undefined {
+  if (!rawFiles) return undefined;
+  for (const base of [child, `sectors/${child}`, `unitOperations/${child}`])
+    for (const p of [`${base}/system/flowsheetDict`, `${base}/flowsheetDict`])
+      if (rawFiles[p] !== undefined) return rawFiles[p];
+  return undefined;
+}
+
+export function unitFolderNames(flowsheet: JsonDict): string[] {
+  const u = flowsheet["units"];
+  return Array.isArray(u) && u.every((x) => typeof x === "string")
+    ? (u as string[])
+    : [];
+}
+
+/** A flowsheet's composite MEMBERS: `sectors` (composites) + dignified `units`
+ *  (folder unit ops).  Empty for a flat/leaf case. */
+export function compositeMembers(flowsheet: JsonDict): string[] {
+  return [
+    ...((flowsheet["sectors"] ?? []) as string[]),
+    ...unitFolderNames(flowsheet),
+  ];
+}
+
+// Tear streams are declared in the flowsheetDict (legacy) OR in system/solverDict
+// (the clean home) -- read from whichever carries them, so the recycle is still
+// drawn as a TEAR even after the designation moved to solverDict.
+function readTearStreams(flowsheet: JsonDict, rawFiles?: { [relPath: string]: string }): string[] {
+  const inline = (flowsheet["tearStreams"] ?? []) as string[];
+  if (Array.isArray(inline) && inline.length > 0) return inline;
+  const sd = rawFiles?.["system/solverDict"];
+  if (sd) {
+    try {
+      const j = toJson(parse(sd, { sourceName: "solverDict" })) as JsonDict;
+      const t = j["tearStreams"];
+      if (Array.isArray(t)) return t as string[];
+    } catch { /* unparseable solverDict -- ignore */ }
+  }
+  return [];
+}
+
 function readComposite(
   flowsheet: JsonDict,
   rawFiles?: { [relPath: string]: string },
 ): FlowsheetView {
-  const children = (flowsheet["children"] ?? []) as string[];
-  const conns = (flowsheet["connections"] ?? []) as JsonDict[];
+  // Members are folders under `sectors` (composites) and/or `units` (dignified
+  // unit ops) -- both flattened the same way, the keyword is a semantic label.
+  const children = [
+    ...((flowsheet["sectors"] ?? []) as string[]),
+    ...unitFolderNames(flowsheet),
+  ];
+
+  // Named-edge grammar: `connections { liquor { from A; to B; } }` -- the KEY is
+  // the stream ID; from/to are ports.  Normalise it (and the legacy anonymous
+  // list `connections ( { from; to; } )`) to edges {name, from, to}.
+  type Edge = { name: string; from: string; to: string };
+  const edges: Edge[] = [];
+  const rawConns = flowsheet["connections"];
+  if (Array.isArray(rawConns)) {
+    for (const c of rawConns as JsonDict[])
+      edges.push({ name: "", from: String(c["from"] ?? ""), to: String(c["to"] ?? "") });
+  } else if (rawConns && typeof rawConns === "object") {
+    for (const [name, v] of Object.entries(rawConns as JsonDict))
+      if (v && typeof v === "object" && !Array.isArray(v))
+        edges.push({ name, from: String((v as JsonDict)["from"] ?? ""), to: String((v as JsonDict)["to"] ?? "") });
+  }
+  const tears = new Set<string>(readTearStreams(flowsheet, rawFiles));
+
+  // Boundary: an explicit legacy block, OR inferred from edge shape in this
+  // domain -- to-only = inlet, from-only = outlet (named-edge world, no boundary{}).
   const boundary = (flowsheet["boundary"] ?? {}) as JsonDict;
-  const inlets = (boundary["inlets"] ?? []) as string[];
-  const outlets = new Set<string>((boundary["outlets"] ?? []) as string[]);
-  const tears = new Set<string>(
-    (flowsheet["tearStreams"] ?? []) as string[],
-  );
-  const s = (c: JsonDict, k: string): string => String(c[k] ?? "");
+  const hasBoundary = Array.isArray(boundary["inlets"]) || Array.isArray(boundary["outlets"]);
+  const inlets = hasBoundary
+    ? (boundary["inlets"] ?? []) as string[]
+    : edges.filter((e) => !e.from && e.to).map((e) => e.name);
+  const outlets = new Set<string>(hasBoundary
+    ? (boundary["outlets"] ?? []) as string[]
+    : edges.filter((e) => e.from && !e.to).map((e) => e.name));
+
+  // A producer port `child/port` -> the edge NAME (the stream) it produces.
+  const edgeFromPort = new Map<string, string>();
+  for (const e of edges) if (e.name && e.from) edgeFromPort.set(e.from, e.name);
 
   // For each child name, peek at its own flowsheetDict (when we have
   // rawFiles) to see whether it's a COMPOSITE sub-sector (has
@@ -659,11 +762,11 @@ function readComposite(
   // sub-case drew Mixer / Fermentor / Flash / Splitter all as SECTORs.
   const childType = (child: string): string => {
     if (!rawFiles) return "sector";
-    const text = rawFiles[`${child}/system/flowsheetDict`];
+    const text = memberFlowsheetText(rawFiles, child);
     if (!text) return "sector";
     try {
       const ast = toJson(parse(text, { sourceName: child + "/flowsheetDict" })) as JsonDict;
-      if (Array.isArray(ast["children"])) return "sector";
+      if (Array.isArray(ast["sectors"]) || unitFolderNames(ast).length > 0) return "sector";
       if (typeof ast["type"] === "string") return ast["type"] as string;
     } catch {
       // unparseable: fall back to sector
@@ -682,39 +785,57 @@ function readComposite(
   // child's own outlet leaf).  Surfaced on the terminal so the rename is
   // visible (forum 2026-06-15: announce, don't ban, don't hide).
   const origins: { [displayName: string]: string } = {};
-  for (const c of conns) {
-    const from = s(c, "from");
-    const to = s(c, "to");
-    if (outlets.has(to)) {
-      renameForOutlet.set(from, to);
-      const leaf = from.includes("/") ? from.slice(from.lastIndexOf("/") + 1) : from;
-      if (to !== leaf) origins[to] = from;   // e.g. Stack -> DRYING/ExhaustClean
+  for (const e of edges) {
+    if (e.name) continue;   // a named edge IS its own identity -- no rename
+    if (outlets.has(e.to)) {
+      renameForOutlet.set(e.from, e.to);
+      const leaf = e.from.includes("/") ? e.from.slice(e.from.lastIndexOf("/") + 1) : e.from;
+      if (e.to !== leaf) origins[e.to] = e.from;   // e.g. Stack -> DRYING/ExhaustClean
     }
-    else if (tears.has(to)) renameForOutlet.set(from, to);
+    else if (tears.has(e.to)) renameForOutlet.set(e.from, e.to);
   }
-  const display = (name: string): string => renameForOutlet.get(name) ?? name;
+  // Display a producer port as its stream: the edge NAME (named edges), else a
+  // legacy boundary/tear rename, else the port itself.
+  const display = (name: string): string =>
+    edgeFromPort.get(name) ?? renameForOutlet.get(name) ?? name;
 
   const units: UnitSpec[] = children.map((child) => ({
     name: child,
     type: childType(child),
-    in: conns.filter((c) => s(c, "to").startsWith(child + "/")).map((c) => s(c, "from")),
+    // Stream feeding / leaving this child = the edge NAME (named edges), else
+    // the producer `from` (legacy anonymous).
+    in: edges.filter((e) => e.to.startsWith(child + "/")).map((e) => e.name || e.from),
     outputs: [
       ...new Set(
-        conns
-          .filter((c) => s(c, "from").startsWith(child + "/"))
-          .map((c) => display(s(c, "from"))),
+        edges
+          .filter((e) => e.from.startsWith(child + "/"))
+          .map((e) => e.name || display(e.from)),
       ),
     ],
     operation: {},
   }));
 
-  // Seed the streams map with boundary inlets.  Tear streams are NOT seeded
-  // here: they would render as feed terminals (their own initial-guess block
-  // doubles as a stream declaration in the dict, but on the canvas we want
-  // them to be invisible -- the back-edge between Splitter and Mixer carries
-  // the meaning).
+  // Seed the streams map with boundary inlets.  An inlet is a plant INPUT: its
+  // state is authored, so read it from the streams{} block (F, T, P, composition)
+  // rather than seeding zeros -- the feed terminal then shows its real conditions
+  // pre-run AND after a reset (the run result clears, the authored input does not).
+  // Migrated cases carry that state in 0/ instead; feedSpecFromInlet(undefined)
+  // falls back to zeros there (until the 0/ reader feeds it).  Tear streams are
+  // NOT seeded here: they render invisible (the recycle back-edge carries the
+  // meaning), not as feed terminals.
+  const authored = (flowsheet["streams"] ?? {}) as JsonDict;
   const streams: { [name: string]: StreamSpec } = {};
-  for (const inl of inlets) streams[inl] = { F: 0, T: 0, P: 0, composition: {} };
+  // Read EVERY stream's state from `0/<stream>` (the plant run / drill projection
+  // materialised it) -- inlets, internal edges AND outlets, so a drilled sector
+  // shows real F/T/P/composition on all its streams, not just the feeds.  An
+  // inlet with no 0/ falls back to its authored `streams{}` block or ambient.
+  for (const e of edges) {
+    if (!e.name || tears.has(e.name)) continue;
+    const spec = streamStateSpec(rawFiles?.[`0/${e.name}`]);
+    if (spec) streams[e.name] = spec;
+  }
+  for (const inl of inlets)
+    if (!streams[inl]) streams[inl] = feedSpecFromInlet(authored[inl]);
 
   return { streams, units, tearStreams: tears, origins };
 }
@@ -723,13 +844,54 @@ function readComposite(
 // a `units` list -- one unit op (its own flowsheet of one).  Project it to a
 // single-unit view so the canvas draws the unit with its feed/product
 // terminals when you open a leaf node on its own.
-function readLeaf(flowsheet: JsonDict): FlowsheetView {
+// Parse ONE 0/ stream-state file (`componentMolarFlows { c <flow>; } T; P;`)
+// into a display StreamSpec.  A migrated case carries its stream state HERE, not
+// in the flowsheetDict -- so a drilled unit / composite reads its real values
+// from 0/<stream> (the plant run materialised them) instead of showing blanks.
+export function streamStateSpec(text: string | undefined): StreamSpec | null {
+  if (!text) return null;
+  let d: JsonDict;
+  try { d = toJson(parse(text, { sourceName: "0/state" })) as JsonDict; }
+  catch { return null; }
+  const flowsBlk = (d["componentMolarFlows"] ?? d["componentFlows"]) as JsonDict | undefined;
+  if (!flowsBlk || typeof flowsBlk !== "object" || Array.isArray(flowsBlk)) return null;
+  const flows: Record<string, number> = {};
+  let F = 0;
+  for (const [k, v] of Object.entries(flowsBlk)) {
+    const n = scalarToSI(v);
+    if (Number.isFinite(n)) { flows[k] = n; F += n; }
+  }
+  const spec: StreamSpec = { F, T: AMBIENT_T, P: AMBIENT_P, composition: {} };
+  if (F > 0) for (const [k, n] of Object.entries(flows)) spec.composition[k] = n / F;
+  const t = scalarToSI(d["T"]); if (Number.isFinite(t) && t > 0) spec.T = t;
+  const p = scalarToSI(d["P"]); if (Number.isFinite(p) && p > 0) spec.P = p;
+  const vf = scalarToSI(d["vaporFraction"] ?? d["vapourFraction"]);
+  if (Number.isFinite(vf)) spec.vf = vf;
+  return spec;
+}
+
+function readLeaf(flowsheet: JsonDict, rawFiles?: { [relPath: string]: string }): FlowsheetView {
   const boundary = (flowsheet["boundary"] ?? {}) as JsonDict;
-  const inlets = (boundary["inlets"] ?? []) as string[];
-  const outlets = (boundary["outlets"] ?? []) as string[];
+  const asList = (v: unknown): string[] =>
+    Array.isArray(v) ? v.filter((x): x is string => typeof x === "string")
+    : typeof v === "string" && v.length > 0 ? [v] : [];
+  // A dignified leaf NAMES its streams directly (sequential-modular: inputs /
+  // outputs); a legacy leaf used a `boundary { inlets; outlets }` block.
+  const inlets = flowsheet["inputs"] !== undefined || flowsheet["in"] !== undefined
+    ? asList(flowsheet["inputs"] ?? flowsheet["in"])
+    : asList(boundary["inlets"]);
+  const outlets = flowsheet["outputs"] !== undefined
+    ? asList(flowsheet["outputs"])
+    : asList(boundary["outlets"]);
   const name = String(flowsheet["name"] ?? "unit");
+  // Read each stream's state from 0/<stream> (the drilled unit's own snapshot,
+  // materialised by the plant run); fall back to ambient for an unfed inlet.
   const streams: { [name: string]: StreamSpec } = {};
-  for (const inl of inlets) streams[inl] = { F: 0, T: 0, P: 0, composition: {} };
+  for (const s of [...inlets, ...outlets]) {
+    const spec = streamStateSpec(rawFiles?.[`0/${s}`]);
+    if (spec) streams[s] = spec;
+    else if (inlets.includes(s)) streams[s] = { F: 0, T: AMBIENT_T, P: AMBIENT_P, composition: {} };
+  }
   return {
     streams,
     units: [
@@ -749,8 +911,15 @@ function readLeaf(flowsheet: JsonDict): FlowsheetView {
 // Project it to a display StreamSpec (SI numbers, normalised composition) so
 // the synthesised `<unit>.feed` terminal reads the real feed conditions
 // pre-run.  Scalars cross JSON as "<n> <unit>" strings; scalarToSI canonicalises.
+// Ambient reference state for a stream we have to seed WITHOUT an authored
+// value (a reset, an un-migrated 0/, a boundary with no streams{} entry): 25 C
+// and 1 atm -- a sensible physical default, NEVER 0 K / 0 Pa (which reads as a
+// non-physical blank).  Flow stays 0 (an unknown inlet flow is honestly empty).
+const AMBIENT_T = 298.15;      // K   (25 C)
+const AMBIENT_P = 101325;      // Pa  (1 atm)
+
 function feedSpecFromInlet(inlet: JsonValue | undefined): StreamSpec {
-  const spec: StreamSpec = { F: 0, T: 0, P: 0, composition: {} };
+  const spec: StreamSpec = { F: 0, T: AMBIENT_T, P: AMBIENT_P, composition: {} };
   if (!inlet || typeof inlet !== "object" || Array.isArray(inlet)) return spec;
   const blk = inlet as JsonDict;
   const f = scalarToSI(blk["F"]);
@@ -784,8 +953,9 @@ function readFlowsheet(
   flowsheet: JsonDict,
   rawFiles?: { [relPath: string]: string },
 ): FlowsheetView {
-  if (flowsheet["children"] !== undefined) return readComposite(flowsheet, rawFiles);
-  if (flowsheet["type"] !== undefined) return readLeaf(flowsheet);
+  if (flowsheet["sectors"] !== undefined || unitFolderNames(flowsheet).length > 0)
+    return readComposite(flowsheet, rawFiles);
+  if (flowsheet["type"] !== undefined) return readLeaf(flowsheet, rawFiles);
 
   const streamsJson = (flowsheet["streams"] ?? {}) as JsonDict;
   const unitsJson = (flowsheet["units"] ?? []) as JsonValue[];
@@ -894,9 +1064,7 @@ function readFlowsheet(
     if (!(name in streams)) streams[name] = spec;
   }
 
-  const flatTears = new Set<string>(
-    (flowsheet["tearStreams"] ?? []) as string[],
-  );
+  const flatTears = new Set<string>(readTearStreams(flowsheet, rawFiles));
   return { streams, units, tearStreams: flatTears };
 }
 

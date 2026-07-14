@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: coumarin-3-carboxylic acid  (C10H6O4, CAS 531-81-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        coumarin3CarboxylicAcid;
+formula     C10H6O4;
+CAS         531-81-7;
+InChIKey    ACMLKANOGIVEPB-UHFFFAOYSA-N;
+MW          190.154;      // g/mol [origin=calculated method=formula-sum]
+Tc          908.39;      // K   [origin=predictive method=joback]
+Pc          38.627;      // bar [origin=predictive method=joback]
+omega       0.9946;      // -   [origin=predictive method=lee-kesler]
+Tb          675.07;      // K   [origin=predictive method=joback]
+HvapTb      66367.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-24.78 0.8829 -0.0007046 2.16e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=C; count 1; } { group ACH; count 4; } { group AC; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 5; } { group dC_ring; count 3; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-oxidanylidenechromene-3-carboxylic acid" "3-carboxycoumarin" "2-oxo-2h-chromene-3-carboxylic acid" "2-oxochromene-3-carboxylic acid" "2h-1-benzopyran-3-carboxylic acid, 2-oxo-" "g 1 (rodenticide)" "2-oxobenzopyran-3-carboxylic acid" "g 1 (the rodenticide) (van)" "g 1 (van)" "malonic acid, salicylidene-, delta-lactone" "g 1 (the rodenticide)" "malonic acid, .delta.-lactone" );
+gibbsFormation
+{
+    dHf_298   -546610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     425.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-417290.0
+    phase     gas;
+}

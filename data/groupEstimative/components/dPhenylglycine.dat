@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: d-phenylglycine  (C8H9NO2, CAS 875-74-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dPhenylglycine;
+formula     C8H9NO2;
+CAS         875-74-1;
+InChIKey    ZGUNAGUHMKGQNY-SSDOTTSWSA-N;
+MW          151.165;      // g/mol [origin=calculated method=formula-sum]
+Tc          867.94;      // K   [origin=predictive method=joback]
+Pc          44.385;      // bar [origin=predictive method=joback]
+omega       0.8455;      // -   [origin=predictive method=lee-kesler]
+Tb          626.92;      // K   [origin=predictive method=joback]
+HvapTb      63095.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.88 0.8035 -0.0005618 1.48e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r)-2-azanyl-2-phenyl-ethanoic acid" "d-2-phenylglycine" "d-(-)-alpha-phenylglycine" "(r)-(-)-2-phenylglycine" "(r)-phenylglycine" "h-d-phg-oh" "(r)-2-amino-2-phenylacetic acid" "(2r)-2-amino-2-phenylacetic acid" "(r)-(-)-alpha-aminophenylacetic acid" "phenylglycine" "d-(-)-alpha-aminophenylacetic acid" "benzeneacetic acid, alpha-amino-, (alphar)-" );
+gibbsFormation
+{
+    dHf_298   -293680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     456.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-151010.0
+    phase     gas;
+}

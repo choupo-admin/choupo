@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: syn-7,14-dihydro-7,14-dimethylene-1,6:8,13-bismethano(14)annulene  (C18H16, CAS 109216-46-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        syn714Dihydro714Dimethylene16813Bismethano14Annulene;
+formula     C18H16;
+CAS         109216-46-8;
+InChIKey    RGWOSRBWFUXUPC-UHFFFAOYSA-N;
+MW          232.326;      // g/mol [origin=calculated method=formula-sum]
+Tc          938.91;      // K   [origin=predictive method=joback]
+Pc          22.937;      // bar [origin=predictive method=joback]
+omega       0.6142;      // -   [origin=predictive method=lee-kesler]
+Tb          688.76;      // K   [origin=predictive method=joback]
+HvapTb      62250.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.41 1.3698 -0.00092812 2.436e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH=CH; count 2; } { group CH2=C; count 2; } { group CH=C; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 2; } { group CH2_ring; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "anti-7,14-dihydro-7,14-dimethylene-1,6:8,13-bismethano(14)annulene" "anti-7,14-dihydro-7,14-dimethylene-1,6:8,13-bismethano[14]annulene" "syn-7,14-dihydro-7,14-dimethylene-1,6:8,13-bismethano[14]annulene" "2,9-dimethylidenetricyclo[8.4.1.13,8]hexadeca-1(14),3,5,7,10,12-hexaene" );
+gibbsFormation
+{
+    dHf_298   290730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     551.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=468760.0
+    phase     gas;
+}

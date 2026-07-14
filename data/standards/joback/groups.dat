@@ -10,6 +10,11 @@
   yne=alkyne, ar=aromatic, r=saturated ring).  Loaded by src/propertyOps/Joback.cpp.
 \*---------------------------------------------------------------------------*/
 
+// Stable identity of THIS parameter table (the methodVersion every
+// structured estimate provenance pins, and what bin/curate/check_estimates.py
+// compares against): bump it if any value here ever changes.
+tableId  joback-poling5e-table2-2;
+
 groups
 (
     { name CH3;         MW 15.035; nA 4; dTc 0.0141; dPc -0.0012; dVc 65; dTb 23.58; dHf -76.45; dGf -43.96; cpa 19.50; cpb -8.08e-3; cpc 1.53e-4; cpd -9.67e-8; dHv 2.373; }

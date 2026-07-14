@@ -35,6 +35,8 @@ License
   one source of truth.
 \*---------------------------------------------------------------------------*/
 
+import { compositeMembers } from "../case/toGraph.js";
+import { readEdges } from "../case/toGraph.js";
 import { ActionIcon, Badge, Group, Text, Tooltip } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
@@ -50,6 +52,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { resolveAdapter, type AdapterKind } from "../adapters/index.js";
 import { withDisplayPrefs } from "../case/applyPrefs.js";
+import { withFrozenBoundaryFeeds } from "../case/resultSlice.js";
 import { applyScratch } from "../case/scratch.js";
 import { downloadFlowsheetDict } from "../case/saveCase.js";
 import { caseHasUserCode, USER_CODE_MSG } from "../case/userCode.js";
@@ -69,6 +72,7 @@ export function TopBar() {
   const failRun = useStore((s) => s.failRun);
   const appendLog = useStore((s) => s.appendLog);
   const caseFiles = useStore((s) => s.caseFiles);
+  const runResult = useStore((s) => s.runResult);
   const pristineCaseFiles = useStore((s) => s.pristineCaseFiles);
   const scratchEdits = useStore((s) => s.scratchEdits);
   const tutorialName = useStore((s) => s.tutorialName);
@@ -165,7 +169,30 @@ export function TopBar() {
       const tinkered = applyScratch(caseFiles, scratchEdits);
       // Splice the active display preset into controlDict.units so
       // the solver log honours the same choice as the StreamsTable.
-      const filesForRun = withDisplayPrefs(tinkered, displayPrefs);
+      let filesForRun = withDisplayPrefs(tinkered, displayPrefs);
+      // Drilled sector: freeze its boundary inlets as feeds from the inherited
+      // (or last) run, so Run re-solves with the parent's inputs instead of
+      // unfed boundary inlets.  Done HERE (run time) so it holds no matter how
+      // the tab was opened; the sub-case's own feed def still wins.
+      if (filesForRun.flowsheet)
+        filesForRun = { ...filesForRun, flowsheet: withFrozenBoundaryFeeds(filesForRun.flowsheet, runResult) };
+      // Visible diagnosis: a drilled sector with a boundary inlet that STILL has
+      // no feed will solve to nothing.  Name them so the failure is obvious.
+      {
+        const fsr = filesForRun.flowsheet as Record<string, unknown> | undefined;
+        const bnd = fsr?.["boundary"] as Record<string, unknown> | undefined;
+        const inl = bnd?.["inlets"];
+        const strm = (fsr?.["streams"] ?? {}) as Record<string, unknown>;
+        const unfed = Array.isArray(inl)
+          ? inl.filter((x): x is string => typeof x === "string" && !strm[x]) : [];
+        if (unfed.length) {
+          notifications.show({
+            color: "yellow", title: "Boundary inlet has no feed",
+            message: `Inlet(s) ${unfed.join(", ")} are unfed — re-open this sector from the parent's finished run so their values carry over.`,
+            autoClose: 8000,
+          });
+        }
+      }
       const result = await resolved.adapter.run(filesForRun,
         appendLog,
         ctl.signal,
@@ -177,8 +204,8 @@ export function TopBar() {
       // say so, NOT "Solved" (and must NOT mark a flowsheet run).
       const fs = caseFiles.flowsheet;
       const inCuration = !!fs
-        && Array.isArray(fs["children"]) && (fs["children"] as unknown[]).length > 0
-        && (!Array.isArray(fs["connections"]) || (fs["connections"] as unknown[]).length === 0);
+        && compositeMembers(fs).length > 0
+        && (readEdges(fs).length === 0);
       if (result.status === "done" && inCuration) {
         notifications.show({
           title: "Property-curation phase — not simulated",
@@ -248,6 +275,7 @@ export function TopBar() {
   }, [
     runDisabled,
     caseFiles,
+    runResult,
     scratchEdits,
     displayPrefs,
     startRun,

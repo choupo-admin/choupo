@@ -191,8 +191,13 @@ export function popOutUnitInternals(name: string): void {
   void import("../state/store.js").then(({ useStore }) => {
     const st = useStore.getState();
     const clone = synthesizeUnitClone(st.caseFiles, st.runResult, name);
+    // No clone -> nothing to stash -> the tab would boot straight into the
+    // "expired" panel.  Bail instead of opening a dead tab (this happens for a
+    // node that is neither a stashable leaf unit nor a drillable sub-case, e.g.
+    // a fractal sector whose `.cho` marker is missing).  Mirrors popOutUnitFocus.
+    if (!clone) return;
     try {
-      if (clone) writeStashes(clone);
+      writeStashes(clone);
       window.open(`${window.location.pathname}?internals=${encodeURIComponent(internalsKey(name))}`,
         "_blank", "noopener");
     } catch { /* localStorage / popup blocked -- nothing to do */ }

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: eicosanedioic acid  (C20H38O4, CAS 2424-92-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        eicosanedioicAcid;
+formula     C20H38O4;
+CAS         2424-92-2;
+InChIKey    JJOJFIHJIRWASH-UHFFFAOYSA-N;
+MW          342.52;      // g/mol [origin=calculated method=formula-sum]
+Tc          1161.25;      // K   [origin=predictive method=joback]
+Pc          11.413;      // bar [origin=predictive method=joback]
+omega       1.0849;      // -   [origin=predictive method=lee-kesler]
+Tb          948.22;      // K   [origin=predictive method=joback]
+HvapTb      94442.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.092 2.0054 -0.0012094 2.828e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 18; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 18; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "icosanedioic acid" "1,20-icosanedioic acid" "eicosa-1,20-dioic acid" "1,18-octadecanedicarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -1156670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1041.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-570300.0
+    phase     gas;
+}

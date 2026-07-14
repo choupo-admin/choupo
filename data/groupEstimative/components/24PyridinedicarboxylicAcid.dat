@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-pyridinedicarboxylic acid  (C7H5NO4, CAS 499-80-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24PyridinedicarboxylicAcid;
+formula     C7H5NO4;
+CAS         499-80-9;
+InChIKey    MJIVRKPEXXHNJT-UHFFFAOYSA-N;
+MW          167.12;      // g/mol [origin=calculated method=formula-sum]
+Tc          984.35;      // K   [origin=predictive method=joback]
+Pc          51.387;      // bar [origin=predictive method=joback]
+omega       1.2139;      // -   [origin=predictive method=lee-kesler]
+Tb          736.14;      // K   [origin=predictive method=joback]
+HvapTb      74652.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.82 0.66576 -0.00047562 1.305e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C5H3N; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 2; } { group COOH; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pyridine-2,4-dicarboxylic acid" "lutidinic acid" "2,4-lutidinic acid" "pd2" "pyridine carboxylate, 6a" "2,4-pyridine dicarboxylic acid" "brd-k36162096-001-03-0" "brd-k36162096-001-04-8" "2,4-piperidine dicarboxylate;piperidine-2,4-dicarboxylic acid;" );
+gibbsFormation
+{
+    dHf_298   -630500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     435.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-499930.0
+    phase     gas;
+}

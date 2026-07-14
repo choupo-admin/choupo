@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-bis(2-hydroxyhexafluoroisopropyl)benzene  (C12H6F12O2, CAS 802-93-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13Bis2HydroxyhexafluoroisopropylBenzene;
+formula     C12H6F12O2;
+CAS         802-93-7;
+InChIKey    PGUIOHNOYADLMU-UHFFFAOYSA-N;
+MW          410.154;      // g/mol [origin=calculated method=formula-sum]
+Tc          820.47;      // K   [origin=predictive method=joback]
+Pc          18.970;      // bar [origin=predictive method=joback]
+omega       1.3779;      // -   [origin=predictive method=lee-kesler]
+Tb          662.04;      // K   [origin=predictive method=joback]
+HvapTb      61022.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-90.79 1.9698 -0.00188156 6.504e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 2; } { group ACH; count 4; } { group AC; count 2; } { group OH; count 2; } { group CF3; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 6; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 12; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,3,3,3-hexakis(fluoranyl)-2-[3-[1,1,1,3,3,3-hexakis(fluoranyl)-2-oxidanyl-propan-2-yl]phenyl]propan-2-ol" "alpha,alpha,alpha',alpha'-tetrakis(trifluoromethyl)-1,3-benzenedimethanol" "1,3-bis(hexafluoro-2-hydroxyisopropyl)benzene" "a,a,a',a'-tetrakis(trifluoromethyl)-1,3-benzenedimethanol" "1,3-bis(hexafluoro-alpha-hydroxyisopropyl)benzene" "1,3-benzenedimethanol, .alpha.,.alpha.,.alpha.',.alpha.'-tetrakis(trifluoromethyl)-" "1,1,1,3,3,3-hexafluoro-2-[3-(1,1,1,3,3,3-hexafluoro-2-hydroxypropan-2-yl)phenyl]propan-2-ol" "1,3 hfab" "1,3-bis-(2-hydroxyhexafluoroisopropyl)benzene" "1,3-bis(hexafluoro 2-hydroxy-2-propyl)benzene" "1,3-bis(alpha-hydroxyhexafluoroisopropyl)benzene" "1,3-bis[perfluoro(2-hydroxyprop-2-yl)]benzene" );
+gibbsFormation
+{
+    dHf_298   -2776230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     759.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2441380.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 3-(trimethylsilyl)propiolate  (C8H14O2Si, CAS 16205-84-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H14O2Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        ethyl3TrimethylsilylPropiolate;
+formula     C8H14O2Si;
+CAS         16205-84-8;
+InChIKey    QRBKPHYAIRLCLK-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          170.283;      // g/mol [origin=calculated method=formula-sum]
+Tc          653.33;      // K   [origin=predictive method=joback]
+Pc          26.543;      // bar [origin=predictive method=joback]
+omega       0.3549;      // -   [origin=predictive method=lee-kesler]
+Tb          451.26;      // K   [origin=predictive method=joback]
+HvapTb      43255.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (79.401 0.35308 0.00019014 -2.1132e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 1; } { group C_C; count 1; } { group COO; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group tC; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 3-trimethylsilylprop-2-ynoate" "ethyl 3-(trimethylsilyl)-2-propynoate" "ethyl 3-(trimethylsilyl)propynoate" "2-propynoic acid, 3-(trimethylsilyl)-, ethyl ester" "2-propynoic acid,3-(trimethylsilyl)-, ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -365050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     617.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-195850.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-diiodopropane  (C3H6I2, CAS 627-31-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13Diiodopropane;
+formula     C3H6I2;
+CAS         627-31-6;
+InChIKey    AAAXMNYUNVCMCJ-UHFFFAOYSA-N;
+MW          295.881;      // g/mol [origin=calculated method=formula-sum]
+Tc          702.62;      // K   [origin=predictive method=joback]
+Pc          41.623;      // bar [origin=predictive method=joback]
+omega       0.2556;      // -   [origin=predictive method=lee-kesler]
+Tb          454.52;      // K   [origin=predictive method=joback]
+HvapTb      41018.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.543 0.3668 -0.0003022 1.043e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group I; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group I; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-bis(iodanyl)propane" "trimethylene diiodide" "propane, 1,3-diiodo-" "trimethylene iodide" "propane,3-diiodo-" );
+gibbsFormation
+{
+    dHf_298   48490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     384.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=90620.0
+    phase     gas;
+}

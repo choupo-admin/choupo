@@ -1,0 +1,16 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    catalogue_as_assembled aad              2.0400             1e-4
+diag    catalogue_as_assembled chi2             60.1945            1e-4
+diag    catalogue_as_assembled max_abs_resid    3.4379             1e-4
+diag    catalogue_as_assembled max_resid_x1     0.5000             1e-4
+diag    catalogue_as_assembled mode_evaluate    1.0000             1e-4
+diag    catalogue_as_assembled n_data           11.0000            1e-4
+diag    catalogue_as_assembled n_feasible       11.0000            1e-4
+diag    catalogue_as_assembled partial          0.0000             1e-4
+diag    catalogue_as_assembled penalised_points 0.0000             1e-4
+diag    catalogue_as_assembled rms              2.3393             1e-4
+diag    catalogue_as_assembled sse              60.1945            1e-4
+diag    catalogue_as_assembled validity_declared 1.0000            1e-4
+diag    catalogue_as_assembled n_outside_validity 0.0000           1e-4

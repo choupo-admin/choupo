@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-tert-butyl-4-ethylphenol  (C12H18O, CAS 96-70-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2TertButyl4Ethylphenol;
+formula     C12H18O;
+CAS         96-70-8;
+InChIKey    LZHCVNIARUXHAL-UHFFFAOYSA-N;
+MW          178.275;      // g/mol [origin=calculated method=formula-sum]
+Tc          808.53;      // K   [origin=predictive method=joback]
+Pc          28.114;      // bar [origin=predictive method=joback]
+omega       0.6112;      // -   [origin=predictive method=lee-kesler]
+Tb          583.21;      // K   [origin=predictive method=joback]
+HvapTb      56962.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-61.019 1.28588 -0.00102132 3.372e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group C; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-tert-butyl-4-ethyl-phenol" "2-t-butyl-4-ethylphenol" "2-(tert-butyl)-4-ethylphenol" "phenol, 2-(1,1-dimethylethyl)-4-ethyl-" "4-ethyl-2-tert-butylphenol" "lzhcvniaruxhal-uhfffaoysa-" "phenol, 2-tert-butyl-4-ethyl-" "benzene, 2-tert-butyl-4-ethyl-1-hydroxy-" "[2-(methylamino)acetyl] (2s)-2-[[(2r)-2-[[(2s)-2-amino-3-(4-hydroxyphenyl)propanoyl]amino]-5-guanidino-pentanoyl]amino]-3-phenyl-propanoate" );
+gibbsFormation
+{
+    dHf_298   -252010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     498.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1160.0
+    phase     gas;
+}

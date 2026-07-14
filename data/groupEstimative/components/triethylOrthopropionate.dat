@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethyl orthopropionate  (C9H20O3, CAS 115-80-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethylOrthopropionate;
+formula     C9H20O3;
+CAS         115-80-0;
+InChIKey    FGWYWKIOMUZSQF-UHFFFAOYSA-N;
+MW          176.256;      // g/mol [origin=calculated method=formula-sum]
+Tc          642.58;      // K   [origin=predictive method=joback]
+Pc          22.376;      // bar [origin=predictive method=joback]
+omega       0.5764;      // -   [origin=predictive method=lee-kesler]
+Tb          469.55;      // K   [origin=predictive method=joback]
+HvapTb      41562.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (46.734 0.79508 -0.0003046 3.4e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group CH2O; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 4; } { group C; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1-triethoxypropane" "ethyl orthopropionate" "propane, 1,1,1-triethoxy-" "1,1,1-triethoxypropan" "orthopropionic acid, triethyl ester" "triethyl o-propionate" "orthopropionic acid ethyl ester" "triethylorthopropionate" "propane,1,1-triethoxy-" "orthopropionic acid triethyl ester" "i882" "orthopropionic acid, triethyl ester (8ci)" );
+gibbsFormation
+{
+    dHf_298   -634500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     501.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-287260.0
+    phase     gas;
+}

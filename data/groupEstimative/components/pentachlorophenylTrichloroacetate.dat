@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentachlorophenyl trichloroacetate  (C8Cl8O2, CAS 2879-60-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentachlorophenylTrichloroacetate;
+formula     C8Cl8O2;
+CAS         2879-60-9;
+InChIKey    WMUFBMFZOHGUPA-UHFFFAOYSA-N;
+MW          411.686;      // g/mol [origin=calculated method=formula-sum]
+Tc          1051.12;      // K   [origin=predictive method=joback]
+Pc          24.950;      // bar [origin=predictive method=joback]
+omega       0.8228;      // -   [origin=predictive method=lee-kesler]
+Tb          788.65;      // K   [origin=predictive method=joback]
+HvapTb      80179.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (137.27 0.5128 -0.0003478 7.18e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 1; } { group CCl3; count 1; } { group ACCl; count 5; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dC_ring; count 6; } { group Cl; count 8; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2,3,4,5,6-pentakis(chloranyl)phenyl] 2,2,2-tris(chloranyl)ethanoate" "phenol, pentachloro-, trichloroacetate" "perchlorophenyl 2,2,2-trichloroacetate" "acetic acid, trichloro-, pentachlorophenyl ester" "trichloroacetic acid pentachlorophenyl ester" "tca-o-pcp" "(2,3,4,5,6-pentachlorophenyl) 2,2,2-trichloroacetate" "tca-o-pcp; trichloroacetic acid pentachlorophenyl ester" "aceticacid, trichloro-, pentachlorophenyl ester (7ci,8ci,9ci); phenol, pentachloro-,trichloroacetate (8ci); pentachlorophenyl trichloroacetate" );
+gibbsFormation
+{
+    dHf_298   -481220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     610.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-322230.0
+    phase     gas;
+}

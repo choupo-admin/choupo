@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentane-d12  (C5D12, CAS 2031-90-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C5D12 (delta D+12H-12; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        pentaneD12;
+formula     C5D12;
+CAS         2031-90-5;
+InChIKey    OFBQJSOFQDEBGM-HYVJACIRSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          84.223;      // g/mol [origin=calculated method=formula-sum]
+Tc          476.68;      // K   [origin=predictive method=joback]
+Pc          34.684;      // bar [origin=predictive method=joback]
+omega       0.2607;      // -   [origin=predictive method=lee-kesler]
+Tb          314.00;      // K   [origin=predictive method=joback]
+HvapTb      26724.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.657 0.47884 -0.0002482 4.83e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2,3,3,4,4,5,5,5-dodecadeuteriopentane" );
+gibbsFormation
+{
+    dHf_298   -146530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     350.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-8780.0
+    phase     gas;
+}

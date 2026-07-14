@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,5-diethyl-4,5-bis(4-tert-butylphenyl)octane  (C32H50, CAS 85668-73-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        45Diethyl45Bis4TertButylphenylOctane;
+formula     C32H50;
+CAS         85668-73-1;
+InChIKey    DTOQQIZHGNEYCR-UHFFFAOYSA-N;
+MW          434.752;      // g/mol [origin=calculated method=formula-sum]
+Tc          1211.58;      // K   [origin=predictive method=joback]
+Pc          7.794;      // bar [origin=predictive method=joback]
+omega       0.6665;      // -   [origin=predictive method=lee-kesler]
+Tb          982.16;      // K   [origin=predictive method=joback]
+HvapTb      87518.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-163.304 3.2704 -0.00233252 6.584e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 10; } { group CH2; count 6; } { group C; count 4; } { group ACH; count 8; } { group AC; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 10; } { group CH2; count 6; } { group C; count 4; } { group dCH_ring; count 8; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-tert-butyl-4-[5-(4-tert-butylphenyl)-4,5-diethyl-octan-4-yl]benzene" "4,5-diethyl-4,5-bis-(4-tert-butylphenyl)-octane" "1,1'-(4,5-diethyloctane-4,5-diyl)bis(4-tert-butylbenzene)" "1-tert-butyl-4-[5-(4-tert-butylphenyl)-4,5-diethyloctan-4-yl]benzene" );
+gibbsFormation
+{
+    dHf_298   -288690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1021.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=435480.0
+    phase     gas;
+}

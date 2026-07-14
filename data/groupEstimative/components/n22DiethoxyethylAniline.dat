@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-(2,2-diethoxyethyl)aniline  (C12H19NO2, CAS 22758-34-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        n22DiethoxyethylAniline;
+formula     C12H19NO2;
+CAS         22758-34-5;
+InChIKey    DHGUGEBXVGPRRD-UHFFFAOYSA-N;
+MW          209.289;      // g/mol [origin=calculated method=formula-sum]
+Tc          796.28;      // K   [origin=predictive method=joback]
+Pc          23.749;      // bar [origin=predictive method=joback]
+omega       0.7678;      // -   [origin=predictive method=lee-kesler]
+Tb          595.41;      // K   [origin=predictive method=joback]
+HvapTb      55450.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.183 1.02064 -0.00049 5.75e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH2O; count 2; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "anilinoacetaldehyde diethyl acetal" "(2,2-diethoxyethyl)phenylamine" "benzenamine,n-(2,2-diethoxyethyl)-" "benzenamine, n-(2,2-diethoxyethyl)-" "n-phenylaminoacetaldehyde diethyl acetal" "anilinoacetaldehyde diethyl acetal, 98%" "acetaldehyde,anilino-, diethyl acetal (7ci,8ci); n-(2,2-diethoxyethyl)aniline;n-(2,2-diethoxyethyl)benzenamine" );
+gibbsFormation
+{
+    dHf_298   -270730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     570.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=39520.0
+    phase     gas;
+}

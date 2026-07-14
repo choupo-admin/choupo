@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (e)-but-2-enedioic acid;1-(2-oxidanylpropoxy)propan-2-ol  (C10H18O7, CAS 69882-13-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        eBut2EnedioicAcid12OxidanylpropoxyPropan2Ol;
+formula     C10H18O7;
+CAS         69882-13-9;
+InChIKey    ZXSNKIFPONQIHP-WLHGVMLRSA-N;
+MW          250.247;      // g/mol [origin=calculated method=formula-sum]
+Tc          1141.34;      // K   [origin=predictive method=joback]
+Pc          29.124;      // bar [origin=predictive method=joback]
+omega       1.9159;      // -   [origin=predictive method=lee-kesler]
+Tb          930.88;      // K   [origin=predictive method=joback]
+HvapTb      107426.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (62.352 0.88584 -0.0002906 -4.22e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group CH=CH; count 1; } { group OH; count 1; } { group COOH; count 2; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group dCH; count 2; } { group OH; count 2; } { group O; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-butenedioic acid (2e)-, polymer with 1,1'-oxybis(2-propanol)" );
+gibbsFormation
+{
+    dHf_298   -1391910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     846.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1062560.0
+    phase     gas;
+}

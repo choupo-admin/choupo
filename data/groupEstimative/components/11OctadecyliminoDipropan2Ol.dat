@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1'-(octadecylimino)dipropan-2-ol  (C24H51NO2, CAS 28137-64-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11OctadecyliminoDipropan2Ol;
+formula     C24H51NO2;
+CAS         28137-64-6;
+InChIKey    WPNICNOCPSBYTR-UHFFFAOYSA-N;
+MW          385.677;      // g/mol [origin=calculated method=formula-sum]
+Tc          1176.15;      // K   [origin=predictive method=joback]
+Pc          9.051;      // bar [origin=predictive method=joback]
+omega       0.7057;      // -   [origin=predictive method=lee-kesler]
+Tb          944.64;      // K   [origin=predictive method=joback]
+HvapTb      103643.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.401 2.48756 -0.0014616 3.304e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 18; } { group CH; count 2; } { group OH; count 2; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 19; } { group CH; count 2; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[octadecyl(2-oxidanylpropyl)amino]propan-2-ol" "2-propanol, 1,1'-(octadecylimino)bis-" "2-propanol,1,1'-(octadecylimino)bis-" "1-[2-hydroxypropyl(octadecyl)amino]propan-2-ol" "2-propanol,1,1'-(octadecylimino)di- (6ci,8ci); n,n-bis(2-hydroxypropyl)stearylamine;n-octadecyldiisopropanolamine" );
+gibbsFormation
+{
+    dHf_298   -786180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1189.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-16540.0
+    phase     gas;
+}

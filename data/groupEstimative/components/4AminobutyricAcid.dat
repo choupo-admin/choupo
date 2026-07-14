@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-aminobutyric acid  (C4H9NO2, CAS 56-12-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4AminobutyricAcid;
+formula     C4H9NO2;
+CAS         56-12-2;
+InChIKey    BTCSSZJGUNDROE-UHFFFAOYSA-N;
+MW          103.121;      // g/mol [origin=calculated method=formula-sum]
+Tc          714.25;      // K   [origin=predictive method=joback]
+Pc          47.171;      // bar [origin=predictive method=joback]
+omega       0.7832;      // -   [origin=predictive method=lee-kesler]
+Tb          509.16;      // K   [origin=predictive method=joback]
+HvapTb      52303.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.343 0.4965 -0.0003098 7.54e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2NH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-azanylbutanoic acid" "4-aminobutanoic acid" "gaba" "gamma-aminobutyric acid" "piperidic acid" "piperidinic acid" "aminalon" "gaballon" "gammalon" "mielogen" "gammalone" "gammasol" );
+gibbsFormation
+{
+    dHf_298   -442370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     416.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-294660.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-fluoro-2-methylaniline  (C7H8FN, CAS 452-71-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Fluoro2Methylaniline;
+formula     C7H8FN;
+CAS         452-71-1;
+InChIKey    KMHLGVTVACLEJE-UHFFFAOYSA-N;
+MW          125.146;      // g/mol [origin=calculated method=formula-sum]
+Tc          685.29;      // K   [origin=predictive method=joback]
+Pc          40.210;      // bar [origin=predictive method=joback]
+omega       0.4710;      // -   [origin=predictive method=lee-kesler]
+Tb          468.20;      // K   [origin=predictive method=joback]
+HvapTb      44600.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.8 0.54462 -0.00031392 6.44e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACCH3; count 1; } { group ACNH2; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-fluoranyl-2-methyl-aniline" "2-amino-5-fluorotoluene" "benzenamine, 4-fluoro-2-methyl-" "4-fluoro-o-toluidine" "4-fluoro-2-methylbenzenamine" "6-amino-3-fluorotoluene" "o-toluidine, 4-fluoro-" "4-fluorotoluidine" "3-fluoro-6-aminotoluene" "2-methyl-4-fluoroaniline" "2-amino -5-fluorotoluene" "zr df b1" );
+gibbsFormation
+{
+    dHf_298   -136540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     393.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-27150.0
+    phase     gas;
+}

@@ -1,0 +1,24 @@
+/*---------------------------------------------------------------------------*\
+  FINISHING sector: drying and solids recovery subdomain.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    dryer
+    recoverer
+);
+
+connections
+{
+    slurry       { to dryer/slurry; }
+    hotAir       { to dryer/hotAir; }
+
+    product      { from dryer/drySolid; }
+
+    humidExhaust { from dryer/humidExhaust;
+                    to   recoverer/humidExhaust; }
+
+    cleanAir     { from recoverer/cleanAir; }
+
+    fines        { from recoverer/product; }
+}

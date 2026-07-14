@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 11-deoxojervine-4-en-3-one  (C27H39NO2, CAS 14410-98-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Deoxojervine4En3One;
+formula     C27H39NO2;
+CAS         14410-98-1;
+InChIKey    SKWIGGSUCKQTMK-XDDOBYEYSA-N;
+MW          409.614;      // g/mol [origin=calculated method=formula-sum]
+Tc          1292.94;      // K   [origin=predictive method=joback]
+Pc          12.884;      // bar [origin=predictive method=joback]
+omega       0.9184;      // -   [origin=predictive method=lee-kesler]
+Tb          1030.74;      // K   [origin=predictive method=joback]
+HvapTb      91234.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-311.99 3.43618 -0.00279534 9.871e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 7; } { group CH; count 6; } { group C; count 2; } { group CH=C; count 1; } { group CH2CO; count 1; } { group CH-O; count 1; } { group CH2NH; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 9; } { group CH_ring; count 7; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 3; } { group O_ring; count 1; } { group CdO_ring; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3'r,3'as,6's,6as,6bs,7'ar,9r,11as,11br)-3',6',10,11b-tetramethylspiro[1,2,5,6,6a,6b,7,8,11,11a-decahydrobenzo[a]fluorene-9,2'-3a,4,5,6,7,7a-hexahydro-3h-furo[3,2-b]pyridine]-3-one" "spiro(9h-benzo(a)fluorene-9,2'(3'h)-furo(3,2-b)pyridin)-3(1h)-one, 2,3'a,4',5,5',6,6',6a,6b,7,7',7'a,8,11,11a,11b-hexadecahydro-3',6',10,11b-tetramethyl-" );
+gibbsFormation
+{
+    dHf_298   -388210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     587.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=332180.0
+    phase     gas;
+}

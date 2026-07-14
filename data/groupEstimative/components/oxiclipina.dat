@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxiclipina  (C20H29NO3, CAS 4354-45-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oxiclipina;
+formula     C20H29NO3;
+CAS         4354-45-4;
+InChIKey    LCFBCKSQWVQIBY-UHFFFAOYSA-N;
+MW          331.456;      // g/mol [origin=calculated method=formula-sum]
+Tc          1106.99;      // K   [origin=predictive method=joback]
+Pc          18.773;      // bar [origin=predictive method=joback]
+omega       1.1616;      // -   [origin=predictive method=lee-kesler]
+Tb          878.32;      // K   [origin=predictive method=joback]
+HvapTb      87909.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-179.75 2.30762 -0.001524 3.634e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group CH; count 2; } { group C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group OH; count 1; } { group CH3N; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1-methylpiperidin-3-yl) 2-cyclohexyl-2-oxidanyl-2-phenyl-ethanoate" "oxiclipinum" "oxyclipine" "oxyclipine [inn]" "propenzolate" "oxyclipinum [inn-latin]" "delinal" "1-methyl-3-piperidyl alpha-cyclohexylmandelat" "( )-1-methyl-3-piperidyl alpha-phenylglycolat" "n-methyl-3-piperidyl-alpha-cyclohexyl mandelate" "1-methyl-3-piperidyl alpha-phenylcyclohexaneglycolate" "1-methyl-3-piperidyl ( -)-alpha-phenylcyclohexane-glycolate" );
+gibbsFormation
+{
+    dHf_298   -515530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     827.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-42640.0
+    phase     gas;
+}

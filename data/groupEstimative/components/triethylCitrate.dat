@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethyl citrate  (C12H20O7, CAS 77-93-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethylCitrate;
+formula     C12H20O7;
+CAS         77-93-0;
+InChIKey    DOOTYTYQINUNNV-UHFFFAOYSA-N;
+MW          276.285;      // g/mol [origin=calculated method=formula-sum]
+Tc          919.61;      // K   [origin=predictive method=joback]
+Pc          19.859;      // bar [origin=predictive method=joback]
+omega       1.3405;      // -   [origin=predictive method=lee-kesler]
+Tb          737.77;      // K   [origin=predictive method=joback]
+HvapTb      79910.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (49.025 1.13926 -0.0005474 4.2e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group OH; count 1; } { group CH2COO; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group C; count 1; } { group OH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "triethyl 2-oxidanylpropane-1,2,3-tricarboxylate" "ethyl citrate" "citroflex 2" "eudraflex" "hydragen cat" "citric acid, triethyl ester" "triaethylcitrat [german]" "citric acid triethyl ester" "1,2,3-propanetricarboxylic acid, 2-hydroxy-, triethyl ester" "triethyl 2-hydroxy-1,2,3-propanetricarboxylate" "2-hydroxy-1,2,3-propanetricarboxylic acid, triethyl ester" "2-hydroxy-1,2,3-propanetricarboxylic acid, delta triethyl ester" );
+gibbsFormation
+{
+    dHf_298   -1403830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     789.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1014930.0
+    phase     gas;
+}

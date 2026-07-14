@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-bromohexanoic acid  (C6H11BrO2, CAS 616-05-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2BromohexanoicAcid;
+formula     C6H11BrO2;
+CAS         616-05-7;
+InChIKey    HZTPKMIMXLTOSK-UHFFFAOYSA-N;
+MW          195.056;      // g/mol [origin=calculated method=formula-sum]
+Tc          755.95;      // K   [origin=predictive method=joback]
+Pc          37.730;      // bar [origin=predictive method=joback]
+omega       0.7916;      // -   [origin=predictive method=lee-kesler]
+Tb          548.11;      // K   [origin=predictive method=joback]
+HvapTb      52161.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.543 0.66872 -0.0004498 1.218e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group COOH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanylhexanoic acid" "2-bromocaproic acid" "hexanoic acid, 2-bromo-" "dl-2-bromohexanoic acid" ".alpha.-bromo-n-caproic acid" "alpha-bromo-n-caproic acid" "2-bromo-hexanoic acid" "alpha-bromocaproic acid" "alpha-bromohexanoic acid" "a-bromo-n-caproic acid" ".alpha.-bromocaproic acid" ".alpha.-bromohexanoic acid" );
+gibbsFormation
+{
+    dHf_298   -496390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     484.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-332390.0
+    phase     gas;
+}

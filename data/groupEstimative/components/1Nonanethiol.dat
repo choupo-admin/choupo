@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-nonanethiol  (C9H20S, CAS 1455-21-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Nonanethiol;
+formula     C9H20S;
+CAS         1455-21-6;
+InChIKey    ZVEZMVFBMOOHAT-UHFFFAOYSA-N;
+MW          160.319;      // g/mol [origin=calculated method=formula-sum]
+Tc          652.21;      // K   [origin=predictive method=joback]
+Pc          24.556;      // bar [origin=predictive method=joback]
+omega       0.5190;      // -   [origin=predictive method=lee-kesler]
+Tb          468.38;      // K   [origin=predictive method=joback]
+HvapTb      42365.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.598 0.88612 -0.0004882 1.015e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "nonane-1-thiol" "n-nonyl mercaptan" "nonylthiol" "nonyl mercaptan" "mercaptan c9" "1-nonyl mercaptan" "n-nonylmercaptan" "q791" );
+gibbsFormation
+{
+    dHf_298   -190610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     569.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=54290.0
+    phase     gas;
+}

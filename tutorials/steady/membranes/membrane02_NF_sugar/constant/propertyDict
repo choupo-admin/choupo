@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  membrane02_NF_sugar / constant/thermoPackage
+
+  Water (solvent) + glucose (the MW-180 neutral solute the loose NF270
+  only PARTIALLY rejects, ~50-65 %) for the canonical 10 g/L NF case at
+  10 bar.  The separation physics is entirely in the membrane unit op
+  (solution-diffusion + film model); at 0.055 mol/L the solution is
+  nearly ideal anyway, so ideal activity + ideal-gas EoS lose nothing.
+\*---------------------------------------------------------------------------*/
+
+components       ( water  glucose );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

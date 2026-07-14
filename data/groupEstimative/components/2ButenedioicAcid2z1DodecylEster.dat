@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-butenedioic acid (2z)-, 1-dodecyl ester  (C16H28O4, CAS 10283-72-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2ButenedioicAcid2z1DodecylEster;
+formula     C16H28O4;
+CAS         10283-72-4;
+InChIKey    IIPCXIGUIPAGQB-UHFFFAOYSA-N;
+MW          284.396;      // g/mol [origin=calculated method=formula-sum]
+Tc          960.66;      // K   [origin=predictive method=joback]
+Pc          14.702;      // bar [origin=predictive method=joback]
+omega       1.1371;      // -   [origin=predictive method=lee-kesler]
+Tb          773.57;      // K   [origin=predictive method=joback]
+HvapTb      75739.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.171 1.53982 -0.0009084 1.975e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group CH=CH; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-dodecoxy-4-oxidanylidene-but-2-enoic acid" "2-butenedioic acid (2z)-, monododecyl ester" "4-dodecoxy-4-oxobut-2-enoic acid" "4-(dodecyloxy)-4-oxobut-2-enoic acid" "2-butenedioic acid(2e)-, 1-dodecyl ester" "2-butenedioicacid (2e)-, monododecyl ester (9ci); 2-butenedioic acid (e)-, monododecylester; fumaric acid, dodecyl ester (6ci); fumaric acid, monododecyl ester(8ci); dodecyl hydrogen fumarate; monododecyl fumarate" );
+gibbsFormation
+{
+    dHf_298   -923900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     877.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-490220.0
+    phase     gas;
+}

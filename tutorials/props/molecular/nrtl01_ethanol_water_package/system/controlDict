@@ -1,0 +1,3 @@
+application  choupoProps;
+description  "ethanol-water NRTL via the SAME property-package builder (molecular U4)";
+verbosity    2;

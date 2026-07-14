@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triglyme  (C8H18O4, CAS 112-49-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triglyme;
+formula     C8H18O4;
+CAS         112-49-2;
+InChIKey    YFNKIDBQEZZDLK-UHFFFAOYSA-N;
+MW          178.228;      // g/mol [origin=calculated method=formula-sum]
+Tc          636.64;      // K   [origin=predictive method=joback]
+Pc          23.703;      // bar [origin=predictive method=joback]
+omega       0.7089;      // -   [origin=predictive method=lee-kesler]
+Tb          472.32;      // K   [origin=predictive method=joback]
+HvapTb      43042.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (97.616 0.51104 3.26e-05 -1.352e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH3O; count 2; } { group CH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methoxy-2-[2-(2-methoxyethoxy)ethoxy]ethane" "triethylene glycol dimethyl ether" "2,5,8,11-tetraoxadodecane" "1,2-bis(2-methoxyethoxy)ethane" "glyme 4" "glyme-3" "tegdime" "tegdme" "1-methoxy-2-[2-(2-methoxy-ethoxy]-ethane" "dimethyltriglycol" "glycol, triethylene-, dimethyl ether" "ethane, 1,2-bis(2-methoxyethoxy)-" );
+gibbsFormation
+{
+    dHf_298   -737330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     512.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-403520.0
+    phase     gas;
+}

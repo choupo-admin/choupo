@@ -1,0 +1,16 @@
+recordType modelSpecies;   // model species — summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+
+name    NH4;
+ion     "NH4+";
+charge  +1;
+
+MW { value 18.039; unit g/mol;}
+
+aqueousThermo
+{
+    hfAq { value -132510; unit J/mol;}
+    sAq  { value 113.4;  unit J/mol/K;}
+}
+
+source "hfAq+sAq Wagman 1982";

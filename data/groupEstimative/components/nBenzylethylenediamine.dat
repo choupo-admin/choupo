@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-benzylethylenediamine  (C9H14N2, CAS 4152-09-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nBenzylethylenediamine;
+formula     C9H14N2;
+CAS         4152-09-4;
+InChIKey    ACYBVNYNIZTUIL-UHFFFAOYSA-N;
+MW          150.225;      // g/mol [origin=calculated method=formula-sum]
+Tc          774.45;      // K   [origin=predictive method=joback]
+Pc          35.389;      // bar [origin=predictive method=joback]
+omega       0.6807;      // -   [origin=predictive method=lee-kesler]
+Tb          554.90;      // K   [origin=predictive method=joback]
+HvapTb      54981.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-33.917 0.918 -0.000589 1.429e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group ACCH2; count 1; } { group CH2NH2; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n'-(phenylmethyl)ethane-1,2-diamine" "ethylenediamine, n-benzyl-" "n1-benzylethane-1,2-diamine" "(2-aminoethyl)(benzyl)amine" "1,2-ethanediamine, n-(phenylmethyl)-" "n-(2-aminoethyl)-n-benzylamine" "1,2-ethanediamine, n1-(phenylmethyl)-" "(2-aminoethyl)benzylamine" "2-benzylaminoethylamine" "n-benzylethyl enediamine" "1, n-(phenylmethyl)-" "2-(benzylamino)ethylamine" );
+gibbsFormation
+{
+    dHf_298   94700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     492.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=293150.0
+    phase     gas;
+}

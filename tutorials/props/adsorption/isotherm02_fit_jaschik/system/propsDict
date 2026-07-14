@@ -1,0 +1,156 @@
+/*  Four fitParameters(kind isotherm) operations: the REAL Jaschik fit plus
+    the three identifiability gates on zero-noise synthetics generated from
+    a KNOWN surface (q_max 4.6 mol/kg, b_ref 3.0e-4 1/Pa @ 298.15 K,
+    dH_ads -38000 J/mol) -- so every gate has an exact truth to recover or
+    to honestly refuse.  Inline synthetic data is canonical SI (K, Pa,
+    mol/kg); the vendored Jaschik dataset declares its own units (bar,
+    mol/kg) and is converted at the data boundary.  */
+operations
+(
+    // 1. REAL fit: CO2 / zeolite 13X (Grace), Jaschik et al. 2020, CC BY.
+    //    Single-site Langmuir is a TEACHING surface for 13X (the material is
+    //    energetically heterogeneous) -- expect structured residuals; the
+    //    report quotes them honestly rather than hiding them.
+    {
+        name       fit_jaschik;
+        type       fitParameters;
+        residual
+        {
+            kind       isotherm;
+            adsorbent  zeolite13X;
+            adsorbate  CO2;
+            model      langmuir;
+            tRef       298.15;      // van't Hoff anchor [K], declared
+            dataset    "constant/experimental/co2_13x_jaschik2020.dat";
+            // no weighting declared, no sigma column -> unweighted
+            // absolute-q residuals, ANNOUNCED in the report
+        }
+        parameters
+        (
+            { name q_max;   initial 5.0;    }   // mol/kg   (ln-space, > 0)
+            { name b_ref;   initial 1.0e-4; }   // 1/Pa     (ln-space, > 0)
+            { name dH_ads;  initial -40000; }   // J/mol    (natural, sign free)
+        );
+        options  { maxIter 300; tolerance 1e-12; }
+        output   { proposal auto; }   // -> data/proposed/adsorption/equilibria/
+    }
+
+    // 2. RECOVERY gate: zero-noise multi-T synthetic from the known surface;
+    //    the fit must return the three generating parameters to 1e-6.
+    {
+        name       recovery_multiT;
+        type       fitParameters;
+        residual
+        {
+            kind       isotherm;
+            adsorbent  zeolite13X;      // labels only -- data is synthetic
+            adsorbate  CO2;
+            model      langmuir;
+            tRef       298.15;
+            data       // T [K]  p [Pa]  q [mol/kg]  (generated, zero noise)
+            (
+                293.15  2000.0    2.014699181800165
+                293.15  5000.0    3.039739219943858
+                293.15  10000.0   3.660543903184303
+                293.15  20000.0   4.076850665525022
+                293.15  50000.0   4.3754153099771305
+                293.15  100000.0  4.484897852809461
+                313.15  2000.0    1.0283343796238356
+                313.15  5000.0    1.9252490588716973
+                313.15  10000.0   2.7144237992782925
+                313.15  20000.0   3.4141717295386034
+                313.15  50000.0   4.038878150156582
+                313.15  100000.0  4.301215775426473
+                333.15  2000.0    0.4924191583524799
+                333.15  5000.0    1.0607256281460153
+                333.15  10000.0   1.7239266518097387
+                333.15  20000.0   2.5079552736606856
+                333.15  50000.0   3.449141000750299
+                333.15  100000.0  3.942296103887961
+            );
+        }
+        parameters
+        (
+            { name q_max;   initial 3.0;    }   // deliberately off-truth
+            { name b_ref;   initial 1.0e-4; }
+            { name dH_ads;  initial -30000; }
+        );
+        options  { maxIter 300; tolerance 1e-14; }
+    }
+
+    // 3. SINGLE-T gate: the same surface at 313.15 K only.  One temperature
+    //    carries NO van't Hoff information: the engine must fit q_max and
+    //    b(T_data) and REFUSE to report dH_ads (unidentifiable by name,
+    //    not a number with +/-3000%).
+    {
+        name       gate_singleT;
+        type       fitParameters;
+        residual
+        {
+            kind       isotherm;
+            adsorbent  zeolite13X;
+            adsorbate  CO2;
+            model      langmuir;
+            tRef       298.15;      // declared but overridden by T_data (announced)
+            data
+            (
+                313.15  2000.0    1.0283343796238356
+                313.15  5000.0    1.9252490588716973
+                313.15  10000.0   2.7144237992782925
+                313.15  20000.0   3.4141717295386034
+                313.15  50000.0   4.038878150156582
+                313.15  100000.0  4.301215775426473
+            );
+        }
+        parameters
+        (
+            { name q_max;   initial 3.0;    }
+            { name b_ref;   initial 1.0e-4; }
+            { name dH_ads;  initial -30000; }   // declared; the ENGINE refuses it
+        );
+        options  { maxIter 300; tolerance 1e-14; }
+    }
+
+    // 4. HENRY-REGIME gate: the same surface sampled at p <= 100 Pa, where
+    //    max b*p = 0.039 < 0.05 -- the isotherm never bends, so q_max and
+    //    b_ref are inseparable: only the PRODUCT q_max*b (the Henry slope,
+    //    truth 1.38e-3 mol/kg/Pa) and dH_ads are reported.
+    {
+        name       gate_henry;
+        type       fitParameters;
+        residual
+        {
+            kind       isotherm;
+            adsorbent  zeolite13X;
+            adsorbate  CO2;
+            model      langmuir;
+            tRef       298.15;
+            data
+            (
+                293.15  5.0     0.008944409753165527
+                293.15  10.0    0.01785410332895073
+                293.15  20.0    0.035570147291560265
+                293.15  50.0    0.08790575282377548
+                293.15  100.0   0.1725147578940962
+                313.15  5.0     0.003308635427504034
+                313.15  10.0    0.006612514681021433
+                313.15  20.0    0.0132060456293033
+                313.15  50.0    0.03287355007252295
+                313.15  100.0   0.06528057746416946
+                333.15  5.0     0.0013782135744556587
+                333.15  10.0    0.0027556015385969074
+                333.15  20.0    0.005507903601620104
+                333.15  50.0    0.013745072091416509
+                333.15  100.0   0.027408246720426153
+            );
+        }
+        parameters
+        (
+            { name q_max;   initial 3.0;    }
+            { name b_ref;   initial 1.0e-4; }
+            { name dH_ads;  initial -30000; }
+        );
+        options  { maxIter 300; tolerance 1e-14; }
+        output   { proposal auto; }   // must be SKIPPED aloud (unidentifiable factors)
+    }
+);

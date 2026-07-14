@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl farnesoate  (C16H26O2, CAS 10485-70-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylFarnesoate;
+formula     C16H26O2;
+CAS         10485-70-8;
+InChIKey    NWKXNIPBVLQYAB-VDQVFBMKSA-N;
+MW          250.382;      // g/mol [origin=calculated method=formula-sum]
+Tc          825.15;      // K   [origin=predictive method=joback]
+Pc          15.046;      // bar [origin=predictive method=joback]
+omega       0.7236;      // -   [origin=predictive method=lee-kesler]
+Tb          636.02;      // K   [origin=predictive method=joback]
+HvapTb      58731.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.866 1.5288 -0.0010103 2.697e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 4; } { group CH=C; count 3; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 4; } { group dCH; count 3; } { group dC; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl (2e,6e)-3,7,11-trimethyldodeca-2,6,10-trienoate" "farnesyl methyl ester" "methyl (2e,6e)-farnesoate" "2,6,10-dodecatrienoic acid, 3,7,11-trimethyl-, methyl ester" "(2e,6e)-methyl 3,7,11-trimethyldodeca-2,6,10-trienoate" "(2e,6e)-3,7,11-trimethyl-dodeca-2,6,10-trienoic acid methyl ester" "2,6,10-dodecatrienoic acid, 3,7,11-trimethyl-, methyl ester, (2e,6e)-" "2,6,10-dodecatrienoic acid, 3,7,11-trimethyl-, methyl ester, (e,e)-" "methyl (trans,trans)-farnesoate" "(2e,6e)-farnesyl methyl ester" "methyl (2-trans-6-trans)-farnesoate" "methyl (2e,6e)-3,7,11-trimethyl-2,6,10-dodecatrienoate" );
+gibbsFormation
+{
+    dHf_298   -368560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     798.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11520.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl cellosolve acetyl ricinoleate  (C23H42O5, CAS 140-05-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylCellosolveAcetylRicinoleate;
+formula     C23H42O5;
+CAS         140-05-6;
+InChIKey    BJJRVZBBFAXWGR-UHFFFAOYSA-N;
+MW          398.584;      // g/mol [origin=calculated method=formula-sum]
+Tc          1063.19;      // K   [origin=predictive method=joback]
+Pc          8.790;      // bar [origin=predictive method=joback]
+omega       0.8509;      // -   [origin=predictive method=lee-kesler]
+Tb          868.42;      // K   [origin=predictive method=joback]
+HvapTb      83586.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (42.435 2.04196 -0.0010142 1.404e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 14; } { group CH; count 1; } { group CH=CH; count 1; } { group CH3COO; count 1; } { group CH2COO; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 15; } { group CH; count 1; } { group dCH; count 2; } { group O; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methoxyethyl 12-acetyloxyoctadec-9-enoate" "2-methoxyethyl 12-(acetyloxy)octadec-9-enoate" );
+gibbsFormation
+{
+    dHf_298   -1172890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1149.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-505180.0
+    phase     gas;
+}

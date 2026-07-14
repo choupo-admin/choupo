@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloroethyl ethyl ether  (C4H9ClO, CAS 628-34-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2ChloroethylEthylEther;
+formula     C4H9ClO;
+CAS         628-34-2;
+InChIKey    GPTVQTPMFOLLOA-UHFFFAOYSA-N;
+MW          108.565;      // g/mol [origin=calculated method=formula-sum]
+Tc          524.59;      // K   [origin=predictive method=joback]
+Pc          36.465;      // bar [origin=predictive method=joback]
+omega       0.3396;      // -   [origin=predictive method=lee-kesler]
+Tb          350.97;      // K   [origin=predictive method=joback]
+HvapTb      31293.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (37.643 0.32742 -0.0001032 -9.4e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2O; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-2-ethoxy-ethane" "1-chloro-2-ethoxyethane" "2-ethoxyethyl chloride" "2-chloroethoxyethane" "ether, 2-chloroethyl ethyl" "beta-chloroethyl ethyl ether" "ethyl beta-chloroethyl ether" "ethane, 1-chloro-2-ethoxy-" "2-chloro-1-ethoxyethane" "agn-pc-03v685" "ethane, 1-chloro-2-ethoxy- (9ci)" "ether,2-chloroethyl ethyl (6ci,7ci,8ci);(2-chloroethoxy)ethane;1-chloro-2-ethoxyethane;2-ethoxyethyl chloride;ethyl b-chloroethyl ether;b-chlorodiethyl ether;b-chloroethyl ethyl ether;" );
+gibbsFormation
+{
+    dHf_298   -273850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     356.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134130.0
+    phase     gas;
+}

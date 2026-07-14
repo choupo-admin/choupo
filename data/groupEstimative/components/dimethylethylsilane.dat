@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethylethylsilane  (C4H11Si, CAS 758-21-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C4H11Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        dimethylethylsilane;
+formula     C4H11Si;
+CAS         758-21-4;
+InChIKey    KJISMKWTHPWHFV-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+role        radical;
+MW          87.217;      // g/mol [origin=calculated method=formula-sum]
+Tc          456.46;      // K   [origin=predictive method=joback]
+Pc          35.515;      // bar [origin=predictive method=joback]
+omega       0.1660;      // -   [origin=predictive method=lee-kesler]
+Tb          291.82;      // K   [origin=predictive method=joback]
+HvapTb      24645.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.661 0.28076 1.36e-05 -7.22e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 3; } { group CH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl(dimethyl)silicon" "ethyldimethylsilane" "silane, ethyldimethyl-" "ethyl-dimethylsilicon" "agn-pc-0d76g4" "2-deuterioethyl(dimethyl)silicon" );
+gibbsFormation
+{
+    dHf_298   -181700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     384.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-69580.0
+    phase     gas;
+}

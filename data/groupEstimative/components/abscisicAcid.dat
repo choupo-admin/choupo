@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (+)-abscisic acid  (C15H20O4, CAS 21293-29-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        abscisicAcid;
+formula     C15H20O4;
+CAS         21293-29-8;
+InChIKey    JLIDBLDQVAYHNE-YKALOCIXSA-N;
+MW          264.321;      // g/mol [origin=calculated method=formula-sum]
+Tc          1104.21;      // K   [origin=predictive method=joback]
+Pc          23.795;      // bar [origin=predictive method=joback]
+omega       1.3434;      // -   [origin=predictive method=lee-kesler]
+Tb          876.01;      // K   [origin=predictive method=joback]
+HvapTb      85842.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-130.05 1.94918 -0.00183214 7.454e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group C; count 2; } { group CH=CH; count 1; } { group CH=C; count 2; } { group OH; count 1; } { group CH2CO; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH; count 3; } { group dC; count 1; } { group CH2_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2z,4e)-3-methyl-5-[(1s)-2,6,6-trimethyl-1-oxidanyl-4-oxidanylidene-cyclohex-2-en-1-yl]penta-2,4-dienoic acid" "abscisic acid" "abscisin ii" "(s)-(+)-abscisic acid" "dormin (van)" "s-aba" "acide abscisique [french]" "dormin (abscission factor)" "(+)-(s)-abscisic acid" "2-cis,4-trans-abscisic acid" "(+)-cis,trans-abscisic acid" "aba" );
+gibbsFormation
+{
+    dHf_298   -657710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     770.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-349920.0
+    phase     gas;
+}

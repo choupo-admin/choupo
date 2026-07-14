@@ -1,5 +1,6 @@
 \documentclass[11pt,a4paper]{article}
 \newcommand{\docTitle}{Theory Guide}
+\newcommand{\propertyTheoryAuthors}{}
 \input{preamble.tex}
 
 % Math packages --- theory manual needs more than the others
@@ -43,9 +44,6 @@ Anthropic, Claude, and Claude Code are trademarks or registered trademarks of
 Anthropic, PBC.
 
 OpenFOAM is a registered trademark of OpenCFD Ltd.
-
-Aspen and HYSYS are trademarks or registered trademarks of Aspen Technology,
-Inc.
 
 REFPROP and NIST WebBook are products or services of the National Institute
 of Standards and Technology.
@@ -746,7 +744,7 @@ Part~I      & this chapter; the notation and units the simulator uses internally
 Part~II     & thermodynamic models for \emph{pure} components: Antoine, Watson, Cp, plus integrals into $h$, $s$, $g$ \\
 Part~III    & thermodynamic models for \emph{mixtures}: ideal mixing, activity coefficients, fugacity, $\gamma$-$\varphi$, K-values \\
 Part~IV     & numerical methods: Newton-1D, Newton-ND, Levenberg-Marquardt, Wegstein, RK4 \\
-Part~V      & transport properties: viscosity, thermal conductivity, diffusivity, mixture rules (theory documented, code in v1.x) \\
+Part~V      & transport properties: viscosity (Chung), thermal conductivity (Eucken), diffusivity (Fuller), mixture rules -- shipped \\
 Part~VI     & selected unit operations as they are wired  \\
 Part~VII    & equipment sizing and Guthrie/Turton costing \\
 \bottomrule
@@ -2701,7 +2699,7 @@ rule: new entries should always declare \code{phase} so the datum is
 unambiguous at the source of truth.
 
 \subsection{Where every number comes from --- the three questions
-            Aspen won't answer}
+            a black-box tool won't answer}
 \label{sec:data-provenance-questions}
 
 The \code{phase} keyword of the previous subsection is one instance of a
@@ -3089,7 +3087,7 @@ composition range must integrate to zero:
    \label{eq:integral-gd-area}
 \end{equation}
 This is the celebrated Redlich-Kister consistency test.  When the
-\code{fitBinaryPair} outer driver fits NRTL or Wilson parameters to a
+\code{fitParameters} regression fits NRTL or Wilson parameters to a
 $(x_1, T_{\mathrm{bubble}})$ dataset (the
 \file{tutorials/fitNRTL01\_ethanol\_water} case), the chosen
 functional form for $G^E$ \emph{automatically} satisfies
@@ -3838,7 +3836,7 @@ implementation, whose $\tau_{ij}=a_{ij}+b_{ij}/T$
 \eqref{eq:nrtl-GE} carries an explicit linear-in-$1/T$ term. If a wider
 temperature range demands it, the physically standard refinement is to
 let $A_{ij}=A_{ij}^{0}+A_{ij}^{1}\,T$ (a linear-in-$T$ energy, the form
-used by DECHEMA and Aspen for Wilson); that extra slope is not yet wired
+used by DECHEMA for Wilson); that extra slope is not yet wired
 into the loader, so over a broad $T$ window prefer a pair fitted near the
 operating temperature. The single-constant choice keeps the glass-box
 small: one number per direction, visible in the \file{.dat}.
@@ -4491,6 +4489,36 @@ that opposes the permeate water flux.  A component flagged
 \dict{nonvolatile true; dissociation $\nu$;} in its \file{.dat} is a
 salt; it is invisible to the VLE machinery ($K_i = 0$) and visible to
 the osmotic model.
+
+\subsection{How Choupo carries the split: one salt, model ions, reference rung}
+
+The physics above is also the \emph{data} architecture.  The user writes one
+component, \code{NaCl}; the solver reasons in the two \emph{model species} it
+dissociates into, $\mathrm{Na}^{+}$ and $\mathrm{Cl}^{-}$.  Choupo records
+exactly that, without duplicating the salt: the component
+(\code{components/NaCl.dat}) carries the identity and the ion stoichiometry
+\code{dissociatesTo \{ Na 1; Cl 1; \}} --- a formula-like fact, like the
+molecular formula itself --- while the \emph{model species}
+(\code{species/aqueous/Na.dat}, \code{Cl.dat}) carry the charge and the
+aqueous reference data.  We deliberately do not call the ions ``true''
+species: an ion is not more real than the salt --- complete dissociation is
+itself a model, the $K\!\to\!\infty$ limit of an association equilibrium, and
+the moment a real $K$ appears (an ion pair, a hydrate) the split moves from
+the component's stoichiometry into \code{chemistry/} as an equilibrium.
+
+The \emph{reference state} matters as much as the model.  A neutral activity
+model is anchored on pure-liquid Raoult ($\gamma_i \to 1$ as $x_i \to 1$); an ion
+has no pure liquid, so its datum is the \emph{aqueous infinite-dilution}
+reference on the $\mathrm{H}^{+}(\mathrm{aq})=0$ convention.  Choupo does not
+hardcode ``aqueous'': each \emph{property method} record declares its
+reference basis per phase --- a Pitzer method declares the aqueous
+infinite-dilution rung for the liquid and the ion-derived datum for the salt,
+where an NRTL method declares pure-liquid Raoult.  A case then selects a
+\emph{property package} that names the method, the salt (whose
+\code{dissociatesTo} names the ions), and the Pitzer pairs; the Developer
+Guide (\emph{the thermophysical property architecture}) gives the full
+picture.  Here we keep to the physics: why $\phi(I)$, built next, is the
+electrolyte's correction to van't Hoff.
 
 \subsection{Osmotic pressure from the solvent chemical potential}
 
@@ -5177,6 +5205,73 @@ with the Pitzer membrane cases of \S\ref{ch:electrolytes}
 same physics.
 \end{tutoriallink}
 
+\subsection{Multi-salt eNRTL: the symmetric multicomponent
+formulation}\label{sec:enrtl-multisalt}
+
+When two salts share the water --- NaCl $+$ KCl in a crystalliser purge, a
+mixed brine --- each ion's environment contains \emph{foreign} ions, and the
+single-salt expressions no longer apply.  The multicomponent formulation
+(Song \& Chen 2009, DOI \texttt{10.1021/ie9004578})
+keeps the two eNRTL hypotheses (local electroneutrality, like-ion repulsion)
+and writes the local term species-wise, with every effective ion--molecule
+and ion--ion binary assembled from the \emph{pair} parameters by
+charge-fraction mixing rules:
+\begin{equation}
+  Y_c = \frac{X_c}{\sum_{c'} X_{c'}}, \qquad
+  G_{am} = \sum_{c} Y_c\, G_{ca,m}, \qquad
+  G_{ca} = \sum_{c'} Y_{c'}\, G_{ca,c'a}, \qquad
+  \tau = -\ln G / \alpha,
+\end{equation}
+so a chloride ion in a Na/K mixture sees a \emph{composition-weighted}
+water--salt energy.  The long-range term is the same PDH expression with the
+multicomponent ionic strength.  Two structural results, both golden-locked in
+the tutorial:
+
+\begin{enumerate}[leftmargin=*,nosep,topsep=2pt]
+  \item \textbf{Exact single-salt reduction.}  With one salt the charge
+        fractions collapse to unity and the model IS the single-salt kernel
+        of the previous sections (the tutorial pins the pure endpoints at
+        $\sim 10^{-15}$ relative).
+  \item \textbf{Harned's rule emerges.}  At constant total molality,
+        $\ln\gamma_\pm$ of each salt is nearly \emph{linear} in the salt
+        fraction ($R^2 > 0.999$ at 4\,mol/kg with zero
+        electrolyte--electrolyte parameters) --- the century-old empirical
+        rule falls out of the local-composition structure.
+\end{enumerate}
+
+\begin{intuition}
+\textbf{A declared inconsistency --- and its fix, side by side.}  The published
+multicomponent activity-coefficient expressions differentiate the excess
+Gibbs energy \emph{treating the mixing-rule binaries as constants}, yet those
+binaries depend on composition through the charge fractions $Y$.  The result
+is not exactly Gibbs--Duhem consistent --- the motivation for the
+\emph{refined} eNRTL of Bollas, Chen \& Barton (2008).  Choupo ships
+\textbf{both formulations} (\code{formulation published;} vs
+\code{consistent;}): the consistent one keeps the chain rule through the
+$Y$-dependent mixing rules, so $\gamma$ \emph{is} the exact derivative of
+$G^{ex}$ and the finite-difference oracle closes ($\sim$$10^{-9}$) at
+\emph{every} composition --- while the published one prints its mid-sweep
+deviation ($\sim$$0.5$) next to the pure-salt state where it, too, is exact.
+At 4\,mol/kg NaCl--KCl the two differ by $\sim$4\,\% in mid-sweep
+$\gamma_\pm$.  Robinson's 1961 isopiestic data judge them: the published form
+wins the dominant Harned coefficient ($\alpha_{\mathrm{NaCl}}$ +14\,\% vs
+$-29\,\%$), both overstate the small $\alpha_{\mathrm{KCl}}$, and no single
+$\tau_{EE}$ closes both --- the residual is structural.  Bollas et al.'s own
+Figure~1 (this very system) cross-checks both branches: their original-eNRTL
+panel matches our published curves to the pixel, and their refined panel
+shows the same signature our consistent form shows --- the $\tau$ fan nearly
+collapses, because an exact derivative is almost insensitive to
+$\tau_{EE}$.
+\end{intuition}
+
+\begin{tutoriallink}
+\file{tutorials/props/electrolyte/enrtl\_multisalt\_nacl\_kcl} --- the
+paper's own demonstration (NaCl--KCl--H$_2$O, 4\,mol/kg Harned sweep),
+reproducing its Figure~1 $\tau_{ca,c'a}$ sensitivity fan (in log$_{10}$ ---
+the figure's axis label says $\ln$ but plots log$_{10}$) and locking the
+reduction pin, the Harned slopes, and the declared Gibbs--Duhem deviation.
+\end{tutoriallink}
+
 % =====================================================================
 \section{Multi-ion Pitzer: the Harvie--M\o ller--Weare
 model}\label{ch:pitzer-hmw}
@@ -5378,6 +5473,86 @@ are active for the present ion set (\code{announceParameters}), so a
 student sees the \emph{actual} parameter set in play --- never a black
 box.  The same kernel that carries $E_\theta$ is the difference between a
 correct $\text{Mg}^{2+}$-rich seawater $\gamma$ and a 10--20\,\% error.
+\end{keyidea}
+
+\subsection{The multi-ion osmotic coefficient and the water
+activity}\label{sec:hmw-osmotic}
+
+The per-ion $\gamma_i$ answers ``how non-ideal is each solute?''  Its
+thermodynamic \emph{sibling} answers the question that matters for the
+\emph{solvent}: ``how much do all these ions, together, lower the
+activity of the water?''  That is the osmotic coefficient $\phi$ of the
+whole brine, and it is built from the \emph{same} virial parameters as
+the $\gamma_i$ --- the Gibbs--Duhem relation forces it.  Skipping it (the
+$\phi=1$ dilute approximation) is the single most common way a Pitzer
+code quietly cheats: the ions get the full treatment, the water is left
+ideal.  In a real brine the water is \emph{not} ideal --- $a_w<x_w$ ---
+and that departure \emph{is} the osmotic pressure
+$\Pi=-(\Rgas T/\bar V_w)\ln a_w$ that drives every membrane process, so a
+$\phi=1$ water activity is exactly the error that wrecks an osmosis or
+evaporator calculation at high concentration.
+
+Choupo therefore evaluates the full Harvie--M\o ller--Weare osmotic
+coefficient (\cite{Pitzer1973}, Pitzer 1991 ch.~3; HMW 1984), the
+osmotic-form companion of the $\gamma_i$ sums above:
+\begin{equation}
+\begin{aligned}
+   \Bigl(\phi-1\Bigr)\sum_i m_i \;=\; 2\Bigg[&
+     -\,\frac{A_\phi\,I^{3/2}}{1+b\sqrt I}
+     \;+\; \sum_c\sum_a m_c m_a\,\bigl(B^\phi_{ca} + Z\,C_{ca}\bigr)\\[2pt]
+   &+\sum_{c<c'} m_c m_{c'}\Bigl(\Phi^\phi_{cc'}+\textstyle\sum_a m_a\,\psi_{cc'a}\Bigr)
+    +\sum_{a<a'} m_a m_{a'}\Bigl(\Phi^\phi_{aa'}+\textstyle\sum_c m_c\,\psi_{aa'c}\Bigr)\\[2pt]
+   &+\sum_n\sum_i m_n m_i\,\lambda_{ni}
+    \;+\; \sum_n\sum_c\sum_a m_n m_c m_a\,\zeta_{nca}\Bigg],
+\end{aligned}
+   \label{eq:hmw-osmotic}
+\end{equation}
+with $Z=\sum_i\lvert z_i\rvert m_i$, the osmotic second virial
+$B^\phi_{ca}=\beta^{(0)}_{ca}+\beta^{(1)}_{ca}e^{-\alpha_1\sqrt I}
++\beta^{(2)}_{ca}e^{-\alpha_2\sqrt I}$ (note: the bare exponentials, not
+the $g(x)$ of the $\gamma$ form), and $C_{ca}=C^\phi_{ca}/(2\sqrt{\lvert
+z_cz_a\rvert})$.  Term by term this is the same parameter set the
+$\gamma_i$ used: the long-range Debye--H\"uckel head
+$-A_\phi I^{3/2}/(1+b\sqrt I)$ is $I\,f^\phi(I)$, the binaries reuse
+$\beta^{(0,1,2)},C^\phi$, and the ternaries reuse $\theta,\psi$.
+
+The one genuinely different object is the like-sign mixing term, which
+takes its \emph{osmotic} form
+\begin{equation}
+   \Phi^\phi_{ij} \;=\; \theta_{ij} \;+\; {}^E\!\theta_{ij}(I)
+                        \;+\; I\,{}^E\!\theta'_{ij}(I),
+   \label{eq:phi-osmotic-mixing}
+\end{equation}
+which carries the extra $I\,{}^E\!\theta'$ piece that the $\gamma$ mixing
+term $\Phi_{ij}=\theta_{ij}+{}^E\!\theta_{ij}$ does \emph{not} --- both
+built from the \emph{same} $J(x)$ kernel \eqref{eq:Jfunc}.  For two
+same-charge ions ${}^E\!\theta={}^E\!\theta'=0$, so \eqref{eq:phi-osmotic-mixing}
+collapses to the plain $\theta_{ij}$ and every single salt is untouched.
+The water activity then follows from the $\phi$ definition
+\eqref{eq:osmotic-phi},
+\begin{equation}
+   \ln a_w \;=\; -\,M_w\,\phi\,\sum_i m_i,
+   \label{eq:hmw-aw}
+\end{equation}
+the same shape as the dilute form \eqref{eq:spec-aw} but with the
+\emph{real} $\phi$ in front instead of $1$.  In code this is
+\code{PitzerHMW::evaluate} filling \code{ActivityResult::osmotic} from
+\eqref{eq:hmw-osmotic}, which \code{SpeciationSolver} reads for
+\eqref{eq:hmw-aw}; Davies leaves it null and keeps $\phi=1$, announced as
+such.
+
+\begin{keyidea}
+The same virials, two faces.  Equation~\eqref{eq:hmw-osmotic} shares
+\emph{every} parameter with the $\gamma_i$ sums --- as Gibbs--Duhem
+demands --- so a brine's water activity is no longer a free guess but a
+\emph{prediction}.  Validated where the literature is sharpest: the
+NaCl osmotic coefficient from \eqref{eq:hmw-osmotic} tracks
+Pitzer--Peiper--Busey/Robinson--Stokes to better than $0.2\,\%$ from
+$0.1$ to $6$\,mol/kg ($\phi=0.936$ at $1$\,m, $1.045$ at $3$\,m, $1.27$
+at $6$\,m), and standard seawater ($S=35$, $I\approx0.7$) returns
+$a_w=0.981$ against the measured $0.980$--$0.981$.  Before this, Choupo
+(like many codes) used $\phi=1$; that is now a \emph{declared} fallback
+of the Davies model only, never a silent default under Pitzer.
 \end{keyidea}
 
 \subsection{The single-salt collapse --- the skeptic's gate}
@@ -5939,14 +6114,20 @@ The default single-ion $\gamma$ is the Davies equation
 \eqref{eq:davies-AT} shared with the Pitzer kernel; it is trustworthy to
 $I\approx 0.5$\,mol/kg, the solver raises an advisory above $I\approx
 0.7$, and Pitzer HMW \cite{Pitzer1973} is the documented replacement.
-Neutral species take $\gamma=1$.  The water activity uses the dilute
-(osmotic coefficient $\phi=1$) approximation
+Neutral species take $\gamma=1$.  The water activity is
 \begin{equation}
-   \ln a_w \;=\; -\,M_w\sum_i m_i,
+   \ln a_w \;=\; -\,M_w\,\phi\sum_i m_i,
    \label{eq:spec-aw}
 \end{equation}
-with $M_w$ the molar mass of water in kg/mol --- consistent with the
-$\phi$ definition~\eqref{eq:phi-def} at $\phi=1$.
+with $M_w$ the molar mass of water in kg/mol and $\phi$ the osmotic
+coefficient --- the definition~\eqref{eq:phi-def}.  Under \textbf{Davies}
+the solver keeps the dilute approximation $\phi=1$ (declared in the run
+header), consistent with Davies being indicative beyond $I\approx
+0.5$\,mol/kg.  Under \textbf{Pitzer} $\phi$ is the \emph{real} multi-ion
+osmotic coefficient of \eqref{eq:hmw-osmotic}, built from the same
+virials as the $\gamma_i$, so the brine's water activity --- the gypsum
+$a_w^2$ leg, the boiling-point elevation, the osmotic pressure --- is
+Pitzer-consistent and not a $\phi=1$ guess (\S\ref{sec:hmw-osmotic}).
 
 \subsection{Temperature dependence of \texorpdfstring{$K$}{K}}
 
@@ -6460,8 +6641,51 @@ flat.
 \paragraph{In the simulator.}  \code{ThermoPackage::Kvec} branches to
 the Henry path for a component whose data file declares \code{role
 solute;} \emph{and} for which a \code{(solute, solvent)} pair file
-exists for the case's named solvent; it then returns $K_i = H_i(T)/P$
-from Eq.~\eqref{eq:henry-K} instead of the $\gamma$-$\varphi$ result.
+exists for the case's named solvent; it then equates the FULL
+unsymmetric-convention fugacities (Prausnitz, \emph{Molecular
+Thermodynamics}, Ch.~10),
+\begin{equation}
+   y_i\,\varphi_i^V\,P
+   \;=\;
+   x_i\;\gamma_i^{*}\;H_i(T)\,
+   \exp\!\left[\frac{\bar v_i^{\infty}\,(P - P^{\mathrm{sat}}_{\mathrm
+   {solv}})}{RT}\right]
+   \quad\Longrightarrow\quad
+   K_i \;=\; \frac{\gamma_i^{*}\,H_i(T)\,\mathcal P}{\varphi_i^V\,P},
+   \label{eq:henry-K-highP}
+\end{equation}
+with three physically distinct corrections on top of the textbook
+$H_i/P$ (each optional in the pair file, each defaulting to the dilute
+low-pressure limit):
+\begin{itemize}
+  \item $\varphi_i^V$ --- the \emph{vapour} fugacity coefficient from
+        the package EoS: the gas phase is real at $200$~bar.
+  \item $\mathcal P = \exp[\bar v_i^\infty (P-P^{\mathrm{sat}})/RT]$
+        --- the \textbf{Poynting} term of \textbf{Krichevsky--Kasarnovsky}
+        (1935): compressing the \emph{liquid} raises the dissolved gas's
+        fugacity through its partial molar volume $\bar v_i^\infty$
+        (\code{v\_inf} in the pair file).
+  \item $\gamma_i^{*}$ --- the \textbf{unsymmetric activity coefficient}
+        of \textbf{Krichevsky--Ilinskaya} (1945), normalised so
+        $\gamma^{*}\!\to\!1$ as $x_i\!\to\!0$; a two-suffix Margules,
+        $\ln\gamma_i^{*} = (A/RT)(x_{\mathrm{solv}}^2-1)$
+        (\code{margulesA}).  This is where the liquid's activity model
+        lives in the Henry world --- not NRTL on the solvent, but the
+        solute's departure from its own dilute limit.
+\end{itemize}
+\paragraph{Worked fit: hydrogen in ammonia to 1000 atm.}  Plot Wiebe
+\& Tremearne's isotherms as $\ln(f_2/x_2)$ against $P$ (the KK
+coordinates) and the data collapse onto straight lines: slope
+$\bar v^\infty_{\mathrm{H_2}} = 24~\mathrm{cm^3\,mol^{-1}}$
+(25 and 50\,$^\circ$C agree), intercept $H(298) = 1.18\times10^{9}$~Pa
+--- the apparent ``drift of $H$ with pressure'' IS the Poynting term,
+and the two-constant line reproduces the full 1000-atm isotherm to
+${\sim}2\%$ ($x_{\mathrm H_2}$ at 400~atm: computed $0.0287$ vs.\
+measured $0.0282$).  The same plot on Larson \& Black's nitrogen data
+gives $\bar v^\infty_{\mathrm{N_2}} = 23~\mathrm{cm^3\,mol^{-1}}$.
+Both fits keep $\gamma^{*}=1$: hydrogen stays on the KK line up to
+$x\sim9\%$, so the Margules slot is available but the data do not
+demand it.
 Everything downstream (flash, the absorber/stripper tridiagonal of
 Chapter~\ref{ch:absorber}) consumes that $K_i$ identically --- the
 Henry model is invisible to the stage solver, which only ever sees
@@ -6471,6 +6695,28 @@ H_{\mathrm{diss}}$ straight from the pair file
 (\code{Absorber.cpp}), so the constant that sets the solubility
 \emph{and} the constant that warms the column are one number, never
 two.
+
+\paragraph{Supercritical solutes: the ammonia loop.}  Henry's law is
+not merely convenient at high pressure --- above a solute's critical
+temperature it is the \emph{only} honest anchor.  In the ammonia
+synthesis loop the separator condenses $\mathrm{NH_3}$ at $250~\mathrm K$
+and $200$~bar with $\mathrm{H_2}$ ($T_c = 33~\mathrm K$) and
+$\mathrm{N_2}$ ($T_c = 126~\mathrm K$) far above their critical points:
+neither HAS a vapour pressure there, so the Raoult anchor
+$\Psat_i$ does not exist, and extrapolating an Antoine fit above $T_c$
+manufactures a number with no physical meaning (it once predicted
+$13\%$ dissolved $\mathrm H_2$ --- forty times the measured value).
+The shipped pairs are fitted to the classical syntheses-loop
+measurements: \code{H2-NH3} to Wiebe \& Tremearne (1934), and
+\code{N2-NH3} to Larson \& Black (1925) as critically evaluated in the
+IUPAC Solubility Data Series (Vol.\ 5/6), whose evaluation confirms the
+two gases dissolve \emph{independently}, each linear in its partial
+pressure --- exactly the independent-Henry-pairs model.  Both carry
+$\Delta H_{\mathrm{diss}} > 0$: unusually, hydrogen and nitrogen are
+\emph{more} soluble in hot ammonia.  With these constants the separator
+liquid carries ${\sim}0.5\%$ $\mathrm H_2$ + ${\sim}0.2\%$
+$\mathrm N_2$ --- the physical numbers
+(\file{tutorials/steady/flowsheets/ammonia02\_full\_plant}).
 
 \paragraph{Power and limit.}  The power: with two numbers
 ($H_{\mathrm{ref}}$, $\Delta H_{\mathrm{diss}}$) per pair, Henry's law
@@ -6524,7 +6770,7 @@ robustness, at the price of an outer convergence that needs Wegstein
 to be fast.
 
 \begin{tutoriallink}
-In any tutorial's \file{constant/thermoPackage} you will find:
+In any tutorial's \file{constant/propertyDict} you will find:
 \begin{lstlisting}
 equationOfState  { model  idealGas; }
 \end{lstlisting}
@@ -6846,7 +7092,7 @@ earn their keep precisely where the ideal gas stops being so and
 association has not yet taken over.
 
 \begin{tutoriallink}
-Select the cubic EoS in any case's \file{constant/thermoPackage}:
+Select the cubic EoS in any case's \file{constant/propertyDict}:
 \begin{lstlisting}
 equationOfState
 {
@@ -7693,6 +7939,22 @@ simulator:
         Heat balance); a column with $N_s$ stages and $n_c$
         components builds a system of $O(N_s n_c)$ coupled equations.
         Naphtali--Sandholm uses Newton-ND on the whole block.
+  \item \textbf{Reactive distillation.}  A reaction on the catalytic
+        stages adds, per reactive stage $j$, the source $\nu_i\,\xi_j$
+        to that stage's component balance, with the molar extent
+        $\xi_j$ set either by chemical \emph{equilibrium},
+        \(
+            \sum_i \nu_i \ln\!\big(\gamma_i\,x_{j,i}\big) = \ln K_a(T_j),
+        \)
+        (one extra unknown $\xi_j$ and one extra equation per stage), or
+        by a \emph{rate} law $\xi_j = r_j\,m_{\mathrm{cat},j}$ (no extra
+        unknown --- $\xi_j$ is a function of $x_j,T_j$).  Because the
+        reaction makes the residual far more nonlinear, it is converged by
+        \emph{homotopy}: solve the column non-reactive first, then switch
+        the reaction on, seeded from that profile.  For a mole-conserving
+        ($\sum_i\nu_i=0$) reaction the constant-molal-overflow flow
+        profile is undisturbed; the worked methyl-acetate case is in the
+        User Guide, \S\ref{sec:advanced-distillation} of that document.
 \end{itemize}
 The pattern is universal: residuals $F_i$ that all depend on all the
 unknowns $x_j$, and zero of them can be solved independently.
@@ -8433,10 +8695,11 @@ $\pv^*$ that the inner bubble-$T$ Newton itself fails to converge.
 
 \subsection{The simulator's implementation}
 
-The driver is registered as
-\code{type fitBinaryPair;} in \file{system/outerDict}. Its main loop
-is the half-page of code in \file{src/outerDriver/FitBinaryPair.cpp},
-which calls into:
+The operation is registered as \code{type fitParameters;} in
+\file{system/propsDict} (its choupoSolve-era predecessor
+\code{fitBinaryPair} is retired --- the factory throws, naming the
+replacement).  Its main loop lives in
+\file{src/propertyOps/FitParameters.cpp}, which calls into:
 \begin{itemize}[leftmargin=*,nosep]
   \item \code{Dictionary::setScalarAtPath()} to overwrite the four
         NRTL parameters in \code{thermoDict\_} for each forward
@@ -10677,9 +10940,36 @@ The appeal of the LJ approach is that \emph{two} parameters
 and diffusivity --- not separately fitted per property.  Tabulations
 exist for most common species.
 
-\subsection{Data-file extension (v1.x)}
+\subsection{The Chung correlation --- what Choupo actually uses}
+The Lennard-Jones form needs $\sigma$ and $\epsilon/k$, which are tabulated
+for only some species.  Choupo instead ships the \textbf{Chung et al.\ (1988)}
+corresponding-states realisation of the SAME kinetic theory, which ESTIMATES
+the collision parameters from the critical properties every component already
+carries --- so a gas viscosity follows from $T_c, P_c, \omega, M$ alone, with
+no separate viscosity datum:
+\begin{equation}
+  \mu^{\mathrm{gas}}(T) \;=\; 40.785 \times 10^{-7}\;
+     \frac{F_c\,\sqrt{M\,T}}{V_c^{2/3}\,\Omega_{\!\mu}(T^*)}
+     \qquad\text{[Pa$\cdot$s; $M$ in kg/kmol; $V_c$ in cm$^3$/mol]},
+  \label{eq:chung-viscosity}
+\end{equation}
+with the critical volume from the acentric-corrected compressibility
+$V_c = Z_c R T_c / P_c$, $Z_c = 0.2918 - 0.0928\,\omega$; the reduced
+temperature $T^* = 1.2593\,T/T_c$ feeding the SAME Neufeld collision integral
+$\Omega_{\!\mu}$; and the polarity factor $F_c = 1 - 0.2756\,\omega$ (non-polar
+here --- the factor does not capture strong dipoles, so Chung degrades for
+polar species).  For a simple non-polar gas the accuracy is excellent: at
+298~K it returns $\mu_{\mathrm{N_2}} = 1.78\times10^{-5}$~Pa$\cdot$s, within
+$\sim$0.3\% of the measured value.  The model is DECLARED
+(\code{transport \{ model Chung; \}} in the thermoPackage) and the engine
+REFUSES to guess a viscosity without it --- no silent default.  (Water and
+steam take the higher-accuracy IAPWS transport formulation instead.)
 
-The planned syntax for the component file:
+\subsection{Data-file extension (optional per-component override)}
+
+The Chung/Sutherland corresponding-states route above needs no per-component
+viscosity datum.  A component MAY still carry an explicit measured correlation
+to OVERRIDE the estimate where higher accuracy is warranted:
 \begin{lstlisting}
 viscosityLiq
 {
@@ -11295,11 +11585,58 @@ import time:
         declared $T$, $P$, and the actual $P_{\mathrm{sat}}(T)$.
   \item Declaring \code{state subcooled} with $T > T_{\mathrm{sat}}(P)$:
         a physical contradiction; thrown.
-  \item Two-phase mixtures (multicomponent saturated states) are
-        not yet supported by the \code{state} keyword --- the user
-        falls back to giving $T$, $P$, $\zv$ explicitly and the
-        simulator does a Rachford-Rice flash to find $\beta$.
+  \item The \code{state} keyword is PURE-component only (it inverts a
+        single $P_{\mathrm{sat},i}$).  For a \emph{mixture} saturated or
+        two-phase state, use \code{vaporFraction} (next subsection), which
+        is mixture-aware.
 \end{itemize}
+
+\subsection{\code{vaporFraction}: the general two-spec rule (why $\beta$ is
+often essential)}\label{sec:vaporFraction-dof}
+
+The \code{state} keyword above is convenient but pure-only.  The general,
+mixture-aware spec is: \textbf{a stream is fixed by $\zv$ + $F$ + exactly TWO
+of $\{T,\,P,\,\code{vaporFraction}\}$} (vaporFraction is the vapour fraction
+$\beta$; the legacy key \code{vf} is an alias).  The engine resolves whichever
+pair you give:
+
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+What you write & What the engine does & Typical use \\
+\midrule
+$T$ + $P$              & Rachford--Rice flash $\to$ $\beta$ & general feed (single- or two-phase) \\
+$P$ + \code{vaporFraction} & solve $T$ so the flash gives $\beta$ & saturated-liquid ($\beta{=}0$) / vapour ($\beta{=}1$) feed \\
+$T$ + \code{vaporFraction} & solve $P$ so the flash gives $\beta$ & feed pinned at a known temperature \\
+all three              & \textbf{REFUSED} (over-specified) & --- \\
+only one               & \textbf{REFUSED} (under-specified) & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{intuition}
+Why \code{vaporFraction} is not optional sugar but often \emph{essential}: on
+the phase boundary, $T$ and $P$ are \textbf{not independent}.  For a pure
+component a two-phase state has $P = P_{\mathrm{sat}}(T)$, so $(T,P)$ is
+degenerate --- you \emph{cannot} pin a saturated state with $T$ and $P$; you
+must give $\beta$ with one of them.  For a mixture $(T,P)$ between bubble and
+dew does fix $\beta$ uniquely, but $\code{vaporFraction}\ 0$ (or $1$) is the
+unambiguous way to say ``saturated liquid (or vapour) feed'' and let the engine
+find the bubble (or dew) point.  This is the most common point of confusion in
+stream specification, and the over-/under-specification refusals above exist so
+the engine never silently resolves an ill-posed request.
+\end{intuition}
+
+The resolver (\code{Flowsheet.cpp::solveStateForVf}) brackets and bisects on the
+(monotone) flash $\beta$ --- $\beta{=}0$ is the bubble point, $\beta{=}1$ the dew
+point, in between a flash-at-$\beta$ --- and announces the resolved
+$(T,P,\beta,\text{phase})$ loudly.  \textbf{A feed's thermal state lives in the
+STREAM, never duplicated on the consuming unit.}  A distillation column reads its
+feed quality $q = 1-\beta$ directly from the inlet stream
+(\S\ref{ch:mesh}); a redundant \code{operation.feeds.quality} that
+\emph{disagrees} with the stream is refused at import, so the two can never drift
+apart (the silent ``feed declared liquid but flashing to vapour'' bug that broke
+an early multi-feed energy balance).
 
 \subsection{The flow $F$: extensive, source-driven vs.\ demand-driven}
 
@@ -12012,6 +12349,177 @@ $\xi = 0.5\,c_{A,0}\,Q = 0.5$ mol/s.
 \begin{tutoriallink}
 \file{tutorials/cstr01\_first\_order} --- includes the analytic check in
 the case output.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
+\section{The rate law: from mass action to
+Langmuir--Hinshelwood}\label{ch:lhhw}
+
+\begin{whatyoulllearn}
+Why a power law cannot describe a catalytic reaction at any order, where the
+denominator of an LHHW rate law comes from, and why a rate constant means nothing
+without the rate law and the activity model it was regressed with.
+\end{whatyoulllearn}
+
+Every reactor so far has been handed a rate $r(\mathbf{c}, T)$ and asked what to do with
+it: a CSTR sets $\xi = r V_R$, a PFR integrates it along the volume, a batch
+vessel integrates it in time.  None of them cares what $r$ is.  This section is
+about $r$ itself, and in Choupo it is one object --- the shared \code{RateLaw} ---
+so a batch vessel and a continuous one cannot disagree about it.
+
+\subsection{Where mass action stops}
+
+For a homogeneous elementary step the rate is a product of concentrations raised
+to the stoichiometric orders: mass action, the law of a well-mixed molecular
+collision.  A \emph{catalytic} reaction is not that.  The molecules do not meet in
+the fluid; they meet on a surface, and the surface has a finite number of sites.
+
+Follow Langmuir.  Let $\theta_i$ be the fraction of sites carrying species $i$ and
+$\theta_v$ the fraction left vacant.  Adsorption and desorption of $i$ balance at
+equilibrium,
+\[
+k_{a,i}\, c_i\, \theta_v \;=\; k_{d,i}\, \theta_i
+\qquad\Longrightarrow\qquad
+\theta_i \;=\; K_i\, c_i\, \theta_v ,
+\]
+with $K_i = k_{a,i}/k_{d,i}$ the \emph{adsorption equilibrium constant} of $i$.
+Every site is either vacant or occupied, so $\theta_v + \sum_i \theta_i = 1$ and
+therefore
+\begin{equation}
+\theta_v \;=\; \frac{1}{1 + \sum_i K_i c_i} ,
+\qquad
+\theta_i \;=\; \frac{K_i c_i}{1 + \sum_i K_i c_i} .
+\label{eq:langmuir}
+\end{equation}
+
+Now let the rate-determining step be a surface reaction between adsorbed species.
+Its rate is proportional to the coverages of the reactants --- not to their bulk
+concentrations --- so for a bimolecular step $A_{\mathrm{ads}} + B_{\mathrm{ads}}$
+occupying two sites,
+\begin{equation}
+r \;=\; k\,\theta_A\,\theta_B
+  \;=\; \frac{k\,K_A c_A\, K_B c_B}{\bigl(1 + \sum_i K_i c_i\bigr)^{2}} .
+\label{eq:lhhw-canonical}
+\end{equation}
+
+That denominator is the whole point, and no power law contains it.  Look at what
+it does.  A \emph{product} that adsorbs strongly appears in $\sum_i K_i c_i$ but
+not in the numerator: as the reaction makes it, it covers the surface, crowds the
+reactants off, and \textbf{throttles the reaction that produced it}.  This is
+product inhibition.  You cannot reproduce it by tuning the order of a power law,
+because a power law's dependence on a product's concentration is monotone in one
+direction only.  Equation~\eqref{eq:lhhw-canonical} is the
+Langmuir--Hinshelwood--Hougen--Watson (LHHW) form \cite{Langmuir1918,
+Hinshelwood1940, HougenWatson1943}.
+
+\subsection{The one formula Choupo evaluates}
+
+Choupo does not carry a taxonomy of LHHW shapes.  It carries one expression, and
+the shapes are what you get by choosing its parts.  Write $\theta_i$ for the
+intensive variable of species $i$ --- a concentration, or an \emph{activity}
+$a_i = \gamma_i x_i$ when \code{basis activity} --- and weight it by its adsorption
+constant to get the species \emph{as the surface sees it},
+\[
+\bar a_i \;=\; K_i(T)\,\theta_i ,
+\qquad K_i(T) = K^0_i\,\mathrm{e}^{B_i/T}
+\]
+($B_i$ the van 't Hoff slope; $K_i = 1$ for a species that declares no
+adsorption).  Then
+\begin{equation}
+\boxed{\;
+r \;=\;
+\frac{k_f \prod_i \bar a_i^{\,\alpha_i}
+      \;-\; k_r \prod_i \bar a_i^{\,\beta_i}}
+     {\bigl(v + \sum_{i \in \mathrm{ads}} \bar a_i\bigr)^{p}}
+\;}
+\label{eq:ratelaw}
+\end{equation}
+
+Three dials, and every rate law in this guide is a setting of them.
+
+\begin{itemize}
+\item $p = 0$ (no \code{adsorption} block): the denominator is $1$ and what
+      remains is the plain power law, \code{type Arrhenius}.  Mass action.
+\item $p > 0$: LHHW.  The exponent is the number of sites the rate-determining
+      step occupies --- $p=2$ in Eq.~\eqref{eq:lhhw-canonical}.
+\item $v$ is the vacant-site term.  It is $1$ in the classical Hougen--Watson
+      forms, and $0$ where the surface is taken as saturated --- an ion-exchange
+      resin swollen with liquid, say, on which every site holds \emph{something}
+      and only the competition matters.
+\end{itemize}
+
+Note that $\bar a_i$ sits in the numerator too.  That is not a convention: the
+rate-determining surface step sees the \emph{adsorbed} species, as
+Eq.~\eqref{eq:lhhw-canonical} shows.  Any constant $K_i$ can of course be absorbed
+into $k_f$, which is exactly why textbook LHHW forms look different from one
+another --- and it is the first hint of the pitfall below.
+
+The reverse leg is either \textbf{detailed balance} (\code{reversible true}:
+$k_r = k_f/K_c$, so equilibrium sits precisely where the thermodynamics puts it,
+and cannot drift with a fitted number), or an \textbf{explicitly regressed}
+Arrhenius pair $(k_r^0, E_{a,r})$ --- which is what a kinetics paper reports.
+Choupo refuses both at once, and refuses detailed balance on an activity basis,
+since $K_c$ is a concentration-basis constant.
+
+\subsection{Per gram of catalyst}
+
+A heterogeneous rate constant is reported per gram of dry catalyst, and a reactor
+is measured in cubic metres.  Declare the bulk loading $\rho_{\mathrm{cat}}$ and
+the conversion is exact:
+\[
+r\;\Bigl[\tfrac{\mathrm{kmol}}{\mathrm{m^3\,s}}\Bigr]
+\;=\; \rho_{\mathrm{cat}}\Bigl[\tfrac{\mathrm{kg}}{\mathrm{m^3}}\Bigr]
+      \cdot r\Bigl[\tfrac{\mathrm{mol}}{\mathrm{g\,s}}\Bigr] .
+\]
+It is a declared, printed number --- change the packing and the reactor changes
+with it.
+
+\subsection{A worked, cited example, and a trap}
+
+Methyl-acetate synthesis over the ion-exchange resin Amberlyst~15,
+$\mathrm{CH_3OH} + \mathrm{CH_3COOH} \rightleftharpoons
+ \mathrm{CH_3COOCH_3} + \mathrm{H_2O}$, follows Eq.~16 of P\"opken, G\"otze and
+Gmehling \cite{Popken2000} --- the adsorption-based model the authors recommend
+(mean relative error $5.4\,\%$, against $13.9\,\%$ for the pseudo-homogeneous
+power law on the same data).  It is Eq.~\eqref{eq:ratelaw} with $v = 0$, $p = 2$,
+activities from UNIQUAC, and $\bar a_i = K_i a_i / M_i$.
+
+Water and methanol adsorb hardest ($K_i/M_i = 0.29$ and $0.18$, against $0.052$
+for the acid).  So the water the reaction \emph{makes} crowds the acid off the
+resin.  That is why reactive distillation, which pulls the water out as it forms,
+pays for its capital --- and here it is a line in a dictionary rather than a
+sentence in a textbook.
+
+\begin{pitfall}
+Do not try to see the inhibition by deleting the denominator and keeping $k_f$.
+It shows nothing.  In this parameterisation the reaction gets \emph{faster},
+because the adsorbed activities are small numbers and dividing by their square is
+a multiplication.  That is an arithmetic accident, not physics: the constants were
+regressed \emph{for} that rate law, on \emph{those} activities.  \textbf{A rate
+constant without its rate law and its activity model is a number without a
+meaning.}  Swap UNIQUAC for UNIFAC in \file{cstr07\_lhhw\_methylAcetate} and
+$k_1 = 8.497\times10^{6}$ stops being the authors' $k_1$.
+
+To \emph{see} the inhibition, hold the reactants fixed and add the product.  In
+\file{batch07\_lhhw\_methylAcetate}, charging water at unchanged acid and alcohol
+fractions halves the initial rate, from $58.3$ to $29.0$~mmol/(L\,s).  The water is
+not a reactant.  It is sitting on the sites.
+\end{pitfall}
+
+Three reactors evaluate the same Eq.~\eqref{eq:ratelaw}.  The steady CSTR
+(\file{cstr07}) runs kinetically limited at $X = 49\,\%$; grow its volume and it
+climbs to $76\,\%$.  The batch vessel (\file{batch07}) integrates to
+$X = 76.6\,\%$ and stops.  That plateau is asserted nowhere: it is where the
+numerator of Eq.~\eqref{eq:ratelaw} vanishes, i.e.\ the activity-based
+$K_a = 25.50$ that the authors' \emph{independent} Eq.~17 recovers from the same
+eight constants.  Two reactors, two integration schemes, one equilibrium --- and a
+cheap, honest check that the parameters were entered right.
+
+\begin{tutoriallink}
+\file{cstr07\_lhhw\_methylAcetate} (steady, activity basis) ·
+\file{batch07\_lhhw\_methylAcetate} (the same law integrated in time, plus the
+water-spike experiment) · \file{ctrl07\_lhhw\_inhibition} (a PID loop against a
+reaction whose exotherm fades as its own product covers the catalyst).
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
@@ -14034,6 +14542,75 @@ literature 1.40 --- the same accuracy as the 800~K case.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\subsection{Equilibrium maps and the temperature approach}\label{sec:gibbs-maps}
+
+A single Gibbs solve answers ``what is the equilibrium composition at
+\emph{this} $(T,P)$?''.  Sweep the solve over a $T\times P$ grid and you
+get an \emph{equilibrium map} --- iso-lines of a chosen quantity (a product
+mole fraction, an element yield) over the operating plane.  This is the
+picture that explains, at a glance, why an industrial reactor fixes its
+temperature and pressure in a narrow window.  Take ammonia synthesis,
+$\mathrm{N_2 + 3H_2 \rightleftharpoons 2NH_3}$:
+
+\begin{itemize}[leftmargin=*,nosep]
+  \item the reaction is exothermic, so by Le~Chatelier the equilibrium
+        NH$_3$ fraction \emph{rises as $T$ falls} --- the contours climb
+        toward the cold side;
+  \item it consumes moles ($\Delta n = -2$), so the fraction \emph{rises
+        with pressure} --- the contours climb with $P$;
+  \item yet the plant runs \emph{hot} (400--500\,\textcelsius) because the
+        iron catalyst is inert below $\sim$400\,\textcelsius: without a rate
+        there is no approach to that beautiful cold equilibrium at all.
+\end{itemize}
+
+The map makes this tension a single image: the equilibrium optimum sits in
+one corner, the industrial window (a labelled box) sits where the catalyst
+can work, and the arrow between them \emph{is} the compromise every ammonia
+plant lives with.  Choupo draws the map with the \code{gibbsMap} property
+operation (the Explorer's ``Equilibrium map'' view is the same engine,
+interactive); unconverged grid cells are marked, never interpolated over.
+
+\paragraph{The temperature approach to equilibrium.}  A real reactor does
+not reach equilibrium at its outlet temperature; a rate-limited,
+catalyst-limited bed falls short.  The classical engineering device for
+this --- the one a commercial equilibrium reactor exposes without explaining --- is the
+\emph{temperature approach} $\Delta T$: evaluate the \emph{reaction}
+equilibrium at $T+\Delta T$ while the physical state (enthalpy, any
+condensation, the energy balance) stays at the real $T$.  For an
+exothermic reaction the equilibrium conversion falls with temperature, so
+the conversion a real bed reaches equals the equilibrium conversion of a
+\emph{higher} temperature: $\Delta T$ is that distance, in kelvin, and
+industry quotes it routinely (ammonia beds $\sim$10--20\,\textcelsius,
+methanol $\sim$10--30, shift converters $\sim$5--25).
+
+Choupo implements it exactly (Song's convention, ratified by the design
+forum, \file{docs/design/gibbs-map-forum-2026-07-02.md}): the outlet is a
+legitimate \emph{non-equilibrium} state --- composition $n(T+\Delta T)$,
+physical state $(T,P)$ --- so its enthalpy is
+$H = \sum_i n_i(T+\Delta T)\,h_i(T,P)$, evaluated at the physical $T$, and
+its affinity at $T$ is nonzero (that nonzero affinity \emph{is} the
+distance from equilibrium, not a bug).  Two honesty rules the forum
+demanded:
+
+\begin{intuition}
+\textbf{$\Delta T$ is calibrated, never predicted.}  It lumps kinetics,
+catalyst activity and transport into one empirical number you fit against
+a plant measurement --- \emph{all models are wrong, some are useful}.  A
+single global $\Delta T$ is meaningful for one dominant reaction (ammonia,
+methanol); applied to a multi-reaction pool it shifts reactions in
+physically inconsistent directions (in a reformer, methane reforming and
+the water-gas shift have \emph{opposite} thermicity and different real
+approaches), so Choupo announces the global-only limitation aloud.  And at
+high pressure an ideal-gas Gibbs kernel will let $\Delta T$ silently absorb
+the missing fugacity corrections --- announced too, so a student never
+calibrates non-ideality and calls it kinetics.  The value is echoed at
+every point of consumption --- the streams table, the KPI epilogue, a
+column in the map CSV, the anchor-KPI names --- because a $\Delta T$ that
+survives unnoticed in a copied case file is the classic silent-fudge
+accident.
+\end{intuition}
+
+% ---------------------------------------------------------------------
 \section{Distillation column, Wang-Henke bubble-point}\label{ch:distillation}
 
 \begin{whatyoulllearn}
@@ -15277,6 +15854,44 @@ Already a key result: as $J_w$ grows (high pressure) $c_p \to 0$ ---
 more water dilutes the fixed solute leak, so \emph{rejection improves
 with pressure}.
 
+\subsection{Where the coefficients come from --- and where the model ends}
+
+Equations \eqref{eq:sd-water}--\eqref{eq:sd-solute} look phenomenological,
+but they follow from ONE structural premise that Wijmans \& Baker
+\cite{WijmansBaker} place at the centre of the model: \textbf{inside a dense
+membrane the pressure is uniform} (equal to the feed-side pressure), so the
+chemical-potential gradient that drives permeation is expressed entirely as
+a \emph{concentration} (activity) gradient.  A pore-flow membrane is the
+exact mirror --- uniform concentration, pressure gradient --- and the two
+pictures give different, testable flux laws.  From that premise, water
+transport integrates to $J_w \propto \big(1 - e^{-\bar V_w(\Delta P -
+\Delta\pi)/RT}\big)$, whose linearisation (the exponent is $\ll 1$ at
+process conditions) is \eqref{eq:sd-water} with
+\begin{equation}
+   A_w \;=\; \frac{D_w\,K_w\,c_w\,\bar V_w}{R\,T\,\ell},
+\end{equation}
+diffusivity $\times$ solubility $\times$ molar volume over $RT$ and film
+thickness $\ell$: the ``permeability'' is not a fudge factor but a
+composite of measurable membrane properties --- which is why $A_w$ is a
+\emph{material} constant in \file{data/standards/membranes/} and not a
+per-case knob.  The same integration for the solute (whose $\bar V_s
+\Delta P/RT$ term is negligible) yields \eqref{eq:sd-solute}: solute flux
+blind to pressure, the signature the classic RO experiments confirm.
+
+\begin{intuition}
+\textbf{Know where the model ends.}  Wijmans \& Baker close their review
+exactly where nanofiltration lives: between dense RO films
+(solution-diffusion) and open UF pores (pore-flow) sits a transition at
+virtual pore sizes of roughly 5--10\,\AA.  A loose NF membrane (the
+catalogue's NF270) is \emph{in} that transition: solution-diffusion with a
+fitted $(A_w, B_s)$ still describes its water flux and partial rejection,
+but charge effects and convective coupling grow underneath --- which is why
+the catalogue also carries \file{NF270\_dspmde} (the Donnan-steric,
+charge-aware sibling) and why the two give different answers for
+multivalent ions.  Choosing between them IS a modelling decision the case
+author owns.
+\end{intuition}
+
 \subsection{Concentration polarisation: the film model}
 
 Water leaves through the membrane; the solute it rejects does not, so
@@ -16221,6 +16836,257 @@ coupled to the saturation indices of Chapter~\ref{ch:electrolytes}.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{Adsorption: isotherms, LDF uptake, and the fixed
+bed}\label{ch:adsorption}
+
+\begin{whatyoulllearn}
+A gas molecule sticking to a porous solid is an \emph{equilibrium}
+(the isotherm, a curated pair datum: adsorbent $\times$ species), a
+\emph{rate} (the linear driving force, an equipment datum: this
+particle, in this bed), and a \emph{contactor} (the closed vessel or
+the 1-D fixed bed).  This chapter gives the Henry and Langmuir
+isotherms with their van't Hoff temperature dependence, the extended
+(competitive) Langmuir together with its \emph{declared}
+thermodynamic inconsistency, the LDF rate and why its $k$ can never
+live in a standards catalogue, the conservative finite-volume bed
+balance with Danckwerts boundaries, the stoichiometric time every
+breakthrough curve must obey before a single time step is taken ---
+and, closing the loop, how a ``steady-state'' pressure- or
+temperature-swing unit reads as the \emph{time average of a twin-bed
+pair}.
+\end{whatyoulllearn}
+
+\subsection{The equilibrium loading: Henry and Langmuir}
+
+The state of the solid is the \emph{loading} $q_i$ --- moles of
+adsorbate $i$ per kilogram of regenerated, dry adsorbent
+(mol/kg) --- and the driving force the isotherm sees is the partial
+pressure $p_i$ (Pa).  The extensive solid inventory is always
+$m_{\mathrm{ads}}\,q_i$, with $m_{\mathrm{ads}}$ the adsorbent mass of
+the \emph{equipment}, never of the catalogue.
+
+At vanishing coverage every isotherm is linear (Henry's law of the
+adsorbed phase):
+\begin{equation}
+q = H\,p, \qquad H = \lim_{p\to 0}\frac{q}{p} .
+\label{eq:ads-henry}
+\end{equation}
+The Langmuir model adds the finite site count: a balance over
+identical, independent sites with fractional coverage
+$\theta = q/q_{\max}$, adsorption rate $\propto p\,(1-\theta)$ and
+desorption rate $\propto\theta$, gives at equilibrium
+\begin{equation}
+q(T,p) \;=\; q_{\max}\,
+\frac{b(T)\,p}{1 + b(T)\,p},
+\label{eq:langmuir}
+\end{equation}
+with the two limits that make it teachable: $p\to0$ recovers
+\eqref{eq:ads-henry} with $H = q_{\max}\,b$, and $p\to\infty$
+saturates at the monolayer $q_{\max}$.  The affinity $b$ carries the
+temperature dependence through van't Hoff on the adsorption
+equilibrium:
+\begin{equation}
+b(T) \;=\; b_{\mathrm{ref}}\,
+\exp\!\left[-\frac{\Delta H_{\mathrm{ads}}}{R}
+\left(\frac{1}{T}-\frac{1}{T_{\mathrm{ref}}}\right)\right],
+\label{eq:vant-hoff-b}
+\end{equation}
+with $\Delta H_{\mathrm{ads}} < 0$ for exothermic adsorption (the
+usual case), so $b$ \emph{falls} as $T$ rises --- beds regenerate hot.
+$T_{\mathrm{ref}}$ is a mandatory part of the curated record, never an
+implicit 298\,K.  The equilibrium record (its
+$q_{\max},\,b_{\mathrm{ref}},\,\Delta H_{\mathrm{ads}}$, bases,
+validity window and primary citation) is a \emph{pair} datum ---
+adsorbent $\times$ species --- and lives in the standards catalogue;
+the evaluation bench
+(\file{tutorials/props/adsorption/isotherm01\_eval\_13x\_co2}) runs the
+Henry-limit, saturation, pin and unit-invariance gates aloud on every
+record it touches, and the regression bench
+(\file{isotherm02\_fit\_jaschik}) shows how such a record is
+\emph{earned} from data --- including the identifiability refusals
+(single-temperature data cannot yield $\Delta H_{\mathrm{ads}}$;
+Henry-regime data yields only the product $q_{\max} b$).
+
+\subsection{Competition: the extended Langmuir, honestly}
+
+For a mixture the workhorse teaching model is the \emph{extended}
+(competitive) Langmuir --- all species compete for the same sites,
+each term in the denominator crowding everyone else out:
+\begin{equation}
+q_i \;=\; q_{\max,i}\,
+\frac{b_i(T)\,p_i}{1 + \sum_j b_j(T)\,p_j}.
+\label{eq:ext-langmuir}
+\end{equation}
+Now the honesty clause, stated here exactly as it is stated in the
+run headers: \eqref{eq:ext-langmuir} is thermodynamically consistent
+\emph{only} if all the $q_{\max,i}$ are equal.  With distinct
+$q_{\max,i}$ the model violates the Gibbs--Duhem relation of the
+adsorbed phase --- there is no single free-energy surface (no
+consistent spreading pressure) from which all the $q_i$ derive, so
+the predicted loadings depend on a path that thermodynamics says must
+not matter.  It remains a \emph{useful, declared} teaching model, and
+Choupo keeps it as the default mixing rule precisely because its
+error is announced rather than hidden.  The honest extension is the
+Ideal Adsorbed Solution Theory (IAST), which builds the mixture from
+the \emph{pure-component} isotherms by equating spreading pressures
+--- an explicit extension point of the mixing-rule layer, never a
+silent default.
+
+\subsection{The rate: linear driving force, and whose datum $k$ is}
+
+Uptake is not instantaneous.  The linear driving force (LDF) model
+lumps the whole diffusional resistance chain into one first-order
+relaxation toward the local equilibrium loading
+$q_i^{*} = q_i^{*}(T, p)$:
+\begin{equation}
+\frac{\mathrm{d}q_i}{\mathrm{d}t} \;=\; k_i\,(q_i^{*} - q_i).
+\label{eq:ldf}
+\end{equation}
+The coefficient $k_i$ (1/s) aggregates film, macropore and crystal
+diffusion \emph{of that particle in that bed}; Glueckauf's classic
+estimate $k \approx 15\,D_e/r_p^2$ makes the point --- $k$ depends on
+the particle radius, i.e.\ on the \emph{equipment}, not on the
+chemical identity of the pair.  It therefore lives in the case dict
+(with declared scope and source), never in the standards catalogue,
+and a missing $k_i$ for an active species is a named refusal, not a
+default.  In a closed vessel \eqref{eq:ldf} couples to the gas
+inventory ($\mathrm{d}n_i/\mathrm{d}t = -m_{\mathrm{ads}}\,
+\mathrm{d}q_i/\mathrm{d}t$, $p_i = n_i R T/V_{\mathrm{gas}}$); in the
+Henry limit the coupled system is \emph{linear} with
+\begin{equation}
+q(t) = q_\infty\bigl(1 - e^{-k_{\mathrm{eff}}t}\bigr),
+\qquad
+k_{\mathrm{eff}} = k\Bigl(1 +
+\frac{m_{\mathrm{ads}} H R T}{V_{\mathrm{gas}}}\Bigr),
+\label{eq:ldf-linear}
+\end{equation}
+the closed form the integrator must reproduce to $10^{-8}$
+(\file{tutorials/batch/adsorber/batch11\_adsorber\_henry}) --- the
+analytic gate that certifies the numerics before any nonlinear case
+is trusted.
+
+\subsection{The 1-D isothermal fixed bed}
+
+The bed balance is written the way it is solved: conservative finite
+volumes.  For cell $j$ of volume $V_j$, species $i$:
+\begin{equation}
+\varepsilon\,V_j\,\frac{\mathrm{d}c_{ij}}{\mathrm{d}t}
+\;=\;
+F^{\mathrm{conv}}_{i,j-\frac12} - F^{\mathrm{conv}}_{i,j+\frac12}
+\;+\;
+F^{\mathrm{disp}}_{i,j-\frac12} - F^{\mathrm{disp}}_{i,j+\frac12}
+\;-\;
+\rho_b\,V_j\,\frac{\mathrm{d}q_{ij}}{\mathrm{d}t},
+\label{eq:bed-fv}
+\end{equation}
+with upwind convective face fluxes $u\,A\,c$ ($u$ the superficial
+velocity), dispersive fluxes
+$-\varepsilon D_{\mathrm{ax}} A\,\partial c/\partial z$ at the
+interior faces, and the LDF sink \eqref{eq:ldf} evaluated at the local
+$p_{ij}$.  Two boundary statements (Danckwerts): at the inlet the
+\emph{flux} is imposed --- the first face carries exactly
+$u\,c_{\mathrm{in}}$, so what enters is what you fed, dispersion
+included --- and at the outlet $\partial c/\partial z = 0$, so nothing
+diffuses back in from the void beyond the bed.
+
+Two honesty notes belong to this equation.  First, the density trap:
+$\rho_b$ is the \emph{bulk} (packed-bed) density, kg of solid per
+m\textsuperscript{3} of bed, so $\rho_b\,q$ is already mol per bed
+volume --- writing $(1-\varepsilon)\rho_p$ with $\varepsilon$ and
+$\rho_p$ from different sources double-counts the porosity, the
+classic error, and is forbidden.  Second, the declared closure:
+$u$, $P$, $T$ are held constant in this phase of the model
+(momentum and energy balances are later extensions), yet a bed taking
+up 15\,\% of its feed \emph{does} slow the gas.  Holding $u$ constant
+therefore fabricates carrier gas at exactly the net uptake rate ---
+and the engine says so out loud, prints the fabricated moles, pins
+them as a KPI, and discounts them in the campaign ledger.  The model's
+residual is \emph{declared}, at a named magnitude, instead of being
+absorbed invisibly --- the difference between a wrong number and an
+honest model.
+
+\subsection{The stoichiometric time: where the front must arrive}
+
+Before integrating anything, an overall mass balance already fixes
+where the breakthrough front must sit.  Feed a clean bed at
+superficial velocity $u$ and inlet concentration $c_{\mathrm{in}}$;
+idealise the front as sharp.  When it has just traversed the bed,
+everything fed has gone into filling the bed's two inventories ---
+gas in the voids and adsorbate on the solid:
+\begin{equation}
+u\,A\,c_{\mathrm{in}}\,t_{\mathrm{st}}
+\;=\;
+L\,A\,\bigl[\varepsilon\,c_{\mathrm{in}}
++ \rho_b\,q^{*}(c_{\mathrm{in}})\bigr]
+\quad\Longrightarrow\quad
+t_{\mathrm{st}} \;=\; \frac{L}{u}
+\underbrace{\left[\varepsilon +
+\frac{\rho_b\,q^{*}(c_{\mathrm{in}})}{c_{\mathrm{in}}}\right]}_{R_f},
+\label{eq:t-stoich}
+\end{equation}
+where $R_f$ is the retention factor and $u_{\mathrm{sh}} = u/R_f$ the
+front (shock) velocity --- typically hundreds of times slower than
+the gas.  Kinetics ($k$) and dispersion ($D_{\mathrm{ax}}$) spread
+the front into a mass-transfer zone \emph{around}
+$t_{\mathrm{st}}$, but cannot move its centroid: because
+\eqref{eq:bed-fv} telescopes exactly, the integral identity
+\begin{equation}
+\int_0^{\infty}
+\Bigl(1 - \frac{c_{\mathrm{out}}}{c_{\mathrm{in}}}\Bigr)\,
+\mathrm{d}t \;=\; t_{\mathrm{st}}
+\label{eq:integral-anchor}
+\end{equation}
+holds for the conservative scheme on \emph{any} mesh, while the
+useful capacity $t_b$ (breakthrough at, say, 5\,\%) converges with
+the mesh at the upwind scheme's first order --- run the mesh study
+and watch both statements hold
+(\file{tutorials/batch/adsorber/batch13\_breakthrough\_co2},
+\file{batch15\_mesh\_study}; the pure-transport twin
+\file{batch14\_transport\_only} pins the $k=0$ bed against the
+analytic advection--dispersion solution).
+
+\subsection{Reading a ``steady'' swing unit: the twin-bed time
+average}
+
+A fixed bed is intrinsically transient --- so what is a
+pressure-swing or temperature-swing unit doing in a \emph{steady}
+flowsheet?  It is the \emph{time average of a pair of columns at
+cyclic steady state}: one bed adsorbs at high pressure (or low
+temperature) while its twin regenerates at low pressure (or high
+temperature), the valves swap, and over a full cycle the pair's
+averaged inlet and outlet flows are constant.  The working capacity
+per cycle is bounded by the equilibrium swing
+$\Delta q = q^{*}(p_{\mathrm{high}}) - q^{*}(p_{\mathrm{low}})$ for
+PSA --- or, through \eqref{eq:vant-hoff-b}, by
+$q^{*}(T_{\mathrm{low}}) - q^{*}(T_{\mathrm{high}})$ for TSA.  The
+case \file{tutorials/steady/separation/psa01\_h2\_psa} is exactly this
+abstraction for the pressure swing: competitive Langmuir loadings at
+$P_{\mathrm{high}}$ and $P_{\mathrm{low}}$ set the equilibrium
+ceiling, a declared utilisation derating and a purge sweep complete
+the shortcut, and the run header lists out loud what the shortcut
+does \emph{not} model (breakthrough and cycle time, thermal effects,
+blowdown loss).  The transient bed of the previous subsection is the
+machinery that will eventually replace the shortcut's derating with a
+computed one --- the two levels of description are the same physics
+at two Pareto points.
+
+\begin{tutoriallink}
+\file{tutorials/props/adsorption/} --- the isotherm bench: evaluation
+gates (\file{isotherm01}), the multi-T regression with
+identifiability verdicts (\file{isotherm02}), the refusal case
+(\file{isotherm03}). \\
+\file{tutorials/batch/adsorber/} --- the uptake staircase: closed
+vessel to inventory equilibrium (\file{batch09}), extended-Langmuir
+competition (\file{batch10}), the analytic Henry gate
+(\file{batch11}), the pressure refusal (\file{batch12}), breakthrough
+with the announced $t_{\mathrm{st}}$ and the declared model residual
+(\file{batch13}), pure transport vs the analytic solution
+(\file{batch14}), the mesh study (\file{batch15}). \\
+\file{tutorials/steady/separation/psa01\_h2\_psa} --- the twin-bed
+equilibrium shortcut in a steady flowsheet.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
 \section{Rotating equipment: compressors, turbines, pumps}\label{ch:rotating}
 
 \begin{whatyoulllearn}
@@ -16530,12 +17396,13 @@ real piping run costs, with the factor traceable to Nikuradse's data
 through Colebrook.  The model is closed-form (or one short fixed-point
 loop), so it costs almost nothing inside a flowsheet pass.
 
-\paragraph{Limit.}  It is built for a \emph{single-phase incompressible
-liquid}.  For a gas, $\rho$ falls as $P$ drops along the pipe, so a single
-$(\rho,u)$ evaluation is wrong --- compressible flow needs the
-isothermal- or adiabatic-pipe integral, a documented future extension.
-There is no two-phase flow, no fitting database (you furnish each $K$), and
-the $K$-method itself is a lumped approximation to genuinely 3-D fitting
+\paragraph{Limit.}  The equations above are for a \emph{single-phase
+incompressible liquid}.  For a single \emph{gas}, $\rho$ falls as $P$ drops
+along the pipe, so one $(\rho,u)$ evaluation is wrong --- compressible flow
+needs the isothermal- or adiabatic-pipe integral, a documented future
+extension.  \emph{Gas-liquid two-phase} flow, by contrast, IS handled --- it
+is the next subsection.  There is no fitting database (you furnish each $K$),
+and the $K$-method itself is a lumped approximation to genuinely 3-D fitting
 flows.
 
 \begin{example}[Water line, \file{pipe01\_water\_line}]
@@ -16582,6 +17449,204 @@ split into its friction, fittings and elevation parts (swap \code{model
 Churchill} for \code{Haaland} / \code{Colebrook} and watch $f$ barely
 move).
 \end{tutoriallink}
+
+\subsection{Gas-liquid two-phase flow: Lockhart--Martinelli}\label{sec:pipe-twophase}
+
+When the feed flashes two-phase at $(T,P)$ --- the vapour fraction
+$0 < V/F < 1$ the flowsheet already resolves (\S\ref{sec:vaporFraction-dof})
+--- the pipe switches AUTOMATICALLY from the single-phase law above to a
+gas-liquid model.  Two-phase friction is dramatically higher than either phase
+alone: the phases jostle, the slower one is held back, and the interface adds
+drag.  \textbf{Layer 1} offers two $\sigma$-free models (they need only the
+phase densities and viscosities the package already gives).
+
+\paragraph{Homogeneous (no-slip).}  Treat the mixture as one pseudo-fluid with
+a quality-weighted density and a McAdams viscosity,
+\begin{equation}
+   \frac{1}{\rho_H} = \frac{x}{\rho_G} + \frac{1-x}{\rho_L},
+   \qquad
+   \frac{1}{\mu_H}  = \frac{x}{\mu_G}  + \frac{1-x}{\mu_L},
+\end{equation}
+($x$ the mass quality) and apply the single-phase Darcy law to it.  Simple, and
+adequate for finely-dispersed bubbly/mist flow; it assumes the phases travel at
+the \emph{same} velocity (no slip), so it under-predicts the liquid holdup.
+
+\paragraph{Lockhart--Martinelli (the default).}  Compute the pressure gradient
+each phase \emph{would} have flowing alone in the pipe at its superficial
+velocity $j_k = \dot m_k/(\rho_k A)$, $(\mathrm{d}P/\mathrm{d}z)_k = f_k\,\rho_k j_k^2/(2D)$,
+and form the \textbf{Martinelli parameter}
+\begin{equation}
+   X^2 = \frac{(\mathrm{d}P/\mathrm{d}z)_L}{(\mathrm{d}P/\mathrm{d}z)_G}.
+\end{equation}
+The two-phase gradient is the liquid-alone gradient times a \textbf{multiplier}
+(Chisholm's algebraic form of the original Lockhart--Martinelli chart):
+\begin{equation}
+   \left(\frac{\mathrm{d}P}{\mathrm{d}z}\right)_{2\phi} = \phi_L^2\,
+   \left(\frac{\mathrm{d}P}{\mathrm{d}z}\right)_{L},
+   \qquad
+   \phi_L^2 = 1 + \frac{C}{X} + \frac{1}{X^2},
+\end{equation}
+with $C$ set by which phase is turbulent (each phase laminar if its alone-Re
+$<1000$): $C = 20$ (both turbulent, \emph{tt}), $12$ (\emph{vt}), $10$
+(\emph{tv}), $5$ (both viscous, \emph{vv}).  The liquid holdup uses
+Butterworth's~\cite{Butterworth1975} fit of the L--M void fraction,
+$\alpha = (1 + 0.28\,X^{0.71})^{-1}$, $\varepsilon_L = 1-\alpha$, and the
+elevation term uses the holdup mixture density
+$\rho_{\text{mix}} = \varepsilon_L\rho_L + \alpha\rho_G$.
+
+\begin{intuition}
+For the air-water line of \file{pipe02\_airwater\_twophase} ($j_G\approx4.3$,
+$j_L\approx0.58$\,m/s, both phases turbulent), $X = 2.67$ and $\phi_L^2 = 8.6$
+--- the two-phase $\Delta P$ is \textbf{8.6 times} what the liquid alone would
+lose.  And the holdup is $\varepsilon_L = 0.36$ against a no-slip
+$j_L/(j_L+j_G) = 0.12$: the slow heavy liquid is \emph{held up} (it occupies
+three times the pipe fraction its flow rate suggests), because the light gas
+races past it.  Switch to \code{homogeneous} and the holdup drops to the
+no-slip $0.12$ --- a one-line way to see why slip matters.
+\end{intuition}
+
+\paragraph{Layer 2: surface-tension models.}  Two further models add the
+interfacial physics (they need $\sigma$, supplied by
+\code{transport \{ surfaceTension \{ model BrockBird; \} \}}).
+\textbf{Friedel}~\cite{Friedel1979} gives a general two-phase multiplier
+$\phi_{LO}^2$ on the total mass flux flowing as liquid, built from density and
+viscosity ratios and the Froude and Weber numbers,
+$\phi_{LO}^2 = E + 3.24\,F\,H/(\mathrm{Fr}^{0.045}\,\mathrm{We}^{0.035})$ --- the
+recommended general correlation.  \textbf{Beggs--Brill}~\cite{BeggsBrill1973}
+goes further: from the no-slip holdup $\lambda_L$ and the Froude number it
+classifies the \emph{flow pattern} (segregated / intermittent / distributed),
+reads the holdup from a pattern-specific $H_L(0)=a\,\lambda_L^b/\mathrm{Fr}^c$
+(clamped $\ge\lambda_L$), corrects it for pipe \emph{inclination} (the Payne et
+al.\ $\psi$ factor; horizontal $\Rightarrow \psi = 1$) and scales the no-slip
+friction factor by a two-phase ratio $e^S$ --- so it is the one for inclined or
+hilly lines.  On the \file{pipe02} air-water case the four models span
+$\Delta P = 6.0$--$9.0$\,kPa: that $\sim$50\,\% scatter between two-phase
+$\Delta P$ correlations is itself the lesson --- they are engineering fits, not
+laws.
+
+\paragraph{Scope and trust.}  The correlations are general ($\rho_L,\rho_G,
+\mu_L,\mu_G,\sigma$), but Lockhart \& Martinelli~\cite{LockhartMartinelli1949}
+developed and validated them on \emph{isothermal air-water} pipe data, so
+air-water is exactly where they are trusted.  All four are \textbf{adiabatic}
+(the inlet $V/F$ is held along the line --- no flashing/condensing in the pipe).
+The liquid density still comes from the Rackett branch, $\sim$12\,\% low for
+water --- it biases the \emph{absolute} $\Delta P$, not the model structure.
+
+\begin{tutoriallink}
+\file{tutorials/steady/hydraulics/pipe02\_airwater\_twophase} --- air (N$_2$) +
+water; the two-phase path activates on its own, prints $X$, $\phi_L^2$, the
+holdup and the regime, and lets you compare \code{LockhartMartinelli} against
+\code{homogeneous}.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
+\section{Pneumatic conveying: carrying solids in a
+gas}\label{sec:pneumatic-conveying}
+
+\begin{whatyoulllearn}
+The pipe chapter above moves a single fluid.  Now suspend SOLIDS in the gas
+and blow them down the line.  The pressure drop is no longer a wall-friction
+story: most of it goes into the SOLIDS --- accelerating them, dragging them
+against slip, lifting them, and (the punchline) re-accelerating them after
+every bend.  This section derives the dilute-phase model Choupo uses: the
+additive pressure budget, the particle velocity from a force balance, the
+Yang solids-friction correlation, the saltation floor that decides whether the
+line PLUGS, and why a fitting can cost more than a hundred metres of pipe.
+Worked in \file{tutorials/steady/solids/pneumaticConveyor01\_sand} and
+\file{pneumaticConveyor02\_bends}.
+\end{whatyoulllearn}
+
+\subsection{The additive pressure budget}
+In developed dilute-phase flow the total drop is a SUM of independent momentum
+sinks --- gas and solids treated separately, each contributing acceleration,
+friction and static (gravity) heads:
+\begin{equation}
+  \Delta P = \underbrace{\tfrac12\rho_g u_g^2}_{\text{gas accel}}
+    + \underbrace{\rho_s^* u_p^2}_{\text{solids accel}}
+    + \underbrace{2 f_g \rho_g u_g^2 \tfrac{L}{D}}_{\text{gas friction}}
+    + \underbrace{f_p \tfrac{\rho_s^* u_p^2 L}{2D}}_{\text{solids friction}}
+    + \underbrace{(\rho_g + \rho_s^*) g\,\Delta z}_{\text{static}}
+    + \sum_{\text{bends}}\Delta P_{\text{bend}} .
+\end{equation}
+Here $u_g$ is the superficial gas velocity, $u_p$ the particle velocity, and
+$\rho_s^* = \dot m_s/(u_p A)$ the \emph{suspension density} --- the mass of
+solids per unit pipe volume.  The whole point of conveying is the solids terms:
+in a real line they dominate.  Choupo PRINTS this breakdown line by line, so
+you SEE where the pressure goes.
+
+\subsection{Particle velocity: a force balance, not a fit}
+The particles do not travel at the gas velocity --- they SLIP.  In developed
+flow a particle no longer accelerates, so the gas DRAG balances the resistances
+it feels: the Coulomb friction against the pipe wall plus the gravity component
+along the pipe,
+\begin{equation}
+  \tfrac12\rho_g C_D \tfrac{\pi}{4}d_p^2\,(u_g-u_p)^2
+    \;=\; \tfrac{\pi}{6}d_p^3\rho_p\,g\,(\sin\theta + \mu_w\cos\theta),
+\end{equation}
+solved for the slip $u_g-u_p$ (a scalar root-find; $C_D$ depends on the slip
+Reynolds number).  Two limits make it physical: for a VERTICAL line
+($\theta=90^\circ$) the balance is drag $=$ gravity, so the slip equals the
+terminal velocity $u_t$; for a HORIZONTAL line ($\theta=0$) it is drag $=$ wall
+friction, so the slip is $u_t\sqrt{\mu_w}$.  This REPLACES a fitted slip
+correlation --- there is no black formula and no fallback; $\mu_w$, the
+particle--wall friction coefficient, is declared and announced.
+
+\subsection{Solids friction: Yang (1974)}
+The solids friction factor is the hard part --- particles differ in size,
+shape and charge, and there is no universal Reynolds number.  Choupo uses the
+correlation of Yang (1974), which ties $f_p$ to the voidage $\varepsilon$
+($1-\varepsilon = \rho_s^*/\rho_p$, the solids holdup) and the terminal-to-
+particle Reynolds ratio $(Re)_t/(Re)_p = u_t/u_p$:
+\begin{align}
+  \text{vertical:}\quad & f_p\,\frac{\varepsilon^3}{1-\varepsilon}
+     = 0.0206\left[(1-\varepsilon)\frac{(Re)_t}{(Re)_p}\right]^{-0.869},\\
+  \text{horizontal:}\quad & f_p\,\frac{\varepsilon^3}{1-\varepsilon}
+     = 0.117\left[(1-\varepsilon)\frac{(Re)_t}{(Re)_p}\frac{u_g}{\sqrt{gD}}\right]^{-1.15}.
+\end{align}
+The correlations are validated for voidage $0.994$--$0.999$; outside that
+window (a more dilute line) $f_p$ is an EXTRAPOLATION and Choupo says so
+aloud.  The horizontal form carries a pipe-diameter (Froude) dependence the
+vertical one does not, because in a horizontal pipe gravity segregates the
+particles radially.
+
+\subsection{The saltation floor --- will the line plug?}
+Drop the gas velocity too far and the particles fall out of suspension and
+settle: the line SALTATES and eventually blocks.  The saltation velocity
+$u_{\text{salt}}$ (Rizk, 1973) is the floor you must stay above, and the single
+most important safety number in a conveying design is the MARGIN
+\begin{equation}
+  \frac{u_g}{u_{\text{salt}}} \ge 1.5\text{--}2 ,
+\end{equation}
+which Choupo reports as a headline KPI and flags in red when it approaches~1.
+Under-velocity plugging --- not the pressure drop --- is the number-one real
+failure of a conveying line; a beautiful $\Delta P$ on a line that will plug is
+worthless.
+
+\subsection{Bends: the re-acceleration that dominates}
+A straight pipe accelerates the solids ONCE, at the inlet.  A bend undoes it:
+the particles crash the outer wall, decelerate to $u_{p,\text{bend}} =
+r\,u_p$, and the gas must RE-ACCELERATE them over the straight run downstream
+--- the same momentum work as the line entry, once per bend,
+\begin{equation}
+  \Delta P_{\text{bend}} = \frac{\dot m_s\,(u_p - u_{p,\text{bend}})}{A}
+     = \frac{\dot m_s\,u_p\,(1-r)}{A}.
+\end{equation}
+The exit ratio $r$ is set by the bend TYPE: a long-radius sweep keeps most of
+the velocity ($r\approx0.75$), a blind (dead-leg) tee nearly stops the solids
+($r\approx0.25$) --- three times the pressure cost, but almost no erosion,
+because the solids cushion on a stagnant pocket of their own kind rather than
+scouring the wall.  In a bendy line the bends carry the majority of $\Delta P$
+even though they add no length: \emph{a fitting, not the pipe, sets the
+pressure budget}.  (Choupo's term is the re-acceleration MOMENTUM, a
+mechanistic lower bound; the extra friction in the re-acceleration zone is not
+separately counted.)
+
+\subsection{Scope: dilute phase}
+This whole model is DILUTE phase --- particles suspended and carried, loading
+up to $\sim$15\,kg solids per kg gas.  DENSE phase (plugs and slugs moving as a
+bed) is a different momentum regime with no honest general correlation; Choupo
+refuses to fake it and warns when the loading leaves the dilute range.
+
 
 % ---------------------------------------------------------------------
 \section{Gas-solid separation: cyclone, bag filter, ideal
@@ -16686,13 +17751,71 @@ The collection efficiency follows by integrating $\eta(d)$ over the
 feed PSD.  The pressure drop is a few velocity heads, $\Delta P = N_H
 \rho_g v_i^2/2$ (Shepherd--Lapple).
 
-The cut model is a \emph{selectable sub-model} (the EoS/cyclone factory
-pattern, ``all models are wrong, some useful''): Lapple, Leith--Licht,
-Iozia--Leith, Barth, and Muschelknautz.  The last is the gold standard
-because it captures the \emph{solids-loading effect} the simpler models
-miss: above a limit loading, the surplus dust is mass-separated near
-100\,\%, so a heavily-loaded cyclone is far more efficient than Lapple
-predicts (\file{cyclone04\_high\_loading}: 98\,\% vs Lapple's 82\,\%).
+The cut is a \emph{selectable sub-model} (the same explicit-factory pattern
+as the EoS and activity models --- ``all models are wrong, some useful''),
+chosen with \code{model <name>;}.  There are \textbf{FIVE}, spanning the three
+classical approaches to the centrifugal/drag balance, and on one real cyclone
+they can disagree by $\sim$3$\times$ in $d_{50}$ (\file{cyclone05\_dirgo\_leith\_validation})
+--- which is why you validate against data:
+
+\begin{itemize}
+  \item \textbf{Lapple} (1951) --- \emph{timed flight}: the residence-time
+        $d_{50}$ of Eq.~\eqref{eq:iozia-d50}'s ancestor above,
+        $d_{50}=\sqrt{9\mu b/(2\pi N_e v_i\rho_p)}$, with the S-curve
+        $\eta=1/(1+(d_{50}/d)^2)$.  The simple default.
+  \item \textbf{Leith--Licht} (1972) --- \emph{back-mixing}: turbulence
+        re-mixes uncollected dust across each plane, giving a closed-form
+        efficiency
+        $\eta(d)=1-\exp\!\big[-2\,(C\psi)^{1/(2n+2)}\big]$, where
+        $\psi=\rho_p d^2 Q/(\dots)$ is the inertia parameter, $C$ a geometric
+        constant, and $n=1-(1-0.67\,D^{0.14})(T/283)^{0.3}$ the vortex
+        exponent (weaker spin in a hotter, wider cyclone).
+  \item \textbf{Iozia--Leith} (1989) --- \emph{flow pattern}: $d_{50}$ from the
+        core velocity, Eq.~\eqref{eq:iozia-d50} (derived just below).
+  \item \textbf{Barth} (1956) --- \emph{equilibrium orbit}: the critical
+        particle orbits the vortex-finder edge where its outward drift
+        balances the inward gas, $d_{50}=\sqrt{18\mu\,v_r r_{cs}/(\rho_p v_\theta^2)}$,
+        with $v_r=Q/(\pi D_{cs}H_{cs})$ the radial and $v_\theta=\alpha v_i$ the
+        tangential velocity on the control surface.
+  \item \textbf{Muschelknautz} (MMD) --- the gold standard, because it adds the
+        \emph{solids-loading effect} the other four miss: above a limit loading
+        $c_{\lim}$ the surplus dust is mass-separated at the wall near 100\,\%,
+        $\eta=\eta_L+(1-\eta_L)\eta_I$ with $\eta_L=1-c_{\lim}/c$, so a
+        heavily-loaded cyclone is far more efficient than Lapple predicts
+        (\file{cyclone04\_high\_loading}: 98\,\% vs 82\,\%).
+\end{itemize}
+
+\subsubsection{The Iozia--Leith flow-pattern cut}
+Lapple's $d_{50}$ is a residence-time \emph{surrogate}; Iozia \& Leith
+(1989) instead read it off the gas FLOW PATTERN.  The critical particle
+hangs at the core radius, where the tangential velocity peaks at
+$V_{t,\max}$; balancing its centrifugal throw against the inward drag of
+the gas draining into the vortex gives
+\begin{equation}
+   d_{50} = \sqrt{\dfrac{9\,\mu\,Q}{\pi\,z_c\,\rho_p\,V_{t,\max}^{2}}},
+   \label{eq:iozia-d50}
+\end{equation}
+where $z_c$ is the core length and $Q$ the gas flow.  The two
+flow-pattern quantities are regressed from the cyclone's OWN eight
+dimensions:
+\begin{align}
+   V_{t,\max} &= 0.61\,V_i\,(ab/D^2)^{-0.61}(D_e/D)^{-0.74}(H/D)^{-0.33},\\
+   d_c &= 0.52\,D\,(ab/D^2)^{-0.25}(D_e/D)^{1.53},
+\end{align}
+with $V_i=Q/(ab)$ the inlet velocity, $a,b$ the inlet height and width,
+$D_e$ the gas-outlet diameter, $H$ the total height, and $z_c=H-S$ (or,
+if the core $d_c$ exceeds the dust outlet $B$, the shorter distance where
+it meets the cone).  Because it uses all eight dimensions it captures cut
+changes with geometry that Lapple's single $d_{50}$ cannot.  (Source note:
+the printed 1989 prefactor on $V_{t,\max}$ is $6.1$, which yields a
+supersonic $V_{t,\max}\!\sim\!400$\,m/s and a ten-fold-too-fine cut ---
+contradicting the paper's own Figure~4, where $V_{t,\max}\le\!40$\,m/s.
+The factor of exactly ten is a misplaced decimal; Choupo uses the
+Figure-4-consistent $0.61$.)  Validate it against the measured
+fractional-efficiency curves of Dirgo \& Leith (1985) in
+\file{cyclone05\_dirgo\_leith\_validation} --- where the five sub-models
+spread over $\sim$3$\times$ in $d_{50}$ on one real cyclone, the reason
+data, not a single correlation, has the last word.
 
 \subsection{Bag filter: the cake is the filter}
 
@@ -16935,6 +18058,136 @@ $A=10\,\mathrm{m^2}$, $U=500\,\mathrm{W/m^2K}$ counter-current cool
 $360\to315$\,K against $300\to337$\,K, $\varepsilon=0.745$, $Q=93.8$\,kW.
 
 % ---------------------------------------------------------------------
+\section{Heat exchanger DESIGN: geometry, pressure drop, and the sizing
+workflow}\label{sec:hx-design}
+
+\begin{whatyoulllearn}
+The $\varepsilon$--NTU section above RATES an exchanger whose $U$ and area
+you already know.  But where do $U$ and the area come from?  This section
+opens that box: the overall coefficient BUILT from the two film coefficients
+and the wall, the pressure drop both sides, the shell diameter implied by a
+tube count, and --- the payoff --- the DESIGN loop that inverts the problem:
+given a duty, SIZE the exchanger.  This is the workflow a real project follows, and Choupo does it glass-box: every $Nu$, every resistance,
+every friction factor is printed and cited.  Worked end-to-end in the
+two-part sequence \file{hxWorkflow1\_design\_from\_duty} (size it) $\to$
+\file{hxWorkflow2\_rate\_designed} (rate it).
+\end{whatyoulllearn}
+
+\subsection{Two questions: rating vs design}
+A shell-and-tube exchanger poses two inverse questions:
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{Rating} (\code{model geometry;}): the geometry is GIVEN; find
+        $U$, the area, the pressure drop, and hence the duty.  ``I have this
+        exchanger --- what will it do?''
+  \item \textbf{Design} (\code{model design;}): the DUTY is given; find a
+        geometry that delivers it within a pressure budget.  ``I need this
+        duty --- size me an exchanger.''
+\end{itemize}
+Design is built ON rating: you cannot size without being able to rate a trial.
+
+\subsection{The overall coefficient, built}
+Heat crosses three resistances in series --- the tube-side film, the tube
+wall, the shell-side film --- referred here to the OUTSIDE area $A_o =
+\pi\,d_o\,L\,N$ (the convention that makes $U_o A_o$ the group in $Q = U_o
+A_o\,\Delta T_{\mathrm{lm}}$):
+\begin{equation}
+  \frac{1}{U_o} = \underbrace{\frac{1}{h_o}}_{\text{shell film}}
+    + \underbrace{\frac{r_o \ln(r_o/r_i)}{k_{\mathrm{wall}}}}_{\text{cylindrical wall}}
+    + \underbrace{\frac{r_o}{r_i\,h_i}}_{\text{tube film}}.
+\end{equation}
+The engine prints the three terms and names the largest the \emph{controlling
+resistance} --- the one worth attacking (a better shell-side baffle cut buys
+nothing if the tube film controls).
+
+\paragraph{Tube-side film (Gnielinski).}  For turbulent in-tube flow,
+\begin{equation}
+  Nu = \frac{(f/8)(Re-1000)\,Pr}{1 + 12.7\sqrt{f/8}\,(Pr^{2/3}-1)},
+  \qquad f = (0.790\ln Re - 1.64)^{-2},
+\end{equation}
+(Gnielinski; Incropera \& DeWitt) with $h_i = Nu\,k/d_i$, evaluated at the
+stream's mean temperature with real (IF97 for water) $\rho,\mu,k,c_p$.
+
+\paragraph{Shell-side film (Kern).}  The shell side is a baffled crossflow;
+the Kern method lumps it into a bundle correlation on an EQUIVALENT diameter
+$D_e$ and the crossflow mass flux $G_s$:
+\begin{equation}
+  Nu = 0.36\,Re_s^{0.55}\,Pr^{1/3},\quad
+  Re_s = \frac{G_s D_e}{\mu},\quad
+  G_s = \frac{\dot m_s}{A_s},\quad
+  A_s = \frac{D_s\,(p-d_o)\,B}{p},
+\end{equation}
+with $A_s$ the crossflow area at the shell centreline, $B$ the baffle
+spacing, $p$ the tube pitch, and $D_e = 4(p^2 - \pi d_o^2/4)/(\pi d_o)$
+(square pitch).  Kern is a $\pm 25\%$ method --- honest for teaching and a
+first design; Bell--Delaware (leakage/bypass corrections) is the refinement.
+
+\subsection{Pressure drop: the other half of design}
+An exchanger is not sized for area alone --- it lives within a PUMPING
+budget.  The tube side (friction over all $n_p$ passes plus the turnaround
+losses):
+\begin{equation}
+  \Delta P_t = \Big(4 f\,\frac{L\,n_p}{d_i} + 4 n_p\Big)\frac{\rho u_t^2}{2},
+  \qquad f = 0.079\,Re^{-1/4}\ \text{(Blasius)}.
+\end{equation}
+The shell side (Kern), over the $N_b$ baffles:
+\begin{equation}
+  \Delta P_s = f_s\,\frac{G_s^2\,D_s\,(N_b+1)}{2\,\rho\,D_e},
+  \qquad f_s = \exp(0.576 - 0.19\ln Re_s).
+\end{equation}
+The shell drop typically EXCEEDS the tube drop --- baffled crossflow
+dissipates more --- and the duty-vs-pumping trade-off is precisely the
+engineering the map of $U$ against $\Delta P$ makes visible.
+
+\subsection{The design loop}
+Design inverts rating.  Fix the tube choices (diameter, length, pitch,
+passes, material); everything else follows from ONE unknown, the tube count
+$N$:
+\begin{enumerate}[leftmargin=*,nosep]
+  \item From the duty target (an outlet $T$) and an energy balance, get
+        $Q_{\mathrm{req}}$, both outlet temperatures, and $\Delta
+        T_{\mathrm{lm}}$; hence the required $U A_{\mathrm{req}} =
+        Q_{\mathrm{req}} / \Delta T_{\mathrm{lm}}$.
+  \item The shell diameter follows from $N$ by the Kern/Sinnott bundle
+        correlation $D_b = d_o (N/K_1)^{1/n_1} + \text{clearance}$
+        (triangular pitch, one pass: $K_1 = 0.319$, $n_1 = 2.142$).
+  \item $U(N)\,A(N)$ increases monotonically with $N$ (area grows linearly,
+        $U$ falls only slowly as the tube velocity drops), so a BISECTION on
+        $N$ finds the count that meets $U A_{\mathrm{req}}$.  Round UP: never
+        undersize.
+  \item Rate the sized bundle (the same film coefficients) and read the
+        pressure drop --- if it busts the budget, fewer passes or a wider
+        baffle spacing, and re-check.
+\end{enumerate}
+
+\subsection{The design workflow}
+The cardinal rule: \emph{do not invent the geometry up front}.  The standard
+practice splits the job into three:
+\begin{enumerate}[leftmargin=*,nosep]
+  \item a \textbf{Heater / shortcut} block establishes the DUTY while the
+        flowsheet converges (no geometry);
+  \item a \textbf{detailed design} step sizes the exchanger from that duty
+        (generates the geometry);
+  \item a \textbf{detailed rating} step checks the sized exchanger and probes
+        off-design.
+\end{enumerate}
+Choupo folds steps 1--2 into \code{model design;} --- it computes the duty
+from your target, ANNOUNCES it, and sizes in one honest step --- then
+\code{model geometry;} is the rating (step 3).  The two-part tutorial
+sequence walks exactly this: Part~1 sizes 146 tubes / 0.344\,m shell
+from a 330$\to$315\,K target; Part~2 rates that bundle (delivers 315.0\,K, a touch over-surfaced from the round-up) and invites the
+off-design study (turn the coolant down, watch the outlet warm).
+
+\subsection{The deliverable: the datasheet}
+A design ends in a \emph{datasheet} --- the TEMA specification sheet an
+engineer signs off.  Choupo's GUI builds one (the unit panel $\to$ ``Open
+datasheet''): a formatted sheet with the service, the thermal and hydraulic
+results, the geometry, and a SCHEME of the shell-and-tube drawn from the
+solved numbers (the tube count, the baffles, the passes, the nozzle
+temperatures), printable to PDF; the raw numbers also export to a
+spreadsheet.  Open, cited, and reproducible --- the black box a commercial
+tool hands you, opened.
+
+% ---------------------------------------------------------------------
 \section{Shortcut distillation: Fenske--Underwood--Gilliland}\label{ch:fug}
 
 \begin{figure}[ht]
@@ -17070,10 +18323,45 @@ stage 10.8.  The method assumes constant $\alpha$ --- it does
 \section{Rigorous distillation by simultaneous MESH
 Newton}\label{ch:mesh}
 
+\begin{whatyoulllearn}
+The \emph{ladder} of column models --- bubble-point Wang--Henke, the
+constant-molal-overflow simultaneous Newton, and the full energy-balance
+Naphtali--Sandholm MESH --- which one to reach for, how the cheap model
+warm-starts the rigorous one, and how multiple feeds, side draws and a
+stage reaction are layered on top.
+\end{whatyoulllearn}
+
+\subsection{The model ladder (\emph{all models are wrong, some useful})}
+
+One \code{distillationColumn} unit carries three solver models, selected by the
+\code{model} slot, in increasing order of rigour and cost:
+
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\code{model} & method & best used when \\
+\midrule
+\code{WangHenke} \emph{(default)} & sequential bubble-point, CMO &
+  ideal / near-ideal, ONE feed, quick screening \\
+\code{simultaneous} & simultaneous Newton, CMO &
+  azeotropic / non-ideal; multi-feed, side draws, reaction \\
+\code{fullMESH} \emph{(= \code{MESH} = \code{NaphtaliSandholm})} & full energy-balance MESH &
+  wide-boiling / large $\Delta H_{\text{vap}}$ spread / when $V,L$ matter \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent A naming note: \code{simultaneous} is the \emph{bubble-point-reduced}
+solve (constant molal overflow, NO per-stage energy balance); the genuine MESH
+(Mass, Equilibrium, Summation, \emph{Heat}) is \code{fullMESH} --- aliased
+\code{MESH} and \code{NaphtaliSandholm} so the name never means less than it says.
+
+\subsection{Wang--Henke vs the simultaneous CMO Newton}
+
 The Wang--Henke bubble-point method of Chapter~\ref{ch:distillation} is
 robust for ideal systems but converges slowly ($\mathcal O(100)$ outer
 iterations) and can step \emph{through} an azeotrope non-physically.
-Selecting \code{method simultaneous} on the column solves all the stage
+Selecting \code{model simultaneous} solves all the stage
 equations at once by Newton (\code{solver::newtonND}): the variables are
 the per-stage $(x_{j,0..n-2}, T_j)$, the residuals the $n-1$ component
 balances plus the per-stage bubble-point $\sum_i K_i x_i - 1 = 0$ that
@@ -17083,6 +18371,321 @@ systems: \file{column03\_azeotrope\_mesh} (ethanol/water, NRTL) finds a
 physical distillate \emph{below} the azeotrope on the very case the
 bubble-point method cannot solve --- and refuses to invent a
 non-physical ``past the azeotrope'' answer, because none exists.
+
+Both Wang--Henke and \code{simultaneous} assume \textbf{constant molal overflow}
+(CMO): the internal flows $L_j$, $V_j$ are fixed by a mass march down the
+column, and only $x_j, T_j$ are solved.  CMO is exact only when all components
+have equal molar latent heats and sensible/mixing effects are negligible.
+
+\subsection{The full MESH (Naphtali--Sandholm): the energy balance}
+
+\code{model fullMESH} drops the CMO assumption.  It promotes $V_j$ and $L_j$ to
+\emph{unknowns} (so the per-stage variable count rises from $n$ to $n+2$:
+$x_{j,0..n-2}, T_j, V_j, L_j$) and adds, per interior stage, the
+\textbf{total-mass balance} and the \textbf{energy balance} --- the enthalpy
+residual the CMO never carried:
+\begin{equation}
+   L_{j-1}\,h_L(x_{j-1},T_{j-1}) + V_{j+1}\,h_V(y_{j+1},T_{j+1}) + F_j\,h_{F,j}
+   \;-\; L_j\,h_L(x_j,T_j) \;-\; V_j\,h_V(y_j,T_j) \;=\; 0 .
+   \label{eq:fullmesh-energy}
+\end{equation}
+The internal flows now follow the \emph{real} latent heats instead of being
+assumed equimolal.  The end stages carry flow specifications instead of an
+energy residual: a total condenser fixes $V_1=0$ and $L_1=R\,D$, the reboiler
+fixes $L_N=B$, and their energy balances yield $Q_{\text{cond}}$ and
+$Q_{\text{reb}}$ as \emph{results}.  Validated stage-by-stage against the
+original Naphtali \& Sandholm (1971) Problem~2 in
+\file{column07\_naphtaliSandholm} ($T$ profile within $\le1.8$~K over 20 stages);
+\file{column06\_fullMESH} shows it agreeing with CMO on benzene/toluene (close
+latent heats), the small gap being exactly the energy-balance correction CMO
+drops.
+
+\subsection{The warm-started ladder (switching model mid-solve)}
+
+A rigorous Newton from a cold start can fail (the linearization is only valid
+near the solution).  Choupo therefore \emph{switches model mid-solve}: the
+\code{fullMESH} run first converges the cheap CMO problem, then hands the CMO's
+converged stage profile $(x_j,T_j,V_j,L_j)$ to the full MESH as its
+\emph{initial guess}.  The intermediate profile is \emph{kept}, not discarded ---
+the rigorous model then converges in $\sim$3--4 iterations instead of from
+scratch.  This homotopy/continuation pattern recurs throughout the simulator:
+non-reactive\,$\to$\,reactive (the reaction is switched on, seeded from the
+non-reactive profile), and the catalyst-mass ramp in kinetic mode.  It is the
+``cheap model bootstraps the rigorous one'' principle, and it is why selecting a
+more rigorous model is cheap once a coarser one has run.
+
+\subsection{Multiple feeds and side draws}
+
+The \code{simultaneous} and \code{fullMESH} models generalise the single fixed
+feed into a per-stage \emph{flow staircase}.  Any stage $j$ may receive a feed
+(a flowsheet stream mapped by \code{operation.feeds (\{stream; stage;\}...)}) and
+bleed a liquid ($U_j$) or vapour ($W_j$) \emph{side draw}
+(\code{operation.sideDraws}).  Each stage balance then carries an $F_j z_{F,j}$
+source and $(L_j{+}U_j),(V_j{+}W_j)$ outflows; the general form reduces
+\emph{exactly} to the single-feed equations when there is one feed and no draw,
+so every legacy tutorial is unchanged.  Feeds are FLOWSHEET STREAMS so the
+plant-boundary balance sees them (\emph{information follows the streams}); a side
+draw is inherently less pure than an end product (it picks up the components
+boiling just above and below it).  \file{column08\_radfrac\_multidraw} splits a
+C3--C6 mix four ways with two feeds and two side draws.
+
+\subsection{Reactive distillation}
+
+A \code{reaction\{\}} block makes named catalytic stages reactive.  For a
+mole-conserving ($\sum_i\nu_i=0$) reaction the CMO flows are undisturbed; the
+generation $\nu_i\,\xi_j$ enters each reactive stage's component balance with the
+molar extent $\xi_j$ fixed either by chemical \code{equilibrium}
+(an activity-based $K_a(T)$ via van't Hoff, residual
+$\sum_i \nu_i \ln(\gamma_i x_i) = \ln K_a$ --- one extra unknown $\xi_j$ and one
+extra equation per stage) or by \code{kinetics} (a rate law $\times$ catalyst
+mass; $\xi_j$ then a function of $x_j,T_j$, no extra unknown).  Converged by the
+same homotopy: the column is solved non-reactive first, then the reaction is
+switched on from that profile.  \file{column05\_reactive\_methylacetate} (methyl
+acetate, validated vs P\"opken 2001) reaches the equilibrium ceiling this way.
+
+% ---------------------------------------------------------------------
+\section{Tray hydraulics: can the column be built?}\label{ch:hydraulics}
+
+Everything up to here answers one question: \emph{what separates?}  The MESH
+equations know the stage temperatures, the compositions, the flows.  They do not
+know the diameter of the column, and they never asked.  A column of any diameter
+converges to the same distillate purity, because nothing in the stage equations
+depends on how wide the trays are.
+
+That is a real hole.  Vapour rising through a tray drags liquid with it, and
+above a certain velocity it carries the liquid to the tray above instead of
+letting it fall --- \emph{entrainment flooding}.  Liquid crossing a tray must
+then descend through the downcomer against the tray's own pressure drop, and if
+the head it needs exceeds the space available it backs up to the tray above ---
+\emph{downcomer flooding}.  Too little vapour and the liquid rains straight
+through the holes instead of bubbling --- \emph{weeping}.  A flooded column
+separates nothing.  It also converges.
+
+So hydraulics is a \textbf{rating pass on the converged profile}, run after the
+stage equations, never inside them.  That scope is a decision, not an oversight:
+a column whose pressure drop shifts its own stage temperatures needs the
+pressure profile carried back into the MESH, and Choupo does not pretend to do
+that.  What it does do is refuse to let the student believe a stream table that
+no physical tray could produce.
+
+\subsection{First, the tray is not ideal: Murphree efficiency}
+
+Every column derived so far is built from \emph{equilibrium stages}: the vapour
+leaving a tray is in equilibrium with the liquid leaving it.  No real tray does
+that.  The vapour bubbles through a froth of finite depth for a finite time and
+comes off somewhere between what entered it and what equilibrium would give.
+Murphree measured that shortfall on the vapour side:
+
+\begin{equation}
+y_j \;=\; E_{MV}\, y^{*}_j \;+\; (1 - E_{MV})\, y_{j+1},
+\qquad y^{*}_j = K_j x_j ,
+\label{eq:murphree}
+\end{equation}
+
+so $E_{MV}$ is the \emph{fraction of the way} the vapour travels from what rose
+into the tray, $y_{j+1}$, towards equilibrium with the liquid on it.  $E_{MV}=1$
+is the ideal stage; $E_{MV}=0$ is a tray that does nothing.
+
+Two consequences, and the second is the one that matters for the rest of this
+section.  First, purity falls: fourteen real trays do less than fourteen ideal
+ones, which is why a column designed on ideal stages and built on real trays comes
+up short.  Second, and more important, \textbf{once $E_{MV} < 1$ the stage count
+is a count of REAL TRAYS} --- physical objects with a diameter, a weir and holes
+in them --- and it is those the hydraulics below sizes.  Without an efficiency we
+would be dimensioning to the millimetre a tray we then assumed was perfect.
+
+\begin{keyidea}
+$E_{MV}$ is a \emph{declared} number in Choupo, exactly like the orifice
+coefficient $C_o$ and the weep constant $K_2$ that follow.  It comes from a
+correlation (O'Connell's, from the liquid viscosity and the relative volatility),
+a chart, or plant data.  The engine will not invent it, and it will not silently
+assume $1$ when you meant something else.
+\end{keyidea}
+
+Numerically, Eq.~\eqref{eq:murphree} couples tray $j$ to the vapour rising from
+$j+1$, which is itself an unknown --- and that would destroy the tridiagonal
+structure the bubble-point method depends on.  Choupo folds the efficiency into an
+\emph{effective} $K$,
+
+\begin{equation}
+K^{\mathrm{eff}}_{j,i} \;=\; E_{MV}\,K_{j,i}
+\;+\; (1 - E_{MV})\,\frac{y_{j+1,i}}{x_{j,i}} ,
+\label{eq:keff}
+\end{equation}
+
+with $y_{j+1}$ taken from the \emph{previous} outer pass.  Every equation in the
+tridiagonal sweep is untouched: $y_j = K^{\mathrm{eff}}_j x_j$ as before.  The lag
+vanishes at convergence, where $y^{\mathrm{old}} = y$, so the converged profile
+satisfies Eq.~\eqref{eq:murphree} exactly.  The outer loop pays for the coupling,
+and it is visible in the iteration count.  The simultaneous MESH method has no
+outer pass to lag against --- there the relation would have to enter the residual
+and the Jacobian --- so it \emph{refuses} the keyword rather than quietly handing
+back ideal stages.
+
+\subsection{Entrainment flooding: Souders--Brown and Fair}
+
+Suspend a droplet in the rising vapour.  It falls under its own buoyant weight
+and is dragged up by the gas; at the flooding velocity the two balance.  Writing
+the drag with a constant coefficient and clearing the algebra gives the
+\emph{Souders--Brown} form \cite{SoudersBrown1934}: the flooding velocity scales
+as the square root of the density difference over the vapour density,
+
+\begin{equation}
+u_{\mathrm{flood}} \;=\; C_{\mathrm{SB}}\,
+\left(\frac{\sigma}{20}\right)^{0.2}
+\sqrt{\frac{\rho_L-\rho_V}{\rho_V}} ,
+\label{eq:souders-brown}
+\end{equation}
+
+referred to the \emph{net area} (the tower cross-section less one downcomer,
+which is the area the vapour actually has).  Surface tension enters because it is
+what holds a droplet together against the shear that would atomise it; $\sigma$ is
+in dyn/cm and the correlation is anchored at $20$~dyn/cm.
+
+The capacity parameter $C_{\mathrm{SB}}$ is not a constant.  It falls as the tray
+carries more liquid relative to vapour, which is measured by the dimensionless
+\emph{flow parameter}
+
+\begin{equation}
+F_{LV} \;=\; \frac{L}{V}\sqrt{\frac{\rho_V}{\rho_L}} ,
+\qquad\text{(mass flows)}
+\label{eq:flowparam}
+\end{equation}
+
+and it rises with the tray spacing, because a droplet thrown off one tray has
+further to travel before it reaches the next.  Fair \cite{Fair1961} measured
+$C_{\mathrm{SB}}(F_{LV}, \mathrm{TS})$ and published it as a \emph{chart}.  A
+chart cannot be integrated into a solver, so Choupo uses the algebraic
+representation of Lygeros and Magoulas \cite{LygerosMagoulas1986},
+
+\begin{equation}
+C_{\mathrm{SB}} \;=\; 0.0105 \;+\; 8.127\times10^{-4}\;
+\mathrm{TS}^{0.755}\;\exp\!\left(-1.463\,F_{LV}^{0.842}\right)
+\qquad [\mathrm{m/s}],
+\label{eq:lygeros}
+\end{equation}
+
+with the tray spacing $\mathrm{TS}$ in millimetres.  This fit is \emph{known} to
+misbehave below $F_{LV}\approx0.03$: its slope turns the wrong way, where the
+real chart rises.  Choupo says so out loud when a tray lands there rather than
+reporting a number it does not believe.  This is the anti-black-box stance in its
+plainest form --- a correlation is a fit to somebody's data, and when you leave
+the data behind, you are told.
+
+\begin{keyidea}
+Kister and Haas (1990) published a physically grounded, fully algebraic
+entrainment-flood correlation, built on the clear-liquid height at the
+froth-to-spray transition.  It is the better model, and it is \emph{not}
+implemented: two of its constants could not be verified against a primary source.
+A teaching tool does not ship numbers it has not read.  What you get instead is
+Fair's chart, an honest fit to it, and a warning where the fit is known to fail.
+\end{keyidea}
+
+\subsection{Pressure drop, as heads of liquid}
+
+A tray's pressure drop is most naturally written not in pascals but as the height
+of clear liquid that pressure would support, in millimetres.  Three contributions
+add \cite{Sinnott}:
+
+\begin{align}
+h_d   &= 51\left(\frac{u_h}{C_o}\right)^{2}\frac{\rho_V}{\rho_L}
+        &&\text{dry tray: the orifice equation,}\label{eq:hd}\\
+h_{ow}&= 750\left(\frac{L_w}{\rho_L\,l_w}\right)^{2/3}
+        &&\text{crest over the weir (Francis),}\label{eq:how}\\
+h_r   &= \frac{12.5\times10^{3}}{\rho_L}
+        &&\text{residual,}\label{eq:hr}
+\end{align}
+
+so that the total head over a tray carrying a weir of height $h_w$ is
+$h_t = h_d + h_w + h_{ow} + h_r$.  Here $u_h$ is the vapour velocity through the
+holes, $L_w$ the liquid mass flow over the weir and $l_w$ the weir length.  The
+residual term $h_r$ is Sinnott's deliberate simplification: the froth on a real
+tray is aerated, less dense than clear liquid, and rather than carry a charted
+aeration factor he absorbs the whole effect into a term that depends only on the
+liquid density.  It is worth knowing this is a simplification and not a law.
+
+The discharge coefficient $C_o$ is itself a chart, against the hole-area ratio
+and the plate-thickness-to-hole-diameter ratio \cite{Liebson1957}.  Choupo will
+not invent it: it is a \emph{declared} input, printed back at you with its
+provenance, and it is yours to own.
+
+\subsection{Downcomer backup}
+
+The liquid leaving a tray must fall through the downcomer and squeeze out under
+the apron at the bottom.  That last constriction costs head,
+
+\begin{equation}
+h_{dc} \;=\; 166\left(\frac{L_{wd}}{\rho_L\,A_m}\right)^{2} ,
+\label{eq:hdc}
+\end{equation}
+
+$A_m$ being the smaller of the clearance area under the apron and the downcomer
+area itself.  The liquid therefore stands in the downcomer at
+
+\begin{equation}
+h_b \;=\; (h_w + h_{ow}) \;+\; h_t \;+\; h_{dc} ,
+\label{eq:hb}
+\end{equation}
+
+high enough to push itself through the gap \emph{and} to overcome the pressure
+drop of the tray it is leaving.  If $h_b$ reaches the tray above, the column
+floods --- from below this time, for an entirely different reason.  The froth in
+the downcomer is roughly half the density of clear liquid, which gives the
+criterion in its familiar form:
+
+\begin{equation}
+h_b \;<\; \tfrac{1}{2}\left(\mathrm{TS} + h_w\right).
+\label{eq:hbmax}
+\end{equation}
+
+\subsection{Weeping}
+
+At the other end of the operating window, if the vapour is too slow it cannot
+hold the liquid up on the plate and the liquid drains through the holes.  The
+weep point \cite{Sinnott} is
+
+\begin{equation}
+u_{h,\min} \;=\; \frac{K_2 - 0.90\,(25.4 - d_h)}{\sqrt{\rho_V}} ,
+\label{eq:weep}
+\end{equation}
+
+with $d_h$ the hole diameter in millimetres.  $K_2$ is read off a plot against
+$(h_w+h_{ow})$.  It is optional in Choupo, and its absence is announced: give
+$K_2$ and the weep check runs, omit it and the column tells you the check was not
+performed.  It never guesses.
+
+Between the flood point above and the weep point below lies the whole operating
+window of a tray column, and \emph{turndown} --- the ratio of the two --- is why
+a column designed for one throughput cannot always be run at half of it.
+
+\subsection{The two directions}
+
+Equation~\eqref{eq:souders-brown} contains the diameter nowhere; it is a velocity.
+The diameter enters only when the vapour volumetric flow $Q_V$ is turned into a
+velocity through the net area, $u_V = Q_V / A_{\mathrm{net}}$.  So the same
+equation runs both ways:
+
+\begin{center}
+\begin{tabular}{ll}
+\textbf{Rating} & $D$ given $\;\Rightarrow\;$ how close is each tray to flood? \\
+\textbf{Design} & $D$ absent $\;\Rightarrow\;$ what $D$ keeps every tray at
+$\phi\,u_{\mathrm{flood}}$? \\
+\end{tabular}
+\end{center}
+
+In design the widest tray sets the column, because a column has one diameter.
+Which tray that is, is not obvious in advance: below the feed the liquid traffic
+rises, which raises $F_{LV}$ and \emph{lowers} the capacity parameter, but the
+vapour volumetric flow falls too.  The column is sized by whichever tray loses
+that argument, and you find out by looking.
+
+\file{column09\_tray\_hydraulics} sizes the benzene--toluene column of
+\S\ref{ch:distillation} at $D = 1.322$~m, set by the last stripping tray at
+exactly the $80\,\%$ of flood it was asked for.  \file{column10\_flooding} builds
+the same column $1.10$~m wide.  The stream table is identical to the last digit,
+the MESH converges just as fast, the distillate is still $98.12\,\%$ benzene ---
+and stage~14 runs at $115.6\,\%$ of its flooding velocity.  On paper it is a
+perfectly good column.  It would not work.
 
 % ---------------------------------------------------------------------
 \section{Multi-stream heat exchanger (MHeatX): a checker, not a
@@ -17111,8 +18714,7 @@ hardware numbers ($U$, $A$) plus the four inlet conditions close the
 degrees of freedom (Chapter~\ref{ch:hx-entu}).  Put $N+M$ streams in one
 shell and the \emph{internal} heat-transfer network --- which stream
 sees which, over what area, with what local $U$ --- carries far more
-unknowns than the inlet/outlet temperatures alone can fix.  Aspen's
-MHeatX resolves this by demanding a fuller specification (zones, areas,
+unknowns than the inlet/outlet temperatures alone can fix.  Detailed-rating tools resolve this by demanding a fuller specification (zones, areas,
 or all-but-one outlet) and then closing the last balance.  Choupo
 refuses to invent the missing information.  Instead it adopts the spec
 that keeps the unit honest: \emph{every} inlet stream carries its own
@@ -17245,6 +18847,277 @@ the surroundings appears, correctly, as a non-zero $\mathcal I$ rather
 than being absorbed.
 
 % ---------------------------------------------------------------------
+\section{Drying of solids and spray drying}\label{ch:drying}
+
+Drying removes a liquid (usually water) from a wet solid by evaporation.  It
+competes with distillation as the most energy-intensive unit operation --- the
+latent heat must be supplied and the (usually air) drying medium is
+thermodynamically inefficient --- so the model must close both a mass and an
+energy balance.  Choupo models drying at the ``all models are wrong, but some are
+useful'' altitude: measured drying curves and algebraic transfer correlations, no
+pore-scale or CFD detail.
+
+\subsection{Moisture content and the equilibrium}
+Moisture is reported on a \emph{dry basis} $X=$ kg water / kg dry solid (so
+$0\le X<\infty$), related to the wet basis $W$ by $X=W/(1-W)$.  A wet solid held in
+air of a given relative humidity reaches an \emph{equilibrium moisture} $X_e(a_w)$
+--- its \emph{sorption isotherm} --- below which that air cannot dry it.  The
+\emph{free moisture} $X-X_e$ is what can be removed; the bound fraction (held in
+capillaries and by sorption, its vapour pressure depressed) dries only under a
+lower humidity.  Choupo reads $X_e$ from a GAB isotherm on the solid component's
+\code{sorption} block; drying stops at $X_{\text{final}}=\max(X_e,\,\dots)$.
+
+\subsection{The drying-rate curve: constant and falling rate}
+Plot the drying rate $N=-\frac{m_s}{A}\frac{dX}{dt}$ against $X$ and two regimes
+appear.  In the \textbf{constant-rate period} ($X>X_c$) the surface stays wet: the
+particle surface sits at the \emph{wet-bulb temperature} $T_w$ and the rate is
+limited by external gas-film heat/mass transfer, so $N=N_c$ is flat.  Below the
+\textbf{critical moisture} $X_c$ the surface dries out and a receding front / crust
+governs; the \textbf{falling-rate period} ramps $N$ down toward zero at $X_e$.  The
+critical moisture $X_c$ is a KINETIC datum (it depends on the drying intensity), so
+it lives in \code{constant/dryingKinetics}, not on the equilibrium isotherm.  The
+drying \emph{time} is the integral
+\[
+   t \;=\; \frac{m_s}{A}\!\int_{X_2}^{X_1}\!\frac{dX}{N(X)}
+        \;=\; \underbrace{\frac{m_s (X_1-X_c)}{A\,N_c}}_{\text{constant rate}}
+            + \underbrace{\frac{m_s (X_c-X_e)}{A\,N_c}\,
+              \ln\!\frac{X_c-X_e}{X_2-X_e}}_{\text{falling rate (linear model)}},
+\]
+the falling-rate branch using the linear (Lewis) closure $N\propto(X-X_e)$ matched
+to $N_c$ at $X_c$ --- an honest first approximation that does \emph{not} resolve
+crust diffusion; calibrate $X_c$/the curve against a measured drying curve of the
+real material.
+
+\subsection{Spray drying}
+A spray dryer atomises a solution into a cloud of droplets and dries them in hot
+gas to a powder of controlled particle size --- seconds of residence, because the
+droplets are tiny.  Three pieces compose.
+
+\subsection{Atomisation --- the drop-size correlations}\label{sec:atomisation}
+
+Atomisation sets the whole dryer.  The spray is a \emph{distribution} of drops, and its
+Sauter mean diameter $d_{32}=\sum n_i d_i^3/\sum n_i d_i^2$ (the volume-to-surface mean)
+is the number that matters: the drying rate scales as $1/d$ (Ranz--Marshall, below), the
+powder inherits it ($d_p=d_{32}(x_{\text{solid}}\rho_L/\rho_{\text{solid}})^{1/3}$), and
+the chamber must be tall enough for the \emph{largest} drops to dry.  Choupo exposes the
+three families of Figure~\ref{fig:atomisers} as the selectable \code{atomiser} sub-model;
+each returns $d_{32}$ and a Rosin--Rammler width $n$ for the spread.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=stealth, font=\small,
+   drop/.style={circle, fill=blue!35, minimum size=2.4pt, inner sep=0pt},
+   lbl/.style={align=center}]
+% ---- Panel 1: rotary wheel ----
+\begin{scope}[shift={(0,0)}]
+  \node[lbl] at (0,2.35) {\textbf{Rotary wheel}\\{\scriptsize Friedman \& Marshall}};
+  \draw[->,thick] (0,1.75) -- (0,1.25); \node[right] at (0.05,1.5){\scriptsize feed};
+  \draw[thick,fill=gray!18] (0,1.0) ellipse (1.1 and 0.26);
+  \draw[->,thick] (0.55,1.3) arc (0:290:0.55 and 0.16); \node at (0.9,1.42){$N$};
+  \foreach \p in {(-1.7,0.75),(-1.6,1.05),(-1.75,0.5),(1.7,0.75),(1.6,1.05),(1.75,0.5),(-1.9,0.9),(1.9,0.9)}{\node[drop] at \p{};}
+  \node[lbl] at (0,0.1) {\scriptsize $d_{32}\!\propto\!N^{-0.6}$\\{\scriptsize lever: wheel speed}};
+\end{scope}
+% ---- Panel 2: pressure-swirl ----
+\begin{scope}[shift={(5.2,0)}]
+  \node[lbl] at (0,2.35) {\textbf{Pressure-swirl}\\{\scriptsize Wang \& Lefebvre}};
+  \draw[->,thick] (0,1.9) -- (0,1.55); \node[right] at (0.05,1.72){\scriptsize $\Delta P$};
+  \draw[thick,fill=gray!18] (-0.32,1.55) rectangle (0.32,1.15);
+  \draw[->] (-0.13,1.35) arc (180:-120:0.11);
+  \draw[thick] (-0.22,1.15) -- (-1.05,-0.25);
+  \draw[thick] (0.22,1.15) -- (1.05,-0.25);
+  \foreach \x in {-0.95,-0.6,-0.25,0.1,0.45,0.8}{\node[drop] at (\x,-0.2){};}
+  \node[lbl] at (0,-0.75) {\scriptsize $d_{32}[\mu\text{m}]{=}9575\,\Delta P^{-1/3}$\\{\scriptsize lever: pressure}};
+\end{scope}
+% ---- Panel 3: twin-fluid ----
+\begin{scope}[shift={(10.4,0)}]
+  \node[lbl] at (0,2.35) {\textbf{Twin-fluid}\\{\scriptsize Nukiyama--Tanasawa}};
+  \draw[->,thick] (0,1.9) -- (0,1.4); \node[right] at (0.05,1.68){\scriptsize liq.};
+  \draw[->,thick] (-0.85,1.95) -- (-0.28,1.42); \node[left] at (-0.6,1.75){\scriptsize air};
+  \draw[->,thick] (0.85,1.95) -- (0.28,1.42);
+  \draw[thick,fill=gray!18] (-0.3,1.4) rectangle (0.3,1.12);
+  \draw[thick] (-0.16,1.12) -- (-0.95,-0.25);
+  \draw[thick] (0.16,1.12) -- (0.95,-0.25);
+  \foreach \x in {-0.85,-0.5,-0.15,0.2,0.55,0.85}{\node[drop] at (\x,-0.2){};}
+  \node[lbl] at (0,-0.75) {\scriptsize lever: air/liquid ratio};
+\end{scope}
+\end{tikzpicture}
+\caption{The three atomiser families.  A drop is born when the atomising energy overcomes
+the surface tension holding the sheet together, against the liquid's viscous resistance:
+$d_{32}\sim(\text{cohesion }\sigma,\mu_L,\rho_L)/(\text{energy }N,\Delta P,U_{\text{air}})$.
+The wheel sizes by speed, the pressure nozzle by pressure, the twin-fluid by the air/liquid
+ratio; the twin-fluid gives the finest drops (best for viscous feeds).}
+\label{fig:atomisers}
+\end{figure}
+
+\paragraph{The physics, in one line.}  A drop forms when the atomising energy overcomes the
+surface tension holding the liquid sheet/ligament together, against the viscosity resisting
+its deformation.  So every correlation shares one skeleton --- $d_{32}$ grows with the
+cohesive properties ($\sigma$, $\mu_L$, $\rho_L$) and shrinks as you spend energy ($N$,
+$\Delta P$, air velocity).  Because a concentrated, viscous feed therefore sprays
+\emph{coarser}, $\sigma$ and $\mu_L$ are drawn from the property layer --- the \emph{solution}
+viscosity via its mixing rule, not a fixed water value.
+
+\paragraph{Rotary wheel --- three regimes, one lever.}  Liquid fed to the centre of a disc
+(or cup) spinning at $N$ rev/s is driven to the rim by centrifugal force.  On a \emph{flat}
+disc the liquid slips --- it leaves below the rim speed, so the drop size is unpredictable
+--- and industrial wheels therefore carry radial \emph{vanes}: the liquid is trapped against
+a vane and discharged at the wheel's peripheral (tip) speed $U=\pi D N$, the true scaling
+velocity (100--200~m/s in practice).  So the honest lever is not $N$ alone but $U$: a small
+fast wheel and a large slow one that share $U$ atomise alike.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=stealth, font=\small,
+   drop/.style={circle, fill=blue!35, minimum size=#1, inner sep=0pt},
+   drop/.default=3pt, lbl/.style={align=center}]
+\foreach \panel/\ttl/\rate [count=\i] in {0/direct drop/{low flow}, 4.4/ligament/{design}, 8.8/sheet\,/\,film/{high flow}}{
+  \begin{scope}[shift={(\panel,0)}]
+    \draw[very thick] (-1.3,0) -- (1.3,0);   % rim
+    \node[lbl] at (0,0.5) {\textbf{\ttl}\\{\scriptsize \rate}};
+    \ifnum\i=1
+      \foreach \x in {-0.8,0,0.8}{\draw[thick] (\x,0)--(\x,-0.35); \node[drop=4.5pt] at (\x,-0.6){};}
+    \fi
+    \ifnum\i=2
+      \foreach \x in {-1.0,-0.5,0,0.5,1.0}{\draw[thick] (\x,0)--(\x,-0.5);
+        \node[drop=3.5pt] at (\x,-0.7){}; \node[drop=1.6pt] at (\x+0.12,-0.95){};}
+    \fi
+    \ifnum\i=3
+      \draw[thick] (-1.1,0) .. controls (-0.4,-0.55) and (0.4,-0.25) .. (1.1,-0.6);
+      \foreach \p in {(-0.9,-0.85),(-0.5,-0.7),(-0.1,-0.95),(0.35,-0.75),(0.8,-1.0),(1.05,-0.8)}{\node[drop=2.6pt] at \p{};}
+      \foreach \p in {(-0.7,-1.05),(0.1,-1.15),(0.6,-1.05)}{\node[drop=1.4pt] at \p{};}
+    \fi
+  \end{scope}
+}
+\end{tikzpicture}
+\caption{The three break-up regimes at a rotary wheel's rim as the feed rate rises
+(after Christensen \& Steely; Lefebvre \& McDonell, \emph{Atomization and Sprays}).
+\emph{Direct drop}: discrete, near-monodisperse drops shed one at a time.  \emph{Ligament}:
+radial jets break by Rayleigh instability into main drops $+$ satellites --- the industrial
+regime.  \emph{Sheet/film}: a continuous sheet overhangs the rim and breaks irregularly ---
+a broad, coarse spray.  Turning the feed up to raise throughput can silently cross
+ligament$\to$sheet and \emph{widen} the powder.}
+\label{fig:rotary-regimes}
+\end{figure}
+
+As the feed rate rises the rim passes through the three regimes of
+Figure~\ref{fig:rotary-regimes}; Tanasawa's critical flow rates (cgs: $q\,[\text{cm}^3/\text{s}]$,
+$D\,[\text{cm}]$, $n\,[\text{rpm}]$) fix the transitions,
+\[
+  q_{\text{direct}}=2.8\left(\tfrac{D}{n}\right)^{2/3}\!\tfrac{\sigma}{\rho_L}
+     \Big[1+10\big(\tfrac{\mu_L}{(\rho_L\sigma D)^{1/2}}\big)^{1/3}\Big]^{-1},
+  \qquad
+  q_{\text{film}}\ge 5.3\left(\tfrac{D}{n}\right)^{2/3}\!\tfrac{\sigma}{\rho_L}
+     \big(\tfrac{\rho_L}{\mu_L}\big)^{1/3},
+\]
+the ligament (design) regime lying between.  In it the Sauter mean follows the
+Friedman--Gluckert--Marshall correlation ($\Gamma=\dot m/\pi D$, the loading per wetted
+perimeter),
+\[
+  d_{32}=0.4\,D\left(\frac{\Gamma}{\rho_L N D^2}\right)^{0.6}
+              \left(\frac{\mu_L}{\Gamma}\right)^{0.2}
+              \left(\frac{\sigma\rho_L D}{\Gamma^2}\right)^{0.1}
+   \ \propto\ N^{-0.6},
+\]
+a comparatively narrow spray ($n\approx2.2$) --- though the Rayleigh break-up leaves
+\emph{satellite} drops, so the true distribution is mildly bimodal.  Serrating the rim (a
+\emph{toothed} wheel) delays the ligament$\to$sheet transition; Christensen \& Steely give
+the teeth needed to hold ligament formation,
+$z=0.215(\rho_L\omega^2D^3/\sigma)^{5/12}(\rho_L\sigma D/\mu_L^2)^{1/6}$ (e.g.\ $\approx95$
+teeth on a 5~cm wheel at 3000~rpm).  The wheel's asset is operational: since
+$d_{32}\!\propto\!\dot m^{0.2}$ only, drop size is \emph{decoupled from throughput} --- set
+size by speed, rate independently, with no small orifice to clog.  This is why large
+food/dairy towers atomise by wheel, where a pressure nozzle would tie size and flow to one
+$\Delta P$ through one hole.
+
+\paragraph{Pressure-swirl nozzle.}  Liquid forced through a swirl chamber leaves as a thin
+conical sheet that breaks up.  The class-average design curve
+$d_{32}[\mu\text{m}]=9575\,\Delta P[\text{Pa}]^{-1/3}$ is the quick estimate; the two-term
+SMD of Wang \& Lefebvre resolves the properties and the sheet geometry,
+\[
+  d_{32}=4.52\left(\frac{\sigma\mu_L^2}{\rho_G\Delta P^2}\right)^{0.25}\!(t\cos\theta)^{0.25}
+        +0.39\left(\frac{\sigma\rho_L}{\rho_G\Delta P}\right)^{0.25}\!(t\cos\theta)^{0.75},
+\]
+$t$ the film thickness and $\theta$ the half-cone angle.  Pressure is the lever
+($d_{32}\!\propto\!\Delta P^{-1/3}$); wider spray than a wheel ($n\approx1.8$).
+
+\paragraph{Twin-fluid (airblast) nozzle.}  A high-velocity air stream shreds the liquid ---
+the finest drops of the three, the choice for viscous feeds.  Nukiyama \& Tanasawa
+(empirical, cgs; $U_{\text{rel}}$ the air--liquid slip velocity, $Q_L/Q_A$ the liquid-to-air
+volume ratio):
+\[
+  d_{32}\,[\mu\text{m}] = \frac{585}{U_{\text{rel}}}\sqrt{\frac{\sigma}{\rho_L}}
+       + 597\left(\frac{\mu_L}{\sqrt{\sigma\rho_L}}\right)^{0.45}
+              \!\left(1000\,\frac{Q_L}{Q_A}\right)^{1.5}.
+\]
+A higher air/liquid ratio gives finer drops; broad spray ($n\approx1.6$).  This form is
+dimensional (cgs) --- extrapolate with care.
+
+\paragraph{The atomising energy --- pressure follows the stream, power is a result.}  The
+atomising pressure of a pressure nozzle is \emph{not} a free number: it is the feed's
+pressure above the chamber, $\Delta P=P_{\text{feed}}-P_{\text{chamber}}$, imposed by the
+feed pump on the \emph{stream} (a bare-atomiser study may override it with \code{deltaP}).
+Each atomiser then carries a \textbf{shaft-power} estimate.  For the pressure nozzle it is
+the hydraulic pumping power $\dot W=Q\,\Delta P/\eta_{\text{pump}}$.  For the rotary wheel it
+splits in two: the kinetic energy imparted to the liquid, accelerated centre-to-rim to the
+tip speed, $\tfrac12\dot m U^2$ (exact), \emph{plus} \textbf{windage} --- the wheel dragging
+the surrounding gas.  The spray-drying literature gives windage only qualitatively
+(``rotary needs more power''), so Choupo anchors it on the classic rotating-disk drag (von
+K\'arm\'an 1921; Schlichting, \emph{Boundary Layer Theory}),
+\[
+  \dot W_{\text{wind}}=\tfrac12\,C_M\,\rho_g\,\omega^3 R^5,\qquad
+  C_M=0.146\,\mathrm{Re}_\omega^{-1/5}\ \text{(turbulent)},\ \ \mathrm{Re}_\omega=\frac{\omega R^2}{\nu_g},
+\]
+flagged honestly as the \emph{smooth free disk} --- a vaned wheel pumps air like a fan and
+draws \emph{more}, so this is a lower bound.  The split (liquid KE, windage, drive
+efficiency) is printed in the atomiser note; the power feeds sizing and costing.
+
+\paragraph{References.}  Marshall (1954); Masters (1991); Lefebvre \& McDonell (2017,
+DOI 10.1201/9781315120911); Wang \& Lefebvre, \emph{J.\ Propulsion \& Power} 3 (1987) 11
+(DOI 10.2514/3.22946); Nukiyama \& Tanasawa, \emph{Trans.\ Soc.\ Mech.\ Eng.\ Japan} 5
+(1939) 68.
+
+\paragraph{Single-droplet drying.}  A droplet decelerates to its terminal velocity
+in milliseconds, after which the slip Reynolds number is small and the
+Ranz--Marshall correlation
+$\mathrm{Nu}=2+0.6\,\mathrm{Re}^{1/2}\mathrm{Pr}^{1/3}$ collapses to its conduction
+limit $\mathrm{Nu}=2$, i.e.\ $h=2k_g/d$.  The constant-rate time to reach the
+critical diameter $D_c$ is then
+\[
+   t_c \;=\; \frac{\rho_L\,\Delta H_{\text{vap}}}{8\,k_g\,\Delta T_{\ln}}
+             \bigl(D_0^2 - D_c^2\bigr),
+\]
+with the log-mean driving force $\Delta T_{\ln}$ over the constant-rate span
+(the gas cools as it dries).  The droplet then shrinks to the powder particle by
+mass, $d_f=d_0\bigl[(1+X_f)/(1+X_0)\bigr]^{1/3}$.  The $\mathrm{Nu}=2$ short-cut
+holds once the droplet has slowed; it \emph{underpredicts} early-flight and
+large-droplet drying where the convective $\mathrm{Re}\,\mathrm{Pr}$ term matters.
+
+\paragraph{Chamber: co- vs.\ counter-current.}  The chamber closes a lumped
+adiabatic mass + energy balance on the gas (fixing the dry-air rate $G$, the outlet
+humidity and temperature, and the air state at the critical point), with the
+residence time a RESULT of the hardware ($V\!\approx\!\dot Q_{\text{gas}}\,t$,
+$t\!\ge\! t_c$).  \emph{Co-current} (hot gas meets the wettest droplet) keeps the
+droplet near $T_w$ --- gentle, for heat-sensitive foods (milk, coffee);
+\emph{counter-current} (hot gas meets the driest, crusted particle) is thermally
+efficient but harsh --- for robust materials (detergents).
+
+\paragraph{References.}  Marshall, \emph{Atomization and Spray Drying}, AIChE
+Monograph 2 (1954); Masters, \emph{Spray Drying Handbook}, 5th ed.\ (1991);
+Mujumdar (ed.), \emph{Handbook of Industrial Drying}, 4th ed., CRC Press 2015
+(DOI 10.1201/b17208).  Atomisation: Lefebvre \& McDonell, \emph{Atomization and
+Sprays}, 2nd ed.\ 2017 (DOI 10.1201/9781315120911); Wang \& Lefebvre,
+\emph{J.\ Propulsion \& Power} 3 (1987) 11 (DOI 10.2514/3.22946).  Droplet drying
+and axial chamber profiles: Ranz \& Marshall, \emph{Chem.\ Eng.\ Prog.}\ 48 (1952)
+141, 173; Langrish \& Kockel, \emph{Chem.\ Eng.\ J.}\ 84 (2001) 69
+(DOI 10.1016/S1385-8947(00)00384-3, the characteristic drying curve); Mezhericher,
+Levy \& Borde, \emph{Chem.\ Eng.\ \& Processing} 49 (2010) 1205
+(DOI 10.1016/j.cep.2010.09.002).  Falling-rate kinetics --- the two non-CFD schools:
+the \emph{characteristic drying curve} $N/N_c=f(\Phi)$ above (Langrish \& Kockel),
+and the \emph{Reaction Engineering Approach}, Chen \& Xie, \emph{Drying Technology}
+15 (1997) 1063 (DOI 10.1080/07373939708917282) and Chen, \emph{Drying Technology}
+26 (2008) 627 (DOI 10.1080/07373930802045922), which replaces the critical-moisture
+break with a smooth apparent activation energy $\Delta E_v(X)$.
+
 \section{The simple unit operations}\label{ch:simple-ops}
 
 Not every unit needs a chapter.  Four are one-liners, listed here for
@@ -17573,6 +19446,49 @@ $\Lambda$                   & Wilson binary parameter \\
 
 \begin{thebibliography}{99}
 
+\bibitem{Langmuir1918} Langmuir, I., ``The adsorption of gases on plane
+surfaces of glass, mica and platinum'', \emph{J.\ Am.\ Chem.\ Soc.} \textbf{40}
+(1918) 1361.  The isotherm Eq.~\eqref{eq:langmuir} rests on.
+
+\bibitem{Hinshelwood1940} Hinshelwood, C.N., \emph{The Kinetics of Chemical
+Change}, Oxford University Press, 1940.  Surface reaction between adsorbed
+species as the rate-determining step.
+
+\bibitem{HougenWatson1943} Hougen, O.A.\ and Watson, K.M., ``Solid catalysts and
+reaction rates'', \emph{Ind.\ Eng.\ Chem.} \textbf{35} (1943) 529.  The
+engineering form: kinetic factor, driving force, adsorption group.
+
+\bibitem{Popken2000} P\"opken, T., G\"otze, L.\ and Gmehling, J., ``Reaction
+kinetics and chemical equilibrium of homogeneously and heterogeneously catalyzed
+acetic acid esterification with methanol and methyl acetate hydrolysis'',
+\emph{Ind.\ Eng.\ Chem.\ Res.} \textbf{39} (2000) 2601.  Eq.~16 (adsorption-based
+rate law, Table 11), the adsorption constants (Table 10), the UNIQUAC parameters
+they were regressed with (Tables 2--3), and the independent $K_a$ of Eq.~17.
+
+\bibitem{SoudersBrown1934} Souders, M.\ and Brown, G.G., ``Design of
+fractionating columns.~I.\ Entrainment and capacity'', \emph{Industrial \&
+Engineering Chemistry} \textbf{26} (1934) 98.  The droplet-suspension argument
+behind $u_{\mathrm{flood}} \propto \sqrt{(\rho_L-\rho_V)/\rho_V}$.
+
+\bibitem{Fair1961} Fair, J.R., ``How to predict sieve tray entrainment and
+flooding'', \emph{Petro/Chem Engineer} \textbf{33}(10) (1961) 45.  The capacity
+parameter $C_{\mathrm{SB}}(F_{LV},\mathrm{TS})$, published as a chart.
+
+\bibitem{LygerosMagoulas1986} Lygeros, A.I.\ and Magoulas, K.G.,
+\emph{Hydrocarbon Processing} \textbf{65}(12) (1986) 43.  The algebraic
+representation of Fair's chart used in Eq.~\eqref{eq:lygeros}; inaccurate below
+$F_{LV}\approx0.03$, where its slope has the wrong sign.
+
+\bibitem{Liebson1957} Liebson, I., Kelley, R.E.\ and Bullington, L.A.,
+\emph{Petroleum Refiner} \textbf{36} (1957).  The sieve-tray discharge
+coefficient $C_o$, charted against $A_h/A_p$ and plate thickness over hole
+diameter.
+
+\bibitem{Sinnott} Sinnott, R.K., \emph{Coulson \& Richardson's Chemical
+Engineering}, Vol.~6, \emph{Chemical Engineering Design}, Butterworth-Heinemann.
+The clear-liquid-head lineage used here: dry-tray head, weir crest, residual
+head, downcomer backup, and the weep point.
+
 \bibitem{Weisbach1845} Weisbach, J., \emph{Lehrbuch der Ingenieur- und
 Maschinen-Mechanik}, Vol.~1, Braunschweig, 1845; and Darcy, H.,
 \emph{Recherches exp\'erimentales relatives au mouvement de l'eau dans
@@ -17598,6 +19514,27 @@ Spans All Fluid-Flow Regimes,'' \emph{Chem. Eng.}\ \textbf{84}(24),
 transition and turbulent flow; Choupo's default \code{Churchill}
 model.
 
+\bibitem{LockhartMartinelli1949} Lockhart, R. W., \& Martinelli, R. C.,
+``Proposed Correlation of Data for Isothermal Two-Phase, Two-Component Flow
+in Pipes,'' \emph{Chem. Eng. Prog.}\ \textbf{45}(1), 39--48, 1949.  The
+foundational gas--liquid pressure-drop correlation, developed and validated
+on air-water (and similar) pipe data; Choupo's default \code{twoPhase} model.
+
+\bibitem{Butterworth1975} Butterworth, D., ``A Comparison of Some
+Void-Fraction Relationships for Co-Current Gas--Liquid Flow,''
+\emph{Int. J. Multiphase Flow} \textbf{1}(6), 845--850, 1975.  The algebraic
+fit of the Lockhart--Martinelli void fraction Choupo uses for the holdup.
+
+\bibitem{Friedel1979} Friedel, L., ``Improved Friction Pressure Drop
+Correlations for Horizontal and Vertical Two-Phase Pipe Flow,'' European
+Two-Phase Flow Group Meeting, Ispra, paper E2, 1979.  The general two-phase
+friction multiplier $\phi_{LO}^2$; Choupo's \code{Friedel} model.
+
+\bibitem{BeggsBrill1973} Beggs, H. D., \& Brill, J. P., ``A Study of Two-Phase
+Flow in Inclined Pipes,'' \emph{J. Petroleum Technology} \textbf{25}(5),
+607--617, 1973.  Flow-pattern map, holdup with inclination correction, and the
+two-phase friction-factor ratio; Choupo's \code{BeggsBrill} model.
+
 
 \bibitem{RPP} Poling, B. E., Prausnitz, J. M., \& O'Connell, J. P.,
 \emph{The Properties of Gases and Liquids}, 5th ed., McGraw-Hill,
@@ -17612,7 +19549,7 @@ and activity-coefficient models. Chapters 6 (vapour pressure), 8
 
 \bibitem{WijmansBaker} Wijmans, J. G., \& Baker, R. W., ``The
 Solution-Diffusion Model: A Review'', \emph{J.\ Membr.\ Sci.}, 107,
-1--21 (1995). The standard derivation of the pressure- and
+1--21 (1995), DOI 10.1016/0376-7388(95)00102-I. The standard derivation of the pressure- and
 concentration-driven fluxes (Eqs.~\ref{eq:sd-water}--\ref{eq:sd-solute})
 used by the spiral-wound module.
 
@@ -18082,7 +20019,7 @@ sizing/cost blocks; a profit-analysis pass.  Each of these is a
 candidate item for the roadmap.
 
 What Choupo has and FLOWTRAN did not: an embedded modern
-parameter-estimation driver (\code{fitBinaryPair}) inside the
+parameter-estimation engine (\code{fitParameters}) inside the
 simulator rather than as a companion program; a Web-based GUI with
 flowsheet canvas, plots and a WASM solver; an open-source licence
 that lets a student modify any layer; auditable transparency in the
@@ -18583,6 +20520,304 @@ mean Antoine-based $\alpha \approx 2.4$ predicts $0.080$ ---
 agreement at the 2\,\% level.
 \end{tutoriallink}
 
+\subsection*{Batch rectification: the pot grows a column}
+\label{sec:batch-rectifier}
+
+The Rayleigh still wastes what the vapour knows: $y^{\star}$ is richer
+than the pot, but every mole of it leaves.  The classical batch
+rectifier (\code{model rectifier;} on the same \code{batchStill})
+inserts $N$ ideal equilibrium stages between the pot and a
+\emph{total} condenser, and returns a fraction of the condensate as
+reflux.  With stage and condenser hold-up neglected --- the standard
+textbook idealisation --- the column is \emph{quasi-steady}: at every
+instant it is an algebraic system riding on the slow pot ODE.
+
+Let $V$ be the boilup leaving the pot (the dict's
+\code{F\_vap} in this model), $R$ the reflux ratio.  A total
+condenser splits $V$ into distillate product $D = V/(R+1)$ and reflux
+$L = R\,D$.  The pot then loses \emph{product only}:
+\begin{equation}
+\frac{\mathrm{d} n_i}{\mathrm{d} t} \;=\; -\,D \, x_{D,i}(t),
+\label{eq:rectifier-ode}
+\end{equation}
+with $x_D(t)$ solved at each instant from the cascade
+\begin{align}
+y_0 &= K\!\left(T_{\mathrm{bub}}(x_B)\right)\, x_B
+        && \text{(pot vapour)} \nonumber\\
+V\,y_{s-1} &= L\,x_s + D\,x_D,
+        && s = 1 \ldots N \quad \text{(section balance)} \nonumber\\
+y_s &= K\!\left(T_{\mathrm{bub}}(x_s)\right)\, x_s
+        && \text{(stage equilibrium)} \nonumber\\
+x_D &= y_N. && \text{(total condenser)}
+\label{eq:rectifier-cascade}
+\end{align}
+The unknown is the \emph{vector} $x_D$; Choupo iterates the closure
+$x_D \leftarrow y_N$ and declares the single residual
+$\max_i |y_{N,i} - x_{D,i}|$, with the section balances holding
+algebraically at every iterate (so $\sum_i x_{s,i} = 1$ follows from
+$\sum_i y_i = \sum_i x_{D,i} = 1$ --- nothing is ever renormalised
+into looking converged).  Two numerical honesty notes, both learnt
+the hard way: the closure tolerance sits at $10^{-7}$, just
+\emph{above} the $10^{-8}$ Newton floor of each stage's bubble-$T$
+(a $10^{-10}$ demand can never close --- it chases the stages'
+round-off); and an infeasible iterate (a negative stage composition,
+which the natural first guess $x_D = y_0$ produces by
+over-enriching) is projected onto the cascade's own last vapour,
+which corrects toward the reachable set from either side.
+
+Two limits anchor the model.  With $R = 0$ or $N = 0$ no liquid runs
+down the column, $x_D = y_0$ and
+eq.~\eqref{eq:rectifier-ode} degenerates to the Rayleigh still
+exactly --- the regression suite pins the equivalence to the last
+digit.  As $R \to \infty$ at fixed $N$ the cascade approaches total
+reflux, where the Fenske relation for an ideal binary gives
+\begin{equation}
+\frac{x_D}{1 - x_D} \;=\; \alpha^{\,N+1}\,\frac{x_B}{1 - x_B}
+\label{eq:rectifier-fenske}
+\end{equation}
+($N$ stages $+$ the pot are $N{+}1$ equilibrium contacts).  For
+benzene/toluene at $x_B = 0.5$ with $\alpha = 2.35$--$2.6$ the band
+is $x_D = 0.968$--$0.979$; the solver at $R = 200$, $N = 3$ lands at
+$0.9765$ --- inside, computed by a route (per-stage Antoine
+bubble-$T$) that shares nothing with eq.~\eqref{eq:rectifier-fenske}.
+
+At \emph{finite} reflux the constant-$R$ policy trades purity for
+time: as the pot strips, $y_0$ leans and the whole cascade leans with
+it, so $x_D(t)$ drifts downward while the receiver accumulates the
+run average --- two different compositions, deliberately both
+reported (the trajectory carries the instantaneous
+$x_{D,i}$, $R$ and $D$; the receiver holds the mean).  The
+complementary policy (\code{refluxPolicy constantComposition})
+\emph{holds} $x_D$ of a declared light key at a target by solving
+$R(t)$ each step: a \emph{bracketed} solve of
+$f(R) = x_{D,\mathrm{LK}}(R) - x_D^{\mathrm{target}}$ over
+$[0, R_{\max}]$ on a feasibility map --- never a bare Newton, because
+$x_D(R)$ can lose monotonicity (an azeotrope) and the solve must
+refuse an ambiguous branch rather than jump one silently.  Three
+infeasibilities get three distinct diagnostics: a target \emph{below}
+the $R=0$ floor (even zero reflux over-purifies); a target
+unreachable from the charge at $R_{\max}$ (an azeotrope caps the
+cascade at \emph{any} reflux --- ethanol/water refuses a $0.95$
+target against its $0.894$ barrier by computed VLE, not by a
+message); and the mid-campaign exhaustion, where the leaning pot
+drags the reachable set below the target and the run announces
+\code{onRefluxLimit stopDistillation}: $D = 0$, the pot inventory
+freezes, and the campaign idles \emph{visibly} to \code{endTime}
+with the event in the trajectory and the KPIs --- never a magic
+termination.  $R(t)$ is a control input updated once per step at the
+committed state (first order in $\Delta t$, announced as such).  No reboiler duty is
+reported by this model: $V$ alone does not prove an energy balance,
+and a $V \cdot \lambda$ shortcut would be a decorative number.
+
+\begin{tutoriallink}{batch/still04\_rectifier\_benzene\_toluene}
+The still01 pot grown a column: $N = 3$, $R = 3$,
+$V = 1.5 \times 10^{-6}$\,kmol/s at 1\,atm.  Initial distillate
+$x_D = 0.949$ (vs.\ $0.71$ for the raw pot vapour) drifting to
+$0.906$ over 600\,s; the receiver accumulates $0.931$; the pot loses
+exactly $D\,t = 0.225$\,mmol --- three quarters of the boilup
+refluxes.
+\end{tutoriallink}
+
+\begin{tutoriallink}{batch/still05\_rectifier\_constant\_xD}
+The same column under the second policy: $x_D$ held at $0.9300 \pm
+10^{-4}$ while $R$ climbs $2.0 \to 7.9$; at $t = 863$\,s the ceiling
+$R_{\max} = 8$ can no longer reach the target and distillation stops
+--- the receiver ends with the WHOLE cut on-spec at $0.930$, the
+policy's selling point over still04's drifting purity.
+\end{tutoriallink}
+
+
+\subsection*{Campaign accounting: the material ledger and the mass balance}
+\label{sec:campaign-ledger}
+
+Batch vessels are materially CONNECTED: a recipe \code{transfer} is a
+discrete material edge, a \code{dischargeTo} route a continuous one.
+Choupo records every such edge as a structured \emph{ledger} entry ---
+$t_{\mathrm{start}}$, $t_{\mathrm{end}}$, source, destination, the
+per-component amount moved, and the transported enthalpy
+\begin{equation}
+H_{\mathrm{moved}} \;=\; \sum_{\mathrm{packages}\ p}
+    n_p \, h\!\left(T_p, x_p\right),
+\label{eq:ledger-enthalpy}
+\end{equation}
+integrated \emph{package by package at each package's own temperature}
+(elements datum).  A single end-temperature stamped on an accumulated
+amount would destroy exactly the information an energy balance needs ---
+a still's condensate leaves at a $T$ that climbs all campaign.  The
+timeline and the Gantt view are \emph{projections} of this ledger, never
+independent records.  A vessel that sheds material with no declared
+receiver is an EXTERNAL outlet --- an unrouted product stream, recorded
+and named, never a hidden loss.
+
+The transported enthalpy carries an explicit \emph{validity}: a package
+containing a species with no formation datum cannot be priced, and the
+record then withholds $H_{\mathrm{moved}}$ entirely and names the
+species.  Validity is \emph{monotonic in time} --- once one package was
+unpriceable the integral has lost a parcel forever, and a later
+priceable package must never resurrect it; an emitted enthalpy that
+silently dropped part of its own history would be worse than no number
+at all.  The campaign reports the census (how many ledger records carry
+a valid $H$) as a first-class verdict.
+
+\begin{tutoriallink}{batch/still06\_ledger\_mixed\_validity}
+Two stills poison their distillate records in opposite temporal orders
+(unpriceable$\,\to\,$priceable and the reverse); both records must end
+invalid, naming the datum-less species, with no partial integral
+emitted.
+\end{tutoriallink}
+
+The material ledger has an energy twin.  Each vessel contributes
+\emph{energy records}: one per segment of constant physics --- a recipe
+\code{setParameter} or a material charge closes the running segment,
+because the record's $h_i(T)$ belong to one temperature and the state
+difference it prices must be purely reactive.  The isothermal reactor's
+jacket duty is the flagship: for a closed vessel at constant pressure
+the first law gives $Q = \Delta H$ over the segment, and on the elements
+datum Hess's law collapses the per-reaction story into a state
+difference,
+\begin{equation}
+Q \;=\; \sum_j \Delta H_{\mathrm{rxn},j}\,\Delta\xi_j
+  \;=\; \sum_i \Delta n_i \, h_i(T),
+\label{eq:ledger-duty}
+\end{equation}
+so the integral is \emph{exact} --- computed from committed mole numbers,
+never a quadrature riding on the integrator's step size.  When a lumped
+species carries no formation data but the reaction declares its heat, the
+duty falls back to the announced-override branch: extents are solved from
+the stoichiometry ($N\boldsymbol{\xi} = \Delta\nv$, refused aloud if the
+reaction set is linearly dependent) and priced per reaction.  Neither
+datum nor declaration --- the record is invalid and names the reaction.
+
+Material transfers respect the same first law: a recipe charge solves
+its mix temperature from \emph{enthalpy equality} on the elements datum,
+\begin{equation}
+H\!\left(\nv_1 + \nv_2,\, T_{\mathrm{mix}}\right)
+  \;=\; H(\nv_1, T_1) + H(\nv_2, T_2),
+\label{eq:charge-h-equality}
+\end{equation}
+by a 1-D Newton warm-started at the molar average --- so charging is a
+material act, never a thermal one, and internal transfers cancel
+\emph{exactly} in the campaign sum.  Heat-capacity differences matter:
+a hot ethanol charge into cold water lands $\sim$4\,K above the
+equal-$C_p$ molar average.  When a species cannot be priced the charge
+falls back to the molar average, \emph{announced} --- and that named
+occasion is enough to withhold the balance verdict below.
+
+The campaign \emph{energy balance} follows the same honesty rule as the
+mass balance, with one addition: it only claims a verdict when
+\emph{every} piece is ledgered.  A vessel type whose duty physics has not
+landed yet, an instantaneous \code{setParameter} temperature jump, a
+charge that fell back to the molar-$T$ average, or an external outlet
+whose transported enthalpy could not be priced makes the balance report
+UNAVAILABLE, naming each missing piece --- never a decorative closure.
+When it does close, it closes over everything that moved:
+$\sum_{\mathrm{vessels}} \Delta H = Q_{\mathrm{ledger}} -
+H_{\mathrm{external\,out}}$, with the closure scaled by the total
+enthalpy that MOVED ($\sum |\Delta H_{\mathrm{vessel}}|$), so a pure
+transfer campaign whose signed sum cancels to zero still reports its
+closure honestly instead of a 0/0.
+
+\begin{tutoriallink}{batch/batch08\_isothermal\_duty}
+The override branch end-to-end: lumped $A \to B$ with a declared
+$\Delta H_{\mathrm{rxn}} = -50$\,kJ/mol prices the jacket duty
+$E = \Delta H\,\Delta\xi = -49.88$\,kJ against the analytic first-order
+decay, while the balance stays unavailable naming the datum-less species.
+\end{tutoriallink}
+
+\begin{tutoriallink}{batch/recipe04\_charge\_enthalpy}
+The H-equality charge: hot ethanol into cold water mixes to 317.06\,K
+(the enthalpy-true temperature, $\sim$4\,K above the molar average), and
+the campaign balance CLOSES across the transfer at $2\times10^{-12}$ ---
+the first law surviving a recipe action.
+\end{tutoriallink}
+
+The still's duties follow the same discipline: no invented
+$V\lambda$, only phase-enthalpy differences of the \emph{actual}
+packages.  For the Rayleigh pot the first law gives the reboiler
+directly,
+\begin{equation}
+Q_{\mathrm{reb}} \;=\; \Delta H_{\mathrm{pot}}
+  + \sum_{p} n_p\, h^{\mathrm{vap}}(T_p, \mathbf{y}_p),
+\qquad
+Q_{\mathrm{cond}} \;=\; -\sum_{p} n_p
+  \left[h^{\mathrm{vap}} - h^{\mathrm{liq}}\right](T_p),
+\label{eq:still-duties}
+\end{equation}
+each shed package priced at its own hand-off temperature --- so the
+reboiler integral is a state difference plus a package sum, exact.  The
+rectifier's condenser is the physical one --- it condenses the whole
+boilup $V$, not the product $D$, at the top-stage temperature --- and
+its reboiler closes the box first law as the exact residual.  With
+that, a full react-then-distil campaign closes its energy balance end
+to end: reactor duty, charge, distillation and the unrouted product all
+on one elements-datum ledger.
+
+\begin{tutoriallink}{batch/recipe01\_react\_then\_distill}
+The showcase, now energy-closed: esterification duty, the reactor-to-
+still charge, reboiler/condenser duties and the external distillate
+balance to $6\times10^{-16}$.
+\end{tutoriallink}
+
+An instantaneous \code{setParameter} temperature change is an energy
+\emph{intervention}, and the ledger prices it as such: an
+\code{impulse} record with $E = H(\nv, T_{\mathrm{new}}) - H(\nv,
+T_{\mathrm{old}})$ on the same elements datum --- a state difference
+including any phase leg, never a $\sum n C_p \Delta T$ shortcut when
+enthalpy data exist.  A staged temperature programme thus reads off the
+ledger as its full story: reaction segments at each held temperature,
+with the jump energies in between, and the balance closes across all of
+them.
+
+The ledger closes into \emph{utilities}: every valid duty record carries
+the process temperature its service must beat --- the segment's
+\emph{worst-case} end (the hottest pot state for a reboiler, the coldest
+condensing temperature for a coolant) --- and the campaign allocates each
+record to the lowest-grade catalogue utility that still serves it, the
+same tightest-margin rule the steady allocation uses, through one shared
+picker.  Mass consumption uses the catalogue's phase-aware duty per
+kilogram (condensing steam is latent heat, never a $c_p \Delta T$), and
+the campaign cost is simply $\sum |E| \times$ price.  A record no
+utility can serve is \emph{listed}, never silently dropped.
+
+The batch crystalliser's latent duty is another exact state difference:
+$Q = -\Delta H_{\mathrm{cryst}}\,\Delta n_{\mathrm{cryst}}$ with
+$n_{\mathrm{cryst}} = V \rho_c k_v \mu_3 / M$ read off the third moment,
+and $\Delta H_{\mathrm{cryst}}$ resolved through the \emph{same} shared
+resolver the steady crystalliser uses (ion-derived
+\code{dissolutionEnthalpy}, the molecular solution tier, or a declared
+constant that confesses itself) --- the source travels in the record's
+basis, and steady and batch can never diverge on the number.  The
+vessel-enthalpy half is an honestly \emph{named} gap: a magma is
+dissolved solute plus crystal, and until inventories price on the solid
+rung the campaign balance reports it unavailable, verbatim.
+
+The campaign closes on inventories.  Each vessel reports its ALL-phase
+per-component inventory (a crystalliser adds its crystal magma
+$V \rho_c k_v \mu_3 / M$ to the dissolved holdup --- without it,
+crystallisation reads as mass loss), and
+\begin{equation}
+m_0 \;=\; m_{\mathrm{final}} \;+\; m_{\mathrm{external}},
+\label{eq:campaign-mass}
+\end{equation}
+in kilograms via the component molar masses, because \emph{reactions
+conserve mass, not moles}.  For reacting campaigns the sharper invariant
+is the ELEMENTS: formulas are parsed against the periodic table (a
+lumped teaching species whose ``formula'' is \code{A} makes no elemental
+claim) and each element must close independently --- a chemically wrong
+stoichiometry can hide inside a closed total mass, but not inside a
+closed oxygen balance.  Two honest findings shipped with this machinery:
+catalogue molar masses from mixed sources drift from the stoichiometry
+at the $10^{-5}$ level ($\sum_j \nu_j M_j \neq 0$ exactly), reported as
+a curation note; and a genuine violation reports the run
+NON-CONVERGED --- a leak is a failure, not a log line.
+
+\begin{tutoriallink}{batch/recipe01\_react\_then\_distill}
+The react-then-still campaign: one discrete transfer at $t = 400$\,s,
+the still's unrouted distillate recorded as an external outlet
+(0.889\,kg), and the campaign closing to $10^{-15}$ with every element
+independently balanced.
+\end{tutoriallink}
+
 % ---------------------------------------------------------------------
 \section{Continuous dynamic CSTR with finite hold-up}\label{ch:dyn-cstr}
 
@@ -19019,6 +21254,27 @@ $T_{\mathrm{in}}$ to test closed-loop disturbance rejection
 feed rate over time) without writing a new unit op.  The user-side
 dict syntax (\code{type Schedule;}, \code{schedule ( {time; value;} \ldots );})
 is documented in the User Guide §8.2.
+
+The forcing vocabulary culminates in the \emph{PRBS} --- the classic
+system-identification input.  A maximal-length Fibonacci LFSR of $n$
+registers generates a binary sequence of period exactly $2^n - 1$ bits;
+its autocorrelation approximates an impulse, so one record excites the
+plant across the band and carries the information for a full low-order
+model fit, where a sinusoid probes a single frequency.  Choupo's
+\code{type prbs;} is deterministic by construction --- the seed and the
+feedback taps are \emph{declared} in the dict (taps may come from the
+versioned canonical table of primitive polynomials), the initialiser
+\emph{walks} the register and refuses any tap set whose cycle is not
+exactly $2^n - 1$, and the announce line prints the leading bits so the
+student can derive the same sequence by hand.  Randomness at run time
+would make the experiment unrepeatable; a declared LFSR makes it exact.
+
+\begin{tutoriallink}{ctrl/ctrl08\_prbs\_ident}
+$T_{\mathrm{in}} = 320 \pm 10$\,K by an $n=4$ LFSR (period 15 bits
+$\times$ 120\,s), the hand-derived sequence \code{000100110101111} in
+the case header matching the announce; seed 0 and non-maximal taps
+refuse aloud.
+\end{tutoriallink}
 
 % ====================================================================
 %  THREE NEW CHAPTERS (kinetics + stiff numerics + polymers)

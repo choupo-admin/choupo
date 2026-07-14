@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethyl-n-propylamine  (C5H13N, CAS 926-63-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethylNPropylamine;
+formula     C5H13N;
+CAS         926-63-6;
+InChIKey    ZUHZZVMEUAUWHY-UHFFFAOYSA-N;
+MW          87.166;      // g/mol [origin=calculated method=formula-sum]
+Tc          488.54;      // K   [origin=predictive method=joback]
+Pc          34.602;      // bar [origin=predictive method=joback]
+omega       0.3153;      // -   [origin=predictive method=lee-kesler]
+Tb          326.44;      // K   [origin=predictive method=joback]
+HvapTb      28767.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.348 0.60276 -0.0003608 8.57e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethylpropan-1-amine" "dimethylpropylamine" "n,n-dimethylpropylamine" "1-propanamine, n,n-dimethyl-" "n,n-dimethyl-1-propanamine" "dimethyl(propyl)amine" "agn-pc-0clz2o" "n,n-dimethyl-3-tritiopropan-1-amine" );
+gibbsFormation
+{
+    dHf_298   -79000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     366.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=102000.0
+    phase     gas;
+}

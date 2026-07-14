@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrahydrofurfuryl pentaethylene glycol acrylate  (C18H32O8, CAS 67892-99-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrahydrofurfurylPentaethyleneGlycolAcrylate;
+formula     C18H32O8;
+CAS         67892-99-3;
+InChIKey    CTVTVTUUJWVDSV-UHFFFAOYSA-N;
+MW          376.446;      // g/mol [origin=calculated method=formula-sum]
+Tc          1010.17;      // K   [origin=predictive method=joback]
+Pc          12.637;      // bar [origin=predictive method=joback]
+omega       1.1137;      // -   [origin=predictive method=lee-kesler]
+Tb          820.67;      // K   [origin=predictive method=joback]
+HvapTb      79216.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (93.281 1.4517 -0.0004422 -7.99e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH; count 1; } { group CH2=CH; count 1; } { group CH2O; count 5; } { group FCH2O; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 11; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group O; count 5; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-[2-[2-(oxolan-2-ylmethoxy)ethoxy]ethoxy]ethoxy]ethoxy]ethyl prop-2-enoate" "1-(tetrahydrofuran-2-yl)-2,5,8,11,14-pentaoxahexadecan-16-yl acrylate" "16-(tetrahydro-2-furyl)-3,6,9,12,15-pentaoxahexadecyl acrylate" "2-propenoic acid, 16-(tetrahydro-2-furanyl)-3,6,9,12,15-pentaoxahexadec-1-yl ester" );
+gibbsFormation
+{
+    dHf_298   -1339320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     858.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-696420.0
+    phase     gas;
+}

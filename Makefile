@@ -1,7 +1,7 @@
 # =============================================================================
 #  Choupo  --  top-level Makefile
 #
-#  Build:           make
+#  Build:           make          (native release; same as `make all`)
 #  Build (debug):   make MODE=debug
 #  Tests:           make test
 #  Clean current:   make clean      (only current MODE/PLATFORM)
@@ -14,6 +14,12 @@
 #      choupoCtrl    --  dynamic continuous + control loops (v0.24+)
 #      choupoProps   --  physical-property service + parameter fitting (v0.36+)
 # =============================================================================
+
+# `make` with no target must build the NATIVE binaries.  Without this line the
+# default goal would be the first rule GNU make sees -- which is whatever
+# make/wasm.mk defines, because it is included before `all:` is declared below.
+# A visitor's very first command would then fire up Emscripten.
+.DEFAULT_GOAL := all
 
 include make/compiler.mk
 include make/rules.mk

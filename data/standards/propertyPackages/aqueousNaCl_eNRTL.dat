@@ -1,0 +1,46 @@
+/*---------------------------------------------------------------------------*\
+  propertyPackage aqueousNaCl_eNRTL -- the declarative thermo MANIFEST a case selects
+  (`package aqueousNaCl_eNRTL;` in its constant/propertyPackage, or copy this record
+  inline into the case for the self-contained form).
+  Components: water NaCl.  Liquid method: electrolyte.eNRTL (the world);
+  the ThermoPackageBuilder loads + verifies every declared parameter file and
+  announces the assembly in the run log.  Grammar: the 2026-07-04 forum
+  (models per PHASE, conventions per GROUP, parameters per PAIR, all cited).
+\*---------------------------------------------------------------------------*/
+recordType propertyPackage;
+schemaVersion 1;
+
+name aqueousNaCl_eNRTL;
+
+components ( water NaCl );
+
+chemistry
+{
+    salts ( halite );
+
+    activeSaltEquilibriumData
+    {
+        halite measuredSolubilityAnchor;
+    }
+}
+
+propertyMethods
+{
+    liquid electrolyte.eNRTL;
+    vapour builtin.idealGas;
+    solid  builtin.saltEquilibrium;
+}
+
+parameters
+{
+    eNRTLPairs
+    {
+        Na-Cl "data/standards/parameters/electrolyte/eNRTL/Na-Cl.dat";
+    }
+}
+
+
+notes
+{
+    purpose "Aspen-like NaCl eNRTL package. tau(T) anchored/uncalibrated -> no L_phi (calorimetricFit forced false by the builder).";
+}

@@ -25,16 +25,7 @@
   membrane itself, they are adjusting k_film.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            575.0 kmol/h;
-        T            298.15 K;
-        P            55.0 bar;
-        molarComposition  { water 0.98960;  NaCl 0.01040; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: netasyn  (C40H50O4, CAS 37270-71-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        netasyn;
+formula     C40H50O4;
+CAS         37270-71-6;
+InChIKey    NAPPWIFDUAHTRY-XYDRQXHOSA-N;
+MW          594.836;      // g/mol [origin=calculated method=formula-sum]
+Tc          1884.10;      // K   [origin=predictive method=joback]
+Pc          11.023;      // bar [origin=predictive method=joback]
+omega       0.9468;      // -   [origin=predictive method=lee-kesler]
+Tb          1524.39;      // K   [origin=predictive method=joback]
+HvapTb      153910.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-488.28 5.26094 -0.00481222 1.86898e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 12; } { group CH; count 6; } { group C; count 4; } { group CH=C; count 1; } { group ACH; count 3; } { group ACCH2; count 1; } { group ACCH; count 1; } { group OH; count 2; } { group ACOH; count 1; } { group CH2CO; count 1; } { group CH_C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group tCH; count 2; } { group tC; count 2; } { group CH2_ring; count 14; } { group CH_ring; count 7; } { group C_ring; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 4; } { group OH; count 2; } { group OH_phenol; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(8r,9s,13s,14s,17r)-17-ethynyl-13-methyl-7,8,9,11,12,14,15,16-octahydro-6h-cyclopenta[a]phenanthrene-3,17-diol;(8r,9s,10r,13s,14s,17r)-17-ethynyl-13-methyl-17-oxidanyl-1,2,6,7,8,9,10,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthren-3-one" "norminest" "norinyl 1-35" "duagynon" "gynovlar" "oestro-primolut" "femcon fe" "e-con" "ovcon 35" "ovcon 50" "ortho-novum 1/35" "ortho-novum 7/7/7" );
+gibbsFormation
+{
+    dHf_298   -298770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1270.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=487310.0
+    phase     gas;
+}

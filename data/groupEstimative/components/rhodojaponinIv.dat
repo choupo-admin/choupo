@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: rhodojaponin iv  (C24H38O8, CAS 30460-34-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        rhodojaponinIv;
+formula     C24H38O8;
+CAS         30460-34-5;
+InChIKey    CLACQPZPBZLUQK-OZPUGOANSA-N;
+MW          454.56;      // g/mol [origin=calculated method=formula-sum]
+Tc          1562.90;      // K   [origin=predictive method=joback]
+Pc          15.623;      // bar [origin=predictive method=joback]
+omega       1.0755;      // -   [origin=predictive method=lee-kesler]
+Tb          1246.43;      // K   [origin=predictive method=joback]
+HvapTb      142970.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-376.78 4.14952 -0.0041846 1.7696e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 6; } { group C; count 5; } { group OH; count 4; } { group CH3COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2_ring; count 5; } { group CH_ring; count 6; } { group C_ring; count 5; } { group OH; count 4; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-acetyl-grayanotoxin i" "6-o-acetyl grayanotoxin 1" "grayanotoxin iii 6,14-diacetate" "(3" "a,6" "a,14s)-3,5,10,16-tetrahydroxygrayanotoxane-6,14-diyl diacetate" "7,9a-methano-9ah-cyclopenta(b)heptalene-2,4,8,11,11a,12(1h)-hexol, dodecahydro-1,1,4,8-tetramethyl-, 6,12-diacetate, (2s,3as,4r,4ar,7r,8r,9as,11r,11ar,12r)-" );
+gibbsFormation
+{
+    dHf_298   -1581790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1166.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-903640.0
+    phase     gas;
+}

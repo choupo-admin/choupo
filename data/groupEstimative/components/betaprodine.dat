@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: betaprodine  (C16H23NO2, CAS 468-59-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        betaprodine;
+formula     C16H23NO2;
+CAS         468-59-7;
+InChIKey    UVAZQQHAVMNMHE-UHFFFAOYSA-N;
+MW          261.365;      // g/mol [origin=calculated method=formula-sum]
+Tc          896.12;      // K   [origin=predictive method=joback]
+Pc          20.145;      // bar [origin=predictive method=joback]
+omega       0.7143;      // -   [origin=predictive method=lee-kesler]
+Tb          673.87;      // K   [origin=predictive method=joback]
+HvapTb      61733.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-135.379 1.91116 -0.0015004 4.943e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH2COO; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1,3-dimethyl-4-phenyl-piperidin-4-yl) propanoate" "alphaprodin" "alphaprodine" "beta-prodine" "1,3-dimethyl-4-phenyl-4-piperidinyl propionate" "betaprodinum [inn-latin]" "prodine" "betaprodine [inn:ban:dcf]" "4-piperidinol, 1,3-dimethyl-4-phenyl-, propanoate (ester), cis-" "4-piperidinol, 1,3-dimethyl-4-phenyl-, propanoate (ester), trans-" "alpha-prodinol" "beta-1,3-dimethyl-4-phenyl-4-propionyloxypiperidine" );
+gibbsFormation
+{
+    dHf_298   -331410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     716.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=20010.0
+    phase     gas;
+}

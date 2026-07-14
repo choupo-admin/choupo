@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-tridecen-7-yn-1-ol  (C13H22O, CAS 61565-24-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Tridecen7Yn1Ol;
+formula     C13H22O;
+CAS         61565-24-0;
+InChIKey    LDQDYJTYBDXDFI-UHFFFAOYSA-N;
+MW          194.318;      // g/mol [origin=calculated method=formula-sum]
+Tc          780.98;      // K   [origin=predictive method=joback]
+Pc          21.394;      // bar [origin=predictive method=joback]
+omega       0.9641;      // -   [origin=predictive method=lee-kesler]
+Tb          602.38;      // K   [origin=predictive method=joback]
+HvapTb      63321.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.262 1.14302 -0.00070546 1.7968e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CH=CH; count 1; } { group OH; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group dCH; count 2; } { group tC; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tridec-4-en-7-yn-1-ol" "4-tridecen-7-yn-1-ol, (4e)-" );
+gibbsFormation
+{
+    dHf_298   -74360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     678.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=204780.0
+    phase     gas;
+}

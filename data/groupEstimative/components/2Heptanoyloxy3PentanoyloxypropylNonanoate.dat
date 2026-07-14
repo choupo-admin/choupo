@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2-heptanoyloxy-3-pentanoyloxypropyl) nonanoate  (C24H44O6, CAS 70693-40-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Heptanoyloxy3PentanoyloxypropylNonanoate;
+formula     C24H44O6;
+CAS         70693-40-2;
+InChIKey    NALYYZTVSBKKMS-UHFFFAOYSA-N;
+MW          428.61;      // g/mol [origin=calculated method=formula-sum]
+Tc          1132.36;      // K   [origin=predictive method=joback]
+Pc          8.168;      // bar [origin=predictive method=joback]
+omega       0.7618;      // -   [origin=predictive method=lee-kesler]
+Tb          922.94;      // K   [origin=predictive method=joback]
+HvapTb      90851.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (55.617 2.12536 -0.0010012 1.026e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 14; } { group CH; count 1; } { group CH2COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 17; } { group CH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2-heptanoyloxy-3-pentanoyloxy-propyl) nonanoate" "nonanoic acid mixed esters with heptanoic acid trimethylolpropane and valeric acid" "nonanoic acid, mixed esters with heptanoic acid, trimethylolpropane and valeric acid" "(c5-c9) saturated alkyl straight-fatty acids, trimethylolpropane esters" );
+gibbsFormation
+{
+    dHf_298   -1495810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1235.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-782350.0
+    phase     gas;
+}

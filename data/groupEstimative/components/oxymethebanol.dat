@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxymethebanol  (C19H27NO4, CAS 3176-03-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oxymethebanol;
+formula     C19H27NO4;
+CAS         3176-03-2;
+InChIKey    LCAHPIFLPICNRW-SVYNMNNPSA-N;
+MW          333.428;      // g/mol [origin=calculated method=formula-sum]
+Tc          1156.21;      // K   [origin=predictive method=joback]
+Pc          21.918;      // bar [origin=predictive method=joback]
+omega       1.5765;      // -   [origin=predictive method=lee-kesler]
+Tb          937.88;      // K   [origin=predictive method=joback]
+HvapTb      99671.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-204.39 2.61736 -0.00241528 9.489e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH; count 2; } { group C; count 2; } { group ACH; count 2; } { group AC; count 3; } { group ACCH2; count 1; } { group OH; count 2; } { group CH3O; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 6; } { group CH_ring; count 2; } { group C_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH; count 2; } { group O; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oxymetebanol" "metebanyl" "drotebanol" "drotebanolum [inn-latin]" "14-hydroxy-6-beta-thebainol 4-methyl ether" "dihydro-14-hydroxy-4-o-methyl-6-beta-thebainol" "3,4-dimethoxy-17-methylmorphinan-6beta,14-diol" "14-hydroxydihydro-6-beta-thebainol 4-methyl ether" "3,4-dimethoxy-17-methylmorphinan-6-beta,14-diol" "dihydro-14-hydroxy-6-beta-thebainol 4 methyl ester" "6-beta,14-dihydroxy-3,4-dimethoxy-n-methylmorphinan" "morphinan-6-beta,14-diol, 3,4-dimethoxy-17-methyl-" );
+gibbsFormation
+{
+    dHf_298   -512360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     757.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-28780.0
+    phase     gas;
+}

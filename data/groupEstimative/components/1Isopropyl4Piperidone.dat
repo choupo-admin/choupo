@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-isopropyl-4-piperidone  (C8H15NO, CAS 5355-68-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Isopropyl4Piperidone;
+formula     C8H15NO;
+CAS         5355-68-0;
+InChIKey    CCDBCHAQIXKJCG-UHFFFAOYSA-N;
+MW          141.214;      // g/mol [origin=calculated method=formula-sum]
+Tc          696.64;      // K   [origin=predictive method=joback]
+Pc          33.335;      // bar [origin=predictive method=joback]
+omega       0.4614;      // -   [origin=predictive method=lee-kesler]
+Tb          482.41;      // K   [origin=predictive method=joback]
+HvapTb      39870.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-46.75 0.88354 -0.000466 7.56e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group CH2CO; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group CH2_ring; count 4; } { group CdO_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-propan-2-ylpiperidin-4-one" "1-isopropylpiperidin-4-one" "n-isopropyl-4-piperidone" "1-(methylethyl)piperidin-4-one" "1-(isopropyl)-4-piperidone" "4-piperidinone,1-(1-methylethyl)-" "4-piperidinone, 1-(1-methylethyl)-" "1-(propan-2-yl)piperidin-4-one" "p487" "1-(1'-methylethyl)-4-piperidone" "4-piperidone,1-isopropyl- (7ci,8ci);1-(1-methylethyl)-4-piperidinone;1-isopropyl-4-piperidinone;n-isopropyl-4-piperidinone;n-isopropyl-4-piperidone;" );
+gibbsFormation
+{
+    dHf_298   -203080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     387.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=46490.0
+    phase     gas;
+}

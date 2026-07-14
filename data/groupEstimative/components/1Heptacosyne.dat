@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-heptacosyne  (C27H52, CAS 61847-87-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Heptacosyne;
+formula     C27H52;
+CAS         61847-87-8;
+InChIKey    WQIIFNZXBFDHKQ-UHFFFAOYSA-N;
+MW          376.713;      // g/mol [origin=calculated method=formula-sum]
+Tc          988.71;      // K   [origin=predictive method=joback]
+Pc          7.457;      // bar [origin=predictive method=joback]
+omega       0.7000;      // -   [origin=predictive method=lee-kesler]
+Tb          807.48;      // K   [origin=predictive method=joback]
+HvapTb      75554.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.876 2.47492 -0.00144093 3.2849e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 24; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 24; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "heptacos-1-yne" );
+gibbsFormation
+{
+    dHf_298   -308710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1177.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=399530.0
+    phase     gas;
+}

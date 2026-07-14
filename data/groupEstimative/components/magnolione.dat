@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: magnolione  (C13H22O2, CAS 40942-73-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        magnolione;
+formula     C13H22O2;
+CAS         40942-73-2;
+InChIKey    PMVDYAQAPLAXSY-UHFFFAOYSA-N;
+MW          210.317;      // g/mol [origin=calculated method=formula-sum]
+Tc          833.78;      // K   [origin=predictive method=joback]
+Pc          20.272;      // bar [origin=predictive method=joback]
+omega       0.7464;      // -   [origin=predictive method=lee-kesler]
+Tb          629.34;      // K   [origin=predictive method=joback]
+HvapTb      55473.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.685 1.14774 -0.0004927 3.276e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CH; count 2; } { group CH3CO; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group CdO; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(2-oxidanylidenepropyl)-2-pentyl-cyclopentan-1-one" "3-(2-oxopropyl)-2-pentylcyclopentanone" "cyclopentanone, 3-(2-oxopropyl)-2-pentyl-" "pentylcyclopentanonepropanone" "3-(2-oxopropyl)-2-pentylcyclopentan-1-one" "2-pentyl-3-(2-propanone)-1-cyclopentanone" "agn-pc-00ahpw" );
+gibbsFormation
+{
+    dHf_298   -521790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     517.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-164090.0
+    phase     gas;
+}

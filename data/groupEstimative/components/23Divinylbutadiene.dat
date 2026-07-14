@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3-divinylbutadiene  (C8H10, CAS 3642-21-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23Divinylbutadiene;
+formula     C8H10;
+CAS         3642-21-5;
+InChIKey    DMCINEDFOKMBFI-UHFFFAOYSA-N;
+MW          106.168;      // g/mol [origin=calculated method=formula-sum]
+Tc          554.08;      // K   [origin=predictive method=joback]
+Pc          30.592;      // bar [origin=predictive method=joback]
+omega       0.2590;      // -   [origin=predictive method=lee-kesler]
+Tb          369.12;      // K   [origin=predictive method=joback]
+HvapTb      30882.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.73 0.6836 -0.0005076 1.572e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 2; } { group CH2=C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 4; } { group dCH; count 2; } { group dC; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4-dimethylidenehexa-1,5-diene" "ch2=chc(=ch2)c(=ch2)ch=ch2" );
+gibbsFormation
+{
+    dHf_298   273690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     440.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=350740.0
+    phase     gas;
+}

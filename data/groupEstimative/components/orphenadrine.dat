@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: orphenadrine  (C18H23NO, CAS 83-98-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        orphenadrine;
+formula     C18H23NO;
+CAS         83-98-7;
+InChIKey    QVYRGXJJSLMXQH-UHFFFAOYSA-N;
+MW          269.388;      // g/mol [origin=calculated method=formula-sum]
+Tc          925.00;      // K   [origin=predictive method=joback]
+Pc          18.740;      // bar [origin=predictive method=joback]
+omega       0.7654;      // -   [origin=predictive method=lee-kesler]
+Tb          704.20;      // K   [origin=predictive method=joback]
+HvapTb      64941.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-53.858 1.56316 -0.00095556 2.112e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 9; } { group AC; count 1; } { group ACCH3; count 1; } { group ACCH; count 1; } { group CH2O; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethyl-2-[(2-methylphenyl)-phenyl-methoxy]ethanamine" "disipal" "o-methyldiphenhydramine" "brocadisipal" "orphenedrine" "biorphen" "orphenadine" "orphenadrin" "2-methyldiphenhydramine" "mephenamine" "o-monomethyldiphenhydramine" "orfenadrina" );
+gibbsFormation
+{
+    dHf_298   -23230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     655.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=319210.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-pentyn-2-ol  (C5H8O, CAS 2117-11-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Pentyn2Ol;
+formula     C5H8O;
+CAS         2117-11-5;
+InChIKey    JTHLRRZARWSHBE-UHFFFAOYSA-N;
+MW          84.118;      // g/mol [origin=calculated method=formula-sum]
+Tc          572.65;      // K   [origin=predictive method=joback]
+Pc          47.562;      // bar [origin=predictive method=joback]
+omega       0.5996;      // -   [origin=predictive method=lee-kesler]
+Tb          395.86;      // K   [origin=predictive method=joback]
+HvapTb      42873.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.731 0.42482 -0.00027773 7.599e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pent-4-yn-2-ol" "4-pentyne-2-ol" "(+-)-4-pentyn-2-ol" "(s)-4-pentyn-2-ol" "(+/-)-4-pentyn-2-ol" );
+gibbsFormation
+{
+    dHf_298   -12140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     361.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=75030.0
+    phase     gas;
+}

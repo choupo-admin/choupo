@@ -30,17 +30,31 @@ describe("energyBalance — first-law closure with unit duties", () => {
   });
 });
 
+describe("energyBalance — adiabatic flash uses the published enthalpy surface", () => {
+  it("closes directly from feed and product H_kW", () => {
+    const adiabatic = [
+      { ...mk("feed", 0.0277777777778, 39290.5886153), H_kW: 1091.40523931 },
+      { ...mk("product", 0.0263366357393, 37200.5118908), H_kW: 979.736330984 },
+      { ...mk("product", 0.00144114203845, 77486.3584064), H_kW: 111.668848506 },
+    ];
+    const eb = energyBalance(adiabatic);
+    expect(Math.abs(eb.delta)).toBeLessThan(0.001);
+    expect(eb.closureErr).toBeLessThan(1e-6);
+  });
+});
+
 describe("unitEnergy — heat from utilityAllocation, work from kpis", () => {
   it("nets heating − cooling and signs shaft work", () => {
     const e = unitEnergy(
       [{ tier: "heating", duty_kW: 275.582 }, { tier: "cooling", duty_kW: 40 }],
       { comp1: { W_shaft_kW: 12.5 }, turb1: { W_shaft_kW: -5 } },
     );
-    expect(e.heatKw).toBeCloseTo(235.582, 3);  // 275.582 − 40
+    expect(e.heatAddedKw).toBeCloseTo(275.582, 3);   // heating, on the INPUTS side
+    expect(e.heatRemovedKw).toBeCloseTo(40, 3);       // cooling (the cold), OUTPUTS side
     expect(e.workKw).toBeCloseTo(7.5, 6);      // +12.5 (compressor) − 5 (turbine)
   });
 
   it("empty inputs → zero", () => {
-    expect(unitEnergy(undefined, undefined)).toEqual({ heatKw: 0, workKw: 0 });
+    expect(unitEnergy(undefined, undefined)).toEqual({ heatAddedKw: 0, heatRemovedKw: 0, workKw: 0 });
   });
 });

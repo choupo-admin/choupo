@@ -1,0 +1,44 @@
+/*---------------------------------------------------------------------------*\
+  pitzer_hmw_hot_agreement  --  one salt, one temperature, TWO Pitzer
+  engines: they must agree (forum 100.2/#101, the HMW-virials(T) fix).
+
+  NaCl at 4 mol/kg, 100 C.  Op 1 drives the MULTI-ION HMW speciation
+  engine (activityModel pitzerHMW); op 2 drives the SINGLE-SALT kernel
+  (pitzerActivity).  Both now read the SAME Na-Cl.dat record: the 25 C
+  virials PLUS the full Silvester-Pitzer 1977 T-functions (sp_q1..q14)
+  and the same A_phi(T).  For a lone 1:1 salt the HMW sum collapses to
+  the same B/C terms as the kernel, so
+
+      gamma_pm(HMW) = sqrt(gamma_Na * gamma_Cl)  ==  gamma_pm(kernel)
+
+  to numerical noise.  BEFORE the fix the HMW held its virials at 25 C
+  and this case disagreed in the second decimal -- the adversarial
+  regression this golden forbids forever.
+
+  (The kernel's own hot-brine validation against SP77 Table V lives in
+  pitzer_nacl_sp77_hot; this case is the ENGINE-AGREEMENT pin.)
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        hmw_nacl_100C;
+        type        speciate;
+        activityModel pitzerHMW;
+        temperature 373.15;
+        totals      { Na 4.0 mol/kg;  Cl 4.0 mol/kg; }
+        pH          7.0;               // neutral brine (no acid-base chemistry)
+        diagSpecies ( Na Cl );
+        output      { file hmw_nacl_100C.csv; }
+    }
+
+    {
+        name        kernel_nacl_100C;
+        type        pitzerActivity;
+        cation      Na;   anion Cl;
+        temperature 373.15;
+        source      "SP77 T-functions (Na-Cl.dat); A_phi: SP77 Table II";
+        molality    { from 4.0; to 4.0; n 1; }
+        output      { file kernel_nacl_100C.csv; }
+    }
+);

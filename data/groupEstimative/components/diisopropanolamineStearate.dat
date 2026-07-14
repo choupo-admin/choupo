@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diisopropanolamine stearate  (C24H51NO4, CAS 10042-66-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diisopropanolamineStearate;
+formula     C24H51NO4;
+CAS         10042-66-7;
+InChIKey    WGQPIPNTXUNINT-UHFFFAOYSA-N;
+MW          417.675;      // g/mol [origin=calculated method=formula-sum]
+Tc          1446.20;      // K   [origin=predictive method=joback]
+Pc          9.138;      // bar [origin=predictive method=joback]
+omega       0.4806;      // -   [origin=predictive method=lee-kesler]
+Tb          1129.28;      // K   [origin=predictive method=joback]
+HvapTb      125494.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (32.498 2.28446 -0.0010554 1.143e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 17; } { group CH; count 2; } { group OH; count 2; } { group CH2NH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 18; } { group CH; count 2; } { group OH; count 2; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "octadecanoic acid;1-(2-oxidanylpropylamino)propan-2-ol" "octadecanoic acid- 1,1'-iminodipropan-2-ol(1:1)" "stearic acid, compound with 1,1'-iminodi(propan-2-ol) (1:1)" "1-(2-hydroxypropylamino)propan-2-ol; octadecanoic acid" "stearic acid, compound with 1,1-iminodi(propan-2-ol) (1:1)" "octadecanoic acid, compd. with 1,1'-iminobis(2-propanol) (1:1)" );
+gibbsFormation
+{
+    dHf_298   -1262130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1375.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-486600.0
+    phase     gas;
+}

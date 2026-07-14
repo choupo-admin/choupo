@@ -1,4 +1,0 @@
-components       ( ethanol  water );
-
-activityModel    { model ideal; }      // global default; each scan overrides it
-equationOfState  { model idealGas; }

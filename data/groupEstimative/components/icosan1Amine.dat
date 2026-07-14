@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: icosan-1-amine  (C20H43N, CAS 10525-37-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        icosan1Amine;
+formula     C20H43N;
+CAS         10525-37-8;
+InChIKey    BUHXFUSLEBPCEB-UHFFFAOYSA-N;
+MW          297.571;      // g/mol [origin=calculated method=formula-sum]
+Tc          901.37;      // K   [origin=predictive method=joback]
+Pc          10.535;      // bar [origin=predictive method=joback]
+omega       0.9145;      // -   [origin=predictive method=lee-kesler]
+Tb          729.73;      // K   [origin=predictive method=joback]
+HvapTb      70755.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.801 1.96572 -0.0011076 2.378e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 18; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 19; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "eicosylamine" "1-eicosanamine" "icosylamine" "1-icosanamine" "1-aminoeicosane" "eicosylamine(6ci,7ci,8ci); 1-aminoeicosane; arachidylamine; eicosanylamine; n-eicosylamine" );
+gibbsFormation
+{
+    dHf_298   -422340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     986.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=183970.0
+    phase     gas;
+}

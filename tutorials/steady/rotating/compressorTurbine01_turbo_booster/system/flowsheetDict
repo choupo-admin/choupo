@@ -37,26 +37,7 @@
   edge in the flowsheet that the GUI can render dashed.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    // Hot exhaust gas (e.g. post-combustion at 5 bar) feeding the turbine.
-    hotExhaust
-    {
-        F             3.6 kmol/h;        // = 1 mol/s
-        T           800.0 K;
-        P             5.0 bar;
-        molarComposition  { N2 0.79;  O2 0.21; }
-    }
-
-    // Ambient air feeding the compressor (a SEPARATE physical stream).
-    ambientAir
-    {
-        F             1.8 kmol/h;        // = 0.5 mol/s
-        T           298.15 K;
-        P             1.0 bar;
-        molarComposition  { N2 0.79;  O2 0.21; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

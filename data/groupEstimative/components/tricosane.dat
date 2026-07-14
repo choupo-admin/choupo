@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tricosane  (C23H48, CAS 638-67-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tricosane;
+formula     C23H48;
+CAS         638-67-5;
+InChIKey    FIGVVZUWCLSUEI-UHFFFAOYSA-N;
+MW          324.637;      // g/mol [origin=calculated method=formula-sum]
+Tc          892.23;      // K   [origin=predictive method=joback]
+Pc          8.520;      // bar [origin=predictive method=joback]
+omega       0.7799;      // -   [origin=predictive method=lee-kesler]
+Tb          725.84;      // K   [origin=predictive method=joback]
+HvapTb      66792.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.019 2.18884 -0.0012274 2.625e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 21; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 21; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-tricosane" "tricosan" "ai3-35917" "docosane, methyl-" "CH3-[CH2]21-ch3" "tricosane, analytical standard" "CH3-(CH2)21-CH3" "NSC78487" "tricosane; nsc 78487; n-tricosane" "HY-W130307" "AS-56122" "DB-054568" );
+gibbsFormation
+{
+    dHf_298   -518050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1051.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=142780.0
+    phase     gas;
+}

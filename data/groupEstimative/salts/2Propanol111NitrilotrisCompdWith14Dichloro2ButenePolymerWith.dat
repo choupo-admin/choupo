@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): 2-propanol, 1,1',1''-nitrilotris-, compd. with 1,4-dichloro-2-butene polymer with n,n,n',n'-tetramethyl-2-butene-1,4-diamine  (C21H45Cl2N3O3, CAS 71662-59-4)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           2Propanol111NitrilotrisCompdWith14Dichloro2ButenePolymerWith;
+formula        C21H45Cl2N3O3;
+CAS            71662-59-4;
+InChIKey       MJUFODXAVIZCTQ-LBRWJQMRSA-N;
+MW             458.509;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: 2-propanol, 1,1',1''-nitrilotris-, compd. with 1,4-dichloro-2-butene polymer with n,n,n',n'-tetramethyl-2-butene-1,4-diamine

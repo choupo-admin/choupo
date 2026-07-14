@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-dimethylbutane  (C6H14, CAS 75-83-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Dimethylbutane;
+formula     C6H14;
+CAS         75-83-2;
+InChIKey    HNRMPXKDFBEGFZ-UHFFFAOYSA-N;
+MW          86.178;      // g/mol [origin=calculated method=formula-sum]
+Tc          508.30;      // K   [origin=predictive method=joback]
+Pc          31.740;      // bar [origin=predictive method=joback]
+omega       0.2176;      // -   [origin=predictive method=lee-kesler]
+Tb          333.65;      // K   [origin=predictive method=joback]
+HvapTb      27654.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.039 0.69968 -0.0004744 1.321e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "neohexane" "butane, 2,2-dimethyl-" "butane,2-dimethyl-" "2,2-dimethyl butane" "2,2-dimethyl-butane" );
+gibbsFormation
+{
+    dHf_298   -175920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     350.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=2480.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: a-tripiperideine  (C15H27N3, CAS 522-33-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        aTripiperideine;
+formula     C15H27N3;
+CAS         522-33-8;
+InChIKey    DKOLZPGCABHTDG-UHFFFAOYSA-N;
+MW          249.402;      // g/mol [origin=calculated method=formula-sum]
+Tc          842.78;      // K   [origin=predictive method=joback]
+Pc          24.124;      // bar [origin=predictive method=joback]
+omega       0.7107;      // -   [origin=predictive method=lee-kesler]
+Tb          624.56;      // K   [origin=predictive method=joback]
+HvapTb      55590.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-265.09 2.4018 -0.001927 6.152e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group CH; count 3; } { group CH2N; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 12; } { group CH_ring; count 3; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tripiperidine[trimer of 2,3,4,5-tetrahydropyridine]" "dodecahydro-4h,8h,12h-4a,8a,12a-triazatriphenylene" ""dodecahydro-1h,6h,11h-tripyrido[1,2-a:1',2'-c:1"",2""-e][1,3,5]triazine"" "dodecahydro-1h,6h,11h-tripyrido[1,2-a:1',2'-c:1'',2''-e][1,3,5]triazine" "a-tripiperideine" "dodecahydro-4a,8a,12a-triaza-triphenylene" "1,7,13-triazatetracyclo[12.4.0.0<2,7>.0<8,13>]octadecane" "dodecahydro-1h,6h,11h-tripyrido[1,2-a:1',2'-c:1'',2''-e]-s-triazine" ""dodecahydro-1h,6h,11h-tripyrido(1,2-a:1',2'-c:1"""",2""""-e)(1,3,5)triazine"" );
+gibbsFormation
+{
+    dHf_298   142720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     529.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=622170.0
+    phase     gas;
+}

@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): octadecanoic acid, compd. with 2-propanamine (1:1)  (C21H45NO2, CAS 67873-97-6)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           octadecanoicAcidCompdWith2Propanamine11;
+formula        C21H45NO2;
+CAS            67873-97-6;
+InChIKey       GXKKNBAVCHWMEL-UHFFFAOYSA-N;
+MW             343.596;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+dissociatesTo  { octadecanoic acid 1; 2-propanamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

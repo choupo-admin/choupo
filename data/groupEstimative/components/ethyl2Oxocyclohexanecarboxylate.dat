@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 2-oxocyclohexanecarboxylate  (C9H14O3, CAS 1655-07-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl2Oxocyclohexanecarboxylate;
+formula     C9H14O3;
+CAS         1655-07-8;
+InChIKey    FGSGHBPKHFDJOP-UHFFFAOYSA-N;
+MW          170.208;      // g/mol [origin=calculated method=formula-sum]
+Tc          771.98;      // K   [origin=predictive method=joback]
+Pc          29.633;      // bar [origin=predictive method=joback]
+omega       0.5741;      // -   [origin=predictive method=lee-kesler]
+Tb          551.11;      // K   [origin=predictive method=joback]
+HvapTb      47711.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.059 0.75782 -0.0002082 -6.46e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 1; } { group CH2CO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-oxidanylidenecyclohexane-1-carboxylate" "ethyl cyclohexanone-2-carboxylate" "2-carbethoxycyclohexanone" "2-(ethoxycarbonyl)cyclohexanone" "ethyl 2-cyclohexanonecarboxylate" "cyclohexanecarboxylic acid, 2-oxo-, ethyl ester" "ethyl 2-oxocyclohexane-1-carboxylate" "2-cyclohexanonecarboxylic acid ethyl ester" "2-oxocyclohexanecarboxylic acid ethyl ester" "ethyl2-oxocyclohexanecarboxylate" "ethyl 2-oxocylohexanecarboxylate" "ethyl 2-oxylcyclohexanecarboxylic" );
+gibbsFormation
+{
+    dHf_298   -629750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     448.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-383610.0
+    phase     gas;
+}

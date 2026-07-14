@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentafluorobenzyl bromide  (C7H2BrF5, CAS 1765-40-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentafluorobenzylBromide;
+formula     C7H2BrF5;
+CAS         1765-40-8;
+InChIKey    XDEPVFFKOVDUNO-UHFFFAOYSA-N;
+MW          260.987;      // g/mol [origin=calculated method=formula-sum]
+Tc          656.92;      // K   [origin=predictive method=joback]
+Pc          31.210;      // bar [origin=predictive method=joback]
+omega       0.6626;      // -   [origin=predictive method=lee-kesler]
+Tb          473.85;      // K   [origin=predictive method=joback]
+HvapTb      39112.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (72.761 0.3896 -0.0002064 3.52e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACCH2; count 1; } { group Br; count 1; } { group ACF; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dC_ring; count 6; } { group F; count 5; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(bromomethyl)-2,3,4,5,6-pentakis(fluoranyl)benzene" "2,3,4,5,6-pentafluorobenzyl bromide" "(bromomethyl)pentafluorobenzene" "1-bromomethylpentafluorobenzene" "alpha-bromo-2,3,4,5,6-pentafluorotoluene" "1-(bromomethyl)-2,3,4,5,6-pentafluorobenzene" "benzene, (bromomethyl)pentafluoro-" "toluene, .alpha.-bromo-2,3,4,5,6-pentafluoro-" "pentafluoro benzyl bromide" "pentafluorobromomethyl benzene" "2,4,5,6-pentafluorobenzyl bromide" "2,3,4,5,6-pentafluorobenzylbromide" );
+gibbsFormation
+{
+    dHf_298   -962850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     500.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-887410.0
+    phase     gas;
+}

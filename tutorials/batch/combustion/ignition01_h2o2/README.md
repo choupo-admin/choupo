@@ -50,7 +50,7 @@ converges. *See, then decide*, applied to numerics.
   all come from the nine species' curated gas-phase thermo (`gibbsFormation` +
   `idealGasHeatCapacity`) in `data/standards/components/`, each individually
   cited. So the burned state (~2440 K) is physically meaningful.
-- **The reaction RATES are SYNTHETIC.** The Arrhenius constants in
+- **The reaction RATES are REAL: the H/O subsystem of GRI-Mech 3.0, transcribed verbatim (28 reactions, third bodies, explicit colliders, the 2OH(+M) Troe falloff, both DUPLICATE pairs).** The Arrhenius constants in
   `constant/reactions` are hand-chosen, illustrative values — **not** transcribed
   from any published mechanism (GRI-Mech, Ó Conaire, Burke, San Diego, …). They
   reproduce the chain-branching *structure* so there is something stiff to

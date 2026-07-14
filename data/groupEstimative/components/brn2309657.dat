@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 2309657  (C24H23NO2S, CAS 66964-37-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn2309657;
+formula     C24H23NO2S;
+CAS         66964-37-2;
+InChIKey    PZYDJZNTAVBABA-UHFFFAOYSA-N;
+MW          389.513;      // g/mol [origin=calculated method=formula-sum]
+Tc          1406.05;      // K   [origin=predictive method=joback]
+Pc          18.185;      // bar [origin=predictive method=joback]
+omega       1.3904;      // -   [origin=predictive method=lee-kesler]
+Tb          1138.64;      // K   [origin=predictive method=joback]
+HvapTb      113096.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-60.957 2.06881 -0.001534 4.545e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 10; } { group AC; count 7; } { group ACCH3; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 8; } { group COOH; count 1; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-4-[(12-methylbenzo[a]anthracen-7-yl)methylsulfanyl]butanoic acid" "butyric acid, 2-amino-4-(12-methyl-7-benz(a)anthrylmethyl)thio-" "butyric acid, 2-amino-4-(12-methyl-7-benz[a]anthrylmethyl)thio-" "l-homocysteine, s-[(12-methylbenz[a]anthracen-7-yl)methyl]-" "2-amino-4-[(12-methylbenzo[a]anthracen-7-yl)methylsulfanyl]butanoic acid" );
+gibbsFormation
+{
+    dHf_298   -54720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     789.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=298260.0
+    phase     gas;
+}

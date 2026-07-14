@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-hexadecyl-n-methyl-1-hexadecanamine  (C33H69N, CAS 67700-99-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nHexadecylNMethyl1Hexadecanamine;
+formula     C33H69N;
+CAS         67700-99-6;
+InChIKey    KCMTVIZYKDBFFS-UHFFFAOYSA-N;
+MW          479.922;      // g/mol [origin=calculated method=formula-sum]
+Tc          1214.69;      // K   [origin=predictive method=joback]
+Pc          5.194;      // bar [origin=predictive method=joback]
+omega       0.1897;      // -   [origin=predictive method=lee-kesler]
+Tb          967.08;      // K   [origin=predictive method=joback]
+HvapTb      91095.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.8 3.26276 -0.001884 4.189e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 30; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 30; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-hexadecyl-n-methyl-hexadecan-1-amine" "amines, di-c14-18-alkylmethyl" "n-hexadecyl-n-methylhexadecan-1-amine" "methylamine, n,n-bis(n.-hexadecyl)-" "1-hexadecanamine, n-hexadecyl-n-methyl-" "dicetylmethylamine" "di(hexadecyl)methylamine" "(c14-c18) dialkylmethylamine" );
+gibbsFormation
+{
+    dHf_298   -656920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1457.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=337760.0
+    phase     gas;
+}

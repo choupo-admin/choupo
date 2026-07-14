@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1,2,2-pentafluoro-2-methoxyethane  (C3H3F5O, CAS 22410-44-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11122Pentafluoro2Methoxyethane;
+formula     C3H3F5O;
+CAS         22410-44-2;
+InChIKey    GCDWNCOAODIANN-UHFFFAOYSA-N;
+MW          150.046;      // g/mol [origin=calculated method=formula-sum]
+Tc          418.51;      // K   [origin=predictive method=joback]
+Pc          34.199;      // bar [origin=predictive method=joback]
+omega       0.3241;      // -   [origin=predictive method=lee-kesler]
+Tb          280.55;      // K   [origin=predictive method=joback]
+HvapTb      18005.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.17 0.53622 -0.000454 1.415e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3O; count 1; } { group CF3; count 1; } { group CF2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 2; } { group F; count 5; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentafluoroethyl methyl ether" "pentafluoromethoxyethane" "methyl pentafluoroethyl ether" "SY326931" "DB-225820" "NS00115455" "ethane, 1,1,1,2,2-pentafluoro-2-methoxy-" "1,1,1,2,2-pentafluoro-3-oxabutane, 2-methoxy-1,1,1,2,2-pentafluoroethane, pentafluoroethyl methyl ether" "methyl-pentafluoroethyl-ether" );
+gibbsFormation
+{
+    dHf_298   -1235520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     364.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1098990.0
+    phase     gas;
+}

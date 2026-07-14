@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lanostane  (C30H54, CAS 474-20-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lanostane;
+formula     C30H54;
+CAS         474-20-4;
+InChIKey    ZQIOPEXWVBIZAV-UHFFFAOYSA-N;
+MW          414.762;      // g/mol [origin=calculated method=formula-sum]
+Tc          1142.81;      // K   [origin=predictive method=joback]
+Pc          8.707;      // bar [origin=predictive method=joback]
+omega       0.6524;      // -   [origin=predictive method=lee-kesler]
+Tb          915.71;      // K   [origin=predictive method=joback]
+HvapTb      76270.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-430.527 4.48296 -0.0041722 1.6717e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 8; } { group CH2; count 12; } { group CH; count 6; } { group C; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2; count 3; } { group CH; count 2; } { group CH2_ring; count 9; } { group CH_ring; count 4; } { group C_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,4,10,13,14-pentamethyl-17-(6-methylheptan-2-yl)-2,3,5,6,7,8,9,11,12,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthrene" "1h-cyclopenta[a]phenanthrene, 17-(1,5-dimethylhexyl)hexadecahydro-4,4,10,13,14-pentamethyl-, [5s-[5.alpha.,8.beta.,9.alpha.,10.beta.,13.beta.,14.alpha.,17.beta.(s*)]]-" "(8r,9s,10r,13r,14s,17r)-4,4,10,13,14-pentamethyl-17-[(2r)-6-methylheptan-2-yl]-2,3,5,6,7,8,9,11,12,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthrene" );
+gibbsFormation
+{
+    dHf_298   -433090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1152.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=326540.0
+    phase     gas;
+}

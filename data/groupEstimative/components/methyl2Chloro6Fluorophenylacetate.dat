@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 2-chloro-6-fluorophenylacetate  (C9H8ClFO2, CAS 103473-99-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl2Chloro6Fluorophenylacetate;
+formula     C9H8ClFO2;
+CAS         103473-99-0;
+InChIKey    PBWURASHXOJZGA-UHFFFAOYSA-N;
+MW          202.609;      // g/mol [origin=calculated method=formula-sum]
+Tc          746.70;      // K   [origin=predictive method=joback]
+Pc          28.967;      // bar [origin=predictive method=joback]
+omega       0.6083;      // -   [origin=predictive method=lee-kesler]
+Tb          537.08;      // K   [origin=predictive method=joback]
+HvapTb      50203.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (33.791 0.62472 -0.00030512 2.91e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 3; } { group AC; count 1; } { group CH2COO; count 1; } { group ACCl; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-(2-chloranyl-6-fluoranyl-phenyl)ethanoate" "benzeneacetic acid, 2-chloro-6-fluoro-, methyl ester" "methyl 2-(6-chloro-2-fluorophenyl)acetate" "methyl (2-chloro-6-fluorophenyl)acetate" "methyl 2-(2-chloro-6-fluorophenyl)acetate" );
+gibbsFormation
+{
+    dHf_298   -544630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     504.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-399060.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,2,3,3,6-hexamethylindan  (C15H22, CAS 4834-28-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        112336Hexamethylindan;
+formula     C15H22;
+CAS         4834-28-0;
+InChIKey    PMJHCUHTUTVMDB-UHFFFAOYSA-N;
+MW          202.341;      // g/mol [origin=calculated method=formula-sum]
+Tc          800.91;      // K   [origin=predictive method=joback]
+Pc          20.605;      // bar [origin=predictive method=joback]
+omega       0.4547;      // -   [origin=predictive method=lee-kesler]
+Tb          577.32;      // K   [origin=predictive method=joback]
+HvapTb      49577.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-154.4 1.91272 -0.00186392 7.819e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH; count 1; } { group C; count 2; } { group ACH; count 3; } { group AC; count 2; } { group ACCH3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2,3,3,5-hexamethyl-2h-indene" "1,1,2,3,3,5-hexamethylindan" "indan, 1,1,2,3,3,5-hexamethyl-" "1h-indene, 2,3-dihydro-1,1,2,3,3,5-hexamethyl-" "1,2,3,3,5-hexamethylindan" "1,2,3,3,6-hexamethylindan" "1,2,3,3,5-hexamethylindane" "indan,1,2,3,3,5-hexamethyl-" "1,1,2,3,3,5-hexamethylindane" "1h-indene,3-dihydro-1,1,2,3,3,5-hexamethyl-" );
+gibbsFormation
+{
+    dHf_298   -76740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     585.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=202920.0
+    phase     gas;
+}

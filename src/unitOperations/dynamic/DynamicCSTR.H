@@ -64,6 +64,8 @@ Description
 
 #pragma once
 
+#include "thermo/reaction/RateLaw.H"
+
 #include "DynamicUnitOperation.H"
 
 namespace Choupo {
@@ -124,9 +126,17 @@ private:
         scalar                   A_pre = 0;
         scalar                   Ea    = 0;
         scalar                   dH    = 0;
+        // LHHW: the whole law (basis, adsorption denominator, reverse leg) parsed
+        // once by the SHARED RateLaw, so a dynamic reactor and a steady CSTR cannot
+        // disagree about what an adsorption denominator means.
+        bool                     lhhw  = false;
+        RateLaw                  law;
     };
 
     const ThermoPackage*     thermo_ = nullptr;
+    // kg of dry catalyst per m^3 of reactor.  Absent (0) => the LHHW rate constants
+    // are already volumetric.  Declared, printed, never assumed.
+    scalar                   catalystLoading_ = 0.0;
 
     // ---- State variables --------------------------------------------
     sVector  n_;                  // kmol per component
@@ -136,10 +146,20 @@ private:
     scalar   V_ = 0;              // m³  reactor volume (constant)
     scalar   P_ = 1.0;             // bar (not used in liquid-only balance)
 
-    // Inlet (continuously charged)
-    sVector  z_in_;               // mole fractions in inlet (Σ=1)
-    scalar   F_in_  = 0;          // kmol/s
+    // Inlet (continuously charged).  The AUTHORITATIVE state is the
+    // per-component molar-flow vector nDotIn_ (forum #103: a composition
+    // disturbance must never hide inside a renormalised z); F_in_/z_in_
+    // are DERIVED from it by applyInletFlows_() every time it changes,
+    // so the physics keeps reading the familiar (F, z) pair.
+    sVector  nDotIn_;             // kmol/s per component (authoritative)
+    sVector  z_in_;               // mole fractions in inlet (derived, Σ=1)
+    scalar   F_in_  = 0;          // kmol/s (derived)
     scalar   T_in_  = 0;          // K
+
+    // Re-derive (F_in_, z_in_) from nDotIn_.  F = Sum nDot; z = nDot/F
+    // (all-zero flow keeps the last z so a temporarily shut feed does not
+    // divide by zero).
+    void applyInletFlows_();
 
     // Jacket
     scalar   UA_ = 0;             // W/K

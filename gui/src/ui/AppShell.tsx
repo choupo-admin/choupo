@@ -49,10 +49,12 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Box } from "@mantine/core";
+import { useReducedMotion } from "@mantine/hooks";
 import { Suspense, lazy, useEffect } from "react";
 
 import { useStore, hasCaseOpen } from "../state/store.js";
 import { AgentConsole } from "./AgentConsole.js";
+import { agentRowPx } from "./panelFold.js";
 import { CaseWorkspace } from "./CaseWorkspace.js";
 import { resolveHelp, helpUrl } from "../help/helpMap.js";
 import { FlowCanvas } from "./FlowCanvas.js";
@@ -113,9 +115,14 @@ export function AppShell() {
   // When the Assistant console is DOCKED + open it takes a grid row, so the
   // content above shrinks (nothing hides behind it; the Properties band then
   // scrolls within its bounded height).  Floating leaves the layout untouched.
+  // Folded (agentCollapsed) the row shrinks to the slim header bar -- the
+  // terminal session stays alive behind it -- and the row-height change is
+  // the one-click slide-down animation (grid-template-rows transition below).
   const agentOpen = useStore((s) => s.agentOpen);
   const agentDocked = useStore((s) => s.agentDocked);
   const agentHeight = useStore((s) => s.agentHeight);
+  const agentCollapsed = useStore((s) => s.agentCollapsed);
+  const reduceMotion = useReducedMotion();
   // The assistant console authors a CASE, so it only exists once one is open.
   // No case (blank boot) -> no console (and no reserved dock row).
   const caseOpen = hasCaseOpen(tutorialName);
@@ -150,6 +157,9 @@ export function AppShell() {
       if (ev.key !== "F1") return;
       ev.preventDefault();
       const s = useStore.getState();
+      // The props workspace owns its F1 (the in-app "what does this case do?"
+      // drawer, PropsView) -- two handlers here meant two help tabs per press.
+      if (s.activeWorkspace === "props") return;
       let selectedUnitType: string | null = null;
       const sel = s.selectedNodeId;
       if (sel && sel.startsWith("unit:") && s.caseFiles.flowsheet) {
@@ -215,13 +225,23 @@ export function AppShell() {
 
   return (
     <Box
+      // Fold/unfold of the docked console animates the row height (200 ms;
+      // open/close still swaps the template shape = instant, as before).
+      // On settle, dispatch a window resize: xterm's fit + Plotly's
+      // useResizeHandler listen for it (React Flow observes its own div).
+      onTransitionEnd={(e) => {
+        if (e.propertyName === "grid-template-rows") window.dispatchEvent(new Event("resize"));
+      }}
       style={{
         display: "grid",
-        gridTemplateRows: dockRow ? `32px 1fr ${agentHeight}px` : "32px 1fr",
+        gridTemplateRows: dockRow
+          ? `32px 1fr ${agentRowPx(agentCollapsed, agentHeight)}px`
+          : "32px 1fr",
         gridTemplateColumns: "1fr",
         gridTemplateAreas: dockRow
           ? `"header" "center" "console"`
           : `"header" "center"`,
+        transition: reduceMotion ? "none" : "grid-template-rows 200ms ease",
         height: "100vh",
         width: "100vw",
         overflow: "hidden",

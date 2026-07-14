@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-acetyl-4-phenylpiperidine  (C13H17NO, CAS 34798-80-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Acetyl4Phenylpiperidine;
+formula     C13H17NO;
+CAS         34798-80-6;
+InChIKey    RKHWHRHOEKYEJW-UHFFFAOYSA-N;
+MW          203.285;      // g/mol [origin=calculated method=formula-sum]
+Tc          902.46;      // K   [origin=predictive method=joback]
+Pc          30.967;      // bar [origin=predictive method=joback]
+omega       0.6104;      // -   [origin=predictive method=lee-kesler]
+Tb          645.93;      // K   [origin=predictive method=joback]
+HvapTb      59590.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-134.15 1.53252 -0.0012489 4.3466e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH3CO; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-phenylpiperidin-4-yl)ethanone" "methyl (4-phenyl-4-piperidyl) ketone" "1-(4-phenyl-4-piperidinyl)ethanone" "ethanone, 1-(4-phenyl-4-piperidinyl)-" "methyl (4-phenyl-piperidin-4-yl) ketone" "piperidinyl methyl ketone" "rkhwhrhoekyejw-uhfffaoysa-" "ethanone,1-(4-phenyl-4-piperidinyl)-" "methyl (4-phenyl-piperidin-4-yl)ketone" );
+gibbsFormation
+{
+    dHf_298   -80330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     615.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=148740.0
+    phase     gas;
+}

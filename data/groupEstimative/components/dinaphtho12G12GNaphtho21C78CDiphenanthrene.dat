@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dinaphtho(1,2-g:1',2'-g')naphtho(2,1-c:7,8-c')diphenanthrene  (C50H28, CAS 57468-46-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dinaphtho12G12GNaphtho21C78CDiphenanthrene;
+formula     C50H28;
+CAS         57468-46-9;
+InChIKey    WRIBLYWAWHZTKJ-UHFFFAOYSA-N;
+MW          628.774;      // g/mol [origin=calculated method=formula-sum]
+Tc          2003.52;      // K   [origin=predictive method=joback]
+Pc          10.129;      // bar [origin=predictive method=joback]
+omega       0.9267;      // -   [origin=predictive method=lee-kesler]
+Tb          1628.86;      // K   [origin=predictive method=joback]
+HvapTb      153830.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-279.35 4.0392 -0.00356092 1.2524e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 28; } { group AC; count 22; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 28; } { group dC_ring; count 22; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodecahelicene" "dinaphtho[1,2-g:1',2'-g']naphtho[2,1-c:7,8-c']diphenanthrene" );
+gibbsFormation
+{
+    dHf_298   1148270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     737.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1559380.0
+    phase     gas;
+}

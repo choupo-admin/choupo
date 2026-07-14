@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bromophene  (C12H6Br4O2, CAS 21987-62-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bromophene;
+formula     C12H6Br4O2;
+CAS         21987-62-2;
+InChIKey    TXODBIOSWNNKJM-UHFFFAOYSA-N;
+MW          501.794;      // g/mol [origin=calculated method=formula-sum]
+Tc          1277.32;      // K   [origin=predictive method=joback]
+Pc          70.144;      // bar [origin=predictive method=joback]
+omega       1.6038;      // -   [origin=predictive method=lee-kesler]
+Tb          973.32;      // K   [origin=predictive method=joback]
+HvapTb      101274.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.71 1.21 -0.00122156 4.856e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 6; } { group ACOH; count 2; } { group Br; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 4; } { group dC_ring; count 8; } { group Br; count 4; } { group OH_phenol; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[3,5-bis(bromanyl)-2-oxidanyl-phenyl]-4,6-bis(bromanyl)phenol" "dephosphate bromofenofos" "3,3',5,5'-tetrabromo-2,2'-biphenyldiol" "2,2'-dihydroxy-3,3',5,5'-tetrabromobiphenyl" "3,3',5,5'-tetrabromo-2.2'-dihydroxybiphenyl" "3,5,3',5'-tetrabromo-2,2'-dihydroxybiphenyl" "2,2'-biphenyldiol, 3,3',5,5'-tetrabromo-" "o,o'-biphenol, 4,4',6,6'-tetrabromo- (6ci,7ci)" "(1,1'-biphenyl)-2,2'-diol, 3,3',5,5'-tetrabromo-" "2,4-dibromo-6-(3,5-dibromo-2-hydroxyphenyl)phenol" "[1,1'-biphenyl]-2,2'-diol,3,3',5,5'-tetrachloro-" "2,2'-biphenyldiol,3,3',5,5'-tetrachloro- (8ci);3,3',5,5'-tetrachloro-1,1'-biphenyl-2,2'-diol;3,3',5,5'-tetrachloro-2,2'-diphenol;" );
+gibbsFormation
+{
+    dHf_298   -113130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     643.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-15500.0
+    phase     gas;
+}

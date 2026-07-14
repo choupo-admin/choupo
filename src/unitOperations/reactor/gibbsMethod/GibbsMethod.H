@@ -78,6 +78,14 @@ struct GibbsProblem
     std::vector<std::size_t>         compIdx;    // N -> thermo component index
     std::vector<bool>                condensable;// N (species with a vapour-pressure model)
     scalar                           P = 0.0;    // reactor pressure [Pa]
+    // Temperature approach to equilibrium (Aspen-style, forum-ratified
+    // 2026-07-02): the REACTION equilibrium (chemical potentials g/RT) is
+    // evaluated at T + dTapproach while the PHYSICAL state -- enthalpy,
+    // Psat/condensation, the energy balance -- stays at T.  The outlet is a
+    // legitimate NON-equilibrium state (its affinity at T is nonzero: that
+    // is the point).  An EMPIRICAL, CALIBRATED closeness-to-equilibrium
+    // parameter -- never predicted, always announced.  0 = true equilibrium.
+    scalar                           dTapproach = 0.0;   // [K]
     std::size_t M() const { return b.size(); }
     std::size_t N() const { return compIdx.size(); }
 };

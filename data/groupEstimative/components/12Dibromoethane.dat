@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-dibromoethane  (C2H4Br2, CAS 106-93-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Dibromoethane;
+formula     C2H4Br2;
+CAS         106-93-4;
+InChIKey    PAAZPARNPHGIKF-UHFFFAOYSA-N;
+MW          187.862;      // g/mol [origin=calculated method=formula-sum]
+Tc          588.29;      // K   [origin=predictive method=joback]
+Pc          61.805;      // bar [origin=predictive method=joback]
+omega       0.3534;      // -   [origin=predictive method=lee-kesler]
+Tb          377.68;      // K   [origin=predictive method=joback]
+HvapTb      32916.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.452 0.2702 -0.0002278 8.08e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-bis(bromanyl)ethane" "ethylene dibromide" "ethylene bromide" "sym-dibromoethane" "ethane, 1,2-dibromo-" "alpha,beta-dibromoethane" "glycol bromide" "bromuro di etile" "1,2-ethylene dibromide" "1,2-dibromaethan" "1,2-dibroomethaan" "dibromure d'ethylene" );
+gibbsFormation
+{
+    dHf_298   -31950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     335.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-5400.0
+    phase     gas;
+}

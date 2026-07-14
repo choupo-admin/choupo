@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hex-3-enyl 2-methylpent-2-enoate  (C12H20O2, CAS 76649-17-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hex3Enyl2Methylpent2Enoate;
+formula     C12H20O2;
+CAS         76649-17-7;
+InChIKey    RTISFZCHFHFOOK-UHFFFAOYSA-N;
+MW          196.29;      // g/mol [origin=calculated method=formula-sum]
+Tc          724.64;      // K   [origin=predictive method=joback]
+Pc          19.648;      // bar [origin=predictive method=joback]
+omega       0.6422;      // -   [origin=predictive method=lee-kesler]
+Tb          540.58;      // K   [origin=predictive method=joback]
+HvapTb      49709.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.666 1.12896 -0.0007043 1.711e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH=CH; count 1; } { group CH=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group dCH; count 3; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cis-3-hexenyl 2-methyl-2-pentenoate" "2-pentenoic acid, 2-methyl-, (3z)-3-hexenyl ester" "2-pentenoic acid, 2-methyl-, (3z)-3-hexen-1-yl ester" "[(z)-hex-3-enyl] (e)-2-methylpent-2-enoate" "2-pentenoic acid,2-methyl-, (3z)-3-hexen-1-yl ester" "2-pentenoicacid, 2-methyl-, (3z)-3-hexenyl ester (9ci); 2-pentenoic acid, 2-methyl-,3-hexenyl ester, (?,z)-" );
+gibbsFormation
+{
+    dHf_298   -383640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     657.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-108320.0
+    phase     gas;
+}

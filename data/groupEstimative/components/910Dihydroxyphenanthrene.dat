@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9,10-dihydroxyphenanthrene  (C14H10O2, CAS 604-84-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        910Dihydroxyphenanthrene;
+formula     C14H10O2;
+CAS         604-84-2;
+InChIKey    ODUSUXJNDWKJKH-UHFFFAOYSA-N;
+MW          210.232;      // g/mol [origin=calculated method=formula-sum]
+Tc          1019.17;      // K   [origin=predictive method=joback]
+Pc          47.042;      // bar [origin=predictive method=joback]
+omega       1.0288;      // -   [origin=predictive method=lee-kesler]
+Tb          750.78;      // K   [origin=predictive method=joback]
+HvapTb      79004.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-110.17 1.4972 -0.00148812 5.844e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 4; } { group ACOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 8; } { group dC_ring; count 6; } { group OH_phenol; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "phenanthrene-9,10-diol" "9,10-phenanthrenediol" "phenanthrenehydroquinone" "9,10-hydroxyphenanthrenequinone" );
+gibbsFormation
+{
+    dHf_298   -79710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     423.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=73840.0
+    phase     gas;
+}

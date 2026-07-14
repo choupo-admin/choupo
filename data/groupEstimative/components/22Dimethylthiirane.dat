@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-dimethylthiirane  (C4H8S, CAS 3772-13-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Dimethylthiirane;
+formula     C4H8S;
+CAS         3772-13-2;
+InChIKey    HGJOFJDIHKHKAU-UHFFFAOYSA-N;
+MW          88.168;      // g/mol [origin=calculated method=formula-sum]
+Tc          553.68;      // K   [origin=predictive method=joback]
+Pc          48.698;      // bar [origin=predictive method=joback]
+omega       0.1883;      // -   [origin=predictive method=lee-kesler]
+Tb          345.93;      // K   [origin=predictive method=joback]
+HvapTb      29072.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-79.16 0.84105 -0.0009653 4.425e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 1; } { group C_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "isobutylene sulfide" "thiirane, 2,2-dimethyl-" "2-methylpropylene sulfide" "2,2-dimethylethylene sulfide" "propane,1,2-epithio-2-methyl- (7ci,8ci); 2,2-dimethylthiirane; 2-methylpropene sulfide;isobutenylene sulfide; isobutylene sulfide" );
+gibbsFormation
+{
+    dHf_298   7410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     341.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77920.0
+    phase     gas;
+}

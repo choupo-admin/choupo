@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octalene  (C14H12, CAS 257-55-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octalene;
+formula     C14H12;
+CAS         257-55-6;
+InChIKey    OVPVGJFDFSJUIG-UHFFFAOYSA-N;
+MW          180.25;      // g/mol [origin=calculated method=formula-sum]
+Tc          841.48;      // K   [origin=predictive method=joback]
+Pc          30.390;      // bar [origin=predictive method=joback]
+omega       0.4087;      // -   [origin=predictive method=lee-kesler]
+Tb          580.98;      // K   [origin=predictive method=joback]
+HvapTb      51946.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-80.11 1.1008 -0.00069468 1.508e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 6; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 12; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclooctacyclooctene" "1,3,5-cycloheptatriene-7-(2,4,6-cycloheptatrien-1-ylidene)-" "1,3,5-cycloheptatriene, 7-(2,4,6-cycloheptatrien-1-ylidene)-" );
+gibbsFormation
+{
+    dHf_298   186230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     490.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=297580.0
+    phase     gas;
+}

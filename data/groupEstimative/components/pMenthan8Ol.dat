@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: p-menthan-8-ol  (C10H20O, CAS 498-81-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pMenthan8Ol;
+formula     C10H20O;
+CAS         498-81-7;
+InChIKey    UODXCYZDMHPIJE-UHFFFAOYSA-N;
+MW          156.269;      // g/mol [origin=calculated method=formula-sum]
+Tc          729.30;      // K   [origin=predictive method=joback]
+Pc          27.847;      // bar [origin=predictive method=joback]
+omega       0.6814;      // -   [origin=predictive method=lee-kesler]
+Tb          532.23;      // K   [origin=predictive method=joback]
+HvapTb      53357.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-85.05 1.20926 -0.000748 1.709e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 2; } { group C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-methylcyclohexyl)propan-2-ol" "2-(4-methylcyclohexyl)-2-propanol" "dihydro-alpha-terpineol" "trans-p-menthan-8-ol" "alpha,alpha,4-trimethylcyclohexanemethanol" "cyclohexanemethanol, .alpha.,.alpha.,4-trimethyl-" "1-methyl-4-isopropylcyclohexane-8-ol" "trans-2-(4-methylcyclohexyl)isopropanol" "cis-alpha,alpha,4-trimethylcyclohexanemethanol" "cyclohexanemethanol, alpha,alpha,4-trimethyl-" "cyclohexanemethanol, .alpha.,.alpha.,4-trimethyl-, cis-" "cyclohexanemethanol, .alpha.,.alpha.,4-trimethyl-, trans-" );
+gibbsFormation
+{
+    dHf_298   -376730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     484.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-83920.0
+    phase     gas;
+}

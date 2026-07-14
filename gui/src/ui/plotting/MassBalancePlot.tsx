@@ -133,17 +133,30 @@ export function MassBalancePlot({
               : yUnit === "g/h"  ? 3.6e6
               : 1.0;
 
-  const data = visibleComponents.map((c, i) => ({
-    type: "bar" as const,
-    name: c,
-    x: ["INPUTS", "OUTPUTS"],
-    y: [inTotals[c]! * factor, outTotals[c]! * factor],
-    marker: { color: PLOT_COLORS.series[i % PLOT_COLORS.series.length] },
-    hovertemplate:
-      "<b>%{x}</b><br>"
-      + c + " = %{y:.4g} " + yUnit
-      + "<extra></extra>",
-  }));
+  // Adaptive number format so a segment label is readable across scales
+  // (1200 kg/h vs 0.0086 kg/s).
+  const fmt = (v: number) => (v >= 100 ? v.toFixed(0) : v.toPrecision(3));
+  const data = visibleComponents.map((c, i) => {
+    const yin = inTotals[c]! * factor, yout = outTotals[c]! * factor;
+    // Label each segment with the COMPONENT name + its mass flow, so a stack of
+    // several components is readable from the bar itself, not only the legend.
+    return {
+      type: "bar" as const,
+      name: c,
+      x: ["INPUTS", "OUTPUTS"],
+      y: [yin, yout],
+      text: [yin > 1e-12 ? `${c}<br>${fmt(yin)} ${yUnit}` : "",
+             yout > 1e-12 ? `${c}<br>${fmt(yout)} ${yUnit}` : ""],
+      textposition: "inside" as const,
+      insidetextanchor: "middle" as const,
+      textfont: { size: 11, color: "#10242b" },
+      marker: { color: PLOT_COLORS.series[i % PLOT_COLORS.series.length] },
+      hovertemplate:
+        "<b>%{x}</b><br>"
+        + c + " = %{y:.4g} " + yUnit
+        + "<extra></extra>",
+    };
+  });
 
   // The in/out/closure numbers now live in the Streams-workspace summary
   // band (case/balances.ts is the shared source); this plot's title is just

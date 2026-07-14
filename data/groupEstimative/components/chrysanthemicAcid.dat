@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chrysanthemic acid  (C10H16O2, CAS 10453-89-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chrysanthemicAcid;
+formula     C10H16O2;
+CAS         10453-89-1;
+InChIKey    XLOPRKKSAJMMEW-UHFFFAOYSA-N;
+MW          168.236;      // g/mol [origin=calculated method=formula-sum]
+Tc          787.95;      // K   [origin=predictive method=joback]
+Pc          27.042;      // bar [origin=predictive method=joback]
+omega       0.6727;      // -   [origin=predictive method=lee-kesler]
+Tb          575.59;      // K   [origin=predictive method=joback]
+HvapTb      53200.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-103.83 1.41438 -0.0013209 5.259e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH; count 2; } { group C; count 1; } { group CH=C; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH; count 1; } { group dC; count 1; } { group CH_ring; count 2; } { group C_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-dimethyl-3-(2-methylprop-1-enyl)cyclopropane-1-carboxylic acid" "chrysanthemumic acid" "chrysanthemummonocarboxylic acid" "cyclopropanecarboxylic acid, 2,2-dimethyl-3-(2-methyl-1-propenyl)-" "d,l-cis,trans-chrysanthemic acid" "(1r,3s)-chrysanthemic acid" "3-isobutenyl-2,2-dimethylcyclopropanecarboxylic acid" "2-(1-isobutenyl)-3,3-dimethylcyclopropanecarboxylic acid" "cyclopropanecarboxylic acid, 2,2-dimethyl-3-(2-methylpropenyl)-" "2,2-dimethyl-3-(2-methylpropenyl)cyclopropanecarboxylic acid" "2,2-dimethyl-3-(2-methylprop-1-enyl)cyclopropanecarboxylic acid" "2,2-dimethyl-3-(2-methylprop-1-en-1-yl)cyclopropanecarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -445210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     482.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-199080.0
+    phase     gas;
+}

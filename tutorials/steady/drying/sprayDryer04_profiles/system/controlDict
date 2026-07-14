@@ -1,0 +1,61 @@
+/*---------------------------------------------------------------------------*\
+  sprayDryer01_sugar
+  ==================
+
+  Single-stage rotary-atomiser spray dryer (PHASE 1).  A 40 wt% sugar
+  solution is atomised by a spinning disc and dried by hot air; the water
+  evaporates into the air and the sucrose leaves as a fine powder.
+
+  The case ties together everything Choupo has been building toward the
+  dryer:
+
+    * the SOLIDS stream model (v0.50): the powder carries a particle-size
+      distribution `psd`, not just a flow;
+    * the TRANSPORT layer (v0.46 viscosity + v0.52 k & D): the Ranz-Marshall
+      drying coefficients h / k_c need the gas viscosity, conductivity and
+      water-in-air diffusivity, all computed from the .dat data.
+
+  WHAT YOU SPECIFY (the credo -- hardware + feeds only):
+      - the atomiser disc:  wheelDiameter + wheelSpeed
+      - the two inlet streams: the sugar solution + the hot drying air
+
+  WHAT THE SIMULATOR COMPUTES (results):
+      - exhaust air temperature T_out (adiabatic energy balance)
+      - droplet wet-bulb temperature T_wb (psychrometric, Lewis ~ 1)
+      - droplet Sauter diameter d32 (Friedman rotary-disc correlation)
+        and the powder particle diameter after shrinkage
+      - drying kinetics: terminal velocity, Re, Nu/Sh -> h, k_c, and the
+        constant-rate drying time of a single droplet
+
+  Order-of-magnitude (computed by the solver, not specified):
+      d32 ~ 60 µm  ->  particle ~ 35 µm   (sugar/milk powders: 20-100 µm)
+      T_wb ~ 40-50 °C,  T_out ~ 90-100 °C
+      h ~ 1000 W/(m²·K),  Re < 1 (Stokes),  τ_drying ~ 0.1 s
+
+  The GAB isotherm + Lewis falling-rate + residence time ARE modelled — see
+  the residual-moisture block in the log (X_final ~ 0.014 kg/kg, 1.3 wt%) with a
+  real residual moisture in the powder.
+
+  NOTE (slice 4): the atomiser surface tension is NO LONGER a hardcoded
+  0.072 N/m constant -- it now comes from the property layer
+  (`transport { surfaceTension { model BrockBird; } }`), i.e. sigma(T) of
+  the volatile solvent (water) at the feed temperature.  Brock-Bird is a
+  generic corresponding-states estimate (it overpredicts H-bonding water,
+  ~0.107 vs the hardcoded 0.072 N/m -> d32 60.4 vs 58.1 um).  The golden
+  master was deliberately re-recorded against this property-layer sigma(T);
+  a spray-dryer case WITHOUT a surfaceTension model falls back to 0.072 and
+  stays byte-stable.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Spray dryer DISTRIBUTED: axial profiles of moisture, size and temperature along the chamber";
+
+verbosity     3;
+
+reports
+{
+    streamTable    {}
+    massBalance    {}
+    energyBalance  {}
+    profiles       {}        // dumps the powder PSD (massFrac vs diameter)
+}

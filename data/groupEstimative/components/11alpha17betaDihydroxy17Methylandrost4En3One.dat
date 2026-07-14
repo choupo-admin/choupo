@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 11alpha,17beta-dihydroxy-17-methylandrost-4-en-3-one  (C20H30O3, CAS 1807-02-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11alpha17betaDihydroxy17Methylandrost4En3One;
+formula     C20H30O3;
+CAS         1807-02-9;
+InChIKey    UBIBSXMTVJAYTQ-QMNUTNMBSA-N;
+MW          318.457;      // g/mol [origin=calculated method=formula-sum]
+Tc          1178.64;      // K   [origin=predictive method=joback]
+Pc          20.346;      // bar [origin=predictive method=joback]
+omega       1.4015;      // -   [origin=predictive method=lee-kesler]
+Tb          948.54;      // K   [origin=predictive method=joback]
+HvapTb      94805.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-304.93 3.03986 -0.00288164 1.1698e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 4; } { group C; count 3; } { group CH=C; count 1; } { group OH; count 2; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 7; } { group CH_ring; count 4; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(8s,9s,10r,11r,13s,14s,17s)-10,13,17-trimethyl-11,17-bis(oxidanyl)-2,6,7,8,9,11,12,14,15,16-decahydro-1h-cyclopenta[a]phenanthren-3-one" "11" "a-hydroxy-17" "a-methyltestosterone" "11alpha-hydroxy-17alpha-methyltestosterone" "androst-4-en-3-one, 11,17-dihydroxy-17-methyl-, (11alpha,17beta)- (9ci)" "(8s,9s,10r,11r,13s,14s,17s)-11,17-dihydroxy-10,13,17-trimethyl-2,6,7,8,9,11,12,14,15,16-decahydro-1h-cyclopenta[a]phenanthren-3-one" );
+gibbsFormation
+{
+    dHf_298   -606880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     734.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-115480.0
+    phase     gas;
+}

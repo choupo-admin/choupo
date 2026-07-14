@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluoromethylcyclopentane  (C6F12, CAS 1805-22-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluoromethylcyclopentane;
+formula     C6F12;
+CAS         1805-22-7;
+InChIKey    BCNXQFASJTYKDJ-UHFFFAOYSA-N;
+MW          300.042;      // g/mol [origin=calculated method=formula-sum]
+Tc          452.34;      // K   [origin=predictive method=joback]
+Pc          23.982;      // bar [origin=predictive method=joback]
+omega       0.4706;      // -   [origin=predictive method=lee-kesler]
+Tb          322.69;      // K   [origin=predictive method=joback]
+HvapTb      11116.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-240.63 2.3264 -0.00324 1.616e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CF3; count 1; } { group CF2; count 4; } { group CF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group C_ring; count 5; } { group F; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2,2,3,3,4,4,5-nonakis(fluoranyl)-5-(trifluoromethyl)cyclopentane" "perfluoro(methylcyclopentane)" "1,1,2,2,3,3,4,4,5-nonafluoro-5-(trifluoromethyl)cyclopentane" "nonafluoro(trifluoromethyl)cyclopentane" "cyclopentane, nonafluoro(trifluoromethyl)-" "cyclopentane, 1,1,2,2,3,3,4,4,5-nonafluoro-5-(trifluoromethyl)-" "perfluoro(methylcyclopentane), (pmcp)" "s062" "cyclopentane,1,1,2,2,3,3,4,4,5-nonafluoro-5-(trifluoromethyl)-" "cyclopentane,nonafluoro(trifluoromethyl)- (7ci,8ci,9ci);(trifluoromethyl)perfluorocyclopentane; flutec pci;nonafluoro(trifluoromethyl)cyclopentane; perfluoromethylcyclopentane" );
+gibbsFormation
+{
+    dHf_298   -2473920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     859.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2356980.0
+    phase     gas;
+}

@@ -29,9 +29,12 @@ License
 /*---------------------------------------------------------------------------*\
   Pinch workspace: the hot + cold COMPOSITE CURVES of the solved flowsheet, with
   the minimum hot/cold utility targets, the pinch temperature, and the heat that
-  integration could recover vs the utilities you pay for today.  Computed in the
-  browser from the run (computePinch); the menu entry is greyed until a run makes
-  it computable.
+  integration could recover vs the utilities you pay for today.  Plus the
+  classical GRID DIAGRAM (streams as lanes, the pinch as a vertical line, the
+  candidate matches as connections) with a Pareto filter that omits minor
+  streams from the drawing -- announced, never silent, numbers unchanged.
+  Computed in the browser from the run (computePinch); the menu entry is greyed
+  until a run makes it computable.
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState, type ComponentProps } from "react";
@@ -40,12 +43,14 @@ import { Box, Group, NumberInput, SegmentedControl, Stack, Text, Badge } from "@
 import { useStore } from "../state/store.js";
 import { computePinch } from "../case/pinch.js";
 import { Plot, PLOT_CONFIG, darkLayout } from "./plotting/plotly.js";
+import { PinchGridPlot } from "./plotting/PinchGridPlot.js";
 
 export function PinchView() {
   const runResult = useStore((s) => s.runResult);
   const flowsheet = useStore((s) => s.caseFiles.flowsheet);
+  const paretoPct = useStore((s) => s.displayPrefs.pinchParetoPct);
   const [dTmin, setDTmin] = useState(10);
-  const [view, setView] = useState<"composite" | "gcc">("composite");
+  const [view, setView] = useState<"composite" | "gcc" | "grid">("composite");
 
   const pinch = useMemo(() => computePinch(runResult, flowsheet, dTmin), [runResult, flowsheet, dTmin]);
 
@@ -114,9 +119,20 @@ export function PinchView() {
           <Stat label="Cold utility" now={pinch.QcNow} min={pinch.QcMin} />
           <Box>
             <Text size="xs" c="dimmed">Pinch</Text>
-            <Text size="sm" ff="monospace">
-              {pinch.pinchHot != null ? `${pinch.pinchHot.toFixed(1)} / ${pinch.pinchCold!.toFixed(1)} K` : "—"}
-            </Text>
+            {pinch.pinchHot != null ? (
+              <>
+                <Text size="xs" ff="monospace">
+                  <span style={{ display: "inline-block", width: 40, opacity: 0.7 }}>hot</span>
+                  {pinch.pinchHot.toFixed(1)} K
+                </Text>
+                <Text size="xs" ff="monospace">
+                  <span style={{ display: "inline-block", width: 40, opacity: 0.7 }}>cold</span>
+                  {pinch.pinchCold!.toFixed(1)} K
+                </Text>
+              </>
+            ) : (
+              <Text size="sm" ff="monospace">—</Text>
+            )}
           </Box>
           {recov > 0.5 && (
             <Badge color="teal" variant="light" size="lg" styles={{ root: { textTransform: "none" } }}>
@@ -126,8 +142,12 @@ export function PinchView() {
         </Group>
         <Group gap={10} align="center">
           <SegmentedControl size="xs" value={view}
-            onChange={(v) => setView(v as "composite" | "gcc")}
-            data={[{ label: "Composite", value: "composite" }, { label: "Grand composite", value: "gcc" }]} />
+            onChange={(v) => setView(v as "composite" | "gcc" | "grid")}
+            data={[
+              { label: "Composite", value: "composite" },
+              { label: "Grand composite", value: "gcc" },
+              { label: "Grid", value: "grid" },
+            ]} />
           <Group gap={6} align="center">
             <Text size="xs" c="dimmed">ΔT<sub>min</sub></Text>
             <NumberInput value={dTmin} onChange={(v) => setDTmin(typeof v === "number" ? v : 10)}
@@ -136,7 +156,10 @@ export function PinchView() {
         </Group>
       </Group>
 
-      <Box style={{ flex: 1, minHeight: 0 }}>
+      <Box style={{ flex: 1, minHeight: 0, overflowY: view === "grid" ? "auto" : undefined }}>
+        {view === "grid" ? (
+          <PinchGridPlot pinch={pinch} paretoPct={paretoPct} />
+        ) : (
         <Plot
           data={(isGcc ? gccData : compositeData) as PlotData}
           layout={{
@@ -153,12 +176,14 @@ export function PinchView() {
           style={{ width: "100%", height: "100%" }}
           useResizeHandler
         />
+        )}
       </Box>
 
       {pinch.matches.length > 0 && (
         <Box>
           <Text size="xs" c="dimmed" mb={2}>
-            Candidate matches (screening — respect the pinch ~{pinch.pinchHot?.toFixed(0)} K; the
+            Candidate matches (heuristic screening — direct shifted-T overlap only, it can miss
+            feasible counter-current pairs; respect the pinch ~{pinch.pinchHot?.toFixed(0)} K; the
             agent sizes them, you re-run).  Hand these to the 🤖 console as heat-links:
           </Text>
           <Group gap={6}>
@@ -175,21 +200,29 @@ export function PinchView() {
       )}
       <Text size="xs" c="dimmed">
         {pinch.streams.length} thermal streams · heating duties are cold streams (need heat),
-        cooling duties are hot streams.  The overlap is recoverable by heat integration;
-        the tails are the minimum utilities.
+        cooling duties are hot streams.{" "}
+        {recov > 0.5
+          ? `The composite overlap (${recov.toFixed(0)} kW) is recoverable by heat integration; the tails are the minimum utilities.`
+          : "The composites do not overlap — nothing is recoverable here; the utilities cover every duty."}
       </Text>
     </Stack>
   );
 }
 
+// The two quantities NAMED (forum #93: "1412 → 1412" said neither which was
+// the target nor why they might be equal): Current = what the flowsheet pays
+// today; Target = the minimum the pinch analysis says is needed.
 function Stat({ label, now, min }: { label: string; now: number; min: number }) {
   return (
     <Box>
       <Text size="xs" c="dimmed">{label}</Text>
-      <Text size="sm" ff="monospace">
-        <span style={{ color: "var(--mantine-color-gray-5)" }}>{now.toFixed(0)}</span>
-        {" → "}
-        <strong style={{ color: "var(--mantine-color-teal-4)" }}>{min.toFixed(0)}</strong> kW
+      <Text size="xs" ff="monospace">
+        <span style={{ display: "inline-block", width: 56, opacity: 0.7 }}>Current</span>
+        <span style={{ color: "var(--mantine-color-gray-5)" }}>{now.toFixed(0)} kW</span>
+      </Text>
+      <Text size="xs" ff="monospace">
+        <span style={{ display: "inline-block", width: 56, opacity: 0.7 }}>Target</span>
+        <strong style={{ color: "var(--mantine-color-teal-4)" }}>{min.toFixed(0)} kW</strong>
       </Text>
     </Box>
   );

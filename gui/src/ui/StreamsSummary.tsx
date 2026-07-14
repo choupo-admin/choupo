@@ -102,7 +102,8 @@ export function StreamsSummary({
   const mb = massBalance(result.streams, result.componentMolarMass);
   // Energy balance now CLOSES: it counts the energy the units add (heat duties
   // + shaft work), not just the boundary-stream enthalpy.
-  const { heatKw, workKw } = unitEnergy(result.utilityAllocation, result.kpis);
+  const { heatAddedKw, heatRemovedKw, workKw } = unitEnergy(result.utilityAllocation, result.kpis);
+  const heatKw = heatAddedKw - heatRemovedKw;   // net, for the one-line summary text
   const eb = energyBalance(result.streams, { heatKw, workKw });
   const u = massUnit(flow);
   const duties = columnDuties(result);
@@ -262,8 +263,11 @@ export function StreamsSummary({
             </Text>
           </Tooltip>
           {eb.skipped > 0 ? (
-            <Text size="xs" c="yellow.5" ff="monospace">
-              {eb.skipped} stream(s) skipped (no enthalpy)
+            <Text size="xs" c="red.5" ff="monospace">
+              REFUSED — {eb.skipped} boundary stream(s) have no enthalpy datum
+              {eb.missingComponents.length > 0
+                ? `: ${eb.missingComponents.join(", ")}`
+                : ""}
             </Text>
           ) : (
             <Text size="xs" c={energyOk ? "teal.4" : "yellow.5"} ff="monospace">

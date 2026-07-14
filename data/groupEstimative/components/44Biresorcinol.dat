@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4'-biresorcinol  (C12H10O4, CAS 4371-31-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44Biresorcinol;
+formula     C12H10O4;
+CAS         4371-31-7;
+InChIKey    CFGDTWRKBRQUFB-UHFFFAOYSA-N;
+MW          218.208;      // g/mol [origin=calculated method=formula-sum]
+Tc          1127.99;      // K   [origin=predictive method=joback]
+Pc          80.871;      // bar [origin=predictive method=joback]
+omega       1.5600;      // -   [origin=predictive method=lee-kesler]
+Tb          850.00;      // K   [origin=predictive method=joback]
+HvapTb      98914.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-111.51 1.6044 -0.00171684 7.15e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 2; } { group ACOH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 6; } { group dC_ring; count 6; } { group OH_phenol; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[2,4-bis(oxidanyl)phenyl]benzene-1,3-diol" "2,2',4,4'-biphenyltetrol" "[1,1'-biphenyl]-2,2',4,4'-tetrol" "(1,1'-biphenyl)-2,2',4,4'-tetrol" "4-(2,4-dihydroxyphenyl)benzene-1,3-diol" "2,4,4'-tetrahydroxybiphenyl" "[1,2',4,4'-tetrol" "biphenyl-2,2',4,4'-tetraol" "2,2',4,4'-biphenyltetrol (8ci)" "2,2',4,4'-tetrahydroxybiphenyl" "[1,1'-biphenyl]-2,2',4,4'-tetrol; {[1,1'-biphenyl]-2,2',4,4'-tetrol}; 2,2',4,4'-tetrahydroxybiphenyl" );
+gibbsFormation
+{
+    dHf_298   -527190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     516.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-343500.0
+    phase     gas;
+}

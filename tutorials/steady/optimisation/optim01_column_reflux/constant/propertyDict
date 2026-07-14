@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  optim01_column_reflux / constant/thermoPackage
+
+  Benzene (the light key, taken overhead) and toluene (the heavy key, to
+  the bottoms) in the distillation column whose reflux ratio + feedStage
+  the Nelder-Mead simplex optimises.  Ideal + idealGas: the near-ideal
+  aromatic pair genuinely obeys Raoult's law at 1 atm (no azeotrope), which
+  keeps every inner column solve robust while the outer driver probes odd
+  feed stages — the lesson is the optimisation loop, not the VLE.
+\*---------------------------------------------------------------------------*/
+
+components       ( benzene  toluene );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

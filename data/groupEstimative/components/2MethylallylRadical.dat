@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methylallyl radical  (C4H7, CAS 15157-95-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        2MethylallylRadical;
+formula     C4H7;
+CAS         15157-95-6;
+InChIKey    LJXPWUAAAAXJBX-UHFFFAOYSA-N;
+role        radical;
+MW          55.1;      // g/mol [origin=calculated method=formula-sum]
+Tc          449.23;      // K   [origin=predictive method=joback]
+Pc          42.220;      // bar [origin=predictive method=joback]
+omega       0.1645;      // -   [origin=predictive method=lee-kesler]
+Tb          282.28;      // K   [origin=predictive method=joback]
+HvapTb      23259.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.67 0.33372 -0.0002 4.93e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 1; } { group dCH2; count 2; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylprop-1-ene" "2-methylallyl" "2-methyl-2-propenyl" "2-methylprop-2-en-1-yl" "2-methyl-2-propen-1-yl" "ch2c(ch3)=ch2" "2-methylprop-1-en-3-yl" );
+gibbsFormation
+{
+    dHf_298   56570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     301.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=109820.0
+    phase     gas;
+}

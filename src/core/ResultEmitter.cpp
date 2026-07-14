@@ -38,7 +38,7 @@ namespace {
 
 // JSON-escape a string.  Only the subset of escapes JSON requires; we
 // never emit U+0000..001F in dict identifiers so the basic set suffices.
-std::string esc(const std::string& s)
+std::string escImpl_(const std::string& s)
 {
     std::string out;
     out.reserve(s.size() + 2);
@@ -58,6 +58,9 @@ std::string esc(const std::string& s)
     out.push_back('"');
     return out;
 }
+
+std::string esc(const std::string& s) { return escImpl_(s); }
+
 
 // Emit a number in a JSON-safe way.  NaN / Inf are not valid JSON, so
 // we serialise them as null with no surprise.
@@ -111,6 +114,13 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     //   stream in whichever flow unit the student picked (kmol/h,
     //   kg/s, mol/h,...) without dragging MWs through the JSON
     //   bridge.
+    // One-line legend emitted once above the table (JSON has no comments, so
+    // it rides as a string key): a solids-carrying stream shows H = 0 (no
+    // fluid) next to a large H_kW (the crystals' formation enthalpy), and
+    // without the legend the pair reads as a contradiction.
+    os << "  \"streamsNote\": \"H = molar fluid-phase enthalpy [J/mol]; "
+          "H_kW = total stream enthalpy flow [kW] incl. solids, both on the "
+          "elements/formation datum\",\n";
     os << "  \"streams\": {";
     bool firstS = true;
     const bool haveMW = !r.componentMolarMass.empty();
@@ -162,6 +172,20 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         // crystals), not F*H -- so the GUI plot closes on the same elements
         // datum as the report.  Absent => fall back to F*H in the GUI.
         if (s.H_flow_valid) os << ", \"H_kW\": " << num(s.H_flow_kW);
+        // Present species with NO elements-datum enthalpy (missing data, not
+        // composition).  When non-empty, H / H_kW above are absent BECAUSE of
+        // these -- the GUI energy plot must REFUSE and name them, not silently
+        // skip the stream.  Absent (the common case) => fully curated stream.
+        if (!s.H_missing.empty())
+        {
+            os << ", \"H_missing\": [";
+            for (std::size_t i = 0; i < s.H_missing.size(); ++i)
+            {
+                if (i) os << ", ";
+                os << esc(s.H_missing[i]);
+            }
+            os << "]";
+        }
         if (haveMW) os << ", \"F_mass\": " << num(F_mass);
         os << ", \"F_solid_mass\": " << num(F_solid);
         // Utility category (populated by `utility <name>;` in a stream
@@ -415,21 +439,91 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         writeVec("Tdew",    t.Tdew);    os << "\n  }";
     }
 
-    // ---- advisories (solver "speak-up": bounds active at the solution,
-    //      rating exceedances, auto-init) -- so the GUI surfaces them ----
-    if (!r.advisories.empty())
+    // ---- timeline (batch recipe/status sequence) -- the machine-readable
+    //      feed of the sequence/Gantt view; absent unless events fired ----
+    if (!r.timeline.empty())
     {
-        os << ",\n  \"advisories\": [";
-        for (std::size_t i = 0; i < r.advisories.size(); ++i)
+        os << ",\n  \"timeline\": [";
+        for (std::size_t i = 0; i < r.timeline.size(); ++i)
         {
-            const auto& a = r.advisories[i];
-            os << (i ? ",\n" : "\n") << "    { \"category\": " << esc(a.category)
-               << ", \"severity\": " << esc(a.severity)
-               << ", \"locus\": " << esc(a.locus)
-               << ", \"message\": " << esc(a.message) << " }";
+            const auto& e = r.timeline[i];
+            os << (i ? ",\n" : "\n")
+               << "    { \"t\": "        << e.t
+               << ", \"kind\": "         << esc(e.kind)
+               << ", \"action\": "       << esc(e.action)
+               << ", \"detail\": "       << esc(e.detail)
+               << ", \"trigger\": "      << esc(e.trigger)
+               << ", \"from\": "         << esc(e.from)
+               << ", \"to\": "           << esc(e.to) << " }";
         }
         os << "\n  ]";
     }
+
+    // ---- transfers (the batch MATERIAL LEDGER; timeline/Gantt project it) --
+    if (!r.transfers.empty())
+    {
+        os << ",\n  \"transfers\": [";
+        for (std::size_t i = 0; i < r.transfers.size(); ++i)
+        {
+            const auto& tr = r.transfers[i];
+            os << (i ? ",\n" : "\n")
+               << "    { \"tStart\": " << tr.tStart
+               << ", \"tEnd\": "  << tr.tEnd
+               << ", \"from\": " << esc(tr.from)
+               << ", \"to\": "   << esc(tr.to)
+               << ", \"kind\": " << esc(tr.kind)
+               << ", \"dn\": {";
+            bool first = true;
+            for (const auto& [c, v] : tr.dn)
+            {
+                os << (first ? " " : ", ") << esc(c) << ": " << num(v);
+                first = false;
+            }
+            os << " }";
+            if (tr.H_valid) os << ", \"H_kJ\": " << num(tr.H_kJ);
+            if (!tr.H_missing.empty())
+            {
+                os << ", \"H_missing\": [";
+                for (std::size_t m = 0; m < tr.H_missing.size(); ++m)
+                    os << (m ? ", " : "") << esc(tr.H_missing[m]);
+                os << "]";
+            }
+            os << " }";
+        }
+        os << "\n  ]";
+    }
+
+    // ---- energyLedger (the batch ENERGY LEDGER: one record per segment of
+    //      constant physics; E_kJ only when the whole segment was priceable) --
+    if (!r.energyLedger.empty())
+    {
+        os << ",\n  \"energyLedger\": [";
+        for (std::size_t i = 0; i < r.energyLedger.size(); ++i)
+        {
+            const auto& er = r.energyLedger[i];
+            os << (i ? ",\n" : "\n")
+               << "    { \"tStart\": " << er.tStart
+               << ", \"tEnd\": "  << er.tEnd
+               << ", \"unit\": "  << esc(er.unit)
+               << ", \"kind\": "  << esc(er.kind);
+            if (er.E_valid) os << ", \"E_kJ\": " << num(er.E_kJ);
+            if (er.T_service_K >= 0.0)
+                os << ", \"T_service_K\": " << num(er.T_service_K);
+            if (!er.E_missing.empty())
+            {
+                os << ", \"E_missing\": [";
+                for (std::size_t m = 0; m < er.E_missing.size(); ++m)
+                    os << (m ? ", " : "") << esc(er.E_missing[m]);
+                os << "]";
+            }
+            os << ", \"basis\": " << esc(er.basis) << " }";
+        }
+        os << "\n  ]";
+    }
+
+    // ---- advisories (solver "speak-up": bounds active at the solution,
+    //      rating exceedances, auto-init) -- so the GUI surfaces them ----
+    os << advisoriesJson(r.advisories);
 
     // ---- thermoResolution (binary-pair provenance) -- feeds the GUI
     //      foundation navigator + pair-coverage matrix ----
@@ -444,7 +538,13 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                << ", \"j\": " << esc(p.j)
                << ", \"status\": " << esc(p.status)
                << ", \"source\": " << esc(p.source)
-               << ", \"provSource\": " << esc(p.provSource) << " }";
+               << ", \"provSource\": " << esc(p.provSource)
+               << ", \"origin\": " << esc(originToWord(p.origin));
+            // P1 audit detail (forum #67 D-c): full structured record, always.
+            if (!p.method.empty())        os << ", \"method\": " << esc(p.method);
+            if (!p.methodVersion.empty()) os << ", \"methodVersion\": " << esc(p.methodVersion);
+            os << pairResolutionAuditJson(p, esc);
+            os << " }";
         }
         os << "\n  ]";
     }
@@ -522,3 +622,22 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
 }
 
 } // namespace Choupo
+
+namespace Choupo
+{
+std::string jsonEscape(const std::string& s) { return esc(s); }
+
+std::string advisoriesJson(const std::vector<Advisory>& advs)
+{
+    if (advs.empty()) return "";
+    std::string out = ",\n  \"advisories\": [";
+    for (std::size_t i = 0; i < advs.size(); ++i)
+        out += std::string(i ? ",\n" : "\n")
+             + "    { \"category\": " + esc(advs[i].category)
+             + ", \"severity\": " + esc(advs[i].severity)
+             + ", \"locus\": " + esc(advs[i].locus)
+             + ", \"message\": " + esc(advs[i].message) + " }";
+    out += "\n  ]";
+    return out;
+}
+}

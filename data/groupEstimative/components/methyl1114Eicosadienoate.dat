@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl11,14-eicosadienoate  (C21H38O2, CAS 2463-02-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl1114Eicosadienoate;
+formula     C21H38O2;
+CAS         2463-02-7;
+InChIKey    GWJCFAOQCNNFAM-UHFFFAOYSA-N;
+MW          322.533;      // g/mol [origin=calculated method=formula-sum]
+Tc          923.23;      // K   [origin=predictive method=joback]
+Pc          10.240;      // bar [origin=predictive method=joback]
+omega       0.8785;      // -   [origin=predictive method=lee-kesler]
+Tb          746.62;      // K   [origin=predictive method=joback]
+HvapTb      69663.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.156 1.98404 -0.0011916 2.764e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 13; } { group CH=CH; count 2; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 14; } { group dCH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl icosa-11,14-dienoate" "11,14-eicosadienoicacid, methyl ester" "11,14-eicosadienoic acid methyl ester" );
+gibbsFormation
+{
+    dHf_298   -559610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1012.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-23990.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heptamethyleneimine  (C7H15N, CAS 1121-92-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heptamethyleneimine;
+formula     C7H15N;
+CAS         1121-92-2;
+InChIKey    QXNDZONIWRINJR-UHFFFAOYSA-N;
+MW          113.204;      // g/mol [origin=calculated method=formula-sum]
+Tc          671.13;      // K   [origin=predictive method=joback]
+Pc          40.210;      // bar [origin=predictive method=joback]
+omega       0.3027;      // -   [origin=predictive method=lee-kesler]
+Tb          441.07;      // K   [origin=predictive method=joback]
+HvapTb      39016.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-68.34 0.7848 -0.00034 1.72e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 7; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "azocane" "azacyclooctane" "perhydroazocine" "azocine, octahydro-" "octahydroazocine" "azaperhydroocine" "heptamethylenimine" "azacyclooctane; octahydroazocine" "qxndzoniwrinjr-uhfffaoysa-" "heptamethylenimine(6ci,7ci); 1-azacyclooctane; azacyclooctane; azocan; azocane; octahydroazocine;perhydroazocine" );
+gibbsFormation
+{
+    dHf_298   -87660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     474.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=103730.0
+    phase     gas;
+}

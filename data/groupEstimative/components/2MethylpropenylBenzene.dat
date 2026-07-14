@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2-methylpropenyl)benzene  (C10H12, CAS 768-49-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2MethylpropenylBenzene;
+formula     C10H12;
+CAS         768-49-0;
+InChIKey    BTOVVHWKPVSLBI-UHFFFAOYSA-N;
+MW          132.206;      // g/mol [origin=calculated method=formula-sum]
+Tc          678.54;      // K   [origin=predictive method=joback]
+Pc          31.210;      // bar [origin=predictive method=joback]
+omega       0.3288;      // -   [origin=predictive method=lee-kesler]
+Tb          459.12;      // K   [origin=predictive method=joback]
+HvapTb      40168.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-53.98 0.89484 -0.0006375 1.825e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH=C; count 1; } { group ACH; count 5; } { group AC; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylprop-1-enylbenzene" "2-methyl-1-phenylpropene" "2-methyl-1-phenyl-1-propene" "benzene, (2-methyl-1-propenyl)-" "1-phenyl-2-methylpropene" "(2-methyl-1-propenyl)benzene" "benzene, (2-methylpropenyl)-" "propene, 2-methyl-1-phenyl-" "1,1-dimethyl-2-phenylethylene" "1-propene, 2-methyl-1-phenyl-" "(2-methylprop-1-en-1-yl)benzene" "benzene, (2-methyl-1-propen-1-yl)-" );
+gibbsFormation
+{
+    dHf_298   94230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     428.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=217400.0
+    phase     gas;
+}

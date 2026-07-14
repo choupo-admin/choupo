@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyltetramethylcyclopentadiene  (C11H18, CAS 57693-77-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyltetramethylcyclopentadiene;
+formula     C11H18;
+CAS         57693-77-3;
+InChIKey    MXYDFFLUOPTQFI-UHFFFAOYSA-N;
+MW          150.265;      // g/mol [origin=calculated method=formula-sum]
+Tc          680.88;      // K   [origin=predictive method=joback]
+Pc          23.070;      // bar [origin=predictive method=joback]
+omega       0.4423;      // -   [origin=predictive method=lee-kesler]
+Tb          484.80;      // K   [origin=predictive method=joback]
+HvapTb      43569.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.161 0.8306 -0.0004084 6.8e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 1; } { group CH; count 1; } { group C=C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 1; } { group CH_ring; count 1; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-ethyl-1,2,3,4-tetramethyl-cyclopenta-1,3-diene" "ethyl-tetramethylcyclopentadiene" "5-ethyl-1,2,3,4-tetramethyl-1,3-cyclopentadiene" "1,3-cyclopentadiene, ethyltetramethyl-" "5-ethyl-1,2,3,4-tetramethylcyclopenta-1,3-diene" );
+gibbsFormation
+{
+    dHf_298   -140210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     434.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=99690.0
+    phase     gas;
+}

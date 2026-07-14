@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethanol, 2-(o-biphenylyloxy)-  (C14H14O2, CAS 7501-02-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethanol2OBiphenylyloxy;
+formula     C14H14O2;
+CAS         7501-02-2;
+InChIKey    NOZAKUWNUGNDLI-UHFFFAOYSA-N;
+MW          214.264;      // g/mol [origin=calculated method=formula-sum]
+Tc          910.95;      // K   [origin=predictive method=joback]
+Pc          29.537;      // bar [origin=predictive method=joback]
+omega       1.0419;      // -   [origin=predictive method=lee-kesler]
+Tb          692.86;      // K   [origin=predictive method=joback]
+HvapTb      71061.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.558 1.0873 -0.00065256 1.365e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 3; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-phenylphenoxy)ethanol" "ethanol, 2-(2-biphenylyloxy)-" "ethyl alcohol, 2-(o-biphenylyloxy)-" "ethyl alcohol, 2-(o-phenyl)phenoxy-" "beta-hydroxyethyl ether of o-phenylphenol" ".beta.-hydroxyethyl ether of o-phenylphenol" "2-(2-biphenylyloxy)ethanol" "ethanol, 2-([1,1'-biphenyl]-2-yloxy)-" "ethanol, 2-((1,1'-biphenyl)-2-yloxy)-" "ethanol,1'-biphenyl]-2-yloxy)-" "ethanol, 2-((1,1'-biphenyl)-2-yloxy)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -155150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     544.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=40370.0
+    phase     gas;
+}

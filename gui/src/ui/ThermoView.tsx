@@ -30,7 +30,7 @@ License
   ThermoView
   ==========
 
-  Render `constant/thermoPackage` as a human-friendly table so the
+  Render `constant/propertyDict` as a human-friendly table so the
   student SEES the thermo layer that the simulator is using --- which
   activity model, which EoS, which binary interaction pairs, which
   transport correlations.  Without this, the thermoPackage is just a
@@ -90,7 +90,9 @@ function ComponentCoverageTable({ rows }: { rows: ComponentCoverage[] }) {
         <Text span c="red.5" fw={700}>✗</Text> is a GAP: no Psat → no VLE/flash; no Vliq → no pump /
         liquid density; no Cp_ig → no energy balance; no ΔGf → no Gibbs reactor. Fill a gap with the
         props bench (estimate / fit) and promote it into <code>constant/</code>. Solutes carry no
-        Psat by design (n/a).
+        Psat by design (n/a). A dissociating salt (one with <code>dissociatesTo</code>) derives its
+        formation datum from its IONS (Σν·hf_aq − ΔH_soln) — a ✗ under ΔGf there is the ion-derived
+        route, not a gap; do NOT add a component-level gibbsFormation block to a salt.
       </Text>
     </>
   );
@@ -98,8 +100,29 @@ function ComponentCoverageTable({ rows }: { rows: ComponentCoverage[] }) {
 
 export function ThermoView() {
   const tp = useStore((s) => s.caseFiles.thermoPackage);
+  const propsDict = useStore((s) => s.caseFiles.propsDict);
+  const extraFiles = useStore((s) => s.caseFiles.extraFiles);
   const thermoResolution = useStore((s) => s.runResult?.thermoResolution);
   const componentCoverage = useStore((s) => s.runResult?.componentCoverage);
+  // A propertyPackage case: the thermo source is constant/propertyDict (the
+  // engine assembles it via the ThermoPackageBuilder); thermoPackage is empty.
+  const ppText = extraFiles?.["constant/propertyDict"];
+  const ppName = ppText?.match(/^\s*package\s+(\S+?)\s*;/m)?.[1] ?? null;
+  // Per-OP activity engines (speciate / scalingScan select their own model in
+  // the propsDict): a "water + ideal" package here is only the VLE skeleton --
+  // showing "ideal" alone for an I=7 brine case reads as a bug.
+  const opEngines = new Map<string, number>();
+  {
+    const ops = propsDict?.["operations"];
+    if (Array.isArray(ops))
+      for (const op of ops) {
+        if (!op || typeof op !== "object" || Array.isArray(op)) continue;
+        const od = op as { [k: string]: unknown };
+        const am = od["activityModel"];
+        if (typeof am === "string")
+          opEngines.set(am, (opEngines.get(am) ?? 0) + 1);
+      }
+  }
   if (!tp) {
     return (
       <Box p="md">
@@ -145,8 +168,25 @@ export function ThermoView() {
         {/* Activity model */}
         <Box>
           <SectionTitle text="Activity model" />
-          {activity ? <ModelBlock dict={activity} /> :
+          {ppName && (
+            <Text size="sm" mb={4}>
+              property package: <Text span ff="monospace" c="accent">{ppName}</Text>
+              <Text span c="dimmed"> — selected in constant/propertyDict; the
+              engine assembles it (components, ions, pairs, methods) from
+              data/standards/propertyPackages/.</Text>
+            </Text>
+          )}
+          {activity ? <ModelBlock dict={activity} /> : !ppName &&
             <Text c="dimmed" size="sm">(not declared — defaults to ideal)</Text>}
+          {opEngines.size > 0 && (
+            <Text size="sm" mt={4}>
+              per-operation engines (propsDict):{" "}
+              {[...opEngines.entries()].map(([m, n]) =>
+                `${m}${n > 1 ? ` (×${n} ops)` : ""}`).join(", ")}
+              <Text span c="dimmed"> — these override the package model inside
+              their operations (the multi-ion speciation path).</Text>
+            </Text>
+          )}
         </Box>
 
         {/* Binary-pair coverage matrix (from the run's emitted resolution).

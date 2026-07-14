@@ -25,16 +25,7 @@
   (which the bubble-point used to do).
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            363.0 K;
-        P            1.01325 bar;
-        molarComposition { ethanol 0.3;  water 0.7; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

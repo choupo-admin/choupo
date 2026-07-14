@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5,6-dihydrodibenzanthracene  (C22H16, CAS 153-34-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        56Dihydrodibenzanthracene;
+formula     C22H16;
+CAS         153-34-4;
+InChIKey    CGVKCCJKUPLUIW-UHFFFAOYSA-N;
+MW          280.37;      // g/mol [origin=calculated method=formula-sum]
+Tc          1088.65;      // K   [origin=predictive method=joback]
+Pc          22.676;      // bar [origin=predictive method=joback]
+omega       0.8101;      // -   [origin=predictive method=lee-kesler]
+Tb          821.34;      // K   [origin=predictive method=joback]
+HvapTb      75096.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-141.67 1.8776 -0.00156268 5.216e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 6; } { group ACCH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group dCH_ring; count 12; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "12,13-dihydronaphtho[1,2-b]phenanthrene" "5,6-dihydrodibenz[a,h]anthracene" "5,6-dihydrodibenz(a,h)anthracene" "dibenz(a,h)anthracene, 5,6-dihydro-" "dibenz[a,h]anthracene, 5,6-dihydro-" "5,6-dihydrobenzo[k]tetraphene" "benzo[k]benz[a]anthracene,5,6-dihydro-" "dibenz[a,h]anthracene,5,6-dihydro- (7ci,8ci,9ci); 5,6-dihydrodibenz[a,h]anthracene" );
+gibbsFormation
+{
+    dHf_298   411210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     489.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=614520.0
+    phase     gas;
+}

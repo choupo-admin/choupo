@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxandrolone  (C19H30O3, CAS 53-39-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oxandrolone;
+formula     C19H30O3;
+CAS         53-39-4;
+InChIKey    QSLJIVKCVHQPLV-PEMPUTJUSA-N;
+MW          306.446;      // g/mol [origin=calculated method=formula-sum]
+Tc          1032.56;      // K   [origin=predictive method=joback]
+Pc          18.676;      // bar [origin=predictive method=joback]
+omega       1.0501;      // -   [origin=predictive method=lee-kesler]
+Tb          811.20;      // K   [origin=predictive method=joback]
+HvapTb      77762.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-332.17 3.15906 -0.0031188 1.2845e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 7; } { group CH; count 4; } { group C; count 3; } { group OH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 8; } { group CH_ring; count 4; } { group C_ring; count 3; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1s,3as,3br,5as,9as,9bs,11as)-1,9a,11a-trimethyl-1-oxidanyl-2,3,3a,3b,4,5,5a,6,9,9b,10,11-dodecahydroindeno[4,5-h]isochromen-7-one" "oxandrin" "anavar" "protivar" "oxandrolonum" "oxandrolona" "provitar" "vasorome" "lonavar" "ossandrolone" "ossandrolone [dcit]" "oxandrolonum [inn-latin]" );
+gibbsFormation
+{
+    dHf_298   -647580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     778.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-170990.0
+    phase     gas;
+}

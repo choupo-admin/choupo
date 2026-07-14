@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 0018509  (C21H13N, CAS 196-79-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn0018509;
+formula     C21H13N;
+CAS         196-79-2;
+InChIKey    ASOZIQLEGCCDBT-UHFFFAOYSA-N;
+MW          279.342;      // g/mol [origin=calculated method=formula-sum]
+Tc          1130.88;      // K   [origin=predictive method=joback]
+Pc          25.846;      // bar [origin=predictive method=joback]
+omega       0.8705;      // -   [origin=predictive method=lee-kesler]
+Tb          851.32;      // K   [origin=predictive method=joback]
+HvapTb      79372.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-122.92 1.76036 -0.00150482 5.157e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 6; } { group C5H3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 13; } { group dC_ring; count 8; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzo(h)naphtho(1,2-f)quinoline" );
+gibbsFormation
+{
+    dHf_298   522420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     426.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=713110.0
+    phase     gas;
+}

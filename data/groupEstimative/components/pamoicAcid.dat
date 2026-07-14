@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pamoic acid  (C23H16O6, CAS 130-85-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pamoicAcid;
+formula     C23H16O6;
+CAS         130-85-8;
+InChIKey    WLJNZVDCPSBLRP-UHFFFAOYSA-N;
+MW          388.375;      // g/mol [origin=calculated method=formula-sum]
+Tc          1580.55;      // K   [origin=predictive method=joback]
+Pc          28.967;      // bar [origin=predictive method=joback]
+omega       1.9143;      // -   [origin=predictive method=lee-kesler]
+Tb          1289.34;      // K   [origin=predictive method=joback]
+HvapTb      137628.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-100.159 2.1964 -0.001953 6.983e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 7; } { group ACCH2; count 1; } { group ACOH; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 10; } { group OH_phenol; count 2; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[(3-carboxy-2-oxidanyl-naphthalen-1-yl)methyl]-3-oxidanyl-naphthalene-2-carboxylic acid" "embonic acid" "4,4'-methylenebis(3-hydroxy-2-naphthoic acid)" "pamosaeure" "2-naphthalenecarboxylic acid, 4,4'-methylenebis(3-hydroxy-" "4,4'-methylenedi(3-hydroxy-2-naphthoic acid)" "4,4'-methylen-bis-(3-hydroxy-2-naphthoesaeure" "1,1'-methylene-bis(2-hydroxy-3-naphthoic acid)" "2-naphthoic acid, 4,4'-methylenebis(3-hydroxy-" "4,4'-methylene-bis-[2-hydroxy-3-naphthoic acid]" "3,3'-dihydroxy-4,4'-methylenedi(2-naphthoic acid)" "1,1'-dinaphthylmethan-2,2'-dihydroxy-3,3'-dicarbonsaeure" );
+gibbsFormation
+{
+    dHf_298   -763890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     755.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-454680.0
+    phase     gas;
+}

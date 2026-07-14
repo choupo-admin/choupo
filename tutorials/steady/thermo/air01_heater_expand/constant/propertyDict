@@ -1,0 +1,19 @@
+/*---------------------------------------------------------------------------*\
+  TRACK A demo: a PREDEFINED MIXTURE in the component list.
+
+  Writing `air` here is NOT a component -- the loader finds
+  data/standards/mixtures/air.dat and SPLICES it open into its real member
+  components (N2, O2, Ar), announced on stderr:
+
+      [mixture] 'air' -> N2 (0.780800) + O2 (0.209500) + Ar (0.009300)  [.../air.dat]
+
+  The flat-by-name component lookup then loads N2.dat / O2.dat / Ar.dat
+  exactly as if they had been typed individually.  The three are real gas
+  components, so idealGas + ideal activity is the right glass-box package.
+\*---------------------------------------------------------------------------*/
+
+components       ( air );
+
+activityModel    { model  ideal; }
+
+equationOfState  { model  idealGas; }

@@ -28,6 +28,8 @@ License
 
 #include "BatchCrystalliser.H"
 #include "streams/Composition.H"
+#include "thermo/Component.H"
+#include "unitOperations/crystallisation/CrystallisationHeat.H"
 
 #include <cmath>
 #include <filesystem>
@@ -115,6 +117,110 @@ void BatchCrystalliser::initialise(const DictPtr&       unitDict,
         std::cout << "  [BatchCrystalliser] note: nucleation magma exponent j>0"
                   << " with no seed --- B0 starts at 0 (M_T=0); add a seed for"
                   << " secondary nucleation.\n";
+
+    // ---- Heat of crystallisation, resolved ONCE through the SAME shared
+    //      resolver the steady crystalliser reads (never a second source).
+    //      T and (for the electrolyte path) the charge molality are fixed
+    //      by the isothermal model, so the per-mol value is a constant of
+    //      the campaign; the source travels into every duty record's basis.
+    {
+        const scalar solventMass = state_.n[iSolv_] * MW_solv_;   // kg
+        const scalar m0 = (solventMass > 0.0)
+            ? state_.n[iSolute_] * 1000.0 / solventMass : 0.0;    // mol/kg
+        const scalar dHconst =
+            unitDict->found("operation")
+                ? unitDict->subDict("operation")
+                          ->lookupScalarOrDefault("dHcryst", 0.0)
+                : 0.0;
+        dHcrystPerMol_ = crystallisationHeatPerMol(
+            thermo, iSolute_, thermo.hasElectrolyte(), false, m0,
+            T_, dHconst, dHcrystSource_);
+        std::cout << "  [BatchCrystalliser] dH_cryst = " << dHcrystPerMol_
+                  << " J/mol  [" << dHcrystSource_ << "]\n";
+    }
+}
+
+// ---- Energy ledger (phase (d)): latent duty as a mu3 state difference -----
+
+void BatchCrystalliser::noteTimeAdvanced(scalar t)
+{
+    lastTime_ = t;
+    if (!timeSeen_)
+    {
+        timeSeen_    = true;
+        segStart_    = t;
+        segMu3Start_ = mu3_;
+    }
+}
+
+void BatchCrystalliser::closeSegment_(scalar t)
+{
+    if (!timeSeen_) return;
+    const scalar dnCryst =
+        V_ * rho_c_ * k_v_ * (mu3_ - segMu3Start_) / MW_sol_;   // kmol
+    if (dnCryst == 0.0 && t <= segStart_ + 1.0e-12) return;
+    if (dnCryst == 0.0) return;               // idled: no duty story
+
+    SimulationResult::EnergyRecord er;
+    er.tStart  = segStart_;
+    er.tEnd    = t;
+    er.unit    = name_;
+    er.kind    = "latent";
+    er.T_service_K = T_;   // isothermal: the coolant serves at the held T
+    // Crystallisation RELEASES the dissolution endotherm: the jacket must
+    // remove it to hold T, so the heat ADDED is negative for dH_soln > 0.
+    er.E_kJ    = -dHcrystPerMol_ * dnCryst;   // J/mol * kmol = kJ
+    er.E_valid = true;
+    er.basis   = "isothermal crystallisation: Q = -dH_cryst*dn_cryst,"
+                 " n_cryst = V*rho_c*k_v*mu3/MW (state difference);"
+                 " dH_cryst from " + dHcrystSource_;
+    energyLog_.push_back(std::move(er));
+    segStart_    = t;
+    segMu3Start_ = mu3_;
+}
+
+std::vector<SimulationResult::EnergyRecord>
+BatchCrystalliser::energyRecords(scalar tEnd)
+{
+    closeSegment_(tEnd);
+    return energyLog_;
+}
+
+scalar BatchCrystalliser::vesselEnthalpy(bool& ok, std::string& why) const
+{
+    // Dissolved part: the fluid holdup state_.n as liquid at (T, P) --
+    // the SAME pricing every fluid vessel gets.
+    BatchState diss;
+    diss.n = state_.n;
+    diss.T = state_.T;
+    diss.P = state_.P;
+    scalar H = packageEnthalpy_(diss, ok, why);
+    if (!ok) return 0.0;
+
+    // Crystal part on the SOLID rung.
+    const scalar nCryst =
+        (MW_sol_ > 0.0) ? V_ * rho_c_ * k_v_ * mu3_ / MW_sol_ : 0.0;  // kmol
+    if (nCryst > 0.0)
+    {
+        const Component& sol = thermo_->comp(iSolute_);
+        if (!sol.hasGibbsData())
+        {
+            ok  = false;
+            why = "no formation datum for crystal '" + sol.name() + "'";
+            return 0.0;
+        }
+        try
+        {
+            H += nCryst * sol.h_formation(state_.T, "solid");   // kmol*J/mol
+        }
+        catch (const std::exception& ex)
+        {
+            ok  = false;
+            why = std::string("solid-rung enthalpy failed: ") + ex.what();
+            return 0.0;
+        }
+    }
+    return H;
 }
 
 scalar BatchCrystalliser::supersaturation_(scalar nSoluteDissolved) const

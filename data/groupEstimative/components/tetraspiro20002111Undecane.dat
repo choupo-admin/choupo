@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetraspiro(2.0.0.0.2.1.1.1)undecane  (C11H14, CAS 129872-30-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetraspiro20002111Undecane;
+formula     C11H14;
+CAS         129872-30-6;
+InChIKey    JISOCMQWQHEYKJ-UHFFFAOYSA-N;
+MW          146.233;      // g/mol [origin=calculated method=formula-sum]
+Tc          717.22;      // K   [origin=predictive method=joback]
+Pc          43.800;      // bar [origin=predictive method=joback]
+omega       0.3503;      // -   [origin=predictive method=lee-kesler]
+Tb          473.53;      // K   [origin=predictive method=joback]
+HvapTb      34662.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-443.74 3.0358 -0.004047 1.956e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group C; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 7; } { group C_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetraspiro[2.0.0.0.2^{6}.1^{5}.1^{4}.1^{3}]undecane" "tetraspiro[2.0.0.0.2.1.1.1]undecane" );
+gibbsFormation
+{
+    dHf_298   199570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     373.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=379640.0
+    phase     gas;
+}

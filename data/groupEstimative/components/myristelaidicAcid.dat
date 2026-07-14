@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: myristelaidic acid  (C14H26O2, CAS 544-64-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        myristelaidicAcid;
+formula     C14H26O2;
+CAS         544-64-9;
+InChIKey    YWWVWXASSLXJHU-UHFFFAOYSA-N;
+MW          226.36;      // g/mol [origin=calculated method=formula-sum]
+Tc          851.51;      // K   [origin=predictive method=joback]
+Pc          17.061;      // bar [origin=predictive method=joback]
+omega       0.9933;      // -   [origin=predictive method=lee-kesler]
+Tb          669.59;      // K   [origin=predictive method=joback]
+HvapTb      63880.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.42 1.40462 -0.0008942 2.308e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group CH=CH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 10; } { group dCH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetradec-9-enoic acid" "9-tetradecenoic acid, (z)-" "9-tetradecenoic acid,(9z)-" "9-tetradecenoic acid, (9e)-" "9-tetradecenoicacid, (z)- (8ci); (z)-9-tetradecenoic acid; 9(z)-tetradecenoic acid;9(z)-tetradecenoic acid; 9-cis-tetradecenoic acid; myristoleic acid;myristolenic acid; oleomyristic acid; cis-9-tetradecenoic acid; cis-d9-tetradecenoic acid" );
+gibbsFormation
+{
+    dHf_298   -565340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     747.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-196690.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lavandulyl acetate  (C12H20O2, CAS 25905-14-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lavandulylAcetate;
+formula     C12H20O2;
+CAS         25905-14-0;
+InChIKey    HYNGAVZPWWXQIU-UHFFFAOYSA-N;
+MW          196.29;      // g/mol [origin=calculated method=formula-sum]
+Tc          719.14;      // K   [origin=predictive method=joback]
+Pc          19.701;      // bar [origin=predictive method=joback]
+omega       0.5938;      // -   [origin=predictive method=lee-kesler]
+Tb          532.54;      // K   [origin=predictive method=joback]
+HvapTb      48773.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.848 1.09478 -0.0006489 1.424e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group CH2=C; count 1; } { group CH=C; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dC; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5-methyl-2-prop-1-en-2-yl-hex-4-enyl) ethanoate" "(-)-lavandulyl acetate" "(r)-lavandulyl acetate" "(-)-(r)-lavandulyl acetate" "4-hexen-1-ol, 5-methyl-2-(1-methylethenyl)-, acetate" "4-hexen-1-ol, 5-methyl-2-(1-methylethenyl)-, acetate, (2r)-" "(r)-2-isopropenyl-5-methylhex-4-enyl acetate" "5-methyl-2-(1-methylethenyl)-4-hexen-1-ol acetate" "4-hexen-1-ol, 5-methyl-2-(1-methylethenyl)-, 1-acetate" "4-hexen-1-ol, 5-methyl-2-(1-methylethenyl)-, acetate, (r)-" "4-hexen-1-ol, 5-methyl-2-(1-methylethenyl)-, 1-acetate, (2r)-" "(+-)-lavandulol acetate" );
+gibbsFormation
+{
+    dHf_298   -390500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     645.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-111690.0
+    phase     gas;
+}

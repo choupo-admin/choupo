@@ -52,6 +52,7 @@ License
 
 import type { RunResult, StreamResult } from "../adapters/SolverAdapter.js";
 import type { JsonDict } from "../dict/index.js";
+import { readEdges } from "./toGraph.js";
 
 export interface SliceOptions {
   /** Stream names the sub-case's own dicts reference (feeds, boundary,
@@ -63,6 +64,19 @@ export interface SliceOptions {
    *  a parent kpi/convergence/profile entry keyed EXACTLY by the scope
    *  prefix is renamed to this, so the leaf tab finds it. */
   leafUnitName?: string;
+  /** Boundary inlets fed by an INTERNAL parent stream, resolved through the
+   *  PARENT's connections (e.g. EXTRACTION's `liquor` <- the parent's
+   *  `BRINE.liquor`).  Maps the local inlet name -> the flattened parent stream
+   *  name.  Such a feed does NOT appear unprefixed in the parent result, so it
+   *  is pulled in explicitly under the inlet name, keeping its last converged
+   *  values -- otherwise the drilled sub-case sees the inlet as unfed. */
+  boundaryFeeds?: Record<string, string>;
+  /** The sub-case's boundary OUTLET names.  Re-roled to "product" (and the
+   *  inlets, the boundaryFeeds keys, to "feed") in the slice, so the drilled
+   *  sub-case's plant-boundary mass/energy balance counts them -- a sector's
+   *  outlet is an intermediate stream in the PARENT (role "intermediate") and
+   *  would otherwise be missed on the OUTPUTS side. */
+  boundaryOutlets?: string[];
 }
 
 /** Strip the scope prefix off a flattened name.  Accepts both the engine's
@@ -100,9 +114,10 @@ export function localStreamNames(flowsheet: JsonDict | undefined): string[] {
     add(u["inputs"]);
     add(u["outputs"]);
   }
-  for (const c of (flowsheet["connections"] ?? []) as JsonDict[]) {
-    add(c["from"]);
-    add(c["to"]);
+  for (const e of readEdges(flowsheet)) {
+    add(e.name);   // named edge: the KEY is the stream ID
+    add(e.from);
+    add(e.to);
   }
   return [...names];
 }
@@ -110,6 +125,30 @@ export function localStreamNames(flowsheet: JsonDict | undefined): string[] {
 /** The one-line honesty note carried as the synthesized result's log. */
 export function inheritedNote(prefix: string): string {
   return `[inherit] '${prefix}': results inherited from the parent run — re-run to recompute.\n`;
+}
+
+/** Freeze a drilled sub-case's boundary INLETS as feed streams from a run's
+ *  converged values, so pressing Run re-solves the sector with the parent's
+ *  inputs instead of hitting unfed boundary inlets (which produce nothing).
+ *  Applied at RUN time (not just boot) so it works regardless of how the tab
+ *  was opened.  A stream the flowsheet already defines for that name WINS.
+ *  No-op without a finished run or a boundary. */
+export function withFrozenBoundaryFeeds(flowsheet: JsonDict, run: RunResult | null): JsonDict {
+  if (!run || run.status !== "done") return flowsheet;
+  const inlets = (flowsheet["boundary"] as JsonDict | undefined)?.["inlets"];
+  const names = Array.isArray(inlets)
+    ? inlets.filter((x): x is string => typeof x === "string") : [];
+  if (!names.length) return flowsheet;
+  const existing = (flowsheet["streams"] ?? {}) as JsonDict;
+  const byName = new Map(run.streams.map((s) => [s.name, s] as const));
+  const add: JsonDict = {};
+  for (const nm of names) {
+    if (existing[nm]) continue;   // the sub-case's own feed def wins
+    const s = byName.get(nm);
+    if (s) add[nm] = { F: s.F, T: s.T, P: s.P, molarComposition: s.composition ?? {} } as JsonDict[string];
+  }
+  if (!Object.keys(add).length) return flowsheet;
+  return { ...flowsheet, streams: { ...existing, ...add } };
 }
 
 /** Slice a parent RunResult down to the drill-in scope `prefix`, renaming
@@ -135,7 +174,42 @@ export function sliceRunResult(
       order.push(s.name);
     }
   }
-  const streams = order.map((n) => byName.get(n)!);
+  // Boundary inlets fed by an internal parent stream (via the parent's
+  // connections): the feed name is flattened+prefixed in the parent result
+  // ("BRINE.liquor"), so it was neither prefix-stripped into scope nor matched
+  // unprefixed.  Pull it in under the local inlet name, keeping its converged
+  // values.  A scope-own stream already placed under that name wins.
+  for (const [local, parentName] of Object.entries(opts.boundaryFeeds ?? {})) {
+    if (byName.has(local)) continue;
+    const src = parent.streams.find((s) => s.name === parentName);
+    if (src) { byName.set(local, { ...src, name: local }); order.push(local); }
+  }
+  // Re-role the sub-case's boundary streams: its INLETS are its feeds, its
+  // OUTLETS its products.  In the parent these are internal (role
+  // "intermediate"), so without this the drilled tab's plant-boundary balance
+  // shows inputs but no outputs (or vice-versa).
+  const feedSet = new Set(Object.keys(opts.boundaryFeeds ?? {}));
+  const prodSet = new Set(opts.boundaryOutlets ?? []);
+  for (const [name, s] of byName) {
+    if (prodSet.has(name)) s.role = "product";
+    else if (feedSet.has(name)) s.role = "feed";
+  }
+  // De-duplicate a boundary OUTLET against the internal unit stream that feeds
+  // it: `settler01.loadedOrganic` and the sector outlet `loadedOrganic` are the
+  // SAME physical stream (an internal connection maps one to the other), so the
+  // slice must not list both.  Drop the internal `<unit>.<outlet>` when the
+  // boundary `<outlet>` is present -- the boundary name is the sector's own.
+  const present = new Set(order);
+  const streams = order
+    .filter((n) => {
+      const dot = n.lastIndexOf(".");
+      if (dot > 0) {
+        const tail = n.slice(dot + 1);
+        if (prodSet.has(tail) && present.has(tail)) return false;
+      }
+      return true;
+    })
+    .map((n) => byName.get(n)!);
 
   // A name keyed EXACTLY by the scope (a leaf unit's kpi/profile slot) maps
   // to the leaf's local unit name when the caller knows it.

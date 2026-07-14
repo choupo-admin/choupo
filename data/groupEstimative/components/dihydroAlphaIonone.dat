@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dihydro-alpha-ionone  (C13H22O, CAS 31499-72-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dihydroAlphaIonone;
+formula     C13H22O;
+CAS         31499-72-6;
+InChIKey    JHJCHCSUEGPIGE-UHFFFAOYSA-N;
+MW          194.318;      // g/mol [origin=calculated method=formula-sum]
+Tc          779.04;      // K   [origin=predictive method=joback]
+Pc          21.335;      // bar [origin=predictive method=joback]
+omega       0.5615;      // -   [origin=predictive method=lee-kesler]
+Tb          570.17;      // K   [origin=predictive method=joback]
+HvapTb      51201.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-89.148 1.48288 -0.00114314 3.9316e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group CH=C; count 1; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(2,6,6-trimethylcyclohex-2-en-1-yl)butan-2-one" "2-butanone, 4-(2,6,6-trimethyl-2-cyclohexen-1-yl)-" "7,8-dihydro-alpha-ionone" "4-(2,6,6-trimethyl-2-cyclohexen-1-yl)-2-butanone" "4-(2,2,6-trimethyl-5-cyclohexen-1-yl)-2-butanone" "4-(2,6,6-trimethyl-2-cyclohexen-1-yl)butan-2-one" "dihydro alphadionone" "agn-pc-00jtb1" "3,4-dihydro-.alpha.-ionone" "4-(2,6,6-trimethyl-2-cyclohexen-1-yl-2-butanone" "4-(2,6,6-trimethyl-1-cyclohex-2-enyl)-butan-2-one" "2-butanone, 4-(2,6,6-trimethyl-2-cyclohexen-1-yl)-, (r)-" );
+gibbsFormation
+{
+    dHf_298   -328700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     642.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-38760.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl hex-3-enoate  (C7H12O2, CAS 13894-62-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylHex3Enoate;
+formula     C7H12O2;
+CAS         13894-62-7;
+InChIKey    XEAIHUDTEINXFG-UHFFFAOYSA-N;
+MW          128.171;      // g/mol [origin=calculated method=formula-sum]
+Tc          603.55;      // K   [origin=predictive method=joback]
+Pc          29.763;      // bar [origin=predictive method=joback]
+omega       0.4638;      // -   [origin=predictive method=lee-kesler]
+Tb          422.14;      // K   [origin=predictive method=joback]
+HvapTb      38541.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.752 0.63404 -0.0003462 6.24e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH=CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-hexenoic acid, methyl ester, (3e)-" "methyl trans 3 hexenoate" "3-hexenoic acid, methylester, (3z)-" "hydrosorbicacid, methyl ester (6ci);methyl 3-hexenoate;methyl hex-3-enoate;" "3-hexenoicacid, methyl ester, (z)- (8ci); (z)-3-hexenoic acid methyl ester; methylcis-3-hexenoate; z-methyl 3-hexenoate" );
+gibbsFormation
+{
+    dHf_298   -387870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     473.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-222090.0
+    phase     gas;
+}

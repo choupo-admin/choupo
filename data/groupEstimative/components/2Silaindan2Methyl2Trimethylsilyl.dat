@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-silaindan,2-methyl-2-(trimethylsilyl)-  (C12H20Si2, CAS 27490-20-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C12H20Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2Silaindan2Methyl2Trimethylsilyl;
+formula     C12H20Si2;
+CAS         27490-20-6;
+InChIKey    IGVMEAKDPBGCQZ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          220.462;      // g/mol [origin=calculated method=formula-sum]
+Tc          738.92;      // K   [origin=predictive method=joback]
+Pc          21.513;      // bar [origin=predictive method=joback]
+omega       0.3139;      // -   [origin=predictive method=lee-kesler]
+Tb          515.76;      // K   [origin=predictive method=joback]
+HvapTb      45882.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (2.95 0.78008 -8.556e-05 -1.448e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group ACH; count 4; } { group ACCH2; count 2; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl-(2-methyl-1,3-dihydro-2-benzosilol-2-yl)silane" "2-silaindan, 2-methyl-2-(trimethylsilyl)-" );
+gibbsFormation
+{
+    dHf_298   -189890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     695.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=23980.0
+    phase     gas;
+}

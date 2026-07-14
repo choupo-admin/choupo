@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: l-methioninol  (C5H13NOS, CAS 2899-37-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lMethioninol;
+formula     C5H13NOS;
+CAS         2899-37-8;
+InChIKey    MIQJGZAEWQQAPN-YFKPBYRVSA-N;
+MW          135.225;      // g/mol [origin=calculated method=formula-sum]
+Tc          743.70;      // K   [origin=predictive method=joback]
+Pc          43.056;      // bar [origin=predictive method=joback]
+omega       0.9692;      // -   [origin=predictive method=lee-kesler]
+Tb          547.05;      // K   [origin=predictive method=joback]
+HvapTb      60473.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.043 0.57501 -0.000285 4.1e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group OH; count 1; } { group CHNH2; count 1; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group OH; count 1; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-2-azanyl-4-methylsulfanyl-butan-1-ol" "(s)-(-)-methioninol" "d-(s)-(-)-methionanol" "l-(-)-methioninol" "(2s)-2-amino-4-(methylsulfanyl)butan-1-ol" "(2s)-2-amino-4-methylthiobutan-1-ol" "h-methioninol" "(s)-2-amino-4-methylmercapto-1-butanol" "l-(-)-2-amino-4-methylthio-1-butanol" "(2s)-2-amino-4-methylsulfanylbutan-1-ol" "(s)-2-amino-4-methylsulfanyl-butan-1-ol" "(s)-(-)-2-amino-4-methylthio-1-butanol" );
+gibbsFormation
+{
+    dHf_298   -228380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     505.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-48470.0
+    phase     gas;
+}

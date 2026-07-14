@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tocamphyl  (C23H37NO6, CAS 5634-42-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tocamphyl;
+formula     C23H37NO6;
+CAS         5634-42-4;
+InChIKey    WSEQDEFUEFCRLT-UHFFFAOYSA-N;
+MW          423.55;      // g/mol [origin=calculated method=formula-sum]
+Tc          1486.73;      // K   [origin=predictive method=joback]
+Pc          13.768;      // bar [origin=predictive method=joback]
+omega       1.1410;      // -   [origin=predictive method=lee-kesler]
+Tb          1203.14;      // K   [origin=predictive method=joback]
+HvapTb      131338.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-107.696 2.6529 -0.00194916 6.255e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 1; } { group C; count 2; } { group ACH; count 4; } { group ACCH3; count 1; } { group ACCH; count 1; } { group OH; count 2; } { group CH2NH; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 4; } { group CH; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 2; } { group COOH; count 1; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-hydroxyethylamino)ethanol;2,2,3-trimethyl-3-[1-(4-methylphenyl)ethoxycarbonyl]cyclopentane-1-carboxylic acid" "biliphorin" "biliphorine" "hepasynthyl" "hepatoxane" "synthobilin" "licarbin" "lymethol" "syncuma" "tocanfil" "gallogen (choleretic)" "tocamphylum [inn-latin]" );
+gibbsFormation
+{
+    dHf_298   -1278150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1288.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-690020.0
+    phase     gas;
+}

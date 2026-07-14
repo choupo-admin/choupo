@@ -28,22 +28,7 @@
   actually consume?  At what monetary cost per hour?
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    processFeed
-    {
-        F            40.0 kmol/h;
-        T            320.0 K;
-        P            5.0 bar;
-        molarComposition { nHexane 0.5;  C8H18 0.5; }
-    }
-
-    hotOil
-    {
-        utility      dowthermA;          // pulls components, state, P, T_in
-        F            150 kmol/h;          // the user sizes the loop flow
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

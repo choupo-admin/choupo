@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-dipalmitin  (C35H68O5, CAS 30334-71-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Dipalmitin;
+formula     C35H68O5;
+CAS         30334-71-5;
+InChIKey    JEJLGIQLPYYGEE-UHFFFAOYSA-N;
+MW          568.924;      // g/mol [origin=calculated method=formula-sum]
+Tc          1662.04;      // K   [origin=predictive method=joback]
+Pc          5.009;      // bar [origin=predictive method=joback]
+omega       -0.2153;      // -   [origin=predictive method=lee-kesler]
+Tb          1208.58;      // K   [origin=predictive method=joback]
+HvapTb      124609.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.5 3.25914 -0.0017246 3.004e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 28; } { group CH; count 1; } { group OH; count 1; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 30; } { group CH; count 1; } { group OH; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2-hexadecanoyloxy-3-oxidanyl-propyl) hexadecanoate" "1,2-dipalmitoyl-rac-glycerol" "1,2-dihexadecanoyl-rac-glycerol" "dl-1,2-dipalmitin" "dg(16:0/16:0/0:0)[rac]" "rac-glycerol 1,2-dipalmitate" "3-hydroxypropane-1,2-diyl dipalmitate" "(+/-)-1,2-dipalmitin" "(+)-d-dipalmitin" "dl -1,2-dipalmitin" "palmitin, 1,2-di-" "(s)-1-(hydroxymethyl)ethane-1,2-diyl dipalmitate" );
+gibbsFormation
+{
+    dHf_298   -1557800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1663.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-516180.0
+    phase     gas;
+}

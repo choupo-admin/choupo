@@ -1,0 +1,6 @@
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species MnSO4aq; ion "MnSO4"; z 0; masters ( { ion Mn; nu 1; } { ion SO4; nu 1; } );
+      logK25 1.408; dH 21550; source "USGS PHREEQC phreeqc.dat (public domain)";
+

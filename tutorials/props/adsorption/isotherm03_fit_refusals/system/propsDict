@@ -1,0 +1,106 @@
+/*  Two ADVERSARIAL fitParameters(kind isotherm) operations -- see the
+    controlDict header.  Synthetic data generated EXACTLY from the known
+    surface (q_max 4.6 mol/kg, b_298 3.0e-4 1/Pa, dH_ads -38000 J/mol,
+    tRef 298.15 K) -- zero noise, so the ONLY failure mode under test is
+    the strangled optimiser, never the data.                              */
+
+operations
+(
+    {
+        name       gate_henry_nonconverged;
+        type       fitParameters;
+        residual
+        {
+            kind       isotherm;
+            adsorbent  zeolite13X;
+            adsorbate  CO2;
+            model      langmuir;
+            tRef       298.15;
+            data
+            (
+                293.15  5.0     0.008944409753165527
+                293.15  100.0   0.1725147578940962
+                333.15  5.0     0.0013782135744556587
+                333.15  100.0   0.027408246720426153
+            );
+        }
+        parameters
+        (
+            { name q_max;   initial 50.0;   }
+            { name b_ref;   initial 1.0e-9; }
+            { name dH_ads;  initial -5000;  }
+        );
+        options  { maxIter 1; tolerance 1e-14; }
+    }
+
+    {
+        name       gate_nonconverged;
+        type       fitParameters;
+        residual
+        {
+            kind       isotherm;
+            adsorbent  zeolite13X;
+            adsorbate  CO2;
+            model      langmuir;
+            tRef       298.15;
+            data
+            (
+                293.15  200  0.3325575410742196
+                293.15  1000 1.28980212113132
+                293.15  5000 3.039739219943859
+                313.15  200  0.1287342320998852
+                313.15  1000 0.5788707426396007
+                313.15  5000 1.925249058871697
+                333.15  200  0.05449181407467787
+                333.15  1000 0.2601328853115573
+                333.15  5000 1.060725628146015
+            );
+        }
+        parameters
+        (
+            { name q_max;   initial 50.0;   }
+            { name b_ref;   initial 1.0e-9; }
+            { name dH_ads;  initial -5000;  }
+        );
+        options  { maxIter 1; tolerance 1e-14; }
+    }
+
+    // 3. LANGFULL NON-CONVERGED gate (#121): same exact data, but b_ref
+    //    initial 3e-4 puts bp_max = 1.5 >= 0.05, so the op takes the FULL
+    //    Langmuir branch -- strangled at maxIter 1.  The acceptance
+    //    criterion is the ABSENCE of every fit.* key in the result JSON
+    //    (converged 0 / identifiable 0 / dH_identifiable 0), not merely
+    //    the non-zero exit: a return code does not un-emit diagnostics.
+    {
+        name       gate_langfull_nonconverged;
+        type       fitParameters;
+        residual
+        {
+            kind       isotherm;
+            adsorbent  zeolite13X;
+            adsorbate  CO2;
+            model      langmuir;
+            tRef       298.15;
+            data
+            (
+                293.15  200  0.3325575410742196
+                293.15  1000 1.28980212113132
+                293.15  5000 3.039739219943859
+                313.15  200  0.1287342320998852
+                313.15  1000 0.5788707426396007
+                313.15  5000 1.925249058871697
+                333.15  200  0.05449181407467787
+                333.15  1000 0.2601328853115573
+                333.15  5000 1.060725628146015
+            );
+        }
+        parameters
+        (
+            { name q_max;   initial 40.0;   }
+            { name b_ref;   initial 3.0e-4; }
+            { name dH_ads;  initial -5000;  }
+        );
+        options  { maxIter 1; tolerance 1e-14; }
+        output   { proposal auto; }   // must be SKIPPED aloud (verdict not earned)
+    }
+);

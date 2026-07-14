@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: stilbene, 4-(benzyloxy)-2'-fluoro-alpha-phenyl-  (C27H21FO, CAS 1252-18-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        stilbene4Benzyloxy2FluoroAlphaPhenyl;
+formula     C27H21FO;
+CAS         1252-18-2;
+InChIKey    PEXHEPPVJMDAEG-XHPQRKPJSA-N;
+MW          380.462;      // g/mol [origin=calculated method=formula-sum]
+Tc          1222.28;      // K   [origin=predictive method=joback]
+Pc          15.735;      // bar [origin=predictive method=joback]
+omega       0.9196;      // -   [origin=predictive method=lee-kesler]
+Tb          959.77;      // K   [origin=predictive method=joback]
+HvapTb      87755.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-110.959 2.1027 -0.00142722 3.623e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=C; count 1; } { group ACH; count 18; } { group AC; count 5; } { group CH2O; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 18; } { group dC_ring; count 6; } { group F; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-fluoranyl-2-[(z)-2-phenyl-2-(4-phenylmethoxyphenyl)ethenyl]benzene" "ether, benzyl p-(o-fluoro-alpha-phenylstyryl)phenyl" "1-(p-(benzyloxy)phenyl)-2-(o-fluorophenyl)-1-phenylethylene" "ethylene, 1-(p-(benzyloxy)phenyl)-2-(o-fluorophenyl)-1-phenyl-" "1-fluoro-2-[(z)-2-phenyl-2-(4-phenylmethoxyphenyl)ethenyl]benzene" );
+gibbsFormation
+{
+    dHf_298   101670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     801.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=378700.0
+    phase     gas;
+}

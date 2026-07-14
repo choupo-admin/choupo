@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methylcycloheptane  (C8H16, CAS 4126-78-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylcycloheptane;
+formula     C8H16;
+CAS         4126-78-7;
+InChIKey    GYNNXHKOJHMOHS-UHFFFAOYSA-N;
+MW          112.216;      // g/mol [origin=calculated method=formula-sum]
+Tc          616.01;      // K   [origin=predictive method=joback]
+Pc          32.430;      // bar [origin=predictive method=joback]
+omega       0.2437;      // -   [origin=predictive method=lee-kesler]
+Tb          406.46;      // K   [origin=predictive method=joback]
+HvapTb      34003.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-75.11 0.87632 -0.000446 6.37e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl cycloheptane" );
+gibbsFormation
+{
+    dHf_298   -160290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     457.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=28830.0
+    phase     gas;
+}

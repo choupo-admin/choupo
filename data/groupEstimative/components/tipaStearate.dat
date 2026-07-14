@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tipa-stearate  (C27H57NO5, CAS 10042-67-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tipaStearate;
+formula     C27H57NO5;
+CAS         10042-67-8;
+InChIKey    PJXWYLSAKUNJSC-UHFFFAOYSA-N;
+MW          475.755;      // g/mol [origin=calculated method=formula-sum]
+Tc          1723.22;      // K   [origin=predictive method=joback]
+Pc          8.112;      // bar [origin=predictive method=joback]
+omega       0.0266;      // -   [origin=predictive method=lee-kesler]
+Tb          1251.93;      // K   [origin=predictive method=joback]
+HvapTb      144070.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.899 2.65708 -0.0013162 1.862e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 18; } { group CH; count 3; } { group OH; count 3; } { group CH2N; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 19; } { group CH; count 3; } { group OH; count 3; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[bis(2-oxidanylpropyl)amino]propan-2-ol;octadecanoic acid" "octadecanoic acid- 1,1',1''-nitrilotripropan-2-ol(1:1)" "triisopropanolamine monostearate" "1-[bis(2-hydroxypropyl)amino]propan-2-ol; octadecanoic acid" "octadecanoic acid - 1,1',1''-nitrilotripropan-2-ol (1:1)" "stearic acid, compd. with 1,1',1''-nitrilotris(2-proanol) (1:1)" "octadecanoic acid, compd. with 1,1',1''-nitrilotris(2-propanol) (1:1)" "stearic acid, compound with 1,1',1''-nitrilotri(propan-2-ol) (1:1)" "stearic acid, compound with 1,1',1''-nitrilotri(propan-2-ol) (1:1);tipa-stearate" );
+gibbsFormation
+{
+    dHf_298   -1467500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1508.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-579210.0
+    phase     gas;
+}

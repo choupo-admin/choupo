@@ -1,0 +1,22 @@
+/*---------------------------------------------------------------------------*\
+  EXTRACTION sector: real NRTL gamma-gamma LLE subdomain.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    mix01
+    settler01
+);
+
+connections
+{
+    liquor        { to mix01/liquor; }
+    organic       { to mix01/organic; }
+
+    emulsion      { from mix01/emulsion;
+                    to   settler01/emulsion; }
+
+    raffinate     { from settler01/raffinate; }
+
+    loadedOrganic { from settler01/loadedOrganic; }
+}

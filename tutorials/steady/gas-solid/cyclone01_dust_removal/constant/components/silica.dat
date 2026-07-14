@@ -1,9 +1,12 @@
-// --- vendored for self-containment (2026-06-07) ---------------------
+// --- vendored for self-containment (2026-06-07; re-synced 2026-07-05) --
 // origin   standard
 // source   data/standards/components/silica.dat
-// sha256   547bee29684dc3b9b5981f250ed69b95c45c823e22244e5ac404b19687453b4d
-// note     byte-copy of the FROZEN reference at vendoring time. This case
-//          is now self-contained + reproducible even if the standard evolves.
+// sha256   a04d396a7b333240bf080c0078d34747e1f2f304a1a5b476c82d43e1e6a38ee1
+// note     byte-copy of the FROZEN reference at vendoring time.  This case
+//          is now self-contained + reproducible even if the standard evolves
+//          (the earlier vendored copy was a stale PARTIAL snapshot: it lacked
+//          the gibbsFormation + solidHeatCapacity blocks the run was in fact
+//          taking from the standard entry via the field-by-field overlay).
 //          Verify-vs-standard / re-sync is a deliberate curation act.
 // ----------------------------------------------------------------------
 
@@ -11,12 +14,19 @@
   Component: Silica  (SiO2) --- a generic mineral particulate / dust.
 
   A NON-VOLATILE solid: it never enters the vapour (K = 0) and carries
-  no Antoine / Cp blocks.  The `solid { rho_p; }` block gives the
-  particle density used by gas-solid separation (the cyclone d50).
-  `k_v` defaults to a sphere; no `dHf_solid` -> it is a pseudo-solid
-  (cannot react / crystallise), only physically separated.
+  no Antoine / ideal-gas Cp blocks.  The `solid { rho_p; }` block gives
+  the particle density used by gas-solid separation (the cyclone d50);
+  `k_v` defaults to a sphere.  Silica IS a real solid (enriched
+  2026-06-07): `gibbsFormation` (dHf_298 / s_298, solid phase) puts it
+  on the elements/formation datum and `solidHeatCapacity` carries its
+  sensible heat, so it can react / appear in energy balances --- it is
+  NOT a mere pseudo-solid that is only physically separated.
 
   rho_p for amorphous silica / sand ~ 2650 kg/m^3.
+  Sources: dHf_298/s_298 from CODATA Key Values (Cox, Wagman & Medvedev
+           1989); solidHeatCapacity fitted to Robie & Hemingway, USGS
+           Bull. 2131 (1995, public domain); rho_p ~2650 kg/m^3 (amorphous
+           silica / sand) -- primary re-citation pending (IST review).
 \*---------------------------------------------------------------------------*/
 
 name        silica;
@@ -30,4 +40,25 @@ role        nonvolatile;      // never goes to the vapour (K = 0)
 solid
 {
     rho_p   2650.0;           // particle density [kg/m^3]
+}
+
+// --- enriched 2026-06-07: silica IS a real solid with formation + Cp (Vitor's point) ---
+gibbsFormation
+{
+    dHf_298   -910700;        // J/mol  alpha-quartz [CODATA Key Values, Cox-Wagman-Medvedev 1989]
+    s_298     41.46;          // J/(mol*K) [CODATA Key Values]
+    phase     solid;
+}
+// Solid heat capacity of alpha-quartz, restored from an OPEN primary source
+// (the earlier no-grant compilation fit was EXCLUDED by the licence policy and was
+// removed).  Cp(298.15) ~ 44.6 J/(mol*K), rising to ~64.6 at 600 K.
+// PRIMARY: Robie & Hemingway, "Thermodynamic Properties of Minerals and
+// Related Substances ...", U.S. Geological Survey Bulletin 2131 (1995) --
+// a U.S. Government work, PUBLIC DOMAIN (no copyright).  Quadratic least-
+// squares fit to their tabulated Cp at 298.15/400/500/600 K (AAD < 0.5 %).
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = a0 + a1*T + a2*T^2  [J/(mol*K)]
+    coefficients  ( 8.24309   0.149929   -9.34656e-05 );
+    Trange        ( 298  600 );        // [Robie-Hemingway 1995, USGS Bull. 2131]
 }

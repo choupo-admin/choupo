@@ -41,7 +41,7 @@ Description
             controlDict           -- verbosity, output formatting
             propsDict             -- list of property operations to run
           constant/
-            thermoPackage         -- components + γ-φ + EoS models
+            propertyDict          -- components + γ-φ + EoS models
 
     Usage:   choupoProps [case_dir]
 \*---------------------------------------------------------------------------*/
@@ -49,12 +49,15 @@ Description
 #include "AadCompare.H"
 #include "core/Banner.H"
 #include "core/Dictionary.H"
+#include "core/ResultEmitter.H"
 #include "core/ThermoResolution.H"
 #include "core/Units.H"
 #include "propertyOps/PropertyOperation.H"
 #include "propertyOps/ConstantEstimator.H"
 #include "thermo/Database.H"
+#include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/ThermoPackageBuilder.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/electrolyte/AqueousActivity.H"
 #include "thermo/pureFluid/PureFluidModel.H"
@@ -253,7 +256,7 @@ try
 
     // --- Dictionaries ---------------------------------------------------
     //  Cascade resolution (fractal), identical to choupoSolve: a sector node
-    //  may omit the controlDict / thermoPackage it inherits from a PARENT
+    //  may omit the controlDict / propertyDict it inherits from a PARENT
     //  folder level --- walk UP the tree until found (capped).  The propsDict
     //  is NEVER inherited: it IS the node's own analyses.  Without this a
     //  composite sector (e.g. esterification2sector/REACTION) is a CLI dead-end.
@@ -270,6 +273,7 @@ try
 
     auto controlDict = Dictionary::fromFile(resolveUp("system/controlDict"));
     const int verbosity = static_cast<int>(controlDict->lookupScalarOrDefault("verbosity", 3));
+    thermoAnnounceLevel() = verbosity;   // gate the load-phase thermo chorus too
     const std::string description =
         controlDict->lookupWordOrDefault("description", "");
     if (verbosity >= 2 && !description.empty())
@@ -277,11 +281,56 @@ try
                   << std::string(56, '-') << "\n";
 
     auto propsDict = Dictionary::fromFile("system/propsDict");
-    auto thermoDict = Dictionary::fromFile(resolveUp("constant/thermoPackage"));
-
-    ThermoResolutionLog::instance().clear();   // capture binary-pair provenance
+    ThermoResolutionLog::instance().clear();
+    AdvisoryLog::instance().clear();   // capture binary-pair provenance
     ThermoPackage thermo;
-    thermo.readFromDict(thermoDict, db);
+    DictPtr thermoDict;   // null in the propertyPackage branch (only fit ops use it)
+    // ONE name: constant/propertyDict, accepting BOTH grammars (routed by
+    // content) with constant/propertyDict as a deprecated-but-read alias --
+    // mirrors choupoSolve.
+    std::string pkgPath = resolveUp("constant/propertyDict");
+    bool deprecatedName = false;
+    if (!fs::exists(pkgPath))
+    {
+        const std::string legacy = resolveUp("constant/propertyDict");
+        if (fs::exists(legacy)) { pkgPath = legacy; deprecatedName = true; }
+    }
+    if (fs::exists(pkgPath))
+    {
+        auto sel = Dictionary::fromFile(pkgPath);
+        if (deprecatedName)
+            std::cout << "  [deprecated] constant/propertyDict -- rename it to"
+                         " constant/propertyDict (the property package is"
+                         " more than thermo).\n";
+        if (sel->found("components") && sel->found("propertyMethods"))
+        {
+            if (verbosity >= 2)
+                std::cout << "Property package:  INLINE in the case"
+                             "   (constant/propertyDict carries the full"
+                             " manifest)\n";
+            thermo = ThermoPackageBuilder::build(sel, db);   // rich MANIFEST
+        }
+        else if (sel->found("components"))
+        {
+            if (verbosity >= 2)
+                std::cout << "Property package:  constant/propertyDict"
+                             "   (flat form: activityModel/equationOfState)\n";
+            thermoDict = sel;
+            thermo.readFromDict(sel, db);                    // FLAT form
+        }
+        else
+        {
+            const std::string pkgName = sel->lookupWord("package");
+            const fs::path rec = fs::path(Database::currentRoot())
+                                     / "standards" / "propertyPackages" / (pkgName + ".dat");
+            auto pkgDict = Dictionary::fromFile(rec.string());
+            if (verbosity >= 2)
+                std::cout << "Property package:  " << pkgName
+                          << "   (record: data/standards/propertyPackages/"
+                          << pkgName << ".dat)\n";
+            thermo = ThermoPackageBuilder::build(pkgDict, db);   // SELECTOR
+        }
+    }
 
     // GAP REPORT mode: emit the pre-solve gap JSON the author-time LLM consumes,
     // then exit -- never runs an operation (the artifact is read-only honesty).
@@ -326,7 +375,8 @@ try
     int overallRc = 0;
     auto opsList = propsDict->lookupDictList("operations");
     struct OpResult { std::string name, type; std::map<std::string, scalar> diag;
-                      std::map<std::string, std::string> prov; };
+                      std::map<std::string, std::string> prov;
+                      std::vector<std::string> head; };
     std::vector<OpResult> opResults;
     for (std::size_t k = 0; k < opsList.size(); ++k)
     {
@@ -349,7 +399,8 @@ try
                       << rc << "\n";
             overallRc = rc;
         }
-        opResults.push_back({ opName, opType, op->diagnostics(), opProvenance(opDict) });
+        opResults.push_back({ opName, opType, op->diagnostics(), opProvenance(opDict),
+                              op->headline() });
     }
 
     // --- Experimental datasets: echo each to a CSV in the case dir -------
@@ -540,6 +591,9 @@ try
     }
 
     // --- Structured result emitter (JSON) -------------------------------
+    // D-c (forum #67/#73): announced BEFORE the JSON stream opens -- an
+    // announcement inside the result block corrupts the machine channel.
+    announceProvenanceConsumption(ThermoResolutionLog::instance().entries());
     std::cout << "\n<<<Choupo:result-begin>>>\n{\n";
     std::cout << "  \"binary\": \"choupoProps\",\n";
     std::cout << "  \"caseDir\": \"" << caseDir.string() << "\",\n";
@@ -574,7 +628,15 @@ try
             if (!std::isfinite(val)) continue;
             std::cout << (i++ ? ", " : "") << "\"" << key << "\": " << val;
         }
-        std::cout << "}, \"provenance\": {";
+        std::cout << "}";
+        if (!orr.head.empty())
+        {
+            std::cout << ", \"headline\": [";
+            for (std::size_t h = 0; h < orr.head.size(); ++h)
+                std::cout << (h ? ", " : "") << "\"" << orr.head[h] << "\"";
+            std::cout << "]";
+        }
+        std::cout << ", \"provenance\": {";
         std::size_t j = 0;
         for (const auto& [key, val] : orr.prov)
             std::cout << (j++ ? ", " : "") << "\"" << key << "\": \"" << val << "\"";
@@ -585,16 +647,18 @@ try
     // Binary-pair resolution provenance (feeds the GUI foundation navigator +
     // pair-coverage matrix): where each NRTL pair came from + its source tag.
     const auto& resln = ThermoResolutionLog::instance().entries();
+    // advisories (forum #75-1/#77-6): the ONE shared emitter.
+    std::cout << advisoriesJson(AdvisoryLog::instance().entries());
     std::cout << ",\n  \"thermoResolution\": [";
     for (std::size_t i = 0; i < resln.size(); ++i)
     {
         const auto& p = resln[i];
-        auto q = [](const std::string& s){ return "\"" + s + "\""; };
-        std::cout << (i ? "," : "") << "\n    { \"model\": " << q(p.model)
-                  << ", \"i\": " << q(p.i) << ", \"j\": " << q(p.j)
-                  << ", \"status\": " << q(p.status)
-                  << ", \"source\": " << q(p.source)
-                  << ", \"provSource\": " << q(p.provSource) << " }";
+        std::cout << (i ? "," : "") << "\n    { \"model\": " << jsonEscape(p.model)
+                  << ", \"i\": " << jsonEscape(p.i) << ", \"j\": " << jsonEscape(p.j)
+                  << ", \"status\": " << jsonEscape(p.status)
+                  << ", \"source\": " << jsonEscape(p.source)
+                  << ", \"provSource\": " << jsonEscape(p.provSource)
+                  << pairResolutionAuditJson(p, jsonEscape) << " }";
     }
     std::cout << "\n  ]";
 
@@ -655,6 +719,7 @@ try
                 std::cout << (j++ ? "," : "") << "\n      { \"field\": " << esc(field)
                           << ", \"origin\": " << esc(originToWord(oi.origin))
                           << ", \"method\": " << (oi.method.empty() ? "null" : esc(oi.method))
+                          << ", \"methodVersion\": " << (oi.methodVersion.empty() ? "null" : esc(oi.methodVersion))
                           << ", \"validity\": "
                           << (oi.hasValidity
                                 ? "[" + std::to_string(oi.validityMin) + "," + std::to_string(oi.validityMax) + "]"
@@ -675,12 +740,11 @@ try
     for (std::size_t i = 0; i < expDatasets.size(); ++i)
     {
         const auto& d = expDatasets[i];
-        auto q = [](const std::string& s){ return "\"" + s + "\""; };
-        std::cout << (i ? "," : "") << "\n    { \"name\": " << q(d.name)
-                  << ", \"kind\": " << q(d.kind)
-                  << ", \"component\": " << q(d.component)
-                  << ", \"source\": " << q(d.source)
-                  << ", \"citation\": " << q(d.citation)
+        std::cout << (i ? "," : "") << "\n    { \"name\": " << jsonEscape(d.name)
+                  << ", \"kind\": " << jsonEscape(d.kind)
+                  << ", \"component\": " << jsonEscape(d.component)
+                  << ", \"source\": " << jsonEscape(d.source)
+                  << ", \"citation\": " << jsonEscape(d.citation)
                   << ", \"nPoints\": " << d.nPoints << " }";
     }
     std::cout << "\n  ]";
@@ -690,7 +754,6 @@ try
     // (or a coverage-flagged variant); otherwise JSON null + the status reason --
     // a wrong AAD is worse than no AAD.
     {
-        auto q = [](const std::string& s){ return "\"" + s + "\""; };
         auto numOrNull = [](bool has, double v) -> std::string
         { if (!has || !std::isfinite(v)) return "null";
           std::ostringstream os; os << v; return os.str(); };
@@ -698,22 +761,22 @@ try
         for (std::size_t i = 0; i < validation.size(); ++i)
         {
             const auto& vb = validation[i];
-            std::cout << (i ? "," : "") << "\n    { \"dataset\": " << q(vb.name)
-                      << ", \"abscissa\": " << q(vb.abscissa) << ", \"aad\": [";
+            std::cout << (i ? "," : "") << "\n    { \"dataset\": " << jsonEscape(vb.name)
+                      << ", \"abscissa\": " << jsonEscape(vb.abscissa) << ", \"aad\": [";
             for (std::size_t j = 0; j < vb.recs.size(); ++j)
             {
                 const auto& a = vb.recs[j];
-                std::cout << (j ? "," : "") << "\n      { \"model\": " << q(a.model)
-                          << ", \"property\": " << (a.property.empty() ? "null" : q(a.property))
-                          << ", \"kind\": " << (a.kind.empty() ? "null" : q(a.kind))
+                std::cout << (j ? "," : "") << "\n      { \"model\": " << jsonEscape(a.model)
+                          << ", \"property\": " << (a.property.empty() ? "null" : jsonEscape(a.property))
+                          << ", \"kind\": " << (a.kind.empty() ? "null" : jsonEscape(a.kind))
                           << ", \"aadAbs\": " << numOrNull(a.hasAbs, a.aadAbs)
-                          << ", \"aadAbsUnit\": " << (a.hasAbs ? q(a.unit) : std::string("null"))
+                          << ", \"aadAbsUnit\": " << (a.hasAbs ? jsonEscape(a.unit) : std::string("null"))
                           << ", \"aadRelPct\": " << numOrNull(a.hasRel, a.aadRelPct)
                           << ", \"nMeas\": " << a.nMeas << ", \"nUsed\": " << a.nUsed
                           << ", \"nOutOfRange\": " << a.nOutOfRange
                           << ", \"nNearZeroSkipped\": " << a.nNearZeroSkipped
                           << ", \"nNonFinite\": " << a.nNonFinite
-                          << ", \"status\": " << q(a.status) << " }";
+                          << ", \"status\": " << jsonEscape(a.status) << " }";
             }
             std::cout << " ] }";
         }

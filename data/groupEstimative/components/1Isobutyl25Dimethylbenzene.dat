@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-isobutyl-2,5-dimethylbenzene  (C12H18, CAS 55669-88-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Isobutyl25Dimethylbenzene;
+formula     C12H18;
+CAS         55669-88-0;
+InChIKey    IWEUJYZCURHZFV-UHFFFAOYSA-N;
+MW          162.276;      // g/mol [origin=calculated method=formula-sum]
+Tc          716.51;      // K   [origin=predictive method=joback]
+Pc          23.542;      // bar [origin=predictive method=joback]
+omega       0.4537;      // -   [origin=predictive method=lee-kesler]
+Tb          510.36;      // K   [origin=predictive method=joback]
+HvapTb      45518.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.009 0.95188 -0.00052932 1.068e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group ACH; count 3; } { group ACCH3; count 2; } { group ACCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-dimethyl-2-(2-methylpropyl)benzene" "benzene, 1,4-dimethyl-2-(2-methylpropyl)-" "benzene,1,4-dimethyl-2-(2-methylpropyl)-" "p-xylene,2-isobutyl- (6ci); 1,4-dimethyl-2-(2-methylpropyl)benzene;1,4-dimethyl-2-isobutylbenzene; 1-isobutyl-2,5-dimethylbenzene" );
+gibbsFormation
+{
+    dHf_298   -82700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     495.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=140870.0
+    phase     gas;
+}

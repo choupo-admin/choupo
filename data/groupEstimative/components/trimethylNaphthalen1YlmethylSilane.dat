@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimethyl(naphthalen-1-ylmethyl)silane  (C14H18Si, CAS 18410-58-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C14H18Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        trimethylNaphthalen1YlmethylSilane;
+formula     C14H18Si;
+CAS         18410-58-7;
+InChIKey    ZDVDCWGJCRZBHK-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          214.383;      // g/mol [origin=calculated method=formula-sum]
+Tc          801.33;      // K   [origin=predictive method=joback]
+Pc          22.229;      // bar [origin=predictive method=joback]
+omega       0.4378;      // -   [origin=predictive method=lee-kesler]
+Tb          571.96;      // K   [origin=predictive method=joback]
+HvapTb      51630.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.069 0.98556 -0.00042388 1.99e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group ACH; count 7; } { group AC; count 2; } { group ACCH2; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "silane,trimethyl(1-naphthalenylmethyl)-" "trimethyl-(naphthalen-1-ylmethyl)silane" "silane, trimethyl(1-naphthalenylmethyl)-" );
+gibbsFormation
+{
+    dHf_298   -27780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     606.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=171670.0
+    phase     gas;
+}

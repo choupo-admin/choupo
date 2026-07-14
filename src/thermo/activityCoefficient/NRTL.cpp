@@ -28,7 +28,9 @@ License
 
 #include "NRTL.H"
 #include "core/Advisory.H"
+#include "core/Origin.H"
 #include "core/ThermoResolution.H"
+#include "thermo/PairAudit.H"
 #include "thermo/Database.H"
 
 #include <algorithm>
@@ -62,6 +64,7 @@ std::string alphaPairFilename(const std::string& a, const std::string& b)
 //     0. <nodeBase>/constant/binaryPairs/NRTL/<pair>.dat   (per-node, Item 0b)
 //     1. <cwd>/constant/binaryPairs/NRTL/<pair>.dat        (case-local / plant root)
 //     2. <Database::currentRoot()>/standards/binaryPairs/NRTL/<pair>.dat
+//     3. <Database::currentRoot()>/proposed/binaryPairs/NRTL/<pair>.dat
 // Returns empty path if nothing found.  `nodeBase` is the owning node's folder
 // (e.g. "SEPARATION") so a sector/unit's PARTICULAR pair resolves before the
 // plant root + the standard library -- the per-node walk-up.
@@ -79,12 +82,29 @@ fs::path locatePairFile(const std::string& pairName, const std::string& nodeBase
                         / "constant" / "binaryPairs" / "NRTL" / pairName;
     if (fs::exists(caseFile)) { tierOut = "caseRoot"; return caseFile; }
 
+    // Case snapshot: propertyData/parameters/ is the CANONICAL home for a model
+    // parameter (sealed self-containment, F2).  Per-node context first, then the
+    // case root -- consulted BEFORE the installation catalogue.  The `constant/
+    // binaryPairs/` tiers above are the retiring F1 overlay.
+    if (!nodeBase.empty())
+    {
+        fs::path nodeSnap = fs::path(nodeBase) / "constant" / "propertyData"
+                          / "parameters" / "activity" / "NRTL" / pairName;
+        if (fs::exists(nodeSnap)) { tierOut = "perNodeSnapshot"; return nodeSnap; }
+    }
+    fs::path caseSnap = fs::current_path() / "constant" / "propertyData"
+                      / "parameters" / "activity" / "NRTL" / pairName;
+    if (fs::exists(caseSnap)) { tierOut = "caseSnapshot"; return caseSnap; }
+
     const auto& root = Database::currentRoot();
     if (!root.empty())
     {
         fs::path stdFile = fs::path(root)
                            / "standards" / "binaryPairs" / "NRTL" / pairName;
         if (fs::exists(stdFile)) { tierOut = "standard"; return stdFile; }
+        fs::path proposedFile = fs::path(root)
+                           / "local" / "binaryPairs" / "NRTL" / pairName;
+        if (fs::exists(proposedFile)) { tierOut = "local"; return proposedFile; }
     }
     tierOut = "idealDefault";
     return {};
@@ -138,10 +158,12 @@ NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
 
     auto recordResolution = [&](const std::string& ni, const std::string& nj,
                                 const std::string& status, const std::string& source,
-                                const std::string& provSource)
+                                const std::string& provSource,
+                                const DictPtr& provDict = nullptr)
     {
-        ThermoResolutionLog::instance().add(
-            PairResolution{ "NRTL", ni, nj, status, source, provSource });
+        PairResolution r{ "NRTL", ni, nj, status, source, provSource };
+        fillPairAudit(r, provDict, ni + "-" + nj, status == "standard");
+        ThermoResolutionLog::instance().add(std::move(r));
     };
 
     // ---- Phase 1: inline `pairs (... )` in the thermoPackage dict ----
@@ -189,6 +211,17 @@ NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
 
             auto fileDict = Dictionary::fromFile(file.string());
 
+            if (tier == "local")
+            {
+                const bool isNew = AdvisoryLog::instance().add(
+                    "provenance", "warning", "NRTL " + names[i] + "-" + names[j],
+                    "loaded from data/local/binaryPairs -- UNVERIFIED");
+                if (isNew)
+                    std::cout << "  [local] NRTL binary pair " << names[i]
+                              << "-" << names[j]
+                              << ": UNVERIFIED local (imported/licensed) data\n";
+            }
+
             // Validate model
             if (fileDict->found("model"))
             {
@@ -214,7 +247,9 @@ NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
             if (fileDict->found("provenance"))
                 provSource = fileDict->subDict("provenance")
                                  ->lookupWordOrDefault("source", "");
-            recordResolution(names[i], names[j], tier, file.string(), provSource);
+            recordResolution(names[i], names[j], tier, file.string(), provSource,
+                             fileDict->found("provenance")
+                                 ? fileDict->subDict("provenance") : nullptr);
         }
     // Diagonals stay at 0 (τ_ii = 0, G_ii = 1, α_ii = 0).
 

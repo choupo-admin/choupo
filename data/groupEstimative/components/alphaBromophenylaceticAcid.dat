@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: alpha-bromophenylacetic acid  (C8H7BrO2, CAS 4870-65-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        alphaBromophenylaceticAcid;
+formula     C8H7BrO2;
+CAS         4870-65-9;
+InChIKey    WAKFRZBXTKUFIW-UHFFFAOYSA-N;
+MW          215.046;      // g/mol [origin=calculated method=formula-sum]
+Tc          867.38;      // K   [origin=predictive method=joback]
+Pc          45.104;      // bar [origin=predictive method=joback]
+omega       0.7863;      // -   [origin=predictive method=lee-kesler]
+Tb          620.55;      // K   [origin=predictive method=joback]
+HvapTb      58889.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.18 0.7798 -0.0005898 1.711e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group ACCH; count 1; } { group COOH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanyl-2-phenyl-ethanoic acid" "2-bromo-2-phenylacetic acid" "bromo(phenyl)acetic acid" ".alpha.-bromophenylacetic acid" "dl-.alpha.-bromophenylacetic acid" "qvyer" "bromophenylacetic acid" "a-bromophenylacetic acid" "bromo-phenyl-acetic acid" "a-(bromo)phenylacetic acid" "agn-pc-00snr3" "bromo-phenylacetic acid" );
+gibbsFormation
+{
+    dHf_298   -301140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     455.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-203140.0
+    phase     gas;
+}

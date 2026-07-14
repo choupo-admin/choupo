@@ -78,6 +78,10 @@ struct NDOptions
     scalar    fdStep           = 1.0e-7;
     bool      backtracking     = true;
     scalar    minAlpha         = 1.0e-4;
+    // Parallelise the finite-difference Jacobian across cores.  Opt-in: set ONLY
+    // when the residual F is thread-safe (a pure function, no shared mutable
+    // state).  The recycle / flowsheet Newton mutates unit state -> leave false.
+    bool      parallel         = false;
     std::function<void(const NDTrace&)> onIter;
 };
 

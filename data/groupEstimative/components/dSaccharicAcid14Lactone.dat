@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: d-saccharic acid 1,4-lactone  (C6H8O7, CAS 389-36-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dSaccharicAcid14Lactone;
+formula     C6H8O7;
+CAS         389-36-6;
+InChIKey    XECPAIJNBXCOBO-UHFFFAOYSA-N;
+MW          192.123;      // g/mol [origin=calculated method=formula-sum]
+Tc          1004.57;      // K   [origin=predictive method=joback]
+Pc          54.707;      // bar [origin=predictive method=joback]
+omega       2.3579;      // -   [origin=predictive method=lee-kesler]
+Tb          814.11;      // K   [origin=predictive method=joback]
+HvapTb      102465.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.27 0.7756 -0.0004844 1.029e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 4; } { group OH; count 3; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group CH_ring; count 3; } { group OH; count 3; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[3,4-bis(oxidanyl)-5-oxidanylidene-oxolan-2-yl]-2-oxidanyl-ethanoic acid" "(3,4-dihydroxy-5-oxotetrahydrofuran-2-yl)(hydroxy)acetic acid(non-preferred name)" "agn-pc-00hso9" "d-glucaric acid 1,4-lactone" "d-glucaric acid 3,6-lactone" "d-glucaric acid, 6,3-lactone" "2-(3,4-dihydroxy-5-oxooxolan-2-yl)-2-hydroxyacetic acid" "d-(tetrahydro-2,3,4-trihydroxy-5-oxofuran-2-yl)glycollic acid" "2-(3,4-dihydroxy-5-oxo(2-2,3,4-trihydrofuryl))-2-hydroxyacetic acid" "(2r)-2-[(2s,3r,4r)-3,4-dihydroxy-5-oxooxolan-2-yl]-2-hydroxyacetic acid" "(2r)-[(2r,3s,4s)-3,4-dihydroxy-5-oxotetrahydrofuran-2-yl](hydroxy)ethanoic acid (non-preferred name)" "(2s)-[(2s,3r,4s)-3,4-dihydroxy-5-oxotetrahydrofuran-2-yl](hydroxy)ethanoic acid (non-preferred name)" );
+gibbsFormation
+{
+    dHf_298   -1264570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     462.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1022210.0
+    phase     gas;
+}

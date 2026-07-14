@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexacosanoic acid  (C26H52O2, CAS 506-46-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexacosanoicAcid;
+formula     C26H52O2;
+CAS         506-46-7;
+InChIKey    XMHIUKTWLZUKEX-UHFFFAOYSA-N;
+MW          396.7;      // g/mol [origin=calculated method=formula-sum]
+Tc          1156.67;      // K   [origin=predictive method=joback]
+Pc          7.610;      // bar [origin=predictive method=joback]
+omega       0.6695;      // -   [origin=predictive method=lee-kesler]
+Tb          939.99;      // K   [origin=predictive method=joback]
+HvapTb      90634.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.146 2.52462 -0.0014632 3.262e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 24; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 24; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cerotic acid" "ceric acid" "ceratinic acid" "cerinic acid" "cerylic acid" "hexacosanic acid" "n-hexacosanoic acid" "cerotinic acid" "cerate" "ceratinate" "cerinate" "n-hexacosanoate" );
+gibbsFormation
+{
+    dHf_298   -930240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1221.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-175870.0
+    phase     gas;
+}

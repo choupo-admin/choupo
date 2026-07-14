@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(perfluoro-3-methylbutyl)ethyl methacrylate  (C11H9F11O2, CAS 65195-44-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Perfluoro3MethylbutylEthylMethacrylate;
+formula     C11H9F11O2;
+CAS         65195-44-0;
+InChIKey    JTEKNLSWXJADLG-UHFFFAOYSA-N;
+MW          382.169;      // g/mol [origin=calculated method=formula-sum]
+Tc          621.60;      // K   [origin=predictive method=joback]
+Pc          14.546;      // bar [origin=predictive method=joback]
+omega       0.7482;      // -   [origin=predictive method=lee-kesler]
+Tb          481.88;      // K   [origin=predictive method=joback]
+HvapTb      31430.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-39.748 1.73272 -0.0015446 5.029e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH2=C; count 1; } { group CF3; count 2; } { group CF2; count 2; } { group CF; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 5; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 11; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[3,3,4,4,5,6,6,6-octakis(fluoranyl)-5-(trifluoromethyl)hexyl] 2-methylprop-2-enoate" "[3,3,4,4,5,6,6,6-octafluoro-5-(trifluoromethyl)hexyl] 2-methylprop-2-enoate" "1h,1h,2h,2h-perfluoro(5-methylhex-1-yl) methacrylate" "2-methyl-2-propenoic acid [3,3,4,4,5,6,6,6-octafluoro-5-(trifluoromethyl)hexyl] ester" "2-propenoic acid,2-methyl-, 3,3,4,4,5,6,6,6-octafluoro-5-(trifluoromethyl)hexyl ester" "3,3,4,4,5,6,6,6-octafluoro-5-(trifluoromethyl)hex-1-yl 2-methylprop-2-enoate" "3,3,4,4,5,6,6,6-octafluoro-5-(trifluoromethyl)hexyl 2-methylprop-2-enoate" "1h,1h,2h,2h-perfluoro-5-methylhexyl methacrylate;3,3,4,4,5,6,6,6-octafluoro-5-(trifluoromethyl)hexyl methacrylate;2-(perfluoro-3-methylbutyl)ethyl methacrylate;daikin m-3420;2-(perfluoro-3-methylbutyl)ethyl methacrylate 97%;2-(perfluoro-3-methylbutyl)ethylmethacrylate97%" );
+gibbsFormation
+{
+    dHf_298   -2672970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     781.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2318050.0
+    phase     gas;
+}

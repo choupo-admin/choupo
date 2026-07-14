@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-bis[(2h3)methyl](2h4)benzene  (C8D10, CAS 41051-88-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8D10 (delta D+10H-10; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        14Bis2h3Methyl2h4Benzene;
+formula     C8D10;
+CAS         41051-88-1;
+InChIKey    URLKBWYHVLBVBO-ZGYYUIRESA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          116.228;      // g/mol [origin=calculated method=formula-sum]
+Tc          625.42;      // K   [origin=predictive method=joback]
+Pc          35.856;      // bar [origin=predictive method=joback]
+omega       0.2937;      // -   [origin=predictive method=lee-kesler]
+Tb          414.30;      // K   [origin=predictive method=joback]
+HvapTb      36340.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.99 0.62544 -0.00037556 8.46e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group ACCH3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,4,5-tetradeuterio-3,6-bis(trideuteriomethyl)benzene" "benzene-1,2,4,5-d4-, 3,6-di(methyl-d3)-" "p-xylene-d10" "(2h10)-p-xylene" "1,4-dimethylbenzene-d10" "1,4-di(methyl-d3)benzene-d4" "1,4-xylene-d10 9.59 atom % d" );
+gibbsFormation
+{
+    dHf_298   16610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     355.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=119260.0
+    phase     gas;
+}

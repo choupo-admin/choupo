@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (17-ethynyl-10,13-dimethyl-1,4,5,6,7,8,9,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthren-17-yl) acetate  (C23H32O2, CAS 124-85-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        17Ethynyl1013Dimethyl14567891112141516DodecahydrocyclopentaA;
+formula     C23H32O2;
+CAS         124-85-6;
+InChIKey    SQRBBVVZRKZEPF-UHFFFAOYSA-N;
+MW          340.507;      // g/mol [origin=calculated method=formula-sum]
+Tc          1057.94;      // K   [origin=predictive method=joback]
+Pc          15.307;      // bar [origin=predictive method=joback]
+omega       0.6660;      // -   [origin=predictive method=lee-kesler]
+Tb          808.36;      // K   [origin=predictive method=joback]
+HvapTb      70481.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-329.78 3.33596 -0.00319641 1.28509e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 4; } { group C; count 3; } { group CH=CH; count 1; } { group CH3COO; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 8; } { group CH_ring; count 4; } { group C_ring; count 3; } { group dCH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(17-ethynyl-10,13-dimethyl-1,4,5,6,7,8,9,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthren-17-yl) ethanoate" "pregn-2-en-20-yn-17-yl acetate" "5xi,17alpha-pregn-2-en-20-yn-17-yl acetate" "(5alpha,17alpha)-pregn-2-en-20-yn-17-yl acetate" "[(8r,9s,10s,13s,14s,17r)-17-ethynyl-10,13-dimethyl-1,4,5,6,7,8,9,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthren-17-yl] acetate" );
+gibbsFormation
+{
+    dHf_298   -240550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     855.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=228340.0
+    phase     gas;
+}

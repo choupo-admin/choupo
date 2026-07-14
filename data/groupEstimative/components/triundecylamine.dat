@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triundecylamine  (C33H69N, CAS 42910-16-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triundecylamine;
+formula     C33H69N;
+CAS         42910-16-7;
+InChIKey    JEIFGNLZAYFLFL-UHFFFAOYSA-N;
+MW          479.922;      // g/mol [origin=calculated method=formula-sum]
+Tc          1214.69;      // K   [origin=predictive method=joback]
+Pc          5.194;      // bar [origin=predictive method=joback]
+omega       0.1897;      // -   [origin=predictive method=lee-kesler]
+Tb          967.08;      // K   [origin=predictive method=joback]
+HvapTb      91095.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.8 3.26276 -0.001884 4.189e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 29; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 30; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-di(undecyl)undecan-1-amine" "agn-pc-00nkq5" "1-undecanamine, n,n-diundecyl-" );
+gibbsFormation
+{
+    dHf_298   -656920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1457.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=337760.0
+    phase     gas;
+}

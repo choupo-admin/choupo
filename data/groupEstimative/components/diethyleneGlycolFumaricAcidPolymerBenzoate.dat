@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethylene glycol, fumaric acid polymer, benzoate  (C15H18O8, CAS 69898-15-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diethyleneGlycolFumaricAcidPolymerBenzoate;
+formula     C15H18O8;
+CAS         69898-15-3;
+InChIKey    WPAZMMIVXJXQEP-WLHGVMLRSA-N;
+MW          326.301;      // g/mol [origin=calculated method=formula-sum]
+Tc          1273.16;      // K   [origin=predictive method=joback]
+Pc          22.568;      // bar [origin=predictive method=joback]
+omega       1.6933;      // -   [origin=predictive method=lee-kesler]
+Tb          1038.88;      // K   [origin=predictive method=joback]
+HvapTb      112336.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (47.384 1.1813 -0.0004624 -2.31e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH=CH; count 1; } { group ACH; count 5; } { group AC; count 1; } { group COOH; count 2; } { group COO; count 1; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group O; count 1; } { group COOH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e)-but-2-enedioic acid;2-(2-hydroxyethyloxy)ethyl benzoate" "2-butenedioic acid (2e)-, polymer with 2,2'-oxybis(ethanol), benzoate" );
+gibbsFormation
+{
+    dHf_298   -1413070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     954.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1076720.0
+    phase     gas;
+}

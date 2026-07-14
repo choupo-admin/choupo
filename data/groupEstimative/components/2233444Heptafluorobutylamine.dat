@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,3,3,4,4,4-heptafluorobutylamine  (C4H4F7N, CAS 374-99-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2233444Heptafluorobutylamine;
+formula     C4H4F7N;
+CAS         374-99-2;
+InChIKey    WBGBQSRNXPVFDB-UHFFFAOYSA-N;
+MW          199.069;      // g/mol [origin=calculated method=formula-sum]
+Tc          498.23;      // K   [origin=predictive method=joback]
+Pc          30.762;      // bar [origin=predictive method=joback]
+omega       0.4837;      // -   [origin=predictive method=lee-kesler]
+Tb          348.85;      // K   [origin=predictive method=joback]
+HvapTb      25532.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-25.039 0.9057 -0.0008674 3.023e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2NH2; count 1; } { group CF3; count 1; } { group CF2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 3; } { group F; count 7; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,4-heptakis(fluoranyl)butan-1-amine" "1h,1h-perfluorobutylamine" "2,2,3,3,4,4,4-heptafluorobutan-1-amine" "butylamine, 2,2,3,3,4,4,4-heptafluoro-" "1-butanamine, 2,2,3,3,4,4,4-heptafluoro-" "heptafluorobutylamine" "1h,1h-heptafluorobutylamine" "1-butanamine,2,2,3,3,4,4,4-heptafluoro-" "butylamine,2,2,3,3,4,4,4-heptafluoro- (6ci,7ci,8ci);2,2,3,3,4,4,4-heptafluorobutylamine;" );
+gibbsFormation
+{
+    dHf_298   -1491120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     468.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1305900.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: thiophene-2-ethylamine  (C6H9NS, CAS 30433-91-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        thiophene2Ethylamine;
+formula     C6H9NS;
+CAS         30433-91-1;
+InChIKey    HVLUYXIJZLDNIS-UHFFFAOYSA-N;
+MW          127.205;      // g/mol [origin=calculated method=formula-sum]
+Tc          714.26;      // K   [origin=predictive method=joback]
+Pc          46.089;      // bar [origin=predictive method=joback]
+omega       0.4498;      // -   [origin=predictive method=lee-kesler]
+Tb          480.49;      // K   [origin=predictive method=joback]
+HvapTb      47215.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.818 0.63681 -0.00045502 1.312e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2NH2; count 1; } { group C4H3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group NH2; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-thiophen-2-ylethanamine" "2-thiopheneethylamine" "thiopheneethanamine" "2-thien-2-ylethanamine" "2-(2-thienyl)ethylamine" "2-(thiophen-2-yl)ethanamine" "2-(2-aminoethyl)thiophene" "thiopheneethylamine" "2-thiopheneethanamine" "thiophene-1-ethylamine" "2-(thiophen-2-yl)ethan-1-amine" "2-(thien-2-yl)ethylamine" );
+gibbsFormation
+{
+    dHf_298   96790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     402.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=200500.0
+    phase     gas;
+}

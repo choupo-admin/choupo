@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-bromo-4,6-difluorophenyl isocyanate  (C7H2BrF2NO, CAS 190774-48-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Bromo46DifluorophenylIsocyanate;
+formula     C7H2BrF2NO;
+CAS         190774-48-2;
+InChIKey    NPRYGRLJCFTSBA-UHFFFAOYSA-N;
+MW          233.999;      // g/mol [origin=calculated method=formula-sum]
+Tc          753.27;      // K   [origin=predictive method=joback]
+Pc          41.570;      // bar [origin=predictive method=joback]
+omega       0.6742;      // -   [origin=predictive method=lee-kesler]
+Tb          532.75;      // K   [origin=predictive method=joback]
+HvapTb      49771.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 2; } { group Br; count 1; } { group ACF; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group dCd; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group F; count 2; } { group Br; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-3,5-bis(fluoranyl)-2-isocyanato-benzene" "1-bromo-3,5-difluoro-2-isocyanatobenzene" "2-bromo-4,6-difluorobenzenisocyanate" "benzene,1-bromo-3,5-difluoro-2-isocyanato-" "2-bromo-4,6-difluorophenylisocyanate;1-bromo-3,5-difluoro-2-isocyanatobenzene;benzene, 1-bromo-3,5-difluoro-2-isocyanato-;" );
+// formation datum unavailable (element entropy missing): dHf_298=-356990.0 dGf_298=None

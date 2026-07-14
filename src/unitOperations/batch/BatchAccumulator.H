@@ -64,6 +64,12 @@ public:
 
     const BatchState& state() const override { return state_; }
 
+    // A passive adiabatic tank exchanges no heat with the surroundings:
+    // its energy physics is fully represented by ZERO ledger records.  (The
+    // enthalpy its charges CARRY lives on the material ledger; a charge
+    // that cannot solve H-equality is gated separately, by name.)
+    std::string energyLedgerGap() const override { return ""; }
+
 protected:
     BatchState& mutableState() override { return state_; }
 

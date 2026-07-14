@@ -1,0 +1,72 @@
+/*---------------------------------------------------------------------------*\
+  batch07_lhhw_methylAcetate  --  the SAME rate law as cstr07, in a BATCH vessel.
+
+      CH3OH + CH3COOH  <->  CH3COOCH3 + H2O      over Amberlyst 15
+
+  Popken, Gotze & Gmehling, Ind. Eng. Chem. Res. 39 (2000) 2601, Eq 16: the
+  adsorption-based LHHW on UNIQUAC activities.  Nothing about the rate law is
+  restated here -- it lives in constant/reactions, exactly as the steady CSTR
+  reads it, because the SAME `RateLaw` evaluates it in both.  A batch reactor and
+  a continuous one cannot disagree about what an adsorption denominator means.
+
+  What changes is only what a batch vessel does with a rate: it integrates it.
+  The charge is equimolar methanol + acetic acid; the trajectory climbs to the
+  ACTIVITY equilibrium, X = 76.6 %, and stops.  That plateau is asserted nowhere:
+  it is where k1 a'_HOAc a'_MeOH = k-1 a'_MeOAc a'_H2O, i.e. the K_a = 25.50 the
+  authors' independent Eq 17 recovers from the same eight constants -- and the
+  same number the steady CSTR climbs to as its volume grows.  Two reactors, two
+  integration schemes, one equilibrium.
+
+  Water is the strongest adsorber (K/M = 0.29 against 0.052 for the acid), so as
+  the reaction MAKES water it crowds the acid off the resin and the denominator
+  grows.  That self-inhibition is why reactive distillation, which pulls the water
+  out as it forms, is worth its capital.
+
+  Do NOT try to see the inhibition by deleting the `adsorption` block and keeping
+  k1.  It tells you nothing: the constants were REGRESSED for this rate law, on
+  these activities, and a rate constant without its rate law is a number without a
+  meaning.  (Delete the denominator and the reaction gets FASTER, because the
+  adsorbed activities a' are small and dividing by their square is a
+  multiplication.  That is an arithmetic accident, not physics.)  To SEE the
+  inhibition, spike the charge with water at the same acid and alcohol fractions:
+
+      methanol 0.4, aceticAcid 0.4, water 0.0   ->  initial rate 58.3 mmol/(L.s)
+      methanol 0.4, aceticAcid 0.4, water 0.2   ->  initial rate 29.0 mmol/(L.s)
+
+  Half the rate, with every reactant fraction unchanged.  The water is not a
+  reactant here; it is sitting on the sites.
+
+  `catalystLoading` (kg of dry resin per m^3) is what turns the paper's per-gram
+  rate constants into a volumetric rate.  With concentrations in kmol/m^3 the
+  conversion is exact and unit-free: mol/(g.s) x kg/m^3 = kmol/(m^3.s).
+
+  The vessel runs isothermal at 333.15 K, the top of the authors' data range.
+  Do not extrapolate: their activation energies are APPARENT values, fitted over
+  303-333 K.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        initial
+        {
+            T            333.15 K;
+            P            1.013 bar;
+            V            0.001;              // m^3 (1 litre)
+            totalMoles   0.0185;             // kmol
+            molarComposition  { methanol 0.5;  aceticAcid 0.5;  methylAcetate 0.0;  water 0.0; }
+        }
+
+        operation
+        {
+            mode             isothermal;
+            T_setpoint       333.15 K;
+            catalystLoading  400;            // kg dry resin per m^3 of liquid
+        }
+
+        reaction    esterification_meoac;
+    }
+);

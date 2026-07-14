@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyric acid, 4-(2,5-xylyl)-  (C12H16O2, CAS 1453-06-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butyricAcid425Xylyl;
+formula     C12H16O2;
+CAS         1453-06-1;
+InChIKey    XNTQOUBHYSKYOI-UHFFFAOYSA-N;
+MW          192.258;      // g/mol [origin=calculated method=formula-sum]
+Tc          870.66;      // K   [origin=predictive method=joback]
+Pc          25.508;      // bar [origin=predictive method=joback]
+omega       0.8737;      // -   [origin=predictive method=lee-kesler]
+Tb          656.31;      // K   [origin=predictive method=joback]
+HvapTb      63070.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.727 0.99674 -0.00059872 1.353e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 3; } { group ACCH3; count 2; } { group ACCH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(2,5-dimethylphenyl)butanoic acid" "benzenebutanoic acid, 2,5-dimethyl-" "4-(2,5-dimethylphenyl)butyric acid" "butyric acid,5-xylyl)-" "4-(2,5-xylyl)butyric acid" "4-(2,5-xylyl)butanoic acid" "benzenebutanoic acid,5-dimethyl-" "benzenebutanoic acid,2,5-dimethyl-" ".gamma.-(2,5-dimethylphenyl)-n-butyric acid" "gamma-(2,4-dimethylphenyl)butyric acid" );
+gibbsFormation
+{
+    dHf_298   -427690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     557.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-200600.0
+    phase     gas;
+}

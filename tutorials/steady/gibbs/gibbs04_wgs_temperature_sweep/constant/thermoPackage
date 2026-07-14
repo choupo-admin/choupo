@@ -1,4 +1,0 @@
-components       ( CO  water  CO2  H2 );
-
-activityModel    { model  ideal; }
-equationOfState  { model  idealGas; }

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (e)-5-isopropyl-8-methylnona-6,8-dien-2-one  (C13H22O, CAS 1937-54-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        e5Isopropyl8Methylnona68Dien2One;
+formula     C13H22O;
+CAS         1937-54-8;
+InChIKey    PQDRXUSSKFWCFA-UHFFFAOYSA-N;
+MW          194.318;      // g/mol [origin=calculated method=formula-sum]
+Tc          739.65;      // K   [origin=predictive method=joback]
+Pc          19.102;      // bar [origin=predictive method=joback]
+omega       0.6134;      // -   [origin=predictive method=lee-kesler]
+Tb          550.75;      // K   [origin=predictive method=joback]
+HvapTb      49870.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-21.798 1.22258 -0.0007801 2.0006e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 2; } { group CH=CH; count 1; } { group CH2=C; count 1; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-methyl-5-propan-2-yl-nona-6,8-dien-2-one" "agn-pc-00s7wf" "6,8-nonadien-2-one, 8-methyl-5-(1-methylethyl)-" "6,8-nonadien-2-one,8-methyl-5-(1-methylethyl)-, (6e)-" "(5s,6e)-8-methyl-5-(isopropyl)-6,8-nonadien-2-one" "6,8-nonadien-2-one,8-methyl-5-(1-methylethyl)-, (e)-; (?a'a a'a currency)-solanone" );
+gibbsFormation
+{
+    dHf_298   -201930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     654.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=84290.0
+    phase     gas;
+}

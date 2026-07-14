@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4'-dimethyloctafluorobiphenyl  (C14H6F8, CAS 26475-18-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44Dimethyloctafluorobiphenyl;
+formula     C14H6F8;
+CAS         26475-18-3;
+InChIKey    IMAVLXWSVGAOCU-UHFFFAOYSA-N;
+MW          326.186;      // g/mol [origin=calculated method=formula-sum]
+Tc          792.14;      // K   [origin=predictive method=joback]
+Pc          17.217;      // bar [origin=predictive method=joback]
+omega       0.9107;      // -   [origin=predictive method=lee-kesler]
+Tb          617.24;      // K   [origin=predictive method=joback]
+HvapTb      51394.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (114.07 0.67544 -0.000261 2.2e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 2; } { group ACCH3; count 2; } { group ACF; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dC_ring; count 12; } { group F; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,4,5-tetrakis(fluoranyl)-3-methyl-6-[2,3,5,6-tetrakis(fluoranyl)-4-methyl-phenyl]benzene" "2,2',3,3',5,5',6,6'-octafluoro-4,4'-dimethylbiphenyl" "1,2,4,5-tetrafluoro-3-methyl-6-(2,3,5,6-tetrafluoro-4-methylphenyl)benzene" "4,4'-dimethyl octafluoro biphenyl" "1,1'-biphenyl,2,2',3,3',5,5',6,6'-octafluoro-4,4'-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -1542810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     680.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1362960.0
+    phase     gas;
+}

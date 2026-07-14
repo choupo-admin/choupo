@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3,4,4,7,7,8,8,11,11,12,12,15,15,16,16-hexadecafluoropentacyclo[12.2.0.02,5.06,9>.010,13]hexadeca-1,5,9,13-tetraene  (C16F16, CAS 42858-85-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        334477881111121215151616Hexadecafluoropentacyclo122002506901;
+formula     C16F16;
+CAS         42858-85-5;
+InChIKey    OSANNRFVEIBWTC-UHFFFAOYSA-N;
+MW          496.144;      // g/mol [origin=calculated method=formula-sum]
+Tc          778.05;      // K   [origin=predictive method=joback]
+Pc          15.822;      // bar [origin=predictive method=joback]
+omega       1.0129;      // -   [origin=predictive method=lee-kesler]
+Tb          616.36;      // K   [origin=predictive method=joback]
+HvapTb      34204.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-407.13 4.0132 -0.005671 2.8524e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C=C; count 4; } { group CF2; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C_ring; count 8; } { group dC_ring; count 8; } { group F; count 16; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3,4,4,7,7,8,8,11,11,12,12,15,15,16,16-hexadecafluoropentacyclo(12.2.0.0.0.02,5.05,9.010,13) hexadeca-1,5,9,13-tetraene" "3,3,4,4,7,7,8,8,11,11,12,12,15,15,16,16-hexadecafluoropentacyclo[12.2.0.0.0.02,5.05,9.010,13] hexadeca-1,5,9,13-tetraene" "3,3,4,4,7,7,8,8,11,11,12,12,15,15,16,16-hexadecafluoropentacyclo[12.2.0.02,5.06,9.010,13]hexadeca-1(14),2(5),6(9),10(13)-tetraene" );
+gibbsFormation
+{
+    dHf_298   -2953230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1085.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2765720.0
+    phase     gas;
+}

@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "EVALUATE mode: score the CATALOGUE NRTL pair against your own data -- the scale before any fit";
+verbosity     3;

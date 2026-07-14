@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-iso prostaglandin e1  (C20H34O5, CAS 745-65-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8IsoProstaglandinE1;
+formula     C20H34O5;
+CAS         745-65-3;
+InChIKey    GMVPRGQOIOIIMI-UHFFFAOYSA-N;
+MW          354.487;      // g/mol [origin=calculated method=formula-sum]
+Tc          1310.11;      // K   [origin=predictive method=joback]
+Pc          14.176;      // bar [origin=predictive method=joback]
+omega       1.2175;      // -   [origin=predictive method=lee-kesler]
+Tb          1064.55;      // K   [origin=predictive method=joback]
+HvapTb      114092.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.15 1.95892 -0.0010572 1.914e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group CH; count 4; } { group CH=CH; count 1; } { group OH; count 2; } { group CH2CO; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 10; } { group CH; count 1; } { group dCH; count 2; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group OH; count 2; } { group CdO_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-[3-oxidanyl-5-oxidanylidene-2-(3-oxidanyloct-1-enyl)cyclopentyl]heptanoic acid" "15(r)-prostaglandin e1" "agn-pc-00azhb" "11.beta.-prostaglandin e1" "11alpha,13e,15s]-11,15-dihydroxy-9-oxoprosta-13-en-1-oic acid" "3-hydroxy-2-(3-hydroxy-1-octenyl)-5-oxo-cyclopentaneheptanoic acid" "prost-13-en-1-oic acid,11,15-dihydroxy-9-oxo-, (11a,13e,15s)-, homopolymer (9ci)" "7-[3-hydroxy-2-(3-hydroxyoct-1-enyl)-5-oxocyclopentyl]heptanoic acid" "7-[(1r,2r,3r)-3-hydroxy-2-[(e)-3-hydroxyoct-1-enyl]-5-oxocyclopentyl]heptanoic acid" "cyclopentaneheptanoicacid, 3-hydroxy-2-(3-hydroxy-1-octenyl)-5-oxo-, stereoisomer (8ci); 11a,15-(s)-dihydroxy-9-oxo-13-trans-8-isoprostenoicacid; 8-iso-pge1; 8-isoprostaglandin e1; 8-iso-pge1; isoprostaglandin e1;ovinonic acid" );
+gibbsFormation
+{
+    dHf_298   -1116820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     859.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-523710.0
+    phase     gas;
+}

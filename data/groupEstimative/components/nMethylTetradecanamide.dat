@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methyl tetradecanamide  (C15H31NO, CAS 7438-09-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethylTetradecanamide;
+formula     C15H31NO;
+CAS         7438-09-7;
+InChIKey    QUBGMQIUQXZHBL-UHFFFAOYSA-N;
+MW          241.419;      // g/mol [origin=calculated method=formula-sum]
+Tc          817.54;      // K   [origin=predictive method=joback]
+Pc          15.000;      // bar [origin=predictive method=joback]
+omega       0.9593;      // -   [origin=predictive method=lee-kesler]
+Tb          646.84;      // K   [origin=predictive method=joback]
+HvapTb      62166.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.598 1.47704 -0.0008221 1.6876e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 12; } { group CONHCH3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 12; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-methyltetradecanamide" );
+gibbsFormation
+{
+    dHf_298   -412040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     807.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=35890.0
+    phase     gas;
+}

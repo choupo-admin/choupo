@@ -1,0 +1,52 @@
+/*---------------------------------------------------------------------------*\
+  ignition02_h2air_slack / flowsheetDict
+  Stoichiometric H2/air autoignition at 1100 K / 2 atm against the Slack
+  shock-tube point (O Conaire 2004 kinetics): the radical pool (H, O, OH,
+  HO2) builds exponentially through the induction time, then runaway.  A
+  stiff-integrator showcase -- compare the ignition delay with the measured
+  shock-tube value.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        bomb;
+        type        batchReactor;
+
+        initial
+        {
+            T            1100.0 K;
+            P            2.0 atm;              // Slack reflected-shock pressure
+            V            0.001;                // m3
+            totalMoles   2.5e-5;               // ~ n = PV/RT at 1100 K, 2 atm
+            molarComposition
+            {
+                H2     0.295596;
+                O2     0.147798;
+                N2     0.556606;
+                H      0.0;                    // NO seed: the real mechanism
+                                               // self-initiates (R5, H2+M=2H)
+                O      0.0;  OH 0.0;  HO2 0.0;  H2O2 0.0;  water 0.0;
+            }
+        }
+        operation
+        {
+            mode        adiabatic;
+            energy      gasConstantV;
+        }
+        solver
+        {
+            integrator  Rosenbrock23;
+            verbosity   3;
+        }
+        reactions
+        (
+            R1_H_O2_O_OH  R2_O_H2_H_OH  R3_OH_H2_H_H2O
+            R4_O_H2O_2OH  R5_H2_M_2H_M  R6_2O_M_O2_M
+            R7_O_H_M_OH_M  R8_H_OH_M_H2O_M  R9_H_O2_M_HO2
+            R10_HO2_H_H2_O2  R11_HO2_H_2OH  R12_HO2_O_OH_O2
+            R13_HO2_OH_H2O_O2  R14a_2HO2_H2O2_O2  R14b_2HO2_H2O2_O2
+            R15_H2O2_M_2OH  R16_H2O2_H_H2O_OH  R17_H2O2_H_H2_HO2
+            R18_H2O2_O_OH_HO2  R19a_H2O2_OH_H2O_HO2  R19b_H2O2_OH_H2O_HO2
+        );
+    }
+);

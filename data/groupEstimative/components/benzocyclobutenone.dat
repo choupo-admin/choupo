@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzocyclobutenone  (C8H6O, CAS 3469-06-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzocyclobutenone;
+formula     C8H6O;
+CAS         3469-06-5;
+InChIKey    XOGFXHMYHKGOGP-UHFFFAOYSA-N;
+MW          118.135;      // g/mol [origin=calculated method=formula-sum]
+Tc          729.86;      // K   [origin=predictive method=joback]
+Pc          44.623;      // bar [origin=predictive method=joback]
+omega       0.4219;      // -   [origin=predictive method=lee-kesler]
+Tb          489.26;      // K   [origin=predictive method=joback]
+HvapTb      40637.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.62 0.6441 -0.00045356 1.29e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bicyclo[4.2.0]octa-1,3,5-trien-7-one" "benzocyclobuten-1(2h)-one" "bicyclo[4.2.0]octa-1,5-trien-7-one" );
+gibbsFormation
+{
+    dHf_298   -21790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     208.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77230.0
+    phase     gas;
+}

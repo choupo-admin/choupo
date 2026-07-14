@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: inositol niacinate  (C42H30N6O12, CAS 6556-11-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        inositolNiacinate;
+formula     C42H30N6O12;
+CAS         6556-11-2;
+InChIKey    MFZCIDXOLLEMOO-UHFFFAOYSA-N;
+MW          810.732;      // g/mol [origin=calculated method=formula-sum]
+Tc          2577.33;      // K   [origin=predictive method=joback]
+Pc          9.839;      // bar [origin=predictive method=joback]
+omega       0.4468;      // -   [origin=predictive method=lee-kesler]
+Tb          1988.36;      // K   [origin=predictive method=joback]
+HvapTb      203328.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-61.81 3.38376 -0.00174016 1.784e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 6; } { group C5H4N; count 6; } { group COO; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 6; } { group dCH_ring; count 24; } { group dC_ring; count 6; } { group COO; count 6; } { group Nd_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2,3,4,5,6-pentakis(pyridin-3-ylcarbonyloxy)cyclohexyl] pyridine-3-carboxylate" "dilexpal" "mesotal" "inositol nicotinate" "inositol hexanicotinate" "inositoli nicotinas" "myo-inositol hexanicotinate" "hexanicotinoyl inositol" "hamovannad" "hexanicotol" "esantene" "hexanicit" );
+gibbsFormation
+{
+    dHf_298   -1245350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1295.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-436800.0
+    phase     gas;
+}

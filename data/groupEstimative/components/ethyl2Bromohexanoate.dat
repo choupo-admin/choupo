@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 2-bromohexanoate  (C8H15BrO2, CAS 615-96-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl2Bromohexanoate;
+formula     C8H15BrO2;
+CAS         615-96-3;
+InChIKey    KOUAQOCYMAENKN-UHFFFAOYSA-N;
+MW          223.11;      // g/mol [origin=calculated method=formula-sum]
+Tc          697.51;      // K   [origin=predictive method=joback]
+Pc          27.585;      // bar [origin=predictive method=joback]
+omega       0.6449;      // -   [origin=predictive method=lee-kesler]
+Tb          506.58;      // K   [origin=predictive method=joback]
+HvapTb      46856.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (27.534 0.75314 -0.0003914 6.05e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group Br; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-bromanylhexanoate" "ethyl 2-bromocaproate" "hexanoic acid, 2-bromo-, ethyl ester" ".alpha.-bromocaproic acid, ethyl ester" "2-bromohexanoic acid ethyl ester" "alpha-bromocaproic acid, ethyl ester" "ethyl2-bromohexanoate" "ethyl 2-bromocapronate" "ethyl alpha-bromocaproate" "ethyl .alpha.-bromocaproate" "ethyl-alpha-bromocaproate" "kouaqocymaenkn-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -504680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     560.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-282010.0
+    phase     gas;
+}

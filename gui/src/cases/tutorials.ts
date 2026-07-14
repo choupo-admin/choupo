@@ -100,7 +100,7 @@ const UNSUPPORTED_PATHS_IN_BROWSER: ReadonlySet<string> = new Set([
   "steady/optimisation/fitNRTL01_ethanol_water",
 ]);
 
-export type Category = "steady" | "batch" | "ctrl" | "props" | "plant";
+export type Category = "steady" | "batch" | "ctrl" | "props" | "plant" | "electrochem";
 
 export interface TutorialEntry {
   /** Full identifier including category, e.g. "steady/flash01_benzene_toluene". */
@@ -142,6 +142,7 @@ export const TUTORIALS_BY_CATEGORY: {
   { category: "ctrl",   label: "Control       (choupoCtrl)",  entries: [] },
   { category: "props",  label: "Properties    (choupoProps)", entries: [] },
   { category: "plant",  label: "Plant         (fractal)",      entries: [] },
+  { category: "electrochem", label: "Electrochem   (choupoSolve)", entries: [] },
 ];
 for (const t of TUTORIALS) {
   const g = TUTORIALS_BY_CATEGORY.find((x) => x.category === t.category);
@@ -223,6 +224,10 @@ export function subclassGroupsFor(category: Category): SubclassGroup[] | null {
     .filter((s) => s && !seen.has(s))
     .sort();
   for (const slug of leftovers) groups.push(make(slug));
+  // Alphabetical by the DISPLAYED label (Vítor's ask): the SUBCLASS_ORDER
+  // above is kept only as the set of known slugs (for the leftover split) --
+  // the menu itself sorts by what the student reads, not a curated sequence.
+  groups.sort((a, b) => a.label.localeCompare(b.label));
   return groups;
 }
 
@@ -243,7 +248,7 @@ function buildIndex(): TutorialEntry[] {
     const segs = m[1].split("/");
     const cat = segs[0];
     if (cat !== "steady" && cat !== "batch" && cat !== "ctrl"
-        && cat !== "props" && cat !== "plant")
+        && cat !== "props" && cat !== "plant" && cat !== "electrochem")
       return;
     const rootLen = isSubclassed(cat) ? 3 : 2; // segments forming the case root
     if (segs.length <= rootLen) return;        // not a file inside a case
@@ -304,7 +309,7 @@ function buildIndex(): TutorialEntry[] {
       files: cf,
       unsupportedReason,
     });
-    for (const sn of subNodesFor(category, shortName, files)) SUBNODES[sn.name] = sn;
+    for (const sn of subNodesFor(key, category, shortName, files)) SUBNODES[sn.name] = sn;
   }
   return out;
 }
@@ -313,7 +318,37 @@ function buildIndex(): TutorialEntry[] {
 // own `.cho`): re-root the files under that folder, and inherit the
 // thermoPackage / controlDict from the nearest ancestor that has them (the
 // same cascade the C++ engine does with resolveUp).
-function subNodesFor(category: Category,
+// Project a plant's 0/ stream state onto a drilled sub-case.  The root stores
+// streams sector-OWNED (`0/BRINE/liquor`); a drilled sector or unit is re-rooted
+// at `sectors/<S>/...` and reads its OWN streams by NAME, so return the streams
+// the sub-case's flowsheetDict NAMES (a composite's `connections` edge keys, a
+// leaf's `inputs`+`outputs`) as a flat `0/<stream>` map pulled from the root 0/.
+// Only the referenced streams -- a run's completeness check rejects extra 0/ files.
+export function projectRootStreamState(
+  subFsText: string,
+  rootFiles: { [relPath: string]: string },
+): { [relPath: string]: string } {
+  const out: { [relPath: string]: string } = {};
+  try {
+    const j = toJson(parse(subFsText, { sourceName: "sub" })) as { [k: string]: unknown };
+    const wanted = new Set<string>();
+    const conns = j["connections"];
+    if (conns && typeof conns === "object" && !Array.isArray(conns))
+      for (const k of Object.keys(conns as object)) wanted.add(k);
+    for (const key of ["inputs", "outputs"]) {
+      const v = j[key];
+      if (Array.isArray(v)) for (const s of v) if (typeof s === "string") wanted.add(s);
+    }
+    const root0: { [base: string]: string } = {};
+    for (const [r, body] of Object.entries(rootFiles))
+      if (r.startsWith("0/")) root0[r.slice(r.lastIndexOf("/") + 1)] = body;
+    for (const nm of wanted) if (root0[nm]) out[`0/${nm}`] = root0[nm];
+  } catch { /* unparseable flowsheetDict -- no projection */ }
+  return out;
+}
+
+function subNodesFor(rootName: string,
+  category: Category,
   shortName: string,
   files: { [rel: string]: string },
 ): TutorialEntry[] {
@@ -328,7 +363,7 @@ function subNodesFor(category: Category,
       if (r.startsWith(dir + "/")) sub[r.slice(dir.length + 1)] = body;
 
     // Cascade the single-file required dicts from the nearest ancestor.
-    for (const need of ["constant/thermoPackage", "system/controlDict"]) {
+    for (const need of ["constant/propertyDict", "system/controlDict"]) {
       if (sub[need]) continue;
       let p = dir;
       while (p !== "") {
@@ -356,7 +391,32 @@ function subNodesFor(category: Category,
       }
     }
 
-    const name = `${category}/${shortName}/${dir}`;
+    // Flatten `inherits` in the drilled sub-case's propertyDict.  A sector's
+    // propertyDict carries `inherits "../../../constant"`, but the parent
+    // constant/ lives OUTSIDE this flattened sub-case, so that path no longer
+    // resolves (the engine would die: "Cannot open .../constant/propertyDict").
+    // Each sector's propertyDict already declares a COMPLETE world (components +
+    // chemistry + property methods) and the cascade above copied its
+    // propertyData/, so the effective config is fully materialised here -- drop
+    // the now-dangling inherits.  This is the "standalone export" step (resolve
+    // includes, materialise the effective property configuration).
+    if (sub["constant/propertyDict"] && /^\s*inherits\s/m.test(sub["constant/propertyDict"]))
+      sub["constant/propertyDict"] = sub["constant/propertyDict"].replace(
+        /^\s*inherits\s+.*$/m,
+        "// inherits flattened for the standalone drilled sub-case (effective config materialised)");
+
+    // Project the plant's 0/ stream state into the drilled sub-case (the root
+    // stores streams sector-OWNED under 0/<SECTOR>/; a re-rooted sector/unit
+    // reads them by NAME -- without this the drilled tab shows no values).
+    const subFsText = sub["system/flowsheetDict"];
+    if (subFsText && !Object.keys(sub).some((r) => r.startsWith("0/")))
+      Object.assign(sub, projectRootStreamState(subFsText, files));
+
+    // The sub-node's identifier is the ROOT case's FULL name + the folder path,
+    // so a drill lookup (`${tutorialName}/${child}`) matches.  Using shortName
+    // dropped the sub-class segment (steady/CRYSTALLISATION/...), so a subclassed
+    // case's units were registered under the wrong key and never drilled.
+    const name = `${rootName}/${dir}`;
     try {
       const cf = filesToCaseFiles(name, sub);
       const rawDesc = cf.controlDict["description"];
@@ -402,9 +462,28 @@ export function filesToCaseFiles(name: string,
       `Tutorial '${name}' has neither system/flowsheetDict nor system/propsDict`,
     );
 
+  // The thermo source is EITHER the classic constant/propertyDict OR a
+  // constant/propertyDict selection (the engine reads propertyPackage
+  // first -- choupoSolve/main.cpp).  Requiring only thermoPackage silently
+  // hid all 17 propertyPackage tutorials from the GUI.
+  // The thermo source is constant/propertyDict (preferred), else the classic
+  // constant/propertyDict, else a constant/propertyDict selection -- the same
+  // order the engine reads (choupoSolve/main.cpp).
+  const pdictText = optional("constant/propertyDict");
+  const tpText = optional("constant/propertyDict");
+  const ppText = optional("constant/propertyDict");
+  const thermoText = pdictText ?? tpText ?? ppText;
+  if (!thermoText)
+    throw new Error(
+      `Tutorial '${name}' is missing required file 'constant/propertyDict' (or thermoPackage / propertyPackage)`,
+    );
   const cf: CaseFiles = {
     controlDict: toJson(parse(required("system/controlDict"), { sourceName: "controlDict" })),
-    thermoPackage: toJson(parse(required("constant/thermoPackage"), { sourceName: "thermoPackage" })),
+    // Thermo foundation for the Props view.  All three forms declare
+    // `components ( ... )`; without this a propertyDict/propertyPackage plant
+    // would show "Components (none)".
+    thermoPackage: toJson(parse(thermoText, {
+      sourceName: pdictText ? "propertyDict" : tpText ? "thermoPackage" : "propertyPackage" })),
   };
   if (fsText) cf.flowsheet = toJson(parse(fsText, { sourceName: "flowsheetDict" }));
   if (psText) cf.propsDict = toJson(parse(psText, { sourceName: "propsDict" }));
@@ -428,7 +507,7 @@ export function filesToCaseFiles(name: string,
     "system/solverDict",
     "system/outerDict",
     "system/postDict",
-    "constant/thermoPackage",
+    "constant/propertyDict",
     "constant/reactions",
   ]);
   const extras: { [k: string]: string } = {};

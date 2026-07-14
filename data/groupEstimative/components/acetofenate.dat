@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetofenate  (C10H7Cl5O2, CAS 21757-82-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acetofenate;
+formula     C10H7Cl5O2;
+CAS         21757-82-4;
+InChIKey    FSGNOVKGEXRRHD-UHFFFAOYSA-N;
+MW          336.414;      // g/mol [origin=calculated method=formula-sum]
+Tc          955.10;      // K   [origin=predictive method=joback]
+Pc          24.267;      // bar [origin=predictive method=joback]
+omega       0.7034;      // -   [origin=predictive method=lee-kesler]
+Tb          706.74;      // K   [origin=predictive method=joback]
+HvapTb      69102.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (52.2 0.86682 -0.00059972 1.428e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACCH; count 1; } { group CH3COO; count 1; } { group CCl3; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2,2,2-tris(chloranyl)-1-(3,4-dichlorophenyl)ethyl] ethanoate" "penfenate" "plifenate" "baygon meb" "2,2,2-trichloro-1-(3,4-dichlorophenyl)ethyl acetate" "3,4-dichloro-alpha-(trichloromethyl)benzyl acetate" "2,2,2-trichloro-1-(3,4-dichlorophenyl)ethanol acetate" "ethanol, 1-(3,4-dichlorophenyl)-2,2,2-trichloro-, acetate" "benzenemethanol, 3,4-dichloro-alpha-(trichloromethyl)-, acetate" "[2,2,2-trichloro-1-(3,4-dichlorophenyl)ethyl] acetate" "3,4-dichloro-alpha-(trichloromethyl)benzenemethyl acetate" "3,4-dichloro-alpha-(trichloromethyl)benzyl acetate (8ci)" );
+gibbsFormation
+{
+    dHf_298   -446150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     596.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-243150.0
+    phase     gas;
+}

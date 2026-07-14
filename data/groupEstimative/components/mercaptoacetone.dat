@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: mercaptoacetone  (C3H6OS, CAS 24653-75-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        mercaptoacetone;
+formula     C3H6OS;
+CAS         24653-75-6;
+InChIKey    USVCRBGYQRVTNK-UHFFFAOYSA-N;
+MW          90.14;      // g/mol [origin=calculated method=formula-sum]
+Tc          592.25;      // K   [origin=predictive method=joback]
+Pc          52.586;      // bar [origin=predictive method=joback]
+omega       0.3497;      // -   [origin=predictive method=lee-kesler]
+Tb          384.97;      // K   [origin=predictive method=joback]
+HvapTb      35755.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (22.411 0.28812 -0.0001431 2.106e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3CO; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CdO; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-sulfanylpropan-2-one" "1-sulfanylacetone" "2-propanone, 1-mercapto-" "1-mercapto-2-propanone" "2-propanone,mercapto- (6ci,7ci);1-mercapto-2-propanone;3-mercapto-2-propanone;mercaptoacetone;2-propanone,1-mercapto- (8ci,9ci);" );
+gibbsFormation
+{
+    dHf_298   -179350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     362.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-125150.0
+    phase     gas;
+}

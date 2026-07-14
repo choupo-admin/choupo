@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cholecalciferol  (C27H44O, CAS 57651-82-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cholecalciferol;
+formula     C27H44O;
+CAS         57651-82-8;
+InChIKey    QYSXJUFSXHHAJI-YHJXBONMSA-N;
+MW          384.648;      // g/mol [origin=calculated method=formula-sum]
+Tc          1183.90;      // K   [origin=predictive method=joback]
+Pc          10.589;      // bar [origin=predictive method=joback]
+omega       0.9660;      // -   [origin=predictive method=lee-kesler]
+Tb          962.51;      // K   [origin=predictive method=joback]
+HvapTb      92643.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-200.747 3.00268 -0.0021858 6.799e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 11; } { group CH; count 5; } { group C; count 1; } { group CH2=C; count 1; } { group CH=C; count 2; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 2; } { group dCH2; count 1; } { group dCH; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dC_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1r,3z)-3-[(2e)-2-[(1r,3as,7ar)-7a-methyl-1-[(2r)-6-methylheptan-2-yl]-2,3,3a,5,6,7-hexahydro-1h-inden-4-ylidene]ethylidene]-4-methylidene-cyclohexan-1-ol" "epicholecalciferol" "(5z,7e)-(3r)-9,10-seco-5,7,10(19)-cholestatrien-3-ol" "3-epivitamin d3 / 3-epicholecalciferol" "9,10-secocholesta-5,7,10(19)-trien-3-ol, (3alpha,5z,7e)-" "(1r,3z)-3-[(2e)-2-[(1r,3as,7ar)-7a-methyl-1-[(2r)-6-methylheptan-2-yl]-2,3,3a,5,6,7-hexahydro-1h-inden-4-ylidene]ethylidene]-4-methylidenecyclohexan-1-ol" );
+gibbsFormation
+{
+    dHf_298   -350760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1033.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=275210.0
+    phase     gas;
+}

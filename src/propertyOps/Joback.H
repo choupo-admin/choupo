@@ -48,6 +48,7 @@ public:
     {
         return "Joback group contribution (Joback & Reid 1987)";
     }
+    std::string version() const override;   // the loaded table's tableId
     ConstantEstimate estimate(const std::vector<GroupSpec>& groups,
                               bool& ok, std::string& error) const override;
     std::vector<std::string> knownGroups() const override;

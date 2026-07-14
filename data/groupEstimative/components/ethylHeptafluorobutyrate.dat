@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl heptafluorobutyrate  (C6H5F7O2, CAS 356-27-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylHeptafluorobutyrate;
+formula     C6H5F7O2;
+CAS         356-27-4;
+InChIKey    JVHJRIQPDBCRRE-UHFFFAOYSA-N;
+MW          242.09;      // g/mol [origin=calculated method=formula-sum]
+Tc          524.82;      // K   [origin=predictive method=joback]
+Pc          23.865;      // bar [origin=predictive method=joback]
+omega       0.5578;      // -   [origin=predictive method=lee-kesler]
+Tb          380.30;      // K   [origin=predictive method=joback]
+HvapTb      26750.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.939 0.97902 -0.0008382 2.58e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CF3; count 1; } { group CF2; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 3; } { group F; count 7; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2,2,3,3,4,4,4-heptakis(fluoranyl)butanoate" "ethyl perfluorobutyrate" "heptafluorobutyric acid ethyl ester" "butanoic acid, heptafluoro-, ethyl ester" "ethyl perfluorobutanoate" "ethyl heptafluorobutanoate" "ethyl 2,2,3,3,4,4,4-heptafluorobutanoate" "butanoic acid, 2,2,3,3,4,4,4-heptafluoro-, ethyl ester" "perfluorobutyric acid ethyl ester" "2,2,3,3,4,4,4-heptafluorobutanoic acid ethyl ester" "heptafluorobutyric acid ethyl ester; perfluorobutyric acid ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -1883470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     546.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1665880.0
+    phase     gas;
+}

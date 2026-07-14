@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-ethylcholanthrene  (C22H18, CAS 7511-54-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Ethylcholanthrene;
+formula     C22H18;
+CAS         7511-54-8;
+InChIKey    NZZUNDKOLHKMCK-UHFFFAOYSA-N;
+MW          282.386;      // g/mol [origin=calculated method=formula-sum]
+Tc          1069.70;      // K   [origin=predictive method=joback]
+Pc          20.642;      // bar [origin=predictive method=joback]
+omega       0.8701;      // -   [origin=predictive method=lee-kesler]
+Tb          818.62;      // K   [origin=predictive method=joback]
+HvapTb      75122.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-124.909 1.89332 -0.00160116 5.523e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 9; } { group AC; count 6; } { group ACCH2; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 9; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-ethyl-1,2-dihydrobenzo[j]aceanthrylene" "20-ethylcholanthrene" "cholanthrene, 3-ethyl-" "3-ethyl-1,2-dihydrocyclopenta[ij]tetraphene" );
+gibbsFormation
+{
+    dHf_298   354280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     481.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=599130.0
+    phase     gas;
+}

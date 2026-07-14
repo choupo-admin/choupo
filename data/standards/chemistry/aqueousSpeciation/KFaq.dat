@@ -1,0 +1,6 @@
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species KFaq; ion "KF"; z 0; masters ( { ion K; nu 1; } { ion F; nu 1; } );
+      logK25 -0.82; dH 14500; analytic ( -1.568 0.00587 -234.6 ); source "USGS PHREEQC phreeqc.dat (public domain)";
+

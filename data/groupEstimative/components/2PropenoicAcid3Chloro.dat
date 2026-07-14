@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propenoic acid,3-chloro-  (C3H3ClO2, CAS 1609-93-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropenoicAcid3Chloro;
+formula     C3H3ClO2;
+CAS         1609-93-4;
+InChIKey    MHMUCYJKZUZMNJ-UHFFFAOYSA-N;
+MW          106.505;      // g/mol [origin=calculated method=formula-sum]
+Tc          667.61;      // K   [origin=predictive method=joback]
+Pc          50.875;      // bar [origin=predictive method=joback]
+omega       0.5549;      // -   [origin=predictive method=lee-kesler]
+Tb          455.34;      // K   [origin=predictive method=joback]
+HvapTb      43779.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.47 0.3664 -0.0003162 1.089e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group COOH; count 1; } { group Cl_C=C_; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 2; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-chloranylprop-2-enoic acid" "trans-3-chloroacrylic acid 99%" "2-propenoic acid,3-chloro-, (2z)-" "2-propenoicacid, 3-chloro-, (z)-;acrylic acid, 3-chloro-, (z)- (8ci);acrylic acid,3-chloro-, cis- (5ci);(z)-3-chloroacrylic acid;(z)-b-chloroacrylic acid;cis-3-chloroacrylic acid;cis-b-chloroacrylic acid;(2z)-3-chloroprop-2-enoic acid;" "acrylicacid, 3-chloro- (6ci,7ci,8ci);3-chloroacrylic acid;3-chloropropenoic acid;b-chloroacrylic acid;" );
+gibbsFormation
+{
+    dHf_298   -354040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     352.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-301240.0
+    phase     gas;
+}

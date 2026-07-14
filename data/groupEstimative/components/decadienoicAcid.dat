@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: decadienoic acid  (C10H16O2, CAS 30361-33-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        decadienoicAcid;
+formula     C10H16O2;
+CAS         30361-33-2;
+InChIKey    YKHVVNDSWHSBPA-UHFFFAOYSA-N;
+MW          168.236;      // g/mol [origin=calculated method=formula-sum]
+Tc          778.27;      // K   [origin=predictive method=joback]
+Pc          25.379;      // bar [origin=predictive method=joback]
+omega       0.8099;      // -   [origin=predictive method=lee-kesler]
+Tb          582.23;      // K   [origin=predictive method=joback]
+HvapTb      54934.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.966 1.04462 -0.0007604 2.306e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH=CH; count 2; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH; count 4; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "deca-2,4-dienoic acid" "(2e,4z)-2,4-decadienoic acid" "2,4-decadienoic acid" "2,4-decadienoic acid,(2e,4e)-" "2,4-decadienoic acid,(2e,4z)-" "2,4-decadienoic acid, (2z,4e)-" "2,4-decadienoicacid, (e,z)- (8ci); stillingic acid; trans-2-cis-4-decadienoic acid" "2,4-decadienoicacid, (e,e)- (8ci);2,4-decadienoic acid, trans-2,trans-4- (5ci);(2e,4e)-2,4-decadienoic acid;(e,e)-2,4-decadienoic acid;2(e),4(e)-decadienoicacid;2-trans,4-trans-decadienoic acid;trans-2-trans-4-decadienoic acid;(2e,4e)-deca-2,4-dienoic acid;2,4-decadienoic acid, (2e,4e)-;" );
+gibbsFormation
+{
+    dHf_298   -365560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     585.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-150150.0
+    phase     gas;
+}

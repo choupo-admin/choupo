@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: s-(2-(4-pyridyl)ethyl)-l-cysteine  (C10H14N2O2S, CAS 28809-04-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        s24PyridylEthylLCysteine;
+formula     C10H14N2O2S;
+CAS         28809-04-3;
+InChIKey    OBAZTSDKFIRVPD-UHFFFAOYSA-N;
+MW          226.294;      // g/mol [origin=calculated method=formula-sum]
+Tc          1046.37;      // K   [origin=predictive method=joback]
+Pc          35.643;      // bar [origin=predictive method=joback]
+omega       1.1505;      // -   [origin=predictive method=lee-kesler]
+Tb          795.16;      // K   [origin=predictive method=joback]
+HvapTb      80574.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.037 1.02165 -0.00063966 1.46e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CHNH2; count 1; } { group C5H4N; count 1; } { group COOH; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group Nd_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-3-(2-pyridin-4-ylethylsulfanyl)propanoic acid" "s-[2-(pyridin-4-yl)ethyl]cysteine" "s-beta-(4-pyridylethyl)-l-cysteine" "l-cysteine, s-[2-(4-pyridinyl)ethyl]-" "2-amino-3-{[2-(pyridin-4-yl)ethyl]sulfanyl}propanoic acid" "s-[2-(4-pyridyl)ethyl]-l-cysteine" "l-cysteine, s-(2-(4-pyridinyl)ethyl)-" "2-amino-3-(2-(4-pyridyl)ethylthio)propanoic acid" "pec" "dl-cysteine, s-[2-(4-pyridinyl)ethyl]-" "alanine, 3-((2-(4-pyridyl)ethyl)thio)-, l-" "2-amino-3-(2-pyridin-4-ylethylsulfanyl)propanoic acid" );
+gibbsFormation
+{
+    dHf_298   -260300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     608.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-24000.0
+    phase     gas;
+}

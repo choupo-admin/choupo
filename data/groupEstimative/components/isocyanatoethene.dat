@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isocyanatoethene  (C3H3NO, CAS 3555-94-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isocyanatoethene;
+formula     C3H3NO;
+CAS         3555-94-0;
+InChIKey    WARQUFORVQESFF-UHFFFAOYSA-N;
+MW          69.063;      // g/mol [origin=calculated method=formula-sum]
+Tc          515.02;      // K   [origin=predictive method=joback]
+Pc          51.757;      // bar [origin=predictive method=joback]
+omega       0.3081;      // -   [origin=predictive method=lee-kesler]
+Tb          331.59;      // K   [origin=predictive method=joback]
+HvapTb      31134.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group dCH2; count 1; } { group dCH; count 1; } { group dCd; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "vinyl isocyanate" "ch2=chnco" "ethene, isocyanato-" "ethene, isocyanato-(9ci)" "isocyanicacid, vinyl ester (6ci,7ci,8ci); isocyanatoethylene; vinyl isocyanate" );
+// formation datum unavailable (element entropy missing): dHf_298=14770.0 dGf_298=None

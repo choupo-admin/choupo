@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-bis(ethenyl)benzene; methyl 2-methylprop-2-enoate; prop-2-enenitrile; styrene  (C26H29NO2, CAS 62500-94-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12BisEthenylBenzeneMethyl2Methylprop2EnoateProp2EnenitrileSt;
+formula     C26H29NO2;
+CAS         62500-94-1;
+InChIKey    FRUWFHYOCOUIPE-UHFFFAOYSA-N;
+MW          387.523;      // g/mol [origin=calculated method=formula-sum]
+Tc          1247.04;      // K   [origin=predictive method=joback]
+Pc          10.168;      // bar [origin=predictive method=joback]
+omega       0.7923;      // -   [origin=predictive method=lee-kesler]
+Tb          1000.60;      // K   [origin=predictive method=joback]
+HvapTb      94181.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (75.96 1.41784 -0.00013276 -3.019e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2=CH; count 3; } { group CH2=C; count 1; } { group ACH; count 9; } { group AC; count 3; } { group ACRY; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 5; } { group dCH; count 4; } { group dC; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group COO; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-bis(ethenyl)benzene;ethenylbenzene;methyl 2-methylprop-2-enoate;prop-2-enenitrile" "2-propenoic acid, 2-methyl-, methyl ester, polymer with diethenylbenzene, ethenylbenzene and 2-propenenitrile" );
+gibbsFormation
+{
+    dHf_298   11720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1302.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=322410.0
+    phase     gas;
+}

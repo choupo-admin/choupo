@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dodecanoic acid tert-butyl ester  (C16H32O2, CAS 7143-18-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dodecanoicAcidTertButylEster;
+formula     C16H32O2;
+CAS         7143-18-2;
+InChIKey    WJXKWIFHRZWPET-UHFFFAOYSA-N;
+MW          256.43;      // g/mol [origin=calculated method=formula-sum]
+Tc          792.10;      // K   [origin=predictive method=joback]
+Pc          13.418;      // bar [origin=predictive method=joback]
+omega       0.7841;      // -   [origin=predictive method=lee-kesler]
+Tb          620.67;      // K   [origin=predictive method=joback]
+HvapTb      57321.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.72 1.59488 -0.0009238 1.94e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 9; } { group C; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 10; } { group C; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tert-butyl dodecanoate" "dodecanoic acid, 1,1-dimethylethyl ester" "lauric acid, tert-butyl ester" "dodecanoic acid,1-dimethylethyl ester" );
+gibbsFormation
+{
+    dHf_298   -699600.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     791.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-223690.0
+    phase     gas;
+}

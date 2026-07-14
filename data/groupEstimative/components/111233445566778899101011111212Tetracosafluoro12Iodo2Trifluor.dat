@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12-tetracosafluoro-12-iodo-2-(trifluoromethyl)dodecane  (C13F27I, CAS 3248-61-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111233445566778899101011111212Tetracosafluoro12Iodo2Trifluor;
+formula     C13F27I;
+CAS         3248-61-1;
+InChIKey    UHFPYSDLCDSLDC-UHFFFAOYSA-N;
+MW          795.989;      // g/mol [origin=calculated method=formula-sum]
+Tc          653.33;      // K   [origin=predictive method=joback]
+Pc          8.372;      // bar [origin=predictive method=joback]
+omega       0.7079;      // -   [origin=predictive method=lee-kesler]
+Tb          528.48;      // K   [origin=predictive method=joback]
+HvapTb      14998.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-150.93 3.2318 -0.003441 1.2693e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group I; count 1; } { group CF3; count 2; } { group CF2; count 10; } { group CF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 13; } { group F; count 27; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12-tetracosakis(fluoranyl)-12-iodanyl-2-(trifluoromethyl)dodecane" "dodecane, 1,1,1,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12-tetracosafluoro-12-iodo-2-(trifluoromethyl)-" "dodecane, tetracosafluoro-1-iodo-11-(trifluoromethyl)-" "dodecane,tetracosafluoro-1-iodo-11-(trifluoromethyl)- (7ci,8ci)" "dodecane,1,1,1,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12-tetracosafluoro-12-iodo-2-(trifluoromethyl)-" );
+gibbsFormation
+{
+    dHf_298   -5643500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1068.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-5106250.0
+    phase     gas;
+}

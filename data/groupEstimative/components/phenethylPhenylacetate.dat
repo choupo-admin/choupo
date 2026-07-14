@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenethyl phenylacetate  (C16H16O2, CAS 102-20-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenethylPhenylacetate;
+formula     C16H16O2;
+CAS         102-20-5;
+InChIKey    ZOZIRNMDEZKZHM-UHFFFAOYSA-N;
+MW          240.302;      // g/mol [origin=calculated method=formula-sum]
+Tc          908.51;      // K   [origin=predictive method=joback]
+Pc          22.959;      // bar [origin=predictive method=joback]
+omega       0.7257;      // -   [origin=predictive method=lee-kesler]
+Tb          677.26;      // K   [origin=predictive method=joback]
+HvapTb      63169.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-54.057 1.3112 -0.0008144 1.731e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 10; } { group AC; count 1; } { group ACCH2; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenylethyl 2-phenylethanoate" "2-phenylethyl phenylacetate" "benzeneacetic acid, 2-phenylethyl ester" "phenylethyl phenylacetate" "phenethyl 2-phenylacetate" "phenethyl alpha-toluate" "phenylacetic acid, phenethyl ester" "benzylcarbinyl phenylacetate" "benzylcarbinyl alpha-toluate" "2-phenylethyl alpha-toluate" "2-phenylethyl benzeneacetate" "phenethyl .alpha.-toluate" );
+gibbsFormation
+{
+    dHf_298   -217790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     617.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1710.0
+    phase     gas;
+}

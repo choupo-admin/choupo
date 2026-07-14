@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-hexadecene, (3z)-  (C16H32, CAS 34303-81-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Hexadecene3z;
+formula     C16H32;
+CAS         34303-81-6;
+InChIKey    QIZDLUWRENVVJW-UHFFFAOYSA-N;
+MW          224.432;      // g/mol [origin=calculated method=formula-sum]
+Tc          734.21;      // K   [origin=predictive method=joback]
+Pc          13.697;      // bar [origin=predictive method=joback]
+omega       0.7165;      // -   [origin=predictive method=lee-kesler]
+Tb          569.84;      // K   [origin=predictive method=joback]
+HvapTb      51168.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-25.838 1.54384 -0.0009304 2.266e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 12; } { group CH=CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 12; } { group dCH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexadec-3-ene" );
+gibbsFormation
+{
+    dHf_298   -256350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     772.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=164060.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-bromo-1-naphthoic acid  (C11H7BrO2, CAS 16726-67-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Bromo1NaphthoicAcid;
+formula     C11H7BrO2;
+CAS         16726-67-3;
+InChIKey    SZFXXNVLSUTKJF-UHFFFAOYSA-N;
+MW          251.079;      // g/mol [origin=calculated method=formula-sum]
+Tc          975.89;      // K   [origin=predictive method=joback]
+Pc          40.570;      // bar [origin=predictive method=joback]
+omega       0.9454;      // -   [origin=predictive method=lee-kesler]
+Tb          718.57;      // K   [origin=predictive method=joback]
+HvapTb      68919.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.07 0.9362 -0.00075244 2.386e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 4; } { group COOH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 6; } { group dC_ring; count 4; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-bromanylnaphthalene-1-carboxylic acid" "5-bromonaphthalene-1-carboxylic acid" "5-bromonaphthalenecarboxylic acid" "5-bromo-1-naphthalenecarboxylic acid" "5-bromo-naphthalene-1-carboxylic acid" "1-naphthalenecarboxylicacid, 5-bromo-" "5-bromo-1-naphthylcarboxylic acid" "1-bromonaphthalene-5-carboxylic acid" "1-naphthalenecarboxylic acid, 5-bromo-" "1-naphthoicacid, 5-bromo- (6ci,7ci,8ci);5-bromo-1-naphthalenecarboxylic acid;5-bromo-1-naphthoic acid;5-bromo-1-naphthylcarboxylic acid;1-naphthalenecarboxylic acid, 5-bromo-;" );
+gibbsFormation
+{
+    dHf_298   -189650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     460.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-88050.0
+    phase     gas;
+}

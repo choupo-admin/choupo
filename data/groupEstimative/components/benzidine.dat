@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzidine  (C12H12N2, CAS 92-87-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzidine;
+formula     C12H12N2;
+CAS         92-87-5;
+InChIKey    HFACYLZERDEVSX-UHFFFAOYSA-N;
+MW          184.242;      // g/mol [origin=calculated method=formula-sum]
+Tc          947.94;      // K   [origin=predictive method=joback]
+Pc          37.916;      // bar [origin=predictive method=joback]
+omega       0.7460;      // -   [origin=predictive method=lee-kesler]
+Tb          682.54;      // K   [origin=predictive method=joback]
+HvapTb      69464.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-34.25 0.9908 -0.00064412 1.548e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 2; } { group ACNH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 8; } { group dC_ring; count 4; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(4-aminophenyl)aniline" "4,4'-diaminobiphenyl" "p-diaminodiphenyl" "biphenyl-4,4'-diamine" "4,4'-bianiline" "p,p'-diaminobiphenyl" "fast corinth base b" "[1,1'-biphenyl]-4,4'-diamine" "4,4'-biphenyldiamine" "4,4'-diaminodiphenyl" "benzidin" "benzidina" );
+gibbsFormation
+{
+    dHf_298   226690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     501.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=388620.0
+    phase     gas;
+}

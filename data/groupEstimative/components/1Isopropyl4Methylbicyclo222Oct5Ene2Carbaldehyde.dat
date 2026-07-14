@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-isopropyl-4-methylbicyclo(2.2.2)oct-5-ene-2-carbaldehyde  (C13H20O, CAS 67920-94-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Isopropyl4Methylbicyclo222Oct5Ene2Carbaldehyde;
+formula     C13H20O;
+CAS         67920-94-9;
+InChIKey    PDSPBIIMJJPMBL-UHFFFAOYSA-N;
+MW          192.302;      // g/mol [origin=calculated method=formula-sum]
+Tc          786.24;      // K   [origin=predictive method=joback]
+Pc          25.482;      // bar [origin=predictive method=joback]
+omega       0.5126;      // -   [origin=predictive method=lee-kesler]
+Tb          562.25;      // K   [origin=predictive method=joback]
+HvapTb      48715.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-196.2 2.00316 -0.00202428 8.517e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 2; } { group C; count 2; } { group CH=CH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methyl-4-propan-2-yl-bicyclo[2.2.2]oct-2-ene-5-carbaldehyde" "bicyclo(2.2.2)oct-5-ene-2-carboxaldehyde, 4-methyl-1-(1-methylethyl)-" "1-isopropyl-4-methylbicyclo[2.2.2]oct-5-ene-2-carbaldehyde" "bicyclo[2.2.2]oct-5-ene-2-carboxaldehyde, 4-methyl-1-(1-methylethyl)-" "bicyclo(2.2.2)oct-5-ene-2-carboxaldehyde, 4-methyl-1-(1-methylethyl)-, (1r,2r,4s)-rel-" "bicyclo[2.2.2]oct-5-ene-2-carboxaldehyde, 4-methyl-1-(1-methylethyl)-, (1r,2r,4s)-rel-" "bicyclo(2.2.2)oct-5-ene-2-carboxaldehyde, 4-methyl-1-(1-methylethyl)-, (1alpha,2beta,4beta)-" "1-isopropyl-4-methylbicyclo(2.2.2)-5-octene-2-carboxaldehyde" "1-methyl-4-propan-2-ylbicyclo[2.2.2]oct-2-ene-5-carbaldehyde" "(1alpha,2alpha,4beta)-1-isopropyl-4-methylbicyclo(2.2.2)oct-5-ene-2-carbaldehyde" "(1alpha,2beta,4beta)-1-isopropyl-4-methylbicyclo(2.2.2)oct-5-ene-2-carbaldehyde" "bicyclo(2.2.2)oct-5-ene-2-carboxaldehyde, 4-methyl-1-(1-methylethyl)-, (1alpha,2alpha,4beta)-" );
+gibbsFormation
+{
+    dHf_298   -201310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     590.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=65190.0
+    phase     gas;
+}

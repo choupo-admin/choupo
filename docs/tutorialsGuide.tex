@@ -1,0 +1,537 @@
+\documentclass[11pt,a4paper]{article}
+\newcommand{\docTitle}{Tutorials Guide}
+\input{preamble.tex}
+\usepackage{adjustbox}
+
+% ---------------------------------------------------------------------------
+%  Per-tutorial entry macros (the generated files use these).
+% ---------------------------------------------------------------------------
+\newcommand{\tutentry}[2]{%
+  \par\medskip\noindent
+  \addcontentsline{toc}{subsubsection}{\texttt{#1}}%
+  {\large\bfseries\texttt{#1}}\\[1pt]
+  {\footnotesize\color{gray}\texttt{#2}}\par\smallskip}
+\newcommand{\tutwhat}[1]{\noindent\textbf{What it does:}\ #1\par\smallskip}
+\newcommand{\tutstory}[1]{\noindent{\small #1}\par}
+\newenvironment{tutscheme}{%
+  \par\smallskip\noindent\begin{center}\begin{adjustbox}{max width=\linewidth, max height=7cm}}{%
+  \end{adjustbox}\end{center}\par\smallskip}
+\newenvironment{tutnarrative}{\par\noindent\textbf{The story:}\ \small}{\par\normalsize\smallskip}
+\newcommand{\tutreadme}[1]{\par\noindent{\small\emph{#1}}\par}
+\newenvironment{tutgolden}{%
+  \par\smallskip\noindent\textbf{What to expect (golden-locked):}\par\nopagebreak\vspace{2pt}
+  \begin{footnotesize}\begin{tabular}{@{}llll@{}}\toprule
+  kind & unit/stream & key & expected \\ \midrule}{%
+  \bottomrule\end{tabular}\end{footnotesize}\par\medskip}
+\newcommand{\goldrow}[4]{\texttt{#1} & \texttt{#2} & \texttt{#3} & \texttt{#4} \\}
+\newcommand{\goldmore}[1]{\multicolumn{4}{l}{\emph{\dots and #1 more reference values in the case's \file{expected}.}} \\}
+
+% The theory hook: the generated files call \grouptheory{<group>} right after
+% each group heading; groups with a hand-written theory block get one via the
+% \deftheory mechanism below, the rest expand to nothing.
+\makeatletter
+\newcommand{\grouptheory}[1]{\@ifundefined{grouptheory@#1}{}{\csname grouptheory@#1\endcsname}}
+\newcommand{\deftheory}[2]{\expandafter\def\csname grouptheory@#1\endcsname{%
+  \begin{theorybox}#2\end{theorybox}}}
+\makeatother
+\newenvironment{theorybox}{%
+  \par\medskip\noindent\begin{minipage}{\linewidth}\small
+  \textbf{The theory you need.}\ }{\end{minipage}\par\medskip}
+\newcommand{\theoryref}[1]{\emph{Full derivation: Theory Guide, #1.}}
+
+% ===========================================================================
+%  THE THEORY BLOCKS -- hand-written, condensed, with the load-bearing
+%  equations; each ends with a pointer to the full Theory Guide chapter.
+%  (The per-tutorial text below each block is GENERATED from the cases' own
+%  headers -- regenerate with bin/curate/gen_tutorials_guide.py.)
+% ===========================================================================
+
+\deftheory{flash}{%
+An isothermal flash splits a feed of composition $z_i$ into vapour $y_i$ and
+liquid $x_i$ at fixed $(T,P)$.  Phase equilibrium is $y_i = K_i x_i$ with
+$K_i = \gamma_i P_i^{\mathrm{sat}}/P$ ($\gamma$--$\varphi$ formulation), and
+the vapour fraction $\beta$ solves the Rachford--Rice equation
+\[ \sum_i \frac{z_i\,(K_i - 1)}{1 + \beta\,(K_i - 1)} = 0, \]
+monotone in $\beta$ -- Newton converges in a handful of iterations, all of
+them visible at verbosity 3.  Expect: a bubble point when the equation's
+root hits $\beta = 0$, a dew point at $\beta = 1$, and non-ideal systems
+($\gamma_i \ne 1$: NRTL/Wilson/UNIQUAC/UNIFAC) bending $K_i$ with
+composition.  Liquid--liquid and three-phase cases replace
+successive-substitution with direct Gibbs-energy minimisation (the symmetric
+$\gamma$-model trap: Newton collapses onto the trivial $K=1$ root).
+\theoryref{the VLE and flash chapters}}
+
+\deftheory{distillation}{%
+A column is $N$ flash stages coupled by counter-current flows.  Each stage
+obeys MESH equations: Material balance, Equilibrium ($y_i = K_i x_i$),
+Summation ($\sum y = \sum x = 1$), and Heat balance.  Choupo ships two
+solution strategies, selectable per column: Wang--Henke (bubble-point,
+solving the tridiagonal material balances stage by stage; robust for
+near-ideal systems, slow near azeotropes) and \code{simultaneous} (one
+Newton on ALL the MESH residuals; $\sim$5--6 iterations even through
+azeotropes).  Expect: reflux and boilup set the split; a minimum reflux
+below which no stage count reaches the spec; and azeotropes as fixed points
+no column can cross ($x_D$ pinned at the azeotropic composition).
+\theoryref{the distillation chapter (McCabe--Thiele + MESH)}}
+
+\deftheory{reactor}{%
+Three idealised steady reactors.  Conversion reactor: stoichiometry only,
+$n_{\mathrm{out}} = n_{\mathrm{in}} + \nu\,\xi$, duty from the ONE enthalpy
+base $\Delta H_{\mathrm{rxn}}(T) = \sum_i \nu_i h_i(T)$ (formation datum --
+no separate ``heat of reaction'' input, and any dict override is
+cross-checked aloud).  CSTR: outlet at reactor conditions with rate
+$r(c_{\mathrm{out}},T)$, so $F\,(c_{\mathrm{in}} - c_{\mathrm{out}}) =
+r\,V$.  PFR: the same rate integrated along the volume,
+$\mathrm{d}F_i/\mathrm{d}V = \nu_i\,r$.  Arrhenius kinetics
+$k = A\,T^b e^{-E_a/RT}$, orders from the dict, reverse rates from the
+equilibrium constant (thermo-consistent by construction).  Expect: CSTR
+conversion below PFR at equal volume (back-mixing), exponential $T$
+sensitivity, and equilibrium limits the kinetics can approach but never
+cross. \theoryref{the reaction-engineering chapter}}
+
+\deftheory{reactors}{%
+Batch reactors integrate $\mathrm{d}n_i/\mathrm{d}t = \nu_i\,r\,V$ from a
+charged initial state -- no in/out flows; time replaces residence time.
+Adiabatic runs couple the energy balance
+$\sum_i n_i \bar{c}_{p,i}\,\mathrm{d}T/\mathrm{d}t = -\Delta H_{\mathrm{rxn}} r V$,
+so composition and temperature evolve together.  Stiffness appears the
+moment fast and slow reactions coexist (radical chains: $\mu$s radical
+lifetimes vs ms induction) -- the explicit RK4 integrator then needs
+$\Delta t$ at the FASTEST scale or blows up, while Rosenbrock23 (L-stable,
+linearly implicit) steps at the scale of the SOLUTION.  The stiffness ratio
+is printed; watch it. \theoryref{the batch/ODE chapter}}
+
+\deftheory{gibbs}{%
+Equilibrium without a mechanism: minimise total Gibbs energy
+$G = \sum_i n_i\,\mu_i$ over ALL species subject to elemental balances
+$\mathbf{A}\,\mathbf{n} = \mathbf{b}$ (Lagrange multipliers per element --
+printed as $\lambda_E$, the element potentials).  The species list in the
+dict IS the model: what you include can form; what you omit cannot.  With
+enough species this reproduces flame temperatures and radical pools with no
+kinetics at all: expect the adiabatic flame temperature to land within a few
+K of literature when radicals (H, O, OH\dots) are IN the pool, and to
+overshoot by $\sim$100--250\,K when they are not (dissociation is
+endothermic).  Above $\sim$1500\,K the catalogue's polynomial $c_p$ fits
+extrapolate WRONG -- combustion cases carry case-local NASA-7 overrides,
+and the case headers say so.
+
+\medskip
+\emph{Equilibrium maps.}  Sweeping the Gibbs solve over a $T\times P$ grid
+gives an equilibrium map -- iso-lines of a product fraction over the
+operating plane -- which shows why an industrial reactor fixes $T$ and $P$
+in a narrow window (equilibrium wants one corner, the catalyst works in
+another; the gap is the compromise).  The \code{temperatureApproach}
+$\Delta T$ evaluates the \emph{reaction} equilibrium at $T+\Delta T$ while
+enthalpy and the energy balance stay at the physical $T$ -- an empirical,
+calibrated closeness-to-equilibrium knob (never predicted).
+\emph{Gradeable exercise (ammonia):} on \code{nh3\_equilibrium\_map},
+at $P = 200$\,bar and $\Delta T = 0$, find the temperature at which the
+equilibrium NH$_3$ mole fraction crosses 30\,\%; report $T$ to the grid
+resolution and verify against the case's anchor KPIs.  Unique because the
+fraction is monotone in $T$ at fixed $P$. \theoryref{the Gibbs-equilibrium
+chapter, \S equilibrium maps}}
+
+\deftheory{flowsheets}{%
+Recycle turns a flowsheet into a fixed-point problem: guess the tear stream,
+march the units, compare.  Successive substitution converges linearly (and
+diverges past unit gain); Wegstein accelerates it; Newton-on-tears solves
+the tear residuals with a Jacobian.  Choupo announces the tear choice, every
+iteration's residual, and any bound that binds -- no silent crutch.  Expect:
+purge streams controlling inert build-up (close the loop with no purge and
+watch the accumulation), and convergence behaviour that CHANGES with the
+tear location. \theoryref{the flowsheet-convergence chapter}}
+
+\deftheory{evaporation}{%
+An evaporator boils solvent off a solution.  Two pieces of physics beyond a
+flash: boiling-point elevation, $T_{\mathrm{boil}} =
+T_{\mathrm{sat}}(P) + \mathrm{BPE}$ with the BPE from the electrolyte
+activity of water ($\ln a_w = -\varphi\,\nu\,m\,M_w/1000$); and the heat of
+dilution/concentration (the relative apparent molar enthalpy
+$L_\varphi(m,T)$) entering the duty.  Expect: the BPE to GROW as the brine
+concentrates, steam economy below 1 for a single effect, and -- for NaCl --
+the full Silvester--Pitzer $T$-dependence of $\gamma_\pm$ shaping the answer
+between 25 and 200$^\circ$C. \theoryref{the electrolyte chapters}}
+
+\deftheory{crystallisation}{%
+Crystallisation removes solute when the solution crosses saturation:
+$m > m_{\mathrm{sat}}(T)$, with $K_{\mathrm{sp}}(T)$ from
+$\Delta G_{\mathrm{diss}}$ and its $T$-dependence from
+$\Delta H_{\mathrm{diss}}$ (van 't Hoff).  The heat of crystallisation is
+ION-DERIVED -- $\Delta H_{\mathrm{cryst}} = -(\Delta H_{\mathrm{soln}}^\infty
++ \bar{L}_2(m_{\mathrm{sat}}))$ -- never a stored constant (a solid's
+formation enthalpy is $\sum \nu_i h_{f,i}^{\mathrm{aq}} -
+\Delta H_{\mathrm{soln}}$, derived, single-sourced).  Antisolvent cases add
+the mixed-solvent electrolyte model (eNRTL): ethanol drops the dielectric
+constant, $\gamma_\pm$ rises, salt crashes out.  Expect supersaturation as
+the driving force and yields set by the solubility curve, not the kinetics
+(these cases are equilibrium-staged). \theoryref{the crystallisation +
+electrolyte-enthalpy chapters}}
+
+\deftheory{membranes}{%
+Solution-diffusion (Wijmans \& Baker 1995): inside a dense membrane the
+pressure is uniform, so permeation is concentration-driven.  Linearised:
+$J_w = A_w(\Delta P - \Delta\pi)$ and $J_s = B_s(c_m - c_p)$ -- water driven
+by NET pressure, solute blind to pressure; $(A_w, B_s)$ are MATERIAL
+constants from \file{data/standards/membranes/}.  Concentration polarisation
+(film model) makes the wall concentration $c_m = c_b\,e^{J_w/k}$ exceed the
+bulk -- the flux--polarisation--osmotic feedback is THE nonlinearity of
+RO/NF, solved per module segment.  Expect: rejection improving with
+pressure ($c_p = B_s c_m/(J_w + B_s)$), polarisation eating driving force at
+high flux, and charged-membrane (Donnan) effects on multivalent ions that
+plain solution-diffusion cannot see -- that is what the DSPM-DE sibling
+model is for. \theoryref{the membrane chapter}}
+
+\deftheory{electrolyte}{%
+Ions interact at long range (Debye--H\"uckel, $\sqrt{I}$ law) and short
+range (ion--ion, ion--solvent).  Choupo's ladder: Davies (charge-only,
+$I \le 0.5$), single-salt Pitzer ($\beta_0,\beta_1,C^\varphi$; to
+$I \sim 6$, and with the Silvester--Pitzer $T$-functions to 300$^\circ$C),
+multi-ion Pitzer--HMW (per-ion, mixing terms $\theta,\psi$ -- seawater-class
+brines), and eNRTL (local-composition; single-salt, mixed-solvent, and the
+2009 symmetric multi-salt with both published and Gibbs--Duhem-consistent
+formulations).  Speciation solves mass action + charge balance by Newton in
+log-molality space; saturation indices $\mathrm{SI} =
+\log(\mathrm{IAP}/K_{\mathrm{sp}})$ flag scaling.  Expect: models to
+DISAGREE above their validity ($\gamma$ divergence is the lesson, e.g.\
+Davies vs Pitzer at RO recoveries), and every activity model to announce
+itself. \theoryref{the electrolyte + speciation chapters}}
+
+\deftheory{combustion}{%
+Radical chain chemistry: initiation creates the first radicals (slow --
+$\mathrm{H_2 + M}$, $E_a \sim 105$\,kcal), branching multiplies them
+($\mathrm{H + O_2 \to O + OH}$: one in, two out), termination removes them.
+Ignition is the race between branching and termination; the induction time
+is set by the SLOW build-up, then heat release runs away.  Rate constants
+$k = A T^b e^{-E_a/RT}$ come VERBATIM from cited mechanisms (GRI-Mech 3.0,
+\'O Conaire 2004, Glarborg 2018) in their native units -- the engine
+converts and announces.  Reverse rates from equilibrium: the kinetic
+end-state must land on the Gibbs equilibrium (the two-engine handshake the
+NOx tutorial pins at 98.9\,\%).  Expect stiffness ratios of $10^6$--$10^8$
+(use Rosenbrock23), ignition delays in $\mu$s validated against shock-tube
+data, and thermal NO forming over SECONDS -- the timescale gap behind
+quench-based NOx control. \theoryref{the combustion/kinetics chapter}}
+
+\deftheory{steam}{%
+Water/steam properties from IAPWS-IF97: regions (liquid, vapour,
+supercritical), $T_{\mathrm{sat}}(P)$, and $h(T,P)$/$s(T,P)$ from the
+dimensionless Gibbs functions.  Power cycles are enthalpy bookkeeping around
+them: pump work $\approx v\,\Delta P$, turbine work from isentropic
+expansion $\times$ efficiency, cycle efficiency $\eta = W_{\mathrm{net}}/Q_{\mathrm{in}}$
+bounded by Carnot. \theoryref{the steam/power chapter}}
+
+\deftheory{power}{%
+Gas (Brayton) and steam (Rankine) cycles, alone and combined.  Compressor
+and turbine hardware is specified by SHAFT WORK and isentropic efficiency --
+outlet pressure is a RESULT, not an input (the anti-DesignSpec credo).
+Expect: pressure ratio setting Brayton efficiency, the combined cycle's gain
+coming from bottoming the gas turbine's exhaust exergy, and every energy
+flow visible in the ledger. \theoryref{the power-cycle chapter}}
+
+\deftheory{heat}{%
+Heat exchange couples streams without mixing them: $Q = U\,A\,\Delta
+T_{\mathrm{lm}}$, effectiveness-NTU when outlets are unknown.  Utilities
+(steam levels, cooling water) are allocated by temperature level -- a
+reboiler cannot be heated by a colder utility, and the allocator says which
+level it picked.  Heat-links (forward and feedback) couple distant units
+into an energy tear the solver converges like any recycle.  Pinch analysis
+finds the minimum utilities the composite curves allow.
+
+\medskip
+\emph{Exchanger DESIGN vs rating.}  A shell-and-tube poses two inverse
+questions: RATE it (geometry given $\to$ find $U$, area, $\Delta P$, duty --
+\code{model geometry;}) or DESIGN it (duty given $\to$ size the geometry --
+\code{model design;}).  $U$ is BUILT from the two film coefficients
+(Gnielinski tube, Kern shell) and the wall; the pressure drop (Kern both
+sides) is the duty-vs-pumping half a real design lives by.  The standard
+workflow -- establish the duty, THEN design, THEN rate, never invent the
+geometry up front -- is walked end-to-end in the two-part sequence
+\code{hxWorkflow1\_design\_from\_duty} $\to$ \code{hxWorkflow2\_rate\_designed},
+and the design ends in a printable datasheet (GUI: the unit panel).
+\theoryref{the heat-integration chapter, \S heat-exchanger design}}
+
+\deftheory{estimate}{%
+When a compound is missing, group contribution builds it: Joback sums
+first-order group increments into $T_b, T_c, P_c, V_c, \Delta H_f^\circ,
+\Delta H_{\mathrm{vap}}, c_p^{\mathrm{ig}}(T)$; Lee--Kesler closes $\omega$
+from $(T_b, T_c, P_c)$; Ambrose--Walton gives $P^{\mathrm{sat}}(T)$ from
+corresponding states; Rackett the liquid volume.  The estimate is a
+PROPOSAL: a \file{.dat} you review against any reference data and promote
+by hand -- the engine never estimates at runtime.  Molecular structure is
+IDENTITY: components carry \code{jobackGroups\{\}} in their own record, and
+\code{bin/estimate <name>} is the one-command curation act.  Expect
+few-percent errors on criticals (and the guide's worked example shows
+them), weaker $T_b$ for hydrogen-bonded species, and polymers via van
+Krevelen / Yang on the repeat unit. \theoryref{the estimation chapter of
+the Props Guide}}
+
+\deftheory{scan}{%
+Property scans sweep a model across $T$, $P$ or composition and plot what
+the thermodynamics DOES: $P^{\mathrm{sat}}(T)$ curves, $\gamma_\pm(m)$,
+VLE envelopes, ternary diagrams, phase boundaries.  Nothing is fitted --
+these ops answer ``how does the selected model behave?'', the SEE step of
+the props loop (CREATE $\to$ SEE $\to$ TEST $\to$ FIT $\to$ PROMOTE).
+Expect model disagreements to be VISIBLE (overlay two methods and look), and
+every curve exportable as CSV next to the case. \theoryref{the Props Guide}}
+
+\deftheory{thermo}{%
+Consistency tests interrogate DATA, not models: the van Ness point test
+checks measured $(x,y,T,P)$ sets against the Gibbs--Duhem constraint
+(residuals in $\ln(\gamma_1/\gamma_2)$); Herington's area test is its
+integral cousin.  A dataset that fails is not ``bad'' -- the test says WHERE
+and HOW MUCH, and the fit that follows should weight accordingly.  Expect
+plain-language verdicts with severity, not a pass/fail stamp.
+\theoryref{the consistency chapter of the Props Guide}}
+
+\deftheory{compare}{%
+Method comparison runs the SAME property through different models
+side-by-side -- UNIFAC vs NRTL, Joback vs measured, ideal vs EOS.  The gap
+between curves IS the modelling uncertainty; picking a method is a decision
+the case author owns, made with eyes open. \theoryref{the Props Guide}}
+
+\deftheory{still}{%
+A batch still is Rayleigh distillation: $\mathrm{d}(n\,x_i)/\mathrm{d}t =
+-\dot{V} y_i$ with $y_i$ in equilibrium with the pot -- the pot composition
+DRIFTS as the light component leaves (contrast the steady column, where
+stages hold profiles constant).  Expect the distillate to start rich and
+fade, and the recipe layer (charge, heat, switch receivers) to drive the
+run. \theoryref{the batch-distillation section}}
+
+\deftheory{recipes}{%
+A recipe is time-triggered discrete control over batch units: charge,
+heat/cool, hold, transfer, sample.  Between events the DAE integrator runs;
+at each event the state jumps (a transfer moves holdup between vessels).
+Expect exact event times on the trajectory and holdup bookkeeping that
+conserves mass across transfers.}
+
+\deftheory{adsorber}{%
+Adsorption in a vessel or a bed: the isotherm $q^{*}(T,p)$ (Langmuir
+$q = q_{\max} b p/(1+bp)$, van't Hoff $b(T)$) is the curated PAIR datum;
+the LDF rate $\mathrm{d}q/\mathrm{d}t = k\,(q^{*} - q)$ carries the
+EQUIPMENT datum $k$ (this particle, this bed -- it lives in the case, never
+the catalogue).  Work the cases as a staircase.  \code{batch09}: a closed
+vessel relaxes to the inventory equilibrium -- one algebraic root, pinned
+independently of the run.  \code{batch10}: two species compete for the
+same sites (extended Langmuir) -- the selectivity is an equilibrium
+statement, and the model's Gibbs--Duhem inconsistency for unequal
+$q_{\max}$ is declared, not hidden.  \code{batch11}: in the Henry limit
+the whole vessel is LINEAR and the integrator must match
+$q_\infty(1-e^{-k_{\mathrm{eff}}t})$ to $10^{-8}$ -- the analytic gate.
+\code{batch12}: declaring the headspace pressure AND the inventory
+over-specifies a closed ideal-gas vessel -- the contradiction FATALs;
+$P$ is a result.  \code{batch13}: the fixed bed -- the stoichiometric
+time $t_{\mathrm{st}} = (L/u)(\varepsilon + \rho_b q^{*}/c_{\mathrm{in}})$
+is announced BEFORE integration, breakthrough spreads around it, and the
+constant-$u$ closure's fabricated carrier is printed, pinned and
+discounted: the DECLARED model residual is itself the lesson.
+\code{batch14}/\code{batch15} are the numerical hygiene: pure transport
+vs the analytic advection--dispersion solution, and the mesh study that
+earns $N = 100$. \theoryref{the adsorption chapter}}
+
+\deftheory{adsorption}{%
+The isotherm bench: evaluating a curated adsorption-equilibrium record
+(Henry-limit, saturation, pin and unit-invariance gates run aloud) and
+REGRESSING one from data -- the multi-temperature van't Hoff Langmuir fit
+with identifiability verdicts: single-$T$ data refuses $\Delta
+H_{\mathrm{ads}}$, Henry-regime data yields only the product $q_{\max}
+b$, and a non-converged fit refuses its verdict by name.
+\theoryref{the adsorption chapter}}
+
+\deftheory{absorption}{%
+Gas absorption transfers a solute from gas to liquid across stages; Henry's
+law ($p_i = H_i x_i$) anchors the equilibrium at dilution.  Expect the
+L/G ratio to control the operating line's slope, and a minimum solvent rate
+at the pinch with the equilibrium line.
+\theoryref{the absorption section}}
+
+\deftheory{solids}{%
+Solids carry mass and enthalpy without VLE: crystallisers, dryers, cyclones,
+gas--solid splitters.  A dryer's air is a REAL stream (two inlets, adiabatic
+mixing, outlet humidity from the psychrometrics); a cyclone's cut size comes
+from the selected model (Lapple\dots Muschelknautz).  Expect solid streams
+flagged separately ($F_{\mathrm{solid}}$) and energy balances that close
+across phase change.}
+
+\deftheory{hydraulics}{%
+Pressure drop and flow distribution: Darcy--Weisbach with friction factors,
+fittings as equivalent lengths, pump curves against system curves.  Expect
+the operating point at the curves' intersection.}
+
+\deftheory{utilities}{%
+Utility streams (steam levels, cooling water, refrigerants, electricity)
+carry duty into and out of the plant at declared temperature levels and
+prices; allocation is by $T$-level feasibility, announced.}
+
+\deftheory{rotating}{%
+Compressors, turbines, pumps: specified by shaft work $W_s$ and isentropic
+efficiency $\eta_s$; the outlet state follows from
+$h_{\mathrm{out}} = h_{\mathrm{in}} + W_s/\dot{n}$ with the isentropic
+reference path.  Outlet pressure is a RESULT (hardware, not a spec).}
+
+\deftheory{optimisation}{%
+The outer driver wraps the whole simulation in $f(\mathbf{x})$: sweeps map
+it, Nelder--Mead descends it, parameter estimation fits it to data
+(Levenberg--Marquardt, with identifiability diagnostics --
+$\chi^2_{\mathrm{red}}$, correlation, conditioning).  Expect every function
+evaluation to be a full, honest flowsheet pass.}
+
+\deftheory{molecular}{%
+Molecular activity models on display: NRTL/Wilson/UNIQUAC correlate binary
+$\gamma$'s from pair parameters; UNIFAC PREDICTS them from group
+counts.  Expect UNIFAC within a few percent of fitted models for families it
+was trained on -- and to be honestly worse outside them.
+\theoryref{the activity-model chapter}}
+
+\deftheory{esterification2sector}{%
+The self-contained two-sector demo: reaction (esterification CSTR) +
+separation, fractal case layout (each sector its own folder), recycle
+between them.  The showcase for the dignified-unit layout.}
+
+\deftheory{twoSectorDemo}{%
+The zippable two-sector demonstration plant -- the case used to rehearse
+the online landing.  Same physics as the esterification demo.}
+
+\deftheory{ChemicalPlantTutorial}{%
+The full multi-sector plant showcase: feed treatment, reaction, separation,
+utilities -- the fractal flowsheet at its largest, run-only (no golden), for
+reading and dissecting rather than reproducing numbers.}
+
+\deftheory{polycaprolactonePlant}{%
+Ring-opening polymerisation plant: monomer to polycaprolactone with
+step-growth KPIs (Carothers, Flory) on the PFR, polymer properties from
+group contribution on the repeat unit.}
+
+\deftheory{userops}{%
+User-defined operations: the extension seam.  A custom property op or unit
+compiled into the binary via the explicit factory -- the tutorial shows the
+registration pattern (\code{registerBuiltins}) end to end.}
+
+\deftheory{economics}{%
+Sizing (stirred tanks, shell-and-tube areas) feeds costing (Guthrie
+modules); prices are CASE data (\file{constant/economics}, dated and
+cited) -- the engine refuses to invent a price.  Expect honest refusal when
+a price is missing, never a silent default.}
+
+% ===========================================================================
+\title{}
+\author{}
+\date{}
+
+\begin{document}
+
+\manualfrontmatter{Tutorials Guide}{
+Choupo is a trademark of TalentGround Lda.
+
+Anthropic, Claude, and Claude Code are trademarks or registered trademarks of
+Anthropic, PBC.
+}
+
+{\small\setcounter{tocdepth}{3}\setcounter{secnumdepth}{0}\tableofcontents}
+\clearpage
+
+% =====================================================================
+\section*{How to use this guide}
+\addcontentsline{toc}{section}{How to use this guide}
+
+Every Choupo tutorial is a complete, runnable case:
+\begin{verbatim}
+   source etc/bashrc
+   runCase tutorials/<category>/<group>/<name>
+\end{verbatim}
+This guide gives each tutorial the CONTEXT the case file cannot: the theory
+block at the head of each group states the physics and the equations you
+need (condensed -- the Theory Guide carries the full derivations), and each
+entry tells you \textbf{what the case does} and \textbf{what to expect}
+before you run it.  The per-tutorial text is assembled from the cases' own
+headers -- the case file is always the source of truth, and reading it IS
+part of the exercise.
+
+Three reading rules:
+\begin{enumerate}[leftmargin=*,nosep]
+  \item \textbf{Run first, read second, re-run third.}  The log at
+        verbosity 3 shows every Newton iteration, every K-value, every
+        announcement -- the glass box is the point.
+  \item \textbf{Expect the announcements.}  Choupo never silently helps:
+        initial guesses, bounds that bind, model fallbacks, unit overrides
+        -- all are printed.  If a run is quiet about something, it did not
+        happen.
+  \item \textbf{Golden numbers are commitments.}  Cases carrying an
+        \file{expected} file pin their KPIs; the validation AADs quoted in
+        the entries are locked by the regression suite and re-verified on
+        every change.
+\end{enumerate}
+
+% =====================================================================
+\section*{Learning paths}
+\addcontentsline{toc}{section}{Learning paths}
+
+\paragraph{The MCFT path (computational transfer phenomena).}
+Start with \texttt{flash01\_benzene\_toluene} (the Rachford--Rice loop,
+visible), then \texttt{flash} non-ideal cases (activity models bend the
+K-values), \texttt{distillation} (stages couple; Wang--Henke vs
+simultaneous), one \texttt{flowsheets} recycle case (tears and convergence),
+and close with a \texttt{gibbs} flame (equilibrium without mechanism).
+Then the batch side: an \texttt{ignition} case for stiffness -- run the
+\texttt{\_rk4} twin and watch the explicit method die -- and a \texttt{ctrl}
+loop for feedback.
+
+\paragraph{The electrolytes path.}
+\texttt{pitzer01\_nacl} ($\gamma_\pm$, $\varphi$, $a_w$ of one salt), then
+\texttt{pitzer\_gamma\_hamer\_wu} (the catalogue vs NBS data, zero refit),
+\texttt{pitzer\_nacl\_sp77\_hot} (temperature, to 200$^\circ$C),
+speciation (\texttt{scaling} cases: SI, pH, Davies-vs-Pitzer forking an
+engineering answer), the eNRTL series
+(\texttt{enrtl\_mixed\_nacl\_ethanol\_esteso} mixed-solvent;
+\texttt{enrtl\_multisalt\_nacl\_kcl} two salts, two formulations, an
+experimental verdict), and the process payoff: evaporators and
+crystallisers where all of it sets duties and yields.
+
+\paragraph{The combustion path.}
+\texttt{gibbs06\_h2\_flame\_radicals} (the radical pool at equilibrium; the
+$c_p$ extrapolation trap), \texttt{ignition01\_h2o2} (GRI kinetics, the
+stiffness lesson via the \texttt{\_rk4} twin), \texttt{ignition02\_h2air\_slack}
+(quantitative: $\tau_{\mathrm{ign}}$ vs shock-tube data),
+\texttt{nox01\_zeldovich\_postflame} (thermal NO; kinetics meets Gibbs at
+98.9\,\%).
+
+\paragraph{The props-bench path.}
+\texttt{estimate\_acetone} (CREATE: groups $\to$ constants, error shown),
+a \texttt{scan} case (SEE), \texttt{vle01\_consistency} (TEST the data),
+a \texttt{fit} case (Levenberg--Marquardt with identifiability), then the
+promote-and-use loop into a steady case.  The Props Guide is this path's
+companion.
+
+% =====================================================================
+\clearpage
+\section*{Category I: Steady-state flowsheets (choupoSolve)}\addcontentsline{toc}{section}{Category I: Steady-state flowsheets (choupoSolve)}\markboth{Steady-state flowsheets}{Steady-state flowsheets}
+Solved as one nonlinear system $F(\mathbf{x}) = \mathbf{0}$: units in
+sequence, recycles as tears, everything announced.
+\input{tutorialsGuide-steady}
+
+\clearpage
+\section*{Category II: The property bench (choupoProps)}\addcontentsline{toc}{section}{Category II: The property bench (choupoProps)}\markboth{The property bench}{The property bench}
+Questions asked of the thermodynamics BEFORE a simulation uses it --
+CREATE, SEE, TEST, FIT, PROMOTE.
+\input{tutorialsGuide-props}
+
+\clearpage
+\section*{Category III: Batch and time-dependent (choupoBatch)}\addcontentsline{toc}{section}{Category III: Batch and time-dependent (choupoBatch)}\markboth{Batch and time-dependent}{Batch and time-dependent}
+$\mathrm{d}\mathbf{Y}/\mathrm{d}t = f(\mathbf{Y})$ integrated in real time,
+with recipes for discrete events; trajectories, not steady states.
+\input{tutorialsGuide-batch}
+
+\clearpage
+\section*{Category IV: Dynamics and control (choupoCtrl)}\addcontentsline{toc}{section}{Category IV: Dynamics and control (choupoCtrl)}\markboth{Dynamics and control}{Dynamics and control}
+Continuous processes in time with feedback: PID loops, setpoint schedules,
+disturbances and responses.
+\input{tutorialsGuide-ctrl}
+
+\clearpage
+\section*{Category V: Electrochemical systems}\addcontentsline{toc}{section}{Category V: Electrochemical systems}\markboth{Electrochemical systems}{Electrochemical systems}
+\input{tutorialsGuide-electrochem}
+
+\clearpage
+\section*{Category VI: Multi-sector plant showcases}\addcontentsline{toc}{section}{Category VI: Multi-sector plant showcases}\markboth{Plant showcases}{Plant showcases}
+The fractal flowsheet at full size -- read them like worked examples.
+\input{tutorialsGuide-plant}
+
+\end{document}

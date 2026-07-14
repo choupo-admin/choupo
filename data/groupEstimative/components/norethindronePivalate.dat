@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: norethindrone pivalate  (C25H34O3, CAS 65445-09-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        norethindronePivalate;
+formula     C25H34O3;
+CAS         65445-09-2;
+InChIKey    PZXAQHCWXLHKAY-HGBFTFLOSA-N;
+MW          382.544;      // g/mol [origin=calculated method=formula-sum]
+Tc          1182.40;      // K   [origin=predictive method=joback]
+Pc          13.507;      // bar [origin=predictive method=joback]
+omega       0.8046;      // -   [origin=predictive method=lee-kesler]
+Tb          928.12;      // K   [origin=predictive method=joback]
+HvapTb      80006.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-261.29 3.15858 -0.00268877 9.7309e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 7; } { group CH; count 4; } { group C; count 3; } { group CH=C; count 1; } { group CH2CO; count 1; } { group CH_C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group C; count 1; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 8; } { group CH_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(8r,9s,10r,13s,14s,17r)-17-ethynyl-13-methyl-3-oxidanylidene-1,2,6,7,8,9,10,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthren-17-yl] 2,2-dimethylpropanoate" "19-norpregn-4-en-20-yn-3-one, 17-(2,2-dimethyl-1-oxopropoxy)-, (17alpha)-" "[(8r,9s,10r,13s,14s,17r)-17-ethynyl-13-methyl-3-oxo-1,2,6,7,8,9,10,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthren-17-yl] 2,2-dimethylpropanoate" );
+gibbsFormation
+{
+    dHf_298   -434650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     782.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=129000.0
+    phase     gas;
+}

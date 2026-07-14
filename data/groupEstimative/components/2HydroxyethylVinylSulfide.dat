@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-hydroxyethyl vinyl sulfide  (C4H8OS, CAS 3090-56-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2HydroxyethylVinylSulfide;
+formula     C4H8OS;
+CAS         3090-56-0;
+InChIKey    CJDXLHTYSXHWDC-UHFFFAOYSA-N;
+MW          104.167;      // g/mol [origin=calculated method=formula-sum]
+Tc          636.61;      // K   [origin=predictive method=joback]
+Pc          47.497;      // bar [origin=predictive method=joback]
+omega       0.7137;      // -   [origin=predictive method=lee-kesler]
+Tb          448.76;      // K   [origin=predictive method=joback]
+HvapTb      47324.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.152 0.39219 -0.0002069 3.6e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2=CH; count 1; } { group OH; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethenylsulfanylethanol" "2-(vinylsulfanyl)ethanol" "hydroxyethyl vinyl sulfide" "ethanol,2-(ethenylthio)-" "ethanol, 2-(ethenylthio)-" "ethanol,2-(vinylthio)- (6ci,8ci);2-(vinylthio)ethanol;2-hydroxyethyl vinyl sulfide;hydroxyethyl vinyl sulfide;s-vinylthioethanol;vinylmercaptoethanol;vinylthioethanol;" );
+gibbsFormation
+{
+    dHf_298   -110820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     419.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-33060.0
+    phase     gas;
+}

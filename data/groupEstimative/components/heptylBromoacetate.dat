@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heptyl bromoacetate  (C9H17BrO2, CAS 18991-99-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heptylBromoacetate;
+formula     C9H17BrO2;
+CAS         18991-99-6;
+InChIKey    SZZUXOYNCHATNT-UHFFFAOYSA-N;
+MW          237.137;      // g/mol [origin=calculated method=formula-sum]
+Tc          714.78;      // K   [origin=predictive method=joback]
+Pc          24.801;      // bar [origin=predictive method=joback]
+omega       0.7287;      // -   [origin=predictive method=lee-kesler]
+Tb          529.90;      // K   [origin=predictive method=joback]
+HvapTb      49470.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.307 0.84222 -0.0004426 7.29e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CH2COO; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "heptyl 2-bromanylethanoate" "bromoacetic acid, heptyl ester" "heptyl 2-bromoacetate" "acetic acid, bromo-, heptyl ester" );
+gibbsFormation
+{
+    dHf_298   -520040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     608.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-271150.0
+    phase     gas;
+}

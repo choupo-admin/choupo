@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dibenzo-18-crown-6  (C20H24O6, CAS 14187-32-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dibenzo18Crown6;
+formula     C20H24O6;
+CAS         14187-32-7;
+InChIKey    YSSSPARMOAYJTE-UHFFFAOYSA-N;
+MW          360.406;      // g/mol [origin=calculated method=formula-sum]
+Tc          1224.72;      // K   [origin=predictive method=joback]
+Pc          22.208;      // bar [origin=predictive method=joback]
+omega       0.9492;      // -   [origin=predictive method=lee-kesler]
+Tb          940.60;      // K   [origin=predictive method=joback]
+HvapTb      95164.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-63.09 1.6808 -0.00067432 -2.56e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 8; } { group AC; count 4; } { group FCH2O; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 8; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group O_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dibenzo-18-crown-6-ether" "crown 18" "dibenzo-18-crown 6-ether" "6,7,9,10,17,18,20,21-octahydrodibenzo[b,k][1,4,7,10,13,16]hexaoxacyclooctadecine" "2,3,11,12-dibenzo-1,4,7,10,13,16-hexaoxacyclooctadeca-2,11-diene" "dibenzo[b,k][1,4,7,10,13,16]hexaoxacyclooctadecin, 6,7,9,10,17,18,20,21-octahydro-" "dibenzo(b,k)(1,4,7,10,13,16)hexaoxacyclooctadecane" "dibenzocrown" "2,3:11,12-dibenzo-1,4,7,10,13,16-hexaoxacyclooctadecane" "dibenzo(a,j)-1,4,7,10,13,16-hexaoxacyclooctadeca-2,11-diene" "6,7,9,10,17,18,20,21-octahydrodibenzo(b,k)(1,4,7,10,13,16)hexaoxacyclooctadecin" "6,7,9,10,17,18,20,21-octahydrodibenzo[b,k][1,4,7,10,13,16]hexaoxacyclooctadecene" );
+gibbsFormation
+{
+    dHf_298   -772630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     573.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-258280.0
+    phase     gas;
+}

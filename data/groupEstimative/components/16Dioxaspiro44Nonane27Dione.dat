@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,6-dioxaspiro[4.4]nonane-2,7-dione  (C7H8O4, CAS 3505-67-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        16Dioxaspiro44Nonane27Dione;
+formula     C7H8O4;
+CAS         3505-67-7;
+InChIKey    VTQYOGUFKHVWOO-UHFFFAOYSA-N;
+MW          156.137;      // g/mol [origin=calculated method=formula-sum]
+Tc          700.68;      // K   [origin=predictive method=joback]
+Pc          40.725;      // bar [origin=predictive method=joback]
+omega       0.6023;      // -   [origin=predictive method=lee-kesler]
+Tb          490.32;      // K   [origin=predictive method=joback]
+HvapTb      44802.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-103.95 1.189 -0.0012426 5.126e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group C; count 1; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group C_ring; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "spirodilactone" "1,6-dioxaspiro(4.4)nonane-2,7-dione" "4,4-dihydroxypimelic acid dilactone" "vtqyogufkhvwoo-uhfffaoysa-" "4,9-dioxaspiro[4.4]nonane-3,8-dione" );
+gibbsFormation
+{
+    dHf_298   -635030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     442.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-476860.0
+    phase     gas;
+}

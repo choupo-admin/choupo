@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dl-isocitric acid lactone  (C6H6O6, CAS 4702-32-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dlIsocitricAcidLactone;
+formula     C6H6O6;
+CAS         4702-32-3;
+InChIKey    UKZDIMBDWHZXOK-UHFFFAOYSA-N;
+MW          174.108;      // g/mol [origin=calculated method=formula-sum]
+Tc          907.50;      // K   [origin=predictive method=joback]
+Pc          43.626;      // bar [origin=predictive method=joback]
+omega       1.2546;      // -   [origin=predictive method=lee-kesler]
+Tb          688.19;      // K   [origin=predictive method=joback]
+HvapTb      70289.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.26 0.745 -0.000518 1.302e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 2; } { group CH2COO; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group COOH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-oxidanylideneoxolane-2,3-dicarboxylic acid" "isocitric acid lactone" "dl-isocitric lactone" "5-oxooxolane-2,3-dicarboxylic acid" "dl-2-oxotetrahydrofuran-4,5-dicarboxylic acid" "isocitric lactone" "dl-isocitric acid gamma-lactone" "beta,gamma-dicarboxy-gamma-butyrolactone" "5-oxotetrahydrofuran-2,3-dicarboxylic acid;" "tetrahydro-5-oxofuran-2,3-dicarboxylic acid" "dl-butyrolactone-beta,gamma-dicarboxylic acid" "5-oxo-2,3,4-trihydrofuran-2,3-dicarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -1132530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     414.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-945510.0
+    phase     gas;
+}

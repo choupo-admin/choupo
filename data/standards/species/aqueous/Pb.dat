@@ -1,0 +1,16 @@
+recordType modelSpecies;   // model species — summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+
+name    Pb;
+ion     "Pb+2";
+charge  +2;
+
+MW { value 207.2; unit g/mol;}
+
+aqueousThermo
+{
+    hfAq { value -1700; unit J/mol;}
+    sAq  { value 10.5;  unit J/mol/K;}
+}
+
+source "+formation: hfAq+sAq Wagman 1982 (cpAq pending; near-zero -- some tables list +1.6)";

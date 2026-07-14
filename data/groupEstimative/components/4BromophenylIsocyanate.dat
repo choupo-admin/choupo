@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-bromophenyl isocyanate  (C7H4BrNO, CAS 2493-02-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4BromophenylIsocyanate;
+formula     C7H4BrNO;
+CAS         2493-02-9;
+InChIKey    CZQIJQFTRGDODI-UHFFFAOYSA-N;
+MW          198.019;      // g/mol [origin=calculated method=formula-sum]
+Tc          767.24;      // K   [origin=predictive method=joback]
+Pc          48.834;      // bar [origin=predictive method=joback]
+omega       0.5482;      // -   [origin=predictive method=lee-kesler]
+Tb          524.25;      // K   [origin=predictive method=joback]
+HvapTb      50081.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group dCd; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-4-isocyanato-benzene" "1-bromo-4-isocyanatobenzene" "p-bromophenylisocyanate" "p-bromophenyl isocyanate" "p-bromocarbanil" "benzene, 1-bromo-4-isocyanato-" "4-bromophenylisocyanate" "p-bromophenyl carbonimide" "4-bromophenylcarbimide" "isocyanic acid 4-bromophenyl ester" "isocyanic acid, p-bromophenyl ester (6ci,7ci,8ci)" "4-bromobenzenisocyanate" );
+// formation datum unavailable (element entropy missing): dHf_298=58170.0 dGf_298=None

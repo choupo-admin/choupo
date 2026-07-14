@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopentadienyl  (C5H5, CAS 2143-53-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        cyclopentadienyl;
+formula     C5H5;
+CAS         2143-53-5;
+InChIKey    HPYIUKIBUJFXII-UHFFFAOYSA-N;
+role        radical;
+MW          65.095;      // g/mol [origin=calculated method=formula-sum]
+Tc          533.62;      // K   [origin=predictive method=joback]
+Pc          51.387;      // bar [origin=predictive method=joback]
+omega       0.1893;      // -   [origin=predictive method=lee-kesler]
+Tb          331.85;      // K   [origin=predictive method=joback]
+HvapTb      28020.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-48.63 0.497 -0.0003992 1.265e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group dCH_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclopenta-1,3-diene" "cyclopentadienyl radical" "5-cyclopenta-1,3-dienyl" "cyclopenta-2,4-dien-1-yl" );
+gibbsFormation
+{
+    dHf_298   78740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     249.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=110380.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-aminobutyramide  (C4H10N2O, CAS 3251-08-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Aminobutyramide;
+formula     C4H10N2O;
+CAS         3251-08-9;
+InChIKey    WCVPFJVXEXJFLB-UHFFFAOYSA-N;
+MW          102.137;      // g/mol [origin=calculated method=formula-sum]
+Tc          698.33;      // K   [origin=predictive method=joback]
+Pc          49.246;      // bar [origin=predictive method=joback]
+omega       0.7019;      // -   [origin=predictive method=lee-kesler]
+Tb          490.05;      // K   [origin=predictive method=joback]
+HvapTb      52526.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.593 0.4796 -0.0002619 4.936e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2NH2; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group CdO; count 1; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-azanylbutanamide" "4-aminobutanamide" "gaba amide" "gamma-aminobutyric acid amide" "butyramide, 4-amino-" "butanamide, 4-amino-" "butanamide, 4-amino- (9ci)" "10.14272/wcvpfjvxexjflb-uhfffaoysa-n" "doi:10.14272/wcvpfjvxexjflb-uhfffaoysa-n" );
+gibbsFormation
+{
+    dHf_298   -170890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     441.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-13220.0
+    phase     gas;
+}

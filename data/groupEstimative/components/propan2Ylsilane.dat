@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propan-2-ylsilane  (C3H10Si, CAS 18230-84-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C3H10Si (delta H+3Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        propan2Ylsilane;
+formula     C3H10Si;
+CAS         18230-84-7;
+InChIKey    YYVGYULIMDRZMJ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          74.198;      // g/mol [origin=calculated method=formula-sum]
+Tc          427.33;      // K   [origin=predictive method=joback]
+Pc          39.956;      // bar [origin=predictive method=joback]
+omega       0.1329;      // -   [origin=predictive method=lee-kesler]
+Tb          267.10;      // K   [origin=predictive method=joback]
+HvapTb      21737.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-21.93 0.39784 -0.00035 1.326e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group SiH3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "silane,(1-methylethyl)- (9ci)" "silane,isopropyl- (7ci,8ci); isopropylsilane" );
+gibbsFormation
+{
+    dHf_298   -54720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     424.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=24320.0
+    phase     gas;
+}

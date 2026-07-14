@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-aminocoumarin  (C9H7NO2, CAS 14415-44-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Aminocoumarin;
+formula     C9H7NO2;
+CAS         14415-44-2;
+InChIKey    ZOJAINJCZSVZGW-UHFFFAOYSA-N;
+MW          161.16;      // g/mol [origin=calculated method=formula-sum]
+Tc          815.33;      // K   [origin=predictive method=joback]
+Pc          41.893;      // bar [origin=predictive method=joback]
+omega       0.7055;      // -   [origin=predictive method=lee-kesler]
+Tb          579.21;      // K   [origin=predictive method=joback]
+HvapTb      57618.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-21.98 0.799 -0.000621 1.871e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group ACH; count 3; } { group AC; count 2; } { group ACNH2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 5; } { group dC_ring; count 3; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-azanylchromen-2-one" "coumarin, 6-amino-" "6-aminochromen-2-one" "6-amino-chromen-2-one" "2h-1-benzopyran-2-one, 6-amino-" "6-amino-2h-chromen-2-one" "6-amino-1,2-benzopyrone" "6-abp" "63989-79-7 (hydrochloride)" "2h-1-benzopyran-2-one,6-amino-" "2h-1-benzopyran-2-one, 6-amino-; 6-amino-2h-chromen-2-one hydrochloride" "coumarin,6-amino- (6ci,7ci,8ci); 6-amino-1,2-benzopyrone; 6-amino-2h-chromen-2-one;6-aminocoumarin" );
+gibbsFormation
+{
+    dHf_298   -141910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     385.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-15350.0
+    phase     gas;
+}

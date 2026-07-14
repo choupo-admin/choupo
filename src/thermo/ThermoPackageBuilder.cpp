@@ -1,0 +1,759 @@
+/*---------------------------------------------------------------------------*\
+  ThermoPackageBuilder -- see ThermoPackageBuilder.H.
+  SPDX-License-Identifier: GPL-3.0-or-later
+\*---------------------------------------------------------------------------*/
+
+#include "thermo/ThermoPackageBuilder.H"
+
+#include "thermo/Database.H"
+#include "thermo/Component.H"
+#include "thermo/ThermoAnnounce.H"   // [builder] lines: cout (pedagogy), gated at >= 2
+#include "thermo/activityCoefficient/ElectrolyteActivity.H"
+#include "thermo/electrolyte/PitzerSingleSalt.H"
+#include "thermo/electrolyte/SaltFromCatalogue.H"
+#include "thermo/equationOfState/EquationOfState.H"
+
+#include <cmath>
+#include <filesystem>
+#include <iomanip>
+#include <iostream>
+#include <numeric>
+#include <sstream>
+#include <stdexcept>
+
+namespace fs = std::filesystem;
+
+namespace Choupo {
+
+// Resolve a DECLARED pair path so a RELOCATED case reads ITS OWN copy: walk UP
+// from the cwd (the case) trying <dir>/<declared>; only then fall back to the
+// installation repoRoot.  A sector-relative path ("constant/binaryPairs/...")
+// thus resolves inside the moved case, never the original tree.
+static std::filesystem::path resolveDeclared(const std::filesystem::path& repoRoot,
+                                             const std::string& declared)
+{
+    namespace fs = std::filesystem;
+    fs::path q = fs::current_path();
+    for (int up = 0; up < 8; ++up)
+    {
+        fs::path cand = q / declared;
+        if (fs::exists(cand)) return cand;
+        // F2 canonical home: a declared parameter path is propertyData-relative
+        // (`parameters/activity/NRTL/<pair>.dat`), so also try it under
+        // `<dir>/constant/propertyData/` -- how a SEALED case (incl. a drilled
+        // standalone sub-case) stores its pairs.  The bare form above stays for
+        // the retiring F1 `constant/binaryPairs/` overlay.
+        fs::path candPd = q / "constant" / "propertyData" / declared;
+        if (fs::exists(candPd)) return candPd;
+        fs::path par = q.parent_path();
+        if (par == q) break;
+        q = par;
+    }
+    return repoRoot / declared;
+}
+
+namespace {
+
+[[noreturn]] void absent(const std::string& field, const std::string& rec)
+{
+    throw std::runtime_error("ThermoPackageBuilder: " + field + " absent in " + rec
+        + " -- curate it (the builder never estimates).");
+}
+
+DictPtr loadRec(const fs::path& f, const std::string& what)
+{
+    if (!fs::exists(f))
+        throw std::runtime_error("ThermoPackageBuilder: " + what
+            + " record not found: " + f.string());
+    return Dictionary::fromFile(f.string());
+}
+
+} // namespace
+
+// ---- ELECTROLYTE path: assemble a PitzerSingleSalt directly from the new
+//      records (no readFromDict, no loadSalt, no old catalogue) -------------
+static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
+                                      bool isENRTL)
+{
+    // Round-4 (professor): this path serves ONLY the ideal-gas vapour; a
+    // package declaring another vapour method was silently overridden.  A3:
+    // refuse instead.
+    if (pkg->found("propertyMethods") && pkg->subDict("propertyMethods")->found("vapour"))
+    {
+        const std::string v = pkg->subDict("propertyMethods")->lookupWord("vapour");
+        if (v != "builtin.idealGas")
+            throw std::runtime_error("propertyPackage: the electrolyte liquid"
+                " path serves vapour builtin.idealGas only; got '" + v +
+                "'. Declare builtin.idealGas (or ask for the eos-vapour"
+                " extension).");
+    }
+    if (pkg->found("propertyMethods") && pkg->subDict("propertyMethods")->found("transport"))
+        throw std::runtime_error("propertyPackage: the electrolyte liquid path"
+            " does not yet wire a transport method -- remove the transport slot"
+            " (or ask for the extension); silently ignoring it would be a"
+            " declared-and-dropped lie (A3).");
+    // Repo root = parent of the data/ dir (Database::currentRoot() is data/).
+    const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
+    // CASE SNAPSHOT FIRST (Choupo-2607 data strategy): a case may carry a frozen
+    // copy of its dependency closure in constant/propertyData/.  When it does,
+    // the run uses the case's OWN record, walking UP the cascade
+    // (unit -> sector -> plant), and NEVER the installation catalogue.  Opt-in
+    // by file presence: a case WITHOUT constant/propertyData/<sub> falls through
+    // to data/standards/ exactly as before -- zero change for the corpus.
+    auto resolve = [&](const std::string& rel) -> fs::path
+    {
+        static const std::string pfx = "data/standards/";
+        if (rel.rfind(pfx, 0) == 0)
+        {
+            const std::string sub = rel.substr(pfx.size());
+            fs::path p = fs::current_path();
+            for (int up = 0; up < 8; ++up)   // bounded walk (parent of "/" is "/")
+            {
+                fs::path cand = p / "constant" / "propertyData" / sub;
+                if (fs::exists(cand)) return cand;
+                fs::path par = p.parent_path();
+                if (par == p) break;
+                p = par;
+            }
+        }
+        return repoRoot / rel;
+    };
+    // Confess the snapshot (Choupo-2607 data strategy): if the case ships a
+    // property-data manifest, say so once -- this run reads the case's own
+    // frozen copy, never the installation catalogue.
+    {
+        fs::path man = fs::current_path();
+        for (int up = 0; up < 8; ++up)
+        {
+            fs::path m = man / "constant" / "propertyData" / "manifest.dat";
+            if (fs::exists(m))
+            {
+                if (thermoAnnounce())
+                {
+                    auto md = Dictionary::fromFile(m.string())->subDict("propertyDataManifest");
+                    std::cout << "[propertyData] case runs from its FROZEN snapshot ("
+                              << md->lookupWordOrDefault("defaultStandardSet", "?")
+                              << ", imported " << md->lookupWordOrDefault("importedAt", "?")
+                              << ") -- installation catalogue NOT consulted.\n";
+                }
+                break;
+            }
+            fs::path par = man.parent_path();
+            if (par == man) break;
+            man = par;
+        }
+    }
+
+    // (a) component list -----------------------------------------------------
+    if (!pkg->found("components")) absent("components", "propertyPackage");
+    const std::vector<std::string> compNames = pkg->lookupWordList("components");
+
+    // (b) identify the salt: the ONE component whose STANDARDS record carries a
+    //     `dissociatesTo` block (formula-like ion stoichiometry).  Its identity
+    //     (MW, role) comes from components/<salt>.dat, read from STANDARDS (raw, no
+    //     case-local overlay) so it is byte-identical to the retired apparent
+    //     record.  EVERY OTHER component -- the water solvent, an ethanol
+    //     antisolvent, a curve-solute -- is a full molecular component loaded by
+    //     name (overlay honoured), so the crystalliser reads its eps/Mw/v.
+    auto stdCompPath = [&](const std::string& cn)
+        { return resolve("data/standards/components/" + cn + ".dat"); };
+
+    // SUBSET-AWARE (general solver): a flowsheet may run this electrolyte world
+    // on a GLOBAL component union that carries MORE than one salt (a brine unit
+    // in a plant that also has, say, a Li2CO3 sector).  The ACTIVE salt is the
+    // one the package's chemistry.salts declares (its formula maps to a
+    // component); any OTHER dissociatesTo component is a molecular SPECTATOR
+    // (present in the stream, ideal contribution -- the single-salt Pitzer
+    // engine treats only the active salt, announced).  With no chemistry.salts
+    // and a single salt, this is byte-identical to the old "exactly one" rule.
+    std::string activeSaltFormula;
+    if (pkg->found("chemistry") && pkg->subDict("chemistry")->found("salts"))
+    {
+        const auto slist = pkg->subDict("chemistry")->lookupWordList("salts");
+        if (!slist.empty())
+        {
+            const fs::path sf = resolve("data/standards/chemistry/salts/" + slist.front() + ".dat");
+            if (fs::exists(sf))
+            {
+                auto sr = Dictionary::fromFile(sf.string());
+                if (sr->found("formula")) activeSaltFormula = sr->lookupWord("formula");
+            }
+        }
+    }
+
+    std::vector<Component> comps;
+    std::size_t solventIdx = compNames.size(), soluteIdx = compNames.size();
+    std::string saltName;
+    DictPtr saltRec;
+    for (const auto& cn : compNames)
+    {
+        const fs::path sp = stdCompPath(cn);
+        DictPtr rec = fs::exists(sp) ? Dictionary::fromFile(sp.string()) : nullptr;
+        // Is THIS component the active salt?  Yes if it is the only dissociatesTo
+        // component, or if it matches the chemistry-declared active salt formula.
+        const bool isSalt = rec && rec->found("dissociatesTo")
+            && (activeSaltFormula.empty() || cn == activeSaltFormula
+                || (rec->found("formula") && rec->lookupWord("formula") == activeSaltFormula));
+        if (isSalt && saltName.empty())
+        {
+            saltName  = cn;
+            saltRec   = rec;
+            soluteIdx = comps.size();
+            // MW / nonvolatile may be FLAT (legacy layout: NaCl, KCl) or nested in
+            // an identity{} block (reference-state layout: NaOH).  Read either.
+            DictPtr idRec = rec->found("identity") ? rec->subDict("identity") : rec;
+            const scalar saltMW = idRec->found("MW")
+                ? idRec->lookupScalar("MW") : rec->lookupScalar("MW");
+            const std::string nv = rec->found("nonvolatile")
+                ? rec->lookupWordOrDefault("nonvolatile", "false")
+                : idRec->lookupWordOrDefault("nonvolatile", "false");
+            const std::string saltRole = (nv == "true") ? "nonvolatile" : "volatile";
+            comps.push_back(Component::identity(cn, saltMW, saltRole));
+        }
+        else
+        {
+            if (cn == "water") solventIdx = comps.size();
+            comps.push_back(db.loadComponent(cn));   // solvent / antisolvent / curve-solute
+        }
+    }
+    if (saltName.empty())
+        absent("a salt component (with dissociatesTo)", "propertyPackage.components");
+    if (solventIdx == compNames.size())
+        absent("a water solvent", "propertyPackage.components");
+
+    // (c) cation/anion from the salt's `dissociatesTo`: classify by CHARGE SIGN
+    //     (charge from species/aqueous/<ion>.dat).  loadSalt recomputes charge +
+    //     stoichiometry from the catalogue, so this only needs the ion NAMES.
+    std::string catName, anName;
+    {
+        auto d2t = saltRec->subDict("dissociatesTo");
+        for (const auto& ion : d2t->keys())
+        {
+            const fs::path ip =
+                resolve("data/standards/species/aqueous/" + ion + ".dat");
+            auto iRec = loadRec(ip, "species " + ion);
+            if (!iRec->found("charge")) absent("charge", ip.string());
+            const int z = static_cast<int>(std::lround(iRec->lookupScalar("charge")));
+            if      (z > 0) catName = ion;
+            else if (z < 0) anName = ion;
+        }
+    }
+    if (catName.empty() || anName.empty())
+        absent("exactly one cation and one anion", saltName + ".dissociatesTo");
+
+    // The salt's solid phase + saturation anchor are resolved by the phase NAME the
+    // package declares in chemistry.salts -> phases/solid/<phase>.dat (rho_p,k_v)
+    // and chemistry/salts/<phase>.dat (anchor).  Absence-tolerant.
+    std::string phaseName;
+    if (pkg->found("chemistry") && pkg->subDict("chemistry")->found("salts"))
+    {
+        const auto salts = pkg->subDict("chemistry")->lookupWordList("salts");
+        if (!salts.empty()) phaseName = salts.front();
+        if (salts.size() > 1 && thermoAnnounce())
+            std::cout << "[builder] chemistry.salts lists " << salts.size()
+                      << " salts but the single-salt adapter honours ONLY '"
+                      << salts.front() << "' -- the rest are IGNORED (multi-salt"
+                         " needs the eNRTL multi-salt op).\n";
+    }
+
+    // (c2) particulate-solid properties (rho_p, k_v) from phases/solid/<phase>.dat
+    //      -- the MSMPR/PSD crystalliser reads them off the salt component.
+    //      Absence-tolerant (no phase -> identity defaults, fine for non-PSD cases).
+    if (!phaseName.empty())
+    {
+        const fs::path sf =
+            resolve("data/standards/phases/solid/" + phaseName + ".dat");
+        if (fs::exists(sf))
+        {
+            auto sd = Dictionary::fromFile(sf.string());
+            const scalar rho = sd->found("rho_p")
+                ? sd->subDict("rho_p")->lookupScalar("value") : 0.0;
+            scalar kv = 0.5235987756;   // sphere default (matches readFromDict)
+            if (sd->found("shape") && sd->subDict("shape")->found("k_v"))
+                kv = sd->subDict("shape")->subDict("k_v")->lookupScalar("value");
+            comps[soluteIdx].setSolid(rho, kv);
+        }
+    }
+
+    // (c3) liquid heat capacity from the salt's STANDARDS record (if declared) --
+    //      the identity salt otherwise carries none, and the liquid sensible-
+    //      enthalpy path (mixed-solvent / recycle cases) requires it.  Absence-tol.
+    if (saltRec->found("liquidHeatCapacity"))
+        comps[soluteIdx].setLiquidCp(saltRec->subDict("liquidHeatCapacity"));
+
+    // (d) property method -- consulted for honesty, asserted, echoed (NOT in the
+    //     gamma math; the per-phase referenceBasis carries the enthalpy datum).
+    {
+        const std::string methodName = isENRTL ? "eNRTL" : "pitzer";
+        const std::string methodPath =
+            "data/standards/propertyMethods/electrolyte/" + methodName + ".dat";
+        auto mRec = loadRec(resolve(methodPath), "propertyMethod " + methodName);
+        if (!(mRec->found("requires")
+              && mRec->subDict("requires")->found("ionSpecies")))
+            absent("requires.ionSpecies", methodPath);
+        if (thermoAnnounce())
+            std::cout << "[builder] propertyMethod " << methodName
+                      << ": referenceBasis "
+                      << (mRec->found("referenceBasis") ? "declared (per-phase)" : "ABSENT")
+                      << "; gamma math is reference-free (basis carried for enthalpy honesty).\n";
+    }
+
+    // (e) the FULL electrolyte contract, every field via the SAME SaltFromCatalogue
+    //     helpers ElectrolyteActivity::configure() calls -- so the kernel (incl.
+    //     dbeta*_dT), the aqueous-ion reference, the calorimetric flag and the
+    //     L_phi window are byte-identical to the legacy path BY CONSTRUCTION, and
+    //     loadSalt honours the case-local constant/electrolyte/ overlay.  The
+    //     package's parameters.pitzerPairs path is declarative; loadSalt resolves
+    //     the pair by (cation,anion) name.
+    ElectrolyteAssembly assembly;
+    assembly.isENRTL = isENRTL;
+    double nuC = 0.0, nuA = 0.0;
+    if (isENRTL)
+    {
+        assembly.enrtl = electrolyte::loadENRTL(catName, anName);
+        nuC = assembly.enrtl.nu_c; nuA = assembly.enrtl.nu_a;
+    }
+    else
+    {
+        assembly.pitzer = electrolyte::loadSalt(catName, anName);
+        nuC = assembly.pitzer.nu_c; nuA = assembly.pitzer.nu_a;
+    }
+    assembly.soluteIdx  = soluteIdx;
+    assembly.solventIdx = solventIdx;
+    assembly.soluteName = saltName;
+    assembly.solventMW  = comps[solventIdx].MW();
+    {
+        double hf = 0.0, cp = 0.0;
+        assembly.hasAqRef = electrolyte::ionAqReference(catName, anName, nuC, nuA, hf, cp);
+        assembly.hfAqSum = hf;
+        assembly.cpAqSum = cp;
+        // Criss-Cobble 1964 T-averaged ionic Cp (JACS 86, 5390 Table II):
+        // preloaded HERE (build time, never the hot path); the kernel
+        // interpolates the five nodes in T.  Falls back to the constant
+        // cpAq tier -- announced either way so the T-extension is never
+        // silent.
+        if (assembly.hasAqRef)
+        {
+            assembly.ccAvail = electrolyte::crissCobbleNodes(
+                catName, anName, nuC, nuA, assembly.ccNodes);
+            if (thermoAnnounce())
+                std::cout << "[builder] ion Cp(T) for " << saltName << ": "
+                          << (assembly.ccAvail
+                                ? "Criss-Cobble 1964 T-averaged nodes (25-200 C, JACS 86, 5390)"
+                                : "constant cpAq tier (no Criss-Cobble entry; valid near 25 C)")
+                          << "\n";
+        }
+    }
+    // calorimetricFit is per-KERNEL: only the Pitzer T-slots are calorimetrically
+    // fitted, so an eNRTL package NEVER inherits the flag (its tau(T) is the
+    // anchored, uncalibrated form) -- forced false + lphiValidityMax 0 (defaults).
+    if (!isENRTL)
+    {
+        assembly.calorimetricFit = electrolyte::pairCalorimetricFit(catName, anName);
+        auto pr = electrolyte::findPitzerPair(catName, anName);
+        assembly.lphiValidityMax =
+            pr ? pr->lookupScalarOrDefault("lphiValidityMax", 0.0) : 0.0;
+    }
+
+    // (f) the saturation/dissolution anchor from chemistry/salts/<phase>.dat
+    //     (measuredSolubilityAnchor).  Absence-tolerant: no anchor -> solubility 0
+    //     (Ksp short-circuits to 0).
+    if (!phaseName.empty())
+    {
+        const fs::path cf =
+            resolve("data/standards/chemistry/salts/" + phaseName + ".dat");
+        if (fs::exists(cf))
+        {
+            auto cd = Dictionary::fromFile(cf.string());
+            if (cd->found("measuredSolubilityAnchor"))
+            {
+                auto a = cd->subDict("measuredSolubilityAnchor");
+                if (a->found("solubility"))
+                    assembly.solubility =
+                        a->subDict("solubility")->lookupScalar("value");
+                if (a->found("dissolutionEnthalpy"))
+                    assembly.dHsolution =
+                        a->subDict("dissolutionEnthalpy")->lookupScalar("value");
+            }
+        }
+    }
+
+    // (g) assemble + idealGas EoS
+    std::vector<std::string> names;
+    names.reserve(comps.size());
+    for (const auto& c : comps) names.push_back(c.name());
+
+    std::unique_ptr<ActivityModel> act = std::make_unique<ElectrolyteActivity>(
+        names, std::move(assembly));
+
+    DictPtr eosDict = Dictionary::fromString("model idealGas;", "ThermoPackageBuilder.eos");
+    std::unique_ptr<EquationOfState> eos = EquationOfState::New(eosDict, comps);
+
+    ThermoPackage out;
+    out.adoptElectrolytePackage(std::move(comps), std::move(act), std::move(eos));
+    // The world line, symmetric with the phi-phi / gamma-phi / Henry branches:
+    // the liquid method slot IS the world (forum 2026-07-04).
+    if (thermoAnnounce())
+    {
+        std::cout << "[builder] VLE world: electrolyte ("
+                  << (isENRTL ? "eNRTL" : "Pitzer")
+                  << " liquid gamma on the molality basis, idealGas vapour phi;"
+                     " solvent VLE by Raoult)\n";
+        // Capability honesty (no over-promise): the Pitzer adapter here is
+        // PAIRWISE -- binary cation-anion interactions only.  A genuine mixed
+        // multi-salt Pitzer/HMW also needs like-charge (theta) and ternary
+        // (psi) terms; those are NOT included.  Say so, so the method name is
+        // not read as full mixed-electrolyte Pitzer.
+        if (!isENRTL)
+            std::cout << "  [capability] Pitzer PAIRWISE-only (binary c-a pairs;"
+                         " no like-charge theta / ternary psi) -- not full"
+                         " mixed-electrolyte Pitzer/HMW.\n";
+    }
+    return out;
+}
+
+// ---- MOLECULAR path: degenerate (apparent==true, no chemistry, no ions).  Read
+//      the binary pair from the NEW location, inline it into an in-memory
+//      thermoPackage, and reuse readFromDict -- which for a molecular activity
+//      model reads the pair from the dict (Phase-1 inline), touching NO old
+//      binaryPairs catalogue.  Same builder entry, no special architecture (U4).
+// Translate the package's per-phase method slots (forum A2: vapour/transport
+// are first-class methods, never flat folklore keys) into the runtime models.
+static std::string vapourModelOf(const DictPtr& pkg)
+{
+    const auto pm = pkg->subDict("propertyMethods");
+    const std::string v = pm->found("vapour") ? pm->lookupWord("vapour")
+                                              : std::string("builtin.idealGas");
+    if (v == "builtin.idealGas")      return "idealGas";
+    if (v.rfind("eos.", 0) == 0)      return v.substr(4);      // eos.SRK -> SRK
+    throw std::runtime_error("propertyPackage: unsupported vapour method '" + v
+        + "' (have builtin.idealGas, eos.<Model>).");
+}
+// A3 for the EoS: the package may declare parameters.kijPairs { N2-CH4 "path"; }
+// -- each record is loaded (refuse loudly if the file is missing/bad) and
+// inlined as binaryInteractions into the synthesized equationOfState{} block,
+// which SRK/PR::fromDict already consumes.  No kijPairs -> kij = 0, announced
+// by the EoS itself being predictive-degraded (the record is where the cited
+// value lives; NEVER invent one inline).
+static std::string eosLineOf(const DictPtr& pkg)
+{
+    const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
+    std::ostringstream e;
+    e << "equationOfState { model " << vapourModelOf(pkg) << "; ";
+    if (pkg->found("parameters") && pkg->subDict("parameters")->found("kijPairs"))
+    {
+        auto kp = pkg->subDict("parameters")->subDict("kijPairs");
+        e << "binaryInteractions ( ";
+        for (const auto& key : kp->keys())
+        {
+            auto rec = loadRec(resolveDeclared(repoRoot, kp->lookupWord(key)), "kij pair " + key);
+            // Round-3 fix P3: a kij is REGRESSED AGAINST one specific cubic --
+            // an SRK kij fed to Peng-Robinson is silent parameter abuse.  The
+            // record's `eos` field must match the package's declared model.
+            {
+                const std::string recEos =
+                    rec->lookupWordOrDefault("eos", "");
+                const std::string pkgEos = vapourModelOf(pkg);
+                if (recEos.empty() && thermoAnnounce())
+                    std::cout << "[builder] kij pair " << key << ": record"
+                                 " carries NO eos field -- cannot verify it was"
+                                 " regressed for " << pkgEos << "; using it"
+                                 " UNVERIFIED.\n";
+                if (!recEos.empty() && recEos != pkgEos)
+                    throw std::runtime_error("propertyPackage: kij pair " + key
+                        + " was regressed for eos " + recEos
+                        + " but this package declares " + pkgEos
+                        + " -- kij values are NOT transferable between cubics;"
+                        " provide a " + pkgEos + "-regressed pair record.");
+            }
+            e << "{ i " << rec->lookupWord("i") << "; j " << rec->lookupWord("j")
+              << "; kij " << rec->lookupScalar("kij") << "; } ";
+            // The builder line carries only the CITATION (which record file the
+            // pair came from); the VALUE is announced where it is CONSUMED --
+            // '[eos] kij(i,j) = ...' in SRK/PR::fromDict -- so the legacy
+            // inline-binaryInteractions route passes the same announcement point.
+            if (thermoAnnounce())
+                std::cout << "[builder] kij pair " << rec->lookupWord("i") << "-"
+                          << rec->lookupWord("j")
+                          << "  --- " << kp->lookupWord(key) << "\n";
+        }
+        e << "); ";
+    }
+    e << "}\n";
+    return e.str();
+}
+
+static std::string transportModelOf(const DictPtr& pkg)
+{
+    const auto pm = pkg->subDict("propertyMethods");
+    return pm->found("transport") ? pm->lookupWord("transport") : std::string();
+}
+
+// solution.henryDilute -- the dilute-solution method (professors' forum
+// 2026-07-04, amendment A1: per-group rungs).  The package's solution{} block
+// names solvent + solutes; parameters.henryPairs declares each pair's FILE,
+// verified here (A3: refuse loudly, naming the missing file).  Assembly is the
+// proven synthesized-dict route: the ThermoPackage runs the same K path as the
+// legacy solvent/solutes keys -- byte-identical by construction.
+static ThermoPackage buildSolutionHenry(const DictPtr& pkg, const Database& db)
+{
+    const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
+    const std::vector<std::string> compNames = pkg->lookupWordList("components");
+    if (!pkg->found("solution"))
+        absent("solution { solvent <c>; solutes ( ... ); }", "propertyPackage");
+    auto sol = pkg->subDict("solution");
+    const std::string solvent = sol->lookupWord("solvent");
+    const auto solutes = sol->lookupWordList("solutes");
+    if (solutes.empty()) absent("a non-empty solutes ( ... )", "propertyPackage.solution");
+
+    // A3: every declared solute pair -- declared path exists AND parseable.
+    if (!(pkg->found("parameters") && pkg->subDict("parameters")->found("henryPairs")))
+        absent("parameters.henryPairs", "propertyPackage");
+    auto hp = pkg->subDict("parameters")->subDict("henryPairs");
+    for (const auto& su : solutes)
+    {
+        const std::string key = su + "-" + solvent;
+        if (!hp->found(key))
+            throw std::runtime_error("propertyPackage: solute '" + su
+                + "' declared in solution{} but parameters.henryPairs has no '"
+                + key + "' entry -- declare the pair file.");
+        auto rec = loadRec(resolveDeclared(repoRoot, hp->lookupWord(key)), "Henry pair " + key);
+        (void)rec;   // parse = the verification; the runtime registry re-reads it
+    }
+    // Echo the method's per-group referenceBasis (glass-box).
+    {
+        auto mRec = loadRec(repoRoot /
+            "data/standards/propertyMethods/solution/henryDilute.dat",
+            "propertyMethod henryDilute");
+        if (thermoAnnounce())
+            std::cout << "[builder] propertyMethod solution.henryDilute: referenceBasis "
+                      << (mRec->found("referenceBasis") ? "declared (per-GROUP rungs: "
+                         "solvent pureLiquidRaoult, solutes infiniteDilutionHenry)"
+                         : "ABSENT") << "\n";
+    }
+    // The world line, symmetric with the other liquid-method branches.
+    if (thermoAnnounce())
+        std::cout << "[builder] VLE world: gamma-phi with Henry solutes"
+                     "(Raoult solvent + infinite-dilution solutes, K = gamma* H(T) Poynting / (phi_V P); "
+                  << vapourModelOf(pkg) << " vapour phi)\n";
+    std::ostringstream txt;
+    txt << "components ( ";
+    for (const auto& c : compNames) txt << c << " ";
+    txt << ");\n";
+    txt << "activityModel { model ideal; }\n";   // the solvent's Raoult side
+    txt << eosLineOf(pkg);
+    const std::string tr = transportModelOf(pkg);
+    if (!tr.empty()) txt << "transport { viscosity { model " << tr << "; } }\n";
+    txt << "solvent " << solvent << ";\n";
+    txt << "solutes ( ";
+    for (const auto& su : solutes) txt << su << " ";
+    txt << ");\n";
+    DictPtr tdict = Dictionary::fromString(txt.str(), "ThermoPackageBuilder.solution");
+    ThermoPackage out;
+    out.readFromDict(tdict, db);
+    return out;
+}
+
+static ThermoPackage buildMolecularActivity(const DictPtr& pkg, const Database& db,
+                                            const std::string& model)
+{
+    const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
+    const std::vector<std::string> compNames = pkg->lookupWordList("components");
+
+    // activity.ideal has NO pair parameters (gamma = 1 identically): synthesize
+    // directly -- an EoS-centred package (vapour eos.SRK + kijPairs) is the use.
+    if (model == "ideal")
+    {
+        std::ostringstream txt;
+        txt << "components ( ";
+        for (const auto& c : compNames) txt << c << " ";
+        txt << ");\nactivityModel { model ideal; }\n";
+        txt << eosLineOf(pkg);
+        const std::string tr = transportModelOf(pkg);
+        if (!tr.empty()) txt << "transport { viscosity { model " << tr << "; } }\n";
+        if (thermoAnnounce())
+            std::cout << "[builder] VLE world: gamma-phi (ideal liquid gamma, "
+                      << vapourModelOf(pkg) << " vapour phi)\n";
+        DictPtr tdict = Dictionary::fromString(txt.str(), "ThermoPackageBuilder.ideal");
+        ThermoPackage out;
+        out.readFromDict(tdict, db);
+        return out;
+    }
+    // No INLINE parameters.binaryPairs -> resolve the pairs from the case's
+    // binaryPairs CATALOGUE, the SAME path thermoFor uses for a per-unit molecular
+    // override.  This is the standalone/plant alignment (ChatGPT s32): the ACTIVE
+    // liquid method defines the world -- a unit that INHERITS an electrolyte context
+    // but selects `activity.<model>` gets a molecular gamma with its pairs loaded
+    // from the catalogue; the inherited salt chemistry stays AVAILABLE but INACTIVE
+    // (it never activates the electrolyte path nor demands eNRTL/Pitzer parameters).
+    const bool hasInlinePairs = pkg->found("parameters")
+        && pkg->subDict("parameters")->found("binaryPairs")
+        && !pkg->subDict("parameters")->subDict("binaryPairs")->keys().empty();
+    // Multi-phase LLE: the propertyDict may declare 2+ LIQUID phases explicitly
+    // (an NRTL gamma-gamma settler needs them, or the LL flash sees only 1 phase).
+    // Translate the F2 `phases { <name> { type liquid; activityModel <M>; } }` into
+    // the internal `phases ( { name; type; activity { model } } )` list; a vapour
+    // phase closes it.  Absent -> the single implicit liquid via activityModel.
+    std::string phasesTxt;
+    if (pkg->found("phases"))
+    {
+        auto ph = pkg->subDict("phases");
+        for (const auto& pn : ph->keys())
+        {
+            auto pd = ph->subDict(pn);
+            const std::string ptype = pd->lookupWordOrDefault("type", "liquid");
+            std::string pmodel = model;
+            if (pd->found("activityModel")) pmodel = pd->lookupWord("activityModel");
+            else if (pd->found("activity") && pd->subDict("activity")->found("model"))
+                pmodel = pd->subDict("activity")->lookupWord("model");
+            phasesTxt += "    { name " + pn + "; type " + ptype
+                       + "; activity { model " + pmodel + "; } }\n";
+        }
+        phasesTxt += "    { name vapour; type vapor; eos { model idealGas; } }\n";
+    }
+
+    if (!hasInlinePairs)
+    {
+        std::ostringstream txt;
+        txt << "components ( ";
+        for (const auto& c : compNames) txt << c << " ";
+        txt << ");\n";
+        if (!phasesTxt.empty()) txt << "phases (\n" << phasesTxt << ");\n";
+        else                    txt << "activityModel { model " << model << "; }\n";
+        txt << eosLineOf(pkg);
+        const std::string tr = transportModelOf(pkg);
+        if (!tr.empty()) txt << "transport { viscosity { model " << tr << "; } }\n";
+        if (thermoAnnounce())
+            std::cout << "[builder] VLE world: gamma-phi (" << model
+                      << " liquid gamma from the binaryPairs catalogue, "
+                      << vapourModelOf(pkg) << " vapour phi)"
+                      << (pkg->found("chemistry") ? "; inherited chemistry INACTIVE" : "")
+                      << "\n";
+        DictPtr tdict = Dictionary::fromString(txt.str(), "ThermoPackageBuilder.molecularCatalogue");
+        ThermoPackage out;
+        out.readFromDict(tdict, db);
+        return out;
+    }
+    auto params = pkg->subDict("parameters");
+    auto binPairs = params->subDict("binaryPairs");
+    if (binPairs->keys().empty()) absent("a binaryPairs entry", "propertyPackage.parameters");
+    // Inline EVERY declared pair (round-3 fix P1: the first cut consumed only
+    // keys().front(), silently DROPPING the other pairs of a ternary+ system
+    // -- the cardinal sin).  Full precision so gamma matches byte-for-byte.
+    // Build the inline pairs body ONCE -- shared by the single-liquid
+    // activityModel and by EVERY liquid phase of a multi-phase LLE world (a
+    // gamma-gamma settler declared with a `phases {}` block needs the same gamma
+    // on each liquid, or the LL flash sees only one phase).
+    std::ostringstream pairsBody;
+    pairsBody << std::setprecision(15);
+    for (const auto& key : binPairs->keys())
+    {
+        auto pairRec = loadRec(resolveDeclared(repoRoot, binPairs->lookupWord(key)),
+                               "binary pair " + key);
+        // pass-7 (professor): the inlined numbers LAUNDERED the catalogue
+        // provenance to 'inline' -- announce the source file per pair, the
+        // same pattern the kij route uses, so the selector headers' promise
+        // ('every parameter with its source') holds on this path too.
+        if (thermoAnnounce())
+            std::cout << "[builder] binary pair " << key << "  --- "
+                      << binPairs->lookupWord(key) << "\n";
+        auto pp = pairRec->subDict("parameters");
+        pairsBody << "{ i " << pp->lookupWord("i") << "; j " << pp->lookupWord("j") << "; ";
+        for (const char* k : {"a_ij", "b_ij", "a_ji", "b_ji", "c_ij", "c_ji", "alpha"})
+            if (pp->found(k)) pairsBody << k << " " << pp->lookupScalar(k) << "; ";
+        // Honesty flag rides along (pass-3: dropping it silently DISARMED the
+        // H^E calorimetric gate for package-loaded pairs vs legacy-inlined).
+        if (pp->found("calorimetricFit"))
+            pairsBody << "calorimetricFit " << pp->lookupWord("calorimetricFit") << "; ";
+        else if (pairRec->found("calorimetricFit"))
+            pairsBody << "calorimetricFit " << pairRec->lookupWord("calorimetricFit") << "; ";
+        pairsBody << "} ";
+    }
+    const std::string amBody = "model " + model + "; pairs ( " + pairsBody.str() + ")";
+
+    std::ostringstream txt;
+    txt << std::setprecision(15);
+    txt << "components ( ";
+    for (const auto& c : compNames) txt << c << " ";
+    txt << ");\n";
+    if (pkg->found("phases"))
+    {
+        txt << "phases (\n";
+        auto ph = pkg->subDict("phases");
+        for (const auto& pn : ph->keys())
+        {
+            const std::string ptype = ph->subDict(pn)->lookupWordOrDefault("type", "liquid");
+            txt << "    { name " << pn << "; type " << ptype
+                << "; activity { " << amBody << "; } }\n";
+        }
+        txt << "    { name vapour; type vapor; eos { model idealGas; } }\n);\n";
+    }
+    else
+    {
+        txt << "activityModel { " << amBody << "; }\n";
+        txt << eosLineOf(pkg);
+    }
+
+    // The world line, symmetric with the phi-phi / Henry / electrolyte branches.
+    if (thermoAnnounce())
+        std::cout << "[builder] VLE world: gamma-phi (" << model
+                  << " liquid gamma, " << vapourModelOf(pkg) << " vapour phi)\n";
+    DictPtr tdict = Dictionary::fromString(txt.str(), "ThermoPackageBuilder.molecular");
+    ThermoPackage out;
+    out.readFromDict(tdict, db);
+    return out;
+}
+
+ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db)
+{
+    // Dispatch on the selected liquid property method (U4: ONE builder for
+    // electrolyte AND molecular).  electrolyte.* -> direct assembly from the new
+    // records; activity.* -> inline-pair readFromDict.  No special branch downstream.
+    if (!(pkg->found("propertyMethods")
+          && pkg->subDict("propertyMethods")->found("liquid")))
+        absent("propertyMethods.liquid", "propertyPackage");
+    const std::string liquid = pkg->subDict("propertyMethods")->lookupWord("liquid");
+
+    if (liquid == "electrolyte.pitzer")
+        return buildElectrolyte(pkg, db, /*isENRTL=*/false);
+    if (liquid == "electrolyte.eNRTL")
+        return buildElectrolyte(pkg, db, /*isENRTL=*/true);
+    if (liquid.rfind("eos.", 0) == 0)
+    {
+        // World 2 opt-in (forum: the liquid slot IS the world).  The SAME
+        // cubic must serve both phases -- mixed slots are two Gibbs surfaces
+        // pretending to be one VLE: REFUSE.
+        const std::string vap = pkg->subDict("propertyMethods")->found("vapour")
+            ? pkg->subDict("propertyMethods")->lookupWord("vapour") : "";
+        if (vap != liquid)
+            throw std::runtime_error("propertyPackage: liquid " + liquid
+                + " (phi-phi) requires vapour " + liquid + " -- the SAME cubic"
+                " on both phases (one Gibbs surface); got vapour '" + vap + "'.");
+        const std::vector<std::string> compNames = pkg->lookupWordList("components");
+        std::ostringstream txt;
+        txt << "components ( ";
+        for (const auto& c : compNames) txt << c << " ";
+        txt << ");\nactivityModel { model ideal; }\n";   // unused in phi-phi K
+        txt << eosLineOf(pkg);
+        const std::string tr = transportModelOf(pkg);
+        if (!tr.empty()) txt << "transport { viscosity { model " << tr << "; } }\n";
+        txt << "vleWorld phiPhi;\n";
+        // The phi-phi world line is announced by readFromDict itself (it reads
+        // the `vleWorld phiPhi;` written just above) -- ONE announcement point
+        // for both entry paths, this builder AND a legacy thermoPackage that
+        // selects the world directly.  The other branches announce here.
+        DictPtr tdict = Dictionary::fromString(txt.str(), "ThermoPackageBuilder.phiPhi");
+        ThermoPackage out;
+        out.readFromDict(tdict, db);
+        return out;
+    }
+    if (liquid == "solution.henryDilute")
+        return buildSolutionHenry(pkg, db);
+    if (liquid.rfind("activity.", 0) == 0)
+        return buildMolecularActivity(pkg, db, liquid.substr(9));
+
+    throw std::runtime_error("ThermoPackageBuilder: unsupported liquid propertyMethod '"
+        + liquid + "' (have electrolyte.pitzer, electrolyte.eNRTL, activity.<model>, solution.henryDilute).");
+}
+
+} // namespace Choupo

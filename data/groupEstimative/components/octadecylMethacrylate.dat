@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octadecyl methacrylate  (C22H42O2, CAS 32360-05-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octadecylMethacrylate;
+formula     C22H42O2;
+CAS         32360-05-7;
+InChIKey    HMZGPNHSPWNGEP-UHFFFAOYSA-N;
+MW          338.576;      // g/mol [origin=calculated method=formula-sum]
+Tc          932.06;      // K   [origin=predictive method=joback]
+Pc          9.306;      // bar [origin=predictive method=joback]
+omega       0.8513;      // -   [origin=predictive method=lee-kesler]
+Tb          757.74;      // K   [origin=predictive method=joback]
+HvapTb      71383.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.617 2.01894 -0.0011036 2.127e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 17; } { group CH2=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 17; } { group dCH2; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "octadecyl 2-methylprop-2-enoate" "stearyl methacrylate" "2-propenoic acid, 2-methyl-, octadecyl ester" "methacrylic acid, octadecyl ester" "n-octadecyl methacrylate" "octadecyl 2-methylacrylate" "methacrylic acid, stearyl ester" "methacrylic acid octadecyl ester" "methacrylic acid stearyl ester" "poly(octadecyl methacrylate) solution" "2-methyl-2-propenoic acid octadecyl ester" );
+gibbsFormation
+{
+    dHf_298   -699050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1055.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-96720.0
+    phase     gas;
+}

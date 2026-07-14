@@ -34,18 +34,39 @@ ParaView is a trademark of Kitware Inc.
 \section*{Preface --- read this first}
 \addcontentsline{toc}{section}{Preface --- read this first}
 
-Engineers used to text-driven, file-first tools will feel at home. Newcomers will feel curious, then
-liberated. This is an \emph{educational} process simulator: every Newton
-iteration, every $K$-value, every Wegstein step is visible both in the
-source and at runtime. If something surprises you, the answer is
-always one \texttt{grep} away.
+Engineers used to text-driven, file-first tools will feel at home.
+Newcomers will feel curious, then liberated.  Choupo is an
+\emph{educational} process simulator: every Newton iteration, every
+$K$-value, every Wegstein step is visible both in the source and at
+runtime.  If something surprises you, the answer is always one
+\texttt{grep} away.
 
-This guide walks you from a cold install to running, modifying, and
-building your own cases. A dozen-odd short chapters; each opens with a
-\emph{What you'll learn} note and closes with a hands-on cue. Boxes mark
+This guide walks you from a cold install to running, reading, modifying,
+and building your own cases: first the case anatomy (the plain-text
+dictionaries and the per-stream state files), then the thermodynamic
+foundation, then every family of unit operations with a minimal working
+dict, then the outer layers --- sweeps, design specifications,
+optimisation, sizing and costing --- and finally the time-dependent
+binaries, the property workbench, and the browser front-end.  Each
+section opens with a \emph{What you'll learn} note; boxes mark
 crystal-clear takeaways, common pitfalls, and small experiments you
 should run as you read.
 
+Four binaries cover four problem classes, and one dispatcher
+(\code{runCase}) picks the right one for each case:
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Binary} & \textbf{Problem class} & \textbf{Mathematics} \\
+\midrule
+\code{choupoSolve} & steady-state flowsheets & $F(x)=0$ root-finding; Newton-on-tears recycles \\
+\code{choupoBatch} & batch vessels + recipes & $\mathrm{d}Y/\mathrm{d}t = f(Y)$, RK4 or stiff Rosenbrock \\
+\code{choupoCtrl}  & dynamic continuous + control & $\mathrm{d}Y/\mathrm{d}t = f(Y,u,t)$ with controllers writing $u$ \\
+\code{choupoProps} & property evaluation & points, scans, consistency tests, LM fits \\
+\bottomrule
+\end{tabularx}
+\end{center}
 
 % =====================================================================
 \section{Quick start}
@@ -55,31 +76,34 @@ How to build the simulator once, set up your shell environment, and
 run your first tutorial in under five minutes.
 \end{whatyoulllearn}
 
-Build once, source the shell environment once, then run any tutorial:
+Choupo needs only a C\texttt{++}17 compiler (\code{g++}) and GNU
+\code{make} --- no external libraries.  Build once, source the shell
+environment once, then run any tutorial:
 
 \begin{lstlisting}
 cd /path/to/Choupo
 make all                                       # release build
 source etc/bashrc                              # adds bin/ + project root to PATH
 
-listCases                                            # available tutorials
+listCases                                      # available tutorials
 runCase tutorials/steady/flash/flash01_benzene_toluene     # run one
-less  tutorials/steady/flash/flash01_benzene_toluene/log.choupoSolve
+less tutorials/steady/flash/flash01_benzene_toluene/log.choupoSolve
 \end{lstlisting}
 
-Tutorials live under \file{tutorials/<category>/<name>/}, where the
-category is one of \file{steady/} (\code{choupoSolve}), \file{batch/}
-(\code{choupoBatch}), \file{ctrl/} (\code{choupoCtrl}), \file{props/}
-(\code{choupoProps}), or \file{plant/} (multi-sector cases).
-\code{runCase} reads each case's \code{controlDict.application} and
-dispatches to the right binary automatically --- you never pick the
-executable by hand.  After your first run a symlink (e.g.\ \file{./choupoSolve})
-points to the matching \file{build/linux64Gcc/} binary.
+Tutorials live under \file{tutorials/<category>/<family>/<name>/}, where
+the category is one of \file{steady/} (\code{choupoSolve}),
+\file{batch/} (\code{choupoBatch}), \file{ctrl/} (\code{choupoCtrl}),
+\file{props/} (\code{choupoProps}), \file{electrochem/}, or
+\file{plant/} (multi-sector cases).  \code{runCase} reads each case's
+\code{controlDict.application} and dispatches to the right binary
+automatically --- you never pick the executable by hand.  After your
+first build a symlink per binary (e.g.\ \file{./choupoSolve}) points to
+the matching \file{build/<platform>/} executable.
 
 \subsection{Permanent shell setup}
 
-Append this line to \file{\textasciitilde/.bashrc} so every new terminal has the
-environment ready:
+Append this line to \file{\textasciitilde/.bashrc} so every new terminal
+has the environment ready:
 
 \begin{lstlisting}
 source /path/to/Choupo/etc/bashrc
@@ -89,43 +113,43 @@ A fresh terminal then greets you with:
 
 \begin{lstlisting}
 Choupo environment loaded.
-  CHOUPO_HOME = /path/to/Choupo
-  Binaries          : choupoSolve, choupoBatch, choupoCtrl, choupoProps
-  Commands available: runCase, runApplication,
-                        listCases, cleanCase, cdOPE, cdTut
+  CHOUPO_HOME      = /path/to/Choupo
+  CHOUPO_WORKSPACE = /path/to/Choupo/cases   (your cases; newCase writes here)
+  Commands available  : choupoSolve, runCase, runApplication, newCase,
+                        listCases, cleanCase, Choupo, cdTut, cdWork
 \end{lstlisting}
 
 \subsection{Build modes}
 
 \begin{lstlisting}
 make all                # default --- release, -O2
-make MODE=debug all     # -O0 -g, parallel tree under build/linux64GccDebug
-make print              # show resolved variables
-make clean              # remove current mode
-make distclean          # remove the whole build/ tree
+make MODE=debug all     # -O0 -g, parallel tree under build/<platform>Debug
+make print              # show resolved build variables
+make clean              # remove current mode's objects
+make distclean          # remove the whole build/ tree (and the WASM build)
 \end{lstlisting}
 
 Both modes coexist; the \file{choupoSolve} symlink points to the
 \emph{last} binary built.
 
 \begin{keyidea}
-You never recompile to switch cases. Build once, source once, then
+You never recompile to switch cases.  Build once, source once, then
 all you do is edit text dictionaries and re-run.
 \end{keyidea}
 
 \begin{tryit}
 Run \code{runCase tutorials/steady/flash/flash01\_benzene\_toluene} and then
-\code{less tutorials/steady/flash/flash01\_benzene\_toluene/log.choupoSolve}.
-Notice the per-iteration trace under ``\code{Rachford-Rice}'': that is
-the simulator showing its work.
+\code{less} the \file{log.choupoSolve} it writes.  Notice the
+per-iteration trace under ``Rachford-Rice Newton'': that is the
+simulator showing its work.
 \end{tryit}
 
 % =====================================================================
-\section{The four shell helpers}
+\section{The shell helpers}
 
 \begin{whatyoulllearn}
-Five short commands cover every interaction you'll have with the
-simulator from the shell.
+A handful of short commands cover every interaction you'll have with
+the simulator from the shell.
 \end{whatyoulllearn}
 
 After sourcing \file{etc/bashrc} you have:
@@ -135,13 +159,15 @@ After sourcing \file{etc/bashrc} you have:
 \toprule
 \textbf{Command} & \textbf{Purpose} \\
 \midrule
-\code{choupoSolve <case>}    & Run a case; write everything to stdout. \\
-\code{runCase [<case>]}           & Run + redirect to \file{log.choupoSolve} in the case dir. Defaults to current dir. \\
-\code{runApplication choupoSolve <args>} & redirect to \file{log.<appName>} in cwd. \\
-\code{listCases}                  & Tabulate all tutorials with one-line descriptions. \\
-\code{cleanCase [<case>]}         & Remove \file{log.*} and \file{*.log} from a case (never touches source). \\
-\code{cdOPE}                      & \code{cd} to the project root. \\
-\code{cdTut}                      & \code{cd} to \file{tutorials/}. \\
+\code{choupoSolve <case>}    & Run a case directly; write everything to stdout. \\
+\code{runCase [<case>]}      & Run + redirect to \file{log.<binary>} in the case dir; dispatches by \code{controlDict.application}.  Defaults to the current dir. \\
+\code{runApplication <binary> <args>} & Run any binary, redirect to \file{log.<binary>} in the cwd. \\
+\code{listCases}             & Tabulate all tutorials with one-line descriptions. \\
+\code{newCase <name> [note]} & Scaffold a fresh case in \code{\$CHOUPO\_WORKSPACE}. \\
+\code{cleanCase [<case>]}    & Remove \file{log.*} and generated outputs (never touches source). \\
+\code{Choupo}                & \code{cd} to the project root. \\
+\code{cdTut}                 & \code{cd} to \file{tutorials/}. \\
+\code{cdWork}                & \code{cd} to your case workspace. \\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -152,66 +178,102 @@ Two equivalent workflows:
 # From anywhere (use $CHOUPO_HOME):
 runCase $CHOUPO_HOME/tutorials/steady/flash/flash01_benzene_toluene
 
-# from inside the case dir:
+# From inside the case dir:
 cd tutorials/steady/flash/flash01_benzene_toluene
 runCase                                 # writes log.choupoSolve here
 \end{lstlisting}
 
+Two further tools appear later in this guide: \code{bin/choupo-init0}
+(materialise the initial stream state, \S\ref{sec:init0}) and
+\code{bin/choupo-import} (seal a case's property data so it runs
+self-contained, \S\ref{sec:self-contained}).  \code{bin/runTests} runs
+the full regression over every bundled tutorial.
+
 % =====================================================================
-\section{Anatomy of a case directory}
+\section{Anatomy of a case directory}\label{sec:anatomy}
 
 \begin{whatyoulllearn}
-Every case is a folder of plain-text dicts. Two are required; three are
-optional. Nothing else.
+Every case is a folder of plain-text files with a fixed division of
+labour: \file{system/} says how the problem is organised,
+\file{constant/} carries the models and data, and --- in a steady case
+--- the \file{0/} directory carries the complete initial state of every
+stream, one file per stream, OpenFOAM-style.  The solver writes its
+answer to \file{converged/}.
 \end{whatyoulllearn}
+
+The tree below is a \emph{steady} (\code{choupoSolve}) case --- the most
+common kind, and the one whose anatomy the rest of this section
+dissects.  The other binaries reuse the same \file{system/} +
+\file{constant/} skeleton but not the stream-state directories: a batch
+or control case has no flowsheet streams to seed --- its vessels carry
+\code{initial \{\}} charges and the run writes \file{trajectory.csv}
+(\S\ref{sec:batch}, \S\ref{sec:ctrl}) --- and a props case replaces
+\file{flowsheetDict} with a \file{propsDict} altogether
+(\S\ref{sec:props}).
 
 \begin{lstlisting}
 caseName/
+|-- caseName.cho             empty marker file --- the GUI's "openable" entity
 |-- system/
-|   |-- controlDict          required   --- verbosity, [future] time control
-|   |-- flowsheetDict        required   --- topology: streams + units + connections
-|   |-- solverDict           optional   --- per-unit-op solver options (overrides)
-|   |-- outerDict            optional   --- sensitivity / optimisation / param-est
-|   `-- postDict             optional   --- post-processing chain (sizing, costing)
+|   |-- controlDict          REQUIRED  application, verbosity, reports{}
+|   |-- flowsheetDict        REQUIRED  TOPOLOGY ONLY: units + connections
+|   |-- solverDict           optional  per-unit-op solver options
+|   |-- outerDict            optional  sweep / designSpec / optimisation
+|   `-- postDict             optional  sizing + costing chain
 |-- constant/
-|   |-- thermoPackage        required   --- components + gamma-phi models / phases
-|   `-- reactions            optional   --- named-reaction library (CSTR / PFR)
-`-- log.choupoSolve     produced   --- written by runCase
+|   |-- propertyDict         REQUIRED  components + thermodynamic models
+|   |-- reactions            optional  named-reaction library
+|   |-- crystallisation      optional  crystallisation-kinetics library
+|   |-- dryingKinetics       optional  drying-curve library
+|   |-- components/          optional  case-local component overlays
+|   `-- propertyData/        optional  sealed data snapshot (self-contained cases)
+|-- 0/                       REQUIRED (steady only)  initial stream state,
+|   |-- feed   liquid   vapor                        ONE FILE PER STREAM
+`-- (written by the run)
+    |-- converged/           the steady solution, same one-file-per-stream shape
+    |-- reports/             CSV + .ods reports selected in controlDict
+    `-- log.choupoSolve      written by runCase
 \end{lstlisting}
 
 \begin{keyidea}
 A standalone unit operation is just a \file{flowsheetDict} of length 1.
-There is no special ``single-unit'' mode --- one consistent case
-format for everything.
+There is no special ``single-unit'' mode --- one consistent case format
+for everything, from one flash drum to a multi-sector plant.
 \end{keyidea}
 
 \subsection{\file{controlDict}}
 
-The simplest valid file:
+The essential keys:
 
 \begin{lstlisting}[language=dict]
-verbosity   3;     // 0 silent / 1 errors / 2 warnings / 3 info / 4 debug
+application   choupoSolve;      // | choupoBatch | choupoCtrl | choupoProps
+description   "Isothermal flash benzene/toluene at 370 K, 1 bar (Raoult)";
+verbosity     3;                // 0 silent / 1 +warnings / 2 +summary
+                                // 3 info (Newton iterations visible) / 4 debug
+reports
+{
+    streamTable    { }          // see the Reports section
+    massBalance    { }
+    energyBalance  { }
+}
 \end{lstlisting}
 
 For pedagogical use you want \code{verbosity 3} --- that prints every
-Newton iteration, every Wegstein step, every $K$-value evaluation. Set
-lower only when sweeping the simulator thousands of times.
+Newton iteration, every Wegstein step, every $K$-value refresh.  Set it
+lower only when an outer driver sweeps the simulator hundreds of times.
+Time-dependent cases (\code{choupoBatch} / \code{choupoCtrl}) add time
+controls --- see \S\ref{sec:batch}.
 
-\subsection{\file{flowsheetDict}}
+\subsection{\file{flowsheetDict} --- topology only}\label{sec:flowsheet}
 
-Streams + units + (optional) tear-stream declaration for recycles.
+The \file{flowsheetDict} declares \emph{what is connected to what} ---
+units, their wiring, and (for recycles) the tear declaration.  It
+carries \textbf{no stream numbers}: state lives in \file{0/}
+(\S\ref{sec:zero}).  The first tutorial in full:
 
 \begin{lstlisting}[language=dict]
-streams
-{
-    feed
-    {
-        F            100.0  kmol/h;     // industrial unit; parser
-        T            370.0  K;          // converts to SI canonical
-        P              1.0  bar;        // (kmol/s, K, Pa) on the fly
-        composition  { benzene 0.40;  toluene 0.60; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files);
+// flowsheetDict is TOPOLOGY only
 
 units
 (
@@ -219,250 +281,251 @@ units
         name        flash01;
         type        isothermalFlash;
         in          feed;
-        outputs     (liquid  vapor );   // names assigned to producedStreams[0..k]
+        outputs     ( liquid  vapor );
 
         operation   { T 370.0 K;  P 1.0 bar; }
     }
 );
 \end{lstlisting}
 
-\paragraph{Units on every scalar.} Since, any scalar in a
-dict may carry a unit suffix.  The parser converts to canonical SI
-internally (Pa, kmol/s, K, m, m\textsuperscript{2},
-m\textsuperscript{3}, J, kg) and tags the entry with its physical
-dimensions, so a typo (\code{P 1 kg;}) is caught with a
-crystal-clear error before the solver runs.  See
-\S\ref{sec:units-suffixes} for the three accepted forms and the
-\code{controlDict.units \{...\}} block.
+Every unit entry follows the same slot order: \code{name} and
+\code{type} (required), an optional \code{model} (the sub-model
+selector, e.g.\ \code{simultaneous} on a column), then \code{in} (one
+inlet) or \code{inputs (...)} (several), \code{outputs (...)}, the
+\code{operation \{...\}} block of numeric knobs, and finally optional
+\code{reaction} / \code{crystallisation} / \code{dryingCurve}
+references and an optional per-unit \code{thermo \{\}} override
+(\S\ref{sec:thermo-override}).
 
-\paragraph{Composition basis.}  Five ways to declare a stream's
-flow and composition --- pick exactly one:
+\paragraph{Identifying streams: inputs by name, outputs by \emph{position}.}%
+\label{sec:flowsheetDict-streams}
+This is the one rule that trips up every new author, so learn it once.
+A unit's \code{inputs} and its \code{outputs} are matched to physical
+streams by \emph{different} mechanisms.  An \textbf{input} is wired
+\emph{by name}: you write \code{in feed;} (or \code{inputs ( hot cold );})
+and the unit reads each stream by the name you gave it (a
+\code{heatExchanger} names its tube-side inlet with \code{tubeStream}; a
+multi-feed column maps each named feed to a stage in
+\code{operation.feeds}).  An \textbf{output}, by contrast, is matched
+\emph{by position}.  Every unit produces its streams in a \emph{fixed
+internal order}, and your \code{outputs} list does nothing more than
+\emph{rename that ordered list}: \code{outputs[$k$]} becomes the name of
+the $k$-th stream the unit emits.
+
+\begin{center}
+\begin{tikzpicture}[>=Stealth, font=\footnotesize, line width=0.4pt]
+  \node[draw, fill=gray!5, minimum width=2.4cm, minimum height=1.6cm]
+        (u) at (0,0) {\code{flash01}};
+  \draw[<-] (u.west) -- ++(-1.4,0) node[left]{\code{feed}};
+  % produced streams, in emission order
+  \draw[->] (u.east)++(0,0.45) -- ++(1.4,0)
+        node[right]{\code{producedStreams()[0]} $\to$ \code{liquid}};
+  \draw[->] (u.east)++(0,-0.45) -- ++(1.4,0)
+        node[right]{\code{producedStreams()[1]} $\to$ \code{vapor}};
+  \node[align=center, font=\scriptsize\itshape, text=gray!60!black]
+        at (0,-1.55) {\code{outputs ( liquid vapor )} renames by index --- the ORDER matters};
+\end{tikzpicture}
+\end{center}
+
+\noindent The engine does literally \code{s = produced[k]; s.name = outputs[k]}.
+So the order of your \code{outputs} list must follow the unit's emission
+order (\code{isothermalFlash}: liquid, vapour; \code{crystalliser}:
+crystals, mother liquor; \code{cyclone}: clean gas, captured solids;
+\code{distillationColumn}: distillate, bottoms, then side draws by
+ascending stage --- \S\ref{sec:advanced-distillation}).  Getting the
+order wrong sticks the label on the \emph{wrong} physical stream and the
+engine does \emph{not} warn --- the counts still match.  The only guard
+is arity: declaring more names than the unit produces is a loud error.
+To learn a unit's order, read its \code{producedStreams()} in the source
+(glass-box) or its entry in the unit-operation catalogue
+(\S\ref{sec:units}).
+
+\paragraph{Recycles: tear streams.}  A recycle is an ordinary stream
+whose producer sits downstream of its consumer.  Declare the
+cycle-breaking stream (and, optionally, the recycle solver knobs) at the
+top level of \file{flowsheetDict} (or in \file{solverDict}):
 
 \begin{lstlisting}[language=dict]
-// (a) F + molar fractions
-F                100.0 kmol/h;
-molarComposition { benzene 0.50;  toluene 0.50; }
+tearStreams        ( recycle );
+recycleSolver       Newton;      // Newton on the tears (default); or Wegstein
+recycleTol          1e-5;
+recycleMaxIter      120;
+\end{lstlisting}
 
-// (b) F + mass fractions
-F                5000  kg/h;
-massComposition  { benzene 0.40;  toluene 0.60; }
+The tear's initial guess is its \file{0/} file, like any other stream
+(\S\ref{sec:zero}).  \code{recycleSolver Newton} builds a
+finite-difference Jacobian over the tear variables $(F, z_i, T)$ and
+converges quadratically; \code{Wegstein} keeps the classical
+fixed-point accelerator --- run both on
+\file{tutorials/steady/flowsheets/process03\_recycle} and compare the
+iteration counts.
 
-// (c) legacy alias of (a)
-F                100.0 kmol/h;
-composition      { benzene 0.50;  toluene 0.50; }
+\paragraph{Sectors --- the fractal flowsheet.}  A big plant is
+organised as \emph{sectors} (composite sub-flowsheets), each a folder
+with its own \file{system/flowsheetDict} and, when it needs one, its own
+\file{constant/propertyDict} (a sector may run a different
+thermodynamic world --- e.g.\ an electrolyte model in a brine section
+and NRTL in a solvent-recovery section).  The root dict then assembles
+members and named connections:
 
-// (d) per-species molar flows -- F and x_i derived
-molarFlows
+\begin{lstlisting}[language=dict]
+sectors ( BRINE  EXTRACTION  CARBONATION );    // UPPERCASE folders
+// or:   units ( cryst1 cryst2 recovery );     // dignified unit folders
+
+connections
 {
-    benzene  40.0 kmol/h;
-    toluene  60.0 kmol/h;
-}
-
-// (e) per-species mass flows -- F and x_i derived
-massFlows
-{
-    benzene  3124.4 kg/h;
-    toluene  5528.4 kg/h;
+    liRichBrine { from BRINE/liRichBrine;  to EXTRACTION/liRichBrine; }
+    brineFeed   { to BRINE/brineFeed; }        // to-only   = plant inlet
+    tails       { from EXTRACTION/raffinate; } // from-only = plant outlet
 }
 \end{lstlisting}
 
-Forms (d) and (e) are the natural way to describe a feed in
-process design (``mix 40 kmol/h of A with 60 kmol/h of B''); F
-total and composition are computed from the sum.  Forms (a) / (b)
-/ (c) are the textbook way (total flow + composition).
+The connection \emph{key} is the stream's one stable identity (and its
+\file{0/} filename); \code{from}/\code{to} are producer/consumer ports.
+A stream's \emph{role} is inferred from the shape of its edge --- a
+\code{to}-only edge is an inlet, \code{from}+\code{to} is internal,
+\code{from}-only is an outlet.  There is no boundary mini-language to
+maintain.  The whole tree is flattened into one solver problem
+(\code{plant.sector.unit} names); the hierarchy is for authoring and
+namespacing, never a solver-within-a-solver.  See
+\file{tutorials/plant/} for worked multi-sector cases.
 
-\emph{Internally} the simulator always stores mole fractions, so
-mass-basis inputs (b, e) are converted at parse time via
-$x_i = (w_i / \mathrm{MW}_i) / \sum_j w_j / \mathrm{MW}_j$.
+\subsection{The \file{0/} directory --- one file per stream}\label{sec:zero}
 
-\paragraph{Sum check.}  A composition block is always renormalised
-to $\sum_i x_i = 1$, but the parser also checks the user-supplied
-sum and either passes silently or shouts, depending on how far it
-drifts from 1.  Four regimes:
+In a steady case a stream's state lives in its own file on disk ---
+never inside \file{flowsheetDict}.  The \file{0/} directory holds the
+\textbf{complete initial state}: for an \emph{inlet} the file is your
+boundary specification; for an \emph{internal} or \emph{outlet} stream
+it is an initial estimate the solver overwrites.  (This contract
+belongs to the steady domain --- \code{choupoSolve}; the time-dependent
+and props binaries have no stream registry to seed.)  The file for the
+flash tutorial's feed:
 
-\begin{center}\small
-\begin{tabular}{@{}lll@{}}
-\toprule
-Input                                       & Behaviour                                           & Why \\
-\midrule
-$\sum_i = 1.0$ exact                        & silent --- values used as data                      & textbook input \\
-$|\sum_i - 1| \le 10^{-3}$                  & silent --- normalised                               & rounding drift  \\
-$|\sum_i - 1| > 10^{-3}$                    & \textbf{warning} + normalised                       & likely typo \\
-$\sum_i = 0$                                & \textbf{fatal error} --- simulator stops            & no feed at all \\
-\bottomrule
-\end{tabular}
-\end{center}
+\begin{lstlisting}[language=dict]
+// 0/feed
+componentMolarFlows
+{
+    benzene    40 kmol/h;
+    toluene    60 kmol/h;
+}
 
-\noindent The warning emitted on the third case names the stream,
-the block, and the actual sum:
+T    370 K;
+P    1.0 bar;
+\end{lstlisting}
+
+\paragraph{Material --- pick exactly one form.}  Four equivalent ways to
+state what flows; a second form in the same file is a fatal conflict:
+
+\begin{lstlisting}[language=dict]
+componentMolarFlows { water 86 kmol/h;  NaCl 12 kmol/h; }             // (a)
+componentMassFlows  { water 1549.3 kg/h;  NaCl 701.3 kg/h; }          // (b)
+molarFlow 100 kmol/h;   moleFractions { water 0.86;  NaCl 0.14; }     // (c)
+massFlow 2250.6 kg/h;   massFractions { water 0.6884; NaCl 0.3116; }  // (d)
+\end{lstlisting}
+
+Forms (a)/(b) are the natural process-design description (``mix
+40~kmol/h of A with 60~kmol/h of B''); (c)/(d) are the textbook total +
+composition.  Mass converts through each component's MW.  Fractions
+must close: if $|\sum_i x_i - 1| > 10^{-6}$ the reader stops with a
+fatal error naming the stream and the actual sum --- there is no silent
+renormalisation of a state file.
+
+\paragraph{Thermodynamic closure --- T and P.}  Give \code{T} and
+\code{P}; the phase split is then a \emph{result} (Duhem's theorem: a
+stream of known composition is fixed by exactly two state variables).
+Do not write a decorative \code{vaporFraction 0;} or \code{1;} --- the
+engine recovers the phase itself.  Two honest pins exist for the cases
+$(T,P,z)$ cannot close:
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item \code{vaporFraction 0.30;} --- a genuine \emph{two-phase split}
+        on the saturation manifold, where $T$ and $P$ are not
+        independent and the split is a real degree of freedom;
+  \item \code{phase gas;} (or \code{phase liquid;}) --- a
+        \emph{phase-intent} pin for a feed the cheap screen cannot
+        classify (e.g.\ steam in a hot gas mixture: all vapour, but $T$
+        is below water's $T_c$ so ``permanent gas'' cannot be proved).
+        Hot air or combustion gas above every component's $T_c$ needs
+        \emph{nothing} --- the engine's $T_c$ screen recovers
+        $vf = 1$ on its own.
+\end{itemize}
+
+\paragraph{Multiphase decomposition.}  A slurry or partly-solid stream
+adds a \code{phases \{\}} block that decomposes the overall material and
+must sum back to it exactly (validated on read); a particle-size
+distribution rides in a \code{psd \{\}} block.  A utility stream may
+carry \code{category <word>;} so the utilities report can aggregate
+consumption by header (\S\ref{sec:reports}).
+
+\paragraph{The completeness contract.}  $N$ streams in the flowsheet
+graph $\;=\;$ $N$ files in \file{0/}.  A missing or an orphan file is
+\textbf{fatal} for \code{choupoSolve} --- there is no partial state.
+The run announces the check:
 
 \begin{lstlisting}
-WARNING: Stream 'feed': molarComposition sums to 0.9 (should be 1.0);
-         values will be normalised
+[state] seeded 3 stream(s) from 0/ via the canonical manifest
+[state] 0/ complete: 3 graph stream IDs == 3 state files
 \end{lstlisting}
 
-\noindent Why renormalise instead of rejecting outright?  Two
-pedagogical conveniences:
+\paragraph{\file{converged/} --- the answer, in the same shape.}  After
+a converged solve the engine writes the full solution as
+\file{converged/<stream>} files --- same grammar, one file per stream,
+now carrying the solved numbers (and the resolved \code{phase}).  The
+log confirms: \code{[state] wrote converged/}.  A drilled-in sector case
+is seeded from its parent's \file{converged/} state, so a sub-case is
+reproducible from disk alone.
 
-\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
-  \item Shortcut for equimolar feeds: \code{\{ A 1;~ B 1;~ \}} is
-        an unambiguous 50/50 without having to type the
-        arithmetic.
-  \item Tolerance for rounding: \code{\{ A 0.333;~ B 0.333;~ C 0.333; \}}
-        (sum 0.999) should not abort a simulation.
-\end{itemize}
+\subsection{Materialising \file{0/}: \code{bin/choupo-init0}}\label{sec:init0}
 
-\noindent The threshold $10^{-3}$ is tight enough to catch a typo
-like \code{\{ A 0.4;~ B 0.5; \}} (forgot to write 0.6) yet loose
-enough to wave through legitimate rounding.
+You author only the \emph{domain inlets} (and a seed for each declared
+tear); the tool writes every remaining stream file by explicit
+propagation through the topology:
 
-\paragraph{Flow-based forms are not normalised.}  When the stream
-is declared via \code{molarFlows} or \code{massFlows} (forms d / e
-above), the absolute species flows are the source of truth and
-the parser sums them to find $F_{\mathrm{total}}$.  There is no
-``should sum to 1'' check; the only fatal case is $F_{\mathrm{total}}
-= 0$ (an empty feed).
-
-\paragraph{Sixth form: \code{state} keyword + flash on
-import.}  The five flavours above all assume you know $T$ and
-$P$ ahead of time.  But many streams in a problem have an
-\emph{under-specified} thermodynamic state that the simulator
-should resolve on import.
-Two examples that come up immediately:
-
-\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
-  \item Heating utility (live steam at 170 kPa): the engineer
-        knows the header pressure; the temperature is whatever
-        $T_{\mathrm{sat}}$ corresponds to it; the flow is whatever
-        the consuming unit demands.
-  \item Cooling water (saturated liquid at supply pressure):
-        same logic, on the liquid side of the saturation curve.
-\end{itemize}
-
-\noindent For these streams, the user declares a \code{state}
-keyword and only the variables that are physically known.  The
-parser completes the rest by inverting the dominant component's
-saturation curve:
-
-\begin{lstlisting}[language=dict]
-liveSteam
-{
-    P              170.0  kPa;
-    state          saturatedVapour;     // -> T computed from
-                                        //    Psat^-1(170 kPa)
-    molarComposition  { water 1.0; }
-    // no F!  The consuming unit op (the evaporator's heating
-    // chest) computes the actual steam demand and the simulator
-    // writes it back into the stream registry after solve().
-    // The Streams panel then shows the real consumption.
-}
-
-coolingWater
-{
-    T              298.15 K;
-    state          saturatedLiquid;     // -> P computed from
-                                        //    Psat(298.15) for water
-    molarComposition  { water 1.0; }
-    F              50.0   kmol/h;       // here F is known a priori
-                                        //   (plant-side metered flow)
-}
+\begin{lstlisting}
+bin/choupo-init0 <caseDir>            # writes the missing 0/ files
+bin/choupo-init0 <caseDir> --force    # regenerates internal/outlet estimates
 \end{lstlisting}
 
-Supported \code{state} values:
+The rules are strict and announced: an authored inlet file is never
+touched; an unseeded recycle is a hard error naming the file you must
+author (feed propagation is only honest on an acyclic graph); and an
+incomplete \file{0/} handed to \code{choupoSolve} stays fatal --- this
+tool is the sanctioned way out.  The generated files are estimates the
+solver overwrites; they exist so that the initial state is explicit,
+inspectable, and on disk --- never an invisible in-memory guess.
 
-\begin{center}\small
-\begin{tabular}{@{}lll@{}}
-\toprule
-\code{state}                       & Computes                                  & Sets $vf$ \\
-\midrule
-\code{saturatedVapour}             & $T$ from $P$, or $P$ from $T$             & $1.0$ \\
-\code{saturatedLiquid}             & $T$ from $P$, or $P$ from $T$             & $0.0$ \\
-\code{subcooledLiquid}             & --- (validates $T < T_{\mathrm{sat}}(P)$) & $0.0$ \\
-\code{superheatedVapour}           & --- (validates $T > T_{\mathrm{sat}}(P)$) & $1.0$ \\
-\bottomrule
-\end{tabular}
-\end{center}
+\begin{keyidea}
+\file{flowsheetDict} = topology.  \file{0/} = numbers.
+\file{converged/} = the answer.  Every stream's state is a file you can
+open, diff, and version-control --- the same glass-box rule that governs
+the solver's iterations governs its data.
+\end{keyidea}
 
-\noindent Restrictions:
-\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
-\item Currently \code{state} works for \emph{pure-component}
-      streams (one species with $x_i \ge 0.999$).  Multi-component
-      saturated states (bubble-point / dew-point of a mixture) are
-      scheduled.
-\item If you declare \emph{both} $T$ and $P$ alongside a
-      saturated state, the parser checks consistency against
-      $P_{\mathrm{sat}}(T)$ and throws if they disagree by more
-      than 5\,\%.
-\item Omitting $F$ is only allowed for streams declared as
-      \code{saturatedVapour} or \code{saturatedLiquid} --- the
-      utility pattern.  Subcooled / superheated streams require
-      an explicit $F$ since they are not demand-driven utilities.
-\end{itemize}
+\subsection{Units on every scalar}\label{sec:units-suffixes}
 
-\paragraph{Consistency check on input streams (the bigger picture).}
-The \code{state} keyword is one piece of the \emph{flash-on-import}
-contract: every input stream becomes a single point in
-thermodynamic-state space, fully specified, before any unit op
-runs.  Internally the simulator already does this for ALL
-streams --- whether or not the user wrote \code{state}.  Three
-checks happen at parse time:
-
-\begin{enumerate}[leftmargin=*,nosep,topsep=2pt]
-\item Composition normalisation (the four regimes documented in
-      the Sum-check subsection).
-\item Phase-state consistency (the \code{state}-keyword paths
-      above).  Without an explicit \code{state}, a stream with
-      $T$, $P$, $\mathbf{z}$ given is taken as ``whatever the flash
-      regime turns out to be''; multi-component streams left
-      under-specified will go through a Rachford-Rice flash on
-      first use by a unit op.
-\item Dimension cross-check on every scalar value (any unit
-      suffix on $T$, $P$, $F$ etc.\ is validated against the
-      expected physical dimensions; see \S\ref{sec:units-suffixes}).
-\end{enumerate}
-
-\medskip
-
-For recycles, declare the cycle-breaking streams and the Wegstein
-parameters:
-
-\begin{lstlisting}[language=dict]
-tearStreams           (recycle );
-recycleTol             1e-5;
-recycleMaxIter         60;
-recycleWegsteinQmin   -0.5;
-recycleWegsteinQmax    0.0;
-\end{lstlisting}
-
-\subsection{Units}\label{sec:units-suffixes}
-
-Choupo uses canonical SI internally: Pa for pressure, kmol/s for
-molar flow, K for temperature, m for length, m\textsuperscript{2}
-for area, m\textsuperscript{3} for volume, J for energy, kg for
-mass, kmol for amount.  You almost never want to type those raw,
-so any scalar value in a dict may carry a unit suffix.  The parser
-converts the value to SI on the fly and remembers what dimension
-it was --- a typo in the unit is caught with a clear error before
-the solver runs.
+Choupo uses canonical SI internally: Pa, kmol/s, K, m, m\textsuperscript{2},
+m\textsuperscript{3}, J, kg.  You almost never want to type those raw,
+so any scalar in any dict may carry a unit suffix.  The parser converts
+the value to SI on the fly and remembers its physical dimension --- a
+typo in the unit is caught with a clear error before the solver runs.
 
 \paragraph{Three accepted forms.}
 
 \begin{lstlisting}[language=dict]
 P    1     bar;                    // (a) named-unit shortcut
-A_w  [-1  2  1  0  0]  1.5e-12;    // (b) bracket form
-                                   //     [M L T Theta N] + SI value
+A_w  [-1  2  1  0  0]  1.5e-12;    // (b) bracket form:
+                                   //     [M L T Theta N] exponents + SI value
 R    0.5;                          // (c) raw SI (no declaration)
 \end{lstlisting}
 
-Form (a) is what you will type 95\,\% of the time.  Form (b) is
-the escape hatch for quantities with no short named unit
-(membrane permeabilities, exotic transport coefficients).
-Form (c) says ``trust me, the number is in canonical SI'' --- the
-parser cannot check anything, so a typo here passes silently.
+Form (a) is what you will type 95\,\% of the time.  Form (b) is the
+escape hatch for quantities with no short named unit (membrane
+permeabilities, exotic transport coefficients).  Form (c) says ``trust
+me, the number is in canonical SI'' --- the parser cannot check
+anything, so a typo here passes silently.
 
-\paragraph{Named units shipped by Choupo.} A non-exhaustive
-overview of the most useful aliases (see \file{src/core/Units.cpp}
-for the full table):
+\paragraph{Named units shipped by Choupo.}  The most useful aliases
+(the full registry of $\sim$90 units lives in \file{src/core/Units.cpp}):
 
 \begin{center}\small
 \begin{tabular}{lll}
@@ -473,24 +536,32 @@ pressure            & Pa             & \code{Pa, kPa, MPa, bar, atm, psi, mmHg, 
 molar flow          & kmol/s         & \code{kmol/s, kmol/h, mol/s, mol/h} \\
 mass flow           & kg/s           & \code{kg/s, kg/h, g/s, g/h, t/h} \\
 volumetric flow     & m\textsuperscript{3}/s & \code{m3/s, m3/h, L/s, L/h, L/min} \\
-temperature         & K              & \code{K, degC, C, Celsius, degF, F, Fahrenheit} \\
-length              & m              & \code{m, mm, cm, km, in, inch, ft} \\
-area                & m\textsuperscript{2} & \code{m2, m\textasciicircum{}2, cm2, mm2} \\
-volume              & m\textsuperscript{3} & \code{m3, m\textasciicircum{}3, L, mL} \\
-time                & s              & \code{s, sec, min, h, hr, day} \\
+temperature         & K              & \code{K, degC, C, degF, F} \\
+length              & m              & \code{m, mm, cm, km, in, ft} \\
+area / volume       & m\textsuperscript{2} / m\textsuperscript{3} & \code{m2, cm2, mm2;~ m3, L, mL} \\
+time                & s              & \code{s, min, h, day} \\
 mass                & kg             & \code{kg, g, t, ton, tonne} \\
-energy              & J              & \code{J, kJ, MJ} \\
-power               & W              & \code{W, kW, MW\_power} \\
-concentration       & kmol/m\textsuperscript{3} & \code{kmol/m3, mol/m3, mol/L, M} \\
-density             & kg/m\textsuperscript{3}   & \code{kg/m3, g/cm3, g/mL} \\
-viscosity           & Pa$\cdot$s     & \code{Pa.s, cP} \\
+energy / power      & J / W          & \code{J, kJ, MJ;~ W, kW, MW\_power} \\
+heat-transfer coeff.& W/(m\textsuperscript{2}K) & \code{W/m2/K, W/(m2.K), kW/(m2.K)} \\
+velocity            & m/s            & \code{m/s, cm/s, mm/s} \\
 membrane $A_w$      & m/(s$\cdot$Pa) & \code{m/s/Pa, m/s/bar} \\
+viscosity           & Pa$\cdot$s     & \code{Pa.s, cP} \\
+concentration       & kmol/m\textsuperscript{3} & \code{kmol/m3, mol/m3, mol/L, M} \\
+molality            & mol/kg         & \code{mol/kg, mmol/kg} \\
+density             & kg/m\textsuperscript{3}   & \code{kg/m3, g/cm3, g/mL, mg/L, ppm} \\
+molar energy        & J/mol          & \code{J/mol, kJ/mol, J/kmol, kJ/kmol} \\
+dimensionless       & ---            & \code{-}, \code{\%} \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\paragraph{What the student sees on a bad unit.}  Asking for a
-pressure but typing \code{P 1 kg;} produces:
+Note the deliberate quirks: power is \code{MW\_power} (a bare \code{MW}
+would collide with the mega-prefix logic of \code{MPa}), and
+\code{degC}/\code{degF} are affine --- use \code{K} for temperature
+\emph{differences}.
+
+\paragraph{What you see on a bad unit.}  Asking for a pressure but
+typing \code{P 1 kg;} produces:
 
 \begin{lstlisting}
 ERROR: Dictionary 'feed' ():
@@ -499,151 +570,87 @@ ERROR: Dictionary 'feed' ():
   suffix on this entry.
 \end{lstlisting}
 
-The same check guards every parameter that the unit operations
-read (\code{T}, \code{F}, \code{V\_R}, \code{area}, \code{length},
-\code{k\_film}, \code{P\_permeate},...).
+The same check guards every parameter the unit operations read
+(\code{T}, \code{V\_R}, \code{area}, \code{W\_shaft},
+\code{P\_perm},~\dots).
 
-\paragraph{Output preferences.}  By default Choupo prints flows
-in kmol/h, pressures in bar, temperatures in K, sizes in m / m$^2$
-/ m$^3$ --- the chem-eng convention.  To override, drop a
-\code{units} block in \file{controlDict}:
-
-\begin{lstlisting}[language=dict]
-units
-{
-    pressure       atm;       // default bar
-    flow           kmol/s;    // default kmol/h
-    temperature    K;         // default K
-    length         m;
-    volume         L;
-    energy         kJ;
-    power          kW;
-}
-\end{lstlisting}
-
-The simulator internals stay in SI; only the printed output
-changes.  Mismatched dimensions in the override (e.g.\
-\code{pressure m;}) are reported and ignored.
-
-\paragraph{Decimal precision.}  An optional \code{precision} block
-in \file{controlDict} tunes the number of decimal digits per
-quantity category:
+\paragraph{Output preferences.}  By default Choupo prints flows in
+kmol/h, pressures in bar, temperatures in K --- the chem-eng
+convention.  To override, drop a \code{units} block in
+\file{controlDict}; an optional \code{precision} block tunes decimal
+digits per quantity:
 
 \begin{lstlisting}[language=dict]
-precision
-{
-    pressure       3;       // default 3
-    temperature    2;       // default 2
-    flow           4;       // shorthand for molarFlow + massFlow
-    composition    4;       // mole / mass fractions
-}
+units      { pressure atm;  flow kmol/s;  temperature degC; }
+precision  { pressure 3;  temperature 2;  flow 4;  composition 4; }
 \end{lstlisting}
 
-Other accepted keys: \code{molarFlow}, \code{massFlow},
-\code{volumetricFlow}, \code{length}, \code{area}, \code{volume},
-\code{time}, \code{mass}, \code{amount}, \code{energy},
-\code{power}, \code{concentration}, \code{density},
-\code{velocity}, \code{viscosity}, \code{diffusivity}.  Omit any
-key to keep its default.  The defaults match the hardcoded
-formatting so existing tutorials look identical.
-
-\subsection{\file{thermoPackage}}
-
-Two equivalent syntaxes --- legacy (VLE only) and explicit (general,
-supports LL / VLL):
-
-\begin{lstlisting}[language=dict]
-// Legacy:
-components       (benzene  toluene );
-activityModel    { model ideal; }
-equationOfState  { model idealGas; }
-
-// Explicit:
-components (water nButanol );
-phases
-(
-    { name aqueous;  type liquid;  activity { model NRTL; pairs (... ); } }
-    { name organic;  type liquid;  activity { model NRTL; pairs (... ); } }
-);
-\end{lstlisting}
+The internals stay in SI; only the printed output changes.
 
 \subsection{Optional dicts}
 
 \begin{itemize}[leftmargin=*]
-  \item \dict{solverDict} --- defaults per unit-op type, overridable
-        by each unit. E.g.
-        \code{isothermalFlash \{ tolerance 1e-8; outerAccelerator wegstein; \}}.
-  \item \dict{outerDict} --- see \S\ref{sec:outer}.
-  \item \dict{postDict} --- see \S\ref{sec:post}.
-  \item \dict{constant/reactions} --- named-reaction library. CSTR / PFR
-        reference reactions by name: \code{reaction ethanol\_to\_water\_test;}.
+  \item \dict{solverDict} --- solver defaults per unit-op type,
+        overridable by each unit: e.g.\
+        \code{isothermalFlash \{ tolerance 1e-8;\ maxOuterIter 50; \}}.
+  \item \dict{outerDict} --- sweeps, design specs, optimisation
+        (\S\ref{sec:outer}).
+  \item \dict{postDict} --- sizing + costing chain (\S\ref{sec:post}).
+  \item \dict{constant/reactions} --- the named-reaction library
+        referenced by reactors: \code{reaction esterification;} or
+        \code{reactions ( r1 r2 );} (\S\ref{sec:reactors}).
 \end{itemize}
 
 % =====================================================================
-\section{Built-in unit operations}\label{sec:units}
+\section{The thermodynamic foundation: \file{constant/propertyDict}}\label{sec:thermo}
 
 \begin{whatyoulllearn}
-The unit-op types available (around two dozen, plus aliases such as
-\code{flash}, \code{HX}, \code{column}, \code{FUG},
-\code{membraneSW}) and what each \code{operation} block must contain.
-The table below lists the workhorses; \code{UnitOperation::availableTypes()}
-prints the full registry at runtime.
+How a case declares its components and selects the models that turn
+$(T,P,z)$ into $K$-values, enthalpies, and transport properties --- and
+how the run log announces every choice it makes.
 \end{whatyoulllearn}
 
-\begin{center}\footnotesize
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.21\linewidth}
-                                 >{\raggedright\arraybackslash}X
-                                 >{\raggedright\arraybackslash}p{0.30\linewidth}@{}}
-\toprule
-\code{type}            & \textbf{What it does}                                  & \textbf{Required keys} \\
-\midrule
-\code{isothermalFlash} \textit{(alias \code{flash})} & Multi-component V--L or L--L flash    & \code{T}, \code{P}, \code{phaseSet} \code{VL}/\code{LL} \\
-\code{adiabaticFlash}  & Adiabatic two-phase flash; solves $T_{\mathrm{out}}$         & \code{P} \\
-\code{bubbleT}         & Bubble temperature at given $\mathbf{x}, P$            & \code{P} \\
-\code{dewT}            & Dew temperature at given $\mathbf{y}, P$               & \code{P} \\
-\code{cstr}            & Single-reaction liquid CSTR                            & \code{V\_R}, \code{reaction <name>} \\
-\code{pfr}             & Plug-flow reactor (RK4 over volume)                    & \code{V\_R}, \code{nSteps}, \code{reaction <name>} \\
-\code{heatExchanger} \textit{(alias \code{HX})} & Liquid heater / cooler                 & one of \code{Tout} or \code{Q} \\
-\code{mixer}           & $N \to 1$ mixer with energy balance                    & uses \code{inputs (a b c )} \\
-\code{splitter}        & $1 \to N$ tee with composition split                   & \code{fractions (f1 f2 \dots )} \\
-\code{distillationColumn} \textit{(alias \code{column})} & Multi-stage column (Wang-Henke or simultaneous MESH) & \code{nStages}, \code{feedStage}, \code{refluxRatio}, \code{distillateRate}, \code{feedQuality}, \code{P} \\
-\code{shortcutColumn} \textit{(alias \code{FUG})} & Fenske-Underwood-Gilliland shortcut column & \code{lightKey}, \code{heavyKey}, \code{refluxRatio}, \code{P} \\
-\code{absorber} / \code{stripper} & Multi-stage gas absorber / stripper & \code{nStages}, \code{P} \\
-\code{gibbsReactor}  & Equilibrium reactor by Gibbs-energy minimisation & \code{T} or adiabatic; \code{reactions (...)} \\
-\code{compressor} / \code{turbine} / \code{pump} & Rotating equipment; spec \code{W\_shaft} + \code{eta} ($P_{\mathrm{out}}$ is a result) & \code{W\_shaft}, \code{eta} \\
-\code{electricLoad}  & Sink for shaft work via an energy wire & uses \code{energyInputs} \\
-\code{valve}         & Isenthalpic throttle to a target pressure & \code{P\_out} \\
-\code{evaporator}    & Single-effect evaporator with heating duty & \code{P} (+ heat) \\
-\code{sprayDryer} / \code{solidDryer} & Gas--solid drying (constant + falling rate) & \code{T\_gas}, sample drying curve \\
-\code{crystalliser}  & Population-balance crystalliser & nucleation/growth kinetics \\
-\code{cyclone} / \code{bagFilter} / \code{gasSolidSplitter} & Gas--solid separation (5 cyclone sub-models) & geometry per \code{model} \\
-\code{spiralWoundModule} \textit{(alias \code{membraneSW})} & NF/RO spiral-wound element (solution-diffusion) & membrane name, \code{area}, \code{P\_permeate}, \code{k\_film} \\
-\bottomrule
-\end{tabularx}
-\end{center}
+Every case carries a \file{constant/propertyDict} declaring the
+component list and the thermodynamic models.  The minimum viable file:
 
-Each unit also accepts (top-level, not inside \code{operation}) overrides
-for solver tolerances --- same keys as in \file{solverDict}.
+\begin{lstlisting}[language=dict]
+components       ( benzene  toluene );
 
-\paragraph{Energy ports and heat integration.}  Rotating equipment,
-heaters, and distillation reboilers/condensers exchange \emph{work}
-and \emph{heat} through typed energy ports (\code{energyOutputs} /
-\code{energyInputs}) rather than process streams.  A turbine's shaft
-work can drive a compressor or an \code{electricLoad}; a column's
-reboiler heat can preheat another unit (a forward heat-link).  This
-layer --- the \code{W}/\code{Q} wires, the \code{column.condenser} /
-\code{column.reboiler} port names, the auto-allocation-by-temperature
-rule, and the \code{utilityAllocation} report --- is documented in
-\file{docs/ai/energy.md}.
+activityModel    { model ideal; }        // gamma_i = 1  (Raoult)
+equationOfState  { model idealGas; }     // phi_i = 1
+\end{lstlisting}
 
-% =====================================================================
-\section{Built-in thermodynamic models}
+Components are resolved \emph{by name}, with an explicit evidence order:
+\textbf{case-local overlay $>$ standard $>$ local}.  There are exactly two
+data homes, and the distinction is deliberate:
+\begin{itemize}
+  \item \textbf{\file{data/standards/}} --- \emph{curated and public}.  The
+    committee-managed reference set (194 species); shipped in the repository,
+    every value carrying primary provenance.
+  \item \textbf{\file{data/local/}} --- \emph{yours and private}.  A
+    \emph{gitignored} working tier for data you import, license or estimate.
+    The repository ships it \textbf{empty} (a \file{README} and a
+    \file{.gitkeep}); the engine reads it when present.  A value resolved from
+    it is announced \code{[local]\ UNVERIFIED} and carries its source, licence,
+    import digest and method --- it is never presented as equivalent to a
+    standard.
+\end{itemize}
+Data is thus either curated-and-public or yours-and-private: there is no public
+``proposed'' middle tier (retired 2026-07).  A case-local file in
+\file{<case>/constant/components/} overlays either home and always wins
+(\S\ref{sec:build-own}).
 
-\begin{whatyoulllearn}
-The four families of models that together cover everything the
-simulator does: activity coefficients, equation of state, vapour
-pressure, and heat capacity.
-\end{whatyoulllearn}
+You populate \file{data/local/} yourself --- for example with the reproducible
+ChemSep~8.3 importer (\file{bin/curate/chemsep_to_choupo.py}), which writes
+there.  This is why the public repository redistributes \emph{no} third-party
+property values: instead it ships \file{data/references/} \emph{manifests}
+(identity and primary citation, zero numbers) that tell you what exists and
+where to obtain it; you import it into your private \file{data/local/}.
+Imported literature constants and predictive closures stay distinguishable in
+the provenance --- an imported boiling point is not silently upgraded because
+an Ambrose--Walton closure makes the component flashable, and missing heat
+capacities or formation data stay missing (the gap report says what the model
+still needs).
 
 \subsection{Activity models (liquid $\gamma$)}
 
@@ -652,192 +659,1754 @@ pressure, and heat capacity.
 \toprule
 \code{model}  & \textbf{Notes} \\
 \midrule
-\code{ideal}  & $\gamma_i = 1$ --- the Raoult limit. \\
-\code{NRTL}   & Renon-Prausnitz; needs binary pairs. \\
-\code{Wilson} & Wilson 1964; needs binary pairs + $V_{\mathrm{liq}}$ per component. \\
+\code{ideal}  & $\gamma_i = 1$ --- the Raoult limit.  Hydrocarbons, dilute systems. \\
+\code{NRTL}   & Renon--Prausnitz.  Handles LLE.  Needs binary pairs. \\
+\code{Wilson} & Cheaper than NRTL but structurally \emph{cannot} represent a liquid split. \\
+\code{UNIQUAC}& Abrams--Prausnitz; the model many published kinetic studies regressed against. \\
+\code{UNIFAC} & \emph{Predictive} --- $\gamma$ from molecular groups, no fitted binaries.  The group decomposition lives in each component's \file{.dat}. \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-NRTL pair entry:
+NRTL/Wilson/UNIQUAC pairs are supplied inline or resolved by name from
+the pair catalogues.  Resolution is \textbf{inline/case-local $>$ standard
+$>$ local $>$ ideal default} (the same two-tier model as components: the
+public curated \file{data/standards/\allowbreak binaryPairs/\allowbreak <model>/}
+bank, then your private \file{data/local/} bank, which the repository ships
+empty).  A pair absent from every tier is the announced ideal default
+($\tau=0$), never a silent one:
 
 \begin{lstlisting}[language=dict]
-pairs
-(
-    {
-        i       ethanol;     j       water;
-        a_ij   -0.8009;      b_ij    246.18;        // tau_ij = a_ij + b_ij/T
-        a_ji    3.4578;      b_ji   -586.0809;
-        alpha   0.30;
-    }
-);
+activityModel
+{
+    model  NRTL;
+    pairs
+    (
+        { i ethanol;  j water;
+          a_ij -0.8009;  b_ij  246.18;      // tau_ij = a_ij + b_ij/T
+          a_ji  3.4578;  b_ji -586.0809;
+          alpha 0.30; }
+    );
+}
 \end{lstlisting}
 
-\subsection{Equation of state (vapour $\varphi$)}
+A proposed pair never shadows a standard pair.  The 748 staged ChemSep pairs
+have passed identity, unit-conversion and provenance audits, but have not all
+been independently validated against experimental data; the log therefore
+marks their use \code{[proposed] UNVERIFIED}.  A pair with no parameters
+anywhere does not abort the run --- it defaults to ideal ($\tau = 0$) so you
+can build the foundation pair-by-pair --- but it is never silent: each
+ideal-defaulted pair is announced with a \code{[thermo]} log line, and the GUI
+colours the pair matrix by where each pair resolved.
+
+\subsection{Equation of state (vapour $\varphi$ --- and, for a cubic, the liquid too)}
 
 \begin{center}\small
 \begin{tabularx}{\linewidth}{@{}lX@{}}
 \toprule
 \code{model} & \textbf{Notes} \\
 \midrule
-\code{idealGas} & $\varphi_i = 1$; $PV = RT$. Adequate for the low-pressure tutorials. \\
+\code{idealGas} & $Z = 1$, $\varphi_i = 1$.  Adequate at low pressure. \\
+\code{SRK}      & Soave--Redlich--Kwong cubic; van der Waals one-fluid mixing; optional \code{binaryInteractions ( \{ i CO2; j CH4; kij 0.0973; \} )}. \\
+\code{PR}       & Peng--Robinson cubic; better near-critical behaviour (CO$_2$). \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-\subsection{Vapour pressure (per component)}
+The cubics read each component's $(T_c, P_c, \omega)$ from the
+catalogue and deliver $Z$, residual $H$/$S$, and \emph{both} roots ---
+so a cubic can also serve as the \emph{liquid} model in a $\varphi$--$\varphi$
+package (below).
 
-Stored in \file{data/standards/components/<name>.dat}:
+\subsection{Per-component correlations}
+
+Vapour pressure defaults to Antoine
+($\log_{10} P^{\mathrm{sat}} = A - B/(T+C)$), stored per component; a
+corresponding-states alternative (\code{vaporPressure \{ model
+AmbroseWalton; \}}) covers estimated components.  Ideal-gas and liquid
+heat capacities are polynomials in $T$; species used at flame
+temperatures carry two-range NASA-7 forms (\code{model NASA7}).  Each
+component's \code{gibbsFormation \{ dHf\_298; s\_298; phase; \}} block
+pins the formation datum --- the \code{phase} keyword (\code{gas} /
+\code{liquid} / \code{solid}) declares on which rung of the enthalpy
+ladder the value is tabulated, and every energy balance that crosses a
+reactor requires it (\S\ref{sec:reactors}).
+
+\subsection{Multiple liquid phases (LLE / VLLE)}
+
+For liquid--liquid work, declare the phases explicitly:
+
+\begin{lstlisting}[language=dict]
+components ( water  nButanol );
+phases
+(
+    { name vapour;   type vapor;   eos      { model idealGas; } }
+    { name aqueous;  type liquid;  activity { model NRTL; pairs (...); } }
+    { name organic;  type liquid;  activity { model NRTL; pairs (...); } }
+);
+\end{lstlisting}
+
+The flash then searches for the liquid split by direct Gibbs-energy
+minimisation (\S\ref{sec:flash-family}) --- the legacy single-liquid
+form builds only one liquid and will not split.
+
+\subsection{Transport properties}
+
+Units that need viscosity, conductivity, diffusivity, or surface
+tension (pipes, dryers, tray hydraulics, exchanger rating) read them
+from a \code{transport} block of selectable sub-models:
+
+\begin{lstlisting}[language=dict]
+transport
+{
+    viscosity            { model Chung; }        // gas mu, from Tc/Pc/omega/MW
+    thermalConductivity  { model Eucken; }
+    diffusivity          { model Fuller; }       // needs diffusionVolume
+    liquidViscosity      { model Vogel; }        // or Andrade
+    liquidConductivity   { model SatoRiedel; }   // or Latini
+    liquidDiffusivity    { model WilkeChang; }   // or Scheibel
+    surfaceTension       { model BrockBird; }
+}
+\end{lstlisting}
+
+When a unit needs a property the package does not supply, the solver
+stops with a clear error naming the missing model --- it never invents
+a value.
+
+\subsection{Dissolved gases: Henry's law}
+
+A gas solute (CO$_2$, NH$_3$, O$_2$, H$_2$S, SO$_2$,~\dots\ in water)
+takes the infinite-dilution Henry reference: declare
+\code{solvent water;} and the engine consults the Henry-pair catalogue
+(\file{data/standards/henrysLaw/<solute>-<solvent>.dat}, van~'t~Hoff
+temperature dependence).  The absorber/stripper and the dilute-solution
+flash world run on this.  Each engaged pair is announced with its
+constants and source (\code{[henry]} log lines).
+
+\subsection{The \code{propertyPackage} manifest and the four VLE worlds}\label{sec:vle-worlds}
+
+The flat \file{propertyDict} above is the everyday form.  Cases that
+need a declared, verifiable assembly --- Henry worlds, $\varphi$--$\varphi$
+high-pressure work, electrolytes --- write the same file as a typed
+manifest: \code{recordType propertyPackage;} plus a
+\code{propertyMethods} block whose \emph{liquid slot selects the whole
+VLE structure}:
 
 \begin{center}\small
-\begin{tabularx}{\linewidth}{@{}lX@{}}
+\begin{tabularx}{\linewidth}{@{}llX@{}}
 \toprule
-\code{model}    & \textbf{Form} \\
+\code{propertyMethods.liquid} & \textbf{World} & \textbf{K-value} \\
 \midrule
-\code{Antoine}  & $\log_{10} P^{\mathrm{sat}}[\text{bar}] = A - B / (T[\text{K}] + C)$ \\
+\code{activity.<Model>}   & $\gamma$--$\varphi$ & $K_i = \gamma_i P_i^{\mathrm{sat}} / (\varphi_i P)$ \\
+\code{solution.henryDilute} & dilute solution & solvent on Raoult; each solute on the Henry form $y\varphi P = x\gamma^* H(T)\,e^{v_\infty (P-P_s)/RT}$ \\
+\code{eos.<Model>}        & $\varphi$--$\varphi$ & $K_i = \varphi_i^L/\varphi_i^V$ --- the same cubic's two roots \\
+\code{electrolyte.pitzer} / \code{electrolyte.eNRTL} & speciation & ionic activity + osmotic coefficients on the aqueous-ion reference \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-\subsection{Heat capacity (per component, optional)}
+\begin{lstlisting}[language=dict]
+recordType     propertyPackage;
+schemaVersion  1;
+name           flash08_co2Water;
+components     ( water CO2 );
+propertyMethods
+{
+    liquid  solution.henryDilute;
+    vapour  builtin.idealGas;
+}
+solution   { solvent water;  solutes ( CO2 ); }
+parameters
+{
+    henryPairs { CO2-water "data/standards/henrysLaw/CO2-water.dat"; }
+}
+\end{lstlisting}
 
-\begin{center}\small
-\begin{tabularx}{\linewidth}{@{}lX@{}}
-\toprule
-\code{model}     & \textbf{Form} \\
-\midrule
-\code{polynomial} & $C_p = a_0 + a_1 T + a_2 T^2 + a_3 T^3 + a_4 T^4$, \quad $[\,\mathrm{J/(mol\!\cdot\! K)}\,]$ \\
-\bottomrule
-\end{tabularx}
-\end{center}
+Declared parameter files are \emph{verified at assembly} --- a
+declared-but-missing pair refuses loudly, naming the entry to add ---
+and the run announces the selected world
+(\code{[builder] VLE world: phi-phi (SRK both phases)}).  Mixing two
+different cubics across the two phases is refused: one Gibbs surface
+per phase, never two.  Reference tutorials:
+\file{flash08\_co2\_water\_package} (Henry) and
+\file{flash09\_n2ch4\_stryjek} ($\varphi$--$\varphi$ with a declared
+$k_{ij}$).
 
-\subsection{Phase types (multi-phase / LLE)}
+\subsection{Pure fluids: IAPWS-IF97 steam}
 
-\begin{center}\small
-\begin{tabularx}{\linewidth}{@{}lX@{}}
-\toprule
-\code{type}    & \textbf{Notes} \\
-\midrule
-\code{vapor}   & wraps an EoS \\
-\code{liquid}  & wraps an \code{ActivityModel} + uses Antoine for $P^{\mathrm{sat}}$ \\
-\code{solid}   & stub: declared interface for future SLE / inert solids \\
-\bottomrule
-\end{tabularx}
-\end{center}
+For water-dominated power cycles the package can route a pure component
+through the hand-rolled IAPWS-IF97 steam kernel:
+
+\begin{lstlisting}[language=dict]
+pureFluids { water { method IF97; } }
+\end{lstlisting}
+
+The Rankine tutorial \file{tutorials/steady/power/rankine02\_water}
+closes its first law to $10^{-12}$ on IF97 --- and its ideal-gas twin
+\file{rankine01\_water} is kept on purpose, to show what an ideal-gas
+water \emph{cannot} do (there is no two-phase dome to cross).
+
+\subsection{Per-unit \code{thermo \{\}} override and model boundaries}\label{sec:thermo-override}
+
+A unit may carry a \code{thermo \{...\}} block that \emph{replaces} the
+global models for that unit only (components stay global):
+
+\begin{lstlisting}[language=dict]
+{ name turbine;  type turbine;  in feed;  outputs ( expanded );
+  operation { W_shaft -3 kW;  eta 0.8; }
+  thermo    { equationOfState { model SRK; } } }    // real gas here only
+\end{lstlisting}
+
+A stream crossing from model X into model Y is re-interpreted at the
+boundary: $(T,P,z)$ are held and each unit recomputes its own enthalpy,
+so $H$ \emph{steps} at the boundary --- visibly, in the printed
+enthalpy.  \textbf{$H$ is the conserved truth; $T$ is the
+model-dependent readout.}  The solver never silently nudges $T$ to
+paper over the step; an opt-in model-boundary audit prints
+$\Delta H = H_{\mathrm{down}} - H_{\mathrm{up}}$ into the first-law
+ledger.  Default to one consistent global model; reach for the override
+only when the physics demands it.  The run log is loud either way ---
+every unit prints \code{thermo: inherited (global package)} or
+\code{LOCAL override --- ...}.
+
+\subsection{Self-contained cases}\label{sec:self-contained}
+
+A case can be sealed so it runs with \emph{no} installation catalogue:
+
+\begin{lstlisting}
+bin/choupo-import <case>     # materialise the dependency closure into
+                             # constant/propertyData/ + a sha256 manifest
+\end{lstlisting}
+
+When \file{constant/propertyData/} is present the runtime reads the
+frozen snapshot only (the log states ``installation catalogue NOT
+consulted'') --- the definitive test is moving the case out of the repo
+and watching it still run.  Research cases and anything you archive
+with a thesis should be sealed.
 
 % =====================================================================
-\section{Sensitivity, optimisation, parameter estimation}\label{sec:outer}
+\section{Built-in unit operations}\label{sec:units}
+
+\begin{whatyoulllearn}
+The complete catalogue of steady-state unit operations --- what each
+\code{type} does, which \code{model} sub-selectors exist, and what the
+\code{operation} block must contain.  Aliases
+(\code{flash}, \code{column}, \code{FUG}, \code{REquil},
+\code{boiler}, \code{condenser}, \code{MHeatX}, \code{membraneSW},
+\code{extract}) name the same classes.
+\code{UnitOperation::availableTypes()} prints the live registry.
+\end{whatyoulllearn}
+
+\subsection{Quick reference}
+
+\begin{center}\footnotesize
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.26\linewidth}
+                                 >{\raggedright\arraybackslash}X
+                                 >{\raggedright\arraybackslash}p{0.27\linewidth}@{}}
+\toprule
+\code{type}            & \textbf{What it does}    & \textbf{Key spec} \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Flash and saturation}} \\
+\code{isothermalFlash} \textit{(alias \code{flash})} & VL / LL / VLLE flash at fixed $(T,P)$; duty $Q$ is a result & \code{T}, \code{P} optional (inherit feed); \code{phaseSet VL|LL|VLLE} \\
+\code{adiabaticFlash}  & $H_{\mathrm{out}} = H_{\mathrm{in}}$; solves $T$ & \code{P} \\
+\code{bubbleT} / \code{dewT} & Saturation temperature at fixed $P$ & \code{P} \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Reactors (\S\ref{sec:reactors})}} \\
+\code{conversionReactor} & Specified per-pass conversion; stoichiometric & \code{conversion} (or \code{conversions (...)}) \\
+\code{equilibriumReactor} \textit{(alias \code{REquil})} & Named reactions driven to simultaneous $K_p(T)$ equilibrium & \code{reactions (...)}; \code{T} \\
+\code{gibbsReactor}    & Equilibrium by Gibbs minimisation over species & \code{elements}, \code{species}; models \code{elementPotential} / \code{reactiveFlash} / \code{directMin} \\
+\code{cstr}            & Stirred tank; kinetics; 1 or N reactions & \code{V\_R}; \code{thermalMode} \\
+\code{pfr}             & Plug flow, RK4 along volume; 1 or N reactions & \code{V\_R}, \code{nSteps}; \code{thermalMode} \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Heat transfer (\S\ref{sec:heat-family})}} \\
+\code{heater}          & 1-stream duty device; $T_{\mathrm{out}}$ is a result & \code{Q} \\
+\code{phaseChanger} \textit{(aliases \code{boiler}, \code{condenser})} & Crosses the saturation dome; $Q$ a result & exactly one of \code{Q}, \code{outletT}, \code{outletQuality}, \code{outletState}, \code{superheat}, \code{subcool}; or \code{model geometry} \\
+\code{heatExchanger}   & 2-stream $\varepsilon$-NTU rating & \code{area}, \code{U}; or \code{model geometry} / \code{model design} \\
+\code{multiStreamHX} \textit{(alias \code{MHeatX})} & N hot + M cold in one shell; balance + internal pinch & per-stream \code{outlet \{...T...\}} targets \\
+\code{evaporator}      & Single-effect; steam chest is a real stream & \code{area}, \code{U} \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Rotating equipment (\S\ref{sec:rotating})}} \\
+\code{compressor} / \code{turbine} & $W_{\mathrm{shaft}}$ + $\eta$; $P_{\mathrm{out}}$, $T_{\mathrm{out}}$ results & \code{W\_shaft}, \code{eta} \\
+\code{pump}            & Incompressible; closed form & \code{eta} + one of \code{P\_out} / \code{dP} / \code{W\_shaft} \\
+\code{electricLoad}    & Sink for shaft work via an energy wire & \code{energyInputs}, \code{eta} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{center}\footnotesize
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.26\linewidth}
+                                 >{\raggedright\arraybackslash}X
+                                 >{\raggedright\arraybackslash}p{0.27\linewidth}@{}}
+\toprule
+\code{type}            & \textbf{What it does}    & \textbf{Key spec} \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Columns and staged separations (\S\ref{sec:columns})}} \\
+\code{distillationColumn} \textit{(alias \code{column})} & Rigorous MESH; models \code{WangHenke} / \code{simultaneous}; multi-feed, side draws, Murphree, hydraulics, reactive & \code{nStages}, \code{feedStage}, \code{refluxRatio} or \code{distillateRate}, \code{P} \\
+\code{shortcutColumn} \textit{(alias \code{FUG})} & Fenske--Underwood--Gilliland design & keys, recoveries, \code{refluxFactor}, \code{P} \\
+\code{absorber} / \code{stripper} & Counter-current staged gas--liquid contact (Henry) & \code{stages} \\
+\code{extractor} \textit{(alias \code{extract})} & Counter-current staged LL extraction (Gibbs-split stages) & \code{stages} \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Membranes and sorption separations (\S\ref{sec:membranes})}} \\
+\code{spiralWoundModule} \textit{(alias \code{membraneSW})} & NF/RO element or train (solution-diffusion + film model) & \code{membrane}, \code{area}, \code{P\_perm} \\
+\code{ionExchanger}    & Cation-exchange softener (Gaines--Thomas) & \code{resin}, \code{CEC} \\
+\code{electrodialysisStack} & N cell pairs; Faraday transfer, Nernst + ohmic voltage & \code{N\_cellpairs}, \code{current}, geometry \\
+\code{psa}             & Pressure-swing adsorption (equilibrium-theory shortcut) & adsorbent isotherms, \code{bedCapacity}, \code{eta} \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Solids (\S\ref{sec:solids})}} \\
+\code{cyclone}         & PSD-aware gas--solid classifier; 5 models (\code{Lapple},~\dots, \code{Muschelknautz}) & \code{bodyDiameter},~\dots \\
+\code{bagFilter}       & Cake filtration; $\Delta P$ headline & \code{filterArea},~\dots \\
+\code{gasSolidSplitter}& Ideal spec'd split (PSD unchanged) & \code{solidsRecovery} \\
+\code{pneumaticConveyor} & Dilute-phase conveying line; $\Delta P$ + saltation check & \code{geometry \{ D L dz \}} \\
+\code{crystalliser}    & Models \code{equilibrium} / \code{MSMPR} / \code{FVM}; magma or cake+liquor outputs & \code{operatingTemperature}; kinetics for MSMPR \\
+\code{sprayDryer} / \code{solidDryer} / \code{evaporativeDryer} & Gas--solid drying (\S\ref{sec:advanced-spray}) & atomiser, chamber; sorption isotherm \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Flow primitives (\S\ref{sec:primitives})}} \\
+\code{mixer}           & $N \to 1$ adiabatic merge (or declared-$T$) & --- \\
+\code{splitter}        & $1 \to N$ tee at spec'd fractions & \code{fractions (...)} \\
+\code{valve}           & Isenthalpic throttle & \code{P} \\
+\code{pipe}            & Darcy--Weisbach line; $\Delta P$ a result; two-phase aware & \code{geometry \{ D L roughness dz \}} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Each unit also accepts top-level solver-tolerance overrides (same keys
+as \file{solverDict}) and the per-unit \code{thermo \{\}} override
+(\S\ref{sec:thermo-override}).
+
+% ---------------------------------------------------------------------
+\subsection{Flash and saturation}\label{sec:flash-family}
+
+The isothermal flash is the pedagogical core: Newton on the
+Rachford-Rice equation in $V/F$, wrapped in a Wegstein outer loop that
+refreshes $\gamma_i(x)$.  A flash is a \emph{knob-less separator} ---
+with an empty \code{operation \{\}} it inherits $T$ and $P$ from the
+feed and just separates; pin either or both to hold the drum state:
+
+\begin{lstlisting}[language=dict]
+operation { T 370 K;  P 1 bar;  phaseSet VL; }   // VL (default), LL, or VLLE
+\end{lstlisting}
+
+\paragraph{Degrees of freedom --- $Q$ is a result.}  A flash is fixed by
+exactly two numbers (Duhem's theorem), here $T$ and $P$.  The duty is
+therefore a \emph{result, never a spec}: a flash \emph{gives} a $Q$
+(read the \code{Q\_kW} KPI), it never \emph{takes} one.  To impose a
+known heat and then separate, chain \code{heater(Q)} $\to$
+\code{flash}; for a target outlet temperature, wrap the heater in a
+DesignSpec on \code{\$Q} (\S\ref{sec:designspec}).  The
+\code{adiabaticFlash} is the one duty that needs no external device:
+$Q = 0$, spec \code{P}, and the outer Newton finds $T$.
+
+\paragraph{LL and VLLE.}  For symmetric $\gamma$-models a
+liquid--liquid flash solved on the $K$-value fixed point collapses onto
+the trivial $x_\alpha = x_\beta$ saddle --- so Choupo's LL and VLLE
+paths minimise the Gibbs energy of mixing \emph{directly}
+(multi-start Nelder--Mead on the phase-split simplex).  Run
+\file{tutorials/steady/absorption/extraction01\_waterButanol} (LL) and
+\file{tutorials/steady/thermoTest/vlle03\_audit\_artificial} (a
+constructed three-phase global minimum) to watch it work.
+\code{bubbleT} and \code{dewT} are the 1-D saturation solves
+($\sum K_i x_i = 1$ and $\sum y_i/K_i = 1$).
+
+% ---------------------------------------------------------------------
+\subsection{The reactor family}\label{sec:reactors}
+
+\begin{whatyoulllearn}
+Six reactors, one ladder of knowledge: specify the outcome
+(\code{conversionReactor}), let thermodynamics
+decide (\code{equilibriumReactor}, \code{gibbsReactor}), or let kinetics
+decide (\code{cstr}, \code{pfr} --- and, in time,
+\code{batchReactor}, \S\ref{sec:batch}).  Pick the rung that matches
+what you actually know.
+\end{whatyoulllearn}
+
+All reactors share two contracts.  First, \textbf{one reaction
+grammar}: stoichiometry and kinetics live once, in
+\file{constant/reactions}, and a unit references them ---
+\code{reaction <name>;} for one, \code{reactions ( r1 r2 );} for a
+network --- never repeated inside the unit.  Second, \textbf{one
+enthalpy datum}: the heat of reaction is computed from each species'
+\code{gibbsFormation} block (the elements datum),
+$\Delta H_{\mathrm{rxn}}(T) = \sum_i \nu_i h_i(T)$, in every reactor,
+steady or dynamic.  There is no \code{dH\_rxn} input to a steady
+reactor --- a reactions-dict \code{dH\_rxn} key is an announced override
+honoured only for toy components that deliberately lack formation data.
+
+\subsubsection{\code{conversionReactor} --- the outcome is a spec}
+
+You state the per-pass conversion of the limiting reactant; the outlet
+follows stoichiometry.  No kinetics, no residence time --- the honest
+choice for a gas-phase reactor whose conversion is set by the catalyst,
+and the right reactor when a \emph{recycle} is the point of the
+flowsheet (it keeps a finite per-pass conversion).
+
+\begin{lstlisting}[language=dict]
+operation { conversion 0.75;  T 895 K; }     // single reaction
+reaction  toluene_hda;                        // stoichiometry + limitingReactant
+\end{lstlisting}
+
+With several reactions, each extent is a spec --- selectivity becomes a
+declared property of the catalyst:
+
+\begin{lstlisting}[language=dict]
+operation
+{
+    T 650 K;
+    conversions
+    (
+        { reaction main;  conversion 0.60; }    // fraction of the FEED limiting reactant
+        { reaction side;  extent 0.04; }        // or a direct extent
+    );
+}
+reactions ( main side );
+\end{lstlisting}
+
+Tutorials: \file{conversion01\_hda},
+\file{conversion02\_parallel\_selectivity}.
+
+\subsubsection{\code{equilibriumReactor} (alias \code{REquil}) --- named reactions to equilibrium}
+
+You give a \emph{set of reactions}; each is driven to simultaneous
+chemical equilibrium via its $K_p(T)$, computed from the species'
+formation data ($K = e^{-\Delta G^\circ/RT}$) --- no kinetics, no
+residence time.  The coupled system
+$K_{p,j} = \prod_i (p_i/P^\circ)^{\nu_{ij}}$ over all extents is solved
+in log form by the multivariate Newton.  This is the reforming / shift
+/ synthesis workhorse --- and the tool to use when you want to restrict
+\emph{which} reactions equilibrate (something the Gibbs reactor, which
+sees only species, cannot do).
+
+\begin{lstlisting}[language=dict]
+{ name reformer;  type equilibriumReactor;
+  in feed;  outputs ( effluent );
+  operation { T 1000 K; }
+  reactions ( steamReforming  waterGasShift ); }   // stoichiometry only; no kinetics
+\end{lstlisting}
+
+KPIs: \code{Kp\_<name>}, \code{extent\_<name>\_kmol\_h},
+\code{conversion\_<name>}, \code{Q\_kW}.  Tutorial:
+\file{tutorials/steady/reactors/\allowbreak equil01\_reforming}
+(steam-methane reforming and shift together).
+
+\subsubsection{\code{gibbsReactor} --- equilibrium without naming reactions}
+
+Direct Gibbs-energy minimisation over a declared species pool with
+atom-balance constraints --- no reactions at all.  Three selectable
+models: \code{elementPotential} (default; Lagrange multipliers),
+\code{reactiveFlash} (multi-condensable + NRTL), and \code{directMin}
+(multi-start Nelder--Mead on the extent null space).
+
+\begin{lstlisting}[language=dict]
+operation
+{
+    T 800 K;   P 1 bar;
+    elements ( C H O );
+    species
+    (
+        { name CH4; atoms ( 1 4 0 ); }
+        { name H2O; atoms ( 0 2 1 ); }
+        { name CO;  atoms ( 1 0 1 ); }
+        { name CO2; atoms ( 1 0 2 ); }
+        { name H2;  atoms ( 0 2 0 ); }
+    );
+}
+\end{lstlisting}
+
+An optional \code{approachTemperature <dT>;} evaluates the equilibrium
+at $T + \Delta T$ --- the classical way to model an incomplete approach
+for reversible systems without kinetics.  For the adiabatic flame
+problem, wrap the reactor in a DesignSpec that varies \code{\$T} until
+$H_{\mathrm{out}} = H_{\mathrm{in}}$
+(\file{gibbs05\_adiabatic\_flame}: lean CH$_4$/air $\to$ 1492 K).
+
+\subsubsection{\code{cstr} and \code{pfr} --- kinetics}
+
+The kinetic pair.  The CSTR solves the design equation(s)
+$\xi_j = r_j(\boldsymbol{\xi})\,V_R$ --- Newton-1D for one reaction, the
+multivariate Newton for a network; the PFR marches
+$\mathrm{d}F_i/\mathrm{d}V = \sum_j \nu_{ij} r_j$ with a manual RK4.
+Both compute concentrations on the liquid molar volume --- for a
+gas-phase reactor prefer \code{conversionReactor} or
+\code{equilibriumReactor}.
+
+\begin{lstlisting}[language=dict]
+{ name reactor;  type cstr;   in feed;  outputs ( out );
+  operation { V_R 0.004 m3; }
+  reaction  esterification; }               // or:  reactions ( r1 r2 );
+\end{lstlisting}
+
+A reaction entry in \file{constant/reactions} carries stoichiometry
+(with per-species orders) and an Arrhenius \code{kinetics} block;
+\code{reversible true;} adds the reverse leg by detailed balance
+($k_r = k_f / K_{eq}(T)$).  Multi-reaction networks are what make
+\emph{selectivity} modellable --- and the CSTR/PFR contrast visible: for
+the series network A$\to$B$\to$C at equal $\tau$,
+\file{pfr03\_series\_selectivity} keeps 79\,\% of the intermediate
+where \file{cstr03\_series\_selectivity} keeps 53\,\% --- back-mixing
+eats the intermediate, a result you \emph{see}, not memorise.
+
+\paragraph{Non-isothermal operation and multiplicity.}  Both take
+\code{thermalMode isothermal} (default) $\cdot$ \code{adiabatic} $\cdot$
+\code{heatExchange \{ UA; T\_coolant; \}} (CSTR) /
+\code{heatExchange \{ U; areaPerVolume; T\_coolant; \}} (PFR):
+
+\begin{lstlisting}[language=dict]
+operation { V_R 0.004 m3;  thermalMode adiabatic;  T_guess 350; }
+\end{lstlisting}
+
+Because the reaction heat already lives inside $H$ on the elements
+datum, an adiabatic reactor is simply $H_{\mathrm{out}} = H_{\mathrm{in}}$
+--- no source term.  The CSTR eliminates the extents first (at fixed
+$T$ the design equations are monotone), leaving one equation
+$\varphi(T) = H_{\mathrm{out}}(T) - H_{\mathrm{in}} - Q_{\mathrm{ext}}(T)$
+--- the textbook heat-generated vs heat-removed balance, which can have
+\textbf{three roots}.  Choupo does not hide that: it \emph{scans} the
+bracket, prints every steady state it finds, and reports the one
+nearest \code{T\_guess}.  The PFR marches total enthalpy beside the
+species and recovers $T(V)$ by inversion --- a hot spot is something you
+see in the axial profile.
+
+\begin{tryit}
+Run \file{tutorials/steady/reactors/cstr05\_multiplicity}: three steady
+states at 300.4 / 348.4 / 391.3~K, all printed, the \code{steadyStates}
+KPI counting them.  Change \code{T\_guess} and the same reactor answers
+differently --- that is the physics of ignition and extinction, not a
+numerical defect.  Then run \file{cstr04\_adiabatic} and
+\file{pfr04\_adiabatic} on the same esterification: +82~K vs +83~K ---
+the difference is the back-mixing the CSTR pays for.
+\end{tryit}
+
+% ---------------------------------------------------------------------
+\subsubsection{Catalytic kinetics: writing an LHHW rate law}\label{sec:lhhw}
+
+\begin{whatyoulllearn}
+How to write a Langmuir--Hinshelwood--Hougen--Watson rate law in
+\file{constant/reactions}, what \code{basis activity} obliges you to,
+and the one experiment that actually demonstrates product inhibition
+(it is not the one you would try first).
+\end{whatyoulllearn}
+
+The same block is read by \code{cstr}, \code{pfr}, \code{batchReactor}
+and \code{dynamicCSTR}: one \code{RateLaw}, four reactors, no
+possibility of them disagreeing.  The Theory Guide \S\,``The rate law''
+derives where the denominator comes from; here is how to write it.
+
+\begin{lstlisting}
+esterification_meoac
+{
+    limitingReactant   methanol;
+
+    stoichiometry
+    (
+        { component aceticAcid;     nu -1;  order 1; }   // forward orders
+        { component methanol;       nu -1;  order 1; }
+        { component methylAcetate;  nu  1; }             // orderRev defaults to nu
+        { component water;          nu  1; }
+    );
+
+    kinetics
+    {
+        type       LHHW;
+        basis      activity;        // a_i = gamma_i x_i    (else `concentration`)
+
+        A          8.497e6;         // k_f0   [mol/(g_cat.s)]
+        Ea         6.047e4;         // J/mol
+        A_rev      6.127e5;         // the REGRESSED reverse pair ...
+        Ea_rev     6.373e4;         // ... or `reversible true;` for detailed balance
+
+        adsorption
+        {
+            exponent    2;          // sites the rate-determining step occupies
+            vacantSite  0;          // 1 (default) gives the classical `1 + sum K c`
+            species
+            (
+                { component aceticAcid;     K0 0.05245454; }   // K_i = K0 exp(B/T)
+                { component methanol;       K0 0.17601898; }   // B defaults to 0
+                { component methylAcetate;  K0 0.05602127; }
+                { component water;          K0 0.29086872; }
+            );
+        }
+    }
+}
+\end{lstlisting}
+
+Read it against the rate-law equation in the Theory Guide:
+\code{exponent} is $p$, \code{vacantSite} is $v$, \code{K0}/\code{B}
+are $K_i(T)$, and the \code{order} / \code{orderRev} entries are
+$\alpha_i$ / $\beta_i$.  Omit the \code{adsorption} block entirely and
+the denominator collapses to $1$: you are back to \code{type Arrhenius},
+the plain power law, byte for byte.
+
+\paragraph{Two things the engine refuses.}  You may not ask for
+\code{reversible true} \emph{and} an \code{A\_rev}/\code{Ea\_rev} pair
+--- pick the one you can defend.  And you may not ask for
+\code{reversible true} on \code{basis activity}: detailed balance runs
+through $K_c$, a concentration-basis equilibrium constant, and
+pretending otherwise would put the equilibrium in the wrong place.
+Give the regressed reverse pair instead.
+
+\paragraph{\code{basis activity} obliges you to an activity model.}
+The rate constants of a published LHHW law were regressed \emph{with} a
+particular $\gamma$-model.  P\"opken's were regressed on UNIQUAC with
+the binary parameters of their own Table 3 --- which are in the
+standard catalogue, cited --- so \file{cstr07\_lhhw\_methylAcetate}
+declares \code{activityModel \{ model UNIQUAC; \}} and nothing else
+will do.  Swap in UNIFAC and $k_1$ stops being their $k_1$.
+
+\paragraph{Rate constants per gram of catalyst.}  Add
+\code{catalystLoading <kg/m\^{}3>;} to \code{operation}.  The reactor
+prints it back and converts; with concentrations in
+kmol/m\textsuperscript{3} the loading \emph{is} the factor.  Omit it
+and the constants are taken as already volumetric.
+
+\begin{pitfall}
+The obvious way to see product inhibition --- delete the
+\code{adsorption} block, keep $k_f$, compare --- \textbf{shows
+nothing}.  The reaction gets \emph{faster}, because the adsorbed
+activities are small and dividing by their square is a multiplication.
+The constants were fitted for that denominator.
+
+The honest experiment: hold every reactant fraction fixed and
+\emph{charge the product}.  In \file{batch07\_lhhw\_methylAcetate},
+starting from \code{methanol 0.4;\ aceticAcid 0.4;\ water 0.2;} instead
+of \code{...\ water 0.0;} halves the initial rate,
+$58.3 \to 29.0$~mmol/(L\,s).  The water is not a reactant.  It is
+sitting on the sites.
+\end{pitfall}
+
+\begin{tryit}
+Run \file{cstr07\_lhhw\_methylAcetate}: $X = 49\,\%$, kinetically
+limited.  Raise \code{V\_R} to $1$~m\textsuperscript{3} and it climbs
+to $76\,\%$ and stops.  Then run \file{batch07\_lhhw\_methylAcetate},
+which integrates the \emph{same} law in time: it reaches $76.6\,\%$.
+Nothing in either dict asserts that number.  It is where the rate law's
+numerator vanishes --- the activity equilibrium $K_a = 25.50$ that
+P\"opken's independent Eq.~17 recovers from the same eight constants.
+Two reactors agreeing is how you check you typed the parameters right.
+\end{tryit}
+
+% ---------------------------------------------------------------------
+\subsection{Heat transfer}\label{sec:heat-family}
+
+\paragraph{\code{heater} --- the unit that \emph{takes} a $Q$.}
+Single-stream, sensible-only; \code{operation \{ Q 100 kW; \}} (negative
+cools) and $T_{\mathrm{out}}$ is the result.  ``I need
+$T_{\mathrm{out}} = 360$~K'' is a DesignSpec on \code{\$Q}
+(\S\ref{sec:designspec}) --- the outer loop is visible, the duty is
+never back-computed in secret.
+
+\paragraph{\code{phaseChanger} (aliases \code{boiler}, \code{condenser})
+--- crossing the dome.}  Where a heater must stay off the saturation
+line, the phase changer lands its outlet \emph{anywhere} on the
+$(T, vf)$ surface --- subcooled, inside the dome, or superheated ---
+wrapping the flash kernel and the dome-aware enthalpy
+$h = (1-vf)h_f + vf\,h_g$.  $P$ is held from the inlet (or set); then
+pick \emph{exactly one} outlet coordinate (a degrees-of-freedom guard
+rejects zero or two):
+
+\begin{lstlisting}[language=dict]
+operation
+{
+    // pick exactly ONE:
+    Q             -630 kW;            // duty given -> T, vf results
+    outletT        368 K;             // -> Q result
+    outletQuality  0.4;               // partial condenser -> Q result
+    outletState    saturatedVapour;   // or saturatedLiquid
+    superheat      25 K;              // T = Tsat(P) + dT
+    subcool        10 K;              // T = Tsat(P) - dT
+}
+\end{lstlisting}
+
+The labels \emph{boiler} / \emph{partial condenser} /~\dots\ are
+emergent from the converged $vf$ and the sign of $Q$ --- not a model
+switch.  With \code{model geometry;} the duty \emph{emerges} from real
+heat-transfer physics instead: a \code{coolant \{\}} block selects
+Nusselt (1916) laminar-film condensation on a tube bundle; a
+\code{boiling \{\}} + \code{heatingMedium \{\}} pair selects Rohsenow
+nucleate pool boiling with the Zuber critical-heat-flux ceiling --- a
+design above CHF is hard-refused (burnout), and the Rohsenow surface
+constant \code{Csf} has \emph{no default} and demands a
+\code{citation} (a $\pm 100\,\%$ number must state its provenance).
+Tutorials: \file{phasechange01\_partial\_condenser},
+\file{condenser01\_film\_nusselt}, \file{reboiler\_water\_copper},
+\file{rankine02\_water}.
+
+\paragraph{\code{heatExchanger} --- rating, geometry, design.}  The
+two-stream exchanger has three faces of one model:
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item \textbf{default (\code{model epsNTU})} --- give \code{area} and
+        \code{U}; duty and outlet temperatures are results
+        ($\varepsilon$-NTU, \code{flow counter|co}).
+  \item \textbf{\code{model geometry}} --- give the tube-bundle geometry
+        (\code{tubeID/OD/Length}, \code{nTubes}, \code{passes},
+        \code{shellID}, \code{baffleSpacing}, \code{tubePitch},
+        \code{wallK} or \code{wallMaterial}) and the per-side
+        correlations (\code{Gnielinski} tube-side, \code{Kern}
+        shell-side by default) \emph{compute} $U$ and the area --- the
+        glass-box answer to ``where does $U$ come from?''.  Both-side
+        pressure drops are reported too.
+  \item \textbf{\code{model design}} --- give the duty target (an outlet
+        temperature) and the tube choices; the engine \emph{sizes} the
+        bundle (bisects the tube count so the delivered $\varepsilon$-NTU
+        duty meets the target) and then rates its own design.
+\end{itemize}
+
+The two-part tutorial pair
+\file{hxWorkflow1\_design\_from\_duty} $\to$
+\file{hxWorkflow2\_rate\_designed} is the standard industrial sequence:
+converge the balance with a duty target, design the exchanger, then
+rate the designed geometry (and ask the off-design question the design
+step cannot answer).
+
+\paragraph{\code{multiStreamHX} (alias \code{MHeatX}).}  N hot + M cold
+streams in one adiabatic shell.  Every inlet carries its own outlet-$T$
+target; the unit verifies the energy balance (a non-zero imbalance is
+\emph{reported}, never absorbed into an invented outlet) and builds the
+hot/cold composite curves to report the internal pinch
+$\Delta T_{\min}$ --- a temperature cross is a hard warning.  Tutorial:
+\file{mheatx01\_two\_hot\_one\_cold}.
+
+\paragraph{\code{evaporator}.}  Single-effect with a \emph{real} steam
+chest: \code{inputs ( feed steam )}, hardware \code{area} + \code{U};
+the boiling temperature, vapour split, and operating pressure are all
+results.  Multi-effect trains are just chained evaporators --- see
+\file{evaporator02\_triple\_effect\_sugar} and the DesignSpec that sizes
+them (\S\ref{sec:designspec}).
+
+% ---------------------------------------------------------------------
+\subsection{Rotating equipment and electric loads}\label{sec:rotating}
+
+The credo: rotating hardware is specified by \emph{shaft power and
+efficiency}, and the pressure it achieves is a result:
+
+\begin{lstlisting}[language=dict]
+operation { W_shaft  10 kW;   eta 0.75; }     // compressor: W > 0
+operation { W_shaft  -3 kW;   eta 0.80; }     // turbine:    W < 0
+\end{lstlisting}
+
+The compressor/turbine run an outer Newton on $P_{\mathrm{out}}$
+matching the isentropic enthalpy change scaled by $\eta$.  The
+\code{pump} is incompressible and closed-form, so it accepts \code{eta}
+plus exactly \emph{one} of \code{P\_out} / \code{dP} /
+\code{W\_shaft} --- specifying the header it feeds is a local one-shot
+inversion, not a DesignSpec.  A let-down is a \code{valve}, not a pump.
+
+\paragraph{Energy wires.}  Shaft work travels on typed scalar wires
+declared on the \emph{consumer}:
+
+\begin{lstlisting}[language=dict]
+{ name T1;  type turbine;  in steam;  outputs ( exhaust );
+  operation { W_shaft -1500 kW;  eta 0.85; }
+  energyOutputs ( { name shaft;  kind work;  expression "-W_shaft";  unit W; } ) }
+
+{ name G1;  type electricLoad;
+  operation { eta 0.97; }
+  energyInputs ( { from T1.shaft;  kind work;  target W_shaft; } ) }
+\end{lstlisting}
+
+Several inputs to the same target \emph{sum} --- the gas-turbine
+shaft-split, where one generator nets the turbine's gross work against
+the compressor's load
+(\file{tutorials/steady/power/combined02\_brayton\_rankine\_shaft}).
+Typed ports are checked: a \code{work} wire cannot feed a \code{heat}
+input.  Heat duties follow a different rule --- see
+\S\ref{sec:energy-utilities}.
+
+% ---------------------------------------------------------------------
+\subsection{Distillation, absorption, extraction}\label{sec:columns}
+
+\subsubsection{The rigorous column}
+
+\code{distillationColumn} solves the full MESH stage equations with two
+selectable numerical strategies (the \code{model} slot):
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+\item \code{WangHenke} (default) --- the sequential bubble-point method:
+      a tridiagonal (Thomas) component-balance sweep at frozen $K$,
+      then a bubble-point $T$ update per stage.  Cheap per pass,
+      inspectable, but O(100--500) outer iterations, and it can step
+      \emph{through} an azeotrope non-physically.  Use it for ideal /
+      wide-boiling systems.
+\item \code{simultaneous} (aliases \code{MESH},
+      \code{NaphtaliSandholm}) --- Newton on the whole block at once
+      with Armijo backtracking.  Quadratic ($\approx$5--6 iterations)
+      and stable through azeotropes --- the required choice for
+      non-ideal systems (NRTL ethanol/water:
+      \file{column03\_azeotrope\_mesh}).
+\end{itemize}
+
+\begin{lstlisting}[language=dict]
+{ name column01;  type distillationColumn;      // model WangHenke is the default
+  in feed;  outputs ( distillate  bottoms );
+  operation
+  {
+      nStages          12;
+      feedStage         6;
+      refluxRatio      2.5;                     // XOR with distillateRate
+      distillateRate   50 kmol/h;
+      P                1.01325 bar;
+  } }
+\end{lstlisting}
+
+A column carries two intrinsic heat ports --- the reboiler (heating, at
+the bottoms $T$) and the condenser (cooling, at the top $T$), reported
+as \code{Q\_reboiler\_kW} / \code{Q\_condenser\_kW} and sized to plant
+utilities by temperature level (\S\ref{sec:energy-utilities}).
+
+\subsubsection{Multiple feeds, side draws, reactive stages}\label{sec:advanced-distillation}
+
+\begin{whatyoulllearn}
+How the \code{simultaneous} column handles \emph{several feeds},
+\emph{side draws}, and a \emph{reaction on catalytic stages} --- with a
+worked, paper-validated reactive-distillation case.
+\end{whatyoulllearn}
+
+\paragraph{Feeds are flowsheet streams.}  A multi-feed column declares
+its feeds as \emph{streams} (\code{inputs ( feed acidFeed )});
+\code{operation.feeds} only maps each stream to a stage.  This is
+deliberate (\emph{information follows the streams}): a feed hidden
+inside the operation block would be a side channel the plant-boundary
+mass and energy balance never sees --- and the first law would not
+close.
+
+\paragraph{Side draws, and the order of \code{outputs}.}  A side draw
+is an \emph{output} --- a liquid or vapour bleed from an intermediate
+stage, its rate set in \code{operation.sideDraws}.  Because outputs
+bind \emph{by position} (\S\ref{sec:flowsheetDict-streams}), the
+column's emission order is fixed and your \code{outputs} list must
+match it:
+\[
+   \underbrace{\code{distillate}}_{[0]},\;
+   \underbrace{\code{bottoms}}_{[1]},\;
+   \underbrace{\text{side draws by \emph{ascending stage}}}_{[2],[3],\dots}
+\]
+So a four-product column that draws liquid at stage 13 then 23 is wired
+\code{outputs ( distillate bottoms drawC4 drawC5 )}: \code{drawC4}
+(position 2) is the stage-13 draw, \code{drawC5} (position 3) the
+stage-23 draw.  Swap the two names and the label lands on the wrong
+stream --- the engine does \emph{not} warn.
+
+\begin{center}
+\begin{tikzpicture}[>=Stealth, font=\footnotesize, line width=0.4pt]
+  \draw[fill=gray!5] (0,0) rectangle (2.0,6);
+  \foreach \y in {1,2,3,4,5} \draw[gray!40] (0,\y) -- (2.0,\y);
+  % feeds (by name, to a stage)
+  \draw[<-] (0,4.6) -- ++(-1.5,0) node[left]{\code{feed1} \scriptsize(stage 10)};
+  \draw[<-] (0,2.2) -- ++(-1.5,0) node[left]{\code{feed2} \scriptsize(stage 20)};
+  % products (by position)
+  \draw[->] (2.0,5.7) -- ++(1.5,0) node[right]{\code{[0] distillate}};
+  \draw[->] (2.0,3.9) -- ++(1.5,0) node[right]{\code{[2] drawC4} \scriptsize(stage 13)};
+  \draw[->] (2.0,1.9) -- ++(1.5,0) node[right]{\code{[3] drawC5} \scriptsize(stage 23)};
+  \draw[->] (2.0,0.3) -- ++(1.5,0) node[right]{\code{[1] bottoms}};
+  \node[align=center, font=\scriptsize\itshape, text=gray!60!black]
+        at (1.0,-0.6) {feeds in \emph{by name}; products out \emph{by position}};
+\end{tikzpicture}
+\end{center}
+
+\begin{lstlisting}[language=dict]
+operation
+{
+    nStages 15;  refluxRatio 3.0;  distillateRate 42 kmol/h;  P 1.013 bar;
+    feeds      ( { stream feed;  stage 5;  quality 1.0; }
+                 { stream feed2; stage 11; quality 1.0; } );
+    sideDraws  ( { stage 8;  phase liquid;  rate 15 kmol/h; } );
+}
+\end{lstlisting}
+
+\paragraph{A reaction on the stages.}  A \code{reaction \{\}} block
+turns the column reactive (\code{simultaneous} only; restricted to
+mole-conserving $\sum \nu = 0$ reactions so the flow profile is
+untouched).  The extent on each named catalytic stage is closed either
+by chemical \code{equilibrium} (activity-based $K_a(T)$, van~'t~Hoff)
+or by \code{kinetics} (a rate law $\times$ catalyst mass).
+
+\paragraph{Worked case --- methyl acetate by reactive distillation.}
+The classic industrial esterification:
+\[
+   \text{MeOH} + \text{HOAc} \;\rightleftharpoons\; \text{MeOAc} + \text{H}_2\text{O}.
+\]
+Acetic acid is fed \emph{above} the catalytic zone and methanol
+\emph{below}, so they flow counter-currently through it; the light
+product rises to the distillate, water sinks to the bottoms, and
+removing both products pulls the equilibrium forward --- conversion far
+above a single equilibrium reactor.
+
+\begin{center}
+\begin{tikzpicture}[>=Stealth, font=\footnotesize, line width=0.4pt]
+  % column body
+  \draw[fill=gray!4] (0,0) rectangle (1.8,9);
+  % reactive (catalytic) zone
+  \fill[blue!12] (0,2.2) rectangle (1.8,5.6);
+  \node[align=center, text=blue!55!black] at (0.9,3.9)
+       {\scriptsize catalytic\\[-1pt]\scriptsize zone\\[-1pt]\scriptsize (11--19)};
+  % trays
+  \foreach \y in {0.6,1.2,...,8.4} \draw[gray!50] (0.15,\y) -- (1.65,\y);
+  % condenser
+  \draw[fill=cyan!12] (0.4,9.4) rectangle (1.4,10.0);
+  \node at (0.9,9.7) {\scriptsize cond.};
+  \draw[->] (0.9,9.0) -- (0.9,9.4);
+  \draw[->] (0.6,9.4) -- (0.6,8.7);
+  \draw[->] (1.4,9.7) -- (3.0,9.7) node[right, align=left]
+       {\scriptsize \textbf{distillate}\\[-2pt]\scriptsize methyl acetate ($x{=}0.93$)};
+  % reboiler
+  \draw[fill=orange!15] (0.4,-1.0) rectangle (1.4,-0.4);
+  \node at (0.9,-0.7) {\scriptsize reb.};
+  \draw[->] (0.9,-0.4) -- (0.9,0.0);
+  \draw[->] (1.4,-0.7) -- (3.0,-0.7) node[right, align=left]
+       {\scriptsize \textbf{bottoms}\\[-2pt]\scriptsize water ($x{=}0.83$)};
+  % feeds
+  \draw[->, red!70!black] (-1.6,6.0) -- (0,6.0)
+       node[midway, above] {\scriptsize HOAc} node[midway, below]{\scriptsize (st.\ 10)};
+  \draw[->, blue!70!black] (-1.6,1.8) -- (0,1.8)
+       node[midway, above] {\scriptsize MeOH} node[midway, below]{\scriptsize (st.\ 20)};
+  \node[red!60!black]  at (2.4,5.3) {\scriptsize $\downarrow$\,HOAc};
+  \node[blue!60!black] at (2.4,2.6) {\scriptsize MeOH\,$\uparrow$};
+  \node[align=center] at (0.9,10.4) {\scriptsize 25 equilibrium stages};
+\end{tikzpicture}
+\end{center}
+
+The dict says exactly this --- two input streams mapped to stages
+(their state authored in \file{0/feed} and \file{0/acidFeed}), plus the
+reaction:
+
+\begin{lstlisting}[language=dict]
+units ( {
+    name rdColumn;  type distillationColumn;  model simultaneous;
+    inputs  ( feed  acidFeed );              // both feeds are flowsheet streams
+    outputs ( distillate  bottoms );
+    operation {
+        nStages 25;  refluxRatio 2.1;  distillateRate 30.1 mol/h;  P 1.017 bar;
+        feeds ( { stream feed;     stage 20; quality 1.0; }   // methanol below the zone
+                { stream acidFeed; stage 10; quality 1.0; } );// acetic acid above it
+    }
+    reaction {
+        stoichiometry ( { component methanol;      nu -1; } { component aceticAcid; nu -1; }
+                        { component methylAcetate; nu  1; } { component water;      nu  1; } );
+        reactiveStages ( 11 12 13 14 15 16 17 18 19 );
+        equilibrium { Ka298 38.7; dHrxn -5670; }   // activity-based K_a(T), van't Hoff
+    }
+} );
+\end{lstlisting}
+
+Running it
+(\file{tutorials/steady/distillation/column05\_reactive\_methylacetate})
+converges by homotopy (solve the column non-reactive, then switch the
+reaction on) and gives \textbf{96\,\% methanol conversion}, a
+methyl-acetate-rich distillate and a water-rich bottoms --- the
+\emph{equilibrium ceiling}.  The measured value (P\"opken \emph{et
+al.}, \emph{Ind.\ Eng.\ Chem.\ Res.}\ 40 (2001) 1566) is 87.6\,\%: the
+real column is slightly kinetically limited, so the equilibrium model
+correctly brackets it from above (replace \code{equilibrium} with a
+\code{kinetics} block to model the finite rate).  Because both feeds
+are flowsheet streams, the plant-boundary energy balance closes
+exactly.
+
+\subsubsection{Real trays: Murphree efficiency}\label{sec:murphree}
+
+Add \code{murphreeEfficiency 0.70;} to \code{operation}
+(\code{WangHenke} only --- \code{simultaneous} refuses the keyword
+rather than silently returning ideal stages) and \code{nStages} stops
+counting ideal stages and starts counting \emph{real trays}:
+$y_j = E\,K_j x_j + (1-E)\,y_{j+1}$, folded into an effective $K$.
+$E$ is a \emph{declared} number --- O'Connell's correlation, a chart, or
+plant data; the engine never invents it.  \file{column11\_murphree} is
+\file{column09} plus that one line: the distillate falls from
+$98.12\,\%$ to $95.05\,\%$ benzene, and at $E = 1$ every existing case
+reproduces bit for bit.
+
+\subsubsection{Tray hydraulics: will the column you converged actually run?}\label{sec:tray-hydraulics}
+
+\begin{whatyoulllearn}
+How to ask a converged column whether its trays can pass the traffic
+they carry --- and how the same block, with one keyword removed, stops
+rating the column and starts sizing it.
+\end{whatyoulllearn}
+
+A converged column tells you what separates.  It says nothing at all
+about how wide it is, because nothing in the stage equations depends on
+the diameter.  Two columns of very different width give the identical
+stream table --- and one of them floods, which means in practice that it
+separates nothing.  The Theory Guide \S\,``Tray hydraulics'' derives
+why.
+
+Add a \code{hydraulics \{\}} block inside \code{operation} (either
+column model) and the column runs a rating pass over its own converged
+profile:
+
+\begin{lstlisting}[language=dict]
+hydraulics
+{
+    trayType               sieve;
+    // diameter            1.10;     // GIVE it -> rating.  OMIT it -> design.
+    traySpacing            0.50;     // m
+    weirHeight             0.050;    // m
+    holeDiameter           5.0e-3;   // m
+    holeAreaFraction       0.10;     // A_holes / A_active
+    downcomerAreaFraction  0.12;     // A_downcomer / A_tower
+    weirLengthFraction     0.77;     // l_weir / D
+    orificeCoefficient     0.84;     // C_o -- YOU read this off the chart
+    floodFraction          0.80;     // design target
+    K2                     30.7;     // optional: enables the weep check
+}
+\end{lstlisting}
+
+\paragraph{The thermo package must supply the surface tension.}
+Entrainment is a contest between the vapour's drag on a droplet and the
+surface tension holding it together, so the Souders--Brown flooding
+velocity cannot be evaluated without $\sigma$.  Add
+\code{transport \{ surfaceTension \{ model BrockBird; \} \}} to the
+\file{propertyDict}, or declare a constant \code{sigma <N/m>;} inside
+the hydraulics block.  The column refuses to guess; it will stop and
+say so.
+
+\paragraph{Two modes, one block.}  Give \code{diameter} and the column
+\emph{rates}: it reports how close each tray runs to its flooding
+velocity.  Omit \code{diameter} and it \emph{designs}: it finds the
+width at which no tray exceeds \code{floodFraction} of flood, and the
+widest tray sets the column.  This is the same rating/design duality as
+the spray dryer (\S\ref{sec:spray-design}) --- one set of equations, run
+in whichever direction you need.
+
+\paragraph{Two numbers you must own.}  The orifice coefficient $C_o$
+and the weep constant $K_2$ are charts in the literature, not formulae.
+Choupo does not invent charts.  $C_o$ is a declared input, printed back
+at you with its provenance.  $K_2$ is optional: give it and the weep
+check runs, leave it out and the column tells you plainly that the
+check was not performed.  If a tray lands where the flooding fit is
+known to be unreliable ($F_{LV} < 0.03$), the column says that too.
+
+\paragraph{What it prints.}  Run
+\file{tutorials/steady/distillation/column09\_tray\_hydraulics} at
+\code{verbosity 3}:
+
+\begin{lstlisting}
+--- Sieve-tray hydraulics (DESIGN: the diameter is the result) ---
+D = 1.322 m    tray spacing 0.500 m    weir 50.000 mm    holes 5.000 mm ...
+C_o = 0.840  (declared -- the Liebson chart value for this A_h/A_p and t/d_h)
+sized so no tray passes 80.000 % of its flooding velocity
+
+stage    F_LV    C_SB    u_v    u_flood   %flood    h_t     dP      h_b   h_b,max
+ 1     0.0389  0.091   1.002   1.575    63.6     112.9   886.1   178.1   275.0
+ ...
+14     0.0826  0.085   1.081   1.351    80.0     135.3  1017.8   215.8   275.0
+worst tray: 80.0 % of flood on stage 14   column dP = 13.26 kPa   ...
+\end{lstlisting}
+
+The last stripping tray sets the diameter, sitting exactly on the
+$80\,\%$ it was asked for.  Notice that the flow parameter $F_{LV}$
+jumps at the feed --- more liquid, less vapour below it --- which lowers
+the capacity parameter $C_{SB}$ and so the flooding velocity.  Which
+tray ends up tightest is not obvious in advance; you find out by
+looking.
+
+\begin{tryit}
+Run \file{column10\_flooding}.  It is the \emph{same} column, built
+$1.10$~m wide instead of $1.322$~m.  Compare the stream tables: they
+are identical to the last digit, the MESH converges just as fast, the
+distillate is still $98.12\,\%$ benzene.  Then read the hydraulics:
+stage~14 runs at $115.6\,\%$ of flood, and the downcomer backs up to
+$271$~mm against a $275$~mm limit.  On paper it is a perfectly good
+column.  It would not work.  This is exactly why the check exists.
+\end{tryit}
+
+\begin{pitfall}
+Hydraulics is a \emph{rating pass on the converged profile}, not a
+coupled unknown.  The $13$~kPa of pressure drop it reports is
+\textbf{not} fed back into the stage temperatures --- the column was
+solved at one pressure.  For a low-pressure column where the drop is a
+large fraction of the operating pressure, that matters, and Choupo says
+so rather than quietly absorbing it.  The KPIs \code{diameter},
+\code{floodApproach\_max}, \code{floodStage}, \code{dP\_column\_kPa}
+and \code{downcomerBackup\_max\_mm} are available to a sweep or an
+optimiser, so you can trace how far you can push the reflux before a
+tray floods.
+\end{pitfall}
+
+\subsubsection{Shortcut column, absorber, stripper, extractor}
+
+\code{shortcutColumn} (alias \code{FUG}) is the
+Fenske--Underwood--Gilliland \emph{design} method (constant $\alpha$,
+no azeotropes): declare the key components, their recoveries and
+\code{refluxFactor} ($R/R_{\min}$); $N_{\min}$, $R_{\min}$, $N$, and
+the feed stage are results.  Use it to size first, then hand the
+numbers to \code{distillationColumn} for a rigorous rating.
+
+\code{absorber} / \code{stripper} are counter-current staged
+gas--liquid contactors solved by the Thomas tridiagonal; the solute(s)
+need a Henry pair (\S\ref{sec:thermo}).  \code{extractor} (alias
+\code{extract}) is the liquid--liquid analogue: each theoretical stage
+is one LL equilibrium computed by the \emph{same} Gibbs-minimisation
+flash kernel the flash uses (never re-implemented), the cascade swept
+by successive substitution.  Hardware in, results out: \code{stages}
+is the knob; recovery and the distribution ratio are results.
+Tutorials: \file{absorber01\_NH3\_water},
+\file{extract01\_ethanol\_water\_benzene}.
+
+% ---------------------------------------------------------------------
+\subsection{Membranes and electrochemical separations}\label{sec:membranes}
+
+\paragraph{\code{spiralWoundModule} (alias \code{membraneSW}).}  The
+NF/RO element: solution-diffusion permeation + film-model concentration
+polarisation, with selectable sub-models for feed-channel mass transfer
+(\code{SchockMiquel} or \code{constant}), pressure drop, and osmotic
+pressure (\code{vanHoff} or \code{Pitzer}):
+
+\begin{lstlisting}[language=dict]
+operation
+{
+    membrane         SW30HR;        // -> data/standards/membranes/<name>.dat
+    area             35 m2;         // per element
+    length           1 m;
+    elements         1;             // >1 for a train in one vessel
+    P_perm           1.01325 bar;
+    dP_feed_total    2 bar;
+    massTransfer  { model SchockMiquel;  channelHeight 0.7 mm;
+                    diffusivity 1.6e-9 m2/s;  viscosity 1.0e-3 Pa.s; }
+    osmotic       { model Pitzer; }
+}
+\end{lstlisting}
+
+Inputs \code{( feed )}, outputs \code{( retentate permeate )}.  KPIs:
+\code{J\_w\_avg}, per-solute observed rejection, \code{water\_recovery},
+\code{dP\_feed}.  Four membranes ship in the catalogue (a seawater-RO
+archetype, a loose-NF archetype, a pore-model NF, and an ion-exchange
+pair); the solutes carry \code{nonvolatile true;} and a van~'t~Hoff
+\code{dissociation} factor.  A \code{scaling \{ minerals (calcite
+gypsum); \}} block runs the aqueous speciation solver per module at the
+bulk \emph{and at the wall}, so you see concentration polarisation as
+the scaling driver (\file{membrane07\_scaling\_si}).  Start with
+\file{membrane01\_RO\_NaCl\_seawater}, then the concentration-polarisation
+sweep \file{membrane03\_concentration\_polarization}.
+
+\paragraph{\code{ionExchanger}.}  A cation-exchange softener: the inlet
+water analysis is fully equilibrated with a fixed-capacity Na-form
+resin (Gaines--Thomas mass action), so Ca/Mg drop onto the resin and Na
+rises equivalent-for-equivalent.  \code{operation \{ resin SAC\_Na;
+CEC 2.0 eq/L; \}}; hardness removal is a \emph{result} (a
+target-hardness key is refused --- that is an outer-driver job).  Every
+run carries a non-suppressible banner: this is the fresh-resin
+equilibrium limit, not a bed in service (breakthrough is transient).
+Tutorial: \file{membrane08\_softened\_scaling} --- softener upstream of
+the RO train, the scaling driver removed at the source.
+
+\paragraph{\code{electrodialysisStack}.}  N cell pairs of alternating
+cation/anion-exchange membranes: an applied current drives ions out of
+the diluate channel into the concentrate.  Glass-box electrochemistry,
+all printed: Faraday transfer per cell pair ($\dot n_i = \xi I / z_i F$),
+Nernst membrane potential from real ion activities, the Cowan--Brown
+limiting current density (a loud warning --- never a clamp --- when
+$i > i_{\lim}$), ohmic drops from the membrane and channel resistances,
+and the stack power published on an energy wire.
+
+\begin{lstlisting}[language=dict]
+{ name edStack;  type electrodialysisStack;
+  inputs ( diluateFeed concentrateFeed );  outputs ( diluate concentrate );
+  operation
+  {
+      N_cellpairs 100;   current 8.0;        // A
+      xi 0.9;                                 // current efficiency (announced)
+      membraneArea 0.2 m2;  channelThickness 0.5 mm;
+      channelLength 0.4 m;  linearVelocity 0.05 m/s;
+      E_electrodes 1.5;  membrane CMX_AMX;
+  }
+  energyOutputs ( { name power; kind work; expression "W_electric"; unit W; } ) }
+\end{lstlisting}
+
+Tutorials: \file{tutorials/electrochem/ed01\_nacl\_desalination} and
+\file{ed02\_over\_limiting\_current} (what the $i_{\lim}$ warning looks
+like when you cross it).
+
+\paragraph{\code{psa}.}  Pressure-swing adsorption as a steady
+flowsheet unit --- the equilibrium-theory (local-equilibrium) shortcut:
+the swing between $P_{\mathrm{high}}$ and $P_{\mathrm{low}}$ on a
+competitive-Langmuir adsorbent sets the captured flow per species, with
+a declared equilibrium-utilisation derating \code{eta} and a purge
+fraction.  What the shortcut does \emph{not} model (breakthrough, cycle
+time, thermal effects) is announced in the run header.  A
+result-named key (\code{recovery}, \code{purity}) in \code{operation}
+is refused --- hitting a target is an outer-driver job.  Tutorial:
+\file{tutorials/steady/separation/psa01\_h2\_psa}.
+
+% ---------------------------------------------------------------------
+\subsection{Solids: separation, conveying, crystallisation}\label{sec:solids}
+
+Solids ride streams as a \code{phases \{ solid \{...\} \}} decomposition
+plus an optional particle-size distribution (\code{psd}); the solids
+units read and transform both.
+
+\paragraph{Gas--solid separation.}  \code{cyclone} is a PSD-aware
+classifier with five selectable models (\code{Lapple} default,
+\code{LeithLicht}, \code{IoziaLeith}, \code{Barth},
+\code{Muschelknautz} --- the last adds the solids-loading effect);
+\code{bagFilter} is cake-dominated near-total collection whose headline
+KPI is \code{dP\_filter}; \code{gasSolidSplitter} is the ideal spec'd
+split (PSD passes unchanged --- it does \emph{not} classify).
+
+\paragraph{\code{pneumaticConveyor}.}  A dilute-phase conveying line:
+the total $\Delta P$ is the sum of announced contributions (gas +
+solids acceleration, wall friction, static head), particle velocity by
+Hinkle, and the \emph{Rizk saltation velocity} reported with a loud
+warning if the gas velocity falls below it (settling / blockage risk)
+--- never a silent clip.
+
+\paragraph{\code{crystalliser}.}  Three models on one saturation
+foundation:
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+\item \code{equilibrium} (default) --- cooling crystalliser; the mother
+      liquor leaves saturated, yield $=$ solute in $-\,c_{\mathrm{sat}}(T)\cdot$solvent.
+\item \code{MSMPR} --- steady continuous population balance by the
+      method of moments: nucleation/growth kinetics from
+      \file{constant/crystallisation}, supersaturation $S$ a result,
+      and the full crystal-size distribution (mean sizes, CV, magma
+      PSD) reported.
+\item \code{FVM} --- the discretised population balance on a size grid
+      (size-dependent growth).
+\end{itemize}
+
+All three read the same saturation --- a solubility curve
+(\code{solubility \{\}} on the component) or, for a salt, the
+ion-activity $K_{sp}$ of the electrolyte package (including antisolvent
+drowning-out; \file{crystalliser08\_nacl\_antisolvent\_msmpr}).
+Multiple feeds are first-class (\code{inputs ( brine antisolvent );})
+and \code{operation \{ solute <name>; \}} names which salt this unit
+crystallises when the feed carries several
+(\file{crystalliser09\_KHT\_KCl\_series}).  The declared
+\code{outputs} pick the product shape: \code{( magma )} for one slurry
+(required by MSMPR/FVM so the PSD travels), or
+\code{( crystals motherLiquor )} for a solid--liquid split, where the
+cake leaves \emph{wet} (\code{cakeMoisture}, default 0.10 kg liquor per
+kg dry solid --- perfectly dry solids are unphysical) and
+\code{solidsRecovery} lets fines escape with the liquor.
+
+% ---------------------------------------------------------------------
+\subsection{Drying}\label{sec:drying}
+
+Three dryers, one honesty rule --- the drying air is a \emph{real
+stream} (it brings the heat and carries the moisture; the outlet
+temperature is a result, there is no imposed duty):
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+\item \code{sprayDryer} --- solution/suspension $\to$ powder
+      (\S\ref{sec:advanced-spray});
+\item \code{solidDryer} --- polish a \emph{hygroscopic} powder toward
+      the equilibrium moisture set by the air humidity and the solid's
+      GAB sorption isotherm (a \code{sorption \{\}} block on the
+      component, typically a case-local overlay --- sorption is
+      sample-specific);
+\item \code{evaporativeDryer} --- dry a \emph{non-sorbing} crystalline
+      solid of its free surface moisture: no isotherm exists or is
+      consulted; constant-rate evaporation until the first of three
+      announced limits binds (water gone, exhaust saturates, air runs
+      out of heat).
+\end{itemize}
+
+\subsubsection{Advanced spray drying: the atomiser library}\label{sec:advanced-spray}
+
+\begin{whatyoulllearn}
+How the \code{sprayDryer} atomises a solution into droplets, dries them
+to a powder of a real particle size, and where each piece of physics
+--- the droplet size, the liquid properties, the drying curve --- comes
+from.  ``All models are wrong, but some are useful'': every correlation
+is an algebraic fit (no CFD) and announces its source and validity
+envelope at run time.
+\end{whatyoulllearn}
+
+A spray dryer takes a liquid feed and hot drying air (both flowsheet
+\emph{streams}) and returns a powder plus the humid exhaust.  Three
+pieces of physics compose: (i)~\emph{atomisation} sets the droplet
+Sauter diameter $d_{32}$; (ii)~\emph{single-droplet drying}
+(Ranz--Marshall
+$\mathrm{Nu}=2+0.6\,\mathrm{Re}^{1/2}\mathrm{Pr}^{1/3}$, a wet-bulb
+surface) sets the rate; (iii)~the droplet shrinks to a powder particle
+$d_p=d_{32}\,(x_{\text{solid}}\rho_L/\rho_{\text{solid}})^{1/3}$
+carrying a residual moisture set by the material's sorption isotherm.
+
+\paragraph{The atomiser is a selectable sub-model.}
+
+\begin{lstlisting}[language=dict]
+operation
+{
+    atomiser
+    {
+        model   pressureNozzle;     // rotary | pressureNozzle | twinFluid
+        deltaP  40 bar;             // pressure-nozzle hardware
+    }
+    chamberDiameter  1.0 m;         // -> residence time is a RESULT
+    chamberHeight    5.0 m;
+    flow             co;            // co | counter current
+}
+\end{lstlisting}
+
+\noindent Omit the \code{atomiser} block and the default \code{rotary}
+wheel reads the legacy \code{wheelSpeed}/\code{wheelDiameter} keys ---
+older cases are unchanged.  The families and their hardware:
+
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\code{model} & correlation ($d_{32}$) & hardware \\
+\midrule
+\code{rotary} & Friedman/Marshall wheel & \code{wheelSpeed} [rpm], \code{wheelDiameter} [m] \\
+\code{pressureNozzle} & $9575\,\Delta P^{-1/3}\,\mu$m (class curve) & \code{deltaP} [Pa] \\
+              & \emph{or} Wang--Lefebvre (two-term) & \code{correlation wangLefebvre} \\
+\code{twinFluid} & Nukiyama--Tanasawa airblast & \code{relativeVelocity}, \code{airLiquidMassRatio} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Droplet size follows the liquid properties.}  $d_{32}$ rises
+with surface tension ($\sigma^{0.1}$--$\sigma^{0.6}$) and viscosity
+($\mu_L^{0.2}$), so a concentrated, viscous feed sprays coarser.
+Choupo pulls $\sigma$ and $\mu_L$ from the property layer when the
+\file{propertyDict} declares the models (\code{surfaceTension},
+\code{liquidViscosity}), with an announced fallback otherwise --- the
+$\sigma$ source is printed in the report.
+
+\paragraph{Drying kinetics --- equilibrium vs.\ curve.}  The powder
+does not leave bone dry: it stops at the residual moisture set by
+(a)~the equilibrium $X_e$ from the solid's \code{sorption} isotherm at
+the exhaust-air humidity, and (b)~the falling-rate approach past the
+critical moisture $X_c$ (the \code{dryingCurve} in
+\file{constant/dryingKinetics}).  Co- vs.\ counter-current changes the
+residence time and, in the trajectory models, the droplet thermal
+history.
+
+\paragraph{Chamber model --- named by its authors, not ``rigorous''.}
+The unit-level \code{model} slot picks the chamber model:
+\code{marshall} (default) --- the lumped inlet/outlet mass + energy
+balance and single-droplet constant-rate time (Marshall 1954);
+\code{langrishKockel} --- the 1-D axial droplet trajectory with the
+Characteristic Drying Curve, which reports the profiles of $X$, $d$,
+$T_g$, $T_p$ \emph{along} the chamber (a \file{profile.csv} you can
+plot); or \code{chen} --- the same trajectory with the Reaction
+Engineering Approach kinetics, a smooth activation-energy rate with no
+critical-moisture break.  Reported KPIs: $d_{32}$, $d_p$, Nu, Sh, $h$,
+$k_c$, $T_{\mathrm{out}}$, $T_{\mathrm{wetbulb}}$, the constant-rate
+droplet time and $X_{\mathrm{final}}$ --- all feeding
+sensitivity/sizing/costing.
+
+\subsubsection{Simulation vs.\ design --- the model runs both ways}\label{sec:spray-design}
+
+It can feel odd to supply a wheel speed and a chamber size just to
+\emph{simulate} a dryer.  That feeling is correct, and it has a name:
+what you are doing is \emph{rating} ---
+geometry~$\rightarrow$~performance, ``I have this dryer, what does it
+do?''.  The opposite question --- ``I want this powder, what dryer do I
+need?'' --- is \emph{design}, targets~$\rightarrow$~geometry.  Choupo
+does not split these into two black boxes; it keeps \textbf{one model
+and runs it in both directions}.
+
+\emph{Rating} is the \code{sprayDryer} unit itself.  \emph{Design} is a
+\file{postDict} sizing pass carrying a \code{design \{\}} block, which
+\textbf{inverts the run you just rated} --- it does not re-derive the
+correlations, it \emph{scales from the simulated point}, so every step
+is visible:
+
+\begin{lstlisting}[language=dict]
+sizing
+{
+    units
+    (
+        {
+            unitName    dryer;
+            type        sprayDryer;
+            material    SS304;
+            designRules
+            {
+                design
+                {
+                    targetSize       40;    // um  -- target powder Sauter mean d32
+                    residenceFactor  3.0;   // chamber residence >= 3 x drying time
+                }
+            }
+        }
+    );
+}
+\end{lstlisting}
+
+The pass then reports the geometry the targets demand: the wheel speed
+from the target drop size (Friedman's $d_{32}\!\sim\!N^{-0.6}$) and the
+chamber size from the required residence, with the Tanasawa regime
+warning still telling you whether that design lands in the clean
+ligament regime.  In \file{tutorials/steady/drying/sprayDryer07\_design}
+the sugar dryer rated at 20\,000~rpm must spin to $\approx$40\,000~rpm
+for a 40~\textmu m powder, and its $1\times5$~m chamber turns out
+$\sim$30$\times$ oversized --- the fast sugar drying needs only 0.24~s
+of residence.  \textbf{You simulate with the unit and design with the
+pass: two directions of one model, both on the page, neither hidden.}
+
+% ---------------------------------------------------------------------
+\subsection{Flow primitives: mixer, splitter, valve, pipe}\label{sec:primitives}
+
+\paragraph{\code{mixer}.}  Adiabatic merge:
+$P_{\mathrm{out}} = \min(P_{\mathrm{in}})$, energy balance on the
+dominant phase, solids summed, Newton-1D in $T_{\mathrm{out}}$.  A
+mixer \emph{mixes} --- it never runs an internal flash (separators
+separate).  Declare gas inlets with \code{phase gas;} in their
+\file{0/} files so the energy balance picks the right basis; an
+optional \code{operation \{ T 330 K; \}} declares the mix temperature
+and skips the adiabatic balance (announced in the log).
+
+\paragraph{\code{splitter}.}  One inlet, N outlets at
+\code{fractions ( 0.6 0.4 );} --- a flow split, not a separation: all
+branches share $T$, $P$, composition, $vf$.
+
+\paragraph{\code{valve}.}  Isenthalpic throttle to
+\code{operation \{ P 1 bar; \}}; $T_{\mathrm{out}}$ and the vapour
+fraction are results (a real-gas EoS flashes the let-down).  Use it
+upstream of a flash to set the drum pressure; it warns if
+$P \ge P_{\mathrm{in}}$.
+
+\paragraph{\code{pipe}.}  The pressure \emph{drop} is a computed result
+of geometry + flow --- never a spec (a pipe has no knob; a pump raises
+$P$, a valve sets a let-down).  Darcy--Weisbach friction + minor losses
++ static head, with the friction-factor sub-model in the \code{model}
+slot (\code{Churchill} default --- one explicit correlation across all
+regimes; \code{Haaland}; \code{Colebrook}):
+
+\begin{lstlisting}[language=dict]
+{ name P1;  type pipe;  model Churchill;
+  in feed;  outputs ( downstream );
+  operation {
+    geometry {
+      D 0.1 m;  L 50 m;  roughness 4.6e-5 m;  dz 2 m;    // rise costs P
+      fittings ( { K 0.9; count 2; }      // two elbows
+                 { K 10.0;         } );   // one globe valve
+    }
+  }
+}
+\end{lstlisting}
+
+When the feed flashes two-phase at $(T,P)$, the pipe automatically
+switches to a gas--liquid model, selected in an \code{operation \{
+twoPhase \{ model ...; \} \}} sub-block: \code{LockhartMartinelli}
+(default; Chisholm multiplier + Butterworth holdup),
+\code{homogeneous}, \code{Friedel}, or \code{BeggsBrill} (flow-pattern
+map + inclination).  KPIs include the five-way $\Delta P$ breakdown,
+velocities, Reynolds, regime, holdup and void fraction.  Tutorials:
+\file{pipe01\_water\_line}, \file{pipe02\_airwater\_twophase}.
+
+% ---------------------------------------------------------------------
+\subsection{Heat duties, utilities, heat integration}\label{sec:energy-utilities}
+
+One rule covers heat: \textbf{a duty is carried by a physical stream
+when one is wired to it, otherwise it is sized to a plant utility by
+temperature level}.  Shaft work is a direct scalar wire
+(\S\ref{sec:rotating}); no abstract ``Q stream'' ever travels the
+flowsheet.
+
+\paragraph{Q then allocate (the default).}  Most units just report
+their duty and let a report size the utility.  Add to
+\file{controlDict}:
+
+\begin{lstlisting}[language=dict]
+reports { utilityAllocation { dTmin 10; } }
+\end{lstlisting}
+
+For each duty $Q$ at process temperature $T$ the report picks the
+lowest-grade catalogue utility that still works (a steam grade with
+$T_{\mathrm{in}} \ge T + \Delta T_{\min}$ for heating; a coolant with
+$T_{\mathrm{in}} \le T - \Delta T_{\min}$ for cooling) and converts
+$|Q|$ to a mass flow, a load, and a cost.  Nine utilities ship in
+\file{data/standards/utilities/}: \code{steamLP/MP/HP},
+\code{coolingWater}, \code{chilledWater}, \code{dowthermA},
+\code{hitecSalt}, \code{refrigerationPG}, and \code{electricity} ---
+the power tier tallies pump/compressor motors against turbine
+generators, so a combined cycle shows a net electricity credit.
+
+\paragraph{Heat integration.}  Reuse a column's condenser heat by
+wiring the duty on the consumer, like any energy link:
+
+\begin{lstlisting}[language=dict]
+{ name preheater;  type heater;  in coldFeed;  outputs ( warmFeed );
+  operation { }                                   // Q comes from the link
+  energyInputs ( { from column01.condenser;  kind heat;  target Q; } ) }
+\end{lstlisting}
+
+Both ends then read \emph{(carried)} in the allocation --- no
+double-counting, and the report shows the saving.  A \emph{forward}
+link runs in one pass; a \emph{feedback} link (the condenser preheating
+the column's own feed) is an energy tear --- the flowsheet detects it,
+turns the recycle loop on, and converges the duty by successive
+substitution.  Tutorials: \file{heatlink01\_condenser\_to\_heater},
+\file{heatlink02\_condenser\_feed\_preheat}.
+
+% =====================================================================
+\section{Reports}\label{sec:reports}
+
+\begin{whatyoulllearn}
+One \code{reports \{\}} block in \file{controlDict} turns a converged
+run into CSV tables and a consolidated spreadsheet --- stream tables,
+balances, utility bills, profiles, costs.
+\end{whatyoulllearn}
+
+Each key names a report object; after a converged solve each writes
+into the case's \file{reports/} directory and announces the file:
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Report} & \textbf{What it writes} \\
+\midrule
+\code{streamTable}   & one row per stream: role, $F$, $F_{\mathrm{mass}}$, $T$, $P$, $vf$, compositions \\
+\code{massBalance}   & per-component in/out/net + global closure \%, and a per-unit table \\
+\code{energyBalance} & per-unit $H_{\mathrm{in}}$ / $H_{\mathrm{out}}$ / $\Delta H$ (the implied duty) + the plant boundary \\
+\code{utilities}     & consumption aggregated by stream \code{category} (kg/h, MW, cost) \\
+\code{utilityAllocation} & each duty sized to a catalogue utility by temperature level (\S\ref{sec:energy-utilities}) \\
+\code{energyStreams} & the W/Q wire ledger \\
+\code{computed}      & the values of computed \code{\$variables} (below) \\
+\code{profiles}      & per-unit internal profiles (column stages, PFR axis, dryer trajectory) \\
+\code{design} / \code{economics} & equipment realisation + cost tables (with a \file{postDict}, \S\ref{sec:post}) \\
+\code{spreadsheet}   & one consolidated, coloured \file{report.ods} (multi-sheet) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Computed variables.}  For post-processing arithmetic,
+declare \code{compute} expressions in the \code{variables} block of
+\file{flowsheetDict} --- they resolve against unit KPIs, stream fields,
+and earlier variables, and land in \file{reports/computed/values.csv}:
+
+\begin{lstlisting}[language=dict]
+variables
+{
+    Q_total    { compute "effect1.Q + effect2.Q + effect3.Q";  unit kW; }
+    economy    { compute "water_evap / effect1.F_steam"; }
+}
+\end{lstlisting}
+
+% =====================================================================
+\section{Sweeps, design specs, optimisation}\label{sec:outer}
 
 \begin{whatyoulllearn}
 How to wrap the simulator in an outer loop without writing a single
-line of \cpp.
+line of \cpp: trend one knob (\code{sweep}), map two
+(\code{gridSweep}), meet N specs with N knobs (\code{designSpec}), or
+search for the best value (\code{optimization}).
 \end{whatyoulllearn}
 
-Drop a \file{system/outerDict} into a case and the simulator is wrapped
-in an outer loop.
+Drop a \file{system/outerDict} into a case and the binary switches from
+one pass to the driver loop automatically.  One driver per case;
+\code{type} selects it.  Ask the right question of the right tool:
 
-\subsection{Sensitivity sweep --- \code{type sweep;}}
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}Xl@{}}
+\toprule
+\textbf{Question} & \textbf{Tool} \\
+\midrule
+``What if $T$ were 360 K?'' (one point)          & edit the dict, re-run \\
+``How does $V/F$ trend with $T$?''               & \code{sweep} \\
+``What does the $(T,P)$ envelope look like?''    & \code{gridSweep} \\
+``What area gives exactly 4500 kg/h?''           & \code{designSpec} \\
+``Which reflux minimises $V_{\mathrm{strip}}$?'' & \code{optimization} \\
+``Fit NRTL to my bubble-$T$ data''               & \code{fitParameters} under \code{choupoProps} (\S\ref{sec:props}) \\
+\bottomrule
+\end{tabularx}
+\end{center}
 
-Vary one design value across a grid and harvest responses:
+\paragraph{Paths.}  Drivers mutate the case between passes via
+dot-and-bracket paths (\code{units[0].operation.refluxRatio},
+\code{variables.A}, \code{streams.feed.F} --- the last steered through
+an explicit stream-override channel, since stream state lives in
+\file{0/}).  Values written this way are \emph{raw canonical SI}.
+Results are read back as \code{<unit>.<kpi>} or
+\code{<stream>.\{F,T,P,vf\}}.
+
+\subsection{\code{type sweep;} --- trend over one parameter}
 
 \begin{lstlisting}[language=dict]
 type        sweep;
 
 parameter
 {
-    target    units[0].operation.refluxRatio;   // JSON-path-like syntax
-    range     ( 1.5  5.0 );
-    nPoints   10;
+    target    units[0].operation.T;        // any scalar dict path
+    range     ( 360.0  385.0 );            // (min max), raw SI of the target
+    nPoints   26;
 }
 
 responses
-(column01.T_top
-    column01.T_bottom
-    column01.x_D_LK
-    column01.V_strip
+(
+    flash01.V_over_F       // <unit>.<kpi>
+    flash01.Q_kW
 );
 
-report
-{
-    format   csv;
-    file     sweep_results.csv;
-}
+report { format csv;  file sweep_flashT.csv; }
 \end{lstlisting}
 
-Each response is \code{unitName.kpiName} (a unit-op KPI) or
-\code{streamName.field} where field is \code{F}, \code{T}, \code{P}, or
-\code{vf}.
+One row per point; a point that fails to converge is reported and
+written as \code{nan} --- the sweep continues.  Canonical case:
+\file{tutorials/steady/flash/flash06\_sweep\_T} (the $V/F$ S-curve
+across the bubble--dew window).  \code{type gridSweep;} is the 2-D
+version --- a \code{parameters ( \{...\} \{...\} )} list of two targets,
+producing the long-form CSV a contour plot reads
+(\file{flash07\_gridsweep\_TP}: the flash envelope over $(T,P)$;
+non-converged cells stay honest gaps, never interpolated).
+
+A sweep may declare CONSTRAINTS --- the same block the SQP optimizer
+uses, same grammar, same refusals:
+\begin{lstlisting}[language=dict]
+constraints
+(
+    { kpi column01.x_D_LK;   atLeast 0.985; }
+    { kpi column01.V_strip;  atMost  0.065;  }
+);
+\end{lstlisting}
+The sweep becomes a FEASIBILITY MAP: every row gains, per constraint,
+the value, the bound, the signed normalised residual and a
+\code{satisfied} flag, plus a final \code{feasible} verdict --- and no
+point is ever filtered.  The infeasible rows are the lesson: where the
+spec fails and where the budget binds, with the feasible window read
+directly off the CSV
+(\file{sensitivity02\_feasibility\_map}: the reflux window between the
+purity spec and the boilup budget).
+
+Two objectives that pull against each other build a PARETO FRONT by
+epsilon-constraint --- \code{type paretoSweep;} --- with no
+multi-objective solver: the second objective becomes a swept bound and
+each front point is one full, auditable SQP run,
+\begin{lstlisting}[language=dict]
+type paretoSweep;   method sqp;
+variables ( { path units[0].operation.refluxRatio;
+              min 1.5; max 6.0; initial 3.0; } );
+objective { kind kpi;  path column01.V_strip;  sense minimise; }
+tradeoff  { kpi column01.x_D_LK;  bound atLeast;
+            range ( 0.96  0.994 );  nPoints 5; }
+report    { file pareto.csv; }
+\end{lstlisting}
+The CSV records, per point, the bound, the achieved objective and
+trade-off values, the variables at the optimum and the solver's own
+converged/feasible verdicts --- a failed point stays on the table,
+marked.  Where the bound is slack the point is the unconstrained
+optimum; where it binds, the SQP's Lagrange multiplier is the marginal
+price of the second objective
+(\file{pareto01\_purity\_energy}: the purity--energy front of the
+benzene/toluene column, $R^*$ rising 1.6\,$\to$\,3.8 as the purity
+bound tightens).
+
+An INTEGER decision --- how many stages? --- is declared, never
+relaxed: \code{integer true;} on a variable makes the optimizer
+enumerate every value in \code{min..max}, each one a NEW run (a changed
+\code{nStages} rebuilds the column; a late parameter mutation on a
+sized object would lie), solving the inner continuous problem at each.
+The FULL table is emitted --- failures included, best marked
+(\file{optim06\_integer\_stages}: the classic $N$-vs-$R$ trade, boilup
+falling 1.03\,$\to$\,0.045\,kmol/s from 9 to 14 stages at the same
+purity spec, with $N=8$ refused aloud because the feed cannot sit on
+the bottom stage).
 
 \begin{tryit}
-\code{runCase tutorials/steady/optimisation/sensitivity01\_column\_reflux} produces
-\file{sweep\_results.csv}. Plot column~6 against column~2 with any
-tool; you'll see the classic ``$V_{\text{strip}}$ asymptote'' as the
+\code{runCase tutorials/steady/optimisation/sensitivity01\_column\_reflux}
+produces \file{sweep\_results.csv}.  Plot $V_{\mathrm{strip}}$ against
+$R$ with any tool; you'll see the classic energy asymptote as the
 reflux ratio grows past the minimum.
 \end{tryit}
 
-\subsection{Parameter estimation}\label{sec:fitBinaryPair}
+\subsection{\code{type designSpec;} --- meet N specs with N knobs}\label{sec:designspec}
 
-A dedicated concrete driver, \code{type fitBinaryPair;}, regresses
-the four interaction parameters of one binary pair against
-experimental bubble-temperature data using hand-rolled
-Levenberg-Marquardt (Marquardt diagonal damping, central
-finite-difference Jacobian, 3-up/5-down trust-region update of
-$\lambda$):
+The DesignSpec is the visible version of ``back-compute the input from
+the target''.  Each knob is a case-level \code{\$variable}, declared in
+\file{flowsheetDict} and referenced by the unit --- the driver iterates
+the variable, a square Newton meets the targets:
 
-\begin{verbatim}
-type      fitBinaryPair;
+\begin{lstlisting}[language=dict]
+// system/flowsheetDict
+variables { A 100 m2; }                       // initial guess; DesignSpec iterates it
+units ( { name effect1; type evaporator;  ...
+          operation { area $A; ... } }
+        { name effect2; type evaporator;  ...
+          operation { area $A; ... } } );     // the SAME $A: equal areas by construction
+\end{lstlisting}
 
-pair      ethanol-water;
-data      constant/experiments/ethanol-water-101kPa;
-unit      bt01;            % the bubbleT unit that emits T_bubble
+\begin{lstlisting}[language=dict]
+// system/outerDict
+type         designSpec;
 
-% Optional (defaults shown):
-% maxIter   30;     tolerance 1.0e-6;
-% fdStep    1.0e-4; lambda0   1.0e-3;
-\end{verbatim}
-
-The dataset is a dict with a flat two-column list:
-
-\begin{verbatim}
-P    1.01325;
-data
+manipulate
 (
-    0.05  361.95
-    0.10  359.95
-...
-    0.95  351.45
+    { variable A;   initial 100.0 m2;   min 20.0 m2;   max 500.0 m2; }
+    { variable streams.utilitySteam_200kPa.F;
+                    initial 400 kmol/h; min 100 kmol/h; max 1500 kmol/h; }
 );
-\end{verbatim}
 
-The driver writes a dated proposal to
-\file{constant/binaryPairs/<model>/<c1>-<c2>.fit-<YYYY-MM-DD>.dat};
-the human promotes it manually with \code{mv} once inspected.  Worked
-example: \file{tutorials/fitNRTL01\_ethanol\_water/}, with detailed
-walk-through in its \file{README.md}.
+targets                        // SAME COUNT as knobs (square Newton)
+(
+    { path  L3.F_mass;   value 4500.0 kg/h;   tol 1.0 kg/h; }   // value form
+    { path  effect3.P;   value 15 kPa;        tol 50 Pa;    }
+    // equality form: { lhs effect1.area;  rhs effect2.area;  tol 0.001; }
+);
 
-\subsection{Optimisation --- \code{type optimization;}}
+options { maxIter 40;  tolF 1.0;  fdStep 1.0e-4; }
+report  { file designspec_history.csv; }
+\end{lstlisting}
 
-\code{type optimization;} drives a hand-rolled Nelder-Mead simplex to
-minimise a target KPI (e.g.\ annualised cost) over one or more decision
-variables, re-running the whole simulator --- and, if a \file{postDict}
-is present, the sizing + costing chain --- at every evaluation.  Two
-worked examples ship: \file{tutorials/steady/optimisation/optim01\_column\_reflux}
-(minimises \code{column01.V\_strip} over reflux ratio + feed stage) and
-\file{tutorials/steady/optimisation/optim02\_process\_cost} (minimises the total
-Guthrie module cost over reactor volume + heater outlet temperature).
+All knob entries carry units, converted on read; a \code{manipulate}
+variable may also be a stream field (as above --- the steam flow the
+plant must supply).  After convergence the simulator is replayed once
+at the design point so the case ends with full converged output.
+Canonical cases: \file{compressor02\_designspec\_pout} ($1\times1$),
+\file{designSpec01\_triple\_equal\_areas} ($2\times2$: one area + one
+steam flow meet a capacity and a vacuum spec at once).
+
+\subsection{\code{type optimization;} --- search for the best value}
+
+\begin{lstlisting}[language=dict]
+type    optimization;
+method  nelderMead;                        // or sqp (adds nonlinear constraints)
+
+variables
+(
+    { path units[0].operation.refluxRatio;  min 3.0;  max 5.0;  initial 4.0; }
+    { path units[0].operation.feedStage;    min 6;    max 12;   initial 8;   }
+);
+
+objective
+{
+    kind     kpi;             // kpi | stream | cost | costTotal
+    path     column01.V_strip;
+    sense    minimise;        // minimise (default) | maximise
+}
+
+options { maxIter 80;  tolX 5e-3;  tolF 1e-4; }
+report  { file optimization_history.csv; }
+\end{lstlisting}
+
+\code{nelderMead} is the derivative-free simplex with hard box bounds
+--- an evaluation that fails to converge gets an announced infinite
+penalty and the simplex contracts away from it.  The \code{cost} /
+\code{costTotal} objective kinds run the \file{postDict} sizing +
+costing chain on every evaluation (\S\ref{sec:post}) --- see
+\file{optim01\_column\_reflux} and \file{optim02\_process\_cost}.
+
+\code{method sqp;} switches to a hand-rolled line-search Sequential
+Quadratic Programming (damped BFGS on the Lagrangian, L1 merit,
+active-set QP) and accepts a \code{constraints (...)} list with
+unit-aware \code{atLeast} / \code{atMost} / \code{equals} bounds on any
+KPI.  The trace is glass-box: per-iteration KKT residuals, the active
+set, the Lagrange multipliers (shadow prices), and a closing five-line
+KKT certificate.  Worked example:
+\file{optim04\_membrane\_recovery\_scaling} --- brackish-RO recovery
+maximised subject to wall-scaling constraints, with the calcite
+constraint active at the optimum and its multiplier printed (the
+shadow price of scaling head-room).  Asking Nelder--Mead for
+constraints is a loud error --- add a penalty term or switch method.
+
+\paragraph{Parameter estimation.}  Regression of model parameters
+against experimental data lives in \code{choupoProps} as the
+\code{fitParameters} operation (\S\ref{sec:props}); the old
+\code{fitBinaryPair} outer driver was retired, and asking for it points
+you to the replacement.
 
 % =====================================================================
 \section{Equipment sizing and costing}\label{sec:post}
 
 \begin{whatyoulllearn}
 How a single \file{postDict} turns a converged flowsheet into a vessel
-list, wall thicknesses, weights, and Guthrie/Turton bare-module costs
-in EUR.
+list, wall thicknesses, weights, and bare-module costs.
 \end{whatyoulllearn}
 
-Drop a \file{system/postDict} and the simulator result is post-processed.
-
-\subsection{Sizing --- \code{sizing \{ units (...) \}}}
+Drop a \file{system/postDict} and the simulator result is
+post-processed after the pass:
 
 \begin{lstlisting}[language=dict]
 sizing
@@ -856,31 +2425,15 @@ sizing
                 jointEfficiency 1.0;
             }
         }
-
         {
             unitName    heater;
             type        shellTubeHX;
             material    SS304;
-            designRules
-            {
-                U               600.0;        // W/(m^2 K)
-                LMTD            10.0;         // K
-                pressureDesign  2.0;
-            }
+            designRules { U 600.0;  LMTD 10.0;  pressureDesign 2.0; }
         }
     );
 }
-\end{lstlisting}
 
-\code{type} selects an \code{EquipmentSize} model. At:
-\code{stirredTank} (vessels including CSTRs and reactor surge drums) and
-\code{shellTubeHX}. Materials come from \file{data/standards/materials/*.dat}
---- built-in: \code{carbonSteel}, \code{SS304}, \code{SS316},
-\code{aluminium}.
-
-\subsection{Costing --- \code{costing \{ method... \}}}
-
-\begin{lstlisting}[language=dict]
 costing
 {
     method      Guthrie;
@@ -891,12 +2444,16 @@ costing
 }
 \end{lstlisting}
 
-The \code{Guthrie} model uses Turton-style purchased-cost correlations,
-ASME wall-thickness pressure factor for vessels, polynomial $F_P$ for
-heat exchangers, then $C_{BM} = C_p (B_1 + B_2 \, F_M \, F_P)$, and
-$C_{TM} = 1.18 \, C_{BM}$.
-
-The post-processor prints a per-unit cost table to stdout:
+\code{type} selects an \code{EquipmentSize} model
+(\code{stirredTank}, \code{shellTubeHX}, and the \code{design \{\}}
+inversions such as the spray dryer's, \S\ref{sec:spray-design});
+materials come from \file{data/standards/materials/} (carbon steel,
+SS304, SS316, aluminium --- each with density, Guthrie material factor,
+yield stress, ratings).  The \code{Guthrie} costing model uses
+Turton-style purchased-cost correlations, the ASME wall-thickness
+pressure factor for vessels, then
+$C_{BM} = C_p (B_1 + B_2 F_M F_P)$ and $C_{TM} = 1.18\,C_{BM}$,
+printing a per-unit table:
 
 \begin{lstlisting}
 ========================  Equipment Costing  =========================
@@ -908,76 +2465,500 @@ The post-processor prints a per-unit cost table to stdout:
   TOTALS (EUR)                            367 304      2 162 786    2 552 087
 \end{lstlisting}
 
+Cost indices, currency rates and prices are \emph{case data} --- dated
+and cited in the dict, never invented by the engine.  Run
+\file{tutorials/steady/flowsheets/process02\_with\_design} for the full
+chain, and \file{optim02\_process\_cost} for an optimiser driving it.
+
 % =====================================================================
-\section{Tour of the tutorials}
+\section{Batch simulation: \code{choupoBatch}}\label{sec:batch}
 
 \begin{whatyoulllearn}
-Choupo ships 131 tutorials under \file{tutorials/\{steady,batch,ctrl,props,plant\}/};
-\code{listCases} tabulates them all with one-line descriptions.  The
-selection below is the steady-state on-ramp --- pick the one closest
-to what you want to do and edit from there.
+How the time-dependent binary integrates closed vessels ---
+\code{batchReactor}, \code{batchStill} (plain Rayleigh or a staged
+rectifier), \code{batchCrystalliser} --- and how a \code{recipe} block
+scripts a campaign of transfers and setpoint changes.
+\end{whatyoulllearn}
+
+A batch case is the same case shape with time controls in
+\file{controlDict}:
+
+\begin{lstlisting}[language=dict]
+application    choupoBatch;
+startTime      0;         // s
+endTime        600;       // s
+deltaT         1.0;       // s   (RK4 step)
+writeInterval  30;        // s   (trajectory snapshot interval)
+\end{lstlisting}
+
+Each vessel carries an \code{initial \{\}} charge instead of an inlet
+stream; the run writes \file{trajectory.csv} (one column per state
+variable, one row per \code{writeInterval}).
+
+\subsection{\code{batchReactor}}
+
+\begin{lstlisting}[language=dict]
+{ name reactor;  type batchReactor;
+  initial
+  {
+      T 350 K;  P 1.013 bar;  V 0.001;  totalMoles 0.0185;
+      molarComposition { ethanol 0.5;  aceticAcid 0.5; }
+  }
+  operation { mode isothermal;  T_setpoint 350 K; }   // or: mode adiabatic
+  reaction  esterification; }                          // or: reactions ( A_to_B B_to_C );
+\end{lstlisting}
+
+\code{mode isothermal} holds $T$; \code{adiabatic} integrates the
+energy balance alongside the species --- \file{batch02\_adiabatic} shows
+a cold start, a slow induction, then thermal runaway from 345 to
+482~K in a hundred seconds.  The kinetics vocabulary is shared with the
+steady reactors: \code{Arrhenius}, the gas-kinetics forms
+(\code{modifiedArrhenius}, \code{thirdBody}, \code{falloff} --- real
+combustion mechanisms run here, see \file{ignition02\_h2air\_slack}),
+and \code{LHHW} --- the \emph{same} \code{RateLaw} class
+(\S\ref{sec:lhhw}), so a batch vessel and a CSTR can never disagree
+about what an adsorption denominator means.
+
+\paragraph{Stiff chemistry: adaptive time-stepping.}  The default is
+the fixed-step RK4 loop.  Add \code{timeStepping adaptive;} to
+\file{controlDict} and the stiff, error-controlled Rosenbrock23
+integrator takes over --- the step starts low (\code{deltaT0}), grows
+through quiet stretches, and shrinks through the runaway, with the step
+history printed at verbosity 3.  Trajectory rows still land on the
+clean \code{writeInterval} grid.  Compare
+\file{batch06\_adaptive\_runaway} with its fixed-step twin, and
+\file{ignition01\_h2o2} (real GRI-Mech H/O ignition, $\lambda \sim
+10^{15}$) with \file{ignition01\_h2o2\_rk4}, which blows up to NaN at
+the same \code{deltaT} --- the stiffness lesson on real chemistry.
+
+\subsection{\code{batchStill} --- Rayleigh and the batch rectifier}
+
+The default \code{model rayleigh;} is the classical open still:
+constant boil-off \code{F\_vap}, the bubble point re-solved each step,
+the pot trajectory following the Rayleigh integral
+(\file{still01\_benzene\_toluene} reproduces the closed form to
+$\sim$2\,\%; \file{still02\_ethanol\_water\_azeo} shows the pot moving
+\emph{away} from the azeotrope --- a Rayleigh still cannot cross it from
+below).  \code{dischargeTo receiver;} routes the condensed vapour into
+a passive \code{batchAccumulator}, so pot + receiver conserve the
+charge at all times.
+
+\code{model rectifier;} adds the classical batch rectification:
+\code{nStages} ideal stages above the pot and a total condenser, with
+the reflux policy a first-class choice:
+
+\begin{lstlisting}[language=dict]
+{ name still;  type batchStill;  model rectifier;
+  dischargeTo receiver;
+  initial   { T 365 K;  P 1.013 bar;  totalMoles 1e-3;
+              molarComposition { benzene 0.5;  toluene 0.5; } }
+  operation { P 1.013 bar;  F_vap 1.5e-6;      // boilup V, kmol/s
+              nStages 3;
+              refluxPolicy constantReflux;  refluxRatio 3.0; } }
+\end{lstlisting}
+
+Under \code{constantReflux}, \code{F\_vap} is the internal boilup $V$;
+the product is $D = V/(R+1)$ and the distillate composition
+$x_D(t)$ is solved each instant from the quasi-steady stage cascade ---
+it starts rich and drifts down, the constant-$R$ purity trade
+(\file{still04\_rectifier\_benzene\_toluene}; with \code{nStages 0} and
+$R = 0$ it reproduces plain Rayleigh to the last digit).
+
+\code{refluxPolicy constantComposition;} holds a light-key purity
+instead: \code{lightKey benzene;\ x\_D\_target 0.93;\ refluxMax 8;\
+onRefluxLimit stopDistillation;} --- $R(t)$ is solved each step by a
+bracketed search, climbing as the pot depletes; when the ceiling can no
+longer reach the target the run \emph{announces} the limit and executes
+the declared action (distillation stops, the event lands in the
+trajectory and the KPIs).  Distinct refusals exist for a target below
+the $R=0$ floor, a target unreachable at \code{refluxMax}, and an
+azeotrope barrier --- computed from the VLE, not guessed
+(\file{still05\_rectifier\_constant\_xD}).
+
+\subsection{\code{batchCrystalliser}}
+
+A supersaturated charge desupersaturates in time: RK4 on the packed
+moments $(\mu_0,\mu_1,\mu_2,\mu_3,n_{\mathrm{solute}})$, against the
+same kinetics library the steady MSMPR uses
+(\file{constant/crystallisation}), so the crystal-size distribution
+grows through the batch (\file{batch05\_crystalliser}).
+
+\subsection{Recipes --- scripting a campaign}
+
+A \code{recipe (...)} list in \file{flowsheetDict} schedules events by
+time or by condition:
+
+\begin{lstlisting}[language=dict]
+recipe
+(
+    { time 400;  action transfer;      from reactor;  to still;  fraction 1.0; }
+    { time 200;  action setParameter;  unit reactor;  key T_setpoint;  value 350.0; }
+    { when { unit reactor;  quantity x_ethanol;  op lt;  value 0.30; }
+      action transfer;  from reactor;  to still;  fraction 0.5; }
+);
+\end{lstlisting}
+
+Actions: \code{transfer} (partial via \code{fraction}; the receiving
+vessel may start empty), \code{setParameter}, and condition-triggered
+\code{when} events (\code{quantity} is \code{T}, \code{total},
+\code{n\_<comp>} or \code{x\_<comp>}; \code{op} is
+\code{gt}/\code{ge}/\code{lt}/\code{le}).  Every fired action lands in
+the result's timeline --- the machine-readable campaign sequence ---
+and, underneath it, the MATERIAL LEDGER: one structured record per
+material edge (interval, vessels, per-component amount, transported
+enthalpy integrated package-by-package).  The run closes a campaign
+MASS BALANCE over all-phase vessel inventories ($m_0 = m_{final} +
+m_{external}$; per-ELEMENT for reacting campaigns) and reports it under
+the \code{campaign} KPIs; a genuine leak marks the run non-converged.
+A still without a \code{dischargeTo} receiver is recorded as an
+unrouted external outlet, never a silent loss.
+\file{recipe01\_react\_then\_distill} runs the classic react-then-still
+sequence in one case.
+
+The material ledger has an ENERGY twin: per vessel, one record per
+segment of constant physics (a \code{setParameter} or a charge closes
+the segment), with the isothermal reactor's jacket duty priced exactly
+from committed mole numbers ($Q = \Delta H$ of the closed constant-$P$
+segment; a declared \code{dH\_rxn} prices lumped species via reaction
+extents, announced).  A recipe \code{transfer} conserves enthalpy by
+construction: the mix temperature solves $H$-equality on the elements
+datum (heat-capacity differences matter --- hot ethanol into cold water
+lands $\sim$4\,K above the molar average), falling back to the molar
+average only when a species cannot be priced, announced.  Stills carry
+reboiler and condenser duty records (phase-enthalpy differences of the
+actual packages at their own temperatures; the rectifier's condenser
+handles the whole boilup $V$ at the top-stage $T$).  The campaign
+ENERGY BALANCE only claims a verdict when every piece is ledgered and
+priceable --- otherwise the run prints \code{energy balance UNAVAILABLE}
+naming each missing piece (a temperature jump, a fallen-back charge, a
+species without formation data).  KPIs land under \code{campaign} as
+\code{energy\_*}; see \file{batch08\_isothermal\_duty},
+\file{recipe04\_charge\_enthalpy} and
+\file{recipe01\_react\_then\_distill} (the react-then-distil showcase
+closes end to end at $10^{-16}$).  Valid duties are then allocated to
+catalogue UTILITIES by temperature level (the still's reboiler draws LP
+steam by its latent heat; a 293\,K crystalliser needs chilled water,
+not cooling water), with campaign totals under \code{utility\_*} ---
+energy, mass and cost per utility; a duty no utility can serve is
+listed, never dropped.
+
+% =====================================================================
+\section{Dynamic simulation and control: \code{choupoCtrl}}\label{sec:ctrl}
+
+\begin{whatyoulllearn}
+How the control binary integrates a continuously fed plant while
+controllers write manipulated variables --- and why the controller
+sample time and the integrator step are two different things.
+\end{whatyoulllearn}
+
+\code{choupoCtrl} integrates open vessels with continuous feeds ---
+$\mathrm{d}Y/\mathrm{d}t = f(Y, u, t)$ --- with a \code{controllers}
+layer writing the manipulated variables $u$ at each sample.  In
+\file{controlDict}, \code{deltaT} is the controller \emph{sample time};
+with \code{timeStepping adaptive;} the plant is sub-stepped between
+samples by the stiff integrator while the manipulated variable is held
+--- two time steps, both correct
+(\file{ctrl03\_adaptive\_disturbance}).
+
+\subsection{\code{dynamicCSTR}}
+
+\begin{lstlisting}[language=dict]
+{ name reactor;  type dynamicCSTR;
+  initial { T 320 K;  P 1.013 bar;  V 0.001;  totalMoles 0.0185;
+            molarComposition { compA 1.0; } }
+  feed    { F 5e-5 kmol/s;  T 320 K;  composition { compA 1.0; } }
+  operation { reactions ( a_to_b );  jacketUA 30 W/K; } }
+\end{lstlisting}
+
+Constant-volume continuous CSTR with an optional jacket
+($UA\,(T_j - T)$); RK4 on the packed $(n_i, T)$.  Its measured (CV)
+and manipulated (MV) variables are string-keyed so controllers bind by
+name.  Kinetics: \code{Arrhenius} or \code{LHHW} (the shared rate law
+--- \file{ctrl07\_lhhw\_inhibition} closes a temperature loop on a
+reaction that poisons itself, the exotherm fading as the product covers
+the catalyst).  Add \code{start steadyState;} inside \code{initial}
+and the engine relaxes the holdup ODE to its fixed point at the
+declared feed and prints the seeded state --- a clean start at the
+operating point.
+
+\subsection{Controllers}
+
+\begin{lstlisting}[language=dict]
+controllers
+(
+    {
+        name  TC1;
+        type  PID;
+        measurement { unit reactor;  cv T_reactor; }
+        actuator    { unit reactor;  mv T_jacket; }
+        setpoint    350 K;
+        Kp  4.0;  Ki  0.04;  Kd  0.0;
+        bias  320;  uLow  280;  uHigh  420;
+    }
+    {
+        name  FeedDist;
+        type  Signal;                                  // open-loop forcing
+        actuator { unit reactor;  mv T_in; }
+        signal   { type sinusoidal;  mean 320 K;  amplitude 15 K;  period 600 s; }
+    }
+);
+\end{lstlisting}
+
+Three controller types: \code{PID} (clamped anti-windup,
+derivative-on-PV), \code{Schedule} (open-loop piecewise-constant steps
+--- the disturbance injector of \file{ctrl02\_disturbance\_rejection}),
+and \code{Signal} --- the full forcing-function vocabulary
+(\code{step}, \code{staircase}, \code{ramp}, \code{pulse},
+\code{sine}, \code{prbs}).  Inject a sinusoid on an inlet and watch the
+loop's forced response, attenuated and phase-lagged; sweep the period to
+build a Bode plot one point at a time (\file{ctrl06\_sine\_disturbance}).
+For identification experiments, \code{type prbs;} generates the classic
+broadband binary sequence from a declared-seed maximal-length LFSR ---
+deterministic and exactly repeatable, with the period verified at load
+and the leading bits printed (\file{ctrl08\_prbs\_ident}):
+\code{signal \{ type prbs; mean 320 K; amplitude 10 K; bitPeriod 120;
+registers 4; seed 1; \}}.
+
+Disturbances can target the unit's INLET FACE by field name ---
+\code{actuator \{ unit reactor; inletField T; \}} (or \code{F},
+\code{moleFraction.<c>}, \code{componentMolarFlow.<c>}) --- the only
+legal disturbance surface.  The inlet's authoritative state is the
+per-component molar-flow vector: \code{componentMolarFlow.<c>} writes
+one component's flow and re-derives $F$ and $z$ (the disturbance never
+hides from the other components), while \code{moleFraction.<c>} holds
+the total flow and renormalises the others proportionally --- two
+explicit semantics, each announced at start-up, both validated hard
+(\file{ctrl09\_stream\_disturbance} pins the derived pair to hand
+arithmetic).  The trajectory carries \code{F\_in} and \code{z\_in\_*}
+as first-class columns.
+The trajectory CSV carries every CV, MV and setpoint --- plot it and
+read the tuning off the page.
+
+% =====================================================================
+\section{The property workbench: \code{choupoProps}}\label{sec:props}
+
+\begin{whatyoulllearn}
+How to interrogate the thermodynamic foundation \emph{before} wiring a
+flowsheet: single points, 1-D/2-D/ternary scans, data-consistency
+tests, and parameter fits --- all from a \file{propsDict}.
+\end{whatyoulllearn}
+
+A props case replaces \file{flowsheetDict} with a
+\file{system/propsDict} carrying \code{operations (...)}:
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{type} & \textbf{What it does} \\
+\midrule
+\code{propertyPoint}   & one state, properties to stdout \\
+\code{propertyScan1D}  & sweep one variable, long-form CSV ($P^{\mathrm{sat}}(T)$, $\gamma(x)$,~\dots) \\
+\code{propertyScan2D}  & a $(T,P)$ or composition grid ($Z$, residuals,~\dots) \\
+\code{propertyScanTernary} & walk the ternary simplex at fixed $(T,P)$, classify the phase regime per node (the same VLLE flash kernel as the unit op), collect tie-lines \\
+\code{fitParameters}   & Levenberg--Marquardt regression of any dotted package parameter against data, with identifiability statistics \\
+\code{estimateComponent} & create a component from molecular groups (Joback + corresponding-states closures), shown against reference data \\
+\code{vleConsistency}  & thermodynamic consistency tests on VLE data (Herington area + Gibbs--Duhem point test) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Two flavours to give the taste:
+
+\begin{lstlisting}[language=dict]
+{ name psat;  type propertyScan1D;
+  vary { variable T;  from 250 K;  to 400 K;  n 51; }
+  properties ( Psat_ethanol  Psat_water );
+  output { file psat.csv; } }
+
+{ name fit_nrtl;  type fitParameters;
+  parameters
+  (
+      { path activityModel.pairs[0].a_ij;  initial -0.8;  min -15;  max 15; }
+      { path activityModel.pairs[0].b_ij;  initial 246;   min -5000; max 5000; }
+  );
+  residual
+  {
+      kind  T_bubble;   P 1.01325 bar;
+      data ( 0.05 361.95   0.10 359.95   0.20 358.05  ... );
+  } }
+\end{lstlisting}
+
+The fit writes \file{fit\_history.csv} and \file{parity.csv} and
+reports which parameters the data can actually identify --- the honest
+part most fitting exercises skip.  A fitted pair is written as a dated
+\emph{proposal} under the case's \file{constant/}; promoting it into
+the frozen standard catalogue is a deliberate human act (the engine
+refuses to write under \file{data/standards/}).
+
+This is the tip of a much larger workbench --- component estimation
+from groups, model-vs-data overlays, electrolyte activity models
+(Pitzer, eNRTL), steam-table verification, speciation and scaling
+indices.  The \emph{Properties Guide} (\file{docs/propsGuide.pdf}) and
+the \emph{Explorer Guide} cover it in depth; start with
+\file{tutorials/props/README.md} and the worked cases under
+\file{tutorials/props/}.
+
+% =====================================================================
+\section{Tour of the tutorials}\label{sec:tutorials}
+
+\begin{whatyoulllearn}
+Choupo ships about 200 tutorials under \file{tutorials/}, in six
+categories: \file{steady/}, \file{batch/}, \file{ctrl/}, \file{props/},
+\file{plant/}, \file{electrochem/}.  \code{listCases} tabulates them
+all with one-line descriptions.  The selection below is the on-ramp ---
+pick the one closest to what you want to do and edit from there.
 \end{whatyoulllearn}
 
 \begin{center}\small
 \begin{tabularx}{\linewidth}{@{}lX@{}}
 \toprule
-\textbf{Tutorial}                       & \textbf{What you learn} \\
+\textbf{Tutorial} & \textbf{What you learn} \\
 \midrule
-\code{flash01\_benzene\_toluene}        & First run: Raoult VLE, Rachford-Rice, Newton iteration visible. \\
-\code{flash02\_ethanol\_water}          & NRTL + Wegstein outer loop ($\sim$7 iter vs $\sim$29 direct subst.). \\
-\code{flash03\_wilson\_ethanol\_water}  & Same problem with Wilson --- model uncertainty visible. \\
-\code{bubbleT01\_ethanol\_water}        & Find $T$ such that $\sum K_i x_i = 1$. \\
-\code{dewT01\_ethanol\_water}           & Find $T$ such that $\sum y_i / K_i = 1$. \\
-\code{adiabaticFlash01\_benzene\_toluene} & $Q = 0$ --- solve for $T_{\mathrm{out}}$; uses $C_p$ and $\Delta H_{\mathrm{vap}}$ (Watson). \\
-\code{cstr01\_first\_order}             & Newton on extent $\xi$; Damk\"ohler \& analytic check. \\
-\code{pfr01\_first\_order}              & RK4 by hand; reproduces $X = 1 - e^{-k\tau}$. \\
-\code{hx01\_heater}                     & Specify $T_{\mathrm{out}}$ or $Q$, compute the other; Newton 1-D. \\
-\code{process01\_reactor\_flash}        & First flowsheet: CSTR $\to$ flash; mass-balance closure. \\
-\code{process02\_reactor\_hx\_flash}    & Three units; $T$ propagates through the chain. \\
-\code{process02\_with\_design}          & The above + sizing + Guthrie costing --- full CAPEX in one run. \\
-\code{process03\_recycle}               & Reactor-separator-recycle: tear stream + Wegstein outer loop. \\
-\code{column01\_benzene\_toluene}       & Multi-stage column, Wang-Henke bubble-point. \\
-\code{sensitivity01\_column\_reflux}    & Sweep $R$ over $[1.5, 5]$ to CSV with $V_{\mathrm{reboiler}}$ vs purity. \\
-\code{optim01\_column\_reflux}          & Nelder-Mead: minimise $V_{\mathrm{strip}}$ over reflux + feed stage. \\
-\code{optim02\_process\_cost}           & Nelder-Mead on total Guthrie module cost (sizing + costing per evaluation). \\
-\code{process04\_research\_workflow}    & Case-local \file{constant/binaryPairs/<model>/<pair>.dat} instead of inline pairs --- the lookup-order pattern. \\
-\code{fitNRTL01\_ethanol\_water}        & \code{fitBinaryPair} outer driver: LM regression of NRTL ethanol/water against 1\,atm bubble-$T$ data (see \S\ref{sec:fitBinaryPair}). \\
-\code{extraction01\_waterButanol}       & LL extraction with NRTL --- \emph{experimental} (see \S\ref{sec:troubleshoot}). \\
+\multicolumn{2}{@{}l}{\emph{steady/flash, steady/thermoTest}} \\
+\code{flash01\_benzene\_toluene}        & First run: Raoult VLE, Rachford--Rice, Newton trace, the \file{0/} state files. \\
+\code{flash02\_ethanol\_water}          & NRTL + Wegstein outer loop. \\
+\code{flash06\_sweep\_T} / \code{flash07\_gridsweep\_TP} & One knob $\to$ a curve; two knobs $\to$ the flash envelope. \\
+\code{flash08\_co2\_water\_package}     & The Henry dilute-solution world, declared as a package manifest. \\
+\code{flash09\_n2ch4\_stryjek}          & The $\varphi$--$\varphi$ world: one cubic, both phases, declared $k_{ij}$. \\
+\code{vlle03\_audit\_artificial}        & Three-phase VLLE by Gibbs minimisation, on a constructed global minimum. \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{steady/reactors, steady/gibbs}} \\
+\code{cstr01\_first\_order} / \code{pfr01\_first\_order} & Newton on the extent; RK4 by hand vs the analytic $X = 1 - e^{-k\tau}$. \\
+\code{cstr03} / \code{pfr03\_series\_selectivity} & Series selectivity: back-mixing eats the intermediate (53\,\% vs 79\,\%). \\
+\code{cstr04\_adiabatic} / \code{cstr05\_multiplicity} & Non-isothermal CSTR; three steady states, all printed. \\
+\code{cstr07\_lhhw\_methylAcetate}      & A published LHHW law on UNIQUAC activities (\S\ref{sec:lhhw}). \\
+\code{conversion01\_hda}                & Specified per-pass conversion + recycle --- the honest gas-phase reactor. \\
+\code{equil01\_reforming}               & Reforming + shift driven to simultaneous $K_p(T)$ equilibrium. \\
+\code{gibbs01\_water\_gas\_shift} / \code{gibbs05\_adiabatic\_flame} & Gibbs minimisation; the flame temperature as a DesignSpec. \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{steady/distillation, absorption}} \\
+\code{column01\_benzene\_toluene}       & Wang--Henke bubble-point column. \\
+\code{column03\_azeotrope\_mesh}        & The simultaneous MESH through the ethanol/water azeotrope. \\
+\code{column05\_reactive\_methylacetate} & Reactive distillation, paper-validated (\S\ref{sec:advanced-distillation}). \\
+\code{column09} / \code{column10} / \code{column11} & Tray hydraulics design; the flooded twin; Murphree trays. \\
+\code{shortcut01\_benzene\_toluene}     & Fenske--Underwood--Gilliland sizing. \\
+\code{absorber01\_NH3\_water} / \code{extract01\_ethanol\_water\_benzene} & Henry absorber; staged LL extraction. \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Tutorial} & \textbf{What you learn} \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{steady/heat, power, rotating, hydraulics}} \\
+\code{hx01\_heater} / \code{heatExchanger02\_geometry\_U} & The duty device; $U$ computed from the bundle geometry. \\
+\code{hxWorkflow1} / \code{hxWorkflow2} & Design from a duty target, then rate the designed bundle. \\
+\code{condenser01\_film\_nusselt} / \code{reboiler\_water\_copper} & Duty emerging from film condensation / nucleate boiling (CHF guard). \\
+\code{rankine02\_water} / \code{combined02\_brayton\_rankine\_shaft} & IF97 Rankine cycle; the shaft-split combined cycle. \\
+\code{compressor01\_air}                & $W_{\mathrm{shaft}} + \eta$; $P_{\mathrm{out}}$ a result. \\
+\code{pipe02\_airwater\_twophase}       & Lockhart--Martinelli two-phase pressure drop. \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{steady/membranes, separation, solids, drying, crystallisation}} \\
+\code{membrane01\_RO\_NaCl\_seawater}   & The canonical seawater-RO element. \\
+\code{membrane07\_scaling\_si}          & Speciation $\times$ membrane: wall scaling three modules ahead of the bulk. \\
+\code{psa01\_h2\_psa}                   & Equilibrium-theory pressure-swing adsorption. \\
+\code{cyclone01\_dust\_removal}         & PSD-aware cyclone. \\
+\code{crystalliser01\_sugar} / \code{crystalliser02\_msmpr} & Cooling equilibrium yield; the MSMPR population balance. \\
+\code{sprayDryer01\_sugar}              & Atomisation + droplet drying to a real particle size. \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{steady/flowsheets, optimisation, evaporation}} \\
+\code{process01\_reactor\_flash} / \code{process03\_recycle} & First flowsheet; the tear + Newton-on-tears recycle. \\
+\code{sensitivity01\_column\_reflux}    & The reflux sweep to CSV. \\
+\code{designSpec01\_triple\_equal\_areas} & Two knobs, two specs on a triple-effect evaporator train. \\
+\code{optim01\_column\_reflux} / \code{optim04\_membrane\_recovery\_scaling} & Nelder--Mead; constrained SQP with shadow prices. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Tutorial} & \textbf{What you learn} \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{batch/, ctrl/, electrochem/, plant/}} \\
+\code{batch01\_first\_order} / \code{batch02\_adiabatic} & RK4 vs the analytic decay; thermal runaway. \\
+\code{still01} / \code{still04} / \code{still05} & Rayleigh; constant-$R$ rectifier; constant-$x_D$ policy at the reflux ceiling. \\
+\code{recipe01\_react\_then\_distill}   & A scripted transfer between vessels. \\
+\code{ctrl01\_cstr\_temp\_control} / \code{ctrl02\_disturbance\_rejection} & PID tracking; step-disturbance rejection. \\
+\code{ed01\_nacl\_desalination}         & The electrodialysis stack, below and at the limiting current. \\
+\code{plant/lithiumBrinePlant}          & A fractal multi-sector plant across four thermodynamic worlds. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Every tutorial's header comment states what it demonstrates and, where
+applicable, the published number it reproduces.  The
+\emph{Tutorials Guide} (\file{docs/tutorialsGuide.pdf}) is the long-form
+companion, one chapter per family.
+
 % =====================================================================
-\section{Output anatomy}
+\section{Output anatomy}\label{sec:output}
 
 \begin{whatyoulllearn}
 What every section of a run's log means, and why the inner iteration
 trace is the part you should read.
 \end{whatyoulllearn}
 
-A typical run with \code{verbosity 3} prints, in order:
+A typical steady run with \code{verbosity 3} prints, in order:
 
 \begin{enumerate}[leftmargin=*]
   \item \textbf{Banner} --- version + licence.
-  \item \textbf{Case header} --- case dir, database root, optional-dicts presence.
-  \item \textbf{Components and phases} declared.
-  \item \textbf{Topology} of the flowsheet --- source streams + the per-unit blocks.
+  \item \textbf{Case header} --- case dir, database root, the property
+        package that was found, which optional dicts are present, and
+        the \code{[overlay]}/\code{[estimate]} announcements for any
+        case-local component data.
+  \item \textbf{State seeding} ---
+        \code{[state] seeded N stream(s) from 0/} and the completeness
+        check.
+  \item \textbf{Topology} --- the source streams and the per-unit
+        wiring.
   \item \textbf{Per-unit run} --- for each unit operation:
     \begin{itemize}
-      \item Inputs echo ($F, T, P, \mathbf{z}$).
-      \item Inner iteration trace (Newton steps with $g(x)$, $\mathrm{d}g/\mathrm{d}x$, $\Delta V$).
-      \item For $\gamma$-models: outer Wegstein loop with $\gamma$ values per iter.
-      \item Result block (regime, $V/F$, $\mathbf{x}$, $\mathbf{y}$, $\mathbf{K}$).
+      \item the thermo provenance line
+            (\code{thermo: inherited (global package)} or the local
+            override);
+      \item inputs echo ($F, T, P, \mathbf{z}$);
+      \item the inner iteration trace (Newton steps with $g(x)$,
+            $\mathrm{d}g/\mathrm{d}x$, $\Delta$);
+      \item for $\gamma$-models, the outer composition loop;
+      \item the result block (regime, $V/F$, $\mathbf{x}$, $\mathbf{y}$,
+            $\mathbf{K}$, duty).
     \end{itemize}
-  \item \textbf{Flowsheet summary} --- final stream table.
-  \item \textbf{Outer driver / post-processor output} (if applicable).
+  \item \textbf{Recycle loop} (if tears exist) --- per-iteration tear
+        residuals, Newton or Wegstein steps, announced convergence aids.
+  \item \textbf{Reports} --- one \code{[report]} line per file written.
+  \item \textbf{State writing} --- \code{[state] wrote converged/}.
+  \item \textbf{Structured result} --- a JSON block between
+        \code{<<<Choupo:result-begin>>>} markers carrying every stream,
+        KPI, convergence history and advisory (this is what the GUI and
+        scripts read).
 \end{enumerate}
+
+An excerpt of the part that matters, from the first tutorial:
+
+\begin{lstlisting}
+  [outer 0] Rachford-Rice Newton (inner):
+    it          V           g(V)         dg/dV         dV
+    ----  -----------  -------------  -------------  -------------
+    0     0.50000000   -3.75806e-02   -1.87920e-01   -1.99981e-01
+    1     0.30001863   7.81978e-04    -1.97366e-01   3.96206e-03
+    2     0.30398070   5.66359e-07    -1.97081e-01   2.87374e-06
+    3     0.30398357   2.94959e-13    -1.97081e-01   0.00000e+00
+\end{lstlisting}
 
 \begin{keyidea}
 The inner iteration trace is where the simulator stops being a black
-box. Convergence ratios in the trace tell you whether Newton is
-converging quadratically (good) or linearly (problem is ill-conditioned).
+box.  The residual column tells you whether Newton is converging
+quadratically (the exponent doubling per line, as above) or linearly
+(the problem is ill-conditioned) --- diagnosis you can do by eye.
 \end{keyidea}
+
+Batch and control runs additionally write \file{trajectory.csv} on the
+\code{writeInterval} grid, and print an epilogue of headline events
+(conversions reached, recipe actions fired, reflux limits hit,
+ignition delay where relevant).
 
 % =====================================================================
 \section{The web GUI: a runner and visualiser}\label{sec:gui}
@@ -990,13 +2971,12 @@ why the GUI never edits your dicts.
 Choupo ships a browser front-end under \file{gui/}.  Its design stance
 is deliberate and worth stating up front: \textbf{the GUI is a runner
 and visualiser, not an editor.}  Cases are authored as plain-text dicts
-under \file{tutorials/<name>/system/} and \file{constant/}, edited with
-any text editor (increasingly with LLM help).  The GUI loads those
-dicts, draws the flowsheet, runs the solver \emph{in the browser}, and
-renders the log + plots.  The dicts on disk remain the single source of
-truth; per-case scalar tweaks in the GUI are downloaded back to disk,
-never silently mutated.  The architectural inspiration is ParaView (a
-DSL plus a viewer), not a block-diagram GUI editor.
+on disk, edited with any text editor (increasingly with LLM help).  The
+GUI loads those dicts, draws the flowsheet, runs the solver \emph{in
+the browser} (compiled to WebAssembly), and renders the log + plots.
+The files on disk remain the single source of truth.  The architectural
+inspiration is ParaView --- a text-defined case plus a viewer --- not a
+block-diagram editor.
 
 \subsection{Starting the GUI}
 
@@ -1006,218 +2986,247 @@ bin/runGui             # boots the dev server and opens a browser window
 bin/runGui --kill      # stops everything
 \end{lstlisting}
 
-\subsection{The layout}
+\subsection{The layout and interactions}
 
 The shell is a thin top bar over a full-screen flowsheet canvas --- no
-left tree, no docked right panel, no bottom tab strip.  Auxiliary views
-(log, plots, stream table) open on demand as workspaces.  Selecting a
-unit or stream raises a floating selection card in the top-right corner;
-the card is read-only (labels, units, help tooltips driven by the
-operation schemas).
-
-\subsection{Interactions}
+left tree, no docked panels.  Auxiliary views (log, plots, stream
+table, thermo foundation) open on demand as workspaces.
 
 \begin{itemize}[leftmargin=*,nosep,topsep=2pt]
-  \item \textbf{Single-click} a node or edge --- raises the floating
-        selection card.
-  \item \textbf{Double-click} --- pops the unit out (or drills into a
-        composite sector).
-  \item \textbf{Drag} nodes, edge bends, and connection points to lay
-        the flowsheet out; the layout persists per case in the
-        browser's \code{localStorage}.
-  \item \textbf{Stream-class toggle} --- show/hide whole classes of
-        streams (e.g.\ energy wires) to declutter the canvas.
+  \item \textbf{Single-click} a node or edge --- raises a floating,
+        read-only selection card (labels, units, help tooltips).
+  \item \textbf{Double-click} --- pops the unit out, or drills into a
+        composite sector (the drilled sub-case is seeded from the
+        parent's persisted \file{converged/} state).
+  \item \textbf{Drag} nodes and edge bends to lay the flowsheet out;
+        the layout persists per case in the browser's
+        \code{localStorage}.
+  \item \textbf{Stream-class toggles} --- show/hide whole classes of
+        streams (e.g.\ energy wires) to declutter.
   \item \textbf{Run} --- streams the same log you would see from
         \code{runCase}; \textbf{Stop} cancels mid-solve.
 \end{itemize}
 
-Stream colour encodes phase and comes straight from the solver
-(\code{vf} + solid mass fraction); it never changes on hover or
-selection --- selection is signalled by a halo/ring, not a recolour.
+Stream colour encodes phase and comes straight from the solver ($vf$
+plus solid mass fraction); it never changes on hover or selection ---
+selection is signalled by a halo, not a recolour.
 
 \begin{pitfall}
 \textbf{MOCK vs WASM.}  If the WASM solver has not been built
-(\code{make wasm-gui}), the GUI silently falls back to a \emph{mock}
-adapter that returns canned numbers so the UI still renders.  The Run
-badge reads \code{MOCK} in that case, not \code{WASM} --- check it
-before trusting any result.  After changing a unit op or any \cpp{}
-source, rebuild the WASM (it is a separate artefact from the native
-binary) or the browser keeps running stale code.
+(\code{make wasm-gui}), the GUI falls back to a \emph{mock} adapter
+that returns canned numbers so the UI still renders.  The Run badge
+reads \code{MOCK} in that case, not \code{WASM} --- check it before
+trusting any result.  After changing any \cpp{} source, rebuild the
+WASM (it is a separate artefact from the native binary) or the browser
+keeps running stale code.
 \end{pitfall}
 
 % =====================================================================
-\section{Building your own case}
+\section{Building your own case}\label{sec:build-own}
 
 \begin{whatyoulllearn}
-The fastest path from a blank idea to a converged result is to clone
-the tutorial closest to your idea and edit.
+The fastest path from a blank idea to a converged result: scaffold or
+clone, wire the topology, author the inlets, initialise, run.
 \end{whatyoulllearn}
 
+Two starting points:
+
 \begin{lstlisting}
-cp -r tutorials/steady/flash/flash01_benzene_toluene tutorials/steady/myFlash
-$EDITOR tutorials/steady/myFlash/system/flowsheetDict
-$EDITOR tutorials/steady/myFlash/constant/thermoPackage
-runCase tutorials/steady/myFlash
+# (a) scaffold a fresh case in your workspace:
+newCase myFlash "isothermal flash of my mixture"
+
+# (b) clone the tutorial closest to your idea:
+cp -r tutorials/steady/flash/flash01_benzene_toluene tutorials/steady/flash/myFlash
 \end{lstlisting}
 
-\paragraph{Adding a missing component.}
-Two locations are available --- pick the right tier for what you are
-adding:
+Then the loop is always the same:
 
-\begin{itemize}[leftmargin=*]
-  \item \file{data/standards/components/<name>.dat} --- contribution to
-        the \emph{shared catalogue} of well-curated chemicals.
-  \item \file{<case>/constant/components/<name>.dat} ---
-        \emph{sample-specific or one-off data}: a particular powder's
-        sorption isotherm, a custom membrane solute, a laboratory
-        measurement.  Per-case files are overlaid field-by-field on
-        top of the standard catalogue, so a slim file with just the
-        bespoke fields is enough --- the rest is inherited from the
-        standard entry of the same name.
-\end{itemize}
-
-\begin{enumerate}[leftmargin=*]
-  \item Create the file in the chosen tier, following the same format
-        as the existing standard entries (see Developer Guide
-        \S\,Adding components for the field list).  When the file
-        carries a \code{gibbsFormation} block, declare the
-        \code{phase} of the tabulated $\Delta h^{\circ}_f$ explicitly
-        (\code{gas} / \code{liquid} / \code{solid}) --- the value
-        tells the solver which rung of the enthalpy ladder the data
-        is pinned to; see Theory Guide
-        \S\,``Which rung does the data file pin?''.
-  \item Add \code{<name>} to the \code{components (...)} list in your
-        thermoPackage.
+\begin{enumerate}[leftmargin=*,nosep,topsep=2pt]
+  \item edit \file{system/flowsheetDict} (topology) and
+        \file{constant/propertyDict} (components + models);
+  \item author the \emph{inlet} files in \file{0/} (and a seed for any
+        tear);
+  \item \code{bin/choupo-init0 <case>} to materialise the remaining
+        stream files;
+  \item \code{runCase <case>}, read the log, iterate.
 \end{enumerate}
 
-\paragraph{Using a plant utility.}
-Heating and cooling services are catalogued separately from process
-components, under \file{data/standards/utilities/}.  Eight services
-ship by default --- LP / MP / HP steam, cooling water, chilled
-water, Dowtherm A, HITEC molten salt, and a propylene-glycol
-refrigeration brine --- each with operating conditions and a
-\code{cost} in EUR/GJ.
+\paragraph{Adding a missing component.}  Two locations --- pick the
+right tier for what you are adding:
 
-A stream block pulls the catalogue defaults with a single keyword:
+\begin{itemize}[leftmargin=*]
+  \item \file{data/standards/components/<name>.dat} --- a contribution
+        to the \emph{shared catalogue} of well-curated chemicals
+        (primary-cited, per-value provenance; the engine refuses to
+        write here --- promotion is a human act).
+  \item \file{<case>/constant/components/<name>.dat} ---
+        \emph{sample-specific or one-off data}: a particular powder's
+        sorption isotherm, a laboratory measurement, a NASA-7 $C_p$
+        override.  Case-local files are overlaid block-by-block on the
+        standard entry of the same name, so a slim file with just the
+        bespoke blocks is enough --- and every overlay is announced in
+        the log (\code{[overlay]~...}).
+\end{itemize}
 
-\begin{lstlisting}[language=dict]
-streams
-{
-    PlantSteam  { utility steamLP;  F 60 kmol/h; }
-}
-\end{lstlisting}
+When a new file carries a \code{gibbsFormation} block, declare the
+\code{phase} of the tabulated $\Delta h^\circ_f$ explicitly
+(\code{gas} / \code{liquid} / \code{solid}) --- it tells the solver
+which rung of the enthalpy ladder the datum pins (Theory Guide
+\S\,``Which rung does the data file pin?'').  A component with no
+catalogue entry at all can be \emph{estimated} from its molecular
+groups on the props bench (\S\ref{sec:props}) and promoted as a dated,
+glass-box proposal.
 
-The parser substitutes \code{components}, \code{state}, \code{P} and
-\code{T} from the \code{steamLP.dat} entry (the user keeps full
-control --- writing \code{P 3 bar;} alongside the \code{utility} key
-overrides the catalogue default for that one case), and marks the
-stream's internal \code{category} to \code{"steamLP"}.  When the case
-runs, the \code{utilities} report aggregates every utility-tagged
-stream by category and emits \file{reports/utilities/consumption.csv}
-with the kg/h, MW, and EUR/h delivered by each header.  Multiple
-streams sharing a catalogue name (two heaters tapping the same plant
-header) sum automatically.
+\paragraph{Using a reaction.}  Declare it in \file{constant/reactions}
+and reference it by name (\code{reaction <name>;} or
+\code{reactions (...)}) --- \S\ref{sec:reactors}.
 
-\paragraph{Adding a missing material.}
-Same procedure under \file{data/standards/materials/}.
+\paragraph{Custom unit operations.}  A case may carry its own \cpp{}
+unit under \file{<case>/code/} (\file{MyUnit.H/.cpp} + an explicit
+registration file); \code{bin/buildCode} compiles it into a per-case
+binary.  See
+\file{tutorials/steady/userops/\allowbreak userOp01\_yield\_reactor}
+and the Developer Guide.
 
-\paragraph{Using a reaction in a CSTR / PFR.}
-Declare it in \file{constant/reactions} and reference it by name in the
-unit's \code{reaction <name>;} entry.
+\paragraph{Archiving.}  Seal the case
+(\code{bin/choupo-import}, \S\ref{sec:self-contained}) so it runs
+without the installation catalogue --- the right form for a thesis
+appendix or a paper's supplementary material.
 
 % =====================================================================
 \section{Troubleshooting}\label{sec:troubleshoot}
 
 \begin{whatyoulllearn}
-The seven failure modes that account for nearly every support ticket,
-and exactly what to do about each.
+The failure modes that account for nearly every support question, and
+exactly what to do about each.
 \end{whatyoulllearn}
 
-\subsection*{``Component does not exist'' / ``Material does not exist''}
+\subsection*{``0/ is incomplete'' / missing or orphan stream file}
+
+The completeness contract (\S\ref{sec:zero}): every stream in the graph
+needs a file in \file{0/}, and every file must correspond to a graph
+stream.  The error names the offending stream.  Author the inlets, then
+\code{bin/choupo-init0 <case>} writes the rest; a leftover file from a
+renamed stream must be deleted (the validator refuses to guess which
+stream you meant).
+
+\subsection*{``Component does not exist''}
 
 \begin{lstlisting}
-ERROR: Database: component file not found: data/standards/components/foo.dat
+ERROR: Database: component file not found: .../components/foo.dat
 \end{lstlisting}
 
-The component (or material) name is misspelt, or the file is missing.
-Filenames are case-sensitive. Check \file{data/standards/components/}.
+The component name is misspelt, or the file is missing.  Names are
+case-sensitive and resolved exactly ---
+check \file{data/standards/components/} and your
+\file{constant/components/} overlay.
+
+\subsection*{``moleFractions do not close''}
+
+Stream-state fractions must sum to 1 within $10^{-6}$
+(\S\ref{sec:zero}); the error names the stream and the actual sum.
+This is deliberate --- a state file is data, and data with a hole in it
+should stop the run, not be silently patched.
+
+\subsection*{Dimension mismatch on a parameter}
+
+\begin{lstlisting}
+parameter 'P' expected dimensions [1 -1 -2 0 0] (Pa) but the dict
+declared [1 0 0 0 0] (kg).
+\end{lstlisting}
+
+A wrong unit suffix (\S\ref{sec:units-suffixes}).  Fix the suffix; do
+not strip it (raw numbers pass unchecked).
 
 \subsection*{Build fails after pulling new code}
 
 \begin{lstlisting}
-make distclean
-make all
+make distclean && make all
 \end{lstlisting}
 
-Removes the entire \file{build/} tree. Necessary when headers change in
-incompatible ways.
+Necessary when headers change incompatibly.  If the GUI misbehaves
+after a source change, rebuild the WASM too (\code{make wasm-gui}) ---
+it is a separate artefact.
 
-\subsection*{Simulator runs but flowsheet returns NaN}
+\subsection*{Simulator runs but a stream shows NaN}
 
-Most common: feed composition does not sum to 1, or a unit-op is fed
-with an empty stream. Re-read the input echo and verify $F, T, P,
-\mathbf{z}$ values.
+Most common: an upstream unit was fed an empty stream ($F = 0$
+emptying the composition vector), or Antoine was evaluated far outside
+its range (e.g.\ $T$ so low the extrapolated $P^{\mathrm{sat}}$ turns
+non-physical).  Re-read the input echo of the first unit whose output
+is NaN; \code{bin/runTests} guards every tutorial against silent
+NaN/inf for exactly this reason.
 
 \subsection*{Newton fails to converge}
 
-Two situations:
-
 \begin{itemize}[leftmargin=*]
-  \item \textbf{Outer Wegstein} ($\gamma$-model loop): \code{qmin} too aggressive.
-        Try \code{outerAccelerator directSubstitution} for non-ideal LL
-        or azeotropic systems.
-  \item \textbf{Inner Newton} (Rachford-Rice or distillation bubble-T): increase
-        \code{maxIter} and \code{maxOuterIter}. Near the phase boundary,
-        tighten \code{compositionTol}.
+  \item \textbf{Outer composition loop} ($\gamma$-model refresh): try
+        \code{outerAccelerator directSubstitution} in
+        \file{solverDict} for strongly non-ideal systems, or raise
+        \code{maxOuterIter}.
+  \item \textbf{Inner Newton} (Rachford--Rice, bubble-$T$): raise
+        \code{maxIter}; near a phase boundary, tighten
+        \code{compositionTol}.
+  \item \textbf{Recycle}: give the tear a better \file{0/} seed (run
+        \code{choupo-init0 --force} after improving the inlets), or
+        switch \code{recycleSolver} between \code{Newton} and
+        \code{Wegstein} --- they have different failure modes.  Every
+        aid the solver applies (auto-seed, bound, fallback) is
+        announced in the log --- read what it did before overriding it.
 \end{itemize}
 
-\subsection*{LL extraction tutorial does not give a physical split}
+\subsection*{Wang--Henke column oscillates or crosses an azeotrope}
 
-Known issue (still open at) --- LL flash converges to the trivial $K = 1$ fixed
-point in systems with the same $\gamma$-model on both phases. Resolution
-requires second-order Michelsen TPD with Newton --- scheduled.
-The tutorial is shipped as \emph{experimental} and documents this gap.
+The bubble-point method is not stable on strongly non-ideal systems.
+Select \code{model simultaneous;} on the column --- the whole-block
+Newton converges quadratically and refuses to invent a
+``past-the-azeotrope'' answer (\S\ref{sec:columns}).
 
-\subsection*{Sweep run fails on some points}
+\subsection*{A sweep fails on some points}
 
-Almost always: the simulator's \code{maxOuterIter} is too small for the
-edge points (high reflux ratio, high pressure, \dots). Increase
-\code{maxOuterIter} in the corresponding unit-operation block in
-\file{flowsheetDict}.
+Almost always the solver's iteration caps are too small for the edge
+points (high reflux, high pressure).  Raise the limits in
+\file{solverDict}; failed points are written as \code{nan} and the
+sweep continues, so the CSV tells you exactly where the envelope ends.
 
-\begin{pitfall}
-A run that prints \code{V/F = nan} mid-flash almost always means
-$\log P_i^{\mathrm{sat}}$ was evaluated outside Antoine's valid range
-(e.g.\ $T$ too low so Antoine returns a negative pressure), or that a
-stream upstream had $F = 0$ and emptied the composition vector.
-\end{pitfall}
+\begin{keyidea}
+If a case behaves unexpectedly, \emph{read the log}.  Every Newton
+step, every Wegstein update, every $\gamma$ value, every announced
+default is printed.  Black-box debugging is exactly the failure mode
+Choupo refuses to participate in.
+\end{keyidea}
 
 % =====================================================================
 \section{Where to look next}
 
-\begin{itemize}[leftmargin=*]
-  \item \file{CLAUDE.md} --- conventions, architecture overview,
-        AI-assistant guide.
-  \item \file{docs/developerGuide.pdf} --- adding unit operations,
-        thermo models, components, materials, outer drivers,
-        post-processors.
-  \item \file{tutorials/<name>/system/*} --- every tutorial is a
-        fully-worked example.
-  \item \file{src/applications/choupoSolve/main.cpp} --- the entry
-        point.
-\end{itemize}
+Choupo's documentation is a family of guides, each with its own job:
 
-\begin{keyidea}
-If a case behaves unexpectedly, \emph{read the log}. Every Newton step,
-every Wegstein update, every $\gamma$ value is printed. Black-box
-debugging is exactly the failure mode Choupo refuses to
-participate in.
-\end{keyidea}
+\begin{itemize}[leftmargin=*]
+  \item \file{docs/theoryGuide.pdf} --- every equation the engine
+        solves, derived: flashes, MESH, kinetics, enthalpy ladders,
+        population balances, the numerical methods.
+  \item \file{docs/tutorialsGuide.pdf} --- the long-form walk through
+        the tutorial corpus, family by family.
+  \item \file{docs/propsGuide.pdf} --- the property workbench in depth:
+        estimation, fitting, consistency, electrolytes.
+  \item \file{docs/explorerGuide.pdf} --- the property-explorer view of
+        the GUI.
+  \item \file{docs/designGuide.pdf} --- sizing, costing, and design
+        heuristics.
+  \item \file{docs/developerGuide.pdf} --- adding unit operations,
+        thermo models, components, outer drivers, post-processors.
+  \item \file{tutorials/<category>/<family>/<name>/} --- every tutorial
+        is a fully-worked, runnable example with an explanatory header.
+  \item \file{src/} --- the ultimate reference.  Every model documented
+        here is a readable \cpp{} class; start from
+        \file{src/applications/\allowbreak choupoSolve/main.cpp} and
+        follow the calls.
+\end{itemize}
 
 \vspace{2cm}
 \noindent\rule{\linewidth}{0.3pt}
 \noindent\small\textit{Colophon.}\quad This manual was typeset in Latin
-Modern with the Choupo shared LaTeX preamble. Sources live in
-\file{docs/}; rebuild with \code{cd docs \&\& make}.
+Modern with the Choupo shared LaTeX preamble.  Sources live in
+\file{docs/}; rebuild with \code{cd docs \&\& make user}.
 
 \end{document}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-amino-1-hydroxy-n-[2-(3-pentadecylphenoxy)butyl]-2-naphthamide  (C36H52N2O3, CAS 62592-57-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Amino1HydroxyN23PentadecylphenoxyButyl2Naphthamide;
+formula     C36H52N2O3;
+CAS         62592-57-8;
+InChIKey    ULDHYCSONIWQBX-UHFFFAOYSA-N;
+MW          560.823;      // g/mol [origin=calculated method=formula-sum]
+Tc          1764.59;      // K   [origin=predictive method=joback]
+Pc          7.984;      // bar [origin=predictive method=joback]
+omega       0.4448;      // -   [origin=predictive method=lee-kesler]
+Tb          1389.73;      // K   [origin=predictive method=joback]
+HvapTb      142767.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-58.654 3.29124 -0.00215446 5.6486e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 14; } { group ACH; count 9; } { group AC; count 4; } { group ACCH2; count 1; } { group ACOH; count 1; } { group CH-O; count 1; } { group ACNH2; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 16; } { group CH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 7; } { group OH_phenol; count 1; } { group O; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-azanyl-1-oxidanyl-n-[2-(3-pentadecylphenoxy)butyl]naphthalene-2-carboxamide" "2-naphthalenecarboxamide, 4-amino-1-hydroxy-n-(2-(3-pentadecylphenoxy)butyl)-" "2-naphthalenecarboxamide, 4-amino-1-hydroxy-n-[2-(3-pentadecylphenoxy)butyl]-" "4-amino-1-hydroxy-n-[2-(3-pentadecylphenoxy)butyl]-2-naphthalenecarboxamide" "4-amino-1-hydroxy-n-[2-(3-pentadecylphenoxy)butyl]naphthalene-2-carboxamide" );
+gibbsFormation
+{
+    dHf_298   -496780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1365.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=319680.0
+    phase     gas;
+}

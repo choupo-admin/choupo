@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: allyl isopropyl sulfide  (C6H12S, CAS 50996-72-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        allylIsopropylSulfide;
+formula     C6H12S;
+CAS         50996-72-0;
+InChIKey    OJBPXSILEFOOQD-UHFFFAOYSA-N;
+MW          116.222;      // g/mol [origin=calculated method=formula-sum]
+Tc          599.68;      // K   [origin=predictive method=joback]
+Pc          33.529;      // bar [origin=predictive method=joback]
+omega       0.3159;      // -   [origin=predictive method=lee-kesler]
+Tb          401.90;      // K   [origin=predictive method=joback]
+HvapTb      34709.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.361 0.55413 -0.0002885 4.95e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group CH2=CH; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-prop-2-enylsulfanylpropane" "allyl isopropyl sulphide" "1-propene, 3-[(1-methylethyl)thio]-" "1-propene, 3-[(1-methylethyl)thio]-;3-(isopropylsulfanyl)-1-propene;allyl iso-propyl sulfide;allyl isopropyl sulphide" );
+gibbsFormation
+{
+    dHf_298   -5150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     436.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=118160.0
+    phase     gas;
+}

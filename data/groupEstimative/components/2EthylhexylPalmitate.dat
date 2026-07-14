@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-ethylhexyl palmitate  (C24H48O2, CAS 29806-73-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2EthylhexylPalmitate;
+formula     C24H48O2;
+CAS         29806-73-3;
+InChIKey    SFAAOBGYWOUHLU-UHFFFAOYSA-N;
+MW          368.646;      // g/mol [origin=calculated method=formula-sum]
+Tc          987.72;      // K   [origin=predictive method=joback]
+Pc          8.121;      // bar [origin=predictive method=joback]
+omega       0.7754;      // -   [origin=predictive method=lee-kesler]
+Tb          806.50;      // K   [origin=predictive method=joback]
+HvapTb      76037.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.799 2.23496 -0.0011904 2.168e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 18; } { group CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 19; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethylhexyl hexadecanoate" "ethylhexyl palmitate" "elfacos ehp" "hexadecanoic acid, 2-ethylhexyl ester" "palmitic acid, 2-ethylhexyl ester" "hexadecanoic acid,2-ethylhexyl ester" "o206" "palmiticacid, 2-ethylhexyl ester (8ci);2-ethylhexyl palmitate;cegesoft c 24;ceraphyl368;crodamol op;dermol 816;exceparl eh-p;jeechem op;kessco op;kesscooctyl palmitate;lexol ehp;octyl palmitate;palmitic acid-2-ethylhexylmonoester;saboderm op;salacos p 8;tegosoft o;tegosoft op;wickenol 155;" );
+gibbsFormation
+{
+    dHf_298   -861250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1132.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-161610.0
+    phase     gas;
+}

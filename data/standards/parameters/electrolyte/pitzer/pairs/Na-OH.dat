@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer binary ion-interaction parameters --- Na(+) / OH(-) in aqueous
+  solution.
+  Role: the beta0 / beta1 / Cphi set (alpha1 2.0) of the Pitzer virial
+  expansion -- the cation-anion second and third virial coefficients behind
+  the mean activity and osmotic coefficients of the Na-OH pair, consumed by
+  the pitzer (single-salt VLE) and pitzerHMW (multi-ion speciation) activity
+  engines.
+  Temperature: linear calorimetric T-slots (dbeta0/dT, dbeta1/dT, dCphi/dT)
+  fitted to Parker NSRDS-NBS 2 apparent relative molal enthalpies -- see the
+  in-file comments.
+  Source: Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49 --
+  full provenance string in the source entry below.
+\*-----------------------------------------------------------------------------*/
+recordType electrolytePairParameters;
+schemaVersion 1;
+
+model pitzer;
+tCorrelationForm linearSlopes;   // DECLARED (forum #101/#103/#105): typed T-correlation contract
+
+pair { cation Na; anion OH; }
+
+parameters
+{
+    beta0 0.0864;
+    beta1 0.253;
+    beta2 0.0;
+    Cphi 0.0044;
+    alpha1 2.0;
+    alpha2 12.0;
+    dbeta0_dT 6.185210e-04;
+    dbeta1_dT 3.336795e-04;
+    dCphi_dT -1.586109e-04;
+    lphiValidityMax 6.0;
+    calorimetricFit true;
+}
+
+source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49; T-slots (refit 2026-07-02, A_phi(T) curated vs SP77 Table II): Parker NSRDS-NBS 2 (1965), curation fit";

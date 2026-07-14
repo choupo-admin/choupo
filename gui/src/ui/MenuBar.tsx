@@ -53,10 +53,10 @@ import { popOutHelpTopics } from "./helpTopicsPopOut.js";
 import { OpenTutorialModal } from "./OpenTutorialModal.js";
 import { NewCaseModal } from "./NewCaseModal.js";
 import { DuplicateCaseModal } from "./DuplicateCaseModal.js";
-import { readCaseAt } from "../cases/workspace.js";
+import { readCaseAt, importCase, slugifyCaseName } from "../cases/workspace.js";
 import { localCaseDir } from "../case/caseName.js";
 import { downloadCaseZip } from "../case/saveCase.js";
-import { openCaseZip, openCaseFolder, SUPPORTS_DIR_PICKER } from "../cases/loadCase.js";
+import { openCaseZip, openCaseFolder, type OpenedCase } from "../cases/loadCase.js";
 import { canComputePinch } from "../case/pinch.js";
 import { collectControllerKnobs } from "../case/controllerKnobs.js";
 
@@ -168,19 +168,52 @@ export function MenuBar() {
 
   // "Reload case from disk".  A local case re-fetches from the bridge by its
   // absolute path; a bundled tutorial re-reads the build-time glob.
-  // Load the user's OWN case INTO the GUI from explicit input (no bridge, no
-  // disk snooping) -- works on the hosted site. .zip = every browser; folder =
-  // Chromium only.  Both build CaseFiles in memory + go through loadExternalCase.
+  //
+  // "Open materialises" -- the single open verb.  Bringing a case INTO Choupo
+  // lands it on disk: on localhost (bridge present) importCase() writes the
+  // student's chosen file-map into the workspace as a real on-disk case, then
+  // loadLocalCase() opens it -- byte-for-byte the same end-state as New Case, so
+  // the Assistant console can run there (?dir=, stable Claude session) and the
+  // canvas LIVE-RELOADS the agent's edits.  On the hosted site (no bridge)
+  // importCase throws the "bridge not reachable" sentinel and we fall back to the
+  // memory-only viewer (loadExternalCase) -- where the 🤖 is hidden anyway.  The
+  // student never sees a path, a folder, or the word "workspace".
+  const openConverging = (picked: OpenedCase | null) => {
+    if (!picked) return;                       // dialog cancelled
+    importCase(picked.name, picked.raw)
+      .then(({ name, dir, caseFiles }) => {
+        loadLocalCase(dir, caseFiles);
+        const suffixed = name !== slugifyCaseName(picked.name);
+        notifications.show({
+          title: suffixed ? `Opened as “${name}”` : "In your cases",
+          message: suffixed ? "Your work saves here." : undefined,
+          color: "teal",
+          autoClose: 3500,
+        });
+      })
+      .catch((e) => {
+        const msg = (e as Error).message;
+        if (/bridge not reachable/i.test(msg)) {
+          loadExternalCase(picked.name, picked.files);  // hosted fallback (no bridge, console hidden)
+        } else {
+          notifications.show({ title: "Could not open the case", message: msg, color: "red" });
+        }
+      });
+  };
+  // Both pickers feed the SAME funnel.  A case IS a folder, so the single
+  // "Open Case…" verb ALWAYS opens the FOLDER picker -- which works in every
+  // browser now (showDirectoryPicker on Chromium, <input webkitdirectory> on
+  // Firefox/Safari).  The .zip path stays for the WelcomeScreen's open-zip
+  // listener (opening a collaborator's downloaded .zip).
   const openZipCase = () => {
-    openCaseZip()
-      .then((r) => { if (r) loadExternalCase(r.name, r.files); })
-      .catch((e) => notifications.show({ title: "Could not open the .zip case", message: (e as Error).message, color: "red" }));
+    openCaseZip().then(openConverging)
+      .catch((e) => notifications.show({ title: "Could not open the case", message: (e as Error).message, color: "red" }));
   };
   const openFolderCase = () => {
-    openCaseFolder()
-      .then((r) => { if (r) loadExternalCase(r.name, r.files); })
-      .catch((e) => notifications.show({ title: "Could not open the folder", message: (e as Error).message, color: "red" }));
+    openCaseFolder().then(openConverging)
+      .catch((e) => notifications.show({ title: "Could not open the case", message: (e as Error).message, color: "red" }));
   };
+  const openCase = () => openFolderCase();
 
   // The WelcomeScreen (blank boot) fires these to drive the modals MenuBar owns,
   // so its buttons reach New Case / Open Tutorial / Open .zip without lifting the
@@ -189,13 +222,16 @@ export function MenuBar() {
     const onNew = () => newCaseCtl.open();
     const onTut = () => openTutorialCtl.open();
     const onZip = () => openZipCase();
+    const onFolder = () => openFolderCase();
     window.addEventListener("choupo:welcome:new-case", onNew);
     window.addEventListener("choupo:welcome:open-tutorial", onTut);
     window.addEventListener("choupo:welcome:open-zip", onZip);
+    window.addEventListener("choupo:welcome:open-folder", onFolder);
     return () => {
       window.removeEventListener("choupo:welcome:new-case", onNew);
       window.removeEventListener("choupo:welcome:open-tutorial", onTut);
       window.removeEventListener("choupo:welcome:open-zip", onZip);
+      window.removeEventListener("choupo:welcome:open-folder", onFolder);
     };
   }, [newCaseCtl, openTutorialCtl]);
 
@@ -251,14 +287,9 @@ export function MenuBar() {
               Open Tutorial…
             </Menu.Item>
           )}
-          <Menu.Item onClick={openZipCase}>
-            Open Case (.zip)…
+          <Menu.Item onClick={openCase}>
+            Open Case…
           </Menu.Item>
-          {SUPPORTS_DIR_PICKER && (
-            <Menu.Item onClick={openFolderCase}>
-              Open Case Folder…
-            </Menu.Item>
-          )}
           {reopenLabel && (
             <Menu.Item onClick={() => void reopenLastCase()}>
               Reopen last: <Text span fw={600} c="accent">{reopenLabel}</Text>
@@ -286,8 +317,8 @@ export function MenuBar() {
           </Menu.Item>
           <Menu.Item disabled>
             <Text size="xs" c="dimmed" component="span">
-              Your cases live in $CHOUPO_WORKSPACE; tutorials are read-only.
-              Edit the dicts with your editor or the 🤖 console.
+              Your cases stay here in Choupo; tutorials are read-only.
+              Edit them with the 🤖 assistant or any text editor.
             </Text>
           </Menu.Item>
         </TopMenu>

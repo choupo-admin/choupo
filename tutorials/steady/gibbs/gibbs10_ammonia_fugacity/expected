@@ -1,0 +1,17 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.000277777777778  1e-4
+stream  products               F                0.000209823048593  1e-4
+kpi     ammonia                F_in_kmol_h      1                  1e-4
+kpi     ammonia                F_out_kmol_h     0.755362974933     1e-4
+kpi     ammonia                N_in_mol_s       0.277777777778     1e-4
+kpi     ammonia                N_out_mol_s      0.209823048593     1e-4
+kpi     ammonia                P                20000000           1e-4
+kpi     ammonia                Q_kW             -3.68175302075     1e-4
+kpi     ammonia                T                700                1e-4
+kpi     ammonia                converged        1                  1e-4
+kpi     ammonia                lambda_H         -34945.3954982     1e-4
+kpi     ammonia                lambda_N         -59416.3950887     1e-4
+kpi     ammonia                y_H2             0.507099864715     1e-4
+kpi     ammonia                y_N2             0.169033288238     1e-4
+kpi     ammonia                y_NH3            0.323866847046     1e-4

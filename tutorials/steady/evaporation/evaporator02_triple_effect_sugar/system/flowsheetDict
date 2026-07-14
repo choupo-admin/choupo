@@ -77,34 +77,7 @@
     is the v0.30 multi-effect tutorial.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        T            295.0 K;           // ~ 22 °C, the textbook feed
-        P            200.0 kPa;
-        massFlows                       // 22500 kg/h * 5 wt% sucrose
-        {
-            water    21375 kg/h;
-            sucrose   1125 kg/h;
-        }
-    }
-
-    utilitySteam_200kPa
-    {
-        // F-spec mode (v0.32+):  F is the live-steam flow driving the
-        // whole cascade.  Q_1 = F · ΔHvap; the unit reports A_needed.
-        // The student varies F (initial guess) to see how V/F shifts
-        // across the three effects.  An outer DesignSpec (see
-        // designSpec01_triple_equal_areas) finds the F that hits a
-        // target outlet concentration.
-        F                495.0  kmol/h;
-        P                200.0  kPa;
-        state            saturatedVapour;
-        molarComposition  { water 1.0; }
-        category         LP_steam_200kPa;    // utility tag for aggregation
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 // Computed post-processing variables (v0.64).  Each `compute` expression is
 // evaluated AFTER the solve, against the unit KPIs / stream fields, by the

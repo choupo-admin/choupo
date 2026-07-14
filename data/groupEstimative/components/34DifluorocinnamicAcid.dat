@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,4-difluorocinnamic acid  (C9H6F2O2, CAS 112897-97-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34DifluorocinnamicAcid;
+formula     C9H6F2O2;
+CAS         112897-97-9;
+InChIKey    HXBOHZQZTWAEHJ-DUXPYHPUSA-N;
+MW          184.141;      // g/mol [origin=calculated method=formula-sum]
+Tc          804.41;      // K   [origin=predictive method=joback]
+Pc          33.412;      // bar [origin=predictive method=joback]
+omega       0.8166;      // -   [origin=predictive method=lee-kesler]
+Tb          590.37;      // K   [origin=predictive method=joback]
+HvapTb      54716.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.0 0.7553 -0.00055212 1.582e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group ACH; count 3; } { group AC; count 1; } { group COOH; count 1; } { group ACF; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e)-3-[3,4-bis(fluoranyl)phenyl]prop-2-enoic acid" "trans-3,4-difluorocinnamic acid" "(e)-3-(3,4-difluorophenyl)acrylic acid" "(2e)-3-(3,4-difluorophenyl)prop-2-enoic acid" "3-(3,4-difluorophenyl)prop-2-enoic acid" "3,4-difluoro cinnamic acid" "3-(3,4-difluoro-phenyl)-acrylic acid" "i694" "trans-3-(3,4-difluorophenyl)acrylic acid" "(e)-3-(3,4-difluorophenyl)prop-2-enoic acid" );
+gibbsFormation
+{
+    dHf_298   -640770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     497.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-535260.0
+    phase     gas;
+}

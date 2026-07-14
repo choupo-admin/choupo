@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (+)-isomenthone  (C10H18O, CAS 1196-31-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isomenthone;
+formula     C10H18O;
+CAS         1196-31-2;
+InChIKey    NFLGAXVYCFJBMK-RKDXNWHRSA-N;
+MW          154.253;      // g/mol [origin=calculated method=formula-sum]
+Tc          728.97;      // K   [origin=predictive method=joback]
+Pc          25.951;      // bar [origin=predictive method=joback]
+omega       0.4122;      // -   [origin=predictive method=lee-kesler]
+Tb          510.66;      // K   [origin=predictive method=joback]
+HvapTb      41833.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.12 0.88706 -0.000305 -2.43e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 3; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r,5r)-5-methyl-2-propan-2-yl-cyclohexan-1-one" "iso-mentone" "(2r,5r)-5-methyl-2-(propan-2-yl)cyclohexanone" "d-isomenthone" "(2r,5r)-isomenthone" "(1r,4r)-p-menthan-3-one" "(2r,5r)-2-isopropyl-5-methylcyclohexanone" "(2r,5r)-5-methyl-2-propan-2-ylcyclohexan-1-one" "(2r-cis)-5-methyl-2-(1-methylethyl)cyclohexanone" "(2s-cis)-2-(isopropyl)-5-methylcyclohexan-1-one" );
+gibbsFormation
+{
+    dHf_298   -358730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     384.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-74970.0
+    phase     gas;
+}

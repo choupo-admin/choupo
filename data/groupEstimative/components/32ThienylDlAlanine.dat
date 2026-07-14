@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(2-thienyl)-dl-alanine  (C7H9NO2S, CAS 2021-58-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        32ThienylDlAlanine;
+formula     C7H9NO2S;
+CAS         2021-58-1;
+InChIKey    WTOFYLAWDLQMBZ-UHFFFAOYSA-N;
+MW          171.214;      // g/mol [origin=calculated method=formula-sum]
+Tc          894.40;      // K   [origin=predictive method=joback]
+Pc          46.151;      // bar [origin=predictive method=joback]
+omega       0.8922;      // -   [origin=predictive method=lee-kesler]
+Tb          648.44;      // K   [origin=predictive method=joback]
+HvapTb      66217.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.809 0.78851 -0.00058522 1.706e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } { group C4H3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-3-thiophen-2-yl-propanoic acid" "thienylalanine" "2-thiophenealanine" "2-thienylalanine" "3-(2-thienyl)alanine" "t5sj b1yzvq[wln]" "2-amino-3-(thiophen-2-yl)propanoic acid" "h-beta-(2-thienyl)-dl-ala-oh" "alpha-amino-2-thiophenepropanoic acid" "2-amino-3-(2-thienyl)propionic acid" "2-thiophenepropionic acid, alpha-amino-" "a(2-thienyl)alanine" );
+gibbsFormation
+{
+    dHf_298   -279400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     485.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-137430.0
+    phase     gas;
+}

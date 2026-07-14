@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 3-methoxyperfluoropropanoate  (C5H6F4O3, CAS 755-73-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl3Methoxyperfluoropropanoate;
+formula     C5H6F4O3;
+CAS         755-73-7;
+InChIKey    NDNOUXQCMAHOSA-UHFFFAOYSA-N;
+MW          190.092;      // g/mol [origin=calculated method=formula-sum]
+Tc          545.04;      // K   [origin=predictive method=joback]
+Pc          29.155;      // bar [origin=predictive method=joback]
+omega       0.5105;      // -   [origin=predictive method=lee-kesler]
+Tb          385.26;      // K   [origin=predictive method=joback]
+HvapTb      30681.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.67 0.65964 -0.0004518 1.026e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH3O; count 1; } { group CF2; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group C; count 2; } { group F; count 4; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2,2,3,3-tetrakis(fluoranyl)-3-methoxy-propanoate" "methyl 2,2,3,3-tetrafluoro-3-methoxypropanoate" "methyl 2,2,3,3-tetrafluoro-3-methoxypropionate" "methyl 3-methoxytetrafluoropropanoate" "propanoic acid, 2,2,3,3-tetrafluoro-3-methoxy-, methyl ester" "2,2,3,3-tetrafluoro-3-methoxypropanoic acid, methyl ester" "propanoic acid,2,2,3,3-tetrafluoro-3-methoxy-, methyl ester" "2,2,3,3-tetrafluoro-3-methoxy-propionic acid methyl ester" "propionicacid, 2,2,3,3-tetrafluoro-3-methoxy-, methyl ester (7ci,8ci);methyl2,2,3,3-tetrafluoro-3-methoxypropionate;methyl 3-methoxyperfluoropropionate;methyl 3-methoxytetrafluoropropionate;methyl 2,2,3,3-tetrafluoro-3-methoxypropanoate;" );
+gibbsFormation
+{
+    dHf_298   -1397970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     462.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1197710.0
+    phase     gas;
+}

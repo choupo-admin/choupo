@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12-pentacosafluoro-14-iodotetradecane  (C14H4F25I, CAS 30046-31-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1112233445566778899101011111212Pentacosafluoro14Iodotetradec;
+formula     C14H4F25I;
+CAS         30046-31-2;
+InChIKey    DBXLDZXWSFMBRB-UHFFFAOYSA-N;
+MW          774.036;      // g/mol [origin=calculated method=formula-sum]
+Tc          686.14;      // K   [origin=predictive method=joback]
+Pc          8.253;      // bar [origin=predictive method=joback]
+omega       0.7134;      // -   [origin=predictive method=lee-kesler]
+Tb          556.05;      // K   [origin=predictive method=joback]
+HvapTb      20154.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-139.548 3.1774 -0.0032908 1.1981e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group I; count 1; } { group CF3; count 1; } { group CF2; count 11; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group C; count 12; } { group F; count 25; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12-pentacosakis(fluoranyl)-14-iodanyl-tetradecane" "tetradecane, 1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12-pentacosafluoro-14-iodo-" "1h,1h,2h,2h-perfluorotetradecyl iodide" "2-perfluorododecyl ethyl iodide" "2-(perfluorododec-1-yl)ethyl iodide" "1h,1h,2h,2h-perfluorotetradecyliodide" "1-iodo-1h,1h,2h,2h-perfluorotetradecane" "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12-pentacosafluoro-14-iodotetradecane;1,1,2,2-tetrahydroperfluorotetradecyl iodide; 1h,1h,2h,2h-perfluorotetradecyliodide; perfluorolaurylethyl iodide" "14-iodo-1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12-pentacosafluorotetradecane" "tetradecane,1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12-pentacosafluoro-14-iodo-" );
+gibbsFormation
+{
+    dHf_298   -5263170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1082.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4711050.0
+    phase     gas;
+}

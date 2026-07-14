@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-dodecanethiol, telomer with 1,3-butadiene and ethenylbenzene  (C24H40S, CAS 68123-15-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1DodecanethiolTelomerWith13ButadieneAndEthenylbenzene;
+formula     C24H40S;
+CAS         68123-15-9;
+InChIKey    QGZWGWATLGDYAZ-UHFFFAOYSA-N;
+MW          360.644;      // g/mol [origin=calculated method=formula-sum]
+Tc          1038.83;      // K   [origin=predictive method=joback]
+Pc          9.908;      // bar [origin=predictive method=joback]
+omega       0.7430;      // -   [origin=predictive method=lee-kesler]
+Tb          831.10;      // K   [origin=predictive method=joback]
+HvapTb      76609.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (34.721 1.75982 -0.0005745 -7.67e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group CH2=CH; count 3; } { group ACH; count 5; } { group AC; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH2; count 3; } { group dCH; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "buta-1,3-diene;dodecane-1-thiol;ethenylbenzene" "buta-1,3-diene; dodecane-1-thiol; styrene" "1,3-butadiene, styrene, telomer with 1-dodecanethiol" );
+gibbsFormation
+{
+    dHf_298   -110630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1248.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=347000.0
+    phase     gas;
+}

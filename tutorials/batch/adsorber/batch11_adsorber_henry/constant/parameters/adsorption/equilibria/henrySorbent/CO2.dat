@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Adsorption equilibrium record --- CO2 on henrySorbent (SYNTHETIC).
+
+  What this IS: a linear (Henry-limit) isotherm, q = H(T) * p, with
+  H(298.15 K) = 0.4 mol/(kg bar) -- the teaching record that makes the
+  closed batch vessel of batch11_adsorber_henry an analytically solvable
+  LINEAR system (the exact-solution gate of the batchAdsorber, A2 spec
+  G1a).  The van't Hoff dH_ads is a nominal physisorption value; the case
+  runs exactly AT tRef, so it never enters the gate numbers.  Case-local
+  on purpose: synthetic data never enters data/standards/.
+\*-----------------------------------------------------------------------------*/
+
+recordType      adsorptionIsotherm;
+schemaVersion   1;
+
+adsorbent       henrySorbent;
+adsorbate       CO2;
+
+model           henry;
+
+parameters
+{
+    H_298   0.4;      // Henry coefficient at tRef [mol/kg per bar]
+    dH_ads  -20000;   // nominal physisorption heat [J/mol] (<0; inert at T = tRef)
+}
+
+tRef            298.15;               // van't Hoff anchor [K]
+loadingBasis    molPerKgAdsorbent;    // q = mol adsorbate per kg adsorbent
+pressureBasis   partialPressureBar;   // p in bar (H_298 per bar)
+
+provenance
+{
+    origin    synthetic;
+    method    "teaching construction: K_H = 0.4 mol/(kg bar) makes alpha = K_H*R*T/V = 0.9916 1/kg, so k_eff = k*(1 + alpha*m) ~ 2k -- the closed-vessel acceleration is visible";
+    curation  "case-local only (batch11_adsorber_henry); NOT catalogue data";
+}

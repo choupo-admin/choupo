@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(2-ethoxyethyl) adipate  (C14H26O6, CAS 109-44-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis2EthoxyethylAdipate;
+formula     C14H26O6;
+CAS         109-44-4;
+InChIKey    NJEMMCIKSMMBDM-UHFFFAOYSA-N;
+MW          290.356;      // g/mol [origin=calculated method=formula-sum]
+Tc          853.16;      // K   [origin=predictive method=joback]
+Pc          14.954;      // bar [origin=predictive method=joback]
+omega       1.0536;      // -   [origin=predictive method=lee-kesler]
+Tb          681.20;      // K   [origin=predictive method=joback]
+HvapTb      66392.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (91.98 1.09784 -0.0003266 -6.84e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH2COO; count 2; } { group CH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 10; } { group O; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(2-ethoxyethyl) hexanedioate" "hexanedioic acid, bis(2-ethoxyethyl) ester" "adipic acid, bis(2-ethoxyethyl) ester" "hexanedioic acid, 1,6-bis(2-ethoxyethyl) ester" "bis-(2-ethoxyethyl) adipate" "1,6-bis(2-ethoxyethyl) hexanedioate" "hexanoic acid, bis(2-ethoxyethyl) ester" "hexanedioic acid,1,6-bis(2-ethoxyethyl) ester" "hexanoic acid, bis(2-ethoxyethyl) ester (9ci)" );
+gibbsFormation
+{
+    dHf_298   -1231290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     826.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-763740.0
+    phase     gas;
+}

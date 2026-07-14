@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-ethyl-3-methylpentane  (C8H18, CAS 1067-08-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Ethyl3Methylpentane;
+formula     C8H18;
+CAS         1067-08-9;
+InChIKey    GIEZWIDCIFCQPS-UHFFFAOYSA-N;
+MW          114.232;      // g/mol [origin=calculated method=formula-sum]
+Tc          553.68;      // K   [origin=predictive method=joback]
+Pc          25.846;      // bar [origin=predictive method=joback]
+omega       0.3091;      // -   [origin=predictive method=lee-kesler]
+Tb          379.41;      // K   [origin=predictive method=joback]
+HvapTb      32106.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.857 0.88968 -0.0005832 1.559e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-ethyl-3-methyl-pentane" "pentane, 3-ethyl-3-methyl-" "pentane,3-ethyl-3-methyl-" "3-methyl-3-ethylpentane" "giezwidcifcqps-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -217200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     428.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=19320.0
+    phase     gas;
+}

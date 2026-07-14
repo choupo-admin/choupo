@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nonabromomonochloro-1,2-diphenoxyethane  (C14H4Br9ClO2, CAS 68299-27-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nonabromomonochloro12Diphenoxyethane;
+formula     C14H4Br9ClO2;
+CAS         68299-27-4;
+InChIKey    IZPUDUNKMAMNJZ-UHFFFAOYSA-N;
+MW          958.77;      // g/mol [origin=calculated method=formula-sum]
+Tc          1616.17;      // K   [origin=predictive method=joback]
+Pc          44.444;      // bar [origin=predictive method=joback]
+omega       2.0562;      // -   [origin=predictive method=lee-kesler]
+Tb          1300.79;      // K   [origin=predictive method=joback]
+HvapTb      125050.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (202.952 0.8052 -0.0005708 1.637e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 11; } { group CH2O; count 2; } { group ACCl; count 1; } { group Br; count 9; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dC_ring; count 12; } { group Cl; count 1; } { group Br; count 9; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5-pentakis(bromanyl)-6-[2-[2,3,4,5-tetrakis(bromanyl)-6-chloranyl-phenoxy]ethoxy]benzene" "pentabromo-beta-(tetrabromochlorophenoxy)phenetole" "benzene, pentabromo(2-(tetrabromochlorophenoxy)ethoxy)-" "1-pentabromophenoxy-2-tetrabromochlorophenoxyethane" "1,2,3,4,5-pentabromo-6-[2-(2,3,4,5-tetrabromo-6-chlorophenoxy)ethoxy]benzene" "benzene, 1,2,3,4,5-pentabromo-6-(2-(tetrabromochlorophenoxy)ethoxy)-" "benzene, 1,2,3,4,5-pentabromo-6-[2-(tetrabromochlorophenoxy)ethoxy]-" "1,2,3,4,5-pentabromo-6-[2-(2,3,4,5-tetrabromo-6-chloro-phenoxy)ethoxy]benzene" );
+gibbsFormation
+{
+    dHf_298   -17140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     942.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=102470.0
+    phase     gas;
+}

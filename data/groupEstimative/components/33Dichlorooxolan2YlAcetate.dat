@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3-dichlorooxolan-2-yl acetate  (C6H8Cl2O3, CAS 141942-52-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33Dichlorooxolan2YlAcetate;
+formula     C6H8Cl2O3;
+CAS         141942-52-1;
+InChIKey    PBTLBQDECKKPKR-UHFFFAOYSA-N;
+MW          199.027;      // g/mol [origin=calculated method=formula-sum]
+Tc          733.62;      // K   [origin=predictive method=joback]
+Pc          35.431;      // bar [origin=predictive method=joback]
+omega       0.4842;      // -   [origin=predictive method=lee-kesler]
+Tb          507.76;      // K   [origin=predictive method=joback]
+HvapTb      48434.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.59 0.92672 -0.0008395 3.217e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 1; } { group CH3COO; count 1; } { group FCH2O; count 1; } { group CCl2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group Cl; count 2; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[3,3-bis(chloranyl)oxolan-2-yl] ethanoate" "2-acetoxy-3,3-dichlorotetrahydrofuran" "3,3-dichlorotetrahydrofuran-2-yl acetate" "2-furanol,3,3-dichlorotetrahydro-, 2-acetate" "(3,3-dichlorooxolan-2-yl) acetate" "2-furanol,3,3-dichlorotetrahydro-, acetate (9ci);2-acetoxy-3,3-dichlorotetrahydrofuran;" );
+gibbsFormation
+{
+    dHf_298   -592550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     433.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-397360.0
+    phase     gas;
+}

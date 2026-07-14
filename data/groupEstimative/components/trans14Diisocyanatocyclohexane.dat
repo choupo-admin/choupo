@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trans-1,4-diisocyanatocyclohexane  (C8H10N2O2, CAS 7517-76-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trans14Diisocyanatocyclohexane;
+formula     C8H10N2O2;
+CAS         7517-76-2;
+InChIKey    CDMDQYCEEKCBGR-UHFFFAOYSA-N;
+MW          166.18;      // g/mol [origin=calculated method=formula-sum]
+Tc          752.23;      // K   [origin=predictive method=joback]
+Pc          36.029;      // bar [origin=predictive method=joback]
+omega       0.5968;      // -   [origin=predictive method=lee-kesler]
+Tb          530.86;      // K   [origin=predictive method=joback]
+HvapTb      52586.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:2
+    joback ( { group dCd; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group dO_oth; count 2; } { group Nd; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-diisocyanatocyclohexane" "cyclohexane, 1,4-diisocyanato-, trans-" "trans-1,4-cyclohexanediisocyanate" "1,4-cyclohexane diisocyanate" "cyclohexane, 1,4-diisocyanato-" "trans-1,4-cyclohexyleneisocyanate" "trans-1,4-cyclohexylene diisocyanate" "cyclohexane-1,4-diisocyanate" "cyclohexane diisocyanate" "trans-1,4-cyclohexane diisocyanate" "trans-cyclohexane dllsocyanate" "1,4-cyclohexane diisocyanate [diisocyanates]" );
+// formation datum unavailable (element entropy missing): dHf_298=-185290.0 dGf_298=None

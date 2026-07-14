@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (s)-(-)-1-phenylethylamine  (C8H11N, CAS 2627-86-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        s1Phenylethylamine;
+formula     C8H11N;
+CAS         2627-86-3;
+InChIKey    RQEUFEKYXDPUSK-ZETCQYMHSA-N;
+MW          121.183;      // g/mol [origin=calculated method=formula-sum]
+Tc          709.91;      // K   [origin=predictive method=joback]
+Pc          39.555;      // bar [origin=predictive method=joback]
+omega       0.4291;      // -   [origin=predictive method=lee-kesler]
+Tb          481.41;      // K   [origin=predictive method=joback]
+HvapTb      45931.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-33.48 0.75272 -0.0004892 1.2e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1s)-1-phenylethanamine" "(s)-(-)-alpha-methylbenzylamine" "l-1-phenylethylamine" "(s)-1-phenylethanamine" "s-alfa-methylbenzylamine" "(s)-1-phenylethylamine" "l-alpha-methylbenzylamine" "l(-)-alpha-methylbenzylamine" "(s)-alpha-methylbenzenemethanamine" "l-alpha-phenylethylamine" "(-)-" "a-phenethylamine" "(s)1-phenyl-ethylamine" );
+gibbsFormation
+{
+    dHf_298   56590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     403.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=192900.0
+    phase     gas;
+}

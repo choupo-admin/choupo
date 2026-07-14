@@ -1,0 +1,68 @@
+/*---------------------------------------------------------------------------*\
+  still04_rectifier_benzene_toluene -- the CLASSICAL batch rectification
+  (model rectifier, design forum #85): the Rayleigh pot now feeds a column
+  of 3 ideal stages topped by a total condenser at constant reflux R = 3.
+
+  F_vap is the internal BOILUP V = 1.5e-6 kmol/s; the distillate PRODUCT is
+  D = V/(R+1) = 3.75e-7 kmol/s and the reflux L = R.D returns to the column.
+  The pot loses PRODUCT only:  dn_i/dt = -D.x_D_i, with x_D(t) solved at
+  every instant from the quasi-steady cascade (stage balances + bubble-T
+  equilibrium + total-condenser closure -- a declared residual, printed on
+  failure).
+
+  What to watch (trajectory.csv):
+    * still.xD_benzene starts ~0.949 (vs ~0.71 for the raw pot vapour --
+      the column working) and DRIFTS DOWN as the pot strips: the constant-R
+      policy trades purity for time.  The receiver's ACCUMULATED benzene
+      fraction sits between the instantaneous x_D and the feed -- two
+      different compositions, deliberately both visible.
+    * The pot loses only D.dt = 0.225 mmol over 600 s (vs 0.9 mmol in
+      still01: same boilup, but 3/4 of it refluxes).
+
+  Physics anchors (verified at authoring): x_D(0) grows with nStages and R
+  (N=1,R=1: 0.806; N=2,R=3: 0.909; N=3,R=3: 0.949) and the R -> infinity
+  limit (R=200: 0.9765) lands inside the Fenske band alpha^(N+1) for
+  alpha = 2.35-2.6.  With nStages 0 and refluxRatio 0 the model reproduces
+  still01's Rayleigh trajectory to the last digit.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        still;
+        type        batchStill;
+        model       rectifier;
+        dischargeTo  receiver;             // the condensed PRODUCT D.x_D only
+
+        initial
+        {
+            T            365.0 K;
+            P            1.013 bar;
+            V            1.0e-4;           // m^3 (decorative)
+            totalMoles   1.0e-3;           // kmol (1 mol equimolar)
+            molarComposition  { benzene 0.5;  toluene 0.5; }
+        }
+
+        operation
+        {
+            P             1.013 bar;
+            F_vap         1.5e-6;          // kmol/s -- boilup V in this model
+            nStages       3;               // ideal stages above the pot
+            refluxPolicy  constantReflux;
+            refluxRatio   3.0;
+        }
+    }
+
+    {
+        name        receiver;
+        type        batchAccumulator;
+
+        initial
+        {
+            T            350.0 K;
+            P            1.013 bar;
+            V            1.0e-4;
+            totalMoles   0.0;              // fills with the ACCUMULATED distillate
+        }
+    }
+);

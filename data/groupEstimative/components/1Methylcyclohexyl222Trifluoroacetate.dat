@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (1-methylcyclohexyl) 2,2,2-trifluoroacetate  (C9H13F3O2, CAS 775-75-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Methylcyclohexyl222Trifluoroacetate;
+formula     C9H13F3O2;
+CAS         775-75-7;
+InChIKey    XHWQUVQVTFUQSG-UHFFFAOYSA-N;
+MW          210.195;      // g/mol [origin=calculated method=formula-sum]
+Tc          672.95;      // K   [origin=predictive method=joback]
+Pc          26.488;      // bar [origin=predictive method=joback]
+omega       0.4946;      // -   [origin=predictive method=lee-kesler]
+Tb          478.11;      // K   [origin=predictive method=joback]
+HvapTb      38566.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-101.68 1.37922 -0.0012058 4.351e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group C; count 1; } { group CF3; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 1; } { group CH2_ring; count 5; } { group C_ring; count 1; } { group F; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1-methylcyclohexyl) 2,2,2-tris(fluoranyl)ethanoate" "acetic acid, trifluoro-, 1-methylcyclohexyl ester" );
+gibbsFormation
+{
+    dHf_298   -1073890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     653.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-848100.0
+    phase     gas;
+}

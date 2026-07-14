@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (perfluoro-n-octyl)ethylene  (C10H3F17, CAS 21652-58-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluoroNOctylEthylene;
+formula     C10H3F17;
+CAS         21652-58-4;
+InChIKey    NKAMGQZDVMQEJL-UHFFFAOYSA-N;
+MW          446.1;      // g/mol [origin=calculated method=formula-sum]
+Tc          502.28;      // K   [origin=predictive method=joback]
+Pc          13.233;      // bar [origin=predictive method=joback]
+omega       0.6316;      // -   [origin=predictive method=lee-kesler]
+Tb          386.83;      // K   [origin=predictive method=joback]
+HvapTb      12927.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-101.43 2.1408 -0.0021963 7.956e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group CF3; count 1; } { group CF2; count 7; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 8; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 17; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heptadecakis(fluoranyl)dec-1-ene" "1h,1h,2h-perfluoro-1-decene" "1h,1h,2h-perfluorodec-1-ene" "1h,1h,2h-heptadecafluoro-1-decene" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heptadecafluoro-1-decene" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heptadecafluorodec-1-ene" "tridecafluoro 1-decene" "(perfluoroctyl)ethylene" "(perfluorooctyl)ethylene" "(perfluorooctyl)ethene;(perfluorooctyl)ethylene;1,1,2-trihydroperfluoro-1-decene;1h,1h,2h-heptadecafluoro-1-decene;1h,1h,2h-perfluoro-1-decene;1h,1h,2h-perfluorodecene;3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heptadecafluoro-1-decene;3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heptadecafluorodecene;f 1820;heptadecafluoro-1-decene;" );
+gibbsFormation
+{
+    dHf_298   -3528170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     768.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3167890.0
+    phase     gas;
+}

@@ -1,0 +1,23 @@
+/*---------------------------------------------------------------------------*\
+  plant02_basename_twins -- the ADVERSARIAL alias case of design forum #87-P0.
+
+  A top-level stream `feed` (the domain inlet) and a sector-INTERNAL edge
+  also named `feed` (A.feed -- a completely different stream between A's two
+  heaters) coexist.  Identity is the PATH, never the basename: the manifest
+  must carry BOTH (0/feed and 0/A/feed).  The old basename filter silently
+  dropped the top-level one from the manifest, so a legitimate case reported
+  ORPHAN on its own inlet.
+\*---------------------------------------------------------------------------*/
+
+units      ( h  A );  // ONE ordered member list (dependency order: h feeds A).
+                      // `units`/`sectors` are semantic labels only -- each
+                      // member's real kind comes from its own dict.  NB: an
+                      // INLINE units(...) dict-list here would silently
+                      // short-circuit the composite path and DROP the sector.
+
+connections
+{
+    feed    { to h/in; }
+    hot     { from h/hot; to A/inlet; }
+    out     { from A/out; }
+}

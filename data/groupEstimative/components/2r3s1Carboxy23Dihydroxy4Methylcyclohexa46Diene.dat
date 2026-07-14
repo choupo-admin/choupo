@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2r,3s)-1-carboxy-2,3-dihydroxy-4-methylcyclohexa-4,6-diene  (C8H10O4, CAS 193338-30-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2r3s1Carboxy23Dihydroxy4Methylcyclohexa46Diene;
+formula     C8H10O4;
+CAS         193338-30-6;
+InChIKey    YZZIXSUTJHCCFT-NKWVEPMBSA-N;
+MW          170.164;      // g/mol [origin=calculated method=formula-sum]
+Tc          934.39;      // K   [origin=predictive method=joback]
+Pc          44.504;      // bar [origin=predictive method=joback]
+omega       1.7170;      // -   [origin=predictive method=lee-kesler]
+Tb          735.67;      // K   [origin=predictive method=joback]
+HvapTb      85952.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.71 0.74722 -0.00041088 7.16e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 2; } { group CH=C; count 2; } { group OH; count 2; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group OH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5s,6r)-4-methyl-5,6-bis(oxidanyl)cyclohexa-1,3-diene-1-carboxylic acid" "(5s,6r)-5,6-dihydroxy-4-methylcyclohexa-1,3-dienecarboxylic acid" "(5s,6r)-5,6-dihydroxy-4-methylcyclohexa-1,3-diene-1-carboxylic acid" "1,3-cyclohexadiene-1-carboxylicacid, 5,6-dihydroxy-4-methyl-, (5s,6r)-" "1,3-cyclohexadiene-1-carboxylicacid, 5,6-dihydroxy-4-methyl-, (5s-cis)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -736580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     462.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-543670.0
+    phase     gas;
+}

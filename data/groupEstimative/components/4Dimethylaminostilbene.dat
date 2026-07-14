@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-dimethylaminostilbene  (C16H17N, CAS 1145-73-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Dimethylaminostilbene;
+formula     C16H17N;
+CAS         1145-73-9;
+InChIKey    XGHHHPDRXLIMPM-UHFFFAOYSA-N;
+MW          223.319;      // g/mol [origin=calculated method=formula-sum]
+Tc          877.75;      // K   [origin=predictive method=joback]
+Pc          23.634;      // bar [origin=predictive method=joback]
+omega       0.5972;      // -   [origin=predictive method=lee-kesler]
+Tb          640.62;      // K   [origin=predictive method=joback]
+HvapTb      58425.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-90.04 1.45044 -0.00103836 2.901e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH=CH; count 1; } { group ACH; count 9; } { group AC; count 3; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethyl-4-(2-phenylethenyl)aniline" "4-(dimethylamino)stilbene" "stilbenyl-n,n-dimethylamine" "n,n-dimethyl-4-aminostilbene" "4-stilbenamine, n,n-dimethyl-" "4-dimethylaminostilben [german]" "benzenamine, n,n-dimethyl-4-(2-phenylethenyl)-" "n,n-dimethyl-p-styrylaniline" "4-dimethylaminostilben" "agn-pc-0d7ak5" "n1,n1-dimethyl-4-styrylaniline" "benzenamine,n,n-dimethyl-4-(2-phenylethenyl)-" );
+gibbsFormation
+{
+    dHf_298   272770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     569.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=490030.0
+    phase     gas;
+}

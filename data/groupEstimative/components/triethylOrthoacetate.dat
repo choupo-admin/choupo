@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethyl orthoacetate  (C8H18O3, CAS 78-39-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethylOrthoacetate;
+formula     C8H18O3;
+CAS         78-39-7;
+InChIKey    NDQXKKFRNOPRDW-UHFFFAOYSA-N;
+MW          162.229;      // g/mol [origin=calculated method=formula-sum]
+Tc          621.00;      // K   [origin=predictive method=joback]
+Pc          24.556;      // bar [origin=predictive method=joback]
+omega       0.5280;      // -   [origin=predictive method=lee-kesler]
+Tb          446.67;      // K   [origin=predictive method=joback]
+HvapTb      39336.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (47.643 0.70008 -0.0002502 -8.5e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group C; count 1; } { group CH2O; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1-triethoxyethane" "ethyl orthoacetate" "ethane, 1,1,1-triethoxy-" "orthoacetic acid, triethyl ester" "1,1-triethoxyethane" "ethane,1,1-triethoxy-" "triethyl orthoacetate(teoa)" "triethyl ortho acetate" "orthoacetic acid triethyl ester" "orthoacetic acid, triethyl ester (8ci)" "ethane,1,1,1-triethoxy   orthoacetic acid,triethyl ester" );
+gibbsFormation
+{
+    dHf_298   -613860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     462.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-295680.0
+    phase     gas;
+}

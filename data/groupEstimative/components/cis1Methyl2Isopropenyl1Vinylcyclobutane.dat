@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cis-1-methyl-2-isopropenyl-1-vinylcyclobutane  (C10H16, CAS 41294-17-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cis1Methyl2Isopropenyl1Vinylcyclobutane;
+formula     C10H16;
+CAS         41294-17-1;
+InChIKey    HRWMELJDGVNKEO-UWVGGRQHSA-N;
+MW          136.238;      // g/mol [origin=calculated method=formula-sum]
+Tc          630.30;      // K   [origin=predictive method=joback]
+Pc          27.070;      // bar [origin=predictive method=joback]
+omega       0.2912;      // -   [origin=predictive method=lee-kesler]
+Tb          428.22;      // K   [origin=predictive method=joback]
+HvapTb      35219.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-111.29 1.32044 -0.0012193 4.836e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group CH2=CH; count 1; } { group CH2=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1r,2s)-1-ethenyl-1-methyl-2-prop-1-en-2-yl-cyclobutane" "cyclobutane, 1-ethenyl-1-methyl-2-(1-methylethenyl)-, (1r,2s)-rel-" "(1r,2s)-1-ethenyl-1-methyl-2-prop-1-en-2-ylcyclobutane" );
+gibbsFormation
+{
+    dHf_298   52880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     488.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=235900.0
+    phase     gas;
+}

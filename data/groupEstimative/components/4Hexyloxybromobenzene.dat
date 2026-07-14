@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-hexyloxybromobenzene  (C12H17BrO, CAS 30752-19-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Hexyloxybromobenzene;
+formula     C12H17BrO;
+CAS         30752-19-3;
+InChIKey    GKLMJONYGGTHHM-UHFFFAOYSA-N;
+MW          257.171;      // g/mol [origin=calculated method=formula-sum]
+Tc          806.45;      // K   [origin=predictive method=joback]
+Pc          24.950;      // bar [origin=predictive method=joback]
+omega       0.6910;      // -   [origin=predictive method=lee-kesler]
+Tb          594.40;      // K   [origin=predictive method=joback]
+HvapTb      54089.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.065 0.98042 -0.00055356 1.115e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group ACH; count 4; } { group AC; count 2; } { group CH2O; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-4-hexoxy-benzene" "1-(4-bromophenoxy)hexane" "1-bromo-4-hexyloxybenzene" "p-bromophenylhexyl ether" "1-bromo-4-hexoxybenzene" "1-bromo-4-n-hexyloxybenzene" "1-bromo-4-(hexyloxy)benzene" "benzene, 1-bromo-4-(hexyloxy)-" "p-hexyloxybromobenzene" "4-bromophenyl hexyl ether" "4-n-hexyloxybromobenzene" );
+gibbsFormation
+{
+    dHf_298   -171840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     573.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=62260.0
+    phase     gas;
+}

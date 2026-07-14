@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cholesteryl octanoate  (C35H60O2, CAS 1182-42-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cholesterylOctanoate;
+formula     C35H60O2;
+CAS         1182-42-9;
+InChIKey    SKLBBRQPVZDTNM-SJTWHRLHSA-N;
+MW          512.863;      // g/mol [origin=calculated method=formula-sum]
+Tc          1343.65;      // K   [origin=predictive method=joback]
+Pc          6.575;      // bar [origin=predictive method=joback]
+omega       0.5795;      // -   [origin=predictive method=lee-kesler]
+Tb          1096.66;      // K   [origin=predictive method=joback]
+HvapTb      98372.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-293.541 4.23032 -0.00326004 1.0856e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 16; } { group CH; count 7; } { group C; count 2; } { group CH=C; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 9; } { group CH; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(3s,8s,9s,10r,13r,14s,17r)-10,13-dimethyl-17-[(2r)-6-methylheptan-2-yl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-yl] octanoate" "cholesteryl caprylate" "cholesterol n-octanoate" "cholesteryl n-octanoate" "3beta-hydroxy-5-cholestene 3-octanoate" "5-cholesten-3" "a-ol 3-octanoate" "n-octanoic acid cholesterol ester" "5-cholesten-3beta-ol 3-octanoate" "cholest-5-ene-3-beta-yl octanoate" "3" "a-hydroxy-5-cholestene 3-octanoate" "14-((1r)-1,5-dimethylhexyl)(1s,5s,10s,11s,2r,14r,15r)-2,15-dimethyltetracyclo[ 8.7.0.0<2,7>.0<11,15>]heptadec-7-en-5-yl octanoate" "cholest-5-en-3-ol(3b)-, octanoate (9ci);cholesterol,octanoate (6ci,7ci,8ci);3b-(octanoyloxy)cholest-5-ene;5-cholesten-3b-ol caprylate;cholest-5-en-3b-ol caprylate;cholesterolcaprylate;cholesteryl caprylate;cholesteryl octanoate;" );
+gibbsFormation
+{
+    dHf_298   -817400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1258.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97290.0
+    phase     gas;
+}

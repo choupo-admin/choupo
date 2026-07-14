@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetradec-13-enal  (C14H26O, CAS 85896-31-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetradec13Enal;
+formula     C14H26O;
+CAS         85896-31-7;
+InChIKey    ZVJRAGVPKPPDKE-UHFFFAOYSA-N;
+MW          210.361;      // g/mol [origin=calculated method=formula-sum]
+Tc          732.53;      // K   [origin=predictive method=joback]
+Pc          16.714;      // bar [origin=predictive method=joback]
+omega       0.8030;      // -   [origin=predictive method=lee-kesler]
+Tb          565.26;      // K   [origin=predictive method=joback]
+HvapTb      52808.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.429 1.2883 -0.0007537 1.707e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 11; } { group CH2=CH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 11; } { group dCH2; count 1; } { group dCH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "13-tetradecenal" );
+gibbsFormation
+{
+    dHf_298   -292440.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     715.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=55320.0
+    phase     gas;
+}

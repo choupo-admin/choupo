@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: rubrene  (C42H28, CAS 517-51-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        rubrene;
+formula     C42H28;
+CAS         517-51-1;
+InChIKey    YYMBJDOZVAITBP-UHFFFAOYSA-N;
+MW          532.686;      // g/mol [origin=calculated method=formula-sum]
+Tc          1696.23;      // K   [origin=predictive method=joback]
+Pc          11.491;      // bar [origin=predictive method=joback]
+omega       1.0534;      // -   [origin=predictive method=lee-kesler]
+Tb          1380.78;      // K   [origin=predictive method=joback]
+HvapTb      129358.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-213.35 3.2312 -0.00242492 7.1e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 28; } { group AC; count 14; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 28; } { group dC_ring; count 14; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5,6,11,12-tetraphenyltetracene" "5,6,11,12-tetraphenylnaphthacene" "rubren" "naphthacene, 5,6,11,12-tetraphenyl-" "5,11,12-tetraphenyltetracene" "5,11,12-tetraphenylnaphthacene" "naphthacene,6,11,12-tetraphenyl-" "5,6,11,12-tetraphenylnaphthacene;5,6,11,12-tetraphenyltetracene;rubren;" );
+gibbsFormation
+{
+    dHf_298   776830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     896.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1126980.0
+    phase     gas;
+}

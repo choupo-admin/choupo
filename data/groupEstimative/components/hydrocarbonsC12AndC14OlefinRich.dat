@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hydrocarbons, c12 and c14, olefin-rich  (C12H18, CAS 68514-33-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hydrocarbonsC12AndC14OlefinRich;
+formula     C12H18;
+CAS         68514-33-0;
+InChIKey    KUYWKHKXFXRJAP-MRYWSNOQSA-N;
+MW          162.276;      // g/mol [origin=calculated method=formula-sum]
+Tc          682.95;      // K   [origin=predictive method=joback]
+Pc          21.394;      // bar [origin=predictive method=joback]
+omega       0.4563;      // -   [origin=predictive method=lee-kesler]
+Tb          490.80;      // K   [origin=predictive method=joback]
+HvapTb      42138.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-64.748 1.22384 -0.0009642 3.212e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH=CH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2e,5e,7e,10e)-dodeca-2,5,7,10-tetraene" "(c12-c14) olefin-paraffin complex combination" );
+gibbsFormation
+{
+    dHf_298   177870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     597.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=371040.0
+    phase     gas;
+}

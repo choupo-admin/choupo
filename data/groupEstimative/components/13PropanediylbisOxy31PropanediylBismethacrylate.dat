@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-propanediylbis(oxy-3,1-propanediyl) bismethacrylate  (C17H28O6, CAS 68901-06-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13PropanediylbisOxy31PropanediylBismethacrylate;
+formula     C17H28O6;
+CAS         68901-06-4;
+InChIKey    QLSAVDKHKYMDCJ-UHFFFAOYSA-N;
+MW          328.405;      // g/mol [origin=calculated method=formula-sum]
+Tc          922.87;      // K   [origin=predictive method=joback]
+Pc          12.939;      // bar [origin=predictive method=joback]
+omega       1.0273;      // -   [origin=predictive method=lee-kesler]
+Tb          742.96;      // K   [origin=predictive method=joback]
+HvapTb      71890.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (83.889 1.34264 -0.0005402 5.7e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 7; } { group CH2=C; count 2; } { group CH2O; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 9; } { group dCH2; count 2; } { group dC; count 2; } { group O; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[3-[3-(2-methylprop-2-enoyloxy)propoxy]propoxy]propyl 2-methylprop-2-enoate" "propane-1,3-diylbis(oxypropane-3,1-diyl) bis(2-methylprop-2-enoate)" "2-propenoic acid, 2-methyl-, 1,3-propanediylbis(oxy-3,1-propanediyl) ester" "2-propenoic acid, 2-methyl-, 1,1'-(1,3-propanediylbis(oxy-3,1-propanediyl)) ester" "2-propenoic acid, 2-methyl-, 1,1'-[1,3-propanediylbis(oxy-3,1-propanediyl)] ester" "2-propenoic acid,2-methyl-, 1,1'-[1,3-propanediylbis(oxy-3,1-propanediyl)] ester" "2-propenoicacid, 2-methyl-, 1,3-propanediylbis(oxy-3,1-propanediyl) ester (9ci)" );
+gibbsFormation
+{
+    dHf_298   -1061930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     925.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-579900.0
+    phase     gas;
+}

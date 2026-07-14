@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-hydroxypropyl myristate  (C17H34O3, CAS 3539-38-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2HydroxypropylMyristate;
+formula     C17H34O3;
+CAS         3539-38-6;
+InChIKey    VCNPGCHIKPSUSP-UHFFFAOYSA-N;
+MW          286.456;      // g/mol [origin=calculated method=formula-sum]
+Tc          909.61;      // K   [origin=predictive method=joback]
+Pc          13.271;      // bar [origin=predictive method=joback]
+omega       1.1492;      // -   [origin=predictive method=lee-kesler]
+Tb          738.52;      // K   [origin=predictive method=joback]
+HvapTb      77134.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (16.453 1.60394 -0.00084 1.433e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 12; } { group CH; count 1; } { group OH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 13; } { group CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-oxidanylpropyl tetradecanoate" "tetradecanoic acid, monoester with 1,2-propanediol" "propylene glycol myristate" "propylene glycol monomyristate" "2-hydroxypropyl tetradecanoate" "tetradecanoic acid,2-hydroxypropyl ester" "myristic acid, monoester with propane-1,2-diol" "myristicacid, 2-hydroxypropyl ester (7ci,8ci); myristic acid, ester with1,2-propanediol (6ci)" );
+gibbsFormation
+{
+    dHf_298   -869000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     910.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-357370.0
+    phase     gas;
+}

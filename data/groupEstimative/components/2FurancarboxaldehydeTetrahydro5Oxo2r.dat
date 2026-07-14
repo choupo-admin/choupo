@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-furancarboxaldehyde, tetrahydro-5-oxo-, (2r)-  (C5H6O3, CAS 70606-00-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2FurancarboxaldehydeTetrahydro5Oxo2r;
+formula     C5H6O3;
+CAS         70606-00-7;
+InChIKey    ZFXZBQWFIKDIQK-UHFFFAOYSA-N;
+MW          114.1;      // g/mol [origin=calculated method=formula-sum]
+Tc          625.09;      // K   [origin=predictive method=joback]
+Pc          45.104;      // bar [origin=predictive method=joback]
+omega       0.5228;      // -   [origin=predictive method=lee-kesler]
+Tb          427.62;      // K   [origin=predictive method=joback]
+HvapTb      40764.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.09 0.5494 -0.0003668 8.84e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 1; } { group CHO; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group OdCH_al; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-oxidanylideneoxolane-2-carbaldehyde" "5-oxooxolane-2-carbaldehyde" "5-oxotetrahydrofuran-2-carbaldehyde" "(2s)-5-oxotetrahydrofuran-2-carbaldehyde" "2-furancarboxaldehyde, tetrahydro-5-oxo-" "5-furancarboxaldehyde, tetrahydro-2-oxo-, (r)-(-)-" );
+gibbsFormation
+{
+    dHf_298   -476590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     330.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-357920.0
+    phase     gas;
+}

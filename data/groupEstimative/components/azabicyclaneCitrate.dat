@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: azabicyclane citrate  (C22H31NO8, CAS 21650-02-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        azabicyclaneCitrate;
+formula     C22H31NO8;
+CAS         21650-02-2;
+InChIKey    UZKDXESOJFBSJS-JXMYBXCISA-N;
+MW          437.489;      // g/mol [origin=calculated method=formula-sum]
+Tc          1612.00;      // K   [origin=predictive method=joback]
+Pc          17.275;      // bar [origin=predictive method=joback]
+omega       1.3827;      // -   [origin=predictive method=lee-kesler]
+Tb          1308.97;      // K   [origin=predictive method=joback]
+HvapTb      137174.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-155.548 2.72964 -0.0020358 6.158e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group CH; count 2; } { group C; count 2; } { group ACH; count 5; } { group AC; count 1; } { group OH; count 1; } { group CH3O; count 1; } { group CH3N; count 1; } { group COOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group O; count 1; } { group COOH; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1s,5r)-9-methoxy-3-methyl-9-phenyl-3-azabicyclo[3.3.1]nonane;2-oxidanylpropane-1,2,3-tricarboxylic acid" "(1r,5s)-9-methoxy-3-methyl-9-phenyl-3-azabicyclo[3.3.1]nonane 2-hydroxypropane-1,2,3-tricarboxylate(1:1)" "9-beta-methoxy-9-alpha-phenyl-3-methyl-3-azabicyclo(3.3.1)nonane citrate" "3-azabicyclo(3.3.1)nonane, 9-methoxy-3-methyl-9-phenyl-, citrate (1:1), stereoisomer" "4-beta-methoxy-1-methyl-4-alpha-phenyl-3-alpha,5-alpha-propanopiperidine hydrogen citrate" "3-azabicyclo(3.3.1)nonane, 9-methoxy-3-methyl-9-phenyl-, syn-, 2-hydroxy-1,2,3-propanetricarboxylate (1:1)" "9-methoxy-3-methyl-9-phenyl-3-azabicyclo(3.3.1)nonane syn-, 2-hydroxy-1,2,3-propanetricarboxylate (1:1)" "2-hydroxypropane-1,2,3-tricarboxylic acid; (1s,5r)-9-methoxy-3-methyl-9-phenyl-3-azabicyclo[3.3.1]nonane" );
+gibbsFormation
+{
+    dHf_298   -1520800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1099.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-933820.0
+    phase     gas;
+}

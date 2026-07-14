@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: neryl isobutyrate  (C14H24O2, CAS 2345-24-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nerylIsobutyrate;
+formula     C14H24O2;
+CAS         2345-24-6;
+InChIKey    OGJYXQFXLSCKTP-UHFFFAOYSA-N;
+MW          224.344;      // g/mol [origin=calculated method=formula-sum]
+Tc          772.35;      // K   [origin=predictive method=joback]
+Pc          16.866;      // bar [origin=predictive method=joback]
+omega       0.6708;      // -   [origin=predictive method=lee-kesler]
+Tb          585.78;      // K   [origin=predictive method=joback]
+HvapTb      53853.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.857 1.3248 -0.0008186 1.962e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 1; } { group CH=C; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 1; } { group dCH; count 2; } { group dC; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7-dimethylocta-2,6-dienyl 2-methylpropanoate" "propanoic acid, 2-methyl-, (2e)-3,7-dimethyl-2,6-octadien-1-yl ester" "propanoic acid, 2-methyl-, (2z)-3,7-dimethyl-2,6-octadien-1-yl ester" "3,7-dimethylocta-2,6-dien-1-yl 2-methylpropanoate" "propanoic acid, 2-methyl-, 3,7-dimethyl-2,6-octadienyl ester" "isobutyric acid,3,7-dimethyl-2,6-octadienyl ester, (z)- (8ci); propanoic acid, 2-methyl-, (2z)-3,7-dimethyl-2,6-octadienylester (9ci); propanoic acid, 2-methyl-, 3,7-dimethyl-2,6-octadienyl ester,(z)-; 2,6-octadien-1-ol, 3,7-dimethyl-, isobutyrate, (z)- (8ci); neryl2-methylpropanoate; neryl isobutyrate" "isobutyricacid, 3,7-dimethyl-2,6-octadienyl ester, (e)- (8ci);isobutyric acid,3,7-dimethyl-2,6-octadienyl ester, trans- (7ci);isobutyric acid, geranyl ester(6ci);propanoic acid, 2-methyl-, (2e)-3,7-dimethyl-2,6-octadienyl ester (9ci);propanoic acid, 2-methyl-, 3,7-dimethyl-2,6-octadienyl ester, (e)-;geraniolisobutyrate;geranyl isobutanoate;geranyl isobutyrate;isobutyric acid,(e)-3,7-dimethyl-2,6-octadienyl ester;" );
+gibbsFormation
+{
+    dHf_298   -439990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     721.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-102470.0
+    phase     gas;
+}

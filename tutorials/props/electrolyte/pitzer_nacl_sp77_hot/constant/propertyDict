@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  pitzer_nacl_sp77_hot / constant/thermoPackage
+
+  Water only: the solvent basis for a props-bench run.  This package is a
+  loader-satisfying stub -- the real thermodynamics (NaCl gamma_pm at
+  100/150/200 C) lives in the propsDict's pitzerActivity ops, which read
+  the Silvester & Pitzer 1977 temperature functions straight from the
+  Na-Cl catalogue pair, not from the ideal models declared here.
+\*---------------------------------------------------------------------------*/
+
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }

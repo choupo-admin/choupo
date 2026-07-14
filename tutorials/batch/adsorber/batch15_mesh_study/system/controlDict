@@ -1,0 +1,22 @@
+/*---------------------------------------------------------------------------*\
+  batch15_mesh_study / system/controlDict
+
+  Same time control as the batch13 anchor (the mesh is the ONLY knob of
+  the study): endTime 4200 s > t_st + MTZ, adaptive Rosenbrock23.  This
+  case runs the COARSEST mesh of the 25/50/100/200 family (nCells 25) and
+  publishes the full study -- monotone t_b(5%) convergence, observed order
+  ~1 (first-order upwind) and the Richardson extrapolation -- in
+  reports/meshStudy.md.  N = 100 is the batch13 production case.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Mesh-study member N = 25 of the batch13 breakthrough (gate G6): t_b(5%) converges monotonically 2732 -> 2839 -> 2891 -> 2916 s with observed order 1.03-1.05; full table in reports/meshStudy.md";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         4200;     // s
+deltaT          0.05;     // s   (only relevant in timeStepping fixed)
+writeInterval   100;      // s
+timeStepping    adaptive; // Rosenbrock23 (identical numerics across meshes)

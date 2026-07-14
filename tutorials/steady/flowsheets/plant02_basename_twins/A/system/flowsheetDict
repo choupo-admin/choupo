@@ -1,0 +1,11 @@
+/* SECTOR A: two heaters chained by an internal edge ALSO named `feed` --
+   the basename twin of the domain inlet (two DIFFERENT streams, one base). */
+
+units ( h1 h2 );
+
+connections
+{
+    inlet   { to h1/in; }
+    feed    { from h1/feed; to h2/in; }
+    out     { from h2/out; }
+}

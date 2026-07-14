@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-fluoro-m-xylene  (C8H9F, CAS 443-88-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2FluoroMXylene;
+formula     C8H9F;
+CAS         443-88-9;
+InChIKey    JTAUTNBVFDTYTI-UHFFFAOYSA-N;
+MW          124.158;      // g/mol [origin=calculated method=formula-sum]
+Tc          619.47;      // K   [origin=predictive method=joback]
+Pc          33.412;      // bar [origin=predictive method=joback]
+omega       0.3486;      // -   [origin=predictive method=lee-kesler]
+Tb          418.55;      // K   [origin=predictive method=joback]
+HvapTb      36185.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.6 0.57774 -0.00032492 6.53e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACCH3; count 2; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-fluoranyl-1,3-dimethyl-benzene" "2-fluoro-1,3-dimethylbenzene" "2,6-dimethylfluorobenzene" "fr b1 f1" "1,3-dimethyl-2-fluorobenzene" "2,6-dimethyl fluorobenzene" "2-fluoro-1,3-dimethyl-benzene" "wt203" "2-fluoro-3-methyl-toluene" "1-fluoro-2,6-dimethylbenzene" "443-88-9 2,6-dimethylfluorobenzene" "2-fluoro-1,3-dimethylbenzene;2-fluoro-1,3-xylene;2-fluoro-m-xylene;3-methyl-2-fluorotoluene;2,6-dimethylfluorobenzene;1-fluoro-2,6-dimethylbenzene;m-xylene,2-fluoro- (6ci,7ci,8ci);1,3-dimethyl-2-fluorobenzene;" );
+gibbsFormation
+{
+    dHf_298   -190970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     380.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-85180.0
+    phase     gas;
+}

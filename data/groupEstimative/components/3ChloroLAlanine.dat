@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-chloro-l-alanine  (C3H6ClNO2, CAS 2731-73-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3ChloroLAlanine;
+formula     C3H6ClNO2;
+CAS         2731-73-9;
+InChIKey    ASBJGPTTYPEMLP-REOHCLBHSA-N;
+MW          123.536;      // g/mol [origin=calculated method=formula-sum]
+Tc          741.47;      // K   [origin=predictive method=joback]
+Pc          51.832;      // bar [origin=predictive method=joback]
+omega       0.7600;      // -   [origin=predictive method=lee-kesler]
+Tb          523.27;      // K   [origin=predictive method=joback]
+HvapTb      54074.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (22.461 0.4142 -0.000279 7.2e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CHNH2; count 1; } { group COOH; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group Cl; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r)-2-azanyl-3-chloranyl-propanoic acid" "(2r)-2-amino-3-chloropropanoic acid" "(r)-2-amino-3-chloropropanoic acid" "alanine, 3-chloro-" "beta-chloro-l-alanine" "snxhmvhai[jihl@" "l-alanine, 3-chloro-" "(2r)-beta-chloroalanine" "alanine, 3-chloro-, l-" "asbjgpttypemlp-reohclbhsa-" "3-chloro-dl-alanine;dl-3-chloroalanine;b-chloro-dl-alanine;b-chloroalanine;" );
+gibbsFormation
+{
+    dHf_298   -442750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     401.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-317450.0
+    phase     gas;
+}

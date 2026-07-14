@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexabenzo[bc,ef,hi,kl,no,qr]coronene  (C42H18, CAS 190-24-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexabenzoBcEfHiKlNoQrCoronene;
+formula     C42H18;
+CAS         190-24-9;
+InChIKey    IVJZBYVRLJZOOQ-UHFFFAOYSA-N;
+MW          522.606;      // g/mol [origin=calculated method=formula-sum]
+Tc          1743.01;      // K   [origin=predictive method=joback]
+Pc          14.133;      // bar [origin=predictive method=joback]
+omega       1.2821;      // -   [origin=predictive method=lee-kesler]
+Tb          1423.58;      // K   [origin=predictive method=joback]
+HvapTb      134508.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-274.45 3.6672 -0.00382852 1.547e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 18; } { group AC; count 24; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 18; } { group dC_ring; count 24; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1:12,2:3,4:5,6:7,8:9,10:11-hexabenzocoronene" "hexabenzo(bc,ef,hi,kl,no,qr)coronene" "hexabenzo[bc,hi,kl,no,qr]coronene" "hexabenzo[bc:ef:hi:kl:no:qr]coronene" "1:12,4:5,6:7,8:9,10:11-hexabenzocoronene" );
+gibbsFormation
+{
+    dHf_298   1220230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     296.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1554480.0
+    phase     gas;
+}

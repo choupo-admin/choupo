@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-quinolinol, 7-(4-ethyl-1-methyleneoctyl)-  (C20H27NO, CAS 72175-38-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8Quinolinol74Ethyl1Methyleneoctyl;
+formula     C20H27NO;
+CAS         72175-38-3;
+InChIKey    XMMALARTZCMXCN-MRXNPFEDSA-N;
+MW          297.442;      // g/mol [origin=calculated method=formula-sum]
+Tc          1064.30;      // K   [origin=predictive method=joback]
+Pc          17.773;      // bar [origin=predictive method=joback]
+omega       1.0403;      // -   [origin=predictive method=lee-kesler]
+Tb          838.28;      // K   [origin=predictive method=joback]
+HvapTb      82938.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.564 1.9359 -0.0014591 4.621e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 1; } { group CH2=C; count 1; } { group ACH; count 2; } { group AC; count 1; } { group ACOH; count 1; } { group C5H3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-[(5r)-5-ethylnon-1-en-2-yl]quinolin-8-ol" "7-(4-ethyl-1-methyleneoctyl)-8-guinolinol" );
+gibbsFormation
+{
+    dHf_298   -74160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     734.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=326230.0
+    phase     gas;
+}

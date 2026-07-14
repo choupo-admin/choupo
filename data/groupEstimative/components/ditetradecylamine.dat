@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ditetradecylamine  (C28H59N, CAS 17361-44-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ditetradecylamine;
+formula     C28H59N;
+CAS         17361-44-3;
+InChIKey    HSUGDXPUFCVGES-UHFFFAOYSA-N;
+MW          409.787;      // g/mol [origin=calculated method=formula-sum]
+Tc          1096.06;      // K   [origin=predictive method=joback]
+Pc          6.598;      // bar [origin=predictive method=joback]
+omega       0.5402;      // -   [origin=predictive method=lee-kesler]
+Tb          890.41;      // K   [origin=predictive method=joback]
+HvapTb      84358.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.774 2.74004 -0.001548 3.325e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 25; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 26; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-tetradecyltetradecan-1-amine" "1-tetradecanamine,n-tetradecyl-" "1-tetradecanamine, n-tetradecyl-" );
+gibbsFormation
+{
+    dHf_298   -567780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1287.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=274270.0
+    phase     gas;
+}

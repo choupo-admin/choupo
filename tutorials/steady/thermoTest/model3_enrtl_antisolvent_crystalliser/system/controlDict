@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Antisolvent (drowning-out) crystallisation of NaCl: a SATURATED aqueous brine is mixed with ethanol; the eNRTL mixed-solvent term lowers the dielectric, raises gamma_pm, and DROPS the saturation molality m_sat -- so NaCl precipitates with NO cooling and NO evaporation. Saturation from the SAME ion-activity product Ksp anchored in pure water, solved with the mixed-solvent gamma_pm.";
+verbosity     3;

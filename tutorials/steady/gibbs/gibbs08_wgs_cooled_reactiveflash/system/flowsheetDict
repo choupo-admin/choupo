@@ -1,5 +1,10 @@
 /*---------------------------------------------------------------------------*\
-  gibbs07_wgs_cooled  --  multi-phase (gas + liquid) Gibbs reactor.
+  gibbs08_wgs_cooled_reactiveflash  --  the gibbs07_wgs_cooled problem
+  solved by `model reactiveFlash;` (route B1: an equilibrium-reaction +
+  isothermal-flash inner loop) instead of the default elementPotential (A).
+  Cross-checks the two-phase V+L answer by an independent method.
+
+  The physics is gibbs07's: multi-phase (gas + liquid) Gibbs reactor.
 
       CO + H2O  <->  CO2 + H2,   excess steam (1 CO + 3 H2O), 350 K, 1 bar.
 
@@ -12,16 +17,7 @@
   Outlets: `gas` (the dry-ish product gas) + `condensate` (liquid water).
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            1.0 kmol/h;
-        T            350.0 K;
-        P            1.0 bar;
-        molarComposition  { CO 0.25;  water 0.75;  CO2 0.0;  H2 0.0; }   // 1 : 3
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

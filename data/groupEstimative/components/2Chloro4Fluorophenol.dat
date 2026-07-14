@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloro-4-fluorophenol  (C6H4ClFO, CAS 1996-41-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chloro4Fluorophenol;
+formula     C6H4ClFO;
+CAS         1996-41-4;
+InChIKey    IGYXYGDEYHNFFT-UHFFFAOYSA-N;
+MW          146.545;      // g/mol [origin=calculated method=formula-sum]
+Tc          714.13;      // K   [origin=predictive method=joback]
+Pc          50.228;      // bar [origin=predictive method=joback]
+omega       0.5372;      // -   [origin=predictive method=lee-kesler]
+Tb          485.86;      // K   [origin=predictive method=joback]
+HvapTb      48470.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.11 0.6086 -0.00055992 2.085e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACOH; count 1; } { group ACCl; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-4-fluoranyl-phenol" "2-chlor-4-fluorophenol" "4-fluoro-2-chlorophenol" "qr bg df" "2-chloro- 4-fluorophenol" "phenol, 2-chloro-4-fluoro-" "2-chloro-4-fluorophenol 99%" "1-bromo-2,3,5-trifluorobezene" "1996-41-4 2-chloro-4-fluorophenol" "l235" "phenol, 2-chloro-4-fluoro- (8ci)(9ci)" );
+gibbsFormation
+{
+    dHf_298   -331270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     368.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-258940.0
+    phase     gas;
+}

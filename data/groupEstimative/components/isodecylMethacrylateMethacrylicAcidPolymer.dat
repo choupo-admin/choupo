@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isodecyl methacrylate, methacrylic acid polymer  (C18H32O4, CAS 61987-71-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isodecylMethacrylateMethacrylicAcidPolymer;
+formula     C18H32O4;
+CAS         61987-71-1;
+InChIKey    MLZJEDVRAJPWSG-UHFFFAOYSA-N;
+MW          312.45;      // g/mol [origin=calculated method=formula-sum]
+Tc          1004.10;      // K   [origin=predictive method=joback]
+Pc          12.416;      // bar [origin=predictive method=joback]
+omega       1.0051;      // -   [origin=predictive method=lee-kesler]
+Tb          809.25;      // K   [origin=predictive method=joback]
+HvapTb      78959.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (50.307 1.46938 -0.0005722 -5.4e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 7; } { group CH; count 1; } { group CH2=C; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 7; } { group CH; count 1; } { group dCH2; count 2; } { group dC; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-methylnonyl 2-methylprop-2-enoate;2-methylprop-2-enoic acid" "2-propenoic acid, 2-methyl-, polymer with isodecyl 2-methyl-2-propenoate" "8-methylnonyl 2-methylprop-2-enoate; 2-methylprop-2-enoic acid" );
+gibbsFormation
+{
+    dHf_298   -968020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1042.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-502220.0
+    phase     gas;
+}

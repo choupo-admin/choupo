@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (+)-retamine  (C15H26N2O, CAS 2122-29-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        retamine;
+formula     C15H26N2O;
+CAS         2122-29-4;
+InChIKey    JMXNBIDTNISOTA-UHFFFAOYSA-N;
+MW          250.386;      // g/mol [origin=calculated method=formula-sum]
+Tc          901.16;      // K   [origin=predictive method=joback]
+Pc          24.801;      // bar [origin=predictive method=joback]
+omega       1.0612;      // -   [origin=predictive method=lee-kesler]
+Tb          694.96;      // K   [origin=predictive method=joback]
+HvapTb      69608.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-237.23 2.2589 -0.001734 5.312e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH; count 5; } { group OH; count 1; } { group CH2N; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 10; } { group CH_ring; count 5; } { group OH; count 1; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "retamine" "spartein-5-ol" "agn-pc-04a6ag" );
+gibbsFormation
+{
+    dHf_298   -117720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     479.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=359150.0
+    phase     gas;
+}

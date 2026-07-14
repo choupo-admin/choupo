@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl methacrylate, styrene, methyl methacrylate, 2-hydroxyethyl methacrylate  (C27H40O7, CAS 32458-06-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butylMethacrylateStyreneMethylMethacrylate2HydroxyethylMetha;
+formula     C27H40O7;
+CAS         32458-06-3;
+InChIKey    WDCAJLIPCRBQHH-UHFFFAOYSA-N;
+MW          476.61;      // g/mol [origin=calculated method=formula-sum]
+Tc          1352.51;      // K   [origin=predictive method=joback]
+Pc          8.387;      // bar [origin=predictive method=joback]
+omega       0.7768;      // -   [origin=predictive method=lee-kesler]
+Tb          1101.44;      // K   [origin=predictive method=joback]
+HvapTb      115314.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (137.375 1.6607 -7.69e-05 -4.025e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 5; } { group CH2=CH; count 1; } { group CH2=C; count 3; } { group ACH; count 5; } { group AC; count 1; } { group OH; count 1; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 5; } { group dCH2; count 4; } { group dCH; count 1; } { group dC; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butyl 2-methylprop-2-enoate;ethenylbenzene;2-hydroxyethyl 2-methylprop-2-enoate;methyl 2-methylprop-2-enoate" "butyl 2-methylprop-2-enoate; 2-hydroxyethyl 2-methylprop-2-enoate; methyl 2-methylprop-2-enoate; styrene" "butyl methacrylate styrene 2-hydroxyethyl methacrylate methyl methacrylate polymer" "2-propenoic acid, 2-methyl-, butyl ester, polymer with ethenylbenzene, 2-hydroxyethyl 2-methyl-2-propenoate and methyl 2-methyl-2-propenoate" "butyl methacrylate, 2-hydroxyethyl methacrylate, methyl methacrylate and styrene copolymer" "styrene, butyl methacrylate, methyl methacrylate, hydroxyethyl methacrylate polymer" "2-propenoic acid, 2-methyl-, butyl ester, polymer with ethenylbenzene, 2-hydroxyethyl 2-methyl-2-propenoate and methyl 2-methyl-2-propenoate;butyl methacrylate, styrene, methyl methacrylate, 2-hydroxyethyl methacrylate;butyl 2-methyl-2-propenoate polymer with ethenylbenzene, 2-hydroxyethyl 2-methyl-2-propenoate and methyl 2-methyl-2-propenoate" );
+gibbsFormation
+{
+    dHf_298   -1330660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1598.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-767630.0
+    phase     gas;
+}

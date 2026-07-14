@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-{[(17|a)-3-methoxyestra-1,3,5(10)-trien-17-yl]oxy}propanenitrile  (C22H29NO2, CAS 53-44-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        317A3Methoxyestra13510Trien17YlOxyPropanenitrile;
+formula     C22H29NO2;
+CAS         53-44-1;
+InChIKey    SKZOMAZQGJCCKH-AANPDWTMSA-N;
+MW          339.479;      // g/mol [origin=calculated method=formula-sum]
+Tc          1142.06;      // K   [origin=predictive method=joback]
+Pc          14.038;      // bar [origin=predictive method=joback]
+omega       0.9374;      // -   [origin=predictive method=lee-kesler]
+Tb          906.18;      // K   [origin=predictive method=joback]
+HvapTb      81778.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-153.498 2.37674 -0.00180672 5.901e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 3; } { group C; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group ACCH; count 1; } { group CH3O; count 1; } { group CH2O; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[[(8r,9s,13s,14s,17s)-3-methoxy-13-methyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthren-17-yl]oxy]propanenitrile" "3-methoxy-17-beta-cyanethoxyestra-1,3,5(10)-trien" "3-methoxy-17-beta-cyanethoxyoestra-1,3,5(10)-trien" "3-((3-methoxyestra-1,3,5(10)-trien-17-beta-yl)oxy)propionitrile" "propionitrile, 3-((3-methoxyestra-1,3,5(10)-trien-17-beta-yl)oxy)-" );
+gibbsFormation
+{
+    dHf_298   -202740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     676.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=287830.0
+    phase     gas;
+}

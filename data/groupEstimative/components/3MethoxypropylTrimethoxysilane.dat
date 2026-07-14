@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (3-methoxypropyl)trimethoxysilane  (C7H18O4Si, CAS 33580-59-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H18O4Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        3MethoxypropylTrimethoxysilane;
+formula     C7H18O4Si;
+CAS         33580-59-5;
+InChIKey    JPMBLOQPQSYOMC-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          194.302;      // g/mol [origin=calculated method=formula-sum]
+Tc          621.44;      // K   [origin=predictive method=joback]
+Pc          23.158;      // bar [origin=predictive method=joback]
+omega       0.5498;      // -   [origin=predictive method=lee-kesler]
+Tb          450.84;      // K   [origin=predictive method=joback]
+HvapTb      41110.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (139.343 0.20988 0.0005018 -3.643e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH3O; count 4; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethoxy(3-methoxypropyl)silane" "methyl (trimethoxysilylpropyl) ether" "ether, methyl (3-(trimethoxysilyl)propyl)" "silane, (3-methoxypropyl)trimethoxy-" "3-methoxypropyltrimethoxysilane" );
+gibbsFormation
+{
+    dHf_298   -828310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     600.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-516700.0
+    phase     gas;
+}

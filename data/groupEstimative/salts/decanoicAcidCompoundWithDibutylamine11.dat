@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): decanoic acid, compound with dibutylamine (1:1)  (C18H39NO2, CAS 29425-97-6)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           decanoicAcidCompoundWithDibutylamine11;
+formula        C18H39NO2;
+CAS            29425-97-6;
+InChIKey       KFGVBFAJGJHUFK-UHFFFAOYSA-N;
+MW             301.515;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+dissociatesTo  { decanoic acid 1; dibutylamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

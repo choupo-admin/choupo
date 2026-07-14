@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexachlorocyclopropane  (C3Cl6, CAS 2065-35-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexachlorocyclopropane;
+formula     C3Cl6;
+CAS         2065-35-2;
+InChIKey    AVFQBLKYJWKKJP-UHFFFAOYSA-N;
+MW          248.733;      // g/mol [origin=calculated method=formula-sum]
+Tc          753.86;      // K   [origin=predictive method=joback]
+Pc          42.775;      // bar [origin=predictive method=joback]
+omega       0.2889;      // -   [origin=predictive method=lee-kesler]
+Tb          490.94;      // K   [origin=predictive method=joback]
+HvapTb      44424.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-110.83 1.3032 -0.001969 1.0154e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CCl2; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C_ring; count 3; } { group Cl; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2,2,3,3-hexakis(chloranyl)cyclopropane" "cyclopropane, hexachloro-" "1,1,2,2,3,3-hexachlorocyclopropane" "cyclopropane,1,1,2,2,3,3-hexachloro-" );
+gibbsFormation
+{
+    dHf_298   -121850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     506.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-68340.0
+    phase     gas;
+}

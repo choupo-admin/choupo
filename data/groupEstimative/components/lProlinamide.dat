@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: l-prolinamide  (C5H10N2O, CAS 7531-52-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lProlinamide;
+formula     C5H10N2O;
+CAS         7531-52-4;
+InChIKey    VLJNHYLEOZPXFW-BYPYZUCNSA-N;
+MW          114.148;      // g/mol [origin=calculated method=formula-sum]
+Tc          737.63;      // K   [origin=predictive method=joback]
+Pc          53.047;      // bar [origin=predictive method=joback]
+omega       0.5832;      // -   [origin=predictive method=lee-kesler]
+Tb          504.23;      // K   [origin=predictive method=joback]
+HvapTb      51126.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.37 0.631 -0.0003397 5.686e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group CH2NH; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-pyrrolidine-2-carboxamide" "prolinamide" "h-pro-nh2" "(s)-prolinamide" "(s)-pyrrolidine-2-carboxamide" "l-proline amide" "l-(-)-prolinamide" "(2s)-2-carbamoylpyrrolidine" "2-pyrrolidinecarboxamide,(s)-" "(s)-pyrrolidine-2-carboxylic acid amide" "(s)-2-pyrrolidinecarboxamide" "(2s)pyrrolidine-2-carboxamide" );
+gibbsFormation
+{
+    dHf_298   -127030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     372.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=53010.0
+    phase     gas;
+}

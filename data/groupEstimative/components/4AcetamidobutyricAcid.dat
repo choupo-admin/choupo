@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-acetamidobutyric acid  (C6H11NO3, CAS 3025-96-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4AcetamidobutyricAcid;
+formula     C6H11NO3;
+CAS         3025-96-5;
+InChIKey    UZTFMUBKZQVKLK-UHFFFAOYSA-N;
+MW          145.158;      // g/mol [origin=calculated method=formula-sum]
+Tc          785.54;      // K   [origin=predictive method=joback]
+Pc          37.684;      // bar [origin=predictive method=joback]
+omega       1.0196;      // -   [origin=predictive method=lee-kesler]
+Tb          586.43;      // K   [origin=predictive method=joback]
+HvapTb      59296.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.183 0.67282 -0.0004051 8.966e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group COOH; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-acetamidobutanoic acid" "4-(acetylamino)butanoic acid" "n-acetyl-4-aminobutyric acid" "n-acetyl-4-aminobutanoic acid" "n-acetyl-gamma-aminobutyrate" "n4-acetylaminobutanoate" "butyric acid, 4-acetamido-" "gamma-acetylaminobutyric acid" "4-acetamidobutyrate" "n-acetyl-.gamma.-aminobutyric acid" "n4-acetylaminobutanoic acid" "butanoic acid, 4-(acetylamino)-" );
+gibbsFormation
+{
+    dHf_298   -576550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     510.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-383800.0
+    phase     gas;
+}

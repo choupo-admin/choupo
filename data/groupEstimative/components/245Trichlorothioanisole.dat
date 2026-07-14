@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4,5-trichlorothioanisole  (C7H5Cl3S, CAS 4163-78-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        245Trichlorothioanisole;
+formula     C7H5Cl3S;
+CAS         4163-78-4;
+InChIKey    RWDHTEMSFGMSDP-UHFFFAOYSA-N;
+MW          227.527;      // g/mol [origin=calculated method=formula-sum]
+Tc          840.08;      // K   [origin=predictive method=joback]
+Pc          34.684;      // bar [origin=predictive method=joback]
+omega       0.4841;      // -   [origin=predictive method=lee-kesler]
+Tb          582.45;      // K   [origin=predictive method=joback]
+HvapTb      55410.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (63.79 0.42621 -0.00020808 2.23e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 1; } { group ACCl; count 3; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 3; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,4-tris(chloranyl)-5-methylsulfanyl-benzene" "methyl 2,4,5-trichlorophenyl sulfide" "methyl 2,4,5-trichlorophenyl sulphide" "1,2,4-trichloro-5-methylsulfanylbenzene" "1,2,5-trichloro-4-(methylthio)benzene" "1,2,4-trichloro-5-methylsulfanyl-benzene" "1,2,4-trichloro-5-(methylsulfanyl)benzene" "benzene, 1,2,4-trichloro-5-(methylthio)-" );
+gibbsFormation
+{
+    dHf_298   8960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     465.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=88910.0
+    phase     gas;
+}

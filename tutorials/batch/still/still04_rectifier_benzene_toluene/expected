@@ -1,0 +1,43 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     campaign               element_C_closure_rel 0                1e-3
+kpi     campaign               element_H_closure_rel 0                1e-3
+kpi     campaign               element_worst_closure_rel 0                1e-3
+kpi     campaign               energy_H_external_kJ 0                1e-4
+kpi     campaign               energy_Q_ledger_kJ 0.534303338765   1e-4
+kpi     campaign               energy_balance_available 1                1e-4
+kpi     campaign               energy_closure_rel 7.08707897844e-10 1e-3
+kpi     campaign               energy_dH_vessels_kJ 0.534303321211   1e-3
+kpi     campaign               energy_records_invalid 0                1e-4
+kpi     campaign               energy_records_valid 2                1e-4
+kpi     campaign               energy_residual_kJ 1.75539529579e-08 1e-3
+kpi     campaign               mass_closure_rel 0                1e-3
+kpi     campaign               mass_kg_external_out 0                1e-4
+kpi     campaign               mass_kg_final    0.0851275        1e-4
+kpi     campaign               mass_kg_initial  0.0851275        1e-4
+kpi     campaign               mass_residual_kg 0                1e-3
+kpi     campaign               transfers_H_invalid 0                1e-4
+kpi     campaign               transfers_H_valid 1                1e-4
+kpi     campaign               transfers_logged 1                1e-4
+kpi     receiver               P_final          101300           1e-4
+kpi     receiver               T_final          367.010511099    1e-4
+kpi     receiver               n_benzene_final  0.00020950789301 1e-4
+kpi     receiver               n_toluene_final  1.54921069902e-05 1e-4
+kpi     receiver               t_end            600              1e-4
+kpi     receiver               totalMoles_final 0.000225         1e-4
+kpi     still                  D_product        3.75e-07         1e-4
+kpi     still                  E_condenser_seg1_kJ -28.282103191    1e-4
+kpi     still                  E_condenser_total_kJ -28.282103191    1e-4
+kpi     still                  E_reboiler_seg0_kJ 28.8164065297    1e-4
+kpi     still                  E_reboiler_total_kJ 28.8164065297    1e-4
+kpi     still                  P_final          101300           1e-4
+kpi     still                  R_final          3                1e-4
+kpi     still                  T_final          369.093403879    1e-4
+kpi     still                  V_boilup         1.5e-06          1e-4
+kpi     still                  n_benzene_final  0.00029049210699 1e-4
+kpi     still                  n_toluene_final  0.00048450789301 1e-4
+kpi     still                  t_end            600              1e-4
+kpi     still                  totalMoles_final 0.000775         1e-4
+kpi     still                  xD_benzene_final 0.905666087463   1e-4
+kpi     still                  xD_toluene_final 0.0943339125367  1e-4

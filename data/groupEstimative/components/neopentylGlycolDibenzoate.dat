@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: neopentyl glycol dibenzoate  (C19H20O4, CAS 4196-89-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        neopentylGlycolDibenzoate;
+formula     C19H20O4;
+CAS         4196-89-8;
+InChIKey    DYJIIMFHSZKBDY-UHFFFAOYSA-N;
+MW          312.365;      // g/mol [origin=calculated method=formula-sum]
+Tc          1032.61;      // K   [origin=predictive method=joback]
+Pc          18.092;      // bar [origin=predictive method=joback]
+omega       0.9020;      // -   [origin=predictive method=lee-kesler]
+Tb          800.89;      // K   [origin=predictive method=joback]
+HvapTb      75958.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-55.848 1.66724 -0.0010548 2.236e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group ACH; count 10; } { group AC; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2,2-dimethyl-3-(phenylcarbonyloxy)propyl] benzoate" "2,2-dimethylpropane-1,3-diyl dibenzoate" "1,3-propanediol, 2,2-dimethyl-, dibenzoate" "2,2-dimethyl-1,3-propanediol dibenzoate" "3-(benzoyloxy)-2,2-dimethylpropyl benzoate" "1,3-propanediol, 2,2-dimethyl-, 1,3-dibenzoate" "2,3-propanediol dibenzoate" "neopentyl glycol, dibenzoate" "1, 2,2-dimethyl-, dibenzoate" "o144" "(3-benzoyloxy-2,2-dimethylpropyl) benzoate" );
+gibbsFormation
+{
+    dHf_298   -605740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     746.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-283980.0
+    phase     gas;
+}

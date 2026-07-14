@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5a-androst-2-en-17-one  (C19H28O, CAS 963-75-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5aAndrost2En17One;
+formula     C19H28O;
+CAS         963-75-7;
+InChIKey    ISJVDMWNISUFRJ-HKQXQEGQSA-N;
+MW          272.432;      // g/mol [origin=calculated method=formula-sum]
+Tc          997.43;      // K   [origin=predictive method=joback]
+Pc          18.871;      // bar [origin=predictive method=joback]
+omega       0.5889;      // -   [origin=predictive method=lee-kesler]
+Tb          740.75;      // K   [origin=predictive method=joback]
+HvapTb      60019.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-284.85 2.67094 -0.00235628 8.934e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 7; } { group CH; count 4; } { group C; count 2; } { group CH=CH; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5s,8r,9s,10s,13s,14s)-10,13-dimethyl-1,4,5,6,7,8,9,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthren-17-one" "androst-2-en-17-one" "5alpha-androst-2-en-17-one" "5-" "a-a ndrosta-2-en-17-one" "17-oxo-5" "a-androst-2-ene" "5a-androst 2-en-17-one" "5a-androsta-2-en-17-one" "2,5alpha-androsten-17-one" "5alpha-androsta-2-en-17-one" "2,(5alpha)-androsten-17-one" "5-alpha-androst-2-en-17-one" "(5" "a)-androst-2-en-17-one" );
+gibbsFormation
+{
+    dHf_298   -265210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     572.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=172570.0
+    phase     gas;
+}

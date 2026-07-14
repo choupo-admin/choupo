@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: glycomul s  (C24H46O6, CAS 1338-41-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        glycomulS;
+formula     C24H46O6;
+CAS         1338-41-6;
+InChIKey    HVUMOYIDDBPOLL-IIZJTUPISA-N;
+MW          430.626;      // g/mol [origin=calculated method=formula-sum]
+Tc          1433.71;      // K   [origin=predictive method=joback]
+Pc          10.220;      // bar [origin=predictive method=joback]
+omega       0.5358;      // -   [origin=predictive method=lee-kesler]
+Tb          1115.93;      // K   [origin=predictive method=joback]
+HvapTb      130223.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.613 2.41262 -0.0012843 2.206e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 16; } { group CH; count 4; } { group OH; count 3; } { group CH2COO; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 17; } { group CH; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group OH; count 3; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2-[(2r,3s,4r)-3,4-bis(oxidanyl)oxolan-2-yl]-2-oxidanyl-ethyl] octadecanoate" "liposorb s" "sorbitan c" "sorbitan stearate" "armotan ms" "sorbitan 0" "hodag sms" "drewsorb 60" "arlacel 60" "crill 3" "montane 60" "liposorb s-20" );
+gibbsFormation
+{
+    dHf_298   -1430140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1098.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-637060.0
+    phase     gas;
+}

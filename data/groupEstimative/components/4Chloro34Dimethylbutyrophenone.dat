@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-chloro-3',4'-dimethylbutyrophenone  (C12H15ClO, CAS 74298-66-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Chloro34Dimethylbutyrophenone;
+formula     C12H15ClO;
+CAS         74298-66-1;
+InChIKey    UMVFZGUNLWQTHV-UHFFFAOYSA-N;
+MW          210.701;      // g/mol [origin=calculated method=formula-sum]
+Tc          816.40;      // K   [origin=predictive method=joback]
+Pc          23.959;      // bar [origin=predictive method=joback]
+omega       0.6733;      // -   [origin=predictive method=lee-kesler]
+Tb          602.10;      // K   [origin=predictive method=joback]
+HvapTb      57037.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.923 0.92474 -0.00052782 1.0726e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH3; count 2; } { group CH2CO; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-chloranyl-1-(3,4-dimethylphenyl)butan-1-one" "4-chloro-1-(3,4-dimethylphenyl)-1-butanone" "4-chloro-1-(3,4-dimethylphenyl)butan-1-one" "1-(3,4-dimethylphenyl)-4-chlorobutan-1-one" );
+gibbsFormation
+{
+    dHf_298   -205740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     564.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=2460.0
+    phase     gas;
+}

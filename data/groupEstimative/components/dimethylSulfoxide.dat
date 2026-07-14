@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethyl sulfoxide  (C2H6OS, CAS 67-68-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C2H6OS (delta S+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        dimethylSulfoxide;
+formula     C2H6OS;
+CAS         67-68-5;
+InChIKey    IAZDPXIOMUYVGZ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          78.129;      // g/mol [origin=calculated method=formula-sum]
+Tc          376.86;      // K   [origin=predictive method=joback]
+Pc          53.047;      // bar [origin=predictive method=joback]
+omega       0.2049;      // -   [origin=predictive method=lee-kesler]
+Tb          234.86;      // K   [origin=predictive method=joback]
+HvapTb      25955.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.89 0.21344 -7.23e-05 -5.2e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group Me2SO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dO_oth; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methylsulfinylmethane" "dmso" "methyl sulfoxide" "dimethyl sulphoxide" "demasorb" "dimexide" "domoso" "methane, sulfinylbis-" "dimethylsulfoxide" "infiltrina" "demavet" "demsodrox" );
+gibbsFormation
+{
+    dHf_298   -332220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     379.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-284870.0
+    phase     gas;
+}

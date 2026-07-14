@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: didecylamine  (C20H43N, CAS 1120-49-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        didecylamine;
+formula     C20H43N;
+CAS         1120-49-6;
+InChIKey    GMTCPFCMAHMEMT-UHFFFAOYSA-N;
+MW          297.571;      // g/mol [origin=calculated method=formula-sum]
+Tc          873.67;      // K   [origin=predictive method=joback]
+Pc          10.240;      // bar [origin=predictive method=joback]
+omega       0.8909;      // -   [origin=predictive method=lee-kesler]
+Tb          707.37;      // K   [origin=predictive method=joback]
+HvapTb      66550.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.502 1.98004 -0.0011128 2.373e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 17; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 18; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-decyldecan-1-amine" "di-n-decylamine" "1-decanamine, n-decyl-" "amines, di-c10-25-alkyl" "didecyl amine" "didecylamine;" "bis(decyl)amine" "di(c10-c25)alkyl" "n-decyl-1-decanamine" "di-n-decylamine, pract" );
+gibbsFormation
+{
+    dHf_298   -402660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     975.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=206910.0
+    phase     gas;
+}

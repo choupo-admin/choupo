@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentachloroaniline  (C6H2Cl5N, CAS 527-20-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentachloroaniline;
+formula     C6H2Cl5N;
+CAS         527-20-8;
+InChIKey    KHCZSJXTDDHLGJ-UHFFFAOYSA-N;
+MW          265.339;      // g/mol [origin=calculated method=formula-sum]
+Tc          907.16;      // K   [origin=predictive method=joback]
+Pc          36.029;      // bar [origin=predictive method=joback]
+omega       0.6712;      // -   [origin=predictive method=lee-kesler]
+Tb          648.14;      // K   [origin=predictive method=joback]
+HvapTb      67102.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (105.97 0.2933 -0.000144 1.72e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACNH2; count 1; } { group ACCl; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 6; } { group Cl; count 5; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,4,5,6-pentakis(chloranyl)aniline" "2,3,4,5,6-pentachloroaniline" "pentachloroaminobenzene" "benzenamine, 2,3,4,5,6-pentachloro-" "pca (van)" "2,3,4,5,6-pentachlorobenzenamine" "aniline, 2,3,4,5,6-pentachloro-" "2,4,5,6-pentachloroaniline" "2,4,5,6-pentachlorobenzenamine" "aniline,3,4,5,6-pentachloro-" "2,3,4,5,6-pentachlorophenylamine" "benzenamine,3,4,5,6-pentachloro-" );
+gibbsFormation
+{
+    dHf_298   -32900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     471.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=70700.0
+    phase     gas;
+}

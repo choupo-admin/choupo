@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-mercapto-1-hexanol  (C6H14OS, CAS 1633-78-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Mercapto1Hexanol;
+formula     C6H14OS;
+CAS         1633-78-9;
+InChIKey    UGZAJZLUKVKCBM-UHFFFAOYSA-N;
+MW          134.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          672.39;      // K   [origin=predictive method=joback]
+Pc          37.271;      // bar [origin=predictive method=joback]
+omega       0.8506;      // -   [origin=predictive method=lee-kesler]
+Tb          491.92;      // K   [origin=predictive method=joback]
+HvapTb      52366.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.616 0.6351 -0.0003554 7.56e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group OH; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group OH; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-sulfanylhexan-1-ol" "6-sulfanyl-1-hexanol" "6-mercaptohexan-1-ol" "1-hexanol, 6-mercapto-" "6-mercaptohexanol" "6-hydroxy-1-hexanethiol" "6-mch" "6-hydroxy-1-hexanethiol;6-mercapto-1-hexanol;6-mercaptohexanol;mercaptohexanol;" );
+gibbsFormation
+{
+    dHf_298   -280920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     503.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-107790.0
+    phase     gas;
+}

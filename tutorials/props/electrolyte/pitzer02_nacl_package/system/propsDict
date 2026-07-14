@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  No `cation`/`anion` keys: the salt is resolved by the SELECTED propertyPackage
+  (constant/propertyDict -> aqueousNaCl_pitzer).  The op consumes the
+  assembled package via thermo.electrolyte() and reports gamma_pm / phi / a_w.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      gamma_nacl;
+        type      electrolyteActivity;
+        molality  { from 0.1; to 6.0; n 30; }
+        output    { file pitzer_nacl.csv; }
+    }
+);

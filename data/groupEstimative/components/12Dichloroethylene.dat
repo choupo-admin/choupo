@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-dichloroethylene  (C2H2Cl2, CAS 540-59-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Dichloroethylene;
+formula     C2H2Cl2;
+CAS         540-59-0;
+InChIKey    KFUSEUYYWQURPO-UHFFFAOYSA-N;
+MW          96.938;      // g/mol [origin=calculated method=formula-sum]
+Tc          517.38;      // K   [origin=predictive method=joback]
+Pc          48.766;      // bar [origin=predictive method=joback]
+omega       0.1996;      // -   [origin=predictive method=lee-kesler]
+Tb          324.38;      // K   [origin=predictive method=joback]
+HvapTb      28774.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.67 0.2274 -0.0002096 7.8e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group Cl_C=C_; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 2; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-bis(chloranyl)ethene" "1,2-dichloroethene" "cis & trans 1,2-dichloroethylene" "ethene, dichloro-" "(z,e)-1,2-dichloroethylene" "cis,trans-1,2-dichloroethylene" "cs & trans 1,2-dichloroethylene" );
+gibbsFormation
+{
+    dHf_298   1130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     294.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=22320.0
+    phase     gas;
+}

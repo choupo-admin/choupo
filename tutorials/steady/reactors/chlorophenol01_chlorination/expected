@@ -1,0 +1,19 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  crude                  F                0.000583333333333  1e-4
+stream  feed                   F                0.000583333333333  1e-4
+stream  offgas                 F                0.000274077911624  1e-4
+stream  product                F                0.00030925542171   1e-4
+kpi     chlorinator            F_in_kmol_h      2.1                1e-4
+kpi     chlorinator            F_out_kmol_h     2.1                1e-4
+kpi     chlorinator            T                353                1e-4
+kpi     chlorinator            conversion       0.9                1e-4
+kpi     chlorinator            extent_kmol_h    0.9                1e-4
+kpi     separator              F_alpha          0.00030925542171   1e-4
+kpi     separator              F_beta           0.000274077911624  1e-4
+kpi     separator              F_in             0.000583333333333  1e-4
+kpi     separator              P                101325             1e-4
+kpi     separator              T                353                1e-4
+kpi     separator              V_over_F         0.469847848498     1e-4
+kpi     separator              phaseSet         0                  1e-4

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-phenylpyridine  (C11H9N, CAS 1008-89-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Phenylpyridine;
+formula     C11H9N;
+CAS         1008-89-5;
+InChIKey    VQGHOUODWALEFC-UHFFFAOYSA-N;
+MW          155.2;      // g/mol [origin=calculated method=formula-sum]
+Tc          822.64;      // K   [origin=predictive method=joback]
+Pc          38.531;      // bar [origin=predictive method=joback]
+omega       0.4231;      // -   [origin=predictive method=lee-kesler]
+Tb          558.34;      // K   [origin=predictive method=joback]
+HvapTb      50842.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-64.86 0.92476 -0.00064626 1.725e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 1; } { group C5H4N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 9; } { group dC_ring; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pyridine, 2-phenyl-" "o-phenylpyridine" "2-azabiphenyl" "2-phenyl-pyridine" "2- phenylpyridine" "agn-pc-00nmcz" "agn-pc-00lk2w" "tpc-i161" "l336" "p158" "o-phenylpyridine;1/c11h9n/c1-2-6-10(7-3-1)11-8-4-5-9-12-11/h1-9;2-phenyl pyridine;pyridine, 2-phenyl-;" );
+gibbsFormation
+{
+    dHf_298   235480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     384.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=343610.0
+    phase     gas;
+}

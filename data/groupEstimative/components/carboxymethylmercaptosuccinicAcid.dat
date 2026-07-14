@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: carboxymethylmercaptosuccinic acid  (C6H8O6S, CAS 99-68-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        carboxymethylmercaptosuccinicAcid;
+formula     C6H8O6S;
+CAS         99-68-3;
+InChIKey    JPHVSDWIWBDHOC-UHFFFAOYSA-N;
+MW          208.184;      // g/mol [origin=calculated method=formula-sum]
+Tc          1072.66;      // K   [origin=predictive method=joback]
+Pc          44.326;      // bar [origin=predictive method=joback]
+omega       1.6686;      // -   [origin=predictive method=lee-kesler]
+Tb          841.75;      // K   [origin=predictive method=joback]
+HvapTb      86871.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (29.152 0.72649 -0.0004834 1.161e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 1; } { group COOH; count 3; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group COOH; count 3; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-hydroxy-2-oxoethylsulfanyl)butanedioic acid" "2-[(carboxymethyl)sulfanyl]butanedioic acid" "butanedioic acid, [(carboxymethyl)thio]-" "((carboxymethyl)thio)succinic acid" "[(carboxymethyl)thio]succinic acid" "butanedioic acid, ((carboxymethyl)thio)-" "butanedioic acid, 2-((carboxymethyl)thio)-" "butanedioic acid, 2-[(carboxymethyl)thio]-" "carboxymethylthiosuccinic acid" "(carboxymethylthio)succinic acid" "succinic acid, [(carboxymethyl)thio]-" "2-(carboxymethylsulfanyl)butanedioic acid" );
+gibbsFormation
+{
+    dHf_298   -1181390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     600.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1001410.0
+    phase     gas;
+}

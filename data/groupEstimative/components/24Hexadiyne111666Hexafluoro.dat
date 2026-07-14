@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-hexadiyne, 1,1,1,6,6,6-hexafluoro-  (C6F6, CAS 10524-09-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24Hexadiyne111666Hexafluoro;
+formula     C6F6;
+CAS         10524-09-1;
+InChIKey    IUMBVSOABSWHBN-UHFFFAOYSA-N;
+MW          186.054;      // g/mol [origin=calculated method=formula-sum]
+Tc          520.35;      // K   [origin=predictive method=joback]
+Pc          34.359;      // bar [origin=predictive method=joback]
+omega       0.2714;      // -   [origin=predictive method=lee-kesler]
+Tb          344.04;      // K   [origin=predictive method=joback]
+HvapTb      25760.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.15 0.5966 -0.00056032 1.9556e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C_C; count 2; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group tC; count 4; } { group F; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,6,6,6-hexakis(fluoranyl)hexa-2,4-diyne" "1,1,1,6,6,6-hexafluorohexa-2,4-diyne" "cf3c.equiv.cc.equiv.ccf3" "2,4-hexadiyne,1,1,1,6,6,6-hexafluoro-" "2,4-hexadiyne,hexafluoro- (7ci,8ci); 1,1,1,6,6,6-hexafluorohexa-2,4-diyne;hexafluoro-2,4-hexadiyne; perfluorohexa-2,4-diyne" );
+gibbsFormation
+{
+    dHf_298   -816730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     445.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-757940.0
+    phase     gas;
+}

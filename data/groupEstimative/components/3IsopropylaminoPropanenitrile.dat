@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(isopropylamino)propanenitrile  (C6H12N2, CAS 692-98-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3IsopropylaminoPropanenitrile;
+formula     C6H12N2;
+CAS         692-98-8;
+InChIKey    XBAXAJAODIQLCI-UHFFFAOYSA-N;
+MW          112.176;      // g/mol [origin=calculated method=formula-sum]
+Tc          684.66;      // K   [origin=predictive method=joback]
+Pc          30.933;      // bar [origin=predictive method=joback]
+omega       0.5933;      // -   [origin=predictive method=lee-kesler]
+Tb          488.69;      // K   [origin=predictive method=joback]
+HvapTb      45476.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.542 0.59074 -0.0003234 6.39e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group CH2NH; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group NH; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(propan-2-ylamino)propanenitrile" "propionitrile, 3-(isopropylamino)-" "propanenitrile, 3-[(1-methylethyl)amino]-" "propanenitrile, 3-((1-methylethyl)amino)-" "3-(isopropylamino)propionitrile" "propanenitrile,3-[(1-methylethyl)amino]-" );
+gibbsFormation
+{
+    dHf_298   45900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     426.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=219770.0
+    phase     gas;
+}

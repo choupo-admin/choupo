@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chlorotrianisene  (C23H21ClO3, CAS 569-57-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chlorotrianisene;
+formula     C23H21ClO3;
+CAS         569-57-3;
+InChIKey    BFPSDSIWYFKGBC-UHFFFAOYSA-N;
+MW          380.868;      // g/mol [origin=calculated method=formula-sum]
+Tc          1180.49;      // K   [origin=predictive method=joback]
+Pc          15.949;      // bar [origin=predictive method=joback]
+omega       0.9558;      // -   [origin=predictive method=lee-kesler]
+Tb          929.43;      // K   [origin=predictive method=joback]
+HvapTb      87339.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.01 1.61066 -0.00089568 1.599e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 6; } { group CH3O; count 3; } { group Cl_C=C_; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dC; count 2; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group Cl; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[1-chloranyl-2,2-bis(4-methoxyphenyl)ethenyl]-4-methoxy-benzene" "chlortrianisestrol" "chlortrianizen" "chlorotrianisine" "tace" "chloortrianisestrol" "chlorotrianizen" "chlortrianisen" "chlorestrolo" "merbentul" "clorestrolo" "clorotrisin" );
+gibbsFormation
+{
+    dHf_298   -157630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     766.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=187310.0
+    phase     gas;
+}

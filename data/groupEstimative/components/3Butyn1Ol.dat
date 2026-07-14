@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-butyn-1-ol  (C4H6O, CAS 927-74-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Butyn1Ol;
+formula     C4H6O;
+CAS         927-74-2;
+InChIKey    OTJZCIYGRUNXTP-UHFFFAOYSA-N;
+MW          70.091;      // g/mol [origin=calculated method=formula-sum]
+Tc          546.80;      // K   [origin=predictive method=joback]
+Pc          53.907;      // bar [origin=predictive method=joback]
+omega       0.5844;      // -   [origin=predictive method=lee-kesler]
+Tb          373.42;      // K   [origin=predictive method=joback]
+HvapTb      41035.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.322 0.3239 -0.00022013 6.459e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group OH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "but-3-yn-1-ol" "1-butyn-4-ol" "3-butynol" "3-butynyl alcohol" "3-butyne-1-ol" "4-hydroxy-1-butyne" "2-hydroxyethylacetylene" "4-hydroxy-butyne" "(2-hydroxyethyl)acetylene" "homopropargyl alcohol" "4-butyne-1-ol" "4-hydroxy-but-1-yne" );
+gibbsFormation
+{
+    dHf_298   13780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     332.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=69050.0
+    phase     gas;
+}

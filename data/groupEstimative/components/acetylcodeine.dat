@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetylcodeine  (C20H23NO4, CAS 6703-27-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acetylcodeine;
+formula     C20H23NO4;
+CAS         6703-27-1;
+InChIKey    MFXFQKMUCYHPFQ-BKRJIHRRSA-N;
+MW          341.407;      // g/mol [origin=calculated method=formula-sum]
+Tc          1064.00;      // K   [origin=predictive method=joback]
+Pc          18.388;      // bar [origin=predictive method=joback]
+omega       1.0434;      // -   [origin=predictive method=lee-kesler]
+Tb          836.27;      // K   [origin=predictive method=joback]
+HvapTb      79058.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-180.88 2.47196 -0.00217906 7.955e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 3; } { group C; count 1; } { group CH=CH; count 1; } { group ACH; count 2; } { group AC; count 3; } { group ACCH2; count 1; } { group CH3COO; count 1; } { group CH3O; count 1; } { group CH-O; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 4; } { group O; count 1; } { group O_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(4r,4ar,7s,7ar,12bs)-9-methoxy-3-methyl-2,4,4a,7,7a,13-hexahydro-1h-4,12-methanobenzofuro[3,2-e]isoquinoline-7-yl] ethanoate" "6-acetylcodeine" "codeine, acetyl-" "6-o-acetyl codeine" "7,8-didehydro-4,5alpha-epoxy-3-methoxy-17-methylmorphinan-6alpha-ol acetate" "morphinan-6-alpha-ol, 7,8-didehydro-4,5-alpha-epoxy-3-methoxy-17-methyl-, acetate" "morphinan-6-ol, 7,8-didehydro-4,5-epoxy-3-methoxy-17-methyl-, acetate, (5alpha,6alpha)-" "6-monoacetylcodeine" );
+gibbsFormation
+{
+    dHf_298   -417940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     446.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=82190.0
+    phase     gas;
+}

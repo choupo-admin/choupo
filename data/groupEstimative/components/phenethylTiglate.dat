@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenethyl tiglate  (C13H16O2, CAS 55719-85-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenethylTiglate;
+formula     C13H16O2;
+CAS         55719-85-2;
+InChIKey    KVMWYGAYARXPOL-QDEBKDIKSA-N;
+MW          204.269;      // g/mol [origin=calculated method=formula-sum]
+Tc          798.80;      // K   [origin=predictive method=joback]
+Pc          23.270;      // bar [origin=predictive method=joback]
+omega       0.6219;      // -   [origin=predictive method=lee-kesler]
+Tb          585.98;      // K   [origin=predictive method=joback]
+HvapTb      54253.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.298 1.12504 -0.0007061 1.611e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH=C; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenylethyl (e)-2-methylbut-2-enoate" "phenylethyl tiglate" "phenyl ethyl tiglate" "benzylcarbinyl tiglate" "2-phenylethyl tiglate" "benzyl carbinyl tiglate" "phenethyl 2-methylcrotonate" "2-butenoic acid, 2-methyl-, 2-phenylethyl ester, (e)-" "phenylethyl-alpha-methylbutenoate" "2-phenylethyl trans-2-methylbutenoate" "2-phenylethyl trans-2,3-dimethylacrylate" "2-phenylethyl 2-methyl-2-butenoate, (e)-" );
+gibbsFormation
+{
+    dHf_298   -284970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     596.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-67710.0
+    phase     gas;
+}

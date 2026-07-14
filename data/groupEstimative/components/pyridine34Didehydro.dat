@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pyridine, 3,4-didehydro-  (C5H3N, CAS 7129-66-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C5H3N (delta C+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        pyridine34Didehydro;
+formula     C5H3N;
+CAS         7129-66-0;
+InChIKey    VLBGLDMKIJSNIZ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          77.086;      // g/mol [origin=calculated method=formula-sum]
+Tc          546.38;      // K   [origin=predictive method=joback]
+Pc          58.361;      // bar [origin=predictive method=joback]
+omega       0.1902;      // -   [origin=predictive method=lee-kesler]
+Tb          335.94;      // K   [origin=predictive method=joback]
+HvapTb      29460.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-35.52 0.37836 -0.00035242 1.323e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C5H5N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,5-didehydropyridine" "3,4-didehydropyridine" "agn-pc-00mk1z" );
+gibbsFormation
+{
+    dHf_298   130080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     194.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=167710.0
+    phase     gas;
+}

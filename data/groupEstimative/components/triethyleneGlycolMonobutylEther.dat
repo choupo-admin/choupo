@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethylene glycol monobutyl ether  (C10H22O4, CAS 143-22-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethyleneGlycolMonobutylEther;
+formula     C10H22O4;
+CAS         143-22-6;
+InChIKey    COBPKKZHLDDMTB-UHFFFAOYSA-N;
+MW          206.282;      // g/mol [origin=calculated method=formula-sum]
+Tc          747.32;      // K   [origin=predictive method=joback]
+Pc          21.897;      // bar [origin=predictive method=joback]
+omega       1.1807;      // -   [origin=predictive method=lee-kesler]
+Tb          587.84;      // K   [origin=predictive method=joback]
+HvapTb      61763.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (75.589 0.79822 -0.0002176 -4.68e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH2O; count 2; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 9; } { group OH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-(2-butoxyethoxy)ethoxy]ethanol" "butoxytriethylene glycol" "butoxytriglycol" "dowanol tbat" "butyltriglycol" "triglycol monobutyl ether" "ethanol, 2-[2-(2-butoxyethoxy)ethoxy]-" "poly-solv tb" "triethylene glycol butyl ether" "triethylene glycol n-butyl ether" "triethylene glycol mono-n-butyl ether" "2-(2-(2-butoxyethoxy)ethoxy)ethanol" );
+gibbsFormation
+{
+    dHf_298   -798620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     630.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-418500.0
+    phase     gas;
+}

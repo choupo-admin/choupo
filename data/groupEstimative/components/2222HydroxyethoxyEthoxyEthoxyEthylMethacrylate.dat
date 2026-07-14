@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(2-(2-(2-hydroxyethoxy)ethoxy)ethoxy)ethyl methacrylate  (C12H22O6, CAS 21217-75-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2222HydroxyethoxyEthoxyEthoxyEthylMethacrylate;
+formula     C12H22O6;
+CAS         21217-75-4;
+InChIKey    MCWMYICYUGCRDY-UHFFFAOYSA-N;
+MW          262.302;      // g/mol [origin=calculated method=formula-sum]
+Tc          858.31;      // K   [origin=predictive method=joback]
+Pc          19.287;      // bar [origin=predictive method=joback]
+omega       1.3126;      // -   [origin=predictive method=lee-kesler]
+Tb          688.38;      // K   [origin=predictive method=joback]
+HvapTb      73032.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (96.498 0.91332 -0.000257 -6.09e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH2=C; count 1; } { group CH2O; count 2; } { group COO; count 1; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group dCH2; count 1; } { group dC; count 1; } { group OH; count 1; } { group O; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-(2-hydroxyethyloxy)ethoxy]ethoxy]ethyl 2-methylprop-2-enoate" "2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethyl methacrylate" "2-propenoic acid, 2-methyl-, 2-(2-(2-(2-hydroxyethoxy)ethoxy)ethoxy)ethyl ester" "2-propenoic acid, 2-methyl-, 2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethyl ester" "poly(ethylene glycol) ethyl ether methacrylate" "2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethyl 2-methylprop-2-enoate" "2-propenoic acid,2-methyl-, 2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethyl ester" "methacrylicacid, 2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethyl ester (8ci); tetraethyleneglycol monomethacryalte; tetraethylene glycol monomethacrylate; tetraethyleneglycol monomethacryloyl ester" );
+gibbsFormation
+{
+    dHf_298   -1041540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     750.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-632740.0
+    phase     gas;
+}

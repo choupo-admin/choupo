@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9-vinylanthracene  (C16H12, CAS 2444-68-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        9Vinylanthracene;
+formula     C16H12;
+CAS         2444-68-0;
+InChIKey    OGOYZCQQQFAGRI-UHFFFAOYSA-N;
+MW          204.272;      // g/mol [origin=calculated method=formula-sum]
+Tc          886.10;      // K   [origin=predictive method=joback]
+Pc          27.099;      // bar [origin=predictive method=joback]
+omega       0.5723;      // -   [origin=predictive method=lee-kesler]
+Tb          636.96;      // K   [origin=predictive method=joback]
+HvapTb      57420.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-82.84 1.2985 -0.00104006 3.345e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group ACH; count 9; } { group AC; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9-ethenylanthracene" "anthracene, 9-ethenyl-" "9-vinyl-anthracene" "anthracene, 9-ethenyl- (9ci)" );
+gibbsFormation
+{
+    dHf_298   347590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     438.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=478130.0
+    phase     gas;
+}

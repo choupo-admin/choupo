@@ -37,7 +37,7 @@ License
     - ESTIMATED / PLACEHOLDER  (per the component's `provenance {}` side-channel:
       the result rides on an estimate -- the "no silent crutch" rule).
 
-  This is the Choupo-aligned half of the Aspen/DWSIM "minimum parameter set"
+  This is the Choupo-aligned half of commercial process simulators' "minimum parameter set"
   idea: provenance stays at the data + validation boundary; the value type is
   never wrapped (no PropertyResult<T> / Tracked<T> in the solver — settled
   2026-06-05, see core/Origin.H and docs/property-architecture.md §3).

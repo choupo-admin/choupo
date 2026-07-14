@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-octynoic acid  (C8H12O2, CAS 5663-96-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2OctynoicAcid;
+formula     C8H12O2;
+CAS         5663-96-7;
+InChIKey    BQDKCWCMDBMLEH-UHFFFAOYSA-N;
+MW          140.182;      // g/mol [origin=calculated method=formula-sum]
+Tc          745.12;      // K   [origin=predictive method=joback]
+Pc          33.144;      // bar [origin=predictive method=joback]
+omega       0.6882;      // -   [origin=predictive method=lee-kesler]
+Tb          537.15;      // K   [origin=predictive method=joback]
+HvapTb      52718.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.774 0.66482 -0.00039186 9.098e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group COOH; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group tC; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oct-2-ynoic acid" "m-pentyl propiolate" "2-octyn-1-oic acid" "propiolic acid, pentyl-" "propiolic acid, pentyl ester" "pentylpropiolic acid" );
+gibbsFormation
+{
+    dHf_298   -286420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     492.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-124630.0
+    phase     gas;
+}

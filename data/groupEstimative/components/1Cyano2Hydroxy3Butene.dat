@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-cyano-2-hydroxy-3-butene  (C5H7NO, CAS 27451-36-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Cyano2Hydroxy3Butene;
+formula     C5H7NO;
+CAS         27451-36-1;
+InChIKey    PBCLOVRWBLGJQA-UHFFFAOYSA-N;
+MW          97.117;      // g/mol [origin=calculated method=formula-sum]
+Tc          693.73;      // K   [origin=predictive method=joback]
+Pc          40.007;      // bar [origin=predictive method=joback]
+omega       0.8427;      // -   [origin=predictive method=lee-kesler]
+Tb          504.50;      // K   [origin=predictive method=joback]
+HvapTb      52823.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.961 0.4335 -0.0002737 6.87e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group CH2=CH; count 1; } { group OH; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-oxidanylpent-4-enenitrile" "3-hydroxypent-4-enenitrile" "butene, (s)-1-cyano-2-hydroxy-3-" "3-hydroxy-4-pentenenitrile" "s-3-hydroxy-4-pentenonitrile" "4-pentenenitrile, 3-hydroxy-" "s-1-cyano-2-hydroxy-3-butene" "4-pentenonitrile, 3-hydroxy-, s-" "4-pentenenitrile, 3-hydroxy-, (s)-" "4-pentenenitrile,3-hydroxy-" "1-cyano-2-hydroxy-3-butene;2-hydroxy-3-butenyl cyanide; 3-hydroxy-4-cyano-1-butene;3-hydroxy-4-pentenenitrile; chp; cyanohydroxybutene" );
+gibbsFormation
+{
+    dHf_298   -13730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     393.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=72980.0
+    phase     gas;
+}

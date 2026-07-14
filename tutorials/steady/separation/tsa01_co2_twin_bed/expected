@@ -1,0 +1,14 @@
+# Recorded after independent hand arithmetic; exact values refreshed by
+# bin/runTests --record only after review.
+# kind   name      key         expected        reltol
+stream  feed                   F                2.77777777778e-4  1e-8
+stream  cleanHe                F                2.475e-4          1e-8
+stream  regenerationGas        F                3.02777777778e-5  1e-8
+kpi     co2tsa                 recovery_He      0.9               1e-8
+kpi     co2tsa                 purity_He        1.0               1e-8
+kpi     co2tsa                 Dq_CO2           0.408156018947    1e-8
+kpi     co2tsa                 capacity_utilisation_CO2 0.680567638068 1e-8
+kpi     co2tsa                 Q_sensible_per_cycle_kJ 276.0             1e-8
+kpi     co2tsa                 Q_desorption_per_cycle_kJ 37.5            1e-8
+kpi     co2tsa                 Q_regeneration_kW 1.045              1e-8
+kpi     co2tsa                 Q_adsorption_cooling_kW -1.045       1e-8

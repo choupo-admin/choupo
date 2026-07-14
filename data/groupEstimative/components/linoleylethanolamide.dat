@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: linoleylethanolamide  (C20H37NO2, CAS 68171-52-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        linoleylethanolamide;
+formula     C20H37NO2;
+CAS         68171-52-8;
+InChIKey    KQXDGUVSAAQARU-UHFFFAOYSA-N;
+MW          323.521;      // g/mol [origin=calculated method=formula-sum]
+Tc          1055.16;      // K   [origin=predictive method=joback]
+Pc          12.174;      // bar [origin=predictive method=joback]
+omega       1.1457;      // -   [origin=predictive method=lee-kesler]
+Tb          861.74;      // K   [origin=predictive method=joback]
+HvapTb      89891.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.216 2.02602 -0.0012921 3.3286e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 13; } { group CH=CH; count 2; } { group OH; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 14; } { group dCH; count 4; } { group OH; count 1; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-(2-hydroxyethyl)octadeca-9,12-dienamide" "9,12-octadecadienamide, n-(2-hydroxyethyl)-, (9z,12z)-" "9,12-octadecadienamide,n-(2-hydroxyethyl)-, (z,z)-; linoleamide, n-(2-hydroxyethyl)- (7ci); linoleicacid monoethanolamide; n-(2-hydroxyethyl)-(z,z)-9,12-octadecadienamide;n-(2-hydroxyethyl)linoleamide; n-linoleoylethanolamine" );
+gibbsFormation
+{
+    dHf_298   -433030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1040.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=101610.0
+    phase     gas;
+}

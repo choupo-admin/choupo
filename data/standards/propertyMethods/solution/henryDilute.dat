@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  propertyMethod solution.henryDilute -- the dilute-solution structure.
+  ONE liquid Gibbs surface, TWO conventions on it (the per-group rungs the
+  2026-07-04 professors' forum ratified as amendment A1):
+    solvent : symmetric Raoult normalisation, gamma -> 1 as x -> 1
+    solutes : unsymmetric Henry normalisation, gamma* -> 1 as x -> 0,
+              full Krichevsky-Kasarnovsky/Ilinskaya form.
+  The package's solution{} block names WHO is solvent and WHO dissolves; the
+  pairs come from parameters.henryPairs (verified at assembly, refuse if absent).
+\*---------------------------------------------------------------------------*/
+recordType propertyMethod;
+schemaVersion 1;
+name henryDilute;
+family solution;
+referenceBasis
+{
+    liquid
+    {
+        solvent { rung pureLiquidRaoult;      convention "gamma -> 1 as x -> 1"; }
+        solutes { rung infiniteDilutionHenry; convention "gamma* -> 1 as x -> 0";
+                  relation "y phi_V P = x gamma* H(T) exp[v_inf (P - Ps)/RT]"; }
+    }
+    vapour  { all { rung idealGasReference; convention "phi from the declared vapour method"; } }
+}
+requires { henryPairs true; solutionBlock true; }
+provides { Kvalues true; dissolvedGasComposition true; }

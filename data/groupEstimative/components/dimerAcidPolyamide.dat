@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimer acid polyamide  (C38H72N2O4, CAS 12624-35-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimerAcidPolyamide;
+formula     C38H72N2O4;
+CAS         12624-35-0;
+InChIKey    KYBYPDUGGWLXNO-GRVYQHKQSA-N;
+MW          621.004;      // g/mol [origin=calculated method=formula-sum]
+Tc          2189.43;      // K   [origin=predictive method=joback]
+Pc          4.847;      // bar [origin=predictive method=joback]
+omega       -0.3305;      // -   [origin=predictive method=lee-kesler]
+Tb          1524.56;      // K   [origin=predictive method=joback]
+HvapTb      156212.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.436 3.50684 -0.001781 2.742e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 24; } { group CH=CH; count 4; } { group CH2NH2; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 26; } { group dCH; count 8; } { group COOH; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethane-1,2-diamine;(9z,12z)-octadeca-9,12-dienoic acid" "ethylenediamine - linoleic acid dimer polymer" "poly(ethylenedilinoleamide)" "9,12-octadecadienoic acid (9z,12z)-, dimer, polymer with 1,2-ethanediamine" "9,12-octadecadienoic acid (9z,12z)-, dimer, reaction products with ethylenediamine" "ethylenediamine, linoleic acid dimer polymer" "ethylenediamine - linoleic acid dimer copolymer" "linoleic acid dimer - ethylenediamine copolymer" "ethane-1,2-diamine; (9z,12z)-octadeca-9,12-dienoic acid" "1,2-ethanediamine, polymer with (9z,12z)-9,12-octadecadienoic acid dimer" "1,2-ethanediamine, polymer with (z,z)-9,12-octadecadienoic acid dimer" "9,12-octadecadienoic acid (z,z)-, dimer, polymer with 1,2-ethanediamine" );
+gibbsFormation
+{
+    dHf_298   -1214970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     2034.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-174480.0
+    phase     gas;
+}

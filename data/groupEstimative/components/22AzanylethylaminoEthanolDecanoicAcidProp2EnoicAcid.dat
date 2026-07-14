@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(2-azanylethylamino)ethanol;decanoic acid;prop-2-enoic acid  (C20H40N2O7, CAS 68815-44-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22AzanylethylaminoEthanolDecanoicAcidProp2EnoicAcid;
+formula     C20H40N2O7;
+CAS         68815-44-1;
+InChIKey    PMNVYPPYLJNVKB-UHFFFAOYSA-N;
+MW          420.547;      // g/mol [origin=calculated method=formula-sum]
+Tc          1659.21;      // K   [origin=predictive method=joback]
+Pc          11.981;      // bar [origin=predictive method=joback]
+omega       0.7425;      // -   [origin=predictive method=lee-kesler]
+Tb          1306.17;      // K   [origin=predictive method=joback]
+HvapTb      144904.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (125.552 1.56972 -0.0002058 -2.747e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group CH2=CH; count 2; } { group OH; count 1; } { group CH2NH2; count 1; } { group CH2NH; count 1; } { group COOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 12; } { group dCH2; count 2; } { group dCH; count 2; } { group OH; count 1; } { group COOH; count 3; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "decanoic acid, reaction products with 2-((2-aminoethyl)amino)ethanol, acrylic acid alkylated (1:2)" "2-(2-aminoethylamino)ethanol; decanoic acid; prop-2-enoic acid" );
+gibbsFormation
+{
+    dHf_298   -1655910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1551.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1033790.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: julolidine  (C12H15N, CAS 479-59-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        julolidine;
+formula     C12H15N;
+CAS         479-59-4;
+InChIKey    DZFWNZJKBJOGFQ-UHFFFAOYSA-N;
+MW          173.259;      // g/mol [origin=calculated method=formula-sum]
+Tc          777.32;      // K   [origin=predictive method=joback]
+Pc          32.840;      // bar [origin=predictive method=joback]
+omega       0.5299;      // -   [origin=predictive method=lee-kesler]
+Tb          546.06;      // K   [origin=predictive method=joback]
+HvapTb      48393.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-136.38 1.4246 -0.00118992 3.997e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 2; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 6; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,6,7-tetrahydro-1h,5h-benzo[ij]quinolizine" "1h,5h-benzo[ij]quinolizine, 2,3,6,7-tetrahydro-" "2,3,6,7-tetrahydro-1h,5h-benzo(ij)quinolizine" "2,3,6,7-tetrahydro-1h,5h-pyrido[3,2,1-ij]quinoline" "1h,5h-benzo(ij)quinolizine, 2,3,6,7-tetrahydro-" "m595" "2,6,7-tetrahydro-1h,5h-benzo[ij]quinolizine" "1h,5h-benzo[ij]quinolizine,2,3,6,7-tetrahydro-" "1,2,3,5,6,7-hexahydropyrido[3,2,1-ij]quinoline" );
+gibbsFormation
+{
+    dHf_298   176390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     424.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=391010.0
+    phase     gas;
+}

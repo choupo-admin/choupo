@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,7,11,15-tetramethylhexadec-1-yn-3-ol  (C20H38O, CAS 29171-23-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        371115Tetramethylhexadec1Yn3Ol;
+formula     C20H38O;
+CAS         29171-23-1;
+InChIKey    MULUCORRSAVKOA-UHFFFAOYSA-N;
+MW          294.523;      // g/mol [origin=calculated method=formula-sum]
+Tc          912.62;      // K   [origin=predictive method=joback]
+Pc          12.268;      // bar [origin=predictive method=joback]
+omega       0.9863;      // -   [origin=predictive method=lee-kesler]
+Tb          734.95;      // K   [origin=predictive method=joback]
+HvapTb      74191.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-25.741 1.9875 -0.00127193 3.2539e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 9; } { group CH; count 3; } { group C; count 1; } { group OH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 9; } { group CH; count 3; } { group C; count 1; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-hexadecyn-3-ol, 3,7,11,15-tetramethyl-" "hexadec-1-yn-3-ol, 3,7,11,15-tetramethyl-" "dehydroisophytol" "1-hexadecyn-3-ol,3,7,11,15-tetramethyl-" "3,7,11,15-tetramethyl-1-hexadecyn-3-ol;3,7,11,15-tetramethyl-3-hydroxy-1-hexadecyne; dehydroisophytol; isophytol,dehydro-" );
+gibbsFormation
+{
+    dHf_298   -341050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     887.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=199290.0
+    phase     gas;
+}

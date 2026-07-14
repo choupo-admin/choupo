@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopentane, 1-ethyl-2-methyl-  (C8H16, CAS 3726-46-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopentane1Ethyl2Methyl;
+formula     C8H16;
+CAS         3726-46-3;
+InChIKey    BSKOLJVTLRLTHE-UHFFFAOYSA-N;
+MW          112.216;      // g/mol [origin=calculated method=formula-sum]
+Tc          585.50;      // K   [origin=predictive method=joback]
+Pc          29.569;      // bar [origin=predictive method=joback]
+omega       0.2783;      // -   [origin=predictive method=lee-kesler]
+Tb          393.25;      // K   [origin=predictive method=joback]
+HvapTb      33350.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-58.929 0.86904 -0.0004834 9.53e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethyl-2-methyl-cyclopentane" "1-ethyl-2-methylcyclopentane" "cyclopentane, 1-ethyl-2-methyl-, cis-" "cis-1-ethyl-2-methylcyclopentane" "agn-pc-03cz57" );
+gibbsFormation
+{
+    dHf_298   -168310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     374.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=45320.0
+    phase     gas;
+}

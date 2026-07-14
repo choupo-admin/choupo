@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4,6-tri-tert-butylphenol  (C18H30O, CAS 732-26-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        246TriTertButylphenol;
+formula     C18H30O;
+CAS         732-26-3;
+InChIKey    PFEFOYRSMXVNEL-UHFFFAOYSA-N;
+MW          262.437;      // g/mol [origin=calculated method=formula-sum]
+Tc          945.80;      // K   [origin=predictive method=joback]
+Pc          16.810;      // bar [origin=predictive method=joback]
+omega       0.6863;      // -   [origin=predictive method=lee-kesler]
+Tb          719.01;      // K   [origin=predictive method=joback]
+HvapTb      68388.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-101.12 2.04808 -0.00162428 5.275e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 9; } { group C; count 3; } { group ACH; count 2; } { group AC; count 3; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 9; } { group C; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4,6-tritert-butylphenol" "voidox" "alkofen b" "phenol, 2,4,6-tris(1,1-dimethylethyl)-" "2,4,6-tris(tert-butyl)phenol" "phenol, 2,4,6-tri-tert-butyl-" "2,4,6-tri-t-butylphenol" "2,4,6-tris(1,1-dimethylethyl)phenol" "p 23" "tris(1,1-dimethylethyl)phenol" "tm02" "2,4,6-tri-tert-butyl phenol" );
+gibbsFormation
+{
+    dHf_298   -404820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     648.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=47730.0
+    phase     gas;
+}

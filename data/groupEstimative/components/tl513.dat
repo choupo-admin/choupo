@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tl 513  (C8H17Cl2N, CAS 42520-97-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tl513;
+formula     C8H17Cl2N;
+CAS         42520-97-8;
+InChIKey    SXPGFJZLDDFUHA-UHFFFAOYSA-N;
+MW          198.131;      // g/mol [origin=calculated method=formula-sum]
+Tc          645.63;      // K   [origin=predictive method=joback]
+Pc          23.519;      // bar [origin=predictive method=joback]
+omega       0.5778;      // -   [origin=predictive method=lee-kesler]
+Tb          469.94;      // K   [origin=predictive method=joback]
+HvapTb      44215.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.707 0.90132 -0.0005648 1.394e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH2N; count 1; } { group CH2Cl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group Cl; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-bis(2-chloroethyl)butan-1-amine" "butylamine, n,n-bis(2-chloroethyl)-" "diethylamine, n-butyl-2,2'-dichloro-" "1-butanamine, n,n-bis(2-chloroethyl)-" "diethylamine, 2,2'-dichloro-n-butyl-" );
+gibbsFormation
+{
+    dHf_298   -172400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     550.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=103400.0
+    phase     gas;
+}

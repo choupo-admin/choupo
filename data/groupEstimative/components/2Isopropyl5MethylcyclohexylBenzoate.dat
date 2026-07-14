@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(isopropyl)-5-methylcyclohexyl benzoate  (C17H24O2, CAS 71617-14-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Isopropyl5MethylcyclohexylBenzoate;
+formula     C17H24O2;
+CAS         71617-14-6;
+InChIKey    TTYVYRHNIVBWCB-UHFFFAOYSA-N;
+MW          260.377;      // g/mol [origin=calculated method=formula-sum]
+Tc          908.08;      // K   [origin=predictive method=joback]
+Pc          17.849;      // bar [origin=predictive method=joback]
+omega       0.6466;      // -   [origin=predictive method=lee-kesler]
+Tb          683.23;      // K   [origin=predictive method=joback]
+HvapTb      62542.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-76.47 1.56016 -0.000811 1.122e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 4; } { group ACH; count 5; } { group AC; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5-methyl-2-propan-2-yl-cyclohexyl) benzoate" "benzoic acid,(-)-menthyl ester" "(5-methyl-2-propan-2-ylcyclohexyl) benzoate" "(-)-menthyl benzoate" "cyclohexanol, 5-methyl-2-(1-methylethyl)-, 1-benzoate, (1r,2s,5r)-rel-" "cyclohexanol, 5-methyl-2-(1-methylethyl)-, benzoate, (1r,2s,5r)-rel-" "benzoic acid, (-)-menthyl ester" "(2-isopropyl-5-methyl-cyclohexyl) benzoate" "(1r,2s,5r)-5-methyl-2-(propan-2-yl)cyclohexyl benzoate" "(1s-(1alpha,2beta,5alpha))-2-(isopropyl)-5-methylcyclohexyl benzoate" "cyclohexanol,5-methyl-2-(1-methylethyl)-, 1-benzoate, (1r,2s,5r)-" "cyclohexanol, 5-methyl-2-(1-methylethyl)-, benzoate, [1r-(1.alpha.,2.beta.,5.alpha.)]-" );
+gibbsFormation
+{
+    dHf_298   -466600.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     638.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-99110.0
+    phase     gas;
+}

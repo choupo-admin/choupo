@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Solid phase: halite -- crystalline NaCl for the PBE crystalliser
+  (rho_p + volume shape factor k_v, cubic habit).
+
+  Provenance
+    In-tree origin: data/standards/components/NaCl.dat solid block
+    (kept as the origin pointers below -- this file is the phase view,
+    not a second source of truth).
+    Primary: rho_p 2165 kg/m3 is the standard halite crystal density
+    (2.165 g/cm3, consistent with the NaCl rock-salt unit cell,
+    a = 5.640 A); primary re-citation pending (IST review).
+    k_v = 1 is the geometric cube definition V = k_v L^3
+    (no external source needed).
+\*---------------------------------------------------------------------------*/
+
+recordType solidPhase;
+schemaVersion 1;
+
+name    halite;
+formula "NaCl";
+
+component NaCl;
+
+rho_p
+{
+    value 2165.0;
+    unit  kg/m3;
+    origin "data/standards/components/NaCl.dat solid block";
+}
+
+shape
+{
+    habit cube;
+
+    k_v
+    {
+        value 1.0;
+        basis "cube, V = k_v L^3";
+        origin "data/standards/components/NaCl.dat solid block";
+    }
+}
+
+notes
+{
+    purpose "Solid crystal phase for NaCl (halite): rho_p and shape factor k_v for the PBE crystalliser.";
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-benzenedicarboxylic acid, polymer with 1,4-cyclohexanedicarboxylic acid and 1,6-hexanediol  (C22H32O10, CAS 133066-42-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14BenzenedicarboxylicAcidPolymerWith14Cyclohexanedicarboxyli;
+formula     C22H32O10;
+CAS         133066-42-9;
+InChIKey    XVWGZOFNGCVZCR-UHFFFAOYSA-N;
+MW          456.488;      // g/mol [origin=calculated method=formula-sum]
+Tc          1977.91;      // K   [origin=predictive method=joback]
+Pc          16.285;      // bar [origin=predictive method=joback]
+omega       0.7445;      // -   [origin=predictive method=lee-kesler]
+Tb          1518.70;      // K   [origin=predictive method=joback]
+HvapTb      170226.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.236 1.9098 -0.00068436 -7.02e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group CH; count 2; } { group ACH; count 4; } { group AC; count 2; } { group OH; count 2; } { group COOH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 2; } { group COOH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclohexane-1,4-dicarboxylic acid;hexane-1,6-diol;terephthalic acid" );
+gibbsFormation
+{
+    dHf_298   -2167150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1357.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1604920.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-propylprop-2-en-1-amine  (C6H13N, CAS 5666-21-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nPropylprop2En1Amine;
+formula     C6H13N;
+CAS         5666-21-7;
+InChIKey    HUEPADWXXGLLSW-UHFFFAOYSA-N;
+MW          99.177;      // g/mol [origin=calculated method=formula-sum]
+Tc          557.23;      // K   [origin=predictive method=joback]
+Pc          33.067;      // bar [origin=predictive method=joback]
+omega       0.4308;      // -   [origin=predictive method=lee-kesler]
+Tb          383.73;      // K   [origin=predictive method=joback]
+HvapTb      34716.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.767 0.63002 -0.0003741 8.81e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH2=CH; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-prop-2-enylpropan-1-amine" );
+gibbsFormation
+{
+    dHf_298   11730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     425.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=176870.0
+    phase     gas;
+}

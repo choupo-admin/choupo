@@ -30,6 +30,7 @@ License
 #include "ResponseExtractor.H"
 #include "core/ResultEmitter.H"
 #include "postProcessing/PostProcessor.H"
+#include "streams/StreamOverrides.H"
 
 #include <fstream>
 #include <iomanip>
@@ -54,6 +55,7 @@ SweepDriver::SweepDriver(const DictPtr& dict)
         throw std::runtime_error("SweepDriver: nPoints must be >= 2");
 
     responses_   = dict->lookupWordList("responses");
+    constraints_ = parseConstraints(dict, "SweepDriver");
 
     if (dict->found("report"))
     {
@@ -84,9 +86,16 @@ int SweepDriver::run()
         throw std::runtime_error("SweepDriver: cannot open '" + reportFile_
             + "' for writing");
 
-    // Header
+    // Header.  Per constraint (the #103 amendment: value, bound, residual
+    // and satisfied, never a global string), then the row verdict.
     csv << "point," << targetPath_;
     for (const auto& r : responses_) csv << "," << r;
+    for (const auto& c : constraints_)
+        csv << "," << c.path << "_value"
+            << "," << c.path << "_" << c.opWord()
+            << "," << c.path << "_residual"
+            << "," << c.path << "_satisfied";
+    if (!constraints_.empty()) csv << ",feasible";
     csv << "\n";
 
     // Echo same header to stdout (formatted)
@@ -108,6 +117,7 @@ int SweepDriver::run()
     const std::size_t midK    = (nPoints_ > 0) ? (nPoints_ - 1) / 2 : 0;
 
     int failures = 0;
+    std::size_t nFeasible = 0, nInfeasible = 0;
     for (std::size_t k = 0; k < nPoints_; ++k)
     {
         const scalar val =
@@ -118,10 +128,23 @@ int SweepDriver::run()
         // current Dictionary class does not have a deep-copy operator,
         // so we re-read from disk each pass (cheap; cases are tiny).
         auto clone = Dictionary::fromFile(flowsheetDict_->sourceName());
-        clone->setScalarAtPath(targetPath_, val);
+        StreamOverrides ov;
+        if (targetPath_.rfind("streams.", 0) == 0)
+        {
+            // Forum #52/#53: a `streams.` target is the driver's hand on
+            // stream STATE -- it goes through the override channel onto the
+            // seeded registry (works identically over 0/ and legacy), never
+            // through the dict, which a 0/ case ignores.
+            //   streams.<name>.molarComposition.<c>  (legacy spelling)
+            //   -> override "<name>.moleFraction.<c>"
+            ov.set(
+                StreamOverrides::fromDictPath(targetPath_), val);
+        }
+        else
+            clone->setScalarAtPath(targetPath_, val);
 
         SimulationResult result;
-        try { result = simulator_(clone); }
+        try { result = simulator_(clone, ov); }
         catch (const std::exception& e)
         {
             std::cerr << "  [point " << k << "  " << val << "]  simulator FAILED: "
@@ -129,6 +152,10 @@ int SweepDriver::run()
             ++failures;
             csv << k << "," << val;
             for (std::size_t i = 0; i < responses_.size(); ++i) csv << ",nan";
+            for (std::size_t i = 0; i < constraints_.size(); ++i)
+                csv << ",nan,nan,nan,0";
+            if (!constraints_.empty()) csv << ",0";
+            ++nInfeasible;
             csv << "\n";
             continue;
         }
@@ -187,6 +214,24 @@ int SweepDriver::run()
                       << std::setw(20) << v;
             csv << "," << v;
         }
+        // Feasibility map: evaluate + MARK every constraint on this row.
+        bool rowFeasible = !constraints_.empty();
+        for (const auto& c : constraints_)
+        {
+            const ConstraintEval e = evaluateConstraint(c, result, "SweepDriver");
+            if (e.evaluated)
+                csv << "," << e.value << "," << c.rhs << "," << e.residual
+                    << "," << (e.satisfied ? 1 : 0);
+            else
+                csv << ",nan," << c.rhs << ",nan,0";
+            if (!e.evaluated || !e.satisfied) rowFeasible = false;
+        }
+        if (!constraints_.empty())
+        {
+            csv << "," << (rowFeasible ? 1 : 0);
+            std::cout << (rowFeasible ? "   feasible" : "   INFEASIBLE");
+            if (rowFeasible) ++nFeasible; else ++nInfeasible;
+        }
         std::cout << "\n";
         csv << "\n";
     }
@@ -196,10 +241,24 @@ int SweepDriver::run()
               << "/" << nPoints_ << " points converged.\n"
               << "  CSV written to: " << reportFile_ << "\n\n";
 
+    if (!constraints_.empty())
+        std::cout << "  Feasibility map: " << nFeasible << " feasible / "
+                  << nInfeasible << " infeasible of " << nPoints_
+                  << " points (ALL rows in the CSV -- nothing filtered).\n\n";
+
     // Emit the representative point's structured result so downstream
     // consumers (the GUI) have a stream table to draw the flowsheet with.
     if (haveRep)
+    {
+        if (!constraints_.empty())
+        {
+            auto& sk = representative.kpis["sweep"];
+            sk["feasible_points"]   = static_cast<scalar>(nFeasible);
+            sk["infeasible_points"] = static_cast<scalar>(nInfeasible);
+            sk["total_points"]      = static_cast<scalar>(nPoints_);
+        }
         emitResultJson(std::cout, representative);
+    }
 
     return (failures == 0) ? 0 : 1;
 }

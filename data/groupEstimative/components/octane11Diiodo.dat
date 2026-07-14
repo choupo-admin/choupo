@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octane, 1,1-diiodo-  (C8H16I2, CAS 66225-22-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octane11Diiodo;
+formula     C8H16I2;
+CAS         66225-22-7;
+InChIKey    DKLWRIQKXIBVIS-UHFFFAOYSA-N;
+MW          366.016;      // g/mol [origin=calculated method=formula-sum]
+Tc          799.35;      // K   [origin=predictive method=joback]
+Pc          24.459;      // bar [origin=predictive method=joback]
+omega       0.4632;      // -   [origin=predictive method=lee-kesler]
+Tb          568.48;      // K   [origin=predictive method=joback]
+HvapTb      51760.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.316 0.84772 -0.0005774 1.633e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CH; count 1; } { group I; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 6; } { group CH; count 1; } { group I; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1-bis(iodanyl)octane" );
+gibbsFormation
+{
+    dHf_298   -59990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     569.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=130280.0
+    phase     gas;
+}

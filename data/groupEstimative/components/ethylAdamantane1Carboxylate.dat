@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl adamantane-1-carboxylate  (C13H20O2, CAS 2094-73-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylAdamantane1Carboxylate;
+formula     C13H20O2;
+CAS         2094-73-7;
+InChIKey    SYEXGNJRYPOUSI-UHFFFAOYSA-N;
+MW          208.301;      // g/mol [origin=calculated method=formula-sum]
+Tc          791.97;      // K   [origin=predictive method=joback]
+Pc          24.171;      // bar [origin=predictive method=joback]
+omega       0.5795;      // -   [origin=predictive method=lee-kesler]
+Tb          575.32;      // K   [origin=predictive method=joback]
+HvapTb      50390.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-183.419 1.89252 -0.0016802 6.242e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group CH; count 3; } { group C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-adamantanecarboxylic acid ethyl ester" "ethyl 1-adamantanecarboxylate" "ethyladamantane-1-carboxylate" "tricyclo(3.3.1.1'3,7)decan-1-carboxylic acid ethyl ester" "tricyclo[3.3.1.1(3,7)-]decane-1-carboxylic acid, ethyl ester" "ethyl adamantanecarboxylate" "agn-pc-00cf9r" "ambap2094-73-7" "tricyclo[3.3.1.1~3,7~]decane-1-carboxylic acid, ethyl ester" "bim-0047968.p001" "ethyl tricyclo(3.3.1.13,7)decane-1-carboxylate" "tricyclo[3.3.1.13,7]decane-1-carboxylic acid, ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -421790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     489.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-94840.0
+    phase     gas;
+}

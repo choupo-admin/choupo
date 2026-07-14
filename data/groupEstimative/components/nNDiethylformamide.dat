@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-diethylformamide  (C5H11NO, CAS 617-84-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C5H11NO (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        nNDiethylformamide;
+formula     C5H11NO;
+CAS         617-84-5;
+InChIKey    SUAKHGWARZSWIH-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          101.149;      // g/mol [origin=calculated method=formula-sum]
+Tc          460.89;      // K   [origin=predictive method=joback]
+Pc          36.465;      // bar [origin=predictive method=joback]
+omega       0.2688;      // -   [origin=predictive method=lee-kesler]
+Tb          302.86;      // K   [origin=predictive method=joback]
+HvapTb      26394.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.848 0.61084 -0.0005138 1.824e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CONCH3CH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-diethylmethanamide" "diethylformamide" "formamide, n,n-diethyl-" "formyldiethylamine" "n-formyldiethylamine" "diethyl formamide" "n,n-diethylcarboxamide" "formamide, diethyl-" "formamide,n-diethyl-" "n,n-diethyl-formamide" "diethylamid kyseliny mravenci" );
+gibbsFormation
+{
+    dHf_298   -2550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     447.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=145960.0
+    phase     gas;
+}

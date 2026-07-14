@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3,4,4,4-pentafluorobutan-2-ol  (C4H5F5O, CAS 374-40-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33444Pentafluorobutan2Ol;
+formula     C4H5F5O;
+CAS         374-40-3;
+InChIKey    BUGIAHXXBFVPGW-UHFFFAOYSA-N;
+MW          164.073;      // g/mol [origin=calculated method=formula-sum]
+Tc          516.76;      // K   [origin=predictive method=joback]
+Pc          35.054;      // bar [origin=predictive method=joback]
+omega       0.7197;      // -   [origin=predictive method=lee-kesler]
+Tb          372.75;      // K   [origin=predictive method=joback]
+HvapTb      34112.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.63 0.73432 -0.000653 2.175e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group OH; count 1; } { group CF3; count 1; } { group CF2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group C; count 2; } { group F; count 5; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3,4,4,4-pentakis(fluoranyl)butan-2-ol" "pentafluoroethyl methyl carbinol" "pentafluoroethylmethylcarbinol" "3,3,4,4,4-pentafluorobutanol-2" "1,1,1,2,2-pentafluorobutan-3-ol" "pentafluorobutanol" "2-pentafluorobutanol" "3,3,3,4,4-pentafluorobutan-2-ol" "4,4,4,3,3-pentafluorobutan-2-ol" "3,3,4,4,4-pentafluoro-2-butanol" );
+gibbsFormation
+{
+    dHf_298   -1281450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     433.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1124830.0
+    phase     gas;
+}

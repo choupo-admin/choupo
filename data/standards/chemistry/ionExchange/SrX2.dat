@@ -1,0 +1,6 @@
+recordType ionExchangeEquilibrium;
+schemaVersion 1;
+
+species SrX2; masters ( { ion Sr; nu 1; } { site X; nu 2; } );
+      logK25 0.91; dH 5500; source "USGS PHREEQC phreeqc.dat (public domain); lit: Laudelout et al., 1968";
+

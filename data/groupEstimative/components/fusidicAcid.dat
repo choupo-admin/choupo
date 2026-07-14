@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: fusidic acid  (C31H48O6, CAS 6990-06-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        fusidicAcid;
+formula     C31H48O6;
+CAS         6990-06-3;
+InChIKey    IECPWNUMDGFDKC-MZJAQBGESA-N;
+MW          516.719;      // g/mol [origin=calculated method=formula-sum]
+Tc          1665.33;      // K   [origin=predictive method=joback]
+Pc          9.508;      // bar [origin=predictive method=joback]
+omega       0.6837;      // -   [origin=predictive method=lee-kesler]
+Tb          1328.54;      // K   [origin=predictive method=joback]
+HvapTb      138639.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-328.078 4.22754 -0.0036725 1.3726e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 8; } { group CH; count 7; } { group C; count 3; } { group CH=C; count 1; } { group OH; count 2; } { group CH3COO; count 1; } { group COOH; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 7; } { group CH2; count 2; } { group dCH; count 1; } { group dC; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 7; } { group C_ring; count 3; } { group dC_ring; count 1; } { group OH; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2z)-2-[(3r,4s,5s,8s,9s,10s,11r,13r,14s,16s)-16-acetyloxy-4,8,10,14-tetramethyl-3,11-bis(oxidanyl)-2,3,4,5,6,7,9,11,12,13,15,16-dodecahydro-1h-cyclopenta[a]phenanthren-17-ylidene]-6-methyl-hept-5-enoic acid" "fusidine" "ramycin" "fucidin acid" "fucidin" "fucithalmic" "fucidic acid" "fusidate" "diethanolamine fusidate" "fusidate sodium" "fucidate" "acide fusidique" );
+gibbsFormation
+{
+    dHf_298   -1297430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1219.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-489430.0
+    phase     gas;
+}

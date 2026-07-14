@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(2-aminoethyl)morpholine  (C6H14N2O, CAS 2038-03-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        42AminoethylMorpholine;
+formula     C6H14N2O;
+CAS         2038-03-1;
+InChIKey    RWIVICVCHVMHMU-UHFFFAOYSA-N;
+MW          130.191;      // g/mol [origin=calculated method=formula-sum]
+Tc          677.68;      // K   [origin=predictive method=joback]
+Pc          42.441;      // bar [origin=predictive method=joback]
+omega       0.5558;      // -   [origin=predictive method=lee-kesler]
+Tb          468.75;      // K   [origin=predictive method=joback]
+HvapTb      46710.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-55.868 0.9148 -0.0006275 1.676e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group FCH2O; count 1; } { group CH2NH2; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH2_ring; count 4; } { group O_ring; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-morpholin-4-ylethanamine" "2-morpholinoethylamine" "4-morpholineethanamine" "n-aminoethylmorpholine" "2-morpholinoethanamine" "morpholine, 4-(2-aminoethyl)-" "n-2-aminoethylmorpholine" "2-morpholin-4-yl-ethylamine" "beta-aminoaethyl-morpholin [german]" "n-(2-aminoethyl)morpholine" "2-(morpholin-4-yl)ethan-1-amine" "2-morpholin-4-ylethylamine" );
+gibbsFormation
+{
+    dHf_298   -117030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     398.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=135010.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(2,2-dimethylolpropyl) phthalate  (C18H26O8, CAS 72829-15-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis22DimethylolpropylPhthalate;
+formula     C18H26O8;
+CAS         72829-15-3;
+InChIKey    VBCOANABQMTRBN-UHFFFAOYSA-N;
+MW          370.398;      // g/mol [origin=calculated method=formula-sum]
+Tc          1400.84;      // K   [origin=predictive method=joback]
+Pc          20.401;      // bar [origin=predictive method=joback]
+omega       1.3391;      // -   [origin=predictive method=lee-kesler]
+Tb          1121.80;      // K   [origin=predictive method=joback]
+HvapTb      137538.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.044 1.85344 -0.00119556 2.724e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group C; count 2; } { group ACH; count 4; } { group AC; count 2; } { group OH; count 4; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group C; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 4; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis[2-(hydroxymethyl)-2-methyl-3-oxidanyl-propyl] benzene-1,2-dicarboxylate" "1,2-benzenedicarboxylic acid bis[3-hydroxy-2-(hydroxymethyl)-2-methylpropyl] ester" "1,2-benzenedicarboxylic acid, 1,2-bis(3-hydroxy-2-(hydroxymethyl)-2-methylpropyl) ester" "1,2-benzenedicarboxylic acid, 1,2-bis[3-hydroxy-2-(hydroxymethyl)-2-methylpropyl] ester" "bis[3-hydroxy-2-(hydroxymethyl)-2-methylpropyl] benzene-1,2-dicarboxylate" "1,2-benzenedicarboxylic acid, bis(3-hydroxy-2-(hydroxymethyl)-2-methylpropyl) ester" );
+gibbsFormation
+{
+    dHf_298   -1450770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     972.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-958880.0
+    phase     gas;
+}

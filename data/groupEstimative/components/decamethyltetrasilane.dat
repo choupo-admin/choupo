@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: decamethyltetrasilane  (C10H30Si4, CAS 865-76-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C10H30Si4 (delta Si+4; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        decamethyltetrasilane;
+formula     C10H30Si4;
+CAS         865-76-9;
+InChIKey    WYNNMDYMPQMXFH-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          262.69;      // g/mol [origin=calculated method=formula-sum]
+Tc          619.84;      // K   [origin=predictive method=joback]
+Pc          14.154;      // bar [origin=predictive method=joback]
+omega       0.1462;      // -   [origin=predictive method=lee-kesler]
+Tb          434.00;      // K   [origin=predictive method=joback]
+HvapTb      39030.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (157.07 0.1292 0.001139 -7.61e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 10; } { group Si; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[dimethyl(trimethylsilyl)silyl]-dimethyl-trimethylsilyl-silane" "tetrasilane, decamethyl-" "[dimethyl(trimethylsilyl)silyl]-dimethyl-trimethylsilylsilane" );
+gibbsFormation
+{
+    dHf_298   -696210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1051.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-385720.0
+    phase     gas;
+}

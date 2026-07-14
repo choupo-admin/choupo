@@ -1,0 +1,86 @@
+/*---------------------------------------------------------------------------*\
+  pitzer_gamma_hamer_wu
+  =====================
+
+  THE BREADTH VALIDATION: the catalogue's Pitzer pairs against the NBS
+  critically-evaluated gamma_pm and osmotic-coefficient tables -- Hamer & Wu,
+  J. Phys. Chem. Ref. Data 1 (1972) 1047 -- for SIX 1-1 salts at 25 C.
+  Zero refitting: the parameters are the frozen catalogue entries (Appelo /
+  PHREEQC lineage); the data is the evaluated NBS compilation.  Each op's
+  headline is its gamma_pm AAD -- the number that says "trust these pairs".
+
+  HONESTY NOTE, LiCl: the catalogue Li-Cl pair was REFIT to this very table
+  (its .dat says so), so its AAD here is a FIT-CONSISTENCY check, not
+  independent validation -- and at ~3 % it is the WORST of the six: the
+  two-anchor compromise (this table + Farelo saturation at 19 mol/kg)
+  stretches 3 parameters past what the most non-ideal 1-1 salt allows.
+  The five pairs that never saw this data land at 0.1-0.7 %.
+
+  Windows stay inside each pair's declared validity (KCl saturates at
+  4.803 mol/kg; KBr data used to 5).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      gamma_nacl;
+        type      pitzerActivity;
+        cation    Na;   anion Cl;
+        source    "Appelo, Appl. Geochem. 55 (2015) 62";
+        molality  { from 0.1; to 6.0; n 60; }
+        validation { dataset "constant/experiments/hamer_wu_1972.dat"; series nacl; }
+        output    { file pitzer_nacl.csv; }
+    }
+    {
+        name      gamma_kcl;
+        type      pitzerActivity;
+        cation    K;    anion Cl;
+        source    "Appelo, Appl. Geochem. 55 (2015) 62";
+        molality  { from 0.1; to 4.5; n 45; }
+        validation { dataset "constant/experiments/hamer_wu_1972.dat"; series kcl; }
+        output    { file pitzer_kcl.csv; }
+    }
+    {
+        name      gamma_kbr;
+        type      pitzerActivity;
+        cation    K;    anion Br;
+        source    "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49";
+        molality  { from 0.1; to 5.0; n 50; }
+        validation { dataset "constant/experiments/hamer_wu_1972.dat"; series kbr; }
+        output    { file pitzer_kbr.csv; }
+    }
+    {
+        // FIT-CONSISTENCY, not validation: the Li-Cl pair was refit to
+        // Hamer & Wu 1972 itself PLUS the Farelo (JCED 2005) saturation
+        // anchor at 19 mol/kg -- a two-anchor compromise.  Its ~3 % AAD here
+        // (the WORST of the six, on the salt the fit actually saw!) is the
+        // price of that compromise: 3 Pitzer parameters cannot hold the most
+        // non-ideal 1-1 salt (gamma reaches 2.7 at 6 m) across both anchors.
+        // The five independent salts land at 0.1-0.7 % -- THAT is validation.
+        name      gamma_licl_consistency;
+        type      pitzerActivity;
+        cation    Li;   anion Cl;
+        source    "REFIT to Hamer & Wu 1972 (see the pair .dat)";
+        molality  { from 0.1; to 6.0; n 60; }
+        validation { dataset "constant/experiments/hamer_wu_1972.dat"; series licl; }
+        output    { file pitzer_licl.csv; }
+    }
+    {
+        name      gamma_hcl;
+        type      pitzerActivity;
+        cation    H;    anion Cl;
+        source    "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49";
+        molality  { from 0.1; to 6.0; n 60; }
+        validation { dataset "constant/experiments/hamer_wu_1972.dat"; series hcl; }
+        output    { file pitzer_hcl.csv; }
+    }
+    {
+        name      gamma_naoh;
+        type      pitzerActivity;
+        cation    Na;   anion OH;
+        source    "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49";
+        molality  { from 0.1; to 6.0; n 60; }
+        validation { dataset "constant/experiments/hamer_wu_1972.dat"; series naoh; }
+        output    { file pitzer_naoh.csv; }
+    }
+);

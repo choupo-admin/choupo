@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-methyl-3-butyltetrahydropyran-4-yl acetate  (C12H22O3, CAS 38285-49-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Methyl3Butyltetrahydropyran4YlAcetate;
+formula     C12H22O3;
+CAS         38285-49-3;
+InChIKey    XWNKVSFNBVIKJB-UHFFFAOYSA-N;
+MW          214.305;      // g/mol [origin=calculated method=formula-sum]
+Tc          765.05;      // K   [origin=predictive method=joback]
+Pc          20.019;      // bar [origin=predictive method=joback]
+omega       0.6384;      // -   [origin=predictive method=lee-kesler]
+Tb          569.54;      // K   [origin=predictive method=joback]
+HvapTb      54034.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.017 1.15516 -0.0004907 1.9e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 3; } { group CH3COO; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3-butyl-5-methyl-oxan-4-yl) ethanoate" "3-butyl-5-methyl-tetrahydro-2h-pyran-4-yl acetate" "2h-pyran-4-ol, 3-butyltetrahydro-5-methyl-, acetate" "3-butyltetrahydro-5-methyl-2h-pyran-4-yl acetate" "2h-pyran-4-ol, tetrahydro-3-butyl-5-methyl-, acetate" "tetrahydro-2h-pyran-4-ol, 3-butyl-5-methyl-, acetate" "3-o-acetyl-1,5-anhydro-2-butyl-2,4-dideoxy-4-methylpentitol" "acetic acid, 3-butyl-5-methyl-tetrahydro-2h-pyran-4-yl ester" "pentitol, 1,5-anhydro-2-butyl-2,4-dideoxy-4-methyl-, 3-acetate" "(3-butyl-5-methyloxan-4-yl) acetate" );
+gibbsFormation
+{
+    dHf_298   -726650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     508.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-337300.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: spiro[bicyclo[2.2.2]octane-2,1'-cyclopropane]  (C10H16, CAS 53764-10-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        spiroBicyclo222Octane21Cyclopropane;
+formula     C10H16;
+CAS         53764-10-6;
+InChIKey    UZHOLRYOLUVERQ-UHFFFAOYSA-N;
+MW          136.238;      // g/mol [origin=calculated method=formula-sum]
+Tc          676.89;      // K   [origin=predictive method=joback]
+Pc          33.881;      // bar [origin=predictive method=joback]
+omega       0.3151;      // -   [origin=predictive method=lee-kesler]
+Tb          453.13;      // K   [origin=predictive method=joback]
+HvapTb      36614.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-212.04 1.6888 -0.001667 6.738e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group CH; count 2; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 7; } { group CH_ring; count 2; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "spiro[bicyclo[2.2.2]octane-3,1'-cyclopropane]" "spiro(bicyclo(2.2.2)octane-2,1'-cyclopropane)" );
+gibbsFormation
+{
+    dHf_298   -22250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     364.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=197980.0
+    phase     gas;
+}

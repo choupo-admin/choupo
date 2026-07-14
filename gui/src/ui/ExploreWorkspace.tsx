@@ -35,6 +35,8 @@ import { EXPLORE_OUTPUT, synthesizeExploreCase, type ExploreSpec } from "../case
 import { caseComponentFiles, caseComponents, mergeCatalogue, metaByName, type ComponentMeta } from "../case/catalogue.js";
 import { fromJson, serialize } from "../dict/index.js";
 import { CsvAutoPlot, axisDisplay } from "./plotting/CsvAutoPlot.js";
+import { GibbsMapPanel } from "./GibbsMapPanel.js";
+import type { JsonDict } from "../dict/index.js";
 import { PurePhaseDiagram } from "./plotting/PurePhaseDiagram.js";
 import { PsychroPlot } from "./plotting/PsychroPlot.js";
 import { BinaryLlePlot } from "./plotting/BinaryLlePlot.js";
@@ -104,6 +106,10 @@ const PLOT_TYPES: PlotType[] = [
   // solvent); the ions are set in the analysis panel, not the compound set.
   { id: "scaling", label: "Scaling (SI vs recovery)", min: 1, max: 99, vle: false,
     why: "select water + a dissolved electrolyte (e.g. NaCl) — RO-scaling needs ions" },
+  // Gibbs equilibrium map (forum 2026-07-02): iso-lines of equilibrium
+  // composition over T x P — why industrial reactors fix T and P.
+  { id: "gibbsmap", label: "Equilibrium map (Gibbs)", min: 2, max: 12, vle: false,
+    why: "pick 2+ gas-phase species with parseable formulas (e.g. N2 + H2 + NH3)" },
   // Steam tables (steamTables engine op): IAPWS-IF97 (R7-97(2012)), the WATER
   // industrial formulation — the saturated-steam table (region-4 line) or an
   // isobar (h,s,v,cp vs T; the engine announces the Tsat crossing).
@@ -117,7 +123,7 @@ const PLOT_TYPES: PlotType[] = [
 const LENS_SHORT: Record<PlotKind, string> = {
   scan: "scan", phase: "P-T", txy: "T-x-y", flash: "flash", gamma: "γ(x)", mccabe: "McCabe",
   binaryLle: "LLE", ternary: "ternary", ternaryLle: "tern.LLE",
-  psychro: "psychro", scaling: "scaling", steam: "steam",
+  psychro: "psychro", scaling: "scaling", steam: "steam", gibbsmap: "gibbsmap",
 };
 
 // PURE = per-component intrinsic properties the engine resolves as <prop>_<c>:
@@ -176,6 +182,29 @@ const SCALING_EQUIL_MINERALS = ["calcite", "gypsum"];
 const SI_REFERENCE = [
   { y: 0, label: "saturation — above this line the mineral precipitates" },
 ];
+
+/** Parse a chemical formula ("C2H5OH", "NH3") into element counts.  Best
+ *  effort: element = capital + optional lowercase, count = trailing digits;
+ *  parentheses are expanded one level ("Ca(OH)2").  Unparseable -> {}. */
+function parseFormulaAtoms(formula: string): { [el: string]: number } {
+  if (!formula || /[^A-Za-z0-9()]/.test(formula)) return {};
+  let f = formula;
+  // expand one level of (...)n
+  f = f.replace(/\(([A-Za-z0-9]+)\)(\d+)/g, (_m, grp: string, n: string) =>
+    grp.repeat(parseInt(n, 10)));
+  const out: { [el: string]: number } = {};
+  const re = /([A-Z][a-z]?)(\d*)/g;
+  let m: RegExpExecArray | null;
+  let consumed = 0;
+  while ((m = re.exec(f)) !== null) {
+    if (m.index !== consumed) return {};        // gap -> unparseable
+    consumed = m.index + m[0].length;
+    const el = m[1]!;
+    const n = m[2] ? parseInt(m[2], 10) : 1;
+    out[el] = (out[el] ?? 0) + n;
+  }
+  return consumed === f.length ? out : {};
+}
 
 /** Drop one named column from a CSV (header + every row).  The scaling CSV
  *  carries the ionic strength I [mol/kg] beside the dimensionless SI columns;
@@ -249,7 +278,7 @@ function csvColumnEnds(csv: string, name: string): { first: number; last: number
 function theoryAnchor(plotType: PlotKind, property: string): string {
   switch (plotType) {
     case "txy": return "ch:flash";          // binary VLE / bubble-dew
-    case "mccabe": return "ch:flash";       // McCabe-Thiele over the binary VLE curve
+    case "mccabe": return "sec:mccabe-tray-efficiency"; // McCabe-Thiele staircase + tray efficiency (O'Connell/Murphree)
     case "flash": return "ch:flash";        // binary flash: tie-line + lever rule
     case "gamma": return "ch:activity";     // activity coefficients
     case "ternary": return "sec:ternary";   // ternary boiling surface
@@ -257,6 +286,7 @@ function theoryAnchor(plotType: PlotKind, property: string): string {
     case "phase": return "ch:vap";           // vapour pressure / saturation
     case "psychro": return "ch:drying";      // psychrometrics / wet-bulb / Lewis number
     case "scaling": return "ch:electrolytes"; // ionic strength / activity / Pitzer
+    case "gibbsmap": return "ch:gibbs";       // equilibrium maps (forum 2026-07-02)
     case "steam": return "ch:vap";           // saturation line / vapour pressure
     default:                                 // property scan
       if (property === "Psat") return "ch:vap";
@@ -338,6 +368,16 @@ export function ExploreWorkspace() {
   const [scalingEquil, setScalingEquil] = useState(false);
   // Optional feed flow [m3/h] -> the kg/day scale-rate column (only with equil).
   const [scalingFeedFlow, setScalingFeedFlow] = useState(10);
+
+  // ---- Gibbs equilibrium map state ----------------------------------------
+  const [gmFeed, setGmFeed] = useState<{ [c: string]: number }>({});
+  const [gmTfrom, setGmTfrom] = useState(573.15);   // K
+  const [gmTto, setGmTto] = useState(973.15);
+  const [gmPfrom, setGmPfrom] = useState(1.0e5);    // Pa
+  const [gmPto, setGmPto] = useState(3.0e7);
+  const [gmMetricSp, setGmMetricSp] = useState<string | null>(null);
+  const [gmDeltaT, setGmDeltaT] = useState(0);      // K, advanced-only
+  const [gmAdvanced, setGmAdvanced] = useState(false);
   const [recFrom, setRecFrom] = useState(0);
   const [recTo, setRecTo] = useState(0.85);
   // Steam tables (IF97): mode + per-mode T range (canonical SI, K) + isobar P.
@@ -392,6 +432,20 @@ export function ExploreWorkspace() {
   // the standard catalogue; localComponentFiles = those bodies flattened to the
   // case root so the synthesized flat run resolves a sector-nested component.
   const catalogue = useMemo<ComponentMeta[]>(() => mergeCatalogue(caseRaw), [caseRaw]);
+
+  // Default metric species: the one spanning the MOST distinct elements
+  // (a compound like NH3 over diatomic reactants N2/H2 — usually the product
+  // of interest); ties break to the last selected.  Used identically by the
+  // dropdown value and the spec target so they never disagree.
+  const gmDefaultSpecies = useMemo(() => {
+    let best = selected[selected.length - 1] ?? null, bestN = -1;
+    for (const c of selected) {
+      const nEl = Object.keys(parseFormulaAtoms(metaByName(c, catalogue)?.formula ?? "")).length;
+      if (nEl > bestN) { bestN = nEl; best = c; }
+    }
+    return best;
+  }, [selected, catalogue]);
+
   const caseList = useMemo<ComponentMeta[]>(() => caseComponents(caseRaw), [caseRaw]);
   const localUnifac = useMemo(() => buildLocalUnifac(caseRaw), [caseRaw]);
   const localComponentFiles = useMemo<Record<string, string>>(() => caseComponentFiles(caseRaw), [caseRaw]);
@@ -547,6 +601,36 @@ export function ExploreWorkspace() {
       };
     }
 
+    if (plotType === "gibbsmap") {
+      // Elements + atoms derived from each component's FORMULA (glass-box:
+      // the same numbers a student would write in the gibbsReactor dict).
+      const parsed = selected.map((c) => ({
+        name: c, atoms: parseFormulaAtoms(metaByName(c, catalogue)?.formula ?? ""),
+      }));
+      const elements = [...new Set(parsed.flatMap((p) => Object.keys(p.atoms)))].sort();
+      const species = parsed.map((p) => ({
+        name: p.name, atoms: elements.map((e) => p.atoms[e] ?? 0),
+      }));
+      const feed: { [c: string]: number } = {};
+      for (const c of selected) feed[c] = gmFeed[c] ?? 1;
+      const target = gmMetricSp && selected.includes(gmMetricSp)
+        ? gmMetricSp : (gmDefaultSpecies ?? selected[selected.length - 1]!);
+      return {
+        components: [...selected],
+        properties: [],
+        axis: { variable: "T", from: 0, to: 1, n: 2 },   // unused
+        state: { composition: Object.fromEntries(selected.map((c) => [c, 1 / selected.length])) },
+        gibbsmap: {
+          elements, species, feed,
+          Tfrom: gmTfrom, Tto: gmTto, nT: 25,
+          Pfrom: gmPfrom, Pto: gmPto, nP: 25, logP: true,
+          metric: { type: "moleFraction", species: target },
+          ...(gmDeltaT !== 0 ? { deltaT: gmDeltaT } : {}),
+        },
+        ...(hasLocal ? { componentFiles: localComponentFiles } : {}),
+      };
+    }
+
     if (plotType === "scaling") {
       // The scalingScan op: ions live in the op's `totals {}` (the analysis),
       // NOT in the component set — water alone is the thermoPackage.  The
@@ -645,7 +729,17 @@ export function ExploreWorkspace() {
       // and the binary FLASH need the SAME y_eq(x) curve as the T-x-y — so they
       // share that branch (T_bubble + y_eq_<c1>); the staircase / tie-line is
       // then pure TS, zero re-solve.
-      const c1 = selected[0] ?? "", c2 = selected[1] ?? "";
+      //
+      // Put the MORE VOLATILE component (lower normal boiling point) on the
+      // x-axis, so the equilibrium curve y*(x) lies ABOVE the y=x diagonal and
+      // the McCabe-Thiele staircase can be drawn at all.  Order by Tb; only
+      // reorder when BOTH boiling points are known (else keep the user's order).
+      const tb0 = metaByName(selected[0] ?? "", catalogue)?.tb;
+      const tb1 = metaByName(selected[1] ?? "", catalogue)?.tb;
+      const vle = (typeof tb0 === "number" && typeof tb1 === "number" && tb1 < tb0)
+        ? [selected[1]!, selected[0]!]
+        : selected;
+      const c1 = vle[0] ?? "", c2 = vle[1] ?? "";
       const isTxy = plotType === "txy" || plotType === "mccabe" || plotType === "flash";
       // the T-x-y also probes per-x liquid-liquid stability so it can mark the
       // immiscibility gap instead of drawing a phantom homogeneous curve.
@@ -653,7 +747,7 @@ export function ExploreWorkspace() {
         ? ["T_bubble", `y_eq_${c1}`, "liquid_stable"]
         : [`gamma_${c1}`, `gamma_${c2}`];
       return {
-        components: selected,
+        components: vle,
         properties,
         axis: { variable: `x[${c1}]`, from: 0, to: 1, n: Math.max(2, Math.round(nPts)) },
         state: { P: fixedP, composition },
@@ -661,7 +755,7 @@ export function ExploreWorkspace() {
         equationOfState: { model: eos },
         ...(isTxy ? { vleTwoLiquid: true } : {}),   // 2-liquid package so the LL probe can fire
         // UNIFAC is predictive — ship the group decomposition so it isn't ideal
-        ...(activity === "UNIFAC" ? { unifacGroups: unifacGroupsBlock(selected, localUnifac) } : {}),
+        ...(activity === "UNIFAC" ? { unifacGroups: unifacGroupsBlock(vle, localUnifac) } : {}),
         ...(hasLocal ? { componentFiles: localComponentFiles } : {}),
       };
     }
@@ -699,7 +793,8 @@ export function ExploreWorkspace() {
       ...(transportSpec ? { transport: transportSpec } : {}),
       ...(hasLocal ? { componentFiles: localComponentFiles } : {}),
     };
-  }, [selected, plotType, property, axisVar, tFrom, tTo, pFrom, pTo, nPts, tieStride, fixedP, fixedT, eos, transportModel, activity, rhFrom, rhTo, rhStep, wbStep, ionTotals, scalingPHMode, scalingPH, scalingAtm, scalingPCO2, scalingT, scalingActivity, scalingEquil, scalingFeedFlow, recFrom, recTo, steamMode, satFrom, satTo, isoFrom, isoTo, steamP, localUnifac, localComponentFiles, hasLocal]);
+  }, [selected, plotType, property, axisVar, tFrom, tTo, pFrom, pTo, nPts, tieStride, fixedP, fixedT, eos, transportModel, activity, rhFrom, rhTo, rhStep, wbStep, ionTotals, scalingPHMode, scalingPH, scalingAtm, scalingPCO2, scalingT, scalingActivity, scalingEquil, scalingFeedFlow, recFrom, recTo, steamMode, satFrom, satTo, isoFrom, isoTo, steamP, localUnifac, localComponentFiles, hasLocal,
+    gmFeed, gmTfrom, gmTto, gmPfrom, gmPto, gmMetricSp, gmDefaultSpecies, gmDeltaT, catalogue]);
 
   const snippet = useMemo(() => {
     try { return serialize(fromJson(synthesizeExploreCase(spec).propsDict!)); }
@@ -762,6 +857,7 @@ export function ExploreWorkspace() {
 
       let out: string | undefined;
       let notDone = false;
+      let failureDetail: string | undefined;
       let advisories: string[] = [];
       const N = isTernary && spec.ternary ? workerCount(spec.ternary.n) : 1;
       if (isTernary && spec.ternary && N > 1) {
@@ -782,6 +878,11 @@ export function ExploreWorkspace() {
         if (seq !== runSeq.current) return;   // superseded by a newer change
         out = result.csvFiles?.[EXPLORE_OUTPUT];
         notDone = result.status !== "done";
+        failureDetail = result.log
+          .split("\n")
+          .map((line) => line.trim())
+          .reverse()
+          .find((line) => /(?:error|fatal|refused|failed)/i.test(line));
         // Honesty: lift the op's "[advisory]" lines off the run log (e.g.
         // scalingScan's Davies-beyond-trust-range flag) — the Explorer shows
         // no log tab, and a swallowed advisory is a silent crutch.  The
@@ -798,7 +899,7 @@ export function ExploreWorkspace() {
       setOpAdvisories(advisories);
       if (out) { setCsv(out); setErr(null); }
       else setErr(notDone
-        ? "choupoProps did not finish — see the Log."
+        ? `choupoProps did not finish${failureDetail ? `: ${failureDetail}` : ". Try a narrower range or a curated compound."}`
         : `No data — ${property} may not be defined for the selected compound(s) over this range.`);
     } catch (e) {
       if (seq === runSeq.current && !ctrl.signal.aborted) {
@@ -925,7 +1026,7 @@ export function ExploreWorkspace() {
   // The honesty footer re-expands whenever a NEW alert appears (an error,
   // advisory, or model-lie warning), so a folded footer never SWALLOWS a fresh
   // honesty signal — the student always SEES the new flag.
-  const hasAlert = !!err || !!activeReason || opAdvisories.length > 0 || !!idealLieWarning || !!lleInTxy;
+  const hasAlert = !!err || !!activeReason || opAdvisories.length > 0 || !!idealLieWarning || !!lleInTxy || plotType === "gibbsmap";
   useEffect(() => { if (hasAlert) setFooterOpen(true); }, [hasAlert]);
 
   // context: which model pickers are physically relevant for the active plot
@@ -943,7 +1044,9 @@ export function ExploreWorkspace() {
 
   // a plain-words subtitle of what is being computed (T6)
   const axisLabel = axisVar === "T" ? "T" : "P";
-  const subtitle = plotType === "phase"
+  const subtitle = plotType === "gibbsmap"
+    ? `Equilibrium map — iso-lines of ${gmMetricSp && selected.includes(gmMetricSp) ? gmMetricSp : (selected[selected.length - 1] ?? "product")} mole fraction over T × log-P by Gibbs-energy minimisation (the ATOMS you fed, redistributed to minimum G at each cell). Labelled industrial window + a user-declared kinetic band; unconverged cells marked, never interpolated. Click any cell for its full composition + the gibbsReactor dict.${gmDeltaT !== 0 ? ` ΔT approach = ${gmDeltaT} K: reaction equilibrium at T+ΔT, physical state at T (empirical; ghost ΔT=0 contours underneath).` : ""}`
+    : plotType === "phase"
     ? `Pure-compound P–T phase diagram — liquid–vapour saturation curve to the critical point (AmbroseWalton corresponding states; marks Tc, Pc, normal b.p.). Solid region omitted — needs triple-point / ΔHfus data.`
     : plotType === "psychro"
     ? `Psychrometric chart at ${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)} — humidity ratio Y vs dry-bulb T (carrier = lower-Tb, condensable = higher-Tb). Saturation + relative-humidity + adiabatic-saturation + true wet-bulb (via the Lewis number) curves.`
@@ -1111,6 +1214,55 @@ export function ExploreWorkspace() {
                 <ToolField label={`T (${temperatureLabel(Tu)})`}>
                   <NumberInput size="xs" value={kToDisplay(fixedT, Tu)}
                     onChange={(v) => setFixedT(parseTemperature(num(v, kToDisplay(fixedT, Tu)), Tu))} w={90} />
+                </ToolField>
+              )}
+            </>
+          )}
+          {plotType === "gibbsmap" && (
+            <>
+              {selected.map((c) => (
+                <ToolField key={c} label={`feed ${c} [mol]`}>
+                  <NumberInput size="xs" w={80} min={0} step={0.5}
+                    value={gmFeed[c] ?? 1}
+                    onChange={(v) => setGmFeed({ ...gmFeed, [c]: num(v, gmFeed[c] ?? 1) })} />
+                </ToolField>
+              ))}
+              <ToolField label="T range [°C]">
+                <Group gap={4} wrap="nowrap">
+                  <NumberInput size="xs" w={72} value={Math.round(gmTfrom - 273.15)}
+                    onChange={(v) => setGmTfrom(num(v, gmTfrom - 273.15) + 273.15)} />
+                  <Text size="xs" c="dimmed">–</Text>
+                  <NumberInput size="xs" w={72} value={Math.round(gmTto - 273.15)}
+                    onChange={(v) => setGmTto(num(v, gmTto - 273.15) + 273.15)} />
+                </Group>
+              </ToolField>
+              <ToolField label="P range [bar]">
+                <Group gap={4} wrap="nowrap">
+                  <NumberInput size="xs" w={72} value={gmPfrom / 1e5}
+                    onChange={(v) => setGmPfrom(num(v, gmPfrom / 1e5) * 1e5)} />
+                  <Text size="xs" c="dimmed">–</Text>
+                  <NumberInput size="xs" w={72} value={gmPto / 1e5}
+                    onChange={(v) => setGmPto(num(v, gmPto / 1e5) * 1e5)} />
+                </Group>
+              </ToolField>
+              <ToolField label="map of">
+                <Select size="xs" w={110} data={selected}
+                  value={gmMetricSp && selected.includes(gmMetricSp)
+                    ? gmMetricSp : gmDefaultSpecies}
+                  onChange={(v) => setGmMetricSp(v)} />
+              </ToolField>
+              <ToolField label="advanced">
+                <Switch size="xs" checked={gmAdvanced}
+                  onChange={(e) => { setGmAdvanced(e.currentTarget.checked);
+                    if (!e.currentTarget.checked) setGmDeltaT(0); }} />
+              </ToolField>
+              {gmAdvanced && (
+                <ToolField label="ΔT approach [K]">
+                  {/* SNAPS (no animation, forum): equilibrium at T+ΔT, physics at T.
+                      Empirical + calibrated; 0 = true equilibrium.  Ghost ΔT=0
+                      contours appear underneath when ΔT ≠ 0. */}
+                  <NumberInput size="xs" w={80} min={-100} max={100} step={5}
+                    value={gmDeltaT} onChange={(v) => setGmDeltaT(num(v, gmDeltaT))} />
                 </ToolField>
               )}
             </>
@@ -1457,6 +1609,15 @@ export function ExploreWorkspace() {
                 // lever rule gives V/F — pure TS, no WASM re-solve.
                 <FlashPlot csv={dropCsvColumn(csv, "liquid_stable")}
                   compA={selected[0] ?? ""} compB={selected[1] ?? ""} P={fixedP} />
+              ) : plotType === "gibbsmap" && spec.gibbsmap ? (
+                <GibbsMapPanel
+                  op={{
+                    elements: spec.gibbsmap.elements,
+                    species: spec.gibbsmap.species.map((sp) => ({ name: sp.name, atoms: sp.atoms })),
+                    feed: spec.gibbsmap.feed,
+                    metric: spec.gibbsmap.metric as unknown as JsonDict,
+                  } as unknown as JsonDict}
+                  csv={csv} />
               ) : (
                 <CsvAutoPlot
                   // Scaling: the SI columns share the axis; the I column (its
@@ -1546,6 +1707,35 @@ export function ExploreWorkspace() {
             <Alert key="lle" color="orange" variant="light" title="Heteroazeotrope — flat three-phase line">
               <Text size="xs">{lleInTxy}</Text>
             </Alert>);
+          if (plotType === "gibbsmap") {
+            // The undergrad's #1 confusion, answered BEFORE the map: Gibbs
+            // needs no reaction -- it redistributes the ATOMS you fed.  The
+            // live element balance makes that concrete.
+            const bal: { [el: string]: number } = {};
+            for (const c of selected) {
+              const atoms = parseFormulaAtoms(metaByName(c, catalogue)?.formula ?? "");
+              const f = gmFeed[c] ?? 1;
+              for (const [el, k] of Object.entries(atoms)) bal[el] = (bal[el] ?? 0) + k * f;
+            }
+            const balStr = Object.entries(bal).map(([el, n]) => `${el}: ${n.toPrecision(3)}`).join(" · ");
+            const unparsed = selected.filter((c) => Object.keys(parseFormulaAtoms(metaByName(c, catalogue)?.formula ?? "")).length === 0);
+            alerts.push(
+              <Alert key="gm-explain" color="blue" variant="light"
+                title="A Gibbs map needs no reaction — it redistributes atoms">
+                <Text size="xs">
+                  Equilibrium finds the composition of minimum Gibbs energy given the
+                  atoms you fed; no reaction is written.  Fed atoms (mol): <b>{balStr || "—"}</b>.
+                  Each map cell holds those totals fixed and solves for the composition
+                  that minimises G at that (T, P); click any cell for its full answer.
+                </Text>
+                {unparsed.length > 0 && (
+                  <Text size="xs" c="orange" mt={4}>
+                    Formula not parseable for: {unparsed.join(", ")} — the atom matrix
+                    will be wrong.  Pick species with plain formulas (e.g. N2, H2, NH3).
+                  </Text>
+                )}
+              </Alert>);
+          }
           const notes: React.ReactNode[] = [];
           if (pairNote) notes.push(<Text key="pair" size="xs" c="dimmed">{pairNote}</Text>);
           if (skipped.length > 0) notes.push(
@@ -1589,7 +1779,7 @@ export function ExploreWorkspace() {
                 <Stack gap={4} mt={6}>
                   <Text size="xs" c="dimmed">
                     Create or open a case, then put this block in <code>system/propsDict</code> under
-                    <code> operations ( … )</code>; keep <code>constant/thermoPackage</code> in sync with the
+                    <code> operations ( … )</code>; keep <code>constant/propertyDict</code> in sync with the
                     components/models above, and <code>runCase</code>.
                   </Text>
                   <Group gap="xs">

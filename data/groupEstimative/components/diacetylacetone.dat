@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diacetylacetone  (C7H10O3, CAS 626-53-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diacetylacetone;
+formula     C7H10O3;
+CAS         626-53-9;
+InChIKey    CTHCTLCNUREAJV-UHFFFAOYSA-N;
+MW          142.154;      // g/mol [origin=calculated method=formula-sum]
+Tc          718.83;      // K   [origin=predictive method=joback]
+Pc          34.561;      // bar [origin=predictive method=joback]
+omega       0.7498;      // -   [origin=predictive method=lee-kesler]
+Tb          521.37;      // K   [origin=predictive method=joback]
+HvapTb      51414.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.602 0.58484 -0.0003009 4.498e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH3CO; count 2; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CdO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "heptane-2,4,6-trione" "1,3-diacetylacetone" "1,3-diacetylacetone;2-propanone, 1,3-diacetyl-; diacetylacetone" );
+gibbsFormation
+{
+    dHf_298   -525550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     508.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-378700.0
+    phase     gas;
+}

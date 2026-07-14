@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diospyrol  (C22H18O4, CAS 17667-23-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diospyrol;
+formula     C22H18O4;
+CAS         17667-23-1;
+InChIKey    ATGBDIJBTXFUFY-UHFFFAOYSA-N;
+MW          346.382;      // g/mol [origin=calculated method=formula-sum]
+Tc          1417.06;      // K   [origin=predictive method=joback]
+Pc          37.090;      // bar [origin=predictive method=joback]
+omega       1.8510;      // -   [origin=predictive method=lee-kesler]
+Tb          1136.68;      // K   [origin=predictive method=joback]
+HvapTb      127102.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-126.29 2.30904 -0.00226612 8.966e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 6; } { group ACCH3; count 2; } { group ACOH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 12; } { group OH_phenol; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-methyl-2-[6-methyl-1,8-bis(oxidanyl)naphthalen-2-yl]naphthalene-1,8-diol" "6,6'-dimethyl-(2,2'-binaphthalene)-1,1',8,8'-tetrol" "(2,2'-binaphthalene)-1,1'-8,8'-tetrol, 6,6'-dimethyl-" "6,6'-dimethyl-2,2'-binaphthalene-1,1',8,8'-tetrol" "2-(1,8-dihydroxy-6-methylnaphthalen-2-yl)-6-methylnaphthalene-1,8-diol" );
+gibbsFormation
+{
+    dHf_298   -397330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     663.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-84520.0
+    phase     gas;
+}

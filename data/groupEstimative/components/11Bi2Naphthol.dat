@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1'-bi-2-naphthol  (C20H14O2, CAS 18531-94-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Bi2Naphthol;
+formula     C20H14O2;
+CAS         18531-94-7;
+InChIKey    PPTXVXKCQZKFBN-UHFFFAOYSA-N;
+MW          286.33;      // g/mol [origin=calculated method=formula-sum]
+Tc          1198.09;      // K   [origin=predictive method=joback]
+Pc          33.881;      // bar [origin=predictive method=joback]
+omega       1.2206;      // -   [origin=predictive method=lee-kesler]
+Tb          919.72;      // K   [origin=predictive method=joback]
+HvapTb      95298.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-135.23 1.9288 -0.00177868 6.564e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 6; } { group ACOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 12; } { group dC_ring; count 8; } { group OH_phenol; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2-oxidanylnaphthalen-1-yl)naphthalen-2-ol" "(s)-(-)-1,1'-bi-2-naphthol" "2,2'-dinaphthol" "binol" "(r)-(+)-1,1'-bi-2-naphthol" "beta-binaphthol" "1,1'-binaphthyl-2,2'-diol" "(s)-binol" "[1,1'-binaphthalene]-2,2'-diol" "(r)-1,1'-bi-2-naphthol" "1,1'-bis-2-naphthol" "2,2'-dihydroxydinaphthyl" );
+gibbsFormation
+{
+    dHf_298   21510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     545.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=227140.0
+    phase     gas;
+}

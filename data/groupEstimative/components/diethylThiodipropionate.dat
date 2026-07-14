@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethyl thiodipropionate  (C10H18O4S, CAS 673-79-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diethylThiodipropionate;
+formula     C10H18O4S;
+CAS         673-79-0;
+InChIKey    VCXUFKFNLUTDAX-UHFFFAOYSA-N;
+MW          234.31;      // g/mol [origin=calculated method=formula-sum]
+Tc          804.63;      // K   [origin=predictive method=joback]
+Pc          21.613;      // bar [origin=predictive method=joback]
+omega       0.8694;      // -   [origin=predictive method=lee-kesler]
+Tb          613.62;      // K   [origin=predictive method=joback]
+HvapTb      59485.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (64.216 0.83863 -0.0002908 -3.4e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH2COO; count 2; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group COO; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 3-(3-ethoxy-3-oxidanylidene-propyl)sulfanylpropanoate" "diethyl 3,3'-thiodipropionate" "diethyl 3,3'-sulfanediyldipropanoate" "diethyl 3,3'-thiobispropanoate" "diethyl 3,3'-thiobispropionate" "propanoic acid, 3,3'-thiobis-, diethyl ester" "propionic acid, 3,3'-thiodi-, diethyl ester" "propanoic acid, 3,3'-thiobis-, 1,1'-diethyl ester" "propionic acid, 3,3'-thiodi-, diethyl ester (6ci,7ci,8ci)" "propionic acid,3'-thiodi-, diethyl ester" "propanoic acid,3'-thiobis-, diethyl ester" "ethyl 3-(3-ethoxy-3-oxopropyl)sulfanylpropanoate" );
+gibbsFormation
+{
+    dHf_298   -842420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     709.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-554300.0
+    phase     gas;
+}

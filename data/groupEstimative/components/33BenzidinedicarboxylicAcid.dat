@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3'-benzidinedicarboxylic acid  (C14H12N2O4, CAS 2130-56-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33BenzidinedicarboxylicAcid;
+formula     C14H12N2O4;
+CAS         2130-56-5;
+InChIKey    IIQLVLWFQUUZII-UHFFFAOYSA-N;
+MW          272.26;      // g/mol [origin=calculated method=formula-sum]
+Tc          1291.43;      // K   [origin=predictive method=joback]
+Pc          35.942;      // bar [origin=predictive method=joback]
+omega       1.7283;      // -   [origin=predictive method=lee-kesler]
+Tb          1029.28;      // K   [origin=predictive method=joback]
+HvapTb      109568.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.73 1.1634 -0.00076404 1.848e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 4; } { group ACNH2; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 6; } { group dC_ring; count 6; } { group COOH; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-5-(4-azanyl-3-carboxy-phenyl)benzoic acid" "5,5'-bianthranilic acid" "5,5'-dianthranilic acid" "3,3'-dicarboxybenzidine" "benzidine-m,m'-dicarboxylic acid" "benzidine-3,3'-dicarboxylic acid" "kwas benzydynodwukaroksylowy [polish]" "4,4'-diamino-3,3'-biphenyldicarboxylic acid" "3,3'-biphenyldicarboxylic acid, 4,4'-diamino-" "2-amino-5-(4-amino-3-carboxyphenyl)benzoic acid" "(1,1'-biphenyl)-3,3'-dicarboxylic acid, 4,4'-diamino-" "[1,1'-biphenyl]-3,3'-dicarboxylic acid, 4,4'-diamino-" );
+gibbsFormation
+{
+    dHf_298   -538070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     673.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-301620.0
+    phase     gas;
+}

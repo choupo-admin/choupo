@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenol  (C6H6O, CAS 108-95-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenol;
+formula     C6H6O;
+CAS         108-95-2;
+InChIKey    ISWSIDIOOBJBQZ-UHFFFAOYSA-N;
+MW          94.113;      // g/mol [origin=calculated method=formula-sum]
+Tc          671.32;      // K   [origin=predictive method=joback]
+Pc          59.263;      // bar [origin=predictive method=joback]
+omega       0.4158;      // -   [origin=predictive method=lee-kesler]
+Tb          439.20;      // K   [origin=predictive method=joback]
+HvapTb      43578.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-59.69 0.709 -0.0006572 2.437e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "carbolic acid" "hydroxybenzene" "phenic acid" "oxybenzene" "phenylic acid" "benzenol" "phenyl hydrate" "monophenol" "phenyl hydroxide" "phenylic alcohol" "monohydroxybenzene" "phenol, liquefied" );
+gibbsFormation
+{
+    dHf_298   -96480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     315.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-32940.0
+    phase     gas;
+}

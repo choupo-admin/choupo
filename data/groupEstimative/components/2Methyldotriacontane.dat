@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methyldotriacontane  (C33H68, CAS 1720-11-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methyldotriacontane;
+formula     C33H68;
+CAS         1720-11-2;
+InChIKey    ZMRQKNNNZMSHKH-UHFFFAOYSA-N;
+MW          464.907;      // g/mol [origin=calculated method=formula-sum]
+Tc          1190.73;      // K   [origin=predictive method=joback]
+Pc          5.217;      // bar [origin=predictive method=joback]
+omega       0.2354;      // -   [origin=predictive method=lee-kesler]
+Tb          954.20;      // K   [origin=predictive method=joback]
+HvapTb      88664.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.791 3.14476 -0.0017746 3.81e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 29; } { group CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 29; } { group CH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dotriacontane, 2-methyl-" "2-methyldotriaconlane" "hentriacontane, dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -729730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1431.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=224540.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chlorogenic acid  (C16H18O9, CAS 327-97-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chlorogenicAcid;
+formula     C16H18O9;
+CAS         327-97-9;
+InChIKey    CWVRJTMFETXNAD-JUHZACGLSA-N;
+MW          354.311;      // g/mol [origin=calculated method=formula-sum]
+Tc          1531.73;      // K   [origin=predictive method=joback]
+Pc          41.516;      // bar [origin=predictive method=joback]
+omega       2.1541;      // -   [origin=predictive method=lee-kesler]
+Tb          1243.81;      // K   [origin=predictive method=joback]
+HvapTb      152431.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-129.48 2.2066 -0.00199092 7.416e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 3; } { group C; count 1; } { group CH=CH; count 1; } { group ACH; count 3; } { group AC; count 1; } { group OH; count 3; } { group ACOH; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 3; } { group OH_phenol; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1s,3r,4r,5r)-3-[(e)-3-[3,4-bis(oxidanyl)phenyl]prop-2-enoyl]oxy-1,4,5-tris(oxidanyl)cyclohexane-1-carboxylic acid" "3-caffeoylquinic acid" "chlorogenate" "hlorogenic acid" "3-o-caffeoylquinic acid" "3-(3,4-dihydroxycinnamoyl)quinic acid" "heriguard" "3-caffeoylquinate" "caffeoyl quinic acid" "5-o-(3,4-dihydroxycinnamoyl)-l-quinic acid" "chlorogenic acid (8ci)" "3-trans-caffeoylquinic acid" );
+gibbsFormation
+{
+    dHf_298   -1490140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     888.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1101680.0
+    phase     gas;
+}

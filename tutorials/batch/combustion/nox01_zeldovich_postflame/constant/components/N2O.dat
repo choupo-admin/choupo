@@ -1,0 +1,51 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Nitrous oxide  (N2O, CAS 10024-97-2)
+
+  Greenhouse gas; emitted from agriculture (denitrification) and from
+  adipic-acid plants.  Also the "laughing gas" anaesthetic.  Forms
+  thermally from N2 + O2 + O3 at intermediate temperatures.  Useful
+  in flue-gas equilibrium screening.
+  Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
+  reference EOS; gibbsFormation cross-checked vs NASA TM-4513
+  (McBride-Gordon-Reno 1993); idealGasHeatCapacity -- individual
+  literature value, primary re-citation pending (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        N2O;
+formula     N2O;
+CAS         10024-97-2;
+
+MW          44.013;            // kg/kmol
+Tc          309.57;             // K
+Pc          72.55;              // bar
+omega       0.142;              // [-]
+Tb          184.67;             // K
+HvapTb      16550;              // J/mol
+Vliq        3.62e-5;            // m^3/mol
+
+gibbsFormation
+{
+    dHf_298    82050.0;         // J/mol  -- ideal-gas reference
+    s_298      219.96;          // J/(mol·K)
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.92962   657.130   -23.350);
+    Trange        (168  310);
+}
+
+idealGasHeatCapacity
+{
+    // CASE-LOCAL OVERRIDE for post-flame temperatures (2125 K): NASA-7
+    // two-range form, GRI-Mech 3.0 thermo, valid 200-3500 K (the catalogue
+    // poly3 is a 250-1500/3000 K process fit).
+    model    NASA7;
+    low      ( 2.25715020e+00 1.13047280e-02 -1.36713190e-05 9.68198060e-09 -2.93071820e-12 8.74177440e+03 1.07579920e+01 );
+    high     ( 4.82307290e+00 2.62702510e-03 -9.58508740e-07 1.60007120e-10 -9.77523030e-15 8.07340480e+03 -2.20172070e+00 );
+    Tlow     200.0;
+    Tcommon  1000.0;
+    Thigh    3500.0;
+}

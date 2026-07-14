@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nicocodine  (C24H24N2O4, CAS 3688-66-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nicocodine;
+formula     C24H24N2O4;
+CAS         3688-66-2;
+InChIKey    RYBGRHAWFUVMST-MJFIPZRTSA-N;
+MW          404.466;      // g/mol [origin=calculated method=formula-sum]
+Tc          1262.07;      // K   [origin=predictive method=joback]
+Pc          17.595;      // bar [origin=predictive method=joback]
+omega       1.1892;      // -   [origin=predictive method=lee-kesler]
+Tb          1008.17;      // K   [origin=predictive method=joback]
+HvapTb      96448.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-208.36 2.8068 -0.00243712 8.704e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 3; } { group C; count 1; } { group CH=CH; count 1; } { group ACH; count 2; } { group AC; count 3; } { group ACCH2; count 1; } { group CH3O; count 1; } { group CH-O; count 1; } { group CH3N; count 1; } { group C5H4N; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 5; } { group O; count 1; } { group O_ring; count 1; } { group COO; count 1; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(4r,4ar,7s,7ar,12bs)-9-methoxy-3-methyl-2,4,4a,7,7a,13-hexahydro-1h-4,12-methanobenzofuro[3,2-e]isoquinoline-7-yl] pyridine-3-carboxylate" "nicocodeine" "lyopect" "nicocodinum [inn-latin]" "codeine, nicotinate (ester)" "nicotinic acid, ester with codeine" "4,5-epoxy-3-methoxy-9a-methyl-7-morphinen-6alpha-yl nicotinat" "4,5alpha-epoxy-3-methoxy-9alpha-methyl-7-morphinen-6alpha-yl nicotinat" "morphinan-6-alpha-ol, 7,8-didehydro-4,5-alpha-epoxy-3-methoxy-17-methyl-, nicotinate (ester)" "nicotinic acid, 7,8-didehydro-4,5-alpha-epoxy-3-methoxy-17-methylmorphinan-6-alpha-yl ester" "(5alpha,6alpha)-7,8-didehydro-4,5-epoxy-3-methoxy-17-methylmorphinan-6-ol, 3-pyridinecarboxylate (ester)" "nicocodina" );
+gibbsFormation
+{
+    dHf_298   -231180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     508.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=305330.0
+    phase     gas;
+}

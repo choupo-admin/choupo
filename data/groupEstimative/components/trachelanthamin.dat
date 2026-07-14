@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trachelanthamin  (C15H27NO4, CAS 14140-18-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trachelanthamin;
+formula     C15H27NO4;
+CAS         14140-18-2;
+InChIKey    BWQSLRZZOVFVHJ-VYHDIPPYSA-N;
+MW          285.384;      // g/mol [origin=calculated method=formula-sum]
+Tc          1004.37;      // K   [origin=predictive method=joback]
+Pc          21.613;      // bar [origin=predictive method=joback]
+omega       1.5065;      // -   [origin=predictive method=lee-kesler]
+Tb          811.46;      // K   [origin=predictive method=joback]
+HvapTb      89718.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-118.889 1.99576 -0.0014432 4.068e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 4; } { group C; count 1; } { group OH; count 2; } { group CH2N; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 2; } { group C; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 2; } { group OH; count 2; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(1s,8s)-2,3,5,6,7,8-hexahydro-1h-pyrrolizin-1-yl]methyl (2r)-2-(1-hydroxyethyl)-3-methyl-2-oxidanyl-butanoate" "trachelanthamine" "butanoic acid, 2,3-dihydroxy-2-(1-methylethyl)-, (hexahydro-1h-pyrrolizin-1-yl)methyl ester, (1r-(1-alpha(2s*,3r*),7a-alpha))-" "[(1s,8s)-2,3,5,6,7,8-hexahydro-1h-pyrrolizin-1-yl]methyl (2r)-2-hydroxy-2-(1-hydroxyethyl)-3-methylbutanoate" );
+gibbsFormation
+{
+    dHf_298   -787010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     690.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-290450.0
+    phase     gas;
+}

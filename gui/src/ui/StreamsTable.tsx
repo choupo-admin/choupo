@@ -315,7 +315,7 @@ export function StreamsTable() {
           {result.streams.length} stream{result.streams.length === 1 ? "" : "s"}
         </Text>
         <Tooltip
-          label="Download as .ods (OpenDocument Spreadsheet) — opens in LibreOffice Calc, numeric values in your units, in the current sort order"
+          label="Download as .ods (OpenDocument Spreadsheet) — numeric values in your units, in the current sort order. TIP: to have it OPEN straight in LibreOffice Calc (no save-then-open), set Firefox → Settings → Applications → 'OpenDocument Spreadsheet' → 'Use LibreOffice Calc' once; a browser cannot launch an external app itself."
           withArrow position="left" multiline w={280}
         >
           <ActionIcon size="sm" variant="subtle" color="teal"

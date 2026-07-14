@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: niax catalyst esn  (C13H30N4O, CAS 62765-93-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        niaxCatalystEsn;
+formula     C13H30N4O;
+CAS         62765-93-9;
+InChIKey    HUYUPSFRMUTTPP-UHFFFAOYSA-N;
+MW          258.41;      // g/mol [origin=calculated method=formula-sum]
+Tc          837.06;      // K   [origin=predictive method=joback]
+Pc          14.770;      // bar [origin=predictive method=joback]
+omega       0.9169;      // -   [origin=predictive method=lee-kesler]
+Tb          660.26;      // K   [origin=predictive method=joback]
+HvapTb      63843.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (42.316 1.27602 -0.0004644 -2.26e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH2O; count 1; } { group CH3N; count 3; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 6; } { group O; count 1; } { group N; count 3; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-(dimethylamino)ethoxy]-n,n-dimethyl-ethanamine;3-(dimethylamino)propanenitrile" "niax es-n" "dimethylaminopropionitrile mixture with bis(2-(dimethylamino)ethyl) ether" "dimethylaminopropionitrile mixt. with bis(2-(dimethylamino)ethyl) ether" "2-(2-dimethylaminoethyloxy)-n,n-dimethylethanamine; 3-(dimethylamino)propanenitrile" "propanenitrile, 3-(dimethylamino)-, mixt. with 2,2'-oxybis(n,n-dimethylethanamine)" );
+gibbsFormation
+{
+    dHf_298   -188020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     835.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=314340.0
+    phase     gas;
+}

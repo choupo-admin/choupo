@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethylacetamide dimethylacetal  (C6H15NO2, CAS 18871-66-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethylacetamideDimethylacetal;
+formula     C6H15NO2;
+CAS         18871-66-4;
+InChIKey    FBZVZUSVGKOWHG-UHFFFAOYSA-N;
+MW          133.191;      // g/mol [origin=calculated method=formula-sum]
+Tc          565.81;      // K   [origin=predictive method=joback]
+Pc          30.490;      // bar [origin=predictive method=joback]
+omega       0.4134;      // -   [origin=predictive method=lee-kesler]
+Tb          390.93;      // K   [origin=predictive method=joback]
+HvapTb      34517.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (13.27 0.6972 -0.000365 5.99e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C; count 1; } { group CH3O; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group C; count 1; } { group O; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1-dimethoxy-n,n-dimethyl-ethanamine" "n,n-dimethylacetamide dimethyl acetal" "1,1-dimethoxy-n,n-dimethylethylamine" "1,1-dimethoxy-n,n-dimethylethanamine" "(1,1-dimethoxyethyl)dimethylamine" "n,n-dimethylacetamide dimethylacetal" "n-(1,1-dimethoxyethyl)dimethylamine" "(1,1-dimethoxy-ethyl)-dimethyl-amine" "ethanamine, 1,1-dimethoxy-n,n-dimethyl-" "acetamide,n,n-dimethyl-, dimethyl acetal (7ci,8ci);ethylamine,1,1-dimethoxy-n,n-dimethyl- (8ci);(1,1-dimethoxyethyl)dimethylamine;1-(dimethylamino)-1,1-dimethoxyethane;dmf dimethyl acetyl;dimethylacetamide dimethyl acetal;n-(1,1-dimethoxyethyl)-n,n-dimethylamine;" );
+gibbsFormation
+{
+    dHf_298   -372830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     389.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-96740.0
+    phase     gas;
+}

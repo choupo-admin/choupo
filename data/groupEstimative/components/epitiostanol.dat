@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: epitiostanol  (C19H30OS, CAS 2363-58-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        epitiostanol;
+formula     C19H30OS;
+CAS         2363-58-8;
+InChIKey    OBMLHUPNRURLOK-UHFFFAOYSA-N;
+MW          306.508;      // g/mol [origin=calculated method=formula-sum]
+Tc          1035.68;      // K   [origin=predictive method=joback]
+Pc          19.355;      // bar [origin=predictive method=joback]
+omega       0.9409;      // -   [origin=predictive method=lee-kesler]
+Tb          802.64;      // K   [origin=predictive method=joback]
+HvapTb      76922.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-330.07 3.06075 -0.0028643 1.1235e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 6; } { group C; count 2; } { group OH; count 1; } { group CHS; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 7; } { group C_ring; count 2; } { group OH; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "thiodrol" "epithiostanol" "epitiostanol [inn:jan]" "epitiostanolum [inn-latin]" "2alpha,3alpha-epithio-5alpha-androstan-17beta-o1" "2alpha,3alpha-epithio-5alpha-androstan-17beta-ol" "2-alpha,3-alpha-epithio-5-alpha-androstan-17-beta-ol" "5.alpha.-androstan-17.beta.-ol,3.alpha.-epithio-" "5alpha-androstan-17beta-ol, 2alpha,3alpha-epithio-" "2 alpha,3 alpha-epithio-5 alpha-androstan-17 beta-ol" "2.alpha.,3.alpha.-epithio-5.alpha.-androstan-17.beta.-ol" "2.alpha.,3.alpha.-epithio-5.alpha.-androstan-17.beta.-o1" );
+gibbsFormation
+{
+    dHf_298   -247820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     575.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=237770.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopentene;(3e)-penta-1,3-diene;prop-1-en-2-ylbenzene  (C19H26, CAS 58901-68-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopentene3ePenta13DieneProp1En2Ylbenzene;
+formula     C19H26;
+CAS         58901-68-1;
+InChIKey    FOEOKQFBLZSGOH-XMOYFUIDSA-N;
+MW          254.417;      // g/mol [origin=calculated method=formula-sum]
+Tc          921.04;      // K   [origin=predictive method=joback]
+Pc          16.038;      // bar [origin=predictive method=joback]
+omega       0.4650;      // -   [origin=predictive method=lee-kesler]
+Tb          680.31;      // K   [origin=predictive method=joback]
+HvapTb      60308.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-45.15 1.39964 -0.00051338 -3.81e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH2=CH; count 1; } { group CH=CH; count 2; } { group CH2=C; count 1; } { group ACH; count 5; } { group AC; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 2; } { group dCH; count 3; } { group dC; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 7; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzene, (1-methylethenyl)-, polymer with cyclopentene ann 1,3-pentadiene" "cyclopentene; (3e)-penta-1,3-diene; prop-1-en-2-ylbenzene" );
+gibbsFormation
+{
+    dHf_298   74690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     939.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=333560.0
+    phase     gas;
+}

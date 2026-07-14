@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acrolein, acrylic acid polymer  (C6H8O3, CAS 28349-72-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acroleinAcrylicAcidPolymer;
+formula     C6H8O3;
+CAS         28349-72-6;
+InChIKey    ORSLXQZSKCIHDH-UHFFFAOYSA-N;
+MW          128.127;      // g/mol [origin=calculated method=formula-sum]
+Tc          734.11;      // K   [origin=predictive method=joback]
+Pc          37.408;      // bar [origin=predictive method=joback]
+omega       0.7049;      // -   [origin=predictive method=lee-kesler]
+Tb          525.81;      // K   [origin=predictive method=joback]
+HvapTb      51788.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (48.27 0.3529 8e-07 -9.63e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 2; } { group CHO; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 2; } { group dCH; count 2; } { group OdCH_al; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "prop-2-enal;prop-2-enoic acid" "2-propenoic acid, polymer with 2-propenal" "prop-2-enal; prop-2-enoic acid" );
+gibbsFormation
+{
+    dHf_298   -463780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     559.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-372870.0
+    phase     gas;
+}

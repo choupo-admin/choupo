@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl (1r,4ar,4bs,7s,10ar)-7-ethenyl-1,4a,7-trimethyl-3,4,4b,5,6,8,10,10a-octahydro-2h-phenanthrene-1-carboxylate  (C21H32O2, CAS 1686-62-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl1r4ar4bs7s10ar7Ethenyl14a7Trimethyl344b5681010aOctahyd;
+formula     C21H32O2;
+CAS         1686-62-0;
+InChIKey    QMZKBAQNFAMESG-GBMAXXPESA-N;
+MW          316.485;      // g/mol [origin=calculated method=formula-sum]
+Tc          1007.27;      // K   [origin=predictive method=joback]
+Pc          15.000;      // bar [origin=predictive method=joback]
+omega       0.6771;      // -   [origin=predictive method=lee-kesler]
+Tb          772.07;      // K   [origin=predictive method=joback]
+HvapTb      66559.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-286.13 3.03598 -0.00288274 1.1643e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 7; } { group CH; count 2; } { group C; count 3; } { group CH2=CH; count 1; } { group CH=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 2; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl (1r-(1alpha,4abeta,4balpha,7alpha,10aalpha))-7-ethenyl-1,2,3,4,4a,4b,5,6,7,8,10,10a-dodecahydro-1,4a,7-trimethyl-1-phenanthrenecarboxylate" );
+gibbsFormation
+{
+    dHf_298   -429670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     929.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13600.0
+    phase     gas;
+}

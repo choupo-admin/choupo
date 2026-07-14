@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: delta-valerolactone  (C5H8O2, CAS 542-28-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        deltaValerolactone;
+formula     C5H8O2;
+CAS         542-28-9;
+InChIKey    OZJPLYNZGCXSJM-UHFFFAOYSA-N;
+MW          100.117;      // g/mol [origin=calculated method=formula-sum]
+Tc          586.61;      // K   [origin=predictive method=joback]
+Pc          44.150;      // bar [origin=predictive method=joback]
+omega       0.3594;      // -   [origin=predictive method=lee-kesler]
+Tb          387.90;      // K   [origin=predictive method=joback]
+HvapTb      34525.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.55 0.5918 -0.0003828 8.88e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oxan-2-one" "5-valerolactone" "2h-pyran-2-one, tetrahydro-" "tetrahydro-2h-pyran-2-one" ".delta.-valerolactone" "penta-1,5-lactone" "tetrahydro-2-pyranone" "2-perhydropyranone" "tetrahydro-2h-2-pyranone" "3h-4,5,6-trihydropyran-2-one" "a-valerolactone" "delta-valeryllactone" );
+gibbsFormation
+{
+    dHf_298   -376830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     374.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-262790.0
+    phase     gas;
+}

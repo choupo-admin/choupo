@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetraethyl orthocarbonate  (C9H20O4, CAS 78-09-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetraethylOrthocarbonate;
+formula     C9H20O4;
+CAS         78-09-1;
+InChIKey    CWLNAJYDRSIKJS-UHFFFAOYSA-N;
+MW          192.255;      // g/mol [origin=calculated method=formula-sum]
+Tc          664.56;      // K   [origin=predictive method=joback]
+Pc          22.021;      // bar [origin=predictive method=joback]
+omega       0.6531;      // -   [origin=predictive method=lee-kesler]
+Tb          491.97;      // K   [origin=predictive method=joback]
+HvapTb      43972.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (72.234 0.73188 -0.0001936 -5.14e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group C; count 1; } { group CH2O; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 4; } { group C; count 1; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "triethoxymethoxyethane" "tetraethoxymethane" "ethane, 1,1',1'',1'''-[methanetetrayltetrakis(oxy)]tetrakis-" "ethane, 1,1',1'',1'''-(methanetetrayltetrakis(oxy))tetrakis-" "(triethoxymethoxy)ethane" "1-(triethoxymethoxy)ethane" "cwlnajydrsikjs-uhfffaoysa-" "orthocarbonic acid, tetraethyl ester" "ethane,1',1'',1'''-[methanetetrayltetrakis(oxy)]tetrakis-" "ethane, 1,1',1'',1'''-[methanetetrayltetrakis( oxy)]tetrakis-" );
+gibbsFormation
+{
+    dHf_298   -766720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     512.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-392260.0
+    phase     gas;
+}

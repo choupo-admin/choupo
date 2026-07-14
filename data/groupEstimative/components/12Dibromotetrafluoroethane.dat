@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-dibromotetrafluoroethane  (C2Br2F4, CAS 124-73-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Dibromotetrafluoroethane;
+formula     C2Br2F4;
+CAS         124-73-2;
+InChIKey    KVBKAPANDHPRDG-UHFFFAOYSA-N;
+MW          259.822;      // g/mol [origin=calculated method=formula-sum]
+Tc          559.45;      // K   [origin=predictive method=joback]
+Pc          50.015;      // bar [origin=predictive method=joback]
+omega       0.3842;      // -   [origin=predictive method=lee-kesler]
+Tb          368.30;      // K   [origin=predictive method=joback]
+HvapTb      27056.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.13 0.569 -0.000637 2.47e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group Br; count 2; } { group CF2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group F; count 4; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-bis(bromanyl)-1,1,2,2-tetrakis(fluoranyl)ethane" "dibromotetrafluoroethane" "1,2-dibromo-1,1,2,2-tetrafluoroethane" "fluobrene" "ethane, 1,2-dibromotetrafluoro-" "ethane, 1,2-dibromo-1,1,2,2-tetrafluoro-" "1,2-dibromoperfluoroethane" "sym-dibromotetrafluoroethane" "ethane,1,2-dibromotetrafluoro- (6ci,7ci,8ci);1,2-dibromo-1,1,2,2-tetrafluoroethane;1,2-dibromoperfluoroethane;daiflon 114b2;f114b2;fluobrene;freon 114b2;h 2402;halon 2402;khladon 114b2;sym-1,2-dibromo-1,1,2,2-tetrafluoroethane;sym-dibromotetrafluoroethane;" );
+gibbsFormation
+{
+    dHf_298   -833890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     385.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-778960.0
+    phase     gas;
+}

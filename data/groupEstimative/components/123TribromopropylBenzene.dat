@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (1,2,3-tribromopropyl)benzene  (C9H9Br3, CAS 56762-23-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        123TribromopropylBenzene;
+formula     C9H9Br3;
+CAS         56762-23-3;
+InChIKey    WTSKOLDTABPEPX-UHFFFAOYSA-N;
+MW          356.883;      // g/mol [origin=calculated method=formula-sum]
+Tc          894.38;      // K   [origin=predictive method=joback]
+Pc          42.831;      // bar [origin=predictive method=joback]
+omega       0.6612;      // -   [origin=predictive method=lee-kesler]
+Tb          629.80;      // K   [origin=predictive method=joback]
+HvapTb      56433.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.989 0.9063 -0.0007176 2.227e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 1; } { group ACH; count 5; } { group ACCH; count 1; } { group Br; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3-tris(bromanyl)propylbenzene" "1,2,3-tribromopropylbenzene" );
+gibbsFormation
+{
+    dHf_298   75870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     534.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=175390.0
+    phase     gas;
+}

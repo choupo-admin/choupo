@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-methyl-3,4-dihydrocoumarin  (C10H10O2, CAS 92-47-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Methyl34Dihydrocoumarin;
+formula     C10H10O2;
+CAS         92-47-7;
+InChIKey    TWAXWQHDMDUHDN-UHFFFAOYSA-N;
+MW          162.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          751.22;      // K   [origin=predictive method=joback]
+Pc          33.258;      // bar [origin=predictive method=joback]
+omega       0.5636;      // -   [origin=predictive method=lee-kesler]
+Tb          530.40;      // K   [origin=predictive method=joback]
+HvapTb      48911.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.16 0.88812 -0.00064472 1.838e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACCH3; count 1; } { group ACCH2; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-methyl-3,4-dihydrochromen-2-one" "6-methylhydrocoumarin" "hydrocoumarin, 6-methyl-" "3,4-dihydro-6-methylcoumarin" "2h-1-benzopyran-2-one, 3,4-dihydro-6-methyl-" "6-methyl-chroman-2-one" "6-methylchromanone" "hydrocoumarin, 6-methyl- (8ci)" "2h-1-benzopyran-2-one,4-dihydro-6-methyl-" );
+gibbsFormation
+{
+    dHf_298   -254120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     410.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-103340.0
+    phase     gas;
+}

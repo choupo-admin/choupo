@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,4-diisopropyl-2,5-dimethyl-3-hexene  (C14H28, CAS 7090-88-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34Diisopropyl25Dimethyl3Hexene;
+formula     C14H28;
+CAS         7090-88-2;
+InChIKey    CHUZFFSJMAKRES-UHFFFAOYSA-N;
+MW          196.378;      // g/mol [origin=calculated method=formula-sum]
+Tc          707.41;      // K   [origin=predictive method=joback]
+Pc          16.418;      // bar [origin=predictive method=joback]
+omega       0.4727;      // -   [origin=predictive method=lee-kesler]
+Tb          522.08;      // K   [origin=predictive method=joback]
+HvapTb      45324.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.13 1.37736 -0.000839 2.044e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 8; } { group CH; count 4; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH; count 4; } { group dC; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,5-dimethyl-3,4-di(propan-2-yl)hex-3-ene" "3-hexene, 2,5-dimethyl-3,4-bis(1-methylethyl)-" "3,4-diisopropyl-2,5-dimethyl-hex-3-ene" );
+gibbsFormation
+{
+    dHf_298   -255770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     648.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=120360.0
+    phase     gas;
+}

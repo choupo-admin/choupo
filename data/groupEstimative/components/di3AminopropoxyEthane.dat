@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: di(3-aminopropoxy)ethane  (C8H20N2O2, CAS 2997-01-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        di3AminopropoxyEthane;
+formula     C8H20N2O2;
+CAS         2997-01-5;
+InChIKey    POTQBGGWSWSMCX-UHFFFAOYSA-N;
+MW          176.26;      // g/mol [origin=calculated method=formula-sum]
+Tc          758.58;      // K   [origin=predictive method=joback]
+Pc          27.527;      // bar [origin=predictive method=joback]
+omega       0.9300;      // -   [origin=predictive method=lee-kesler]
+Tb          572.54;      // K   [origin=predictive method=joback]
+HvapTb      59504.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (59.598 0.7612 -0.0002762 -3.6e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2O; count 2; } { group CH2NH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 8; } { group O; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[2-(3-azanylpropoxy)ethoxy]propan-1-amine" "ethylene glycol bis(3-aminopropyl) ether" "3,3'-(ethylenedioxy)bispropylamine" "3,3'-ethylenedioxybis(propylamine)" "1-propanamine, 3,3'-[1,2-ethanediylbis(oxy)]bis-" "propylamine, 3,3'-(ethylenedioxy)bis-" "1-propanamine, 3,3'-(1,2-ethanediylbis(oxy))bis-" "1,2-bis(3-aminopropoxy)ethane" "ethylene glycol bis(3-aminopropyl)ether" "1,2-bis-(3-aminopropoxy)ethane" "3-[2-(3-aminopropoxy)ethoxy]propan-1-amine" "3,3'-(ethane-1,2-diylbis(oxy))bis(propan-1-amine)" );
+gibbsFormation
+{
+    dHf_298   -405310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     593.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-60620.0
+    phase     gas;
+}

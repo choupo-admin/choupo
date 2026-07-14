@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (3-bromopropyl)benzene  (C9H11Br, CAS 637-59-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3BromopropylBenzene;
+formula     C9H11Br;
+CAS         637-59-2;
+InChIKey    XMZQWZJMTBCUFT-UHFFFAOYSA-N;
+MW          199.091;      // g/mol [origin=calculated method=formula-sum]
+Tc          723.08;      // K   [origin=predictive method=joback]
+Pc          35.347;      // bar [origin=predictive method=joback]
+omega       0.4621;      // -   [origin=predictive method=lee-kesler]
+Tb          498.36;      // K   [origin=predictive method=joback]
+HvapTb      44339.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.007 0.8181 -0.0005684 1.555e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 5; } { group ACCH2; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-bromanylpropylbenzene" "1-bromo-3-phenylpropane" "3-phenylpropyl bromide" "benzene, (3-bromopropyl)-" "3-bromo-1-phenylpropane" "(.gamma.-bromopropyl)benzene" "3-bromopropylbenzene" "4-bromopropylbenzene" "hydrocinnamyl bromide" "(3-bromoprop-1-yl)benzene" "propylbromide, g-phenyl" "(gamma-bromopropyl)benzene" );
+gibbsFormation
+{
+    dHf_298   33770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     451.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=151630.0
+    phase     gas;
+}

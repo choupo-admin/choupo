@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclodecanol  (C10H20O, CAS 1502-05-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclodecanol;
+formula     C10H20O;
+CAS         1502-05-2;
+InChIKey    WFRBMXFCEAHLGH-UHFFFAOYSA-N;
+MW          156.269;      // g/mol [origin=calculated method=formula-sum]
+Tc          770.64;      // K   [origin=predictive method=joback]
+Pc          31.526;      // bar [origin=predictive method=joback]
+omega       0.6830;      // -   [origin=predictive method=lee-kesler]
+Tb          557.21;      // K   [origin=predictive method=joback]
+HvapTb      55650.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-87.0 1.0715 -0.000446 7.6e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group CH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 9; } { group CH_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclodecyl alcohol" );
+gibbsFormation
+{
+    dHf_298   -372280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     645.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-127450.0
+    phase     gas;
+}

@@ -61,6 +61,7 @@ Description
 
 #pragma once
 
+#include "ConstraintSpec.H"
 #include "OuterDriver.H"
 
 #include <string>
@@ -84,6 +85,10 @@ private:
     scalar                   rangeMax_ = 0.0;
     std::size_t              nPoints_  = 0;
     std::vector<std::string> responses_;
+    // Optional FEASIBILITY MAP (forum #102.6/#103): every constraint is
+    // EVALUATED and MARKED on every row (value/bound/residual/satisfied
+    // columns + a final `feasible`) -- no point is ever filtered or hidden.
+    std::vector<ConstraintSpec> constraints_;
     std::string              reportFile_ = "sweep_results.csv";
 };
 

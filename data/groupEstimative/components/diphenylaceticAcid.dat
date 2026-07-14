@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diphenylacetic acid  (C14H12O2, CAS 117-34-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diphenylaceticAcid;
+formula     C14H12O2;
+CAS         117-34-0;
+InChIKey    PYHXGXCGESYPCW-UHFFFAOYSA-N;
+MW          212.248;      // g/mol [origin=calculated method=formula-sum]
+Tc          970.21;      // K   [origin=predictive method=joback]
+Pc          30.762;      // bar [origin=predictive method=joback]
+omega       0.8383;      // -   [origin=predictive method=lee-kesler]
+Tb          718.35;      // K   [origin=predictive method=joback]
+HvapTb      68086.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-74.73 1.2327 -0.000876 2.339e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 1; } { group ACCH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-diphenylethanoic acid" "2,2-diphenylacetic acid" "acetic acid, diphenyl-" "diphenylethanoic acid" "benzeneacetic acid, .alpha.-phenyl-" "1,1-diphenylacetic acid" "alpha-toluic acid, alpha-phenyl-" "benzeneacetic acid, alpha-phenyl-" ".alpha.,.alpha.-diphenylacetic acid" ".alpha.-toluic acid, .alpha.-phenyl-" "diphenyl-acetic acid" "2,2-diphenyl-acetic acid" );
+gibbsFormation
+{
+    dHf_298   -214780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     532.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-54530.0
+    phase     gas;
+}

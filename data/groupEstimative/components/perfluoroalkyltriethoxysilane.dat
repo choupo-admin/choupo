@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluoroalkyltriethoxysilane  (C14H19F13O3Si, CAS 51851-37-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C14H19F13O3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        perfluoroalkyltriethoxysilane;
+formula     C14H19F13O3Si;
+CAS         51851-37-7;
+InChIKey    AVYKQOAMZCAHRG-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          510.362;      // g/mol [origin=calculated method=formula-sum]
+Tc          695.70;      // K   [origin=predictive method=joback]
+Pc          9.741;      // bar [origin=predictive method=joback]
+omega       0.7831;      // -   [origin=predictive method=lee-kesler]
+Tb          559.71;      // K   [origin=predictive method=joback]
+HvapTb      35885.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (39.825 1.84626 -0.001234 2.78e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH2O; count 3; } { group CF3; count 1; } { group CF2; count 5; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group C; count 6; } { group F; count 13; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "triethoxy-[3,3,4,4,5,5,6,6,7,7,8,8,8-tridecakis(fluoranyl)octyl]silane" "1h,1h,2h,2h-perfluorooctyltriethoxysilane" "triethoxy(3,3,4,4,5,5,6,6,7,7,8,8,8-tridecafluorooctyl)silane" "3,3,4,4,5,5,6,6,7,7,8,8,8-tridecafluorooctyltriethoxysilan" "silane, triethoxy(3,3,4,4,5,5,6,6,7,7,8,8,8-tridecafluorooctyl)-" "triethoxy-1h,1h,2h,2h-tridecafluoro-n-octylsilane" "tridecafluoro-1,1,2,2-tetrahydrooctyl-1-triethoxysilane" "1h,1h,2h,2h-perfluoroalkyltriethoxysilane" "1h,1h,2h,2h-perfluorooctyl triethoxysilane" "triethoxy-1h,1h,2h,2h-perfluoro-n-octylsilane" "1h,1h,2h,2h-perfluorooctyltriethoxysilane  97%" "1h,1h,2h,2h-tridecafluoro-n-octyltriethoxysilane" );
+gibbsFormation
+{
+    dHf_298   -3442500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1040.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2868250.0
+    phase     gas;
+}

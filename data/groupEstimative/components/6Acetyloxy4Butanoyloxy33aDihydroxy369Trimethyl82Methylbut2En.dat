@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: [6-acetyloxy-4-butanoyloxy-3,3a-dihydroxy-3,6,9-trimethyl-8-(2-methylbut-2-enoyloxy)-2-oxo-4,5,6a,7,8,9b-hexahydroazuleno[4,5-b]furan-7-yl] octanoate  (C34H50O12, CAS 67526-95-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Acetyloxy4Butanoyloxy33aDihydroxy369Trimethyl82Methylbut2En;
+formula     C34H50O12;
+CAS         67526-95-8;
+InChIKey    IXFPJGBNCFXKPI-UHFFFAOYSA-N;
+MW          650.762;      // g/mol [origin=calculated method=formula-sum]
+Tc          2037.58;      // K   [origin=predictive method=joback]
+Pc          6.925;      // bar [origin=predictive method=joback]
+omega       -0.0720;      // -   [origin=predictive method=lee-kesler]
+Tb          1472.27;      // K   [origin=predictive method=joback]
+HvapTb      158410.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-149.132 4.04956 -0.0032415 1.1222e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 7; } { group CH2; count 7; } { group CH; count 5; } { group C; count 3; } { group CH=C; count 1; } { group OH; count 2; } { group CH3COO; count 1; } { group CH2COO; count 2; } { group C=C; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2; count 8; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 5; } { group C_ring; count 3; } { group dC_ring; count 2; } { group OH; count 2; } { group COO; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[6-acetyloxy-4-butanoyloxy-3,6,9-trimethyl-8-(2-methylbut-2-enoyloxy)-3,3a-bis(oxidanyl)-2-oxidanylidene-4,5,6a,7,8,9b-hexahydroazuleno[4,5-b]furan-7-yl] octanoate" "[(3s,3ar,4s,6s,7s,8s,9bs)-6-acetyloxy-4-butanoyloxy-3,3a-dihydroxy-3,6,9-trimethyl-8-[(z)-2-methylbut-2-enoyl]oxy-2-oxo-4,5,6a,7,8,9b-hexahydroazuleno[4,5-b]furan-7-yl] octanoate" "6-(acetyloxy)-4-(butanoyloxy)-3,3a-dihydroxy-3,6,9-trimethyl-8-[(2-methylbut-2-enoyl)oxy]-2-oxo-2,3,3a,4,5,6,6a,7,8,9b-decahydroazuleno[4,5-b]furan-7-yl octanoate" );
+gibbsFormation
+{
+    dHf_298   -2343580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1543.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1404690.0
+    phase     gas;
+}

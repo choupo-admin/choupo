@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-ethyl-1,3-dioxane-5-methanol  (C7H14O3, CAS 5187-23-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Ethyl13Dioxane5Methanol;
+formula     C7H14O3;
+CAS         5187-23-5;
+InChIKey    BGFBWRWYROQISE-UHFFFAOYSA-N;
+MW          146.186;      // g/mol [origin=calculated method=formula-sum]
+Tc          724.83;      // K   [origin=predictive method=joback]
+Pc          40.777;      // bar [origin=predictive method=joback]
+omega       0.8318;      // -   [origin=predictive method=lee-kesler]
+Tb          525.63;      // K   [origin=predictive method=joback]
+HvapTb      56153.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-79.138 1.11082 -0.0009732 3.721e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group C; count 1; } { group OH; count 1; } { group FCH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group OH; count 1; } { group O_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5-ethyl-1,3-dioxan-5-yl)methanol" "1,3-dioxane-5-methanol, 5-ethyl-" "1,3-dioxane-5-methanol,5-ethyl-" "m-dioxane-5-methanol,5-ethyl- (7ci,8ci);(5-ethyl[1,3]dioxan-5-yl)methanol;5-(hydroxymethyl)-5-ethyl-1,3-dioxane;5-ethyl-1,3-dioxan-5-methanol;5-ethyl-1,3-dioxane-5-methanol;5-ethyl-5-(hydroxymethyl)-1,3-dioxane;5-ethyl-m-dioxane-5-methanol;formaldehyde mono(1,1,1-trimethylolpropane)acetal;" );
+gibbsFormation
+{
+    dHf_298   -534480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     415.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-282040.0
+    phase     gas;
+}

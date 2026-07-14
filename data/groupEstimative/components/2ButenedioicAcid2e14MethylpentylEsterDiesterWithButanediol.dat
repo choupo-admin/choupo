@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-butenedioic acid (2e)-, 1-(4-methylpentyl) ester, diester with butanediol  (C24H38O8, CAS 63450-28-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2ButenedioicAcid2e14MethylpentylEsterDiesterWithButanediol;
+formula     C24H38O8;
+CAS         63450-28-2;
+InChIKey    SLBPRXCMHSPKKO-UHFFFAOYSA-N;
+MW          454.56;      // g/mol [origin=calculated method=formula-sum]
+Tc          1213.20;      // K   [origin=predictive method=joback]
+Pc          8.743;      // bar [origin=predictive method=joback]
+omega       0.8252;      // -   [origin=predictive method=lee-kesler]
+Tb          989.04;      // K   [origin=predictive method=joback]
+HvapTb      97786.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (50.98 2.11648 -0.0010774 1.398e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 10; } { group CH; count 2; } { group CH=CH; count 2; } { group COO; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 10; } { group CH; count 2; } { group dCH; count 4; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "o1-[4-[4-(4-methylpentoxy)-4-oxidanylidene-but-2-enoyl]oxybutyl] o4-(4-methylpentyl) but-2-enedioate" "2-butenedioic acid (2e)-, mono(4-methylpentyl) ester, diester with butanediol" );
+gibbsFormation
+{
+    dHf_298   -1583930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1263.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-934720.0
+    phase     gas;
+}

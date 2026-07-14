@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzyl 2-naphthyl ether  (C17H14O, CAS 613-62-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzyl2NaphthylEther;
+formula     C17H14O;
+CAS         613-62-7;
+InChIKey    WLTCCDHHWYAMCG-UHFFFAOYSA-N;
+MW          234.298;      // g/mol [origin=calculated method=formula-sum]
+Tc          940.29;      // K   [origin=predictive method=joback]
+Pc          25.637;      // bar [origin=predictive method=joback]
+omega       0.6588;      // -   [origin=predictive method=lee-kesler]
+Tb          688.30;      // K   [origin=predictive method=joback]
+HvapTb      62700.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-72.019 1.3346 -0.00092208 2.435e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 4; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 4; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenylmethoxynaphthalene" "2-benzyloxynaphthalene" "2-(benzyloxy)naphthalene" "2-phenylmethoxy naphthalenen" "2-(phenylmethoxy)-naphthalene" "naphthalene, 2-(phenylmethoxy)-" "2-(phenylmethoxy)naphthalene" "2-benzyloxy-naphthalene" "naphthalene,2-(benzyloxy)- (6ci,7ci,8ci);2-(benzyloxy)naphthalene;bon (ether);benzyl 2-naphthyl ether;benzyl b-naphthyl ether;b-(benzyloxy)naphthalene;b-naphthol benzyl ether;b-naphthyl benzyl ether;" );
+gibbsFormation
+{
+    dHf_298   126230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     501.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=309100.0
+    phase     gas;
+}

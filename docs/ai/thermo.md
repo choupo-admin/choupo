@@ -1,6 +1,9 @@
-# thermoPackage — composing the thermodynamic models
+# propertyDict — composing the thermodynamic models
 
-A case's `constant/thermoPackage` declares the components + which
+A case's `constant/propertyDict` (the ONE property-package file — the old
+`constant/thermoPackage` name was retired corpus-wide with NO backward
+compatibility; the engine reads only `propertyDict`) declares the
+components + which
 phase-property models to use.  Minimum viable:
 
 ```
@@ -41,20 +44,27 @@ activityModel  { model <name>; <model-specific keys> }
 | `Wilson` | Cheaper than NRTL but **cannot represent LLE** (structural). | Mild non-ideality, no expected liquid split. |
 | `UNIFAC` | **Predictive** — γ from molecular GROUPS, NO fitted binary parameters (original UNIFAC; Fredenslund 1975 / Hansen 1991). | A binary with no regressed data: get a first VLE from structure alone, then SEE the error vs data. Weak for alcohol-water (predicts the azeotrope but misplaces it — original-UNIFAC's known limit). |
 
-`UNIFAC` takes no pairs; instead declare each component's groups (the R_k/Q_k +
-a_mn tables live in `data/standards/unifac/`):
+`UNIFAC` takes no pairs.  The group decomposition is COMPONENT data, resolved
+from each component's own `.dat` — one home, never re-declared per case (the
+R_k/Q_k + a_mn tables live in `data/standards/unifac/`):
 
 ```
-activityModel
+// case propertyDict — nothing but the model selection:
+activityModel { model UNIFAC; }
+
+// each component's .dat carries its decomposition:
+groups
 {
-    model  UNIFAC;
-    groups
-    {
-        ethanol ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );
-        water   ( { group H2O; count 1; } );
-    }
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );
 }
 ```
+
+An inline `groups {}` block inside the activity model is RETIRED (it made the
+same molecule able to change structure per case) and refuses with a pointer; a
+pedagogical alternative decomposition goes in a case-local component overlay
+(`constant/components/<name>.dat`).  A UNIFAC package whose participating
+component lacks a decomposition is an ERROR with the remedy — never a silent
+γ = 1.
 
 NRTL / Wilson need binary-pair parameters, supplied either inline:
 
@@ -74,7 +84,7 @@ activityModel
 }
 ```
 
-or by reference to `data/standards/binaryPairs/NRTL/<i>-<j>.dat`:
+or by reference to a binary-pair catalogue file:
 
 ```
 activityModel  { model NRTL; }    # pairs auto-loaded if a file exists
@@ -87,6 +97,15 @@ NRTL searches, in order:
    (a sector/unit's PARTICULAR pair — see the fractal `constant/`);
 2. the **plant-root** case `constant/binaryPairs/NRTL/<i>-<j>.dat`;
 3. the **standard library** `data/standards/binaryPairs/NRTL/<i>-<j>.dat`.
+4. the **extended, unverified library**
+   `data/local/binaryPairs/NRTL/<i>-<j>.dat`.
+
+The same standard-before-proposed fallback applies to UNIQUAC and Wilson. A
+proposed pair can never shadow a standard pair. When the fourth tier is used,
+the run prints `[proposed]`, records `status: proposed` plus typed provenance in
+the result JSON, and the GUI displays the advisory. Treat it as screening data
+until it has been checked against VLE data for the relevant temperature and
+composition range.
 
 So an `ethylAcetate-water` pair fitted for one sector lives in that sector's
 `constant/` and beats the library, while `ethanol-water` is inherited from the
@@ -105,7 +124,7 @@ so the unconstrained interactions are visible at a glance.  Each `.dat` may
 carry a `provenance { source placeholder|literature|fitted; }` block; a
 PLACEHOLDER (a guess) is then shown distinctly from real data.
 
-## equationOfState  (vapour-phase + Z, H_R, S_R)
+## equationOfState  (real-gas φ, Z, H_R, S_R — and, for a cubic, the liquid root too)
 
 ```
 equationOfState  { model <name>;... }
@@ -116,6 +135,14 @@ equationOfState  { model <name>;... }
 | `idealGas` | Z=1, H_R=0, S_R=0.  Default. | Low pressure, no critical effects. |
 | `SRK`      | Soave-Redlich-Kwong cubic.  vdW 1-fluid mixing. | Moderate pressure, hydrocarbons, gas compression. |
 | `PR`       | Peng-Robinson cubic.  Better near critical for CO2. | High pressure, CO2, near-critical fluids. |
+
+An EoS is **no longer vapour-only**.  The cubics (SRK, PR) also deliver the
+**LIQUID root** (the smallest physical root above the co-volume) and
+`phiLiquid(T,P,x)` — so in a `propertyPackage` a cubic may occupy the
+**liquid method slot** too (`liquid eos.SRK; vapour eos.SRK;` — the φ-φ
+world, the SAME cubic serving both phases, `K_i = φ_i^L/φ_i^V`; see "The
+four VLE worlds" below).  `idealGas` REFUSES `phiLiquid` — it can never fake
+a liquid root, so it is never a legal liquid slot.
 
 Optional binary interaction parameters:
 
@@ -165,10 +192,14 @@ number require you to name the model?*).  See
    component **fails with a remedy** ("PCSAFT needs m,sigma,epsilon_k for 'X';
    fit them or pick SRK/PR which run off Tc,Pc,ω") — never a silent
    corresponding-states fallback.
-3. **PAIR parameters (`k_ij` and friends) → a model-keyed catalogue**,
-   `data/standards/eos/<model>/binaryInteractions/<i>-<j>.dat`, mirroring
-   `binaryPairs/NRTL/<i>-<j>.dat`, with the always-permitted **inline**
-   override (`binaryInteractions ( … )`, shown above) staying first-class.
+3. **PAIR parameters (`k_ij` and friends) → the declarative parameter
+   catalogue**, `data/standards/parameters/eos/kij/<i>-<j>.dat` (the shipped
+   home; siblings `parameters/binary/` for activity pairs and
+   `parameters/electrolyte/` for Pitzer/eNRTL), declared in a
+   `propertyPackage` via `parameters { kijPairs { N2-CH4 "…"; } }` and
+   loaded by the Builder with a LOUD `[builder] kij(N2,CH4) = 0.0289 ---
+   <file>` line — with the always-permitted **inline** override
+   (`binaryInteractions ( … )`, shown above) staying first-class.
 
 The activity (`activityModel`) and transport branches follow the identical
 shape: corresponding-states-or-parameter-free where possible; a model-keyed
@@ -223,6 +254,12 @@ Used by:
 - absorber / stripper (Kvec consults Henry for the solute);
 - aqueous gas absorption (CO2, NH3, O2, H2S, SO2, CH4, Cl2, HCl in water all ship).
 
+In a `propertyPackage` the same declaration is the `solution {}` block
+(`solution { solvent water; solutes ( CO2 ); }` — the `henryDilute` world,
+see below): WHO dissolves in WHAT is declared at the package level, the pair
+files are declared in `parameters.henryPairs`, and a declared-but-missing
+pair REFUSES loudly at assembly, naming the entry to add.
+
 ### The aqueous solution tier + the default-solvent rule
 
 A solute property whose **definition names a solvent** — an "in-water"
@@ -231,7 +268,7 @@ A solute property whose **definition names a solvent** — an "in-water"
 
 | Solute kind | Tier | Carries |
 |---|---|---|
-| **ions** (∞-dilution) | `data/standards/electrolyte/ions.dat` | `hfAq / sAq / cpAq` on the H⁺(aq)=0 convention (Wagman/NBS 1982) |
+| **ions** (∞-dilution) | `data/standards/components/true/aqueous/` | `hfAq / sAq / cpAq` on the H⁺(aq)=0 convention (Wagman/NBS 1982) |
 | **molecular solutes** | `data/standards/solution/<solute>-<solvent>.dat` | ΔH_soln and other solution thermo, primary-cited |
 
 Water earns **one canonical, named, by-name aqueous reference tier** — never
@@ -265,14 +302,14 @@ block), never field-by-field.
 | a sample-specific pair/model-param refinement | `<case>/constant/<feature>/<pair>.dat` or an `eosParameters{}` overlay |
 | a RATE (kinetics) or GEOMETRY (PSD) — the molecule-in-a-machine | the operation's `constant/` (`crystallisation`, `dryingKinetics`, `reactions`); PSD is a **stream** attribute |
 
-Precedence, lowest → highest: `proposed < standard < case < sector < unit`.
+Precedence, lowest → highest: `local < standard < case < sector < unit`.
 Full rule + the merge semantics: [`data-doctrine.md`](data-doctrine.md) §3.
 
 ## membrane (only for spiralWoundModule)
 
 A membrane case declares which membrane the spiral-wound module uses
 on a per-unit basis (see `unit-ops.md > spiralWoundModule`), not at
-the thermoPackage level — but the components include the solute(s),
+the property-package level — but the components include the solute(s),
 and the solute must have `nonvolatile true;` + `dissociation <nu>;`
 in its.dat (NaCl, glucose, MgSO4 ship this).
 
@@ -308,7 +345,7 @@ transport
 }
 ```
 
-## What does the simulator do with the thermoPackage?
+## What does the simulator do with propertyDict?
 
 The four binaries all call `ThermoPackage::readFromDict(dict, db)`
 at startup, which:
@@ -351,3 +388,150 @@ Default is `gas` for backward compatibility, but **new components
 should always declare `phase` explicitly** so the datum is unambiguous
 at the source of truth.  The same rule applies to per-case overlays
 under `<case>/constant/components/<name>.dat`.
+
+## propertyPackage — the declarative manifest (the modern convention)
+
+The SAME `constant/propertyDict` file takes **TWO forms**, discriminated
+by content (there is no second filename — `constant/propertyPackage` and
+`constant/thermoPackage` were both retired with no backward compatibility):
+
+1. **INLINE full manifest** (the file has a `components (…)` list, so it IS
+   the package record): components, methods, solution structure and
+   parameter sources all IN the case, readable — the self-contained form,
+   **the standard for tutorials** ("the case shows its own chemistry").
+2. **Selector** (`package <name>;`, resolving
+   `data/standards/propertyPackages/<name>.dat`): for fleets of cases
+   sharing identical thermo.
+
+The inline form, from
+`tutorials/steady/flash/flash08_co2_water_package/constant/propertyDict`:
+
+```
+/* header comment: the case's own thermo manifest — inline form */
+recordType propertyPackage;
+schemaVersion 1;
+name flash08_co2Water;
+components ( water CO2 );
+propertyMethods
+{
+    liquid solution.henryDilute;   // water on the Raoult rung,
+    vapour builtin.idealGas;       //   CO2 on the infinite-dilution Henry rung
+}
+solution
+{
+    solvent water;
+    solutes ( CO2 );
+}
+parameters
+{
+    henryPairs
+    {
+        // Sander (2015) compilation, CC-BY
+        CO2-water "data/standards/henrysLaw/CO2-water.dat";
+    }
+}
+```
+
+The selector form:
+
+```
+// <case>/constant/propertyDict           (the selector form)
+/* header comment REQUIRED: say which manifest this selects, summarise what
+   it declares (methods, pairs + sources), and point at the run log for the
+   full assembly story.  A bare one-liner is a juice-less file -- forbidden. */
+package co2Water_henry;
+```
+
+The run header names what was found: `Property package:  INLINE in the case`
+or `Property package:  co2Water_henry   (record: data/standards/
+propertyPackages/co2Water_henry.dat)`.
+
+### The four VLE worlds — the liquid method slot IS the world
+
+The `propertyMethods.liquid` slot does not merely pick a γ-model: it selects
+which of the **four K-value structures** the whole VLE runs on:
+
+| `propertyMethods.liquid` | World | K-value | Reference tutorial |
+|---|---|---|---|
+| `activity.<Model>` (e.g. `activity.NRTL`) | **γ-φ** | `K_i = γ_i·Psat_i / (φ_i·P)` | `flash02_ethanol_water` (NRTL) |
+| `solution.henryDilute` | **dilute solution** | solvent on Raoult; each solute on the full Krichevsky-Kasarnovsky / Krichevsky-Ilinskaya Henry form `y φ_V P = x γ* H(T) exp[v_∞(P−Ps)/RT]` | `flash08_co2_water_package` |
+| `eos.<Model>` (`eos.SRK`, `eos.PengRobinson`) | **φ-φ** | `K_i = φ_i^L / φ_i^V` — the SAME cubic's two roots | `flash09_n2ch4_stryjek` |
+| `electrolyte.pitzer` / `electrolyte.eNRTL` | **speciation** | ionic activity + osmotic coefficients on the aqueous-ion reference | `aqueousNaCl_pitzer` / the eNRTL packages |
+
+Two hard rules ride on this:
+
+* **Mixed cubics are REFUSED.**  `liquid eos.SRK;` with a DIFFERENT vapour
+  cubic (or `builtin.idealGas`) is two Gibbs surfaces pretending to be one
+  VLE — the builder refuses at assembly, demanding the same cubic on both
+  phases (one Gibbs surface per phase).
+* **The world is announced.**  A φ-φ package prints
+  `[builder] VLE world: phi-phi (SRK both phases -- K = phi_L/phi_V)` and
+  the assembled package carries the `vleWorld phiPhi;` key; the default
+  (γ-φ) needs no key.
+
+### kijPairs — declared EoS pair parameters
+
+An EoS-bearing package declares its `k_ij` files the same way Henry pairs
+are declared (A3: declare → verify → refuse), from
+`tutorials/steady/flash/flash09_n2ch4_stryjek`:
+
+```
+parameters
+{
+    kijPairs
+    {
+        // Knapp et al., DECHEMA Chemistry Data Series VI (1982)
+        N2-CH4 "data/standards/parameters/eos/kij/N2-CH4.dat";
+    }
+}
+```
+
+Each declared record is loaded at assembly — a missing/bad file REFUSES,
+naming the entry — and announced LOUD:
+
+```
+[builder] kij(N2,CH4) = 0.0289  --- data/standards/parameters/eos/kij/N2-CH4.dat
+```
+
+No `kijPairs` block → `kij = 0`, announced (the EoS runs
+predictive-degraded; near-critical phase splits will be off).  The inline
+`binaryInteractions (…)` form in a flat `propertyDict` stays first-class.
+
+### Per-group reference rungs (amendment A1)
+
+Reference conventions are per COMPONENT-GROUP within a phase, and every
+implemented method family (`electrolyte.*`, `activity.*`, `solution.*`,
+`eos.*`, `transport.*`) records them uniformly in a `referenceBasis` block.
+From `data/standards/propertyMethods/solution/henryDilute.dat`:
+
+```
+referenceBasis
+{
+    liquid
+    {
+        solvent { rung pureLiquidRaoult;      convention "gamma -> 1 as x -> 1"; }
+        solutes { rung infiniteDilutionHenry; convention "gamma* -> 1 as x -> 0";
+                  relation "y phi_V P = x gamma* H(T) exp[v_inf (P - Ps)/RT]"; }
+    }
+    vapour  { all { rung idealGasReference; convention "phi from the declared vapour method"; } }
+}
+```
+
+The electrolyte methods speak the same grammar on their groups:
+`water { rung pureLiquidRaoult; }` / `ions { rung ionAqueousInfiniteDilution; }`
+(the H⁺(aq)=0 convention) in `propertyMethods/electrolyte/{pitzer,eNRTL}.dat`.
+The run log echoes each selected method's rungs via `[builder]` lines.
+
+### The rules in one paragraph (the 2026-07-04 grammar forum)
+
+Models are per PHASE; reference conventions (Raoult / infinite-dilution
+Henry / aqueous-ion) are per COMPONENT-GROUP within a phase (the
+`solution{}` block + the method's `referenceBasis`); correlations (Antoine,
+Cp) stay per COMPONENT; parameters (Henry, NRTL, Pitzer, k_ij) stay per
+PAIR, with their files DECLARED and verified at assembly — a declared-but-
+missing pair REFUSES loudly, naming the entry to add.  The run log announces
+the selected package, the VLE world, each method's reference rungs
+(`[builder]`) and each engaged Henry pair with constants + source
+(`[henry]`).  Never mix two gamma-models or two EoS in one phase (one Gibbs
+surface per phase).  The flat `propertyDict` form remains fully supported as the
+degenerate form — existing cases never migrate forcibly.

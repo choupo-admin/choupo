@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzenamine, polymer with 1,2-dichloropropane  (C9H13Cl2N, CAS 68016-19-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzenaminePolymerWith12Dichloropropane;
+formula     C9H13Cl2N;
+CAS         68016-19-3;
+InChIKey    LUEXUVQPEVYDJE-UHFFFAOYSA-N;
+MW          206.11;      // g/mol [origin=calculated method=formula-sum]
+Tc          822.02;      // K   [origin=predictive method=joback]
+Pc          29.282;      // bar [origin=predictive method=joback]
+omega       0.5078;      // -   [origin=predictive method=lee-kesler]
+Tb          580.55;      // K   [origin=predictive method=joback]
+HvapTb      57221.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (32.211 0.65512 -0.0001696 -6.73e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 5; } { group ACNH2; count 1; } { group CH2Cl; count 1; } { group CHCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "aniline;1,2-bis(chloranyl)propane" "aniline; 1,2-dichloropropane" "aniline, propylene dichloride polymer" );
+gibbsFormation
+{
+    dHf_298   -107150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     616.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=72700.0
+    phase     gas;
+}

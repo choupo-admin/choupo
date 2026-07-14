@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cycloundecane  (C11H22, CAS 294-41-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cycloundecane;
+formula     C11H22;
+CAS         294-41-7;
+InChIKey    KYTNZWVKKKJXFS-UHFFFAOYSA-N;
+MW          154.297;      // g/mol [origin=calculated method=formula-sum]
+Tc          732.76;      // K   [origin=predictive method=joback]
+Pc          27.383;      // bar [origin=predictive method=joback]
+omega       0.2875;      // -   [origin=predictive method=lee-kesler]
+Tb          496.85;      // K   [origin=predictive method=joback]
+HvapTb      41678.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-104.26 1.1494 -0.000479 8e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 11; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 11; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -226510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     695.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13400.0
+    phase     gas;
+}

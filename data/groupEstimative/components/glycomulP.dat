@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: glycomul p  (C22H42O6, CAS 1338-40-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        glycomulP;
+formula     C22H42O6;
+CAS         1338-40-5;
+InChIKey    IYFATESGLOUGBX-CBOZIWPYSA-N;
+MW          402.572;      // g/mol [origin=calculated method=formula-sum]
+Tc          1351.66;      // K   [origin=predictive method=joback]
+Pc          11.601;      // bar [origin=predictive method=joback]
+omega       0.7699;      // -   [origin=predictive method=lee-kesler]
+Tb          1070.17;      // K   [origin=predictive method=joback]
+HvapTb      125771.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.795 2.22262 -0.0011755 1.968e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 14; } { group CH; count 4; } { group OH; count 3; } { group CH2COO; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 15; } { group CH; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group OH; count 3; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2-[(2r,3s,4r)-3,4-bis(oxidanyl)oxolan-2-yl]-2-oxidanyl-ethyl] hexadecanoate" "liposorb p" "protachem smp" "sorbitan palmitas" "sorbitan palmitate" "arlacel 40" "crill 2" "montane 40" "nikkol sp10" "nonion pp40" "sorgen 70" "nissan nonion pp40" );
+gibbsFormation
+{
+    dHf_298   -1388860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1020.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-653900.0
+    phase     gas;
+}

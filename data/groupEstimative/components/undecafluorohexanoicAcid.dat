@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: undecafluorohexanoic acid  (C6HF11O2, CAS 307-24-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        undecafluorohexanoicAcid;
+formula     C6HF11O2;
+CAS         307-24-4;
+InChIKey    PXUULQAPEKKVAH-UHFFFAOYSA-N;
+MW          314.05;      // g/mol [origin=calculated method=formula-sum]
+Tc          606.58;      // K   [origin=predictive method=joback]
+Pc          22.568;      // bar [origin=predictive method=joback]
+omega       0.8173;      // -   [origin=predictive method=lee-kesler]
+Tb          458.21;      // K   [origin=predictive method=joback]
+HvapTb      30647.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-53.33 1.3834 -0.0014146 5.093e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 1; } { group CF3; count 1; } { group CF2; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 5; } { group F; count 11; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,5,5,6,6,6-undecakis(fluoranyl)hexanoic acid" "perfluorohexanoic acid" "hexanoic acid, undecafluoro-" "undecafluoro-1-hexanoic acid" "perfluorocaproic acid" "hexanoic acid, 2,2,3,3,4,4,5,5,6,6,6-undecafluoro-" "hexanoic acid, perfluoro-" "ipc-pffa-6" "ipc-pffa-6 hg" "perfluorohexanoic acid (pfhxa)" "perfluorohexanoic acid high grade" "undecafluorohexanoic acid high grade" );
+gibbsFormation
+{
+    dHf_298   -2718400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     597.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2472980.0
+    phase     gas;
+}

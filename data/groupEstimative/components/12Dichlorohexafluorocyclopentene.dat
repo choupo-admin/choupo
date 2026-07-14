@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-dichlorohexafluorocyclopentene  (C5Cl2F6, CAS 706-79-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Dichlorohexafluorocyclopentene;
+formula     C5Cl2F6;
+CAS         706-79-6;
+InChIKey    ABPBVCKGWWGZDP-UHFFFAOYSA-N;
+MW          244.943;      // g/mol [origin=calculated method=formula-sum]
+Tc          578.66;      // K   [origin=predictive method=joback]
+Pc          31.315;      // bar [origin=predictive method=joback]
+omega       0.4299;      // -   [origin=predictive method=lee-kesler]
+Tb          400.26;      // K   [origin=predictive method=joback]
+HvapTb      28394.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-101.53 1.3426 -0.001855 9.314e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group Cl_C=C_; count 2; } { group C=C; count 1; } { group CF2; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C_ring; count 3; } { group dC_ring; count 2; } { group F; count 6; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-bis(chloranyl)-3,3,4,4,5,5-hexakis(fluoranyl)cyclopentene" "1,2-dichlorohexafluoro-1-cyclopentene" "cyclopentene-26" "1,2-dichlorohexafluorocyclopent-1-ene" "1,2-dichloroperfluorocyclopentene" "cyclopentene, 1,2-dichloro-3,3,4,4,5,5-hexafluoro-" "cyclopentene, 1,2-dichlorohexafluoro-" "1,2-dichloro-3,3,4,4,5,5-hexafluorocyclopentene" "1,2-dichloro-3,3,4,4,5,5-hexafluorocyclopent-1-ene" "cyclopentene,2-dichlorohexafluoro-" "1,2-dichlorohexafluorocyclopentene-1" "hexafluoro-1,2-dichloro-1-cyclopentene" );
+gibbsFormation
+{
+    dHf_298   -1254310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     631.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1186140.0
+    phase     gas;
+}

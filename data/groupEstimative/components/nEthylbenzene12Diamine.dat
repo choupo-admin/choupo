@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-ethylbenzene-1,2-diamine  (C8H12N2, CAS 23838-73-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nEthylbenzene12Diamine;
+formula     C8H12N2;
+CAS         23838-73-5;
+InChIKey    FRPAGJPHUNNVLJ-UHFFFAOYSA-N;
+MW          136.198;      // g/mol [origin=calculated method=formula-sum]
+Tc          761.65;      // K   [origin=predictive method=joback]
+Pc          39.062;      // bar [origin=predictive method=joback]
+omega       0.6275;      // -   [origin=predictive method=lee-kesler]
+Tb          537.00;      // K   [origin=predictive method=joback]
+HvapTb      53417.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.709 0.76352 -0.00046756 1.061e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 4; } { group AC; count 1; } { group CH2NH; count 1; } { group ACNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n2-ethylbenzene-1,2-diamine" "1-n-ethylbenzene-1,2-diamine" "1,2-benzenediamine, n-ethyl-" "1,2-benzenediamine, n1-ethyl-" "n-ethyl-o-phenylenediamine" "(2-aminophenyl)ethylamine" "2-n-ethylbenzene-1,2-diamine" "1,2-benzenediamine,n1-ethyl-" "1,2-benzenediamine,n-ethyl- (9ci); o-phenylenediamine, n-ethyl- (8ci); 2-(ethylamino)aniline;n-ethyl-1,2-phenylenediamine; n-ethyl-o-phenylenediamine;n-ethylbenzene-1,2-diamine" );
+gibbsFormation
+{
+    dHf_298   103870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     447.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=275100.0
+    phase     gas;
+}

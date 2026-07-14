@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3'-iminodipropionitrile  (C6H9N3, CAS 111-94-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33Iminodipropionitrile;
+formula     C6H9N3;
+CAS         111-94-4;
+InChIKey    SBAJRGRUGUQKAF-UHFFFAOYSA-N;
+MW          123.159;      // g/mol [origin=calculated method=formula-sum]
+Tc          799.57;      // K   [origin=predictive method=joback]
+Pc          29.828;      // bar [origin=predictive method=joback]
+omega       0.8111;      // -   [origin=predictive method=lee-kesler]
+Tb          591.21;      // K   [origin=predictive method=joback]
+HvapTb      56342.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (30.224 0.5196 -0.0002892 5.81e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2NH; count 1; } { group CH2CN; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group NH; count 1; } { group CN; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(2-cyanoethylamino)propanenitrile" "bis(2-cyanoethyl)amine" "propanenitrile, 3,3'-iminobis-" "iminodipropanenitrile" "3,3'-iminobispropanenitrile" "bbce" "idpn" "3,3'-iminobispropionitrile" "3,3'-iminodipropanenitrile" "n,n-bis(2-cyanoethyl)amine" "iminodiproprionitrile" "di-(2-cyanoethyl)amine" );
+gibbsFormation
+{
+    dHf_298   216060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     442.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=355390.0
+    phase     gas;
+}

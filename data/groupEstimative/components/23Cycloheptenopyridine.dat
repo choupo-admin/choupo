@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3-cycloheptenopyridine  (C10H13N, CAS 7197-96-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23Cycloheptenopyridine;
+formula     C10H13N;
+CAS         7197-96-8;
+InChIKey    CULUYAUTCSKQNM-UHFFFAOYSA-N;
+MW          147.221;      // g/mol [origin=calculated method=formula-sum]
+Tc          785.66;      // K   [origin=predictive method=joback]
+Pc          36.820;      // bar [origin=predictive method=joback]
+omega       0.4096;      // -   [origin=predictive method=lee-kesler]
+Tb          533.71;      // K   [origin=predictive method=joback]
+HvapTb      47568.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-82.17 1.00736 -0.00067642 1.779e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group C5H3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 5; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6,7,8,9-tetrahydro-5h-cyclohepta[b]pyridine" "5h-cyclohepta[b]pyridine, 6,7,8,9-tetrahydro-" "6,7,8,9-tetrahydro-5h-cyclohepta(b)pyridine" );
+gibbsFormation
+{
+    dHf_298   88940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     437.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=257410.0
+    phase     gas;
+}

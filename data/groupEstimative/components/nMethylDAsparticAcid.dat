@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methyl-d-aspartic acid  (C5H9NO4, CAS 6384-92-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethylDAsparticAcid;
+formula     C5H9NO4;
+CAS         6384-92-5;
+InChIKey    HOKKHZGPKSLGJE-GSVOUGTGSA-N;
+MW          147.13;      // g/mol [origin=calculated method=formula-sum]
+Tc          865.40;      // K   [origin=predictive method=joback]
+Pc          44.504;      // bar [origin=predictive method=joback]
+omega       1.2433;      // -   [origin=predictive method=lee-kesler]
+Tb          654.75;      // K   [origin=predictive method=joback]
+HvapTb      67100.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.651 0.66252 -0.0004452 1.143e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 1; } { group CH3NH; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group COOH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r)-2-(methylamino)butanedioic acid" "nmda" "n-methyl-d-aspartate" "n-methylaspartate" "methyl aspartic acid" "n-methyl aspartic acid" "n-me-d-asp-oh" "d-aspartic acid, n-methyl-" "(r)-2-(methylamino)succinic acid" "n-methyl-d-aspartic acid, hydrate" "aspartic acid, n-methyl-" "n-methyl-<scp" );
+gibbsFormation
+{
+    dHf_298   -798880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     488.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-609650.0
+    phase     gas;
+}

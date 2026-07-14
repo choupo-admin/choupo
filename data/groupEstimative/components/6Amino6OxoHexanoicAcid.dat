@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-amino-6-oxo-hexanoic acid  (C6H11NO3, CAS 334-25-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Amino6OxoHexanoicAcid;
+formula     C6H11NO3;
+CAS         334-25-8;
+InChIKey    NOIZJQMZRULFFO-UHFFFAOYSA-N;
+MW          145.158;      // g/mol [origin=calculated method=formula-sum]
+Tc          815.73;      // K   [origin=predictive method=joback]
+Pc          39.805;      // bar [origin=predictive method=joback]
+omega       1.0484;      // -   [origin=predictive method=lee-kesler]
+Tb          608.79;      // K   [origin=predictive method=joback]
+HvapTb      63501.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.884 0.6585 -0.0003999 9.016e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group COOH; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group CdO; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-azanyl-6-oxidanylidene-hexanoic acid" "6-amino-6-oxohexanoic acid" "adipamic acid" "adipic acid monoamide" "5-carbamoylpentanoic acid" "hexanoic acid,6-amino-6-oxo-" "hexanoic acid, 6-amino-6-oxo-" "adipamicacid (6ci,8ci);adipic acid monoamide;" );
+gibbsFormation
+{
+    dHf_298   -596230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     521.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-406740.0
+    phase     gas;
+}

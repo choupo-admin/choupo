@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl prop-2-enoate;ethyl prop-2-enoate;2-hydroxyethyl 2-methylprop-2-enoate;prop-2-enoic acid  (C21H34O9, CAS 43127-25-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butylProp2EnoateEthylProp2Enoate2Hydroxyethyl2Methylprop2Eno;
+formula     C21H34O9;
+CAS         43127-25-9;
+InChIKey    WMTZBGBHVDWXRZ-UHFFFAOYSA-N;
+MW          430.494;      // g/mol [origin=calculated method=formula-sum]
+Tc          1333.35;      // K   [origin=predictive method=joback]
+Pc          10.214;      // bar [origin=predictive method=joback]
+omega       0.9259;      // -   [origin=predictive method=lee-kesler]
+Tb          1083.23;      // K   [origin=predictive method=joback]
+HvapTb      116686.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (180.716 1.22056 0.0002127 -4.75e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 6; } { group CH2=CH; count 3; } { group CH2=C; count 1; } { group OH; count 1; } { group COOH; count 1; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group dCH2; count 4; } { group dCH; count 3; } { group dC; count 1; } { group OH; count 1; } { group COOH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butyl prop-2-enoate; ethyl prop-2-enoate; 2-hydroxyethyl 2-methylprop-2-enoate; prop-2-enoic acid" );
+gibbsFormation
+{
+    dHf_298   -1774040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1532.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1257370.0
+    phase     gas;
+}

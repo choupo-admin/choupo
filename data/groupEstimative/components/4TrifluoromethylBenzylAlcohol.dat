@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(trifluoromethyl)benzyl alcohol  (C8H7F3O, CAS 349-95-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4TrifluoromethylBenzylAlcohol;
+formula     C8H7F3O;
+CAS         349-95-1;
+InChIKey    MOOUWXDQAUXZRG-UHFFFAOYSA-N;
+MW          176.137;      // g/mol [origin=calculated method=formula-sum]
+Tc          682.82;      // K   [origin=predictive method=joback]
+Pc          34.848;      // bar [origin=predictive method=joback]
+omega       0.8377;      // -   [origin=predictive method=lee-kesler]
+Tb          501.06;      // K   [origin=predictive method=joback]
+HvapTb      49272.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-24.899 0.8206 -0.00062696 1.831e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group OH; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[4-(trifluoromethyl)phenyl]methanol" "p-trifluoromethylbenzyl alcohol" "4-trifluoromethyl benzene methanol" "4-trifluoromethylbenzyl alcohol" "(4-(trifluoromethyl)phenyl)methanol" "4-(trifluoromethyl)benzylic alcohol" "benzenemethanol, 4-(trifluoromethyl)-" "[4-(trifluoromethyl)phenyl]methan-1-ol" "q1r dxfff" "ptf-byl" "ghl.pd_mitscher_leg0.197" "4-(trifluoromethyl)benzylalcohol" );
+gibbsFormation
+{
+    dHf_298   -732700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     462.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-599150.0
+    phase     gas;
+}

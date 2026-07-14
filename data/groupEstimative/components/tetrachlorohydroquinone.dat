@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrachlorohydroquinone  (C6H2Cl4O2, CAS 87-87-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrachlorohydroquinone;
+formula     C6H2Cl4O2;
+CAS         87-87-6;
+InChIKey    STOSPPMGXZPHKP-UHFFFAOYSA-N;
+MW          247.88;      // g/mol [origin=calculated method=formula-sum]
+Tc          953.95;      // K   [origin=predictive method=joback]
+Pc          54.225;      // bar [origin=predictive method=joback]
+omega       0.9491;      // -   [origin=predictive method=lee-kesler]
+Tb          689.46;      // K   [origin=predictive method=joback]
+HvapTb      76780.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (40.15 0.6528 -0.000727 3.132e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACOH; count 2; } { group ACCl; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 6; } { group Cl; count 4; } { group OH_phenol; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,5,6-tetrakis(chloranyl)benzene-1,4-diol" "2,3,5,6-tetrachlorohydroquinone" "hydroquinone, tetrachloro-" "dihydro-p-chloranil" "tetrachlorobenzoquinol" "1,4-benzenediol, 2,3,5,6-tetrachloro-" "tetrachloro-p-benzohydroquinone" "2,3,5,6-tetrachloro-1,4-benzenediol" "nordrosophilin a" "tetrachloro p-hydroquinone" "tech" "usaf do-62" );
+gibbsFormation
+{
+    dHf_298   -382630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     451.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-273800.0
+    phase     gas;
+}

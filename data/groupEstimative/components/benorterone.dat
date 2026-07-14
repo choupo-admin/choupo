@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benorterone  (C19H28O2, CAS 3570-10-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benorterone;
+formula     C19H28O2;
+CAS         3570-10-3;
+InChIKey    RQETXCPBBLHUIB-UGCZWRCOSA-N;
+MW          288.431;      // g/mol [origin=calculated method=formula-sum]
+Tc          1071.29;      // K   [origin=predictive method=joback]
+Pc          20.568;      // bar [origin=predictive method=joback]
+omega       1.0253;      // -   [origin=predictive method=lee-kesler]
+Tb          833.88;      // K   [origin=predictive method=joback]
+HvapTb      76037.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-310.13 2.94696 -0.00289864 1.2062e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 3; } { group C; count 3; } { group CH=C; count 1; } { group OH; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 7; } { group CH_ring; count 3; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,3as,5as,5br,10ar,10bs)-3,3a,5b-trimethyl-3-oxidanyl-1,2,4,5,5a,6,7,10,10a,10b-decahydrocyclopenta[a]fluoren-8-one" "benorterone [usan:inn]" "benorteronum [inn-latin]" "benorterona" "benorteronum" "17-alpha-methyl-b-nortestosterone" "17beta-hydroxy-17-methyl-b-norandrost-4-en-3-one" "benorterone (usan/inn)" "17-beta-hydroxy-17-methyl-b-norandrost-4-en-3-one" "b-norandrost-4-en-3-one, 17-beta-hydroxy-17-methyl-" "b-norandrost-4-en-3-one, 17-hydroxy-17-methyl-, (17beta)-" );
+gibbsFormation
+{
+    dHf_298   -407510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     667.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=32730.0
+    phase     gas;
+}

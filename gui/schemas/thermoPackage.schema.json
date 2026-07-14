@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/thermoPackage.schema.json",
-  "title": "thermoPackage",
-  "description": "Components and mixture models (constant/thermoPackage).",
+  "title": "propertyDict",
+  "description": "Components and mixture models (constant/propertyDict).",
   "type": "object",
   "required": ["components"],
   "properties": {

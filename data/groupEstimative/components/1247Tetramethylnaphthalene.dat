@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,4,7-tetramethylnaphthalene  (C14H16, CAS 16020-17-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1247Tetramethylnaphthalene;
+formula     C14H16;
+CAS         16020-17-0;
+InChIKey    VKYSGHPKBHQJGN-UHFFFAOYSA-N;
+MW          184.282;      // g/mol [origin=calculated method=formula-sum]
+Tc          810.66;      // K   [origin=predictive method=joback]
+Pc          23.888;      // bar [origin=predictive method=joback]
+omega       0.5387;      // -   [origin=predictive method=lee-kesler]
+Tb          585.50;      // K   [origin=predictive method=joback]
+HvapTb      53322.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.99 1.01328 -0.00063756 1.624e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group ACCH3; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "naphthalene, 1,2,4,7-tetramethyl-" );
+gibbsFormation
+{
+    dHf_298   49430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     461.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=247540.0
+    phase     gas;
+}

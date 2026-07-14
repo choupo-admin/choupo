@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-iodoperfluoropentane  (C5F11I, CAS 638-79-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Iodoperfluoropentane;
+formula     C5F11I;
+CAS         638-79-9;
+InChIKey    KCEJJSGJNCSQFI-UHFFFAOYSA-N;
+MW          395.933;      // g/mol [origin=calculated method=formula-sum]
+Tc          536.10;      // K   [origin=predictive method=joback]
+Pc          22.250;      // bar [origin=predictive method=joback]
+omega       0.4426;      // -   [origin=predictive method=lee-kesler]
+Tb          382.96;      // K   [origin=predictive method=joback]
+HvapTb      20630.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-45.33 1.2766 -0.001369 5.093e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group I; count 1; } { group CF3; count 1; } { group CF2; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 5; } { group F; count 11; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2,3,3,4,4,5,5-undecakis(fluoranyl)-5-iodanyl-pentane" "perfluoropentyl iodide" "undecafluoropentyl iodide" "1,1,1,2,2,3,3,4,4,5,5-undecafluoro-5-iodopentane" "pentane, 1,1,1,2,2,3,3,4,4,5,5-undecafluoro-5-iodo-" "perfluoropentyliodide" "pentane, undecafluoro-5-iodo-" "1,1,1,2,2,3,3,4,4,5,5-undecafluoro-5-iodo" "pentane,1,1,1,2,2,3,3,4,4,5,5-undecafluoro-5-iodo-" "pentane,undecafluoro-1-iodo- (6ci,7ci,8ci); 1-iodoperfluoropentane;iodoundecafluoropentane; perfluoroamyl iodide; perfluoropentyliodide" );
+gibbsFormation
+{
+    dHf_298   -2270620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     560.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2079370.0
+    phase     gas;
+}

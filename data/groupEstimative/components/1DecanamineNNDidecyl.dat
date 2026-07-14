@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-decanamine, n,n-didecyl-  (C30H63N, CAS 1070-01-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1DecanamineNNDidecyl;
+formula     C30H63N;
+CAS         1070-01-5;
+InChIKey    COFKFSSWMQHKMD-UHFFFAOYSA-N;
+MW          437.841;      // g/mol [origin=calculated method=formula-sum]
+Tc          1110.23;      // K   [origin=predictive method=joback]
+Pc          5.949;      // bar [origin=predictive method=joback]
+omega       0.4172;      // -   [origin=predictive method=lee-kesler]
+Tb          898.44;      // K   [origin=predictive method=joback]
+HvapTb      84417.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-35.073 2.97776 -0.0017208 3.832e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 26; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 27; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-didecyldecan-1-amine" "tris(decyl)amine" "tri-n-decylamine" "tridecanitrile (mixed isomers)" "tri-n-decylamine (tertiary amine)" );
+gibbsFormation
+{
+    dHf_298   -595000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1340.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=312500.0
+    phase     gas;
+}

@@ -6,17 +6,7 @@
   in the liquid by construction (no Psat needed for a nonvolatile lump).
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    meltFeed
-    {
-        F            10.0 kmol/h;     // a "mole" of polymer is 50 kg -- molar
-                                      // flow is small, mass flow is large
-        T            450.0 K;
-        P              0.2 bar;       // vacuum devolatilisation
-        molarComposition  { toluene 0.15;  polystyrene 0.85; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

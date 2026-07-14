@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexaethylene glycol  (C12H26O7, CAS 2615-15-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexaethyleneGlycol;
+formula     C12H26O7;
+CAS         2615-15-8;
+InChIKey    IIRDTKBZINWQAW-UHFFFAOYSA-N;
+MW          282.333;      // g/mol [origin=calculated method=formula-sum]
+Tc          944.09;      // K   [origin=predictive method=joback]
+Pc          19.389;      // bar [origin=predictive method=joback]
+omega       1.5608;      // -   [origin=predictive method=lee-kesler]
+Tb          770.62;      // K   [origin=predictive method=joback]
+HvapTb      87714.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (130.062 0.8958 -0.0001348 -1.228e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH2O; count 3; } { group C2H5O2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 12; } { group OH; count 2; } { group O; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-[2-[2-(2-hydroxyethyloxy)ethoxy]ethoxy]ethoxy]ethoxy]ethanol" "hexagol" "3,6,9,12,15-pentaoxaheptadecane-1,17-diol" "hexaoxyethylene glycol" "polyoxyethylene (6)" "peg-6" "ethanol, 2,2'-(oxybis(ethyleneoxyethyleneoxy))di-" "p6g" "2-[2-(2-{2-[2-(2-hydroxyethoxy)ethoxy]ethoxy}ethoxy)ethoxy]ethan-1-ol" "2-[2-[2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethoxy]ethoxy]ethanol" "3,9,12,15-pentaoxaheptadecane-1,17-diol" "ethanol,2'-[oxybis(ethyleneoxyethyleneoxy)]di-" );
+gibbsFormation
+{
+    dHf_298   -1256570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     781.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-748480.0
+    phase     gas;
+}

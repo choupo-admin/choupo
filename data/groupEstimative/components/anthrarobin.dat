@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: anthrarobin  (C14H10O3, CAS 577-33-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        anthrarobin;
+formula     C14H10O3;
+CAS         577-33-3;
+InChIKey    TZIQWQARHPGHIG-UHFFFAOYSA-N;
+MW          226.231;      // g/mol [origin=calculated method=formula-sum]
+Tc          1104.41;      // K   [origin=predictive method=joback]
+Pc          58.361;      // bar [origin=predictive method=joback]
+omega       1.3546;      // -   [origin=predictive method=lee-kesler]
+Tb          831.40;      // K   [origin=predictive method=joback]
+HvapTb      92018.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-119.09 1.6518 -0.00174448 7.175e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 7; } { group AC; count 4; } { group ACOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 7; } { group dC_ring; count 7; } { group OH_phenol; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "anthracene-1,2,10-triol" "desoxyalizarin" "1,2,10-trihydroxyanthracene" "leucoalizarin" "leukoalizarin" "3,4-dihydroxyanthranol" "1,2,10-anthratriol" "3,4,9-trihydroxyanthracene" "1,2,10-anthracenetriol" "1,10-anthratriol" "1,10-anthracenetriol" "3,9,-trihydroxyanthracene" );
+gibbsFormation
+{
+    dHf_298   -257020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     450.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-80780.0
+    phase     gas;
+}

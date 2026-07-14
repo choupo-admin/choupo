@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-thiacyclodeca-3,8-diyne  (C9H10S, CAS 115227-74-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Thiacyclodeca38Diyne;
+formula     C9H10S;
+CAS         115227-74-2;
+InChIKey    BIXURTSOTIYEDE-UHFFFAOYSA-N;
+MW          150.239;      // g/mol [origin=calculated method=formula-sum]
+Tc          776.49;      // K   [origin=predictive method=joback]
+Pc          42.719;      // bar [origin=predictive method=joback]
+omega       0.2174;      // -   [origin=predictive method=lee-kesler]
+Tb          495.57;      // K   [origin=predictive method=joback]
+HvapTb      46482.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.9 0.72221 -0.00043662 1.0046e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group C_C; count 2; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tC; count 4; } { group CH2_ring; count 5; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2h-thiecin,5,6,7,10-tetrahydro-" "2h-thiecin,3,4,8,9-tetradehydro-5,6,7,10-tetrahydro- (9ci); 1-thiacyclodeca-3,8-diyne" );
+gibbsFormation
+{
+    dHf_298   435430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     512.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=502520.0
+    phase     gas;
+}

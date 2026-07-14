@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluorosebacic acid  (C10H2F16O4, CAS 307-78-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluorosebacicAcid;
+formula     C10H2F16O4;
+CAS         307-78-8;
+InChIKey    YPCSMEGZIYWAAZ-UHFFFAOYSA-N;
+MW          490.09;      // g/mol [origin=calculated method=formula-sum]
+Tc          843.79;      // K   [origin=predictive method=joback]
+Pc          15.164;      // bar [origin=predictive method=joback]
+omega       1.2069;      // -   [origin=predictive method=lee-kesler]
+Tb          681.90;      // K   [origin=predictive method=joback]
+HvapTb      48742.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-95.33 2.2506 -0.0023022 8.286e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 2; } { group CF2; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 8; } { group F; count 16; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9-hexadecakis(fluoranyl)decanedioic acid" "hexadecafluorodecanedioic acid" "hexadecafluorosebacic acid" "perfluorodecanedioic acid" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9-hexadecafluorodecanedioic acid" "decanedioic acid, hexadecafluoro-" "hexadecafluorosebacic acid; perfluorodecanedioic acid; perfluorosebacic acid" "decanedioicacid, hexadecafluoro- (6ci,7ci,8ci,9ci); hexadecafluorosebacic acid;perfluorodecanedioic acid; perfluorosebacic acid" );
+gibbsFormation
+{
+    dHf_298   -4158030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     847.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3748740.0
+    phase     gas;
+}

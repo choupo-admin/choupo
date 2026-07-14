@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propionyl radical  (C3H5O, CAS 15843-24-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C3H5O (delta C+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        propionylRadical;
+formula     C3H5O;
+CAS         15843-24-0;
+InChIKey    UFUASNAHBMBJIX-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+role        radical;
+MW          57.072;      // g/mol [origin=calculated method=formula-sum]
+Tc          373.22;      // K   [origin=predictive method=joback]
+Pc          56.617;      // bar [origin=predictive method=joback]
+omega       0.2451;      // -   [origin=predictive method=lee-kesler]
+Tb          234.16;      // K   [origin=predictive method=joback]
+HvapTb      25808.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.519 0.31652 -0.0002797 1.034e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dO_oth; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propan-1-one" "1-oxopropyl" "propanoyl" );
+gibbsFormation
+{
+    dHf_298   -276410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     299.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-232490.0
+    phase     gas;
+}

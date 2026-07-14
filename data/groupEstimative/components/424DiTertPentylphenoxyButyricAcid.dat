@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(2,4-di-tert-pentylphenoxy)butyric acid  (C20H32O3, CAS 50772-35-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        424DiTertPentylphenoxyButyricAcid;
+formula     C20H32O3;
+CAS         50772-35-5;
+InChIKey    LZSDVFDKDUZVFK-UHFFFAOYSA-N;
+MW          320.473;      // g/mol [origin=calculated method=formula-sum]
+Tc          1068.10;      // K   [origin=predictive method=joback]
+Pc          13.447;      // bar [origin=predictive method=joback]
+omega       1.0000;      // -   [origin=predictive method=lee-kesler]
+Tb          855.31;      // K   [origin=predictive method=joback]
+HvapTb      80696.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-39.445 1.94522 -0.00126652 3.195e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 4; } { group C; count 2; } { group ACH; count 3; } { group AC; count 3; } { group CH2O; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 5; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[2,4-bis(2-methylbutan-2-yl)phenoxy]butanoic acid" "4-(2,4-di-tert-pentylphenoxy)butanoic acid" "butanoic acid, 4-[2,4-bis(1,1-dimethylpropyl)phenoxy]-" "4-[2,4-bis(1,1-dimethylpropyl)phenoxy]butanoic acid" "butanoic acid, 4-(2,4-bis(1,1-dimethylpropyl)phenoxy)-" "upcmld0enat5883862:001" "p834" "4-(2,4-bis(tert-pentyl)phenoxy)butyric acid" "butanoic acid,4-[2,4-bis(1,1-dimethylpropyl)phenoxy]-" "butanoic acid, 4-[2, 4-bis(2, 2-dimethylpropyl)phenoxy]-" );
+gibbsFormation
+{
+    dHf_298   -742530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     802.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-232560.0
+    phase     gas;
+}

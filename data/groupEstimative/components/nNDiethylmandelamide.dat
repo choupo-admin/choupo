@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-diethylmandelamide  (C12H17NO2, CAS 2019-69-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDiethylmandelamide;
+formula     C12H17NO2;
+CAS         2019-69-4;
+InChIKey    UXLCWYBQDGCVQE-UHFFFAOYSA-N;
+MW          207.273;      // g/mol [origin=calculated method=formula-sum]
+Tc          855.44;      // K   [origin=predictive method=joback]
+Pc          28.354;      // bar [origin=predictive method=joback]
+omega       1.1381;      // -   [origin=predictive method=lee-kesler]
+Tb          658.89;      // K   [origin=predictive method=joback]
+HvapTb      69662.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-41.648 1.20074 -0.0007877 1.9476e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group ACH; count 5; } { group ACCH; count 1; } { group OH; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-diethyl-2-oxidanyl-2-phenyl-ethanamide" "n,n-diethyl-2-hydroxy-2-phenylacetamide" "mandelamide, n,n-diethyl-" "2-hydroxy-2-phenyl-n,n-diethylacetamide" "n,n-diethyl-alpha-hydroxybenzeneacetamide" "benzeneacetamide, n,n-diethyl-alpha-hydroxy-" );
+gibbsFormation
+{
+    dHf_298   -257040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     601.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=5170.0
+    phase     gas;
+}

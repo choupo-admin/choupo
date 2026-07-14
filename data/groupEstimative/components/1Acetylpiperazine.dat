@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-acetylpiperazine  (C6H12N2O, CAS 13889-98-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Acetylpiperazine;
+formula     C6H12N2O;
+CAS         13889-98-0;
+InChIKey    PKDPUENCROCRCH-UHFFFAOYSA-N;
+MW          128.175;      // g/mol [origin=calculated method=formula-sum]
+Tc          686.75;      // K   [origin=predictive method=joback]
+Pc          44.742;      // bar [origin=predictive method=joback]
+omega       0.5402;      // -   [origin=predictive method=lee-kesler]
+Tb          471.69;      // K   [origin=predictive method=joback]
+HvapTb      45063.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-55.4 0.81452 -0.0005187 1.2336e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2NH; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 4; } { group CdO; count 1; } { group NH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-piperazin-1-ylethanone" "n-acetylpiperazine" "1-(piperazin-1-yl)ethanon" "n-acetyl piperazine" "1-(piperazin-1-yl)ethan-1-one" "1-(piperazin-1-yl)ethanone" "acetylpiperazine" "1-acetyl piperazine" "1-acetyl-piperazine" "piperazine, 1-acetyl-" "agn-pc-0d9zjf" "1-piperazin-1-yl-ethanone" );
+gibbsFormation
+{
+    dHf_298   -93590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     418.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=113470.0
+    phase     gas;
+}

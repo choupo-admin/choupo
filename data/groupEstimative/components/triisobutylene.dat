@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triisobutylene  (C12H24, CAS 39761-68-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triisobutylene;
+formula     C12H24;
+CAS         39761-68-7;
+InChIKey    DRHABPMHZRIRAH-UHFFFAOYSA-N;
+MW          168.324;      // g/mol [origin=calculated method=formula-sum]
+Tc          664.48;      // K   [origin=predictive method=joback]
+Pc          19.321;      // bar [origin=predictive method=joback]
+omega       0.3454;      // -   [origin=predictive method=lee-kesler]
+Tb          471.74;      // K   [origin=predictive method=joback]
+HvapTb      39752.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-70.839 1.41544 -0.0010587 3.246e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 7; } { group CH2; count 1; } { group C; count 2; } { group CH=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 7; } { group CH2; count 1; } { group C; count 2; } { group dCH; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4,4,6,6-pentamethylhept-2-ene" "2-heptene, 2,4,4,6,6-pentamethyl-" "2-methyl propyl radical" );
+gibbsFormation
+{
+    dHf_298   -201080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     534.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=127510.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 3-(dimethylamino)acrylate  (C7H13NO2, CAS 924-99-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl3DimethylaminoAcrylate;
+formula     C7H13NO2;
+CAS         924-99-2;
+InChIKey    MVUMJYQUKKUOHO-AATRIKPKSA-N;
+MW          143.186;      // g/mol [origin=calculated method=formula-sum]
+Tc          614.18;      // K   [origin=predictive method=joback]
+Pc          29.698;      // bar [origin=predictive method=joback]
+omega       0.5245;      // -   [origin=predictive method=lee-kesler]
+Tb          434.58;      // K   [origin=predictive method=joback]
+HvapTb      40584.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.939 0.75796 -0.0004588 9.98e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH=CH; count 1; } { group CH3N; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH; count 2; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl (e)-3-(dimethylamino)prop-2-enoate" "ethyl trans-3-dimethylaminoacrylate" "(e)-ethyl 3-(dimethylamino)acrylate" "ethyl 3-(dimethylamino)prop-2-enoate" "ethyl 3-(n,n-dimethylamino)acrylate" "2-propenoic acid, 3-(dimethylamino)-, ethyl ester" "acrylic acid, 3-(dimethylamino)-, ethyl ester, (e)-" "3-(dimethylamino)acrylic acid ethyl ester" "ethyl (2e)-3-(dimethylamino)-2-propenoate" "ethyl (2e)-3-(dimethylamino)prop-2-enoate" "(e)-3-(dimethylamino)-2-propenoic acid ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -320340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     489.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-111310.0
+    phase     gas;
+}

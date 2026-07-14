@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+"""choupo-drill -- materialise a standalone sub-case from ONE sector of a plant.
+
+The stream-state architecture (docs/architecture/stream-state-architecture.md
+2.6): drilling in changes the DOMAIN, not the stream.  A sector's producer that
+LEAVES the domain flips the stream's role internal -> INLET automatically.  We
+build a ONE-SECTOR plant so the sector keeps the GLOBAL component set (spectator
+species like a NaCl background still load) and its own thermo override:
+
+  * system/flowsheetDict   children ( SECTOR ); the parent's inter-sector edges
+                           RESTRICTED to the sector -- an endpoint outside the
+                           domain is TRUNCATED, so `liquor { from BRINE/liquor;
+                           to SECTOR/liquor }` (internal in the plant) becomes
+                           `liquor { to SECTOR/liquor }` (an INLET here).  The
+                           edge is not edited -- its role follows the domain.
+  * constant/              the parent's data closure (global package) + the
+                           sector's own overlay -- SELF-CONTAINED.
+  * SECTOR/                the sector, untouched (its edges already correct).
+  * 0/                     materialised from the parent's persisted state
+                           (converged/ by default), sector-owned.
+
+Usage:  choupo-drill <plant-case> <SECTOR> <out-dir> [--from converged|<statedir>]
+"""
+import os, re, shutil, sys
+
+def parse_named_edges(fs_text):
+    m = re.search(r'\bconnections\s*\{', fs_text)
+    if not m: return []
+    i = m.end() - 1; depth = 0; j = i
+    while j < len(fs_text):
+        if fs_text[j] == '{': depth += 1
+        elif fs_text[j] == '}':
+            depth -= 1
+            if depth == 0: break
+        j += 1
+    body = fs_text[i+1:j]
+    edges = []
+    for em in re.finditer(r'(\w+)\s*\{([^}]*)\}', body):
+        inner = em.group(2)
+        fr = re.search(r'\bfrom\s+([^\s;]+)', inner)
+        to = re.search(r'\bto\s+([^\s;]+)', inner)
+        edges.append([em.group(1), fr.group(1) if fr else "", to.group(1) if to else ""])
+    return edges
+
+def child_of(port):
+    return port.split('/', 1)[0] if '/' in port else ""
+
+def main():
+    if len(sys.argv) < 4:
+        sys.exit(__doc__)
+    plant, sector, out = sys.argv[1], sys.argv[2], sys.argv[3]
+    src = sys.argv[sys.argv.index("--from") + 1] if "--from" in sys.argv else "converged"
+
+    sdir = os.path.join(plant, sector)
+    if not os.path.isdir(sdir):
+        sys.exit(f"choupo-drill: no sector '{sector}' in {plant}")
+    statedir = os.path.join(plant, src)
+    if not os.path.isdir(statedir):
+        sys.exit(f"choupo-drill: parent has no '{src}/' -- run the plant first "
+                 f"(no silent 'latest'; pass --from <statedir> explicitly)")
+
+    # RESTRICT the parent's root edges to this sector; truncate the endpoints
+    # that leave the domain (that is the role flip).
+    root_edges = parse_named_edges(open(os.path.join(plant, "system", "flowsheetDict")).read())
+    kept = []
+    for name, fr, to in root_edges:
+        touches = child_of(fr) == sector or child_of(to) == sector
+        if not touches: continue
+        nf = fr if child_of(fr) == sector else ""     # producer left the domain -> feed
+        nt = to if child_of(to) == sector else ""     # consumer left the domain -> outlet
+        kept.append([name, nf, nt])
+    if not kept:
+        sys.exit(f"choupo-drill: no root edge touches sector '{sector}'")
+
+    # --- assemble the self-contained one-sector sub-case -------------------
+    if os.path.exists(out): shutil.rmtree(out)
+    os.makedirs(os.path.join(out, "system"))
+    shutil.copytree(os.path.join(plant, "constant"), os.path.join(out, "constant"))
+    shutil.copytree(sdir, os.path.join(out, sector))
+
+    with open(os.path.join(out, "system", "flowsheetDict"), "w") as f:
+        f.write(f"/*--- Drilled domain: sector {sector} of {os.path.basename(plant)}. "
+                f"Every stream keeps its identity; its ROLE is inferred in THIS "
+                f"domain (a producer that left -> the stream is now an inlet). ---*/\n\n")
+        f.write(f"children    ( {sector} );\n\nconnections\n{{\n")
+        for name, fr, to in kept:
+            parts = (f"from {fr}; " if fr else "") + (f"to {to};" if to else "")
+            f.write(f"    {name:14s} {{ {parts} }}\n")
+        f.write("}\n")
+    # copy the parent's controlDict metadata but keep it a solve
+    with open(os.path.join(out, "system", "controlDict"), "w") as f:
+        f.write(f'application   choupoSolve;\n'
+                f'description   "Drilled sector {sector} -- role of each boundary '
+                f'stream inferred in this domain (drill-in test).";\n'
+                f'verbosity     3;\n')
+    for opt in ("solverDict",):
+        s = os.path.join(plant, "system", opt)
+        if os.path.exists(s): shutil.copy2(s, os.path.join(out, "system", opt))
+
+    # --- materialise 0/ from the parent's persisted state ------------------
+    found = {}
+    for root, _d, files in os.walk(statedir):
+        for fn in files:
+            found.setdefault(fn, os.path.join(root, fn))
+    # The drilled domain's streams: the restricted-edge names (boundary) PLUS the
+    # sector's OWN internal edges (produced inside the sector).
+    sect_edges = parse_named_edges(open(os.path.join(sdir, "system", "flowsheetDict")).read())
+    stream_names = set(nm for nm, _f, _t in kept)
+    stream_names |= set(nm for nm, fr, to in sect_edges if fr and to)   # internal
+    missing, n = [], 0
+    for name in sorted(stream_names):
+        if name not in found: missing.append(name); continue
+        dest = os.path.join(out, "0", sector, name)
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        shutil.copy2(found[name], dest)
+        n += 1
+    if missing:
+        sys.exit(f"choupo-drill: parent {src}/ missing state for: {', '.join(missing)}")
+
+    inlets = [nm for nm, fr, to in kept if not fr and to]
+    print(f"choupo-drill: {sector} -> {out}")
+    print(f"  {n} stream(s) materialised into 0/ from {os.path.basename(plant)}/{src}/")
+    print(f"  role flipped to INLET in this domain (internal in the plant): {', '.join(inlets)}")
+
+if __name__ == "__main__":
+    main()

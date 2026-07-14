@@ -42,12 +42,15 @@ License
 #include "heatTransfer/MultiStreamHX.H"
 #include "heatTransfer/PhaseChanger.H"
 #include "heatTransfer/SolidDryer.H"
+#include "heatTransfer/EvaporativeDryer.H"
 #include "heatTransfer/SprayDryer.H"
+#include "heatTransfer/atomizer/Atomizer.H"
 #include "rotating/Compressor.H"
 #include "rotating/ElectricLoad.H"
 #include "rotating/Pump.H"
 #include "rotating/Turbine.H"
 #include "hydraulics/Pipe.H"
+#include "hydraulics/PneumaticConveyor.H"
 #include "membrane/SpiralWoundModule.H"
 #include "membrane/massTransfer/MassTransferModel.H"
 #include "membrane/osmotic/OsmoticModel.H"
@@ -58,7 +61,7 @@ License
 #include "reactor/ConversionReactor.H"
 #include "reactor/GibbsReactor.H"
 #include "reactor/PFR.H"
-#include "reactor/YieldReactor.H"
+#include "reactor/EquilibriumReactor.H"
 #include "saturation/BubblePoint.H"
 #include "saturation/DewPoint.H"
 #include "separation/Absorber.H"
@@ -67,6 +70,8 @@ License
 #include "separation/BagFilter.H"
 #include "separation/GasSolidSplitter.H"
 #include "separation/IonExchanger.H"
+#include "separation/PSA.H"
+#include "separation/TSATwinBed.H"
 #include "separation/Extractor.H"
 #include "electrochem/ElectrodialysisStack.H"
 #include "valve/Valve.H"
@@ -123,7 +128,8 @@ void UnitOperation::registerBuiltins()
     reg("conversionReactor",  []{ return std::make_unique<ConversionReactor>();  });
     reg("pfr",                []{ return std::make_unique<PFR>();                });
     reg("gibbsReactor",       []{ return std::make_unique<GibbsReactor>();       });
-    reg("yieldReactor",       []{ return std::make_unique<YieldReactor>();       });
+    reg("equilibriumReactor", []{ return std::make_unique<EquilibriumReactor>();  });
+    reg("REquil",             []{ return std::make_unique<EquilibriumReactor>();  });   // alias
     reg("isothermalFlash",    []{ return std::make_unique<IsothermalFlash>();    });
     reg("flash",              []{ return std::make_unique<IsothermalFlash>();    });   // alias
     reg("adiabaticFlash",     []{ return std::make_unique<AdiabaticFlash>();     });
@@ -139,6 +145,7 @@ void UnitOperation::registerBuiltins()
     reg("condenser",          []{ return std::make_unique<PhaseChanger>();       });   // alias
     reg("sprayDryer",         []{ return std::make_unique<SprayDryer>();         });
     reg("solidDryer",         []{ return std::make_unique<SolidDryer>();         });
+    reg("evaporativeDryer",   []{ return std::make_unique<EvaporativeDryer>();   });
     reg("crystalliser",       []{ return std::make_unique<Crystalliser>();       });
     reg("compressor",         []{ return std::make_unique<Compressor>();         });
     reg("turbine",            []{ return std::make_unique<Turbine>();            });
@@ -148,6 +155,7 @@ void UnitOperation::registerBuiltins()
     reg("splitter",           []{ return std::make_unique<Splitter>();           });
     reg("valve",              []{ return std::make_unique<Valve>();              });
     reg("pipe",               []{ return std::make_unique<Pipe>();               });
+    reg("pneumaticConveyor",  []{ return std::make_unique<PneumaticConveyor>();  });
     reg("distillationColumn", []{ return std::make_unique<DistillationColumn>(); });
     reg("column",             []{ return std::make_unique<DistillationColumn>(); });   // alias
     reg("absorber",           []{ return std::make_unique<Absorber>();           });
@@ -156,6 +164,8 @@ void UnitOperation::registerBuiltins()
     reg("bagFilter",          []{ return std::make_unique<BagFilter>();          });
     reg("gasSolidSplitter",   []{ return std::make_unique<GasSolidSplitter>();   });
     reg("ionExchanger",       []{ return std::make_unique<IonExchanger>();       });
+    reg("psa",                []{ return std::make_unique<PSA>();                });
+    reg("tsaTwinBed",         []{ return std::make_unique<TSATwinBed>();         });
     reg("extractor",          []{ return std::make_unique<Extractor>();          });
     reg("extract",            []{ return std::make_unique<Extractor>();          });   // alias
     reg("electrodialysisStack",[]{ return std::make_unique<ElectrodialysisStack>(); });
@@ -171,6 +181,10 @@ void UnitOperation::registerBuiltins()
     MassTransferModel::registerBuiltins();
     PressureDropModel::registerBuiltins();
     OsmoticModel    ::registerBuiltins();
+
+    // Spray-dryer atomizer registry (rotary / pressure-swirl / twin-fluid),
+    // selected via the SprayDryer `operation { atomiser { model …; } }` block.
+    Atomizer::registerBuiltins();
 }
 
 } // namespace Choupo

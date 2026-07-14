@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(2-ethoxyethoxy)ethyl acetate  (C8H16O4, CAS 112-15-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22EthoxyethoxyEthylAcetate;
+formula     C8H16O4;
+CAS         112-15-2;
+InChIKey    FPZWZCWUIYYYBU-UHFFFAOYSA-N;
+MW          176.212;      // g/mol [origin=calculated method=formula-sum]
+Tc          656.82;      // K   [origin=predictive method=joback]
+Pc          24.629;      // bar [origin=predictive method=joback]
+omega       0.7068;      // -   [origin=predictive method=lee-kesler]
+Tb          485.70;      // K   [origin=predictive method=joback]
+HvapTb      45629.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (72.025 0.58264 -9.48e-05 -8.27e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH3COO; count 1; } { group CH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group O; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-ethoxyethoxy)ethyl ethanoate" "carbitol acetate" "diethylene glycol monoethyl ether acetate" "ethoxydiglycol acetate" "ethanol, 2-(2-ethoxyethoxy)-, acetate" "de acetate" "ektasolve de acetate" "ethyldiglycol acetate" "diglycol monoethyl ether acetate" "glycol ether de acetate" "diethylene glycol ethyl ether acetate" "2-(2-ethoxyethoxy)ethanol acetate" );
+gibbsFormation
+{
+    dHf_298   -790170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     541.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-503890.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-hexadiyne  (C6H6, CAS 2809-69-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24Hexadiyne;
+formula     C6H6;
+CAS         2809-69-0;
+InChIKey    PCTCNWZFDASPLA-UHFFFAOYSA-N;
+MW          78.114;      // g/mol [origin=calculated method=formula-sum]
+Tc          574.59;      // K   [origin=predictive method=joback]
+Pc          46.026;      // bar [origin=predictive method=joback]
+omega       0.1384;      // -   [origin=predictive method=lee-kesler]
+Tb          354.88;      // K   [origin=predictive method=joback]
+HvapTb      33254.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (32.55 0.27424 -0.00011832 1.816e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C_C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group tC; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexa-2,4-diyne" "dimethylbutadiyne" "dimethylbutadiyne;dimethyldiacetylene" );
+gibbsFormation
+{
+    dHf_298   377430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     333.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=405240.0
+    phase     gas;
+}

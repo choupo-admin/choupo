@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-phenoxybutyl bromide  (C10H13BrO, CAS 1200-03-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4PhenoxybutylBromide;
+formula     C10H13BrO;
+CAS         1200-03-9;
+InChIKey    QBLISOIWPZSVIK-UHFFFAOYSA-N;
+MW          229.117;      // g/mol [origin=calculated method=formula-sum]
+Tc          762.02;      // K   [origin=predictive method=joback]
+Pc          31.036;      // bar [origin=predictive method=joback]
+omega       0.5921;      // -   [origin=predictive method=lee-kesler]
+Tb          543.66;      // K   [origin=predictive method=joback]
+HvapTb      48975.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.416 0.8499 -0.0005118 1.126e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group ACH; count 5; } { group AC; count 1; } { group CH2O; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-bromanylbutoxybenzene" "(4-bromobutoxy)benzene" "4-bromobutyl phenyl ether" "phenoxybutyl bromide" "(4-brombutoxy)benzol" "benzene, (4-bromobutoxy)-" "4-bromobutoxybenzene" "4-bromo-1-phenoxybutane" "4-phenoxybutylbromide" "benzene,(4-bromobutoxy)-" "4-bromobutyl phenyl ether , 97 %" "u277" );
+gibbsFormation
+{
+    dHf_298   -119090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     501.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=55050.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dibenzyl adipate  (C20H22O4, CAS 2451-84-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dibenzylAdipate;
+formula     C20H22O4;
+CAS         2451-84-5;
+InChIKey    AEUORZZHALJMBM-UHFFFAOYSA-N;
+MW          326.392;      // g/mol [origin=calculated method=formula-sum]
+Tc          1046.22;      // K   [origin=predictive method=joback]
+Pc          16.444;      // bar [origin=predictive method=joback]
+omega       1.0195;      // -   [origin=predictive method=lee-kesler]
+Tb          827.00;      // K   [origin=predictive method=joback]
+HvapTb      79480.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.284 1.6364 -0.0009374 1.636e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 10; } { group ACCH2; count 2; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(phenylmethyl) hexanedioate" "dibenzyl hexanedioate" "hexanedioic acid, bis(phenylmethyl) ester" "hexanedioic acid, 1,6-bis(phenylmethyl) ester" "adipic acid dibenzyl ester" "hexanedioic acid,1,6-bis(phenylmethyl) ester" "adipic acid,dibenzyl ester (6ci,7ci,8ci); hexanedioic acid, bis(phenylmethyl) ester (9ci);dibenzyl adipate" );
+gibbsFormation
+{
+    dHf_298   -617630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     824.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-278400.0
+    phase     gas;
+}

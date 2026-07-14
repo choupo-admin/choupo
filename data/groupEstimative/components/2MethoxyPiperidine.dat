@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methoxy-piperidine  (C6H13NO, CAS 53687-79-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2MethoxyPiperidine;
+formula     C6H13NO;
+CAS         53687-79-9;
+InChIKey    DNYWGUIJLFDIPD-UHFFFAOYSA-N;
+MW          115.176;      // g/mol [origin=calculated method=formula-sum]
+Tc          640.30;      // K   [origin=predictive method=joback]
+Pc          40.007;      // bar [origin=predictive method=joback]
+omega       0.3636;      // -   [origin=predictive method=lee-kesler]
+Tb          427.40;      // K   [origin=predictive method=joback]
+HvapTb      38547.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-25.75 0.61932 -0.000212 -1.79e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group CH3O; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methoxypiperidine" "c-c5h10n(2-och3)" "piperidine, 2-methoxy-" );
+gibbsFormation
+{
+    dHf_298   -207260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     364.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=6800.0
+    phase     gas;
+}

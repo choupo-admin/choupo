@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-oxaspiro[4.5]deca-3,6-diene, 2,6,10,10-tetramethyl-  (C13H20O, CAS 54344-61-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Oxaspiro45Deca36Diene261010Tetramethyl;
+formula     C13H20O;
+CAS         54344-61-5;
+InChIKey    BXVWNVFSJFBMTG-UHFFFAOYSA-N;
+MW          192.302;      // g/mol [origin=calculated method=formula-sum]
+Tc          787.15;      // K   [origin=predictive method=joback]
+Pc          24.975;      // bar [origin=predictive method=joback]
+omega       0.4155;      // -   [origin=predictive method=lee-kesler]
+Tb          553.66;      // K   [origin=predictive method=joback]
+HvapTb      48191.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-176.76 1.88508 -0.00184162 7.651e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 2; } { group CH=CH; count 1; } { group CH=C; count 1; } { group CH-O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6,6,10-tetramethyl-1-oxaspiro[4.5]deca-3,9-diene" "2,6,10,10-tetramethyl-1-oxaspiro(4.5)deca-3,6-diene" "2,6,10,10-tetramethyl-1-oxaspiro[4.5]deca-3,6-diene" "1-oxaspiro(4.5)deca-3,6-diene, 2,6,10,10-tetramethyl-" "3,6,10,10-tetramethyl-4-oxaspiro[4.5]deca-1,6-diene" );
+gibbsFormation
+{
+    dHf_298   -208460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     526.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77160.0
+    phase     gas;
+}

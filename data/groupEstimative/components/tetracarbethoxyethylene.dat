@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetracarbethoxyethylene  (C14H20O8, CAS 6174-95-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetracarbethoxyethylene;
+formula     C14H20O8;
+CAS         6174-95-4;
+InChIKey    IYHFWCBVJOQIIT-UHFFFAOYSA-N;
+MW          316.306;      // g/mol [origin=calculated method=formula-sum]
+Tc          947.48;      // K   [origin=predictive method=joback]
+Pc          16.259;      // bar [origin=predictive method=joback]
+omega       1.1236;      // -   [origin=predictive method=lee-kesler]
+Tb          756.72;      // K   [origin=predictive method=joback]
+HvapTb      76504.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (78.234 1.13448 -0.0004478 -2.2e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group C=C; count 1; } { group COO; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 4; } { group dC; count 2; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetraethyl ethene-1,1,2,2-tetracarboxylate" "tetraethyl ethenetetracarboxylate" "tetraethyl ethylenetetracarboxylate" "ethenetetracarboxylic acid, tetraethyl ester" "1,1,2,2-tetraethyl eth-1-ene-1,1,2,2-tetracarboxylate" "tetrakis(ethoxycarbonyl)ethylene" "sym-ethyl ethylenetetra carboxylate" "diethyl 2,3-bis(ethoxycarbonyl)but-2-ene-1,4-dioate" );
+gibbsFormation
+{
+    dHf_298   -1503770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     891.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1111360.0
+    phase     gas;
+}

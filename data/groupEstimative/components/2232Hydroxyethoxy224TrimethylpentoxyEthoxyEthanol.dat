@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-[2-[3-(2-hydroxyethoxy)-2,2,4-trimethylpentoxy]ethoxy]ethanol  (C14H30O5, CAS 68959-24-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2232Hydroxyethoxy224TrimethylpentoxyEthoxyEthanol;
+formula     C14H30O5;
+CAS         68959-24-0;
+InChIKey    PSYZTTIDPMAIDA-UHFFFAOYSA-N;
+MW          278.389;      // g/mol [origin=calculated method=formula-sum]
+Tc          943.13;      // K   [origin=predictive method=joback]
+Pc          17.448;      // bar [origin=predictive method=joback]
+omega       1.4204;      // -   [origin=predictive method=lee-kesler]
+Tb          767.43;      // K   [origin=predictive method=joback]
+HvapTb      85274.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (49.407 1.34988 -0.0006438 8.15e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group C; count 1; } { group CH2O; count 1; } { group C2H5O2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 7; } { group CH; count 2; } { group C; count 1; } { group OH; count 2; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[3-(2-hydroxyethyloxy)-2,2,4-trimethyl-pentoxy]ethoxy]ethanol" "2-({1-[2-(2-hydroxyethoxy)ethoxy]-2,2,4-trimethylpentan-3-yl}oxy)ethanol" "2-[3-[2-(2-hydroxyethoxy)ethoxy]-2,2-dimethyl-1-(isopropyl)propoxy]ethanol" "2-(3-(2-(2-hydroxyethoxy)ethoxy)-2,2-dimethyl-1-(1-methylethyl)propoxy)ethanol" "2-[3-[2-(2-hydroxyethoxy)ethoxy]-2,2-dimethyl-1-(1-methylethyl)propoxy]ethanol" "ethanol, 2-(3-(2-(2-hydroxyethoxy)ethoxy)-2,2-dimethyl-1-(1-methylethyl)propoxy)-" "ethanol, 2-[3-[2-(2-hydroxyethoxy)ethoxy]-2,2-dimethyl-1-(1-methylethyl)propoxy]-" "ethanol,2-[3-[2-(2-hydroxyethoxy)ethoxy]-2,2-dimethyl-1-(1-methylethyl)propoxy]-" );
+gibbsFormation
+{
+    dHf_298   -1052720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     779.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-523680.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oleyl chloride  (C18H35Cl, CAS 59485-81-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oleylChloride;
+formula     C18H35Cl;
+CAS         59485-81-3;
+InChIKey    IFABLCIRROMTAN-KTKRTIGZSA-N;
+MW          286.928;      // g/mol [origin=calculated method=formula-sum]
+Tc          821.71;      // K   [origin=predictive method=joback]
+Pc          11.640;      // bar [origin=predictive method=joback]
+omega       0.8077;      // -   [origin=predictive method=lee-kesler]
+Tb          653.03;      // K   [origin=predictive method=joback]
+HvapTb      60005.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.765 1.74062 -0.0010596 2.594e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 14; } { group CH=CH; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 15; } { group dCH; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z)-1-chloranyloctadec-9-ene" "9-octadecene, 1-chloro-" "cis-1-chloro-9-octadecene" "(z)-1-chlorooctadec-9-ene" "(9z)-1-chloro-9-octadecene" );
+gibbsFormation
+{
+    dHf_298   -313370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     883.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=168970.0
+    phase     gas;
+}

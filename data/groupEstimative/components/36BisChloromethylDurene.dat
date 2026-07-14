@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,6-bis(chloromethyl)durene  (C12H16Cl2, CAS 3022-16-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        36BisChloromethylDurene;
+formula     C12H16Cl2;
+CAS         3022-16-0;
+InChIKey    PGFAKOSRZYDFLR-UHFFFAOYSA-N;
+MW          231.16;      // g/mol [origin=calculated method=formula-sum]
+Tc          814.30;      // K   [origin=predictive method=joback]
+Pc          20.888;      // bar [origin=predictive method=joback]
+omega       0.5995;      // -   [origin=predictive method=lee-kesler]
+Tb          600.60;      // K   [origin=predictive method=joback]
+HvapTb      56662.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (55.352 0.78108 -0.0003658 5.06e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 2; } { group ACCH3; count 4; } { group CH2Cl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group dC_ring; count 6; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-bis(chloromethyl)-2,3,5,6-tetramethyl-benzene" "bis(chloromethyl)durene" "1,4-bis(chloromethyl)-2,3,5,6-tetramethylbenzene" "1,4-bis(chloromethyl)durene" "benzene, 1,4-bis(chloromethyl)-2,3,5,6-tetramethyl-" "1,4-di(chloromethyl)-2,3,5,6-tetramethylbenzene" "3,6-bis-(chloromethyl)-durene" "pgfakosrzydflr-uhfffaoysa-" "2,5,6-tetramethyl-p-dichloroxylylene" "2,3,5,6-tetramethyl-p-dichloroxylylene" "1,4,5-tetramethyl-3,6-bis(chloromethyl)benzene" "1,2,4,5-tetramethyl-3,6-bis(chloromethyl)benzene" );
+gibbsFormation
+{
+    dHf_298   -143310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     553.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=90560.0
+    phase     gas;
+}

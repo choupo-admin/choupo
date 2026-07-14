@@ -10,23 +10,7 @@
   condenser KPI (forward heat-link).
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            370.0 K;
-        P            1.01325 bar;
-        molarComposition  { benzene 0.50;  toluene 0.50; }
-    }
-    coldProcess
-    {
-        F            1500.0 kmol/h;
-        T            320.0 K;
-        P            1.01325 bar;
-        molarComposition  { benzene 1.0;  toluene 0.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (1r,2r)-n,n'-dimethyl-1,2-bis[3-(trifluoromethyl)phenyl]ethane-1,2-diamine  (C18H18F6N2, CAS 137944-39-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1r2rNNDimethyl12Bis3TrifluoromethylPhenylEthane12Diamine;
+formula     C18H18F6N2;
+CAS         137944-39-9;
+InChIKey    SBGOGHODWUZHIY-HZPDHXFCSA-N;
+MW          376.344;      // g/mol [origin=calculated method=formula-sum]
+Tc          964.71;      // K   [origin=predictive method=joback]
+Pc          15.949;      // bar [origin=predictive method=joback]
+omega       1.0073;      // -   [origin=predictive method=lee-kesler]
+Tb          763.38;      // K   [origin=predictive method=joback]
+HvapTb      66140.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-70.87 1.92364 -0.00142932 4.016e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 2; } { group ACCH; count 2; } { group CH3NH; count 2; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 2; } { group C; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group F; count 6; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1r,2r)-(+)-n,n'-dimethyl-1,2-bis[3-(trifluoromethyl)phenyl]-1, 2-ethanediamine" "(1r,2r)-(+)-n,n&#39-dimethyl-1,2-bis[3-(trifluoromethyl)phenyl]-1, 2-ethanediamine" "(1r,2r)-(+)-n,n'-dimethyl-1,2-bis[3-(trifluoromethyl)phenyl-1,2-ethane diamine" "(1r,2r)-(+)-n,n'-dimethyl-1,2-bis[3-(trifluoromethyl)phenyl]-1,2-ethane diamine" "(1r,2r)-(+)-n,n'-dimethyl-1,2-bis[3-(trifluoromethyl)phenyl]ethylenediamine" "(1r,2r)-(+)-n,n inverted exclamation marka-dimethyl-1,2-bis[(3-trifluoromethyl)phenyl]-1,2-ethanediamine" "(1r,2r)-(+)-n,n inverted exclamation marka-dimethyl-1,2-bis[3-(trifluoromethyl)phenyl]ethanediamine" );
+gibbsFormation
+{
+    dHf_298   -1062510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     806.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-683040.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-penten-4-olide  (C5H6O2, CAS 591-11-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Penten4Olide;
+formula     C5H6O2;
+CAS         591-11-7;
+InChIKey    BGLUXFNVVSVEET-UHFFFAOYSA-N;
+MW          98.101;      // g/mol [origin=calculated method=formula-sum]
+Tc          569.99;      // K   [origin=predictive method=joback]
+Pc          42.887;      // bar [origin=predictive method=joback]
+omega       0.3625;      // -   [origin=predictive method=lee-kesler]
+Tb          378.12;      // K   [origin=predictive method=joback]
+HvapTb      34336.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.71 0.51892 -0.00036108 9.47e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group CH=CH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-2h-furan-5-one" "5-methyl-2(5h)-furanone" "5-methylfuran-2(5h)-one" "2(5h)-furanone, 5-methyl-" "alpha,beta-angelica lactone" ".alpha.,.beta.-angelica lactone" "delta1-angelica lactone" "gamma-methyl-alpha,beta-crotonolactone" "delta(sup1)-angelica lactone" "4-hydroxy-2-pentenoic acid gamma-lactone" "delta(sup 1)-angelica lactone" "4-hydroxypent-2-enoic acid lactone" );
+gibbsFormation
+{
+    dHf_298   -333230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     274.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-228440.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-methylpiperazine  (C5H12N2, CAS 109-01-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Methylpiperazine;
+formula     C5H12N2;
+CAS         109-01-3;
+InChIKey    PVOAHINGSUIXLS-UHFFFAOYSA-N;
+MW          100.165;      // g/mol [origin=calculated method=formula-sum]
+Tc          600.21;      // K   [origin=predictive method=joback]
+Pc          46.785;      // bar [origin=predictive method=joback]
+omega       0.3593;      // -   [origin=predictive method=lee-kesler]
+Tb          394.94;      // K   [origin=predictive method=joback]
+HvapTb      36091.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-61.85 0.74752 -0.000483 1.205e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2NH; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 4; } { group NH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-methylpiperazine" "piperazine, 1-methyl-" "4-methylpiperazine" "1-methyl-piperazine" "n-methyl piperazine" "1-methyl piperazine" "methylpiperazine" "n-methyl-piperazine" "n-methylpiperazin" "n'-methylpiperazine" "methylpiperazine-n" "piperazine, methyl-" );
+gibbsFormation
+{
+    dHf_298   39630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     352.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=233970.0
+    phase     gas;
+}

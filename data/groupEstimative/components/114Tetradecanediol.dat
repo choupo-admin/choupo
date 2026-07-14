@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,14-tetradecanediol  (C14H30O2, CAS 19812-64-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        114Tetradecanediol;
+formula     C14H30O2;
+CAS         19812-64-7;
+InChIKey    XLKZJJVNBQCVIX-UHFFFAOYSA-N;
+MW          230.392;      // g/mol [origin=calculated method=formula-sum]
+Tc          867.40;      // K   [origin=predictive method=joback]
+Pc          17.684;      // bar [origin=predictive method=joback]
+omega       1.4021;      // -   [origin=predictive method=lee-kesler]
+Tb          704.28;      // K   [origin=predictive method=joback]
+HvapTb      80116.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.744 1.4018 -0.0007986 1.75e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 14; } { group OH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 14; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetradecane-1,14-diol" "tetradecamethylene glycol" "tetradecane-1,14-diol;" "tetra decamethylene glycol" "s009" );
+gibbsFormation
+{
+    dHf_298   -636750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     803.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-206640.0
+    phase     gas;
+}

@@ -1,0 +1,182 @@
+\documentclass[11pt,a4paper]{article}
+\newcommand{\docTitle}{Explorer Guide}
+\input{preamble.tex}
+
+\title{}
+\author{}
+\date{}
+
+\begin{document}
+
+\manualfrontmatter{Explorer Guide}{
+Choupo is a trademark of TalentGround Lda.
+
+Anthropic, Claude, and Claude Code are trademarks or registered trademarks of
+Anthropic, PBC.
+}
+
+% =====================================================================
+\section{What the Explorer is}
+
+The Explorer is Choupo's \emph{interactive thermodynamics bench}: pick
+components, pick a view, and SEE what the selected property models do ---
+instantly, in the browser, with no case authoring at all.  It answers the
+question that comes \emph{before} any simulation: \textbf{``what does this
+thermodynamics look like?''}
+
+It sits deliberately between two other surfaces:
+\begin{itemize}[leftmargin=*,nosep]
+  \item The \textbf{props bench} (\code{choupoProps} cases) asks the same
+        questions \emph{reproducibly}: a case file, golden-locked numbers,
+        validation blocks.  The Explorer is its sketchpad --- what you find
+        here, you pin down there.
+  \item The \textbf{simulators} consume the models the Explorer displays.
+        A surprise in a flowsheet (an azeotrope, a scaling mineral, a
+        runaway $\gamma$) is usually visible in the Explorer in thirty
+        seconds.
+\end{itemize}
+
+Everything the Explorer draws is computed by the SAME C++ engine
+(compiled to WebAssembly) with the SAME curated catalogue
+(\file{data/standards/}) the solvers use.  There is no ``display model'':
+if the Explorer shows an azeotrope at $x = 0.89$, the distillation column
+will hit it at $x = 0.89$.
+
+\section{The workflow}
+
+\begin{enumerate}[leftmargin=*,nosep]
+  \item \textbf{Pick components} in the left panel.  The list is the live
+        catalogue; each card shows the data the component actually carries
+        (criticals, $P^{\mathrm{sat}}$, $c_p$, formation --- and what it
+        lacks).  Case-local components (from an open case's
+        \file{constant/}) appear alongside, marked.
+  \item \textbf{Pick a view} (the tabs enable themselves when their
+        component-count and data requirements are met; a disabled tab tells
+        you WHY it is disabled).
+  \item \textbf{Pick the method} where more than one applies ---
+        activity model, equation of state, $P^{\mathrm{sat}}$ correlation.
+        Overlaying two methods on the same axes is the fastest modelling
+        lesson Choupo offers: the gap between the curves IS the modelling
+        uncertainty.
+  \item \textbf{Export}: every view is a Plotly figure (zoom, hover, save
+        PNG) backed by numbers you can carry into a props case for the
+        golden-locked version.
+\end{enumerate}
+
+\section{The views, one by one}
+
+\subsection{Property vs $T$/$P$ (scan)}
+Any pure-component property --- $P^{\mathrm{sat}}$, liquid density,
+$c_p$, viscosity, enthalpy --- swept over temperature or pressure, for one
+or many components.  Use it to: check a correlation's range before trusting
+it in a case; compare components; spot the nonsense that extrapolation
+produces outside a fit's window (the guide's recurring lesson: a
+correlation is DATA, and data has a domain).
+
+\subsection{Pure phase diagram ($P$--$T$)}
+The full phase map of one substance: sublimation, melting and vapour-pressure
+lines meeting at the triple point, ending at the critical point.  Expect
+water's negatively-sloped melting line (the anomaly), and the supercritical
+region where the liquid/vapour distinction dissolves.
+
+\subsection{Binary boiling envelope ($T$--$x$--$y$)}
+The bubble and dew curves of a binary at fixed $P$.  This is where
+azeotropes announce themselves: the curves touch, and no distillation can
+cross the touching point.  Switch the activity model (ideal $\to$ NRTL
+$\to$ UNIFAC) and watch the envelope bend --- ideal solutions cannot
+azeotrope; real ones do.
+
+\subsection{$\gamma(x)$ --- activity coefficients}
+The raw non-ideality of a binary: $\gamma_1, \gamma_2$ against composition,
+with the infinite-dilution values $\gamma^\infty$ at the edges.
+$\gamma > 1$: the pair dislikes mixing (positive deviation, minimum-boiling
+azeotropes); $\gamma < 1$: association (maximum-boiling).  The
+Gibbs--Duhem constraint ties the two curves together --- one cannot bend
+without the other answering.
+
+\subsection{McCabe--Thiele (distillation)}
+The classic $x$--$y$ construction: equilibrium curve, operating lines,
+$q$-line, stages stepped off graphically.  Change reflux and watch the
+stage count respond; push the specs toward an azeotrope and watch the pinch
+strangle the staircase.  The fastest intuition-builder for distillation
+that exists --- and it runs on the same $K$-values the rigorous column
+uses.
+
+\subsection{Binary flash ($x$--$y$ + lever rule)}
+One flash, drawn: feed, vapour and liquid on the equilibrium diagram with
+the lever rule made visible.  Use it to understand what a single
+equilibrium stage can and cannot do.
+
+\subsection{Binary and ternary LLE}
+Liquid--liquid splitting from the mixing Gibbs energy: $g_{\mathrm{mix}}(x)$
+with the common-tangent construction (binary), and the ternary solubility
+envelope with tie-lines (UNIFAC-predicted).  Expect the tangent points ---
+not the minima --- to define the coexisting phases; that distinction is the
+whole thermodynamics of demixing.
+
+\subsection{Ternary boiling surface}
+$T_{\mathrm{bubble}}$ over the composition triangle: valleys are
+distillation boundaries, and azeotropes sit at the stationary points.
+
+\subsection{Psychrometric chart}
+Humid air: humidity vs temperature with saturation, wet-bulb and enthalpy
+structure --- the working chart for dryers and HVAC, computed from the same
+gas-phase thermodynamics as everything else.
+
+\subsection{Scaling (SI vs recovery)}
+The membrane/brine screening view: concentrate a water composition over
+recovery and watch each mineral's saturation index climb toward
+$\mathrm{SI} = 0$ (the precipitation line).  The Davies-vs-Pitzer method
+switch is the lesson: at high ionic strength the two activity models give
+DIFFERENT scaling verdicts, and choosing one is an engineering decision.
+
+\subsection{Equilibrium map (Gibbs)}
+The chemical-reaction view: pick two or more gas-phase species (with plain
+formulas --- the atom matrix is derived from them, glass-box) and a feed,
+and get iso-lines of a product's equilibrium mole fraction over the
+$T\times P$ plane.  The whole point is the tension it makes visible: for
+ammonia ($\mathrm{N_2+3H_2\rightleftharpoons 2NH_3}$) the equilibrium
+optimum sits cold and high-pressure, yet the labelled industrial window
+sits hot --- where the catalyst can work.  Answers the beginner's real
+confusion first (``where do I write the reaction?'' --- you don't; Gibbs
+redistributes the ATOMS you fed, shown as a live element balance).
+\emph{Click any cell} for its full equilibrium composition and the
+ready-to-run \code{gibbsReactor} case dict --- the map is a case generator.
+The \emph{advanced} toggle exposes the temperature-approach $\Delta T$
+(the empirical closeness-to-equilibrium knob commercial tools hide); it snaps rather
+than animates, and ghosts the $\Delta T = 0$ contours underneath so you
+read the before/after, not a motion.  Unconverged cells are marked, never
+interpolated.
+
+\subsection{Steam tables (IF97)}
+Saturation and superheat properties of water from IAPWS-IF97 ---
+$h_f, h_g, h_{fg}$, entropies, volumes --- the backbone of every steam and
+power-cycle case, browsable.
+
+\section{Provenance and honesty rules}
+
+The Explorer inherits the project's credo:
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{Every number has a source.}  Component cards show where each
+        value came from; estimates carry their UNVALIDATED badge; nothing is
+        silently filled in.
+  \item \textbf{Disabled means explained.}  A view that cannot run tells you
+        which requirement failed (component count, missing VLE data, missing
+        UNIFAC groups) --- never a dead button.
+  \item \textbf{The Explorer never writes.}  It reads the catalogue and the
+        open case; promoting data, fitting parameters and locking goldens
+        belong to the props bench and the curation tools.  Sketch here,
+        commit there.
+\end{itemize}
+
+\section{From Explorer to case: the hand-off}
+
+A typical session: you notice in the $T$--$x$--$y$ view that your solvent
+pair azeotropes at 78\,\% --- so the simple column in your flowsheet cannot
+deliver 99\,\% purity.  The hand-off is: (1) reproduce the envelope as a
+props case (\code{propertyScanBinary}) so the finding is golden-locked;
+(2) switch the flowsheet to the azeotrope-aware design (pressure-swing or
+entrainer); (3) cite the Explorer finding in the case header.  The Explorer
+is where you LEARN; cases are where knowledge is kept.
+
+\end{document}

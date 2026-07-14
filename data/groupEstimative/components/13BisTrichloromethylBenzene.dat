@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-bis(trichloromethyl)benzene  (C8H4Cl6, CAS 881-99-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13BisTrichloromethylBenzene;
+formula     C8H4Cl6;
+CAS         881-99-2;
+InChIKey    GGZIUXGYCNYNNV-UHFFFAOYSA-N;
+MW          312.82;      // g/mol [origin=calculated method=formula-sum]
+Tc          906.06;      // K   [origin=predictive method=joback]
+Pc          29.092;      // bar [origin=predictive method=joback]
+omega       0.4435;      // -   [origin=predictive method=lee-kesler]
+Tb          632.42;      // K   [origin=predictive method=joback]
+HvapTb      60058.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.41 0.9178 -0.00084156 2.824e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group CCl3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexachlorometaxylol" "m-bis(trichlormethyl)benzene" "m-bis(trichloromethyl)benzene" "1,3-di(trichloromethyl)benzene" "benzene, 1,3-bis(trichloromethyl)-" "alpha,alpha'-hexachloro-m-xylene" "a,a,a,a',a',a'-hexachloro-m-xylene" "alpha,alpha,alpha,alpha',alpha',alpha'-hexachloro-m-xylene" "alpha,alpha,alpha,alpha',alpha',alpha'-hexachloroxylene" "m-xylene, alpha,alpha,alpha,alpha',alpha',alpha'-hexachloro-" "ditrichloromethyl-m-xylene" "m-bis(tricholormethyl)benzene" );
+gibbsFormation
+{
+    dHf_298   -95330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     477.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=53360.0
+    phase     gas;
+}

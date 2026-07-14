@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(6-methoxy-2-naphthyl)propan-1-one  (C14H14O2, CAS 2700-47-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        16Methoxy2NaphthylPropan1One;
+formula     C14H14O2;
+CAS         2700-47-2;
+InChIKey    LWOTXBQKJLOAOZ-UHFFFAOYSA-N;
+MW          214.264;      // g/mol [origin=calculated method=formula-sum]
+Tc          878.93;      // K   [origin=predictive method=joback]
+Pc          25.767;      // bar [origin=predictive method=joback]
+omega       0.7526;      // -   [origin=predictive method=lee-kesler]
+Tb          651.83;      // K   [origin=predictive method=joback]
+HvapTb      61154.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.729 1.04104 -0.00064194 1.4836e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 6; } { group AC; count 4; } { group CH2CO; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group O; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(6-methoxynaphthalen-2-yl)propan-1-one" "6'-methoxy-2'-propiononaphthone" "2-propionyl-6-methoxy naphthalene" "1-propanone,1-(6-methoxy-2-naphthalenyl)-" "1-(6-methoxy-naphthalen-2-yl)-propan-1-one" "brd-k40437631-001-01-6" "6 inverted exclamation marka-methoxy-2 inverted exclamation marka-propiononaphthone" "promen;6'-methoxy-2'-propionaphthone;ethyl6-methoxy-2-naphthyl ketone;2-methoxy-6-propionylnaphthalene;2-propionyl-6-methoxynaphthalene;6-methoxy-2-propionylnaphthalene;6-methoxynaphth-2-yl ethyl ketone;2'-propionaphthone,6'-methoxy- (6ci,7ci);1-(6-methoxy-2-naphthalenyl)-1-propanone;1-(6-methoxy-2-naphthyl)-1-propanone;1-(6-methoxynaphthalen-2-yl)propan-1-one;1-propanone, 1-(6-methoxy-2-naphthalenyl)-;" );
+gibbsFormation
+{
+    dHf_298   -172430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     511.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=32880.0
+    phase     gas;
+}

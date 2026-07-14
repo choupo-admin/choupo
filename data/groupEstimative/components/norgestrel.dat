@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: norgestrel  (C21H28O2, CAS 797-63-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        norgestrel;
+formula     C21H28O2;
+CAS         797-63-7;
+InChIKey    WWYNJERNGUHSAO-UHFFFAOYSA-N;
+MW          312.453;      // g/mol [origin=calculated method=formula-sum]
+Tc          1115.29;      // K   [origin=predictive method=joback]
+Pc          19.424;      // bar [origin=predictive method=joback]
+omega       1.0503;      // -   [origin=predictive method=lee-kesler]
+Tb          873.79;      // K   [origin=predictive method=joback]
+HvapTb      81670.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-253.299 2.74152 -0.00242437 9.2049e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CH; count 4; } { group C; count 2; } { group CH=C; count 1; } { group OH; count 1; } { group CH2CO; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 8; } { group CH_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "13-ethyl-17-ethynyl-17-oxidanyl-1,2,6,7,8,9,10,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthren-3-one" "13-ethyl-17-ethynyl-17-hydroxy-1,2,6,7,8,9,10,11,12,13,14,15,16,17-tetradecahydro-3h-cyclopenta[a]phenanthren-3-one(non-preferred name)" "agn-pc-00s783" "h088" "17-ethynyl-17-hydroxy-18a-homoestr-4-en-3-one" "13 beta-ethyl-17alpha-ethynyl-17 beta-hydroxygon-4-en-3-one" "18,19-dinor-13 beta-ethyl-17 beta hydroxy-4-pregnen-20-yn-3-one" "18,19-dinorpregn-4-en-20-yn-3-one, 13-ethyl-17-hydroxy-, (17.alpha.)-(.+/-.)-" "(8r,9s,10r,13s,14s)-13-ethyl-17-ethynyl-17-hydroxy-1,2,6,7,8,9,10,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthren-3-one" "13-ethyl-17-ethynyl-17-hydroxy-1,2,6,7,8,9,10,11,12,13,14,15,16,17-tetradecahydro-3h-cyclopenta[a]phenanthren-3-one (non-preferred name)" "13-ethyl-17-ethynyl-17-hydroxy-1,2,6,7,8,9,10,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthren-3-one" "18,19-dinor-17a-pregn-5(10)-en-20-yn-3-one,13-ethyl-17-hydroxy- (7ci,8ci); 13-ethyl-17a-ethynyl-17-hydroxygon-5(10)-en-3-one" );
+gibbsFormation
+{
+    dHf_298   -178290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     664.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=266030.0
+    phase     gas;
+}

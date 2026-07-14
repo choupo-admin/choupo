@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-octadecylpropane-1,3-diamine  (C21H46N2, CAS 4253-76-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nOctadecylpropane13Diamine;
+formula     C21H46N2;
+CAS         4253-76-3;
+InChIKey    DXYUWQFEDOQSQY-UHFFFAOYSA-N;
+MW          326.613;      // g/mol [origin=calculated method=formula-sum]
+Tc          984.44;      // K   [origin=predictive method=joback]
+Pc          9.989;      // bar [origin=predictive method=joback]
+omega       0.9484;      // -   [origin=predictive method=lee-kesler]
+Tb          802.78;      // K   [origin=predictive method=joback]
+HvapTb      79417.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.92 2.13692 -0.0012106 2.602e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 18; } { group CH2NH2; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 20; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n'-octadecylpropane-1,3-diamine" "1,3-propanediamine, n-octadecyl-" "duomeen o" "octadecyliminipropylamine" "1,3-propanediamine, n-octadecyl-, dihydrochloride" );
+gibbsFormation
+{
+    dHf_298   -389510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1066.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=281780.0
+    phase     gas;
+}

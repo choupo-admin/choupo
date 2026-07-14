@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-ethyl-2-methyl-2-(3-methylbutyl)oxazolidine  (C11H23NO, CAS 143860-04-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Ethyl2Methyl23MethylbutylOxazolidine;
+formula     C11H23NO;
+CAS         143860-04-2;
+InChIKey    LIKGLDATLCWEDN-UHFFFAOYSA-N;
+MW          185.311;      // g/mol [origin=calculated method=formula-sum]
+Tc          691.18;      // K   [origin=predictive method=joback]
+Pc          23.181;      // bar [origin=predictive method=joback]
+omega       0.5508;      // -   [origin=predictive method=lee-kesler]
+Tb          501.48;      // K   [origin=predictive method=joback]
+HvapTb      45179.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-107.517 1.60888 -0.0013829 5.153e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group FCH2O; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 1; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-ethyl-2-methyl-2-(3-methylbutyl)-1,3-oxazolidine" "oxazolidine, 3-ethyl-2-methyl-2-(3-methylbutyl)-" "oxazolidine,3-ethyl-2-methyl-2-(3-methylbutyl)-" "agn-pc-00q3sh" "3-ethyl-2-methyl-2-(3-methylbutyl)-1,3-oxazolidine;zoldine ms-plus" );
+gibbsFormation
+{
+    dHf_298   -258240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     538.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=107120.0
+    phase     gas;
+}

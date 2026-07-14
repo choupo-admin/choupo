@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: coriandrol  (C10H18O, CAS 126-90-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        coriandrol;
+formula     C10H18O;
+CAS         126-90-9;
+InChIKey    CDOSHBSSFJOMGT-SNVBAGLBSA-N;
+MW          154.253;      // g/mol [origin=calculated method=formula-sum]
+Tc          697.84;      // K   [origin=predictive method=joback]
+Pc          25.820;      // bar [origin=predictive method=joback]
+omega       0.7614;      // -   [origin=predictive method=lee-kesler]
+Tb          518.07;      // K   [origin=predictive method=joback]
+HvapTb      52605.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-42.248 1.11356 -0.0008314 2.561e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group CH2=CH; count 1; } { group CH=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s)-3,7-dimethylocta-1,6-dien-3-ol" "(+)-linalool" "(s)-(+)-linalool" "(s)-3,7-dimethyl-1,6-octadien-3-ol" "1,6-octadien-3-ol, 3,7-dimethyl-, (s)-" "(3r)-linalool" "(3s)-linalool" "(s)-linalool" "1,6-octadien-3-ol, 3,7-dimethyl-, (3s)-" "linalool (d)" "(3s)-3,7-dimethyl-1,6-octadien-3-ol" );
+gibbsFormation
+{
+    dHf_298   -177850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     542.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=58850.0
+    phase     gas;
+}

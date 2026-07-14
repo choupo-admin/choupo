@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene-d6  (C6D6, CAS 1076-43-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C6D6 (delta D+6H-6; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        benzeneD6;
+formula     C6D6;
+CAS         1076-43-3;
+InChIKey    UHOVQNZJYSORNB-MZWXYZOWSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          84.15;      // g/mol [origin=calculated method=formula-sum]
+Tc          570.03;      // K   [origin=predictive method=joback]
+Pc          47.694;      // bar [origin=predictive method=joback]
+omega       0.2036;      // -   [origin=predictive method=lee-kesler]
+Tb          358.58;      // K   [origin=predictive method=joback]
+HvapTb      30564.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-50.77 0.5544 -0.00040084 1.106e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5,6-hexadeuteriobenzene" "hexadeuterobenzene" "perdeuterobenzene" "benzene-1,2,3,4,5,6-d6" "c6d6" "deuterated benzene" "(2h6)benzene" "de25" ""benzene-d6 ""100%"" >99.95 atom % d"" );
+gibbsFormation
+{
+    dHf_298   80830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     289.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=121680.0
+    phase     gas;
+}

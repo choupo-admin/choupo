@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octadeca-3,13-dienyl ethanoate  (C20H36O2, CAS 57491-35-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octadeca313DienylEthanoate;
+formula     C20H36O2;
+CAS         57491-35-7;
+InChIKey    VVJPJXKHBZNADP-UHFFFAOYSA-N;
+MW          308.506;      // g/mol [origin=calculated method=formula-sum]
+Tc          899.12;      // K   [origin=predictive method=joback]
+Pc          10.899;      // bar [origin=predictive method=joback]
+omega       0.8822;      // -   [origin=predictive method=lee-kesler]
+Tb          723.74;      // K   [origin=predictive method=joback]
+HvapTb      67437.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.247 1.88904 -0.0011372 2.645e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 13; } { group CH=CH; count 2; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 13; } { group dCH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z,z)-3,13-octadecadienyl acetate" "(3z,13e)-octadeca-3,13-dienyl acetate" "3,13-octadecadien-1-ol, acetate, (3e,13e)-" "3,13-octadecadien-1-ol, acetate, (3z,13e)-" "3,13-octadecadien-1-ol, 1-acetate, (3e,13e)-" "3,13-octadecadien-1-ol, 1-acetate, (3e,13z)-" "3,13-octadecadien-1-ol, 1-acetate, (3z,13e)-" "3,13-octadecadien-1-ol, 1-acetate, (3z,13z)-" "trans,cis-3,13-octadecadienyl acetate" "trans,trans-3,13-octadecadienyl acetate" );
+gibbsFormation
+{
+    dHf_298   -538970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     973.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-32410.0
+    phase     gas;
+}

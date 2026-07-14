@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-bromo-2-methoxyphenol  (C7H7BrO2, CAS 37942-01-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Bromo2Methoxyphenol;
+formula     C7H7BrO2;
+CAS         37942-01-1;
+InChIKey    OLSJHVZRUFFIPL-UHFFFAOYSA-N;
+MW          203.035;      // g/mol [origin=calculated method=formula-sum]
+Tc          804.87;      // K   [origin=predictive method=joback]
+Pc          53.047;      // bar [origin=predictive method=joback]
+omega       0.6889;      // -   [origin=predictive method=lee-kesler]
+Tb          560.62;      // K   [origin=predictive method=joback]
+HvapTb      55973.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.69 0.66002 -0.00053792 1.851e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACOH; count 1; } { group CH3O; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-bromanyl-2-methoxy-phenol" "4-bromo-2-hydroxyanisole" "5-bromo-2-methoxy-phenol" "phenol, 5-bromo-2-methoxy-," "phenol, 5-bromo-2-methoxy-" "5-bromo-2-methoxyphenol," "n947" "2-methoxy-5-bromophenol;3-hydroxy-4-methoxybromobenzene;phenol,5-bromo-2-methoxy-;" );
+gibbsFormation
+{
+    dHf_298   -245950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     404.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134460.0
+    phase     gas;
+}

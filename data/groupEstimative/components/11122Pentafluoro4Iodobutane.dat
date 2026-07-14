@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1,2,2-pentafluoro-4-iodobutane  (C4H4F5I, CAS 40723-80-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11122Pentafluoro4Iodobutane;
+formula     C4H4F5I;
+CAS         40723-80-6;
+InChIKey    PPXVPFPTMXFUDE-UHFFFAOYSA-N;
+MW          273.966;      // g/mol [origin=calculated method=formula-sum]
+Tc          549.70;      // K   [origin=predictive method=joback]
+Pc          30.490;      // bar [origin=predictive method=joback]
+omega       0.3452;      // -   [origin=predictive method=lee-kesler]
+Tb          374.15;      // K   [origin=predictive method=joback]
+HvapTb      27194.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.548 0.7334 -0.0007008 2.481e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group I; count 1; } { group CF3; count 1; } { group CF2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group C; count 2; } { group F; count 5; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2-pentakis(fluoranyl)-4-iodanyl-butane" "4-iodo-1,1,1,2,2-pentafluorobutane" "butane, 1,1,1,2,2-pentafluoro-4-iodo-" "1-iodo-3,3,4,4,4-pentafluorobutane" "1,1,2,2-tetrahydroperfluorobutyl iodide" "1h,1h,2h,2h-perfluorobutyl iodide" "3,3,4,4,4-pentafluorobutyl iodide" "3,3,4,4,4-pentafluoro-1-iodobutane" "alkyl iodides, c4-18, gamma-omega-perfluoro" );
+gibbsFormation
+{
+    dHf_298   -1047070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     448.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-927450.0
+    phase     gas;
+}

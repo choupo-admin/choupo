@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloro-6-fluorophenylethanol  (C8H8ClFO, CAS 214262-86-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chloro6Fluorophenylethanol;
+formula     C8H8ClFO;
+CAS         214262-86-9;
+InChIKey    UYZAUXBNFFFZFA-UHFFFAOYSA-N;
+MW          174.599;      // g/mol [origin=calculated method=formula-sum]
+Tc          743.20;      // K   [origin=predictive method=joback]
+Pc          35.643;      // bar [origin=predictive method=joback]
+omega       0.8889;      // -   [origin=predictive method=lee-kesler]
+Tb          548.16;      // K   [origin=predictive method=joback]
+HvapTb      57249.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.582 0.6185 -0.00037572 8.41e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 3; } { group ACCH2; count 1; } { group OH; count 1; } { group ACCl; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-chloranyl-6-fluoranyl-phenyl)ethanol" "2-(2-chloro-6-fluorophenyl)ethanol" "2-chloro-6-fluorophenethyl alcohol" "2-(2-chloro-6-fluorophenyl)ethan-1-ol" "2-(6-chloro-2-fluorophenyl)ethan-1-ol" "bh808" "benzeneethanol,2-chloro-6-fluoro-" "2-(2-chloro-6-fluorophenyl)ethanol;2-chloro-6-fluorophenylethanol;2-(2-chloro-6-fluorophenyl)ethan-1-ol;" );
+gibbsFormation
+{
+    dHf_298   -358940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     464.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-233930.0
+    phase     gas;
+}

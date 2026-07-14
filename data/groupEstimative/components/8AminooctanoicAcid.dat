@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-aminooctanoic acid  (C8H17NO2, CAS 1002-57-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8AminooctanoicAcid;
+formula     C8H17NO2;
+CAS         1002-57-9;
+InChIKey    UQXNEWQGGVUVQA-UHFFFAOYSA-N;
+MW          159.229;      // g/mol [origin=calculated method=formula-sum]
+Tc          794.66;      // K   [origin=predictive method=joback]
+Pc          29.537;      // bar [origin=predictive method=joback]
+omega       0.9857;      // -   [origin=predictive method=lee-kesler]
+Tb          600.68;      // K   [origin=predictive method=joback]
+HvapTb      61207.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.707 0.8765 -0.0005274 1.23e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH2NH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 7; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-azanyloctanoic acid" "8-aminocaprylic acid" "omega-aminocaprylic acid" "octanoic acid, 8-amino-" "8-amino-octanoic acid" ".omega.-aminocaprylic acid" "8-amino capylic acid" "8ac" "gamma-aminocaprylic acid" "4e709dfa-3a0e-43bb-abac-b157b44a07f9" );
+gibbsFormation
+{
+    dHf_298   -524930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     572.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-260980.0
+    phase     gas;
+}

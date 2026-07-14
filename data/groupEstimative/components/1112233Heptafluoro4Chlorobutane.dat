@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1,2,2,3,3-heptafluoro-4-chlorobutane  (C4H2ClF7, CAS 374-97-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1112233Heptafluoro4Chlorobutane;
+formula     C4H2ClF7;
+CAS         374-97-0;
+InChIKey    SZBKCQKJQAYJJN-UHFFFAOYSA-N;
+MW          218.496;      // g/mol [origin=calculated method=formula-sum]
+Tc          454.34;      // K   [origin=predictive method=joback]
+Pc          27.789;      // bar [origin=predictive method=joback]
+omega       0.3728;      // -   [origin=predictive method=lee-kesler]
+Tb          313.75;      // K   [origin=predictive method=joback]
+HvapTb      19276.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.639 0.8506 -0.0008444 3.003e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2Cl; count 1; } { group CF3; count 1; } { group CF2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 3; } { group F; count 7; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-chloranyl-1,1,1,2,2,3,3-heptakis(fluoranyl)butane" "4-chloro-1,1,1,2,2,3,3-heptafluorobutane" );
+gibbsFormation
+{
+    dHf_298   -1540650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     450.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1384280.0
+    phase     gas;
+}

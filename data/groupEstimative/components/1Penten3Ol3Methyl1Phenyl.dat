@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-penten-3-ol, 3-methyl-1-phenyl-  (C12H16O, CAS 62232-91-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Penten3Ol3Methyl1Phenyl;
+formula     C12H16O;
+CAS         62232-91-1;
+InChIKey    BMZIBDNSLIDIFP-UHFFFAOYSA-N;
+MW          176.259;      // g/mol [origin=calculated method=formula-sum]
+Tc          800.47;      // K   [origin=predictive method=joback]
+Pc          28.414;      // bar [origin=predictive method=joback]
+omega       0.8108;      // -   [origin=predictive method=lee-kesler]
+Tb          593.95;      // K   [origin=predictive method=joback]
+HvapTb      59923.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-75.289 1.24474 -0.0009462 2.862e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group CH=CH; count 1; } { group ACH; count 5; } { group AC; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methyl-1-phenyl-pent-1-en-3-ol" "styryl methyl ethyl carbinol" "3-methyl-1-phenylpent-1-en-3-ol" "1-penten-3-ol, 3-methyl-1-phenyl-, (1z)-" );
+gibbsFormation
+{
+    dHf_298   -98240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     522.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=108810.0
+    phase     gas;
+}

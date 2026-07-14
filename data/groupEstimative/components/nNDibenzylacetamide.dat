@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-dibenzylacetamide  (C16H17NO, CAS 10479-30-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDibenzylacetamide;
+formula     C16H17NO;
+CAS         10479-30-8;
+InChIKey    JJGMIJNIKHHXHK-UHFFFAOYSA-N;
+MW          239.318;      // g/mol [origin=calculated method=formula-sum]
+Tc          918.05;      // K   [origin=predictive method=joback]
+Pc          24.243;      // bar [origin=predictive method=joback]
+omega       0.7673;      // -   [origin=predictive method=lee-kesler]
+Tb          685.35;      // K   [origin=predictive method=joback]
+HvapTb      64551.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-82.798 1.46192 -0.0010029 2.5856e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 10; } { group AC; count 2; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-bis(phenylmethyl)ethanamide" "dibenzylacetamide" "n-acetyldibenzylamine" "1-(propylsulfonyl)pyrrolidine" "n,n-bis(phenylmethyl)acetamide" "acetamide, n,n-bis(phenylmethyl)-" "acetamide, n,n-dibenzyl-" "acetamide,n-dibenzyl-" "n,n-bisbenzylacetamide" "acetamide,n-bis(phenylmethyl)-" );
+gibbsFormation
+{
+    dHf_298   54440.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     609.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=290520.0
+    phase     gas;
+}

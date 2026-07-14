@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propanamine, n,n,2-trimethyl-  (C6H15N, CAS 918-02-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropanamineNN2Trimethyl;
+formula     C6H15N;
+CAS         918-02-5;
+InChIKey    OXQMIXBVXHWDPX-UHFFFAOYSA-N;
+MW          101.193;      // g/mol [origin=calculated method=formula-sum]
+Tc          519.69;      // K   [origin=predictive method=joback]
+Pc          31.668;      // bar [origin=predictive method=joback]
+omega       0.2701;      // -   [origin=predictive method=lee-kesler]
+Tb          346.09;      // K   [origin=predictive method=joback]
+HvapTb      29697.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.73 0.8236 -0.000587 1.695e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group C; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group C; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n,2-trimethylpropan-2-amine" "tert-butyldimethylamine" "n,n-dimethyl-tert.-butylamine" "t-c4h9n(ch3)2" "tert-butyl-dimethyl-amine" );
+gibbsFormation
+{
+    dHf_298   -108390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     366.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=113260.0
+    phase     gas;
+}

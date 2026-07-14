@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methylpentyl carbitol  (C10H22O3, CAS 10143-56-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2MethylpentylCarbitol;
+formula     C10H22O3;
+CAS         10143-56-3;
+InChIKey    LSCNICLUNGUIRB-UHFFFAOYSA-N;
+MW          190.283;      // g/mol [origin=calculated method=formula-sum]
+Tc          726.53;      // K   [origin=predictive method=joback]
+Pc          22.419;      // bar [origin=predictive method=joback]
+omega       1.0757;      // -   [origin=predictive method=lee-kesler]
+Tb          564.98;      // K   [origin=predictive method=joback]
+HvapTb      58965.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (48.407 0.86734 -0.0003318 7.5e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 1; } { group CH2O; count 1; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 7; } { group CH; count 1; } { group OH; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-(2-methylpentoxy)ethoxy]ethanol" "diethylene glycol monomethylpentyl ether" "8-methyl-3,6-dioxa-1-undecanol" "diethyleneglycol mono-2-methylpentyl ether" "2-(2-((2-methylpentyl)oxy)ethoxy)ethanol" "ethanol, 2-(2-((2-methylpentyl)oxy)ethoxy)-" "2-{2-[(2-methylpentyl)oxy]ethoxy}ethanol" "diethylene glycol mono-2-methylpentyl ether" );
+gibbsFormation
+{
+    dHf_298   -671680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     609.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-315940.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-tert-butyl-m-xylene  (C12H18, CAS 98-19-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5TertButylMXylene;
+formula     C12H18;
+CAS         98-19-1;
+InChIKey    FZSPYHREEHYLCB-UHFFFAOYSA-N;
+MW          162.276;      // g/mol [origin=calculated method=formula-sum]
+Tc          722.32;      // K   [origin=predictive method=joback]
+Pc          23.795;      // bar [origin=predictive method=joback]
+omega       0.3894;      // -   [origin=predictive method=lee-kesler]
+Tb          507.57;      // K   [origin=predictive method=joback]
+HvapTb      44610.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.8 1.0718 -0.00069792 1.792e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-tert-butyl-3,5-dimethyl-benzene" "1-tert-butyl-3,5-dimethylbenzene" "m-xylene, 5-tert-butyl-" "benzene, 1-(1,1-dimethylethyl)-3,5-dimethyl-" "1,3-dimethyl-5-tert-butylbenzene" "5-tert-butyl-1,3-dimethylbenzene" "1-(tert-butyl)-3,5-dimethylbenzene" "benzene, 5-tert-butyl-1,3-dimethyl-" "benzene, 1,3-dimethyl-5-(1,1-dimethylethyl)-" "sym.-tert-butyl-m-xylene" "fzspyhreehylcb-uhfffaoysa-" "1,3-dimethyl-5-tert-butyl-benzene" );
+gibbsFormation
+{
+    dHf_298   -86170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     465.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=146150.0
+    phase     gas;
+}

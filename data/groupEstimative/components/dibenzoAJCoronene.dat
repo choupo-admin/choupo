@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dibenzo[a,j]coronene  (C32H16, CAS 190-72-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dibenzoAJCoronene;
+formula     C32H16;
+CAS         190-72-7;
+InChIKey    HHCCABYUXOGSCO-UHFFFAOYSA-N;
+MW          400.48;      // g/mol [origin=calculated method=formula-sum]
+Tc          1399.40;      // K   [origin=predictive method=joback]
+Pc          17.924;      // bar [origin=predictive method=joback]
+omega       1.2492;      // -   [origin=predictive method=lee-kesler]
+Tb          1122.04;      // K   [origin=predictive method=joback]
+HvapTb      104948.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-204.17 2.7444 -0.00268924 1.0364e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 16; } { group AC; count 16; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 16; } { group dC_ring; count 16; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,7,8-dibenzocoronene" "dibenzo(a,j)coronene" );
+gibbsFormation
+{
+    dHf_298   844610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     374.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1099480.0
+    phase     gas;
+}

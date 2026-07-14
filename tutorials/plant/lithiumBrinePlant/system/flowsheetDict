@@ -1,0 +1,47 @@
+/*---------------------------------------------------------------------------*\
+  lithiumBrinePlant / system/flowsheetDict
+
+  Five REAL sectors.  Streams are named physical graph edges.
+  Sector names are subdomains; unit operations live inside each sector.
+\*---------------------------------------------------------------------------*/
+
+sectors
+(
+    BRINE
+    EXTRACTION
+    CARBONATION
+    HOTAIR
+    FINISHING
+);
+
+connections
+{
+    salarBrine    { to BRINE/salarBrine; }
+
+    halite        { from BRINE/halite; }
+
+    liquor        { from BRINE/liquor;
+                    to   EXTRACTION/liquor; }
+
+    organic       { to EXTRACTION/organic; }
+
+    loadedOrganic { from EXTRACTION/loadedOrganic; }
+
+    raffinate     { from EXTRACTION/raffinate; }
+
+    carbLiquor    { to CARBONATION/carbLiquor; }
+
+    slurry        { from CARBONATION/slurry;
+                    to   FINISHING/slurry; }
+
+    fuelAir       { to HOTAIR/fuelAir; }
+
+    hotAir        { from HOTAIR/hotAir;
+                    to   FINISHING/hotAir; }
+
+    product       { from FINISHING/product; }
+
+    cleanAir      { from FINISHING/cleanAir; }
+
+    fines         { from FINISHING/fines; }
+}

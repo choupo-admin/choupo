@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3,6,9,12,15,17,20,23,26-decaoxacyclooctacosane  (C18H36O10, CAS 74485-47-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1369121517202326Decaoxacyclooctacosane;
+formula     C18H36O10;
+CAS         74485-47-5;
+InChIKey    YMJUNAJOOWDRJI-UHFFFAOYSA-N;
+MW          412.476;      // g/mol [origin=calculated method=formula-sum]
+Tc          1289.18;      // K   [origin=predictive method=joback]
+Pc          19.788;      // bar [origin=predictive method=joback]
+omega       0.9561;      // -   [origin=predictive method=lee-kesler]
+Tb          999.10;      // K   [origin=predictive method=joback]
+HvapTb      105284.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-24.47 1.6212 6.8e-05 -5.04e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group FCH2O; count 10; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 18; } { group O_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -1795710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     794.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-994560.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-chlorobenzal bromide  (C7H5Br2Cl, CAS 62037-06-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3ChlorobenzalBromide;
+formula     C7H5Br2Cl;
+CAS         62037-06-3;
+InChIKey    GXTJYNIKOLTVNC-UHFFFAOYSA-N;
+MW          284.375;      // g/mol [origin=calculated method=formula-sum]
+Tc          822.57;      // K   [origin=predictive method=joback]
+Pc          46.593;      // bar [origin=predictive method=joback]
+omega       0.5177;      // -   [origin=predictive method=lee-kesler]
+Tb          560.73;      // K   [origin=predictive method=joback]
+HvapTb      50981.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.51 0.6195 -0.00048756 1.494e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group ACCH; count 1; } { group ACCl; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[bis(bromanyl)methyl]-3-chloranyl-benzene" "1-chloro-3-(dibromomethyl)benzene" "benzene, 1-chloro-3-(dibromomethyl)-" "3-chlorobenzylidene dibromide" "alpha,alpha-dibromo-3-chlorotoluene" "benzene,1-chloro-4-(dibromomethyl)-" "toluene, a,a-dibromo-p-chloro- (7ci);1-chloro-4-(dibromomethyl)benzene; 1-dibromomethyl-4-chlorobenzene;4-chlorobenzal bromide; a,a-dibromo-p-chlorotoluene" );
+gibbsFormation
+{
+    dHf_298   68890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     442.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=125110.0
+    phase     gas;
+}

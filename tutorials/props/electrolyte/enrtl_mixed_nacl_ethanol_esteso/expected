@@ -1,0 +1,11 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    esteso                 AAD_total_pct    4.3                1e-4
+diag    esteso                 AAD_wt0_pct      1                  1e-4
+diag    esteso                 AAD_wt20_pct     5.3                1e-4
+diag    esteso                 AAD_wt40_pct     5.3                1e-4
+diag    esteso                 AAD_wt60_pct     2.7                1e-4
+diag    esteso                 AAD_wt70_pct     1.2                1e-4
+diag    esteso                 AAD_wt80_pct     7.8                1e-4
+diag    esteso                 AAD_wt90_pct     7.8                1e-4
+diag    esteso                 n_points         47                 1e-4

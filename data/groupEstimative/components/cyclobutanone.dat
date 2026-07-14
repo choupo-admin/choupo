@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclobutanone  (C4H6O, CAS 1191-95-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclobutanone;
+formula     C4H6O;
+CAS         1191-95-3;
+InChIKey    SHQSVMDWKBRBGB-UHFFFAOYSA-N;
+MW          70.091;      // g/mol [origin=calculated method=formula-sum]
+Tc          588.15;      // K   [origin=predictive method=joback]
+Pc          52.586;      // bar [origin=predictive method=joback]
+omega       0.2744;      // -   [origin=predictive method=lee-kesler]
+Tb          374.62;      // K   [origin=predictive method=joback]
+HvapTb      29139.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-25.62 0.3833 -0.000179 2.1e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclobutyloxy" "cyclobutanon" "1-oxocyclobutane" "agn-pc-0cqccc" "cyclobutanone, stab. with ca 0.01% bht" );
+gibbsFormation
+{
+    dHf_298   -176610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     205.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-83430.0
+    phase     gas;
+}

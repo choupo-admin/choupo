@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: silane, (2,3-bis(trimethylsilyl)methyl)-2-butene-1,4-diyl)bis(trimethyl-  (C18H44Si4, CAS 64174-59-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C18H44Si4 (delta Si+4; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        silane23BisTrimethylsilylMethyl2Butene14DiylBisTrimethyl;
+formula     C18H44Si4;
+CAS         64174-59-0;
+InChIKey    AAKJOGMFHWQSPX-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          372.89;      // g/mol [origin=calculated method=formula-sum]
+Tc          805.52;      // K   [origin=predictive method=joback]
+Pc          8.837;      // bar [origin=predictive method=joback]
+omega       0.3699;      // -   [origin=predictive method=lee-kesler]
+Tb          620.96;      // K   [origin=predictive method=joback]
+HvapTb      56956.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (136.234 0.90904 0.0006154 -6.148e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 12; } { group CH2; count 4; } { group C=C; count 1; } { group Si; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 12; } { group CH2; count 4; } { group dC; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl-[4-trimethylsilyl-2,3-bis(trimethylsilylmethyl)but-2-enyl]silane" );
+gibbsFormation
+{
+    dHf_298   -763690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1348.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-255240.0
+    phase     gas;
+}

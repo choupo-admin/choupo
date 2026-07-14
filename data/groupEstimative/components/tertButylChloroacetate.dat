@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tert-butyl chloroacetate  (C6H11ClO2, CAS 107-59-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tertButylChloroacetate;
+formula     C6H11ClO2;
+CAS         107-59-5;
+InChIKey    KUYMVWXKHQSIAS-UHFFFAOYSA-N;
+MW          150.602;      // g/mol [origin=calculated method=formula-sum]
+Tc          622.11;      // K   [origin=predictive method=joback]
+Pc          30.626;      // bar [origin=predictive method=joback]
+omega       0.4094;      // -   [origin=predictive method=lee-kesler]
+Tb          429.30;      // K   [origin=predictive method=joback]
+HvapTb      39446.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.261 0.65166 -0.0004002 8.4e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group CH2Cl; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tert-butyl 2-chloranylethanoate" "tert-butyl 2-chloroacetate" "chloroacetic acid tert-butyl ester" "acetic acid, chloro-, 1,1-dimethylethyl ester" "acetic acid, chloro-, tert-butyl ester" "acetic acid, 2-chloro-, 1,1-dimethylethyl ester" "kuymvwxkhqsias-uhfffaoysa-" "acetic acid, chloro-, tert-butyl ester (8ci)" );
+gibbsFormation
+{
+    dHf_298   -508940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     435.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-319820.0
+    phase     gas;
+}

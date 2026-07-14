@@ -2,9 +2,9 @@
 #   The condenser is asked to land at vapour quality 0.4; the duty Q is the
 #   self-target result.  T_out is the dew-to-bubble interior temperature.
 # kind   name        key            expected          reltol
-kpi      condenser   vf_out         0.4               1e-4
-kpi      condenser   T_out          367.494289759     1e-5
-kpi      condenser   Q_kW          -630.508868406     1e-5
-kpi      condenser   Tsat           352.826063711     1e-6
-stream   wetOut      F              0.0277777777778   1e-6
-stream   wetOut      vf             0.4               1e-4
+kpi     condenser              vf_out           0.399999998746   1e-4
+kpi     condenser              T_out            367.494289759    1e-5
+kpi     condenser              Q_kW             -630.508868406   1e-5
+kpi     condenser              Tsat             352.826063711    1e-6
+stream  wetOut                 F                0.0277777777778  1e-6
+stream  wetOut                 vf               0.399999998746   1e-4

@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tripropylsilane  (C9H21Si, CAS 998-29-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H21Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        tripropylsilane;
+formula     C9H21Si;
+CAS         998-29-8;
+InChIKey    MMYRBBZVCDXGHG-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+role        radical;
+MW          157.352;      // g/mol [origin=calculated method=formula-sum]
+Tc          572.13;      // K   [origin=predictive method=joback]
+Pc          21.473;      // bar [origin=predictive method=joback]
+omega       0.3945;      // -   [origin=predictive method=lee-kesler]
+Tb          406.22;      // K   [origin=predictive method=joback]
+HvapTb      35775.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.116 0.75576 -0.0002584 -1.27e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 3; } { group CH2; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tripropylsilicon" "silane, tripropyl-" "silicon tri-n-propyl" "tri-n-propylsilane" "zhovawfvvbwegq-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -284900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     579.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-27480.0
+    phase     gas;
+}

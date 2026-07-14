@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chloropentamethylbenzene  (C11H15Cl, CAS 5153-39-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chloropentamethylbenzene;
+formula     C11H15Cl;
+CAS         5153-39-9;
+InChIKey    GWKDRPNLSOEGRT-UHFFFAOYSA-N;
+MW          182.691;      // g/mol [origin=calculated method=formula-sum]
+Tc          753.40;      // K   [origin=predictive method=joback]
+Pc          23.680;      // bar [origin=predictive method=joback]
+omega       0.4936;      // -   [origin=predictive method=lee-kesler]
+Tb          540.29;      // K   [origin=predictive method=joback]
+HvapTb      50051.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (43.37 0.6793 -0.000291 2.97e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACCH3; count 5; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group dC_ring; count 6; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-2,3,4,5,6-pentamethyl-benzene" "1-chloro-2,3,4,5,6-pentamethylbenzene" "1-chloro-2,3,4,5,6-pentamethyl-benzene" );
+gibbsFormation
+{
+    dHf_298   -106930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     480.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=94070.0
+    phase     gas;
+}

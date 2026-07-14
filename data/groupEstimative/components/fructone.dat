@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: fructone  (C8H14O4, CAS 6413-10-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        fructone;
+formula     C8H14O4;
+CAS         6413-10-1;
+InChIKey    XWEOGMYZFCHQNT-UHFFFAOYSA-N;
+MW          174.196;      // g/mol [origin=calculated method=formula-sum]
+Tc          717.25;      // K   [origin=predictive method=joback]
+Pc          31.776;      // bar [origin=predictive method=joback]
+omega       0.5865;      // -   [origin=predictive method=lee-kesler]
+Tb          510.28;      // K   [origin=predictive method=joback]
+HvapTb      48935.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-54.808 1.12664 -0.000949 3.47e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group CH2COO; count 1; } { group FCH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group O_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-(2-methyl-1,3-dioxolan-2-yl)ethanoate" "ethyl 2-(2-methyl-1,3-dioxolan-2-yl)acetate" "ethyl acetoacetate ethylene ketal" "1,3-dioxolane-2-acetic acid, 2-methyl-, ethyl ester" "ethyl acetoacetate 3-ethylene acetal" "ethyl 2-methyl-1,3-dioxolane-2-acetate" "ethyl acetoacetate ethylene acetal" "ethyl 3-oxobutyrate ethylene ketal" "ethylacetoacetate ethyleneglycol ketal" "ethyl acetoacetate ethylene glycol ketal" "2-methyl-1,3-dioxolane-2-acetic acid ethyl ester" "1,3-dioxolane-2-aceticacid, 2-methyl-, ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -714010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     435.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-435070.0
+    phase     gas;
+}

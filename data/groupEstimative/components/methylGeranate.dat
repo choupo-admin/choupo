@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl geranate  (C11H18O2, CAS 1189-09-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylGeranate;
+formula     C11H18O2;
+CAS         1189-09-9;
+InChIKey    ACOBBFVLNKYODD-UHFFFAOYSA-N;
+MW          182.263;      // g/mol [origin=calculated method=formula-sum]
+Tc          706.96;      // K   [origin=predictive method=joback]
+Pc          21.533;      // bar [origin=predictive method=joback]
+omega       0.5684;      // -   [origin=predictive method=lee-kesler]
+Tb          517.58;      // K   [origin=predictive method=joback]
+HvapTb      47563.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.448 1.03388 -0.0006522 1.61e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group CH=C; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group dCH; count 2; } { group dC; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 3,7-dimethylocta-2,6-dienoate" "2,6-octadienoic acid, 3,7-dimethyl-, methyl ester, (2e)-" "2,6-octadienoic acid, 3,7-dimethyl-, methyl ester, (2z)-" "2,6-octadienoic acid,3,7-dimethyl-, methyl ester, (2e)-" "2,6-octadienoicacid, 3,7-dimethyl-, methyl ester, (e)- (8ci); 2,6-octadienoic acid,3,7-dimethyl-, methyl ester, trans- (7ci); geranic acid methyl ester (6ci);methyl (e)-geranate; methyl geranate; methyl trans-geranate; trans-geranic acidmethyl ester" );
+gibbsFormation
+{
+    dHf_298   -372790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     614.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-125290.0
+    phase     gas;
+}

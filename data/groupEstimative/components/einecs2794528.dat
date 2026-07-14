@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: einecs 279-452-8  (C25H42O3S, CAS 80387-97-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        einecs2794528;
+formula     C25H42O3S;
+CAS         80387-97-9;
+InChIKey    SPDKDTGZSHRXIT-UHFFFAOYSA-N;
+MW          422.668;      // g/mol [origin=calculated method=formula-sum]
+Tc          1239.04;      // K   [origin=predictive method=joback]
+Pc          10.406;      // bar [origin=predictive method=joback]
+omega       0.9688;      // -   [origin=predictive method=lee-kesler]
+Tb          1008.96;      // K   [origin=predictive method=joback]
+HvapTb      99102.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-39.683 2.53275 -0.00170168 4.537e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 8; } { group CH2; count 5; } { group CH; count 1; } { group C; count 2; } { group ACH; count 2; } { group AC; count 3; } { group ACOH; count 1; } { group CH2COO; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2; count 7; } { group CH; count 1; } { group C; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group COO; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethylhexyl 2-[(3,5-ditert-butyl-4-oxidanyl-phenyl)methylsulfanyl]ethanoate" "2-ethylhexyl[(3,5-di-tert-butyl-4-hydroxybenzyl)sulfanyl]acetate" "(((3,5-bis(1,1-dimethylethyl)-4-hydroxyphenyl)methyl)thio)acetic acid 2-ethylhexyl ester" "2-ethylhexyl (((3,5-bis(1,1-dimethylethyl)-4-hydroxyphenyl)methyl)thio)acetate" "acetic acid, (((3,5-bis(1,1-dimethylethyl)-4-hydroxyphenyl)methyl)thio)-, 2-ethylhexyl ester" "acetic acid, [[[3,5-bis(1,1-dimethylethyl)-4-hydroxyphenyl]methyl]thio]-, 2-ethylhexyl ester" "acetic acid, 2-(((3,5-bis(1,1-dimethylethyl)-4-hydroxyphenyl)methyl)thio)-, 2-ethylhexyl ester" "acetic acid, 2-[[[3,5-bis(1,1-dimethylethyl)-4-hydroxyphenyl]methyl]thio]-, 2-ethylhexyl ester" "2-ethylhexyl [(3,5-di-tert-butyl-4-hydroxybenzyl)sulfanyl]acetate" "2-ethylhexyl 2-[(3,5-ditert-butyl-4-hydroxyphenyl)methylsulfanyl]acetate" );
+gibbsFormation
+{
+    dHf_298   -821240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1062.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-175860.0
+    phase     gas;
+}

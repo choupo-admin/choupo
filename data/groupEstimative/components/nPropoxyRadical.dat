@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-propoxy radical  (C3H7O, CAS 16499-18-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        nPropoxyRadical;
+formula     C3H7O;
+CAS         16499-18-6;
+InChIKey    JAVBBFXUGDCHLZ-UHFFFAOYSA-N;
+role        radical;
+MW          59.088;      // g/mol [origin=calculated method=formula-sum]
+Tc          399.44;      // K   [origin=predictive method=joback]
+Pc          51.534;      // bar [origin=predictive method=joback]
+omega       0.3049;      // -   [origin=predictive method=lee-kesler]
+Tb          257.04;      // K   [origin=predictive method=joback]
+HvapTb      28034.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.428 0.41152 -0.0003341 1.153e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dO_oth; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-$l^{1}-oxidanylpropane" "propyloxidanyl" "n-c3h7o" );
+gibbsFormation
+{
+    dHf_298   -297050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     332.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-224070.0
+    phase     gas;
+}

@@ -25,25 +25,7 @@
   Bottom Rankine stays gas-only (phase-change boiler is the next step).
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    airFuelFeed
-    {
-        F            102.5 mol/s;
-        T            300.0 K;
-        P            1.0 bar;
-        state        superheatedVapour;
-        molarComposition { N2 0.771;  O2 0.205;  CH4 0.024; }
-    }
-    steamFeed
-    {
-        F            10.0 mol/s;
-        T            400.0 K;
-        P            5.0 bar;
-        state        superheatedVapour;
-        molarComposition { water 1.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

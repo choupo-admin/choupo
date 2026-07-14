@@ -30,45 +30,7 @@
                           └─ expandedProduct
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F                1.0 kmol/h;
-        T                800.0 K;
-        P                5.0 bar;
-        state            superheatedVapour;
-        molarComposition { CO 0.50;  water 0.50;  CO2 0.0;  H2 0.0; }
-    }
-
-    // Cooling-water UTILITY stream (category from the catalogue): the HX
-    // rejects the condenser duty into it.  Shows on the canvas as a
-    // utility-class edge (dashed), toggled by the `utility` filter, and
-    // aggregated in the utilities report.
-    CW
-    {
-        utility          coolingWater;          // pulls T_in/T_out/state/cost from the catalogue
-        F                60.0 kmol/h;
-    }
-
-    recycle1
-    {
-        F                0.4 kmol/h;
-        T                800.0 K;
-        P                5.0 bar;
-        state            superheatedVapour;
-        molarComposition { CO 0.25;  water 0.25;  CO2 0.25;  H2 0.25; }
-    }
-
-    recycle2
-    {
-        F                0.3 kmol/h;
-        T                350.0 K;
-        P                5.0 bar;
-        state            superheatedVapour;
-        molarComposition { CO 0.30;  water 0.02;  CO2 0.34;  H2 0.34; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 tearStreams      ( recycle1  recycle2 );
 recycleSolver    Newton;

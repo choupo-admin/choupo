@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tris(methoxyethxy)vinylsilane  (C11H24O6Si, CAS 1067-53-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C11H24O6Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        trisMethoxyethxyVinylsilane;
+formula     C11H24O6Si;
+CAS         1067-53-4;
+InChIKey    WOXXJEVNDJOOLV-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          280.392;      // g/mol [origin=calculated method=formula-sum]
+Tc          752.34;      // K   [origin=predictive method=joback]
+Pc          16.605;      // bar [origin=predictive method=joback]
+omega       0.8487;      // -   [origin=predictive method=lee-kesler]
+Tb          583.88;      // K   [origin=predictive method=joback]
+HvapTb      54164.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (183.716 0.44346 0.0004833 -4.089e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2=CH; count 1; } { group CH3O; count 3; } { group CH2O; count 3; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethenyl-tris(2-methoxyethoxy)silane" "vinyltris(2-methoxyethoxy)silane" "tris(2-methoxyethoxy)vinylsilane" "vinyl tris(2-methoxyethoxy) silane" "silane, tris(2-methoxyethoxy)vinyl-" "2,5,7,10-tetraoxa-6-silaundecane, 6-ethenyl-6-(2-methoxyethoxy)-" "tris(methoxyethoxy)vinylsilane" "vinyltris(methoxyethoxy)silane" "gf 58" "6-(2-methoxyethoxy)-6-vinyl-2,5,7,10-tetraoxa-6-silaundecane" "(tris(p-methoxyethoxy))vinylsilane" "[tris(p-methoxyethoxy)]vinylsilane" );
+gibbsFormation
+{
+    dHf_298   -1049880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     774.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-605180.0
+    phase     gas;
+}

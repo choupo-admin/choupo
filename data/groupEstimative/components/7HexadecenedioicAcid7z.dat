@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7-hexadecenedioic acid, (7z)-  (C16H28O4, CAS 253687-18-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        7HexadecenedioicAcid7z;
+formula     C16H28O4;
+CAS         253687-18-2;
+InChIKey    NJNZHDLLCUGGBQ-IWQZZHSRSA-N;
+MW          284.396;      // g/mol [origin=calculated method=formula-sum]
+Tc          1060.61;      // K   [origin=predictive method=joback]
+Pc          15.697;      // bar [origin=predictive method=joback]
+omega       1.2928;      // -   [origin=predictive method=lee-kesler]
+Tb          860.86;      // K   [origin=predictive method=joback]
+HvapTb      85496.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.638 1.6454 -0.0010756 2.826e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 12; } { group CH=CH; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 12; } { group dCH; count 2; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z)-hexadec-7-enedioic acid" );
+gibbsFormation
+{
+    dHf_298   -956890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     878.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-523760.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diketene  (C4H4O2, CAS 674-82-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diketene;
+formula     C4H4O2;
+CAS         674-82-8;
+InChIKey    WASQWSOJHCZDFK-UHFFFAOYSA-N;
+MW          84.074;      // g/mol [origin=calculated method=formula-sum]
+Tc          540.68;      // K   [origin=predictive method=joback]
+Pc          48.225;      // bar [origin=predictive method=joback]
+omega       0.3682;      // -   [origin=predictive method=lee-kesler]
+Tb          355.64;      // K   [origin=predictive method=joback]
+HvapTb      32114.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.11 0.3985 -0.0003288 1.076e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=C; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group CH2_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-methylideneoxetan-2-one" "2-oxetanone, 4-methylene-" "4-methylene-2-oxetanone" "ethenone, dimer" "ketene dimer" "4-methyleneoxetan-2-one" "ketene, dimer" "but-3-en-3-olide" "3-buteno-beta-lactone" "vinylaceto-beta-lactone" "ethenone, dimer (van)" "3-butenoic acid, 3-hydroxy-, beta-lactone" );
+gibbsFormation
+{
+    dHf_298   -259630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     269.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-193930.0
+    phase     gas;
+}

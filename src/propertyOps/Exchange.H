@@ -92,6 +92,9 @@ public:
     int run(const DictPtr& dict, const ThermoPackage& thermo, int verbosity) override;
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
 
+    std::vector<std::string> headline() const override
+    { return { "hardness_removal_pct" }; }
+
 private:
     std::map<std::string, scalar> diag_;
 };

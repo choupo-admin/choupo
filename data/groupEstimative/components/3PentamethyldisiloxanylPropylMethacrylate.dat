@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(pentamethyldisiloxanyl)propyl methacrylate  (C12H26O3Si2, CAS 18151-85-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C12H26O3Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        3PentamethyldisiloxanylPropylMethacrylate;
+formula     C12H26O3Si2;
+CAS         18151-85-4;
+InChIKey    NWBTXZPDTSKZJU-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          274.507;      // g/mol [origin=calculated method=formula-sum]
+Tc          736.28;      // K   [origin=predictive method=joback]
+Pc          15.082;      // bar [origin=predictive method=joback]
+omega       0.5489;      // -   [origin=predictive method=lee-kesler]
+Tb          554.16;      // K   [origin=predictive method=joback]
+HvapTb      52121.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (121.843 0.59342 0.000381 -3.955e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 3; } { group CH2=C; count 1; } { group COO; count 1; } { group Si; count 1; } { group SiO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 3; } { group dCH2; count 1; } { group dC; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[dimethyl(trimethylsilyloxy)silyl]propyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, 3-(1,1,3,3,3-pentamethyl-1-disiloxanyl)propyl ester" "(3-methacryloyloxypropyl)pentamethyldisiloxane" "3-methacryloxypropyl pentamethyl disiloxane" "2-propenoic acid, 2-methyl-, 3-(pentamethyldisiloxanyl)propyl ester" "2-propenoic acid,2-methyl-, 3-(1,1,3,3,3-pentamethyl-1-disiloxanyl)propyl ester" "3-methacryloxypropylpentamethyldisiloxane;3-(pentamethyldisiloxanyl)propyl 2-methylprop-2-enoate;2-propenoic acid, 2-methyl-, 3-(1,1,3,3,3-pentamethyldisiloxanyl)propyl ester;2-propenoic acid, 2-methyl-, 3-(pentamethyldisiloxanyl)propyl ester;3-(pentamethyldisiloxanyl)propyl methacrylate;" );
+gibbsFormation
+{
+    dHf_298   -848110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     930.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-495440.0
+    phase     gas;
+}

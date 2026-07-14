@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexachlorocyclopentane  (C5H4Cl6, CAS 68258-91-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexachlorocyclopentane;
+formula     C5H4Cl6;
+CAS         68258-91-3;
+InChIKey    RPUFWOAXMFQSDJ-UHFFFAOYSA-N;
+MW          276.787;      // g/mol [origin=calculated method=formula-sum]
+Tc          800.60;      // K   [origin=predictive method=joback]
+Pc          32.690;      // bar [origin=predictive method=joback]
+omega       0.3356;      // -   [origin=predictive method=lee-kesler]
+Tb          540.33;      // K   [origin=predictive method=joback]
+HvapTb      50062.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-66.96 1.1556 -0.001397 6.532e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CHCl; count 2; } { group CCl2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group C_ring; count 2; } { group Cl; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2,3,3,4-hexakis(chloranyl)cyclopentane" "cyclopentane, hexachloro-" "1,1,2,3,3,4-hexachlorocyclopentane" );
+gibbsFormation
+{
+    dHf_298   -211030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     512.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-77920.0
+    phase     gas;
+}

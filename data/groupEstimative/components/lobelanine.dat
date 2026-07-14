@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lobelanine  (C22H25NO2, CAS 579-21-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lobelanine;
+formula     C22H25NO2;
+CAS         579-21-5;
+InChIKey    IDEMKXUAULKYJV-BGYRXZFFSA-N;
+MW          335.447;      // g/mol [origin=calculated method=formula-sum]
+Tc          1127.23;      // K   [origin=predictive method=joback]
+Pc          17.405;      // bar [origin=predictive method=joback]
+omega       1.0161;      // -   [origin=predictive method=lee-kesler]
+Tb          887.11;      // K   [origin=predictive method=joback]
+HvapTb      84601.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-135.438 2.10912 -0.0013826 3.3222e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 2; } { group ACH; count 10; } { group AC; count 2; } { group CH2CO; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group CdO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[(2r,6s)-1-methyl-6-phenacyl-piperidin-2-yl]-1-phenyl-ethanone" "ethanone, 2,2'-(1-methyl-2,6-piperidinediyl)bis(1-phenyl-, cis-" "2-[(2r,6s)-1-methyl-6-phenacyl-2-piperidinyl]-1-phenylethanone" "2-[(2s,6r)-1-methyl-6-phenacylpiperidin-2-yl]-1-phenylethanone" );
+gibbsFormation
+{
+    dHf_298   -141840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     776.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=240960.0
+    phase     gas;
+}

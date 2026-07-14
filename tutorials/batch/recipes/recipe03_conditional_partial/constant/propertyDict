@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------*\
+  recipe03_conditional_partial / constant/thermoPackage
+
+  The esterification quartet: ethanol + aceticAcid (reactants — x_ethanol
+  < 0.30 is the condition that fires the partial transfer) -> ethylAcetate
+  + water (products; the volatiles the receiving still then distils).
+  Ideal Raoult + idealGas: the case teaches condition-triggered events and
+  fractional transfers in the recipe layer, so the VLE stays deliberately
+  simple — non-ideality is the subject of still02, not this test.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water  aceticAcid  ethylAcetate );
+
+// Ideal Raoult for pedagogical simplicity: the still leg then shows
+// classic Rayleigh enrichment without the NRTL azeotrope complication
+// (which is the subject of still02 instead).
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

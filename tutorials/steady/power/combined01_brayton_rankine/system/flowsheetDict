@@ -42,35 +42,7 @@
       A multi-phase Boiler unit op is also on the v0.0.45 roadmap.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    // Pre-mixed combustion feed at the compressor outlet equivalent T/P.
-    // Excess-air operation: lean of stoichiometric (~10:1 air to fuel by
-    // mole, vs stoichiometric 9.52:1) to leave free O2 in the products.
-    combustorFeed
-    {
-        F            102.5 mol/s;
-        T            600.0 K;                  // post-compression T estimate
-        P            8.0 bar;
-        state        superheatedVapour;
-        molarComposition
-        {
-            N2     0.771;        //  79 / 102.5
-            O2     0.205;        //  21 / 102.5
-            CH4    0.024;        //   2.5 / 102.5
-        }
-    }
-
-    // Rankine working fluid: superheated steam at 5 bar, 400 K.
-    steamFeed
-    {
-        F            10.0 mol/s;
-        T            400.0 K;
-        P            5.0 bar;
-        state        superheatedVapour;
-        molarComposition { water 1.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

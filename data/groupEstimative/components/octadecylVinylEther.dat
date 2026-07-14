@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octadecyl vinyl ether  (C20H40O, CAS 930-02-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octadecylVinylEther;
+formula     C20H40O;
+CAS         930-02-9;
+InChIKey    QJJDJWUCRAPCOL-UHFFFAOYSA-N;
+MW          296.539;      // g/mol [origin=calculated method=formula-sum]
+Tc          839.55;      // K   [origin=predictive method=joback]
+Pc          10.319;      // bar [origin=predictive method=joback]
+omega       0.8441;      // -   [origin=predictive method=lee-kesler]
+Tb          676.30;      // K   [origin=predictive method=joback]
+HvapTb      61854.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.217 1.82062 -0.0009761 1.894e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 16; } { group CH2=CH; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 17; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethenoxyoctadecane" "vinyl octadecyl ether" "octadecane, 1-(ethenyloxy)-" "stearyl vinyl ether" "vinyl stearyl ether" "ether, octadecyl vinyl" "vinyloctadecyl ether" "1-(vinyloxy)octadecane" "octadecane, 1-(ethenyloxy)-, homopolymer" "1-(ethenyloxy)octadecane" "ether, octadecyl vinyl (6ci,7ci,8ci)" "vinyl octadecyl ether polymer" );
+gibbsFormation
+{
+    dHf_298   -462920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     941.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=100360.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(4-chlorobutoxy)-2,4-bis(1,1-dimethylpropyl)benzene  (C20H33ClO, CAS 63217-25-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14Chlorobutoxy24Bis11DimethylpropylBenzene;
+formula     C20H33ClO;
+CAS         63217-25-4;
+InChIKey    WQXDZIXHDZKOGO-UHFFFAOYSA-N;
+MW          324.933;      // g/mol [origin=calculated method=formula-sum]
+Tc          951.01;      // K   [origin=predictive method=joback]
+Pc          12.286;      // bar [origin=predictive method=joback]
+omega       0.7442;      // -   [origin=predictive method=lee-kesler]
+Tb          747.23;      // K   [origin=predictive method=joback]
+HvapTb      67917.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.154 1.90122 -0.00121432 3.005e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 4; } { group C; count 2; } { group ACH; count 3; } { group AC; count 3; } { group CH2O; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 6; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-chloranylbutoxy)-2,4-bis(2-methylbutan-2-yl)benzene" "2,4-bis(2-methylbutan-2-yl)phenyl 4-chlorobutyl ether" "benzene, 1-(4-chlorobutoxy)-2,4-bis(1,1-dimethylpropyl)-" "1-(4-chlorobutoxy)-2,4-bis(2-methylbutan-2-yl)benzene" "benzene,1-(4-chlorobutoxy)-2,4-bis(1,1-dimethylpropyl)-" "butane, 1-chloro-4-(2,4-bis(1,1-dimethylpropyl)phenoxy)-" );
+gibbsFormation
+{
+    dHf_298   -408000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     783.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=99420.0
+    phase     gas;
+}

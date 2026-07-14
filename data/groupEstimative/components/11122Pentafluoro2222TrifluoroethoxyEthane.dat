@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1,2,2-pentafluoro-2-(2,2,2-trifluoroethoxy)ethane  (C4H2F8O, CAS 156053-88-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11122Pentafluoro2222TrifluoroethoxyEthane;
+formula     C4H2F8O;
+CAS         156053-88-2;
+InChIKey    ZOMISZRVOJQGOT-UHFFFAOYSA-N;
+MW          218.043;      // g/mol [origin=calculated method=formula-sum]
+Tc          424.14;      // K   [origin=predictive method=joback]
+Pc          27.070;      // bar [origin=predictive method=joback]
+omega       0.4457;      // -   [origin=predictive method=lee-kesler]
+Tb          298.01;      // K   [origin=predictive method=joback]
+HvapTb      16484.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.061 0.7924 -0.0007294 2.421e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2O; count 1; } { group CF3; count 2; } { group CF2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 3; } { group F; count 8; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2-pentakis(fluoranyl)-2-[2,2,2-tris(fluoranyl)ethoxy]ethane" "pentafluoroethyl 2,2,2-trifluoroethyl ether" "1,1,2,2,2-pentafluoro-1-(2,2,2-trifluoroethoxy)ethane" "ethane,1,1,1,2,2-pentafluoro-2-(2,2,2-trifluoroethoxy)-" "ethane,pentafluoro(2,2,2-trifluoroethoxy)- (9ci);1,1,1,2,2-pentafluoro-2-(2,2,2-trifluoroethoxy)ethane" );
+gibbsFormation
+{
+    dHf_298   -1853240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     460.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1672160.0
+    phase     gas;
+}

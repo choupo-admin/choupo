@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propane-1,2,3-triyl tris(2-hydroxypropanoate)  (C12H20O9, CAS 537-32-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        propane123TriylTris2Hydroxypropanoate;
+formula     C12H20O9;
+CAS         537-32-6;
+InChIKey    QFZKSWMAYXNSEJ-UHFFFAOYSA-N;
+MW          308.283;      // g/mol [origin=calculated method=formula-sum]
+Tc          1131.98;      // K   [origin=predictive method=joback]
+Pc          23.865;      // bar [origin=predictive method=joback]
+omega       1.7425;      // -   [origin=predictive method=lee-kesler]
+Tb          923.60;      // K   [origin=predictive method=joback]
+HvapTb      113012.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (77.352 1.10506 -0.0004492 -1.23e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 4; } { group OH; count 3; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 4; } { group OH; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-bis(2-oxidanylpropanoyloxy)propyl 2-oxidanylpropanoate" "propane-1,2,3-triyl trilactate" "2,3-bis(2-hydroxypropanoyloxy)propyl 2-hydroxypropanoate" "propanoic acid,2-hydroxy-, 1,1',1''-(1,2,3-propanetriyl) ester" "propanoic acid, 2-hydroxy-, 1,1',1''-(1,2,3-propanetriyl) ester, (2s,2's,2''s)-" "propanoic acid, 2-hydroxy-, 1,2,3-propanetriyl ester, [2s-[2r*[2(r*),3(r*)]]]-" "lacticacid, 1,2,3-propanetriyl ester (8ci); lactic acid, triester with glycerol(6ci,7ci); propanoic acid, 2-hydroxy-, 1,2,3-propanetriyl ester (9ci);glycerol, trilactate (7ci); 1,2,3-glyceryl trilactate; glyceryl trilactate;propane-1,2,3-triyl trilactate; trilactin" );
+gibbsFormation
+{
+    dHf_298   -1720660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     891.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1301170.0
+    phase     gas;
+}

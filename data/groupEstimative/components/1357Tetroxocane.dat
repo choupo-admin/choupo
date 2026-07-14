@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3,5,7-tetroxocane  (C4H8O4, CAS 293-30-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1357Tetroxocane;
+formula     C4H8O4;
+CAS         293-30-1;
+InChIKey    XGJWQNKXTXSVML-UHFFFAOYSA-N;
+MW          120.104;      // g/mol [origin=calculated method=formula-sum]
+Tc          659.90;      // K   [origin=predictive method=joback]
+Pc          54.870;      // bar [origin=predictive method=joback]
+omega       0.3894;      // -   [origin=predictive method=lee-kesler]
+Tb          431.68;      // K   [origin=predictive method=joback]
+HvapTb      43620.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.25 0.5012 -0.0001818 -2.04e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group FCH2O; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group O_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3,5,7-tetraoxocane" "1,3,5,7-tetroxane" "1,3,5,7-tetraoxacyclooctane;1,3,5,7-tetraoxocane; formaldehyde, tetramer; tetorasetto st 1;tetra(oxymethylene); tetraoxacyclooctane; tetraoxane; tetraoxocane; tetraset st1; tetroxocane" );
+gibbsFormation
+{
+    dHf_298   -591550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     158.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-353720.0
+    phase     gas;
+}

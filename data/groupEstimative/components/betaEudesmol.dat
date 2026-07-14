@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: beta-eudesmol  (C15H26O, CAS 473-15-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        betaEudesmol;
+formula     C15H26O;
+CAS         473-15-4;
+InChIKey    BOPIMTNSYWYZOC-VNHYZAJKSA-N;
+MW          222.372;      // g/mol [origin=calculated method=formula-sum]
+Tc          868.32;      // K   [origin=predictive method=joback]
+Pc          21.513;      // bar [origin=predictive method=joback]
+omega       0.8019;      // -   [origin=predictive method=lee-kesler]
+Tb          657.04;      // K   [origin=predictive method=joback]
+HvapTb      63580.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-172.66 1.99996 -0.001634 5.687e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 2; } { group C; count 2; } { group CH2=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group dCH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[(2r,4ar,8as)-4a-methyl-8-methylidene-1,2,3,4,5,6,7,8a-octahydronaphthalen-2-yl]propan-2-ol" "beta-selinenol" "b-eudesmol" "2-naphthalenemethanol, decahydro-alpha,alpha,4a-trimethyl-8-methylene-, (2r,4ar,8as)-" "(2r,4ar,8as)-decahydro-8-methylene-alpha,alpha,4a-trimethyl-2-naphthylmethanol" "2-naphthalenemethanol, decahydro-8-methylene-alpha,alpha,4a-trimethyl-, (2r-(2-alpha,4a-alpha,8a-beta)-" "a-eudesmol" "ambap473-15-4" "eudesm-4(14)-en-11-ol (8ci)" "(2r,4ar,8as)-decahydro-8-methylene-" "a," "a,4a-trimethyl-2-naphthylmethanol" "2-[(2r,4ar,8as)-4a-methyl-8-methylidenedecahydronaphthalen-2-yl]propan-2-ol" "rel-2-[(2r,4ar,8as)-4a-methyl-8-methylenedecahydronaphthalen-2-yl]propan-2-ol" );
+gibbsFormation
+{
+    dHf_298   -313810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     652.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=54420.0
+    phase     gas;
+}

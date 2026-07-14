@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(2-chloroethyl)amine  (C4H9Cl2N, CAS 334-22-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis2ChloroethylAmine;
+formula     C4H9Cl2N;
+CAS         334-22-5;
+InChIKey    TXFLGZOGNOOEFZ-UHFFFAOYSA-N;
+MW          142.023;      // g/mol [origin=calculated method=formula-sum]
+Tc          603.30;      // K   [origin=predictive method=joback]
+Pc          36.159;      // bar [origin=predictive method=joback]
+omega       0.4755;      // -   [origin=predictive method=lee-kesler]
+Tb          416.15;      // K   [origin=predictive method=joback]
+HvapTb      39704.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.824 0.4736 -0.0002832 6.49e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2NH; count 1; } { group CH2Cl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group Cl; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-n-(2-chloroethyl)ethanamine" "nornitrogen mustard" "bis(chloroethyl)amine" "nor-mustard" "nh-lost" "nor-n-mustard" "2,2'-dichlorodiethylamine" "nor-mechlorethamine" "nor-nitrogen mustard" "nh-lost [german]" "di(2-chloroethyl)amine" "2-chloro-n-(2-chloroethyl)ethanamine" );
+gibbsFormation
+{
+    dHf_298   -103900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     419.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=48330.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dowanol t 4ph  (C14H22O5, CAS 36366-93-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dowanolT4ph;
+formula     C14H22O5;
+CAS         36366-93-5;
+InChIKey    RGRVGOMPHMWMJX-UHFFFAOYSA-N;
+MW          270.325;      // g/mol [origin=calculated method=formula-sum]
+Tc          912.10;      // K   [origin=predictive method=joback]
+Pc          20.530;      // bar [origin=predictive method=joback]
+omega       1.3104;      // -   [origin=predictive method=lee-kesler]
+Tb          728.46;      // K   [origin=predictive method=joback]
+HvapTb      75353.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (63.548 1.0361 -0.0003554 -2.85e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group ACH; count 5; } { group AC; count 1; } { group CH2O; count 3; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 8; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-(2-phenoxyethoxy)ethoxy]ethoxy]ethanol" "2-(2-(2-(2-phenoxyethoxy)ethoxy)ethoxy)ethanol" "tetraethylene glycol monophenyl ether" "ethanol, 2-(2-(2-(2-phenoxyethoxy)ethoxy)ethoxy)-" "ethanol, 2-[2-[2-(2-phenoxyethoxy)ethoxy]ethoxy]-" "quadragel-oh, ca 1.5 mmol/g" "polystyrene grafted with tetraethylene glycol" "dowanol t4ph; tetraethylene glycol monophenyl ether" "ethanol,2-[2-[2-(2-phenoxyethoxy)ethoxy]ethoxy]-" );
+gibbsFormation
+{
+    dHf_298   -776870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     690.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-377410.0
+    phase     gas;
+}

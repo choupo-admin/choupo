@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluorodecanoic acid  (C10HF19O2, CAS 335-76-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluorodecanoicAcid;
+formula     C10HF19O2;
+CAS         335-76-2;
+InChIKey    PCIUEQPBYFRTEM-UHFFFAOYSA-N;
+MW          514.078;      // g/mol [origin=calculated method=formula-sum]
+Tc          664.27;      // K   [origin=predictive method=joback]
+Pc          13.005;      // bar [origin=predictive method=joback]
+omega       0.9535;      // -   [origin=predictive method=lee-kesler]
+Tb          530.97;      // K   [origin=predictive method=joback]
+HvapTb      27831.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-106.13 2.361 -0.0024506 8.893e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 1; } { group CF3; count 1; } { group CF2; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 9; } { group F; count 19; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecakis(fluoranyl)decanoic acid" "nonadecafluorodecanoic acid" "ndfda" "perfluoro-n-decanoic acid" "pfda" "nonadecafluoro-n-decanoic acid" "decanoic acid, nonadecafluoro-" "perfluorocapric acid" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecafluorodecanoic acid" "decanoic acid, 2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecafluoro-" "n-perfluorodecanoic acid" "nonadecafluorocapric acid" );
+gibbsFormation
+{
+    dHf_298   -4404840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     851.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3986420.0
+    phase     gas;
+}

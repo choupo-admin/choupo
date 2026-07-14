@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-chloro-7-methyl-1-indanone  (C10H9ClO, CAS 5333-90-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Chloro7Methyl1Indanone;
+formula     C10H9ClO;
+CAS         5333-90-4;
+InChIKey    GGWVYVCKNJCQOC-UHFFFAOYSA-N;
+MW          180.631;      // g/mol [origin=calculated method=formula-sum]
+Tc          833.38;      // K   [origin=predictive method=joback]
+Pc          33.374;      // bar [origin=predictive method=joback]
+omega       0.5486;      // -   [origin=predictive method=lee-kesler]
+Tb          586.68;      // K   [origin=predictive method=joback]
+HvapTb      50970.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.07 0.71232 -0.00040228 8.21e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 1; } { group ACCH3; count 1; } { group ACCH2; count 1; } { group CH2CO; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-chloranyl-7-methyl-2,3-dihydroinden-1-one" "4-chloro-7-methyl-2,3-dihydroinden-1-one" "1h-inden-1-one, 4-chloro-2,3-dihydro-7-methyl-" "1h-inden-1-one,3-dihydro-7-methyl-" "4-chloro-2,3-dihydro-7-methyl-1h-inden-1-one" "4-chloro-7-methyl-2,3-dihydro-1h-inden-1-one" );
+gibbsFormation
+{
+    dHf_298   -107910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     327.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=50780.0
+    phase     gas;
+}

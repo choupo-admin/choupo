@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-bromo-1-chloroethane  (C2H4BrCl, CAS 593-96-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Bromo1Chloroethane;
+formula     C2H4BrCl;
+CAS         593-96-4;
+InChIKey    QMSVNDSDEZTYAS-UHFFFAOYSA-N;
+MW          143.408;      // g/mol [origin=calculated method=formula-sum]
+Tc          550.18;      // K   [origin=predictive method=joback]
+Pc          53.279;      // bar [origin=predictive method=joback]
+omega       0.2593;      // -   [origin=predictive method=lee-kesler]
+Tb          348.51;      // K   [origin=predictive method=joback]
+HvapTb      30478.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.47 0.24472 -0.00018 5.52e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CHCl; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group Cl; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-1-chloranyl-ethane" "ethane, 1-bromo-1-chloro-" "ethane, bromochloro-" "1-bromo-1-chloro-ethane" );
+gibbsFormation
+{
+    dHf_298   -79300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     308.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-34090.0
+    phase     gas;
+}

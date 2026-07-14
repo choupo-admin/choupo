@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-acetylcyclohexanone  (C8H12O2, CAS 874-23-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Acetylcyclohexanone;
+formula     C8H12O2;
+CAS         874-23-7;
+InChIKey    OEKATORRSPXJHE-UHFFFAOYSA-N;
+MW          140.182;      // g/mol [origin=calculated method=formula-sum]
+Tc          754.39;      // K   [origin=predictive method=joback]
+Pc          35.305;      // bar [origin=predictive method=joback]
+omega       0.4998;      // -   [origin=predictive method=lee-kesler]
+Tb          523.88;      // K   [origin=predictive method=joback]
+HvapTb      44824.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.2 0.68962 -0.0002297 -2.844e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group CH3CO; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group CdO; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethanoylcyclohexan-1-one" "cyclohexanone, 2-acetyl-" ".alpha.-acetylcyclohexanone" "2-acetylcyclohexan-1-one" "2-acetyl-1-cyclohexanone" "2-acetyl-cyclohexanone" "1-acetyl-2-oxocyclohexane" "alpha-acetylcyclohexanone" "cyclohexanone,2-acetyl-" "2-acetyl-cyclohexan-1-one" "2-acetyl cyclohexanone" );
+gibbsFormation
+{
+    dHf_298   -404410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     385.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-210580.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: [(trifluoroacetyl)amino]acetic acid  (C4H4F3NO3, CAS 383-70-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trifluoroacetylAminoAceticAcid;
+formula     C4H4F3NO3;
+CAS         383-70-0;
+InChIKey    IFAXXCBMQJNCCF-UHFFFAOYSA-N;
+MW          171.074;      // g/mol [origin=calculated method=formula-sum]
+Tc          723.24;      // K   [origin=predictive method=joback]
+Pc          41.463;      // bar [origin=predictive method=joback]
+omega       0.9990;      // -   [origin=predictive method=lee-kesler]
+Tb          535.25;      // K   [origin=predictive method=joback]
+HvapTb      51097.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.801 0.644 -0.0005173 1.5456e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 1; } { group CF3; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 1; } { group F; count 3; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2,2,2-tris(fluoranyl)ethanoylamino]ethanoic acid" "n-(trifluoroacetyl)glycine" "tfa-gly-oh" "n-trifluoroacetyl glycine" "n-(trifluoroacetyl)aminoacetic acid" "(2,2,2-trifluoro-acetylamino)-acetic acid" "n-trifluoroacetylglycine" "trifluoroacetyl glycine" "n-(2,2,2-trifluoroacetyl)glycine" "n-alpha-trifluoroacetylglycine" "n-alpha-trifluoracetyl-glycine" "(trifluoroacetamido)acetic acid" );
+gibbsFormation
+{
+    dHf_298   -1132350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     488.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-982230.0
+    phase     gas;
+}

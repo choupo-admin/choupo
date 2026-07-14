@@ -1,0 +1,13 @@
+/*---------------------------------------------------------------------------*\
+  phase01_water_full / constant/thermoPackage
+
+  Pure water, the substance being mapped: purePhaseDiagram traces its
+  vapour-pressure curve from the catalogue water.dat and builds the melting/
+  sublimation lines from the triple-point data given in the op itself.
+  ideal/idealGas are the trivial single-component limit --- there is no
+  mixture, so no activity or mixing physics is exercised.
+\*---------------------------------------------------------------------------*/
+
+components ( water );
+activityModel   { model ideal; }
+equationOfState { model idealGas; }

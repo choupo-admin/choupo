@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): glycine, n-methyl-n-(1-oxo-9-octadecen-1-yl)-, compd. with cyclohexanamine (1:1)  (C27H52N2O3, CAS 72906-41-3)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           glycineNMethylN1Oxo9Octadecen1YlCompdWithCyclohexanamine11;
+formula        C27H52N2O3;
+CAS            72906-41-3;
+InChIKey       HLWVIAJDQFRVMK-ASTDGNLGSA-N;
+MW             452.724;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: glycine, n-methyl-n-(1-oxo-9-octadecen-1-yl)-, compd. with cyclohexanamine (1:1)

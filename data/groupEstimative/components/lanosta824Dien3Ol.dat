@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lanosta-8,24-dien-3-ol  (C30H50O, CAS 79-63-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lanosta824Dien3Ol;
+formula     C30H50O;
+CAS         79-63-0;
+InChIKey    CAHGCLMLTWQZNJ-UHFFFAOYSA-N;
+MW          426.729;      // g/mol [origin=calculated method=formula-sum]
+Tc          1260.94;      // K   [origin=predictive method=joback]
+Pc          9.711;      // bar [origin=predictive method=joback]
+omega       0.9002;      // -   [origin=predictive method=lee-kesler]
+Tb          1026.16;      // K   [origin=predictive method=joback]
+HvapTb      95300.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-406.988 4.38246 -0.0041941 1.7138e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 8; } { group CH2; count 10; } { group CH; count 4; } { group C; count 4; } { group CH=C; count 1; } { group OH; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2; count 2; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 8; } { group CH_ring; count 3; } { group C_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,4,10,13,14-pentamethyl-17-(6-methylhept-5-en-2-yl)-2,3,5,6,7,11,12,15,16,17-decahydro-1h-cyclopenta[a]phenanthren-3-ol" "euphadienol" "tirucallol" "euphol" "eupha-8,24-dienol" "lanosta-8,24-dien-3-ol, (3.beta.)-" "agn-pc-00b5y1" "5.alpha.-eupha-8,24-dien-3.beta.-ol" "13.alpha.,17.beta.h-lanosta-8,24-dien-3.beta.-ol" "lanosta-8, (3.beta.,13.alpha.,14.beta.,17.alpha.)-" "(3s,5r,10s,13r,14s,17r)-4,4,10,13,14-pentamethyl-17-[(2r)-6-methylhept-5-en-2-yl]-2,3,5,6,7,11,12,15,16,17-decahydro-1h-cyclopenta[a]phenanthren-3-ol" );
+gibbsFormation
+{
+    dHf_298   -417430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1195.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=282240.0
+    phase     gas;
+}

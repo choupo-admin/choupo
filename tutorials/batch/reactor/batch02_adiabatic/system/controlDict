@@ -1,5 +1,5 @@
 application   choupoBatch;
-description   "Adiabatic batch esterification (AcOH + EtOH -> EtOAc + H2O), exothermic, starting cold (320 K); thermal runaway to ~445 K then plateau as ethanol is consumed";
+description   "Adiabatic batch esterification (AcOH + EtOH -> EtOAc + H2O), exothermic, starting cold (320 K); thermal runaway to ~428 K then plateau as ethanol is consumed";
 
 verbosity     3;
 

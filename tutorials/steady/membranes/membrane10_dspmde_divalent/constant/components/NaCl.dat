@@ -39,15 +39,7 @@ dissociation   2;              // van't Hoff factor for π = ν R T c
 // are ion NAMES into data/standards/electrolyte/{ions,pairs}.dat; solubility is the
 // measured saturation molality.  Intrinsic salt chemistry, declared ONCE -- a case
 // selects `activityModel { model pitzer; }` and re-types nothing.
-electrolyte
-{
-    cation     Na;          // -> ions.dat (z = +1)
-    anion      Cl;          // -> ions.dat (z = -1); pairs.dat (Na,Cl)
-    solubility 6.144;       // m_sat [mol/kg], 25 C
-    dissolutionEnthalpy 3880;  // J/mol; standard enthalpy of solution NaCl(s)->Na+(aq)+Cl-(aq),
-                               //   +3.88 kJ/mol (Ksp(T) van't Hoff; small -> NaCl ~T-flat)
-    provenance { solubility { origin measured; method "Pinho & Macedo, J. Chem. Eng. Data 50 (2005) 29 (aqueous, 25 C; primary)"; } }
-}
+dissociatesTo  { Na 1; Cl 1; }   // ion stoichiometry (formula-like identity)
 
 // Solid-crystal properties for the population-balance crystalliser (MSMPR/FVM):
 // particle density + volume shape factor (V = k_v L^3).  NaCl grows as CUBES.

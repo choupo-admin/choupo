@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-fluoro-3-(trifluoromethyl)benzylamine  (C8H7F4N, CAS 67515-74-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Fluoro3TrifluoromethylBenzylamine;
+formula     C8H7F4N;
+CAS         67515-74-6;
+InChIKey    HZDVQEUISWBXPV-UHFFFAOYSA-N;
+MW          193.143;      // g/mol [origin=calculated method=formula-sum]
+Tc          680.24;      // K   [origin=predictive method=joback]
+Pc          31.245;      // bar [origin=predictive method=joback]
+omega       0.5996;      // -   [origin=predictive method=lee-kesler]
+Tb          485.66;      // K   [origin=predictive method=joback]
+HvapTb      43079.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.309 0.8008 -0.00058932 1.65e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group CH2NH2; count 1; } { group ACF; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 4; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[4-fluoranyl-3-(trifluoromethyl)phenyl]methanamine" "[4-fluoro-3-(trifluoromethyl)phenyl]methanamine" "(4-fluoro-3-(trifluoromethyl)phenyl)methanamine" "[4-fluoro-3-(trifluoromethyl)phenyl]methylamine" "3-trifluoromethyl-4-fluorobenzylamine" "4-fluoro-3-trifluoromethylbenzylamine" "4-fluoro-3-(trifluoromethyl) benzylamine" "4-fluoro-3-(trifluoromethyl)benzyl amine" "benzenemethanamine,4-fluoro-3-(trifluoromethyl)-" "5-(aminomethyl)-2-fluorobenzotrifluoride, [4-fluoro-3-(trifluoromethyl)phenyl]methylamine" "((4-fluoro-3-(trifluoromethyl)phenyl)methyl)amine;1-[4-fluoro-3-(trifluoromethyl)phenyl]methanamine;3-trifluoromethyl-4-fluorobenzylamine;4-fluoro-3-trifluoromethylbenzylamine;" );
+gibbsFormation
+{
+    dHf_298   -754260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     488.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-600320.0
+    phase     gas;
+}

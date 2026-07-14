@@ -75,11 +75,8 @@ operations
             activityModel
             {
                 model  UNIFAC;
-                groups
-                {
-                    ethanol ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );
-                    water   ( { group H2O; count 1; } );
-                }
+                // groups: resolved from each component's own data (`groups { unifac (...) }` in the .dat) -- ONE home
+
             }
         }
         properties  ( T_bubble  y_eq_ethanol );

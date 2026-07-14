@@ -1,0 +1,17 @@
+/*---------------------------------------------------------------------------*\
+  economics02_irr_sweep / constant/thermoPackage
+
+  The same esterification plant as economics01: aceticAcid + ethanol ->
+  ethylAcetate (the revenue stream) + water, reactor + heater + flash.
+  Raoult + ideal gas is deliberate --- the swept quantity is reactor VOLUME
+  vs IRR/NPV/payback, so the thermodynamics stay simple and fixed while the
+  SweepDriver reruns the sizing -> costing -> economics chain per point.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water  aceticAcid  ethylAcetate );
+
+// Ideal liquid (Raoult): reactor + separation KINETICS demo, not a VLE-
+// accuracy demo; a 4-component NRTL would need all 6 binary pairs.
+activityModel    { model  ideal; }
+
+equationOfState  { model  idealGas; }

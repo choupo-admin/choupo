@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluorobutyl iodide  (C4F9I, CAS 423-39-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluorobutylIodide;
+formula     C4F9I;
+CAS         423-39-2;
+InChIKey    PGRFXXCKHGIFSV-UHFFFAOYSA-N;
+MW          345.926;      // g/mol [origin=calculated method=formula-sum]
+Tc          524.84;      // K   [origin=predictive method=joback]
+Pc          26.218;      // bar [origin=predictive method=joback]
+omega       0.3784;      // -   [origin=predictive method=lee-kesler]
+Tb          364.77;      // K   [origin=predictive method=joback]
+HvapTb      21334.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.13 1.0322 -0.00111 4.143e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group I; count 1; } { group CF3; count 1; } { group CF2; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 4; } { group F; count 9; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2,3,3,4,4-nonakis(fluoranyl)-4-iodanyl-butane" "nonafluorobutyl iodide" "n-nonafluorobutyl iodide" "1-iodoperfluorobutane" "nonafluoro-1-iodobutane" "1,1,1,2,2,3,3,4,4-nonafluoro-4-iodobutane" "butane, 1,1,1,2,2,3,3,4,4-nonafluoro-4-iodo-" "perfluorobutyliodide" "n-nonafluorobutyliodide" "1-iodononafluorobutane" "perfluoro-n-butyl iodide" "nonafluoro-n-butyl iodide" );
+gibbsFormation
+{
+    dHf_298   -1849010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     497.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1701010.0
+    phase     gas;
+}

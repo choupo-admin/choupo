@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Antisolvent (drowning-out) crystallisation of KCl: a SATURATED aqueous KCl brine (4.76 mol/kg) is mixed with ethanol; the eNRTL mixed-solvent term lowers the dielectric, raises gamma_pm, and DROPS the saturation molality -- so KCl precipitates with NO cooling and NO evaporation. Saturation is the SAME ion-activity product Ksp anchored in pure water, solved with the mixed-solvent gamma_pm at the feed's salt-free ethanol fraction. KCl-water-ethanol experimental reference: Lopes, Farelo & Ferra, J. Solution Chem. 28 (1999) 117.";
+verbosity     3;

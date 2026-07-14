@@ -1,23 +1,11 @@
-streams
-{
-    feed
-    {
-        F            10.52 kmol/h;       // kmol/h  (1 CH4 + 2 O2 + 7.52 N2)
-        T            1800.0 K;      // K
-        P            1.0 bar;         // bar
-        composition
-        {
-            CH4    0.0951;
-            O2     0.1901;
-            N2     0.7148;
-            CO     0.0;
-            CO2    0.0;
-            water  0.0;
-            H2     0.0;
-            NO     0.0;
-        }
-    }
-}
+/*---------------------------------------------------------------------------*\
+  gibbs06_thermal_nox / flowsheetDict
+  Methane combustion at 1800 K with thermal NOx: the Gibbs reactor finds the
+  full equilibrium including NO/NO2 -- the EQUILIBRIUM ceiling on NOx, to
+  contrast with the KINETIC path (nox01_zeldovich_postflame, where the rate,
+  not equilibrium, controls).
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

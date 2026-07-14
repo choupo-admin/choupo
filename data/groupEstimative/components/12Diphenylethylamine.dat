@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-diphenylethylamine  (C14H15N, CAS 25611-78-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Diphenylethylamine;
+formula     C14H15N;
+CAS         25611-78-3;
+InChIKey    DTGGNTMERRTPLR-UHFFFAOYSA-N;
+MW          197.281;      // g/mol [origin=calculated method=formula-sum]
+Tc          897.25;      // K   [origin=predictive method=joback]
+Pc          29.698;      // bar [origin=predictive method=joback]
+omega       0.6204;      // -   [origin=predictive method=lee-kesler]
+Tb          645.37;      // K   [origin=predictive method=joback]
+HvapTb      61563.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-72.839 1.2438 -0.0008468 2.169e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 1; } { group ACCH2; count 1; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-diphenylethanamine" "1-amino-1,2-diphenylethane" "alpha-benzylbenzylamine" "1,2-diphenyl-ethylamine" "alpha-phenylphenethylamine" "alpha-phenylbenzeneethanamine" "alpha,beta-diphenylethylamine" "phenethylamine, alpha-phenyl-" "1,2-diphenylethan-1-amine" "benzeneethanamine, alpha-phenyl-" "(r)-1,2-diphenylethylamine" "(s)-1,2-diphenylethylamine" );
+gibbsFormation
+{
+    dHf_298   169280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     530.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=355830.0
+    phase     gas;
+}

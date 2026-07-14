@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: azetidine-3-carboxylic acid  (C4H7NO2, CAS 36476-78-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        azetidine3CarboxylicAcid;
+formula     C4H7NO2;
+CAS         36476-78-5;
+InChIKey    GFZWHAAOIVMHOI-UHFFFAOYSA-N;
+MW          101.105;      // g/mol [origin=calculated method=formula-sum]
+Tc          720.68;      // K   [origin=predictive method=joback]
+Pc          56.278;      // bar [origin=predictive method=joback]
+omega       0.6461;      // -   [origin=predictive method=lee-kesler]
+Tb          496.19;      // K   [origin=predictive method=joback]
+HvapTb      48505.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-34.59 0.5625 -0.0003796 1.009e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 1; } { group CH2NH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COOH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-azetidinecarboxylic acid" "3-carboxyazetidine" "3-azetanecarboxylic acid" "h-aze(3)-oh" "azetane-3-carboxylic acid" "azetidine-3-carboxylicacid" "l-azetidine-3-carboxylic acid" "azetidine-3- carboxylic acid" "bh271" "ht876" "al392-1" "36476-78-5 azetidine-3-carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -371710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     288.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-224750.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetoin acetate  (C6H10O3, CAS 4906-24-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acetoinAcetate;
+formula     C6H10O3;
+CAS         4906-24-5;
+InChIKey    ZKPTYCJWRHHBOW-UHFFFAOYSA-N;
+MW          130.143;      // g/mol [origin=calculated method=formula-sum]
+Tc          638.24;      // K   [origin=predictive method=joback]
+Pc          33.881;      // bar [origin=predictive method=joback]
+omega       0.5457;      // -   [origin=predictive method=lee-kesler]
+Tb          448.53;      // K   [origin=predictive method=joback]
+HvapTb      42715.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.52 0.49696 -0.0001925 -6.44e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group CH3CO; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-oxidanylidenebutan-2-yl ethanoate" "3-acetoxy-2-butanone" "2-butanone, 3-(acetyloxy)-" "2-acetoxy-3-butanone" "3-oxobutan-2-yl acetate" "2-butanon-3-ol, acetate" "2-butanon-3-yl acetate" "3-(acetyloxy)-2-butanone" "3-hydroxy-2-butanone acetate" "acetyl methyl carbinyl acetate" "2-butanone, 3-hydroxy-, acetate" "acetic acid 1-methyl-2-oxopropyl ester" );
+gibbsFormation
+{
+    dHf_298   -602310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     458.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-442090.0
+    phase     gas;
+}

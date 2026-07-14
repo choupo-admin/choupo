@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-fluoro-2-(trifluoromethyl)phenyl isocyanate  (C8H3F4NO, CAS 190774-54-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Fluoro2TrifluoromethylPhenylIsocyanate;
+formula     C8H3F4NO;
+CAS         190774-54-0;
+InChIKey    MNANIHSTOUUFNY-UHFFFAOYSA-N;
+MW          205.11;      // g/mol [origin=calculated method=formula-sum]
+Tc          672.51;      // K   [origin=predictive method=joback]
+Pc          31.847;      // bar [origin=predictive method=joback]
+omega       0.6043;      // -   [origin=predictive method=lee-kesler]
+Tb          479.80;      // K   [origin=predictive method=joback]
+HvapTb      41970.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACF; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group C; count 1; } { group dCd; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 4; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-fluoranyl-1-isocyanato-2-(trifluoromethyl)benzene" "4-fluoro-1-isocyanato-2-(trifluoromethyl)benzene" "4-fluoro-2-(trifluoromethyl)benzenisocyanate" "benzene,4-fluoro-1-isocyanato-2-(trifluoromethyl)-" "1-fluoro-4-isocyanato-3-trifluoromethylbenzene;2-trifluoromethyl-4-fluorophenyl isocyanate; 4-fluoro-2-(trifluoromethyl)phenylisocyanate" );
+// formation datum unavailable (element entropy missing): dHf_298=-793460.0 dGf_298=None

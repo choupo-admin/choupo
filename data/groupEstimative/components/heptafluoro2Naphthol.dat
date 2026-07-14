@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heptafluoro-2-naphthol  (C10HF7O, CAS 727-49-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heptafluoro2Naphthol;
+formula     C10HF7O;
+CAS         727-49-1;
+InChIKey    RWEQEWKAJFTONV-UHFFFAOYSA-N;
+MW          270.103;      // g/mol [origin=calculated method=formula-sum]
+Tc          768.73;      // K   [origin=predictive method=joback]
+Pc          28.505;      // bar [origin=predictive method=joback]
+omega       1.0157;      // -   [origin=predictive method=lee-kesler]
+Tb          584.43;      // K   [origin=predictive method=joback]
+HvapTb      53699.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (62.26 0.6919 -0.00059 2.124e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 2; } { group ACOH; count 1; } { group ACF; count 7; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 10; } { group F; count 7; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3,4,5,6,7,8-heptakis(fluoranyl)naphthalen-2-ol" "1,3,4,5,6,7,8-heptafluoronaphthalen-2-ol" "heptafluoronaphthalen-2-ol" "1,3,4,5,6,7,8-heptafluoro-2-naphthalenol" "2-naphthalenol,1,3,4,5,6,7,8-heptafluoro-" "2-naphthol,1,3,4,5,6,7,8-heptafluoro- (8ci); 2-naphthol, heptafluoro- (7ci);1,3,4,5,6,7,8-heptafluoro-2-naphthol; heptafluoro-2-naphthol;perfluoro-2-naphthol" );
+gibbsFormation
+{
+    dHf_298   -1452500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     535.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1333320.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(4-chlorobutyl) ether  (C8H16Cl2O, CAS 6334-96-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis4ChlorobutylEther;
+formula     C8H16Cl2O;
+CAS         6334-96-9;
+InChIKey    PVBMXMKIKMJQRK-UHFFFAOYSA-N;
+MW          199.115;      // g/mol [origin=calculated method=formula-sum]
+Tc          656.83;      // K   [origin=predictive method=joback]
+Pc          23.181;      // bar [origin=predictive method=joback]
+omega       0.5943;      // -   [origin=predictive method=lee-kesler]
+Tb          479.92;      // K   [origin=predictive method=joback]
+HvapTb      44582.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (46.898 0.7142 -0.0003412 4.72e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH2O; count 1; } { group CH2Cl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 8; } { group Cl; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-4-(4-chloranylbutoxy)butane" "ether, bis(4-chlorobutyl)" "4,4'-dichlorodibutyl ether" "di(chlorobutyl)ether" "4-chlorobutyl ether" "butane, 1,1'-oxybis(4-chloro-" "butane, 1,1'-oxybis[4-chloro-" "1-chloro-4-(4-chlorobutoxy)butane" "1,1'-oxydi-4-chlorobutane" "1,1'-oxybis(4-chlorobutane)" "bis-(4-chlorbut-1-yl)-ether [german]" "bis(4-chlorobutyl)ether" );
+gibbsFormation
+{
+    dHf_298   -372150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     545.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-112380.0
+    phase     gas;
+}

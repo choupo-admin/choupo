@@ -575,6 +575,17 @@ int EconomicsPass::run(SimulationResult& result)
             prevI = i; prevF = f;
         }
 
+        // A wildly profitable project (a tiny investment against a huge cash flow)
+        // can have an IRR far above the scan ceiling -- NPV is still POSITIVE at
+        // iScanMax.  Do NOT report nan: extend the bracket to capture the (very
+        // high) root.  Such an IRR almost always signals a MIS-SCALED appraisal
+        // (a throughput too large for the costed equipment), flagged loudly below.
+        if (!bracketed && std::isfinite(prevF) && prevF > 0.0)
+        {
+            iLo = iScanMax;  iHi = 1000.0;   // up to 100 000 %
+            bracketed = true;
+        }
+
         if (bracketed)
         {
             // Bisection seed (robust, monotone shrink), then Newton polish.
@@ -602,6 +613,17 @@ int EconomicsPass::run(SimulationResult& result)
 
             IRR     = nr.converged ? nr.x : seed;
             haveIRR = true;
+
+            // Loud scale check: an extreme IRR means the cash flow dwarfs the
+            // investment -- usually a throughput too large for the costed
+            // equipment (the appraisal is mis-scaled), not a real 1000%-return.
+            if (IRR > 2.0)
+                std::cerr << "EconomicsPass: IRR = " << (100.0 * IRR)
+                          << "% is EXTREME (>200%) -- the annual cash flow dwarfs the"
+                             " investment (FCI = " << FCI << " EUR).  Verify the project"
+                             " SCALE: a feed/product throughput too large for the costed"
+                             " equipment inflates revenue & opex against a tiny CAPEX,"
+                             " so the IRR is not physically meaningful.\n";
         }
     }
 

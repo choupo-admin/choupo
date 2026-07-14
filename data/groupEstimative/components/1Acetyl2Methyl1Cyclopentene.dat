@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-acetyl-2-methyl-1-cyclopentene  (C8H12O, CAS 3168-90-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Acetyl2Methyl1Cyclopentene;
+formula     C8H12O;
+CAS         3168-90-9;
+InChIKey    HDURLXYBKGWETC-UHFFFAOYSA-N;
+MW          124.183;      // g/mol [origin=calculated method=formula-sum]
+Tc          675.87;      // K   [origin=predictive method=joback]
+Pc          34.440;      // bar [origin=predictive method=joback]
+omega       0.4489;      // -   [origin=predictive method=lee-kesler]
+Tb          465.58;      // K   [origin=predictive method=joback]
+HvapTb      42330.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.07 0.71904 -0.0004287 9.706e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH3CO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group dC_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2-methylcyclopenten-1-yl)ethanone" "ketone, methyl 2-methyl-1-cyclopenten-1-yl" "ethanone, 1-(2-methyl-1-cyclopenten-1-yl)-" "1-(2-methyl-1-cyclopentenyl)-ethanone" "1-(2-methyl-1-cyclopentenyl)ethanone" "ethanone,1-(2-methyl-1-cyclopenten-1-yl)-" "ketone,methyl 2-methyl-1-cyclopenten-1-yl (6ci,7ci,8ci);1-acetyl-2-methyl-1-cyclopentene; 1-acetyl-2-methylcyclopentene" );
+gibbsFormation
+{
+    dHf_298   -205370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     436.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-57480.0
+    phase     gas;
+}

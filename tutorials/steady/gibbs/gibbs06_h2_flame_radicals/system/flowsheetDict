@@ -1,0 +1,62 @@
+/*---------------------------------------------------------------------------*\
+  gibbs06_h2_flame_radicals
+  =========================
+
+  THE RADICAL DATABASE AT WORK: stoichiometric H2/air adiabatic flame,
+  equilibrium by Gibbs minimisation over the FULL radical pool
+  (H, O, OH, HO2, H2O2 -- GRI-Mech 3.0 / Burcat NASA-7 thermo) plus
+  equilibrium thermal NO.
+
+      1 H2 + 0.5 O2 + 1.88 N2   at 298.15 K, 1 atm, adiabatic.
+
+  THE ANSWER (golden-locked):  T_ad = 2385.8 K -- the literature gives
+  2380-2390 K (Glassman, Combustion, 4th ed.; Law, Combustion Physics).
+  Equilibrium pool: OH 0.55 %, H 0.18 %, O 0.06 %, NO 0.27 % -- all inside
+  the published equilibrium ranges.  NO here is the Zeldovich CEILING (what
+  kinetics approaches with residence time, never exceeds).
+
+  TWO LESSONS THIS CASE TEACHES:
+  1. THE RADICALS' WORK: endothermic dissociation (H2O -> OH + H, O2 -> 2 O)
+     soaks up enthalpy near 2400 K.  Without the radical species the same
+     reactor answers ~2640 K -- the first-year textbook overshoot.
+  2. THE EXTRAPOLATION TRAP (why constant/components/ overrides exist here):
+     the catalogue's poly3 Cp fits are 250-1500 K PROCESS fits; extrapolated
+     to 2641 K, N2's cubic turns NEGATIVE (-33 J/mol/K) and water's reads
+     45 instead of ~56.  The case-local overrides switch the four stable
+     species to the NASA-7 two-range form (GRI-Mech 3.0, valid 200-3500 K)
+     -- the same source as the radical entries.  Run it once with the
+     overrides removed to SEE the 250 K error a silent extrapolation buys.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        flame;
+        type        gibbsReactor;
+        in          feed;
+        outputs     ( burnt );
+        operation
+        {
+            T          2400.0 K;     // initial guess for the outer Newton on T
+            P          1.0 atm;
+            mode       adiabatic;    // H_out(T_flame) = H_in
+            elements   ( H  O  N );
+
+            species
+            (
+                { name  H2;     atoms  ( 2  0  0 ); }
+                { name  O2;     atoms  ( 0  2  0 ); }
+                { name  N2;     atoms  ( 0  0  2 ); }
+                { name  water;  atoms  ( 2  1  0 ); }
+                { name  H;      atoms  ( 1  0  0 ); }
+                { name  O;      atoms  ( 0  1  0 ); }
+                { name  OH;     atoms  ( 1  1  0 ); }
+                { name  HO2;    atoms  ( 1  2  0 ); }
+                { name  H2O2;   atoms  ( 2  2  0 ); }
+                { name  NO;     atoms  ( 0  1  1 ); }
+            );
+        }
+    }
+);

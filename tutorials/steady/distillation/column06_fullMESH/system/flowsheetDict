@@ -1,0 +1,44 @@
+/*---------------------------------------------------------------------------*\
+  column06_fullMESH
+  =================
+
+  The SAME benzene/toluene column as column02_simultaneous, but solved by
+  the FULL MESH (Naphtali-Sandholm), selected by `model fullMESH;`.  The
+  full MESH promotes the internal flows V_j, L_j to UNKNOWNS and adds a
+  per-stage total-mass + ENERGY balance, so the flows follow the REAL
+  latent heats instead of the constant-molal-overflow (CMO) assumption
+  behind the `simultaneous` (bubble-point-reduced) method.
+
+  Robustness trick: the full MESH is SEEDED from the converged CMO
+  profile --- the cheap model bootstraps the rigorous one; ~4 Newton
+  iterations from that seed.
+
+  Expected --- close to, but NOT equal to, column02 (the gap IS the
+  energy-balance correction the CMO drops): T_top ~ 354.3 K, T_bottom
+  ~ 382.8 K, x_D(benzene) ~ 0.979 (CMO: 0.981).  Benzene/toluene latent
+  heats are similar (30.8 vs 33.2 kJ/mol) so the gap is small here; on a
+  wide-boiling column the full MESH earns its cost.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        column06;
+        type        distillationColumn;
+        model       fullMESH;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        15;
+            feedStage      8;
+            refluxRatio    2.0;
+            distillateRate 50.0 kmol/h;
+            feedQuality    1.0;
+            P              1.01325 bar;
+        }
+    }
+);

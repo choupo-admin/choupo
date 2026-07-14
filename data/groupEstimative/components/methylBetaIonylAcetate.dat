@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl beta-ionyl acetate  (C16H26O2, CAS 137085-37-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylBetaIonylAcetate;
+formula     C16H26O2;
+CAS         137085-37-1;
+InChIKey    ZFLGHRQDYOPHNY-HBWSCVEGSA-N;
+MW          250.382;      // g/mol [origin=calculated method=formula-sum]
+Tc          864.76;      // K   [origin=predictive method=joback]
+Pc          16.893;      // bar [origin=predictive method=joback]
+omega       0.6794;      // -   [origin=predictive method=lee-kesler]
+Tb          656.53;      // K   [origin=predictive method=joback]
+HvapTb      59081.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-81.329 1.734 -0.0013058 4.31e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group CH=CH; count 1; } { group CH3COO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 1; } { group CH; count 1; } { group dCH; count 2; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(e,3s)-1-(2,6,6-trimethylcyclohexen-1-yl)pent-1-en-3-yl] ethanoate" "1-penten-3-ol, 1-(2,6,6-trimethyl-1-cyclohexen-1-yl)-, acetate" "1-penten-3-ol, 1-(2,6,6-trimethyl-1-cyclohexen-1-yl)-, 3-acetate" "[(e,3s)-1-(2,6,6-trimethylcyclohexen-1-yl)pent-1-en-3-yl] acetate" );
+gibbsFormation
+{
+    dHf_298   -474510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     803.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-119090.0
+    phase     gas;
+}

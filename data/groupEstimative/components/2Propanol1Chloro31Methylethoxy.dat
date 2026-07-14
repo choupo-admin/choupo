@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propanol, 1-chloro-3-(1-methylethoxy)-  (C6H13ClO2, CAS 4288-84-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Propanol1Chloro31Methylethoxy;
+formula     C6H13ClO2;
+CAS         4288-84-0;
+InChIKey    GQPJSBQMFFGZAU-UHFFFAOYSA-N;
+MW          152.618;      // g/mol [origin=calculated method=formula-sum]
+Tc          662.08;      // K   [origin=predictive method=joback]
+Pc          33.029;      // bar [origin=predictive method=joback]
+omega       0.8430;      // -   [origin=predictive method=lee-kesler]
+Tb          488.03;      // K   [origin=predictive method=joback]
+HvapTb      51648.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (37.752 0.56324 -0.0002488 2.32e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group CH2Cl; count 1; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group Cl; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-3-propan-2-yloxy-propan-2-ol" "2-propanol, 1-chloro-3-isopropoxy-" "1-chloro-3-isopropoxypropan-2-ol" "1-chloro-2-isopropoxy-2-propanol" "1-chloro-3-isopropoxy-2-propanol" "2-propanol, 1-chloro-2-isopropoxy-" "1-chloro-3-propan-2-yloxypropan-2-ol" "u 25,352" );
+gibbsFormation
+{
+    dHf_298   -477920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     466.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-258990.0
+    phase     gas;
+}

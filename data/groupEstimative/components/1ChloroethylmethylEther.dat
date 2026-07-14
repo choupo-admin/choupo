@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-chloroethylmethyl ether  (C3H7ClO, CAS 1538-87-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1ChloroethylmethylEther;
+formula     C3H7ClO;
+CAS         1538-87-0;
+InChIKey    QWELSYQNDFTISP-UHFFFAOYSA-N;
+MW          94.538;      // g/mol [origin=calculated method=formula-sum]
+Tc          505.47;      // K   [origin=predictive method=joback]
+Pc          41.516;      // bar [origin=predictive method=joback]
+omega       0.2621;      // -   [origin=predictive method=lee-kesler]
+Tb          327.65;      // K   [origin=predictive method=joback]
+HvapTb      28679.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (36.87 0.23834 -5.2e-05 -2.18e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH3O; count 1; } { group CHCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-1-methoxy-ethane" "ethane, 1-chloro-1-methoxy-" "agn-pc-0dbdtq" "1-chloro-1-methoxyethane" );
+gibbsFormation
+{
+    dHf_298   -258490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     308.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-144990.0
+    phase     gas;
+}

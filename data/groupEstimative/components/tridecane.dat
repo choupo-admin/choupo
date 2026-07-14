@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tridecane  (C13H28, CAS 629-50-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tridecane;
+formula     C13H28;
+CAS         629-50-5;
+InChIKey    IIYFAKIEWZDVMP-UHFFFAOYSA-N;
+MW          184.367;      // g/mol [origin=calculated method=formula-sum]
+Tc          657.38;      // K   [origin=predictive method=joback]
+Pc          16.444;      // bar [origin=predictive method=joback]
+omega       0.6327;      // -   [origin=predictive method=lee-kesler]
+Tb          497.04;      // K   [origin=predictive method=joback]
+HvapTb      44532.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.929 1.23884 -0.0006834 1.435e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 11; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 11; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cactus normal paraffin n 13" "n 13" "n 13 (paraffin)" "paraffin n 13" "n-tridecane" "tridekan" "tridecane, n-" "N-tridecane [HSDB]" "EC 211-093-4" "CH3-[CH2]11-ch3" "dodecane, methyl-" "trd" );
+gibbsFormation
+{
+    dHf_298   -311650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     662.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=58580.0
+    phase     gas;
+}

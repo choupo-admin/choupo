@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-decanoylmorpholine  (C14H27NO2, CAS 5299-65-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nDecanoylmorpholine;
+formula     C14H27NO2;
+CAS         5299-65-0;
+InChIKey    DAOANAATJZWTSJ-UHFFFAOYSA-N;
+MW          241.375;      // g/mol [origin=calculated method=formula-sum]
+Tc          820.49;      // K   [origin=predictive method=joback]
+Pc          18.953;      // bar [origin=predictive method=joback]
+omega       0.8872;      // -   [origin=predictive method=lee-kesler]
+Tb          633.13;      // K   [origin=predictive method=joback]
+HvapTb      60623.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-62.272 1.58492 -0.0010006 2.4276e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 9; } { group FCH2O; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group CH2_ring; count 4; } { group O_ring; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-morpholin-4-yldecan-1-one" "morpholine, 4-decanoyl-" "4-caprylmorpholine" "4-decanoylmorpholine" "4-(1-oxodecyl)morpholine" "morpholine, 4-(1-oxodecyl)-" "1-decanone,1-(4-morpholinyl)-" "morpholine, 4-(1-oxodecyl)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -428520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     684.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=7000.0
+    phase     gas;
+}

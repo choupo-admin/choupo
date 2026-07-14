@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): cresol, compound with 2-aminoethanol (1:1)  (C9H15NO2, CAS 67786-08-7)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           cresolCompoundWith2Aminoethanol11;
+formula        C9H15NO2;
+CAS            67786-08-7;
+InChIKey       QZAXWZRGOAXUQJ-UHFFFAOYSA-N;
+MW             169.224;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+dissociatesTo  { cresol 1; 2-aminoethanol 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

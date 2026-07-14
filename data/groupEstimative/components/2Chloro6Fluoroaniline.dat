@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloro-6-fluoroaniline  (C6H5ClFN, CAS 363-51-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chloro6Fluoroaniline;
+formula     C6H5ClFN;
+CAS         363-51-9;
+InChIKey    ZJLAWMDJTMMTQB-UHFFFAOYSA-N;
+MW          145.561;      // g/mol [origin=calculated method=formula-sum]
+Tc          709.33;      // K   [origin=predictive method=joback]
+Pc          43.397;      // bar [origin=predictive method=joback]
+omega       0.4820;      // -   [origin=predictive method=lee-kesler]
+Tb          482.75;      // K   [origin=predictive method=joback]
+HvapTb      46759.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.6 0.4564 -0.00027992 6.15e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACNH2; count 1; } { group ACCl; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-6-fluoranyl-aniline" "6-chloro-2-fluorophenylamine" "2-amino-3-fluorochlorobenzene" "2-chloro-6-fluoro-phenylamine" "2-chloro-6-fluoroaniline 97%" "benzenamine, 2-chloro-6-fluoro-" "benzenamine, 2-chloro-6-fluoro-;2-chloro-6-fluoroaniline;2-chloro-6-fluoroani" "aniline,2-chloro-6-fluoro- (8ci);2-chloro-6-fluorophenylamine;2-fluoro-6-chloroaniline;2-chloro-6-fluoroaniline;2-chloro-6-fluoro-phenylamine;" );
+gibbsFormation
+{
+    dHf_298   -131640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     387.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-47500.0
+    phase     gas;
+}

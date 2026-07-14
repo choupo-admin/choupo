@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 4-oxocyclohexanecarboxylate  (C9H14O3, CAS 17159-79-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl4Oxocyclohexanecarboxylate;
+formula     C9H14O3;
+CAS         17159-79-4;
+InChIKey    ZXYAWONOWHSQRU-UHFFFAOYSA-N;
+MW          170.208;      // g/mol [origin=calculated method=formula-sum]
+Tc          771.98;      // K   [origin=predictive method=joback]
+Pc          29.633;      // bar [origin=predictive method=joback]
+omega       0.5741;      // -   [origin=predictive method=lee-kesler]
+Tb          551.11;      // K   [origin=predictive method=joback]
+HvapTb      47711.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.059 0.75782 -0.0002082 -6.46e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 1; } { group CH2CO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 4-oxidanylidenecyclohexane-1-carboxylate" "ethyl-4-oxo-cyclohexane carboxylate" "ethyl 4-oxocyclohexane-1-carboxylate" "ethyl4-oxocyclohexanecarboxylate" "4-(ethoxycarbonyl)cyclohexanone" "4-oxo-cyclohexanecarboxylic acid ethyl ester" "ethyl 4-cyclohexanonecarboxylate" "ethyl cyclohexanone-4-carboxylate" "ethyl 4-oxocyclohexane carboxylate" "4-cyclohexanonecarboxylic acid ethyl ester" "cyclohexanecarboxylic acid, 4-oxo-, ethyl ester" "ethyl-4-cyclohexanonecarboxylate" );
+gibbsFormation
+{
+    dHf_298   -629750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     448.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-383610.0
+    phase     gas;
+}

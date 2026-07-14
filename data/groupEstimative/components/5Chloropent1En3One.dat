@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-chloropent-1-en-3-one  (C5H7ClO, CAS 20757-87-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Chloropent1En3One;
+formula     C5H7ClO;
+CAS         20757-87-3;
+InChIKey    XLFDSXRUZDTNER-UHFFFAOYSA-N;
+MW          118.56;      // g/mol [origin=calculated method=formula-sum]
+Tc          592.52;      // K   [origin=predictive method=joback]
+Pc          37.638;      // bar [origin=predictive method=joback]
+omega       0.4120;      // -   [origin=predictive method=lee-kesler]
+Tb          401.98;      // K   [origin=predictive method=joback]
+HvapTb      37185.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.602 0.4376 -0.0002728 6.566e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group CH2CO; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group Cl; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-chloranylpent-1-en-3-one" "1-penten-3-one, 5-chloro-" "5-chloro-1-penten-3-one" "beta-chloroethyl vinyl ketone" );
+gibbsFormation
+{
+    dHf_298   -149420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     406.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-61790.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentyldiglycol  (C9H20O3, CAS 18912-81-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentyldiglycol;
+formula     C9H20O3;
+CAS         18912-81-7;
+InChIKey    PWTNRNHDJZLBCD-UHFFFAOYSA-N;
+MW          176.256;      // g/mol [origin=calculated method=formula-sum]
+Tc          701.94;      // K   [origin=predictive method=joback]
+Pc          24.411;      // bar [origin=predictive method=joback]
+omega       1.0728;      // -   [origin=predictive method=lee-kesler]
+Tb          542.54;      // K   [origin=predictive method=joback]
+HvapTb      57127.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (50.998 0.76642 -0.0002742 -3.9e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH2O; count 1; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group OH; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-pentoxyethoxy)ethanol" "2-(2-pentyloxyethoxy)ethanol" "c5e2" "diethylene glycol monopentyl ether" "diethylene glycol, pentyl ether" "ethanol,2-[2-(pentyloxy)ethoxy]-" "diethyleneglycol monoamyl ether; diethylene glycol monopentyl ether" );
+gibbsFormation
+{
+    dHf_298   -645760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     580.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-321920.0
+    phase     gas;
+}

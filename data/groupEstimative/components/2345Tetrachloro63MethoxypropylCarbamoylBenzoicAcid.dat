@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,4,5-tetrachloro-6-[(3-methoxypropyl)carbamoyl]benzoic acid  (C12H11Cl4NO4, CAS 67846-01-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2345Tetrachloro63MethoxypropylCarbamoylBenzoicAcid;
+formula     C12H11Cl4NO4;
+CAS         67846-01-9;
+InChIKey    ZFCWJUKNOSHVCS-UHFFFAOYSA-N;
+MW          375.023;      // g/mol [origin=calculated method=formula-sum]
+Tc          1180.91;      // K   [origin=predictive method=joback]
+Pc          22.376;      // bar [origin=predictive method=joback]
+omega       1.4389;      // -   [origin=predictive method=lee-kesler]
+Tb          947.43;      // K   [origin=predictive method=joback]
+HvapTb      98188.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (117.383 0.83042 -0.0003981 4.326e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group AC; count 2; } { group CH3O; count 1; } { group COOH; count 1; } { group ACCl; count 4; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dC_ring; count 6; } { group Cl; count 4; } { group O; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,4,5-tetrakis(chloranyl)-6-(3-methoxypropylcarbamoyl)benzoic acid" "2,3,4,5-tetrachloro-6-(((3-methoxypropyl)amino)carbonyl)benzoic acid" "benzoic acid, 2,3,4,5-tetrachloro-6-(((3-methoxypropyl)amino)carbonyl)-" "benzoic acid, 2,3,4,5-tetrachloro-6-[[(3-methoxypropyl)amino]carbonyl]-" "2,3,4,5-tetrachloro-6-[[(3-methoxypropyl)amino]carbonyl]benzoic acid" "3,4,5,6-tetrachloro-n-(3-methoxypropyl)phthalamic acid" "2,3,4,5-tetrachloro-6-(3-methoxypropylcarbamoyl)benzoic acid" );
+gibbsFormation
+{
+    dHf_298   -716390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     751.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-421740.0
+    phase     gas;
+}

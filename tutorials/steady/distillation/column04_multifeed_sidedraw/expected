@@ -1,0 +1,19 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  bottoms                F                0.0286111111111  1e-4
+stream  distillate             F                0.0116666666667  1e-4
+stream  feed                   F                0.0277777777778  1e-4
+stream  intermediateCut        F                0.00416666666667 1e-4
+kpi     radfracLite            B                0.0286111111111  1e-4
+kpi     radfracLite            D                0.0116666666667  1e-4
+kpi     radfracLite            Q_condenser_kW   -1435.80274013   1e-4
+kpi     radfracLite            Q_reboiler_kW    1516.14164522    1e-4
+kpi     radfracLite            R                3                1e-4
+kpi     radfracLite            T_bottom         395.926996928    1e-4
+kpi     radfracLite            T_top            354.978489481    1e-4
+kpi     radfracLite            feedStage        5                1e-4
+kpi     radfracLite            nFeeds           2                1e-4
+kpi     radfracLite            nSideDraws       1                1e-4
+kpi     radfracLite            nStages          15               1e-4
+kpi     radfracLite            x_B_HK           0.467203119885   1e-4
+kpi     radfracLite            x_D_LK           0.965888000336   1e-4

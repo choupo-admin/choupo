@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(tert-butylamino)ethanol  (C6H15NO, CAS 4620-70-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2TertButylaminoEthanol;
+formula     C6H15NO;
+CAS         4620-70-6;
+InChIKey    IUXYVKZUDNLISR-UHFFFAOYSA-N;
+MW          117.192;      // g/mol [origin=calculated method=formula-sum]
+Tc          650.73;      // K   [origin=predictive method=joback]
+Pc          35.856;      // bar [origin=predictive method=joback]
+omega       0.8292;      // -   [origin=predictive method=lee-kesler]
+Tb          476.00;      // K   [origin=predictive method=joback]
+HvapTb      50769.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.958 0.80986 -0.0005534 1.524e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group OH; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group OH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-tert-butylethanolamine" "tert-butylaminoethanol" "t-butylethanolamine" "n-t-butylethanolamine" "ethanol, 2-(tert-butylamino)-" "2-((1,1-dimethylethyl)amino)ethanol" "ethanol, 2-((1,1-dimethylethyl)amino)-" "ethanol, 2-[(1,1-dimethylethyl)amino]-" "agn-pc-0d5ook" ".beta.-tert-butylaminoethanol" "q2mx1&1&1" "ethanol,1-dimethylethyl)amino]-" );
+gibbsFormation
+{
+    dHf_298   -274680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     442.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-44950.0
+    phase     gas;
+}

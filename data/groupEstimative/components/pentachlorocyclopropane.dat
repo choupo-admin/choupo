@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentachlorocyclopropane  (C3HCl5, CAS 6262-51-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentachlorocyclopropane;
+formula     C3HCl5;
+CAS         6262-51-7;
+InChIKey    IACJMSLMMMSESC-UHFFFAOYSA-N;
+MW          214.291;      // g/mol [origin=calculated method=formula-sum]
+Tc          698.20;      // K   [origin=predictive method=joback]
+Pc          42.330;      // bar [origin=predictive method=joback]
+omega       0.2739;      // -   [origin=predictive method=lee-kesler]
+Tb          453.27;      // K   [origin=predictive method=joback]
+HvapTb      41190.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-73.73 1.0045 -0.001416 7.084e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CHCl; count 1; } { group CCl2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 1; } { group C_ring; count 2; } { group Cl; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2,2,3-pentakis(chloranyl)cyclopropane" "cyclopropane, pentachloro-" "1,1,2,2,3-pentachlorocyclopropane" "1,1,2,2,3-pentachloro-cyclopropane" );
+gibbsFormation
+{
+    dHf_298   -121350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     404.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-50920.0
+    phase     gas;
+}

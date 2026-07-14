@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-benzenediamine, n,n,n',n'-tetramethyl-  (C10H16N2, CAS 704-01-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12BenzenediamineNNNNTetramethyl;
+formula     C10H16N2;
+CAS         704-01-8;
+InChIKey    CJVYYDCBKKKIPD-UHFFFAOYSA-N;
+MW          164.252;      // g/mol [origin=calculated method=formula-sum]
+Tc          685.61;      // K   [origin=predictive method=joback]
+Pc          28.719;      // bar [origin=predictive method=joback]
+omega       0.5072;      // -   [origin=predictive method=lee-kesler]
+Tb          484.94;      // K   [origin=predictive method=joback]
+HvapTb      44878.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.19 1.06328 -0.00070956 1.832e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group ACH; count 4; } { group AC; count 2; } { group CH3N; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n1,n1,n2,n2-tetramethylbenzene-1,2-diamine" "o-phenylenebis(dimethylamine)" "1,2-bis(dimethylamino)benzene" "n,n,n,n-tetramethyl-1,2-benzenediamine" "n,n,n',n'-tetramethyl-o-phenylenediamine" "n,n,n',n'-tetramethyl-1,2-benzenediamine" "n,n,n',n'-tetramethylbenzene-1,2-diamine" "1,2-benzenediamine, n1,n1,n2,n2-tetramethyl-" "o-phenylenediamine, n,n,n',n'-tetramethyl-" "benzenediamine,n,n,n',n'-tetramethyl-" "n,n',n'-tetramethyl-o-phenylenediamine" "o-phenylenediamine,n,n',n'-tetramethyl-" );
+gibbsFormation
+{
+    dHf_298   110390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     465.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=357660.0
+    phase     gas;
+}

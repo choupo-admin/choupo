@@ -1,0 +1,57 @@
+/*---------------------------------------------------------------------------*\
+  fitNRTL01 -- Levenberg-Marquardt regression of the ethanol-water NRTL pair
+  against 1 atm bubble-T data, on the CANONICAL fit engine (fitParameters,
+  choupoProps).  This case previously ran the condemned FitBinaryPair outer
+  driver in choupoSolve, which abused a dummy flowsheet and steered the feed
+  composition through the legacy streams{} block per data row -- the design
+  forum (#53) ordered it moved here, WITH a golden: its chi^2 once degraded
+  100x with nothing going red, because a fit without numerical verification
+  does not belong in a green corpus.
+
+  Data: transcribed from constant/experiments/ethanol-water-101kPa (the raw-
+  data home; DECHEMA / Gmehling-Onken Vol. I Part 1, pedagogical subset).
+  Starting point: the catalogue NRTL values in constant/propertyDict.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_NRTL_ethanol_water;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  activityModel.pairs[0].a_ij;  initial -0.8009;   min -15;    max 15;   }
+            { path  activityModel.pairs[0].b_ij;  initial  246.18;   min -5000;  max 5000; }
+            { path  activityModel.pairs[0].a_ji;  initial  3.4578;   min -15;    max 15;   }
+            { path  activityModel.pairs[0].b_ji;  initial -586.0809; min -5000;  max 5000; }
+        );
+
+        residual
+        {
+            kind      T_bubble;
+            P         1.01325 bar;
+            data
+            (
+                0.05  361.95    0.10  359.95    0.20  358.05
+                0.30  357.30    0.40  356.85    0.50  356.20
+                0.60  355.30    0.70  354.50    0.80  353.30
+                0.90  351.85    0.95  351.45
+            );
+        }
+
+        options
+        {
+            maxIter      60;
+            tolerance    1.0e-6;
+            fdStep       1.0e-3;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history.csv;
+            parity     parity.csv;
+        }
+    }
+);

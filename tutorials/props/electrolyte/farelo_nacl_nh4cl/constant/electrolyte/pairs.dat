@@ -1,0 +1,75 @@
+/*---------------------------------------------------------------------------*\
+  Choupo electrolyte catalogue --- PITZER cation-anion parameters (25 C base).
+
+  Source: USGS PHREEQC pitzer.dat (public domain); values from Appelo et al.
+  (Geochim. Cosmochim. Acta 125 (2014) 49; Appl. Geochem. 55 (2015) 62).
+  alpha1 = 1.4 for 2:2 salts (beta2 active), else 2.0; alpha2 = 12.
+  25 C base only (the file T,P coefficients are deferred). Per-row gamma_pm
+  validation (AAD vs literature) is recorded by the curation swarm.
+\*---------------------------------------------------------------------------*/
+
+pairs
+(
+    { cation Ba; anion Br; beta0 0.31455; beta1 1.56975; beta2 0.0; Cphi -0.0159576; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Ba; anion Cl; beta0 0.5268; beta1 0.687; beta2 0.0; Cphi -0.143; alpha1 2.0; alpha2 12.0; source "Appelo, Appl. Geochem. 55 (2015) 62"; }
+    { cation Ba; anion OH; beta0 0.17175; beta1 1.2; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Ca; anion Br; beta0 0.3816; beta1 1.613; beta2 0.0; Cphi -0.00257; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Ca; anion Cl; beta0 0.3159; beta1 1.614; beta2 -1.13; Cphi 0.00014; alpha1 2.0; alpha2 12.0; source "Appelo, Appl. Geochem. 55 (2015) 62"; }
+    { cation Ca; anion HCO3; beta0 0.4; beta1 2.977; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Appl. Geochem. 55 (2015) 62"; }
+    { cation Ca; anion HSO4; beta0 0.2145; beta1 2.53; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Ca; anion OH; beta0 -0.1747; beta1 -0.2303; beta2 -5.72; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Ca; anion SO4; beta0 0.0; beta1 3.546; beta2 -59.3; Cphi 0.114; alpha1 1.4; alpha2 12.0; source "Appelo, Appl. Geochem. 55 (2015) 62"; }
+    { cation CaBOH4; anion Cl; beta0 0.12; beta1 0.0; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Fe; anion Cl; beta0 0.335925; beta1 1.53225; beta2 0.0; Cphi -0.00860725; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Fe; anion HSO4; beta0 0.4273; beta1 3.48; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Fe; anion SO4; beta0 0.2568; beta1 3.063; beta2 -42.0; Cphi 0.0209; alpha1 1.4; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation H; anion Br; beta0 0.196; beta1 0.3564; beta2 0.0; Cphi 0.00827; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation H; anion Cl; beta0 0.1775; beta1 0.2945; beta2 0.0; Cphi 0.0008; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation H; anion HSO4; beta0 0.2065; beta1 0.5556; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation H; anion SO4; beta0 0.0298; beta1 0.0; beta2 0.0; Cphi 0.0438; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation K; anion B3O3OH4; beta0 -0.13; beta1 0.0; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation K; anion B4O5OH4; beta0 -0.022; beta1 0.0; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation K; anion BOH4; beta0 0.035; beta1 0.14; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation K; anion Br; beta0 0.0569; beta1 0.2212; beta2 0.0; Cphi -0.0018; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation K; anion CO3; beta0 0.1488; beta1 1.43; beta2 0.0; Cphi -0.0015; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation K; anion Cl; beta0 0.04808; beta1 0.2168; beta2 0.0; Cphi -0.000788; alpha1 2.0; alpha2 12.0; source "Appelo, Appl. Geochem. 55 (2015) 62"; }
+    { cation NH4; anion Cl; beta0 0.0522; beta1 0.1918; beta2 0.0; Cphi -0.00301; alpha1 2.0; alpha2 12.0; source "Pitzer & Mayorga, J. Phys. Chem. 77 (1973) 2300 -- single-electrolyte fit (PRIMARY); predicted NH4Cl saturation validated vs Farelo, Fernandes & Avelino, J. Chem. Eng. Data 50 (2005) 1470 (7.35 mol/kg, 298.15 K)"; }
+    { cation K; anion HCO3; beta0 0.0296; beta1 0.25; beta2 0.0; Cphi -0.008; alpha1 2.0; alpha2 12.0; source "Appelo, Appl. Geochem. 55 (2015) 62"; }
+    { cation K; anion HSO4; beta0 -0.0003; beta1 0.1735; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation K; anion OH; beta0 0.1298; beta1 0.32; beta2 0.0; Cphi 0.0041; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation K; anion SO4; beta0 0.0317; beta1 0.756; beta2 0.0; Cphi 0.00818; alpha1 2.0; alpha2 12.0; source "Appelo, Appl. Geochem. 55 (2015) 62"; }
+    { cation Li; anion Br; beta0 0.1748; beta1 0.2547; beta2 0.0; Cphi 0.0053; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Li; anion Cl; beta0 0.1494; beta1 0.3074; beta2 0.0; Cphi 0.00359; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Li; anion OH; beta0 0.015; beta1 0.14; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Li; anion SO4; beta0 0.136275; beta1 1.2705; beta2 0.0; Cphi -0.00399338; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Mg; anion Br; beta0 0.4327; beta1 1.753; beta2 0.0; Cphi 0.00312; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Mg; anion Cl; beta0 0.351; beta1 1.65; beta2 0.0; Cphi 0.00651; alpha1 2.0; alpha2 12.0; source "Appelo, Appl. Geochem. 55 (2015) 62"; }
+    { cation Mg; anion HCO3; beta0 0.329; beta1 0.6072; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Mg; anion HSO4; beta0 0.4746; beta1 1.729; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Mg; anion SO4; beta0 0.2135; beta1 3.367; beta2 -32.45; Cphi 0.02875; alpha1 1.4; alpha2 12.0; source "Appelo, Appl. Geochem. 55 (2015) 62"; }
+    { cation MgBOH4; anion Cl; beta0 0.16; beta1 0.0; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation MgOH; anion Cl; beta0 -0.1; beta1 1.658; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Mn; anion Cl; beta0 0.327225; beta1 1.55025; beta2 0.0; Cphi -0.0204972; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Mn; anion SO4; beta0 0.2065; beta1 2.9511; beta2 -40.0; Cphi 0.01636; alpha1 1.4; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Na; anion B3O3OH4; beta0 -0.056; beta1 -0.91; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Na; anion B4O5OH4; beta0 -0.11; beta1 -0.4; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Na; anion BOH4; beta0 -0.0427; beta1 0.089; beta2 0.0; Cphi 0.0114; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Na; anion Br; beta0 0.0973; beta1 0.2791; beta2 0.0; Cphi 0.00116; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Na; anion CO3; beta0 0.0399; beta1 1.389; beta2 0.0; Cphi 0.0044; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Na; anion Cl; beta0 0.07534; beta1 0.2769; beta2 0.0; Cphi 0.00148; alpha1 2.0; alpha2 12.0; source "Appelo, Appl. Geochem. 55 (2015) 62"; }
+    { cation Na; anion HCO3; beta0 -0.018; beta1 -0.0101; beta2 6.84; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Appl. Geochem. 55 (2015) 62"; }
+    { cation Na; anion HSO4; beta0 0.0454; beta1 0.398; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Na; anion OH; beta0 0.0864; beta1 0.253; beta2 0.0; Cphi 0.0044; alpha1 2.0; alpha2 12.0;
+      // Silvester-Pitzer T-slots: linear-LS fit of L_phi to Parker NSRDS-NBS 2 (1965)
+      // Table XIV A, m = 0.1..6 mol/kg, rel-AAD 4.97% (gate <5%), abs-AAD 5.7 cal/mol
+      // (bin/curate/fit_lphi_pitzer.py, 2026-06-11).  EXTRAPOLATION beyond 6 mol/kg
+      // diverges (m=22: fit +9671 vs meas +4260 cal/mol) -- announce loudly.
+      dbeta0_dT 6.209698e-04; dbeta1_dT 2.928294e-04; dCphi_dT -1.592827e-04;
+      calorimetricFit true;  lphiValidityMax 6.0;   // the fitted-data window [mol/kg]
+      source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49; T-slots: Parker NSRDS-NBS 2 (1965), curation fit"; }
+    { cation Na; anion SO4; beta0 0.0273; beta1 0.956; beta2 0.0; Cphi 0.003418; alpha1 2.0; alpha2 12.0; source "Appelo, Appl. Geochem. 55 (2015) 62"; }
+    { cation Sr; anion Br; beta0 0.331125; beta1 1.7115; beta2 0.0; Cphi 0.00122506; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Sr; anion Cl; beta0 0.2858; beta1 1.667; beta2 0.0; Cphi -0.0013; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Sr; anion HCO3; beta0 0.12; beta1 0.0; beta2 0.0; Cphi 0.0; alpha1 2.0; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+    { cation Sr; anion SO4; beta0 0.2; beta1 3.1973; beta2 -54.24; Cphi 0.0; alpha1 1.4; alpha2 12.0; source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49"; }
+);

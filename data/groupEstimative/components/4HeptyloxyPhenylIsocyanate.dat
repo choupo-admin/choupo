@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(heptyloxy)phenyl isocyanate  (C14H19NO2, CAS 55792-37-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4HeptyloxyPhenylIsocyanate;
+formula     C14H19NO2;
+CAS         55792-37-5;
+InChIKey    KJMZSDMQWFWLCX-UHFFFAOYSA-N;
+MW          233.311;      // g/mol [origin=calculated method=formula-sum]
+Tc          840.93;      // K   [origin=predictive method=joback]
+Pc          20.869;      // bar [origin=predictive method=joback]
+omega       0.8390;      // -   [origin=predictive method=lee-kesler]
+Tb          640.67;      // K   [origin=predictive method=joback]
+HvapTb      61638.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group ACH; count 4; } { group AC; count 2; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH3; count 1; } { group CH2; count 6; } { group dCd; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-heptoxy-4-isocyanato-benzene" "1-heptoxy-4-isocyanatobenzene" "4-heptyloxybenzenisocyanate" "4-(heptyl-oxy)phenyl isocyanate" );
+// formation datum unavailable (element entropy missing): dHf_298=-244860.0 dGf_298=None

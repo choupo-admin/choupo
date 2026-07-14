@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-allyl-5-tert-butyl-2-methoxyphenol  (C14H20O2, CAS 67874-75-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Allyl5TertButyl2Methoxyphenol;
+formula     C14H20O2;
+CAS         67874-75-3;
+InChIKey    DNDJANVQFAOBRN-UHFFFAOYSA-N;
+MW          220.312;      // g/mol [origin=calculated method=formula-sum]
+Tc          872.81;      // K   [origin=predictive method=joback]
+Pc          23.383;      // bar [origin=predictive method=joback]
+omega       0.7636;      // -   [origin=predictive method=lee-kesler]
+Tb          653.05;      // K   [origin=predictive method=joback]
+HvapTb      63816.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.029 1.33318 -0.00097498 2.987e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group CH2=CH; count 1; } { group ACH; count 2; } { group AC; count 2; } { group ACCH2; count 1; } { group ACOH; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-tert-butyl-2-methoxy-4-prop-2-enyl-phenol" "4-allyl-5-(tert-butyl)-2-methoxyphenol" "phenol, 5-(1,1-dimethylethyl)-2-methoxy-4-(2-propenyl)-" "phenol, 5-(1,1-dimethylethyl)-2-methoxy-4-(2-propen-1-yl)-" "5-tert-butyl-2-methoxy-4-prop-2-enylphenol" );
+gibbsFormation
+{
+    dHf_298   -311550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     576.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-8790.0
+    phase     gas;
+}

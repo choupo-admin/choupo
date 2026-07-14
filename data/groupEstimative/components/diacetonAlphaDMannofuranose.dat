@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diaceton-alpha-d-mannofuranose  (C12H20O6, CAS 14131-84-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diacetonAlphaDMannofuranose;
+formula     C12H20O6;
+CAS         14131-84-1;
+InChIKey    JWWCLCNPTZHVLF-UHFFFAOYSA-N;
+MW          260.286;      // g/mol [origin=calculated method=formula-sum]
+Tc          939.20;      // K   [origin=predictive method=joback]
+Pc          28.444;      // bar [origin=predictive method=joback]
+omega       1.0957;      // -   [origin=predictive method=lee-kesler]
+Tb          720.19;      // K   [origin=predictive method=joback]
+HvapTb      78424.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-163.56 2.05498 -0.0019085 7.594e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH; count 1; } { group C; count 2; } { group OH; count 1; } { group CH-O; count 4; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 1; } { group CH_ring; count 5; } { group C_ring; count 2; } { group OH; count 1; } { group O_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-(2,2-dimethyl-1,3-dioxolan-4-yl)-2,2-dimethyl-3a,4,6,6a-tetrahydrofuro[3,4-d][1,3]dioxol-4-ol" "4-(2,2-dimethyl(1,3-dioxolan-4-yl))-7,7-dimethyl-3,6,8-trioxabicyclo[3.3.0]oct an-2-ol" "2,3-5,6-di-o-isopropylidene-alpha-d-mannofuranose" "allofuranose, 2,3:5,6-di-o-isopropylidene-, .beta.-d-" "talofuranose, 2,3:5,6-di-o-isopropylidene-, .alpha.-d-" ".beta.-d-allofuranose, 2,3:5,6-bis-o-(1-methylethylidene)-" "4-(2,2-dimethyl-1,3-dioxolan-4-yl)-7,7-dimethyl-3,6,8-trioxabicyclo[3.3.0]octan-2-ol" "(3as,4r,6r,6as)-6-[(4r)-2,2-dimethyl-1,3-dioxolan-4-yl]-2,2-dimethyl-3a,4,6,6a-tetrahydrofuro[3,4-d][1,3]dioxol-4-ol" );
+gibbsFormation
+{
+    dHf_298   -960360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     196.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-425230.0
+    phase     gas;
+}

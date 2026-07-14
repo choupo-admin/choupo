@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetylcholine mustard  (C7H14ClNO2, CAS 36375-30-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acetylcholineMustard;
+formula     C7H14ClNO2;
+CAS         36375-30-1;
+InChIKey    XZICNJLDEMDMQZ-UHFFFAOYSA-N;
+MW          179.644;      // g/mol [origin=calculated method=formula-sum]
+Tc          645.42;      // K   [origin=predictive method=joback]
+Pc          27.014;      // bar [origin=predictive method=joback]
+omega       0.6221;      // -   [origin=predictive method=lee-kesler]
+Tb          467.85;      // K   [origin=predictive method=joback]
+HvapTb      45011.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.134 0.74474 -0.0003954 6.14e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH3COO; count 1; } { group CH3N; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group Cl; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-chloroethyl(methyl)amino]ethyl ethanoate" "2-[(2-chloroethyl)(methyl)amino]ethyl acetate" "2-chloroethylmethylaminoethyl acetate" "methylamine, n-acetoxyethyl-n-chloroethyl-" "diethylamine, 2-acetoxy-2'-chloro-n-methyl-" "methyl-beta-acetoxyethyl-beta-chloroethylamine" "2-((2-chloroethyl)methylamino)ethanol acetate" "ethanol, 2-((2-chloroethyl)methylamino)-, acetate" "ethanol, 2-((2-chloroethyl)methylamino)-, acetate (ester)" "methyl-2-acetoxyethyl-2'-chloroethylamine" "2-[2-chloroethyl(methyl)amino]ethyl acetate" );
+gibbsFormation
+{
+    dHf_298   -453300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     529.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-203460.0
+    phase     gas;
+}

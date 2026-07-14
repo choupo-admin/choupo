@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3,5-hexatriyne  (C6H2, CAS 3161-99-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        135Hexatriyne;
+formula     C6H2;
+CAS         3161-99-7;
+InChIKey    MZHROOGPARRVHS-UHFFFAOYSA-N;
+MW          74.082;      // g/mol [origin=calculated method=formula-sum]
+Tc          546.49;      // K   [origin=predictive method=joback]
+Pc          55.858;      // bar [origin=predictive method=joback]
+omega       0.0969;      // -   [origin=predictive method=lee-kesler]
+Tb          326.12;      // K   [origin=predictive method=joback]
+HvapTb      30818.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (42.55 0.2362 -0.00020232 7.596e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH_C; count 2; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tCH; count 2; } { group tC; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexa-1,3,5-triyne" "triacetylene" "hc#cc#cc#ch" "hc#c-c#c-c#ch" "hc.equiv.cc.equiv.cc.equiv.ch" );
+gibbsFormation
+{
+    dHf_298   688930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     300.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=648580.0
+    phase     gas;
+}

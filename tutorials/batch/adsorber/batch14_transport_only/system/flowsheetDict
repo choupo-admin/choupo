@@ -1,0 +1,68 @@
+/*---------------------------------------------------------------------------*\
+  batch14_transport_only  --  the k = 0 transport gate (A3 spec, gate G1).
+
+  Same bed, same feed, same mesh family as batch13 -- but the LDF constant
+  is DECLARED ZERO: the solid is frozen and CO2 crosses the bed as a pure
+  tracer.  What is left is exactly the advection-dispersion equation with
+  a Danckwerts inlet, and THAT has an analytic yardstick (Ogata-Banks,
+  semi-infinite ADE; the finite-domain difference is O(1/Pe) = 0.4% at
+  Pe = 250):
+
+      u_i = u/eps = 0.125 m/s     D_i = Dax/eps = 2.5e-4 m2/s
+      c/c0 (L, 3.5 s) = 0.07340274358
+      c/c0 (L, 4.0 s) = 0.5178057707
+      c/c0 (L, 4.5 s) = 0.913645218
+      t_50 analytic   = 3.984074227 s
+
+  FV yardsticks pinned by this case (anchors_a3.py, N = 200):
+
+      t_50 numeric = 3.975611088 s   (0.21% below analytic -- first-order
+                                      upwind; the deviation HALVES with
+                                      each mesh doubling: 1.40% at N=25,
+                                      0.74% at 50, 0.40% at 100, 0.21% at
+                                      200, 0.11% at 400)
+      INT(1 - c_out/c_in)dt = eps L / u = 4.0 s  (telescopic conservation:
+                                      exact identity once saturated)
+      ledger closure ~ 1e-14  (k = 0)
+
+  A declared zero is not a silent default: the unit announces "k = 0
+  DECLARED: transport-only diagnostic, the solid is frozen (gate G1)".
+  Note the He carrier fabrication of batch13 vanishes here (no uptake):
+  carrier_fabricated_mol = 0.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        bed;
+        type        fixedBedAdsorber;
+
+        operation
+        {
+            adsorbent   zeolite13X;    // vendored under constant/ (tRef 298 K
+                                       // anchor copy -- irrelevant at k = 0)
+            L           0.5   m;
+            area        0.01  m2;
+            eps         0.4;
+            u           0.05  m/s;     // superficial, CONSTANT DECLARED
+            T           298   K;
+            P           1     bar;
+            Dax  [0 2 -1 0 0]  1e-4;   // m2/s (Pe = 250)
+            nCells      200;           // the G1 mesh (spec: t_50 = 3.9756 s)
+
+            feed    { molarComposition { CO2 0.15; He 0.85; } }
+            initial { molarComposition { He  1.0; } }
+
+            kLDF
+            {
+                basis    solidFilm;
+                scope    "same teaching bed as batch13 -- solid deliberately frozen";
+                source   "k = 0 DECLARED (transport-only diagnostic, A3 gate G1)";
+                k
+                {
+                    CO2  [0 0 -1 0 0]  0.0;   // 1/s -- EXPLICIT zero, announced
+                }
+            }
+        }
+    }
+);

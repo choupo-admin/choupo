@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-ethyl-3-methylhexane  (C9H20, CAS 3074-76-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Ethyl3Methylhexane;
+formula     C9H20;
+CAS         3074-76-8;
+InChIKey    CYWROHZCELEGSE-UHFFFAOYSA-N;
+MW          128.259;      // g/mol [origin=calculated method=formula-sum]
+Tc          575.85;      // K   [origin=predictive method=joback]
+Pc          23.496;      // bar [origin=predictive method=joback]
+omega       0.3559;      // -   [origin=predictive method=lee-kesler]
+Tb          402.29;      // K   [origin=predictive method=joback]
+HvapTb      34332.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.766 0.98468 -0.0006376 1.678e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 4; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-ethyl-3-methyl-hexane" "hexane, 3-ethyl-3-methyl-" "agn-pc-0d7cmz" "hexane,3-ethyl-3-methyl-" "3-ethyl-3-methylhexane;3-methyl-3-ethylhexane" );
+gibbsFormation
+{
+    dHf_298   -237840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     467.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=27740.0
+    phase     gas;
+}

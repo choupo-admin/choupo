@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benz(j)aceanthrene  (C20H14, CAS 479-23-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzJAceanthrene;
+formula     C20H14;
+CAS         479-23-2;
+InChIKey    KVFJBIQWENJTDM-UHFFFAOYSA-N;
+MW          254.332;      // g/mol [origin=calculated method=formula-sum]
+Tc          1029.33;      // K   [origin=predictive method=joback]
+Pc          25.151;      // bar [origin=predictive method=joback]
+omega       0.7829;      // -   [origin=predictive method=lee-kesler]
+Tb          767.88;      // K   [origin=predictive method=joback]
+HvapTb      70008.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-137.39 1.7628 -0.0015594 5.534e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 6; } { group ACCH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-dihydrobenzo[j]aceanthrylene" "cholanthrene" "benz(7,8)aceanthrene" "7,8-dimethylenebenz(a)anthracene" "1,2-dihydroxybenz(j)aceanthrylene" "benz(j)aceanthrylene, 1,2-dihydro-" "benz[j]aceanthrylene, 1,2-dihydro-" "1,2-dihydrobenzo[j]aceanthrylen" "1,2-dihydro-benzo[j]aceanthrylene" "1,2-dihydrocyclopenta[ij]tetraphene" "benz[j]aceanthrylene,1,2-dihydro-" "cholanthrene(6ci,7ci,8ci); benz[7,8]aceanthrene" );
+gibbsFormation
+{
+    dHf_298   407030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     409.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=591920.0
+    phase     gas;
+}

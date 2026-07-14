@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-[2-(dimethylamino)ethoxy]ethanol  (C6H15NO2, CAS 1704-62-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22DimethylaminoEthoxyEthanol;
+formula     C6H15NO2;
+CAS         1704-62-7;
+InChIKey    YSAANLSYLSUVHB-UHFFFAOYSA-N;
+MW          133.191;      // g/mol [origin=calculated method=formula-sum]
+Tc          624.04;      // K   [origin=predictive method=joback]
+Pc          33.763;      // bar [origin=predictive method=joback]
+omega       0.9222;      // -   [origin=predictive method=lee-kesler]
+Tb          463.92;      // K   [origin=predictive method=joback]
+HvapTb      50082.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.534 0.66854 -0.0003346 5.26e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH3N; count 1; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group OH; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dimethylaminoethoxyethanol" "2-(2-dimethylaminoethoxy)ethanol" "n,n-dimethyldiglycolamine" "2-(2-(dimethylamino)ethoxy)ethanol" "ethanol, 2-[2-(dimethylamino)ethoxy]-" "ethanol, 2-(2-(dimethylamino)ethoxy)-" "2-[2-(dimethylamino)ethoxy]ethan-1-ol" "ysaanlsylsuvhb-uhfffaoysa-" "2-(2-dimethylaminoethyloxy)ethanol" "ethanol,2-[2-(dimethylamino)ethoxy]-" "ethylene glycol mono[2-(dimethylamino)ethyl] ether" );
+gibbsFormation
+{
+    dHf_298   -384090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     467.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-131400.0
+    phase     gas;
+}

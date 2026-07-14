@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-Hydroxy-2,2,4-trimethylpentyl isobutyrate  (C12H24O3, CAS 77-68-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Hydroxy224TrimethylpentylIsobutyrate;
+formula     C12H24O3;
+CAS         77-68-9;
+InChIKey    DAFHKNAQFPVRKR-UHFFFAOYSA-N;
+MW          216.321;      // g/mol [origin=calculated method=formula-sum]
+Tc          798.52;      // K   [origin=predictive method=joback]
+Pc          20.109;      // bar [origin=predictive method=joback]
+omega       0.9851;      // -   [origin=predictive method=lee-kesler]
+Tb          620.01;      // K   [origin=predictive method=joback]
+HvapTb      63932.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.839 1.26662 -0.0007462 1.547e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 1; } { group CH; count 3; } { group C; count 1; } { group OH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 1; } { group CH; count 3; } { group C; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3-hydroxy-2,2,4-trimethylpentyl) 2-methylpropanoate" "1,3-pentanediol, 2,2,4-trimethyl-, 1-isobutyrate" "2,2,4-trimethyl-1,3-pentanediol 1-isobutyrate" "3-hydroxy-2,2,4-trimethylpentyl 2-methylpropanoate" "isobutyraldehyde trimer" "isobutyric acid, 3-hydroxy-2,2,4-trimethylpentyl ester" "ng 120" "propanoic acid, 2-methyl-, 3-hydroxy-2,2,4-trimethylpentyl ester" "texanol" "2,2,4-trimethyl-1,3-pentanediol monoisobutyrate" "2,2,4-Trimethyl-1,3-pentanediolmono(2-methylpropanoate)" "isobutyric acid 3-hydroxy-2,2,4-trimethylpentyl ester" );
+gibbsFormation
+{
+    dHf_298   -785110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     658.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-401510.0
+    phase     gas;
+}

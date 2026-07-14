@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetonylacetone  (C6H10O2, CAS 110-13-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acetonylacetone;
+formula     C6H10O2;
+CAS         110-13-4;
+InChIKey    OJVAMHKKJGICOG-UHFFFAOYSA-N;
+MW          114.144;      // g/mol [origin=calculated method=formula-sum]
+Tc          634.39;      // K   [origin=predictive method=joback]
+Pc          35.942;      // bar [origin=predictive method=joback]
+omega       0.5567;      // -   [origin=predictive method=lee-kesler]
+Tb          444.62;      // K   [origin=predictive method=joback]
+HvapTb      42442.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.152 0.51784 -0.0002652 4.212e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH3CO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CdO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexane-2,5-dione" "2,5-hexanedione" "diacetonyl" "acetonyl acetone" "1,2-diacetylethane" "2,5-diketohexane" "2,5-hexadione" "acetone, acetonyl-" "2,5-hexandione" ".alpha.,.beta.-diacetylethane" "alpha,beta-diacetylethane" "acetone, acetonyl" );
+gibbsFormation
+{
+    dHf_298   -392330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     443.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-258200.0
+    phase     gas;
+}

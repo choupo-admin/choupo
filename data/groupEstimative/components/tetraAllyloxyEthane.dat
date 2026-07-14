@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetra(allyloxy)ethane  (C14H22O4, CAS 16646-44-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetraAllyloxyEthane;
+formula     C14H22O4;
+CAS         16646-44-9;
+InChIKey    BXAAQNFGSQKPDZ-UHFFFAOYSA-N;
+MW          254.326;      // g/mol [origin=calculated method=formula-sum]
+Tc          770.63;      // K   [origin=predictive method=joback]
+Pc          16.714;      // bar [origin=predictive method=joback]
+omega       0.8143;      // -   [origin=predictive method=lee-kesler]
+Tb          595.44;      // K   [origin=predictive method=joback]
+HvapTb      52942.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (76.834 1.0128 -0.0003918 4.8e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 2; } { group CH2=CH; count 4; } { group CH2O; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group CH; count 2; } { group dCH2; count 4; } { group dCH; count 4; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[1,2,2-tris(prop-2-enoxy)ethoxy]prop-1-ene" "tetrakis(allyloxy)ethane" "glyoxal tetraallyl acetal" "1,1,2,2-tetrakis(allyloxy)ethane" "tetra(allyloxy)ethane (van)" "1,1,2,2-tetraallyloxyethane" "ethane, 1,1,2,2-tetrakis(allyloxy)-" "glyoxal, bis(diallyl acetal) (7ci,8ci)" "3-[1,2,2-tris(allyloxy)ethoxy]prop-1-ene" "3-[1,2,2-tris(prop-2-en-1-yloxy)ethoxy]prop-1-ene" "3,3',3'',3'''-(1,2-ethanediylidenetetrakis(oxy))tetrakispropene" "1-propene, 3,3',3'',3'''-(1,2-ethanediylidenetetrakis(oxy))tetrakis-" );
+gibbsFormation
+{
+    dHf_298   -370010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     708.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-6520.0
+    phase     gas;
+}

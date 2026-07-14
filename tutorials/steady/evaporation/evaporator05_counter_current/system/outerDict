@@ -26,7 +26,7 @@ type         designSpec;
 manipulate
 (
     { variable A;        initial 20.0   m2;     min 15.0  m2;       max 35.0   m2;     }
-    { variable F_steam;  initial 80.0   kmol/h; min 60.0  kmol/h;   max 120.0  kmol/h; }
+    { variable streams.liveSteam.F;  initial 80.0   kmol/h; min 60.0  kmol/h;   max 120.0  kmol/h; }
 );
 
 targets

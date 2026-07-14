@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetamide, 2,2,2-tribromo-  (C2H2Br3NO, CAS 594-47-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acetamide222Tribromo;
+formula     C2H2Br3NO;
+CAS         594-47-8;
+InChIKey    ORCCSQMJUGMAQU-UHFFFAOYSA-N;
+MW          295.756;      // g/mol [origin=calculated method=formula-sum]
+Tc          837.25;      // K   [origin=predictive method=joback]
+Pc          88.332;      // bar [origin=predictive method=joback]
+omega       0.7297;      // -   [origin=predictive method=lee-kesler]
+Tb          567.01;      // K   [origin=predictive method=joback]
+HvapTb      55442.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.02 0.4681 -0.0004957 1.8876e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group Br; count 3; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group Br; count 3; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,2-tris(bromanyl)ethanamide" "agn-pc-00lq23" );
+gibbsFormation
+{
+    dHf_298   -93160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     426.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-50710.0
+    phase     gas;
+}

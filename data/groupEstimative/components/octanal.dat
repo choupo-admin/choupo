@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octanal  (C8H16O, CAS 124-13-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octanal;
+formula     C8H16O;
+CAS         124-13-0;
+InChIKey    NUJGJRNETVAIRJ-UHFFFAOYSA-N;
+MW          128.215;      // g/mol [origin=calculated method=formula-sum]
+Tc          602.16;      // K   [origin=predictive method=joback]
+Pc          27.354;      // bar [origin=predictive method=joback]
+omega       0.5555;      // -   [origin=predictive method=lee-kesler]
+Tb          431.30;      // K   [origin=predictive method=joback]
+HvapTb      40122.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.016 0.73832 -0.0004044 8.19e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 6; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "caprylic aldehyde" "n-octanal" "caprylaldehyde" "1-octanal" "n-octyl aldehyde" "n-octaldehyde" "n-caprylaldehyde" "octanaldehyde" "1-octylaldehyde" "1-octaldehyde" "1-caprylaldehyde" "aldehyde c-8" );
+gibbsFormation
+{
+    dHf_298   -294030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     486.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-83040.0
+    phase     gas;
+}

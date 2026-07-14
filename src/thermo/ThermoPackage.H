@@ -84,7 +84,49 @@ enum class DensityPhase { Liquid, Vapour };
 class ThermoPackage
 {
 public:
+    ThermoPackage() = default;
+    // Custom MOVE: a LiquidPhase borrows `&components_` for its reference
+    // fugacity, so a default member-wise move would leave the moved-in phases
+    // pointing at the SOURCE's emptied vector -> a dangling read in fEffective
+    // (seen when a molecular package built by value in ThermoPackageBuilder is
+    // returned).  Move every member, then re-point the phases at THIS vector.
+    // Copy stays deleted (phases_ holds unique_ptr).  KEEP THE MEMBER LIST BELOW
+    // IN SYNC with the data members if any are added.
+    ThermoPackage(ThermoPackage&& o) noexcept { *this = std::move(o); }
+    ThermoPackage& operator=(ThermoPackage&& o) noexcept
+    {
+        if (this != &o)
+        {
+            components_          = std::move(o.components_);
+            phases_             = std::move(o.phases_);
+            activity_           = std::move(o.activity_);
+            eos_                = std::move(o.eos_);
+            transport_          = std::move(o.transport_);
+            thermalConductivity_= std::move(o.thermalConductivity_);
+            diffusivity_        = std::move(o.diffusivity_);
+            liquidViscosity_    = std::move(o.liquidViscosity_);
+            liquidConductivity_ = std::move(o.liquidConductivity_);
+            liquidDiffusivity_  = std::move(o.liquidDiffusivity_);
+            surfaceTension_     = std::move(o.surfaceTension_);
+            solventName_        = std::move(o.solventName_);
+            declaredSolutes_    = std::move(o.declaredSolutes_);
+            vleWorld_           = std::move(o.vleWorld_);
+            pureFluid_          = std::move(o.pureFluid_);
+            mixtureSeed_        = std::move(o.mixtureSeed_);
+            auditFindings_      = std::move(o.auditFindings_);
+            for (auto& p : phases_) if (p) p->rebindComponents(&components_);
+        }
+        return *this;
+    }
+
     void readFromDict(const DictPtr& dict, const Database& db);
+
+    // Aspen ThermoPackageBuilder seam: adopt an already-assembled electrolyte
+    // package (components + activity + EoS), mirroring what readFromDict sets,
+    // without re-reading any data file.  Used only by ThermoPackageBuilder.
+    void adoptElectrolytePackage(std::vector<Component> comps,
+                                 std::unique_ptr<ActivityModel> act,
+                                 std::unique_ptr<EquationOfState> eos);
 
     std::size_t n() const { return components_.size(); }
     const Component& comp(std::size_t i) const { return components_.at(i); }
@@ -186,26 +228,66 @@ public:
     scalar H_stream_formation(scalar T_K, scalar P_Pa, scalar vapFrac,
                               const sVector& z) const;
 
-    // ---- Per-natural-phase stream enthalpy (Choupo-native) --------------
+    // ---- THE canonical per-species phase leg (forum #103/#105) ----------
     //
-    // Same formation reference as H_stream_formation but each component
-    // contributes from ITS OWN tabulated phase (gibbsFormation.phase).
-    // Sucrose (phase=solid) integrates Cp_liquid as the dissolved-solute
-    // approximation -- it never has to invent a Cp_ig the way the
-    // strict-IG path forces.  Reaction enthalpy still emerges as
-    // h_out − h_in because every species carries its own Hf°.
+    // ONE function owns the species -> phase -> elements-datum enthalpy
+    // rung, and every consumer -- H_liquid_formation's molecular loop,
+    // reactionHeat's formation branch, and through them every balance,
+    // duty and published stream H -- reads it, so two surfaces can never
+    // drift again (the batch05/batch01 phantom-residual lesson).
     //
-    //   H_stream(T, P, vf, z) = Σ z_i [ (1−vf)·h_i^{liq}(T) + vf·h_i^{gas}(T) ]
+    //   liquid:  solution-tier solute -> Hf_crystal + dHsoln + INT cp_aq
+    //            (the m->0 STANDARD state -- see ReferenceContext)
+    //            volatile              -> h_pure_ig(T) - Hvap(T)
+    //   gas:     h_pure_ig(T)
     //
-    // Components absent from a phase (x[i] = 0 in that phase by
-    // composition, or solute can't be vapour) are silently skipped, so a
-    // sucrose-bearing liquid stream does NOT throw when vf > 0 with
-    // x_sucrose_vap = 0.
-    scalar H_stream(scalar T_K, scalar P_Pa, scalar vapFrac,
-                    const sVector& z) const;
+    // ReferenceContext is the TYPED contract for what the returned number
+    // means for composition-dependent chemistry (#103: never pretend a
+    // per-species API carries a partial molar quantity):
+    //   StandardPhase -- the species' STANDARD-state leg in the phase
+    //     (infinite dilution for a dissolved solute; the only context
+    //     today).  A real partial-molar evaluation needs the full mixture
+    //     state and would be a FUTURE context, not an overload of this one.
+    // Throws (never a silent fallback) when the species has no route in
+    // the requested phase.
+    enum class ReferenceContext { StandardPhase };
+    scalar speciesPhaseEnthalpy(std::size_t i, scalar T_K, scalar P_Pa,
+                                const std::string& phase,
+                                ReferenceContext ctx) const;
+
+    // ---- LEGACY per-natural-phase blend -- NOT a balance surface ---------
+    //
+    // The pre-unification blend (each component from ITS OWN tabulated
+    // phase, blend-by-z): it drifts from the canonical surface by the
+    // Watson-vs-Kirchhoff path difference and misses the solution tier,
+    // which is exactly the phantom residual the batch ledger exposed
+    // (forum #102.10/#103).  It SURVIVES under this deliberately awkward
+    // name for TWO purposes only, both non-published:
+    //   * the recycle TEAR residual (a convergence norm, any consistent
+    //     surface works, robustness matters more than the datum);
+    //   * the ANNOUNCED degraded fallback for a stream .H whose species
+    //     cannot price on the canonical surface (the enthalpy-GAP path).
+    // It must NEVER enter an energy balance, a duty, or a closed stream
+    // .H -- the check_h_surface gate enforces the authorized-locus list.
+    scalar H_blendPerNaturalPhase(scalar T_K, scalar P_Pa, scalar vapFrac,
+                                  const sVector& z) const;
 
     const std::vector<Component>& components() const { return components_; }
     const ActivityModel&    activity() const { return *activity_; }
+
+    // Does component i have ANY route to an ELEMENTS-datum enthalpy that the
+    // H_*_formation kernels actually honour?  The two such routes:
+    //   (1) a `gibbsFormation{}` block (the normal formation datum), or
+    //   (2) the electrolyte AQUEOUS infinite-dilution ion reference, when the
+    //       package's salt is calorimetrically fitted AND its ions carry the
+    //       slice-2 aqueous tier (hasAqueousReference()).
+    // This is the predicate the ENERGY balance uses to tell a genuine
+    // missing-DATA skip (a present species with no datum -> REFUSE, name it)
+    // from a composition skip (z_i = 0 -> legitimately silent).  It must agree
+    // with what H_liquid_formation / H_ig will compute, so it gates the
+    // electrolyte route exactly as the kernel does (calorimetricFit) -- never
+    // a false "has datum" that the kernel would then throw on.
+    bool hasEnthalpyDatum(std::size_t i) const;
 
     // ---- Aqueous-solution tier (data/standards/solution/) ----------------
     // Standard enthalpy of solution [J/mol] of a DISSOLVED molecular solute
@@ -221,12 +303,14 @@ public:
     std::optional<scalar> dHsolnForSolute(std::size_t i) const;
 
     // Electrolyte (ionic) activity model.  It is just the activity model when an
-    // electrolyte one (pitzer) was selected -- recovered by downcast over
-    // activity_ (the dynamic_cast<Wilson*> precedent), null for molecular cases.
+    // electrolyte one (pitzer) was selected -- recovered by an interface downcast
+    // over activity_, null for molecular cases.  (This MI bridge is Workstream
+    // A2's target; the construction-time configure/setMolarVolumes downcasts are
+    // gone -- models self-configure from the components in their constructors.)
     bool hasElectrolyte() const
-    { return dynamic_cast<const ElectrolyteModel*>(activity_.get()) != nullptr; }
+    { return activity_ && activity_->asElectrolyte() != nullptr; }
     const ElectrolyteModel& electrolyte() const
-    { return *dynamic_cast<const ElectrolyteModel*>(activity_.get()); }
+    { return *activity_->asElectrolyte(); }
     const EquationOfState&  eos()      const { return *eos_;      }
     bool                    hasEos()   const { return eos_ != nullptr; }
 
@@ -235,7 +319,8 @@ public:
     // gap report + the result-JSON honesty surface.  See PackageAudit.H.
     const std::vector<AuditFinding>& auditFindings() const { return auditFindings_; }
 
-    // Transport properties.  Optional `transport { model Chung; }`
+    // Transport properties.  Canonical `transport { viscosity { model Chung; } }`
+    // (bare legacy `model Chung;` at transport level still accepted).
     // in the thermo package.  `viscosityGas` mixes the pure-component gas
     // viscosities by Wilke's rule.  Throws if no transport block was set.
     bool   hasTransport() const { return transport_ != nullptr; }
@@ -300,6 +385,18 @@ public:
     // falls back to the Raoult/γ-φ K-value.
     const std::string& solventName() const { return solventName_; }
 
+    // The VLE world in force ("gammaPhi" default, "phiPhi" when the package /
+    // thermoPackage selected `liquid eos.<Model>` / `vleWorld phiPhi;`).  The
+    // flash reads it to print the K-value header in the framing the K actually
+    // uses (phi-phi shows NO gamma and NO Psat -- they play no part in its K).
+    const std::string& vleWorld() const { return vleWorld_; }
+
+    // True when component i takes the HENRY K path in Kvec: role `solute` or
+    // assembly-declared in `solutes ( ... )`, a solvent is named, and the
+    // (solute, solvent) Henry pair exists.  Lets the flash header say
+    // "K from Henry pair ..." instead of showing a Psat the K never touched.
+    bool isHenrySolute(std::size_t i) const;
+
     // ---- Pure-fluid absolute-property override (IF97 et al.) -------------
     //
     // A `pureFluids { water { method IF97; } }` block in the thermoPackage
@@ -339,6 +436,11 @@ public:
     // The seed as a full z-vector over all components (0 for non-mixture
     // members), renormalised to sum 1.0; empty vector when no seed exists.
     sVector mixtureSeedVector() const;
+    // Predefined-mixture MEMBERSHIP by token (`air` -> {N2:0.7808, O2:0.2095,
+    // Ar:0.0093}) -- lets a STREAM write `air 50 kmol/h;` and have the reader
+    // splice it into its member component flows.  Empty when no mixture was used.
+    const std::map<std::string, std::map<std::string, scalar>>&
+    mixtureMembersByToken() const { return mixtureMembersByToken_; }
 
 private:
     // Load-time helper: expand any predefined-mixture tokens in `names`
@@ -350,7 +452,8 @@ private:
     static std::vector<std::string>
     expandMixtures(const std::vector<std::string>& names,
                    const Database& db,
-                   std::map<std::string, scalar>& seedByName);
+                   std::map<std::string, scalar>& seedByName,
+                   std::map<std::string, std::map<std::string, scalar>>* membersByToken = nullptr);
 
 
     std::vector<Component>                 components_;
@@ -366,9 +469,20 @@ private:
     std::unique_ptr<LiquidDiffusivityModel>   liquidDiffusivity_;
     std::unique_ptr<SurfaceTensionModel>      surfaceTension_;
     std::string                               solventName_;
+    // Henry solutes declared at ASSEMBLY level: `solutes ( H2 N2 );` next to
+    // `solvent`.  The USER-FACING convention is the propertyPackage's
+    // solution{} block; the ThermoPackageBuilder translates it to this key
+    // when synthesising the runtime dict.  A listed component takes the Henry
+    // K path exactly as `role solute;` would, with NO component-file overlay.
+    std::vector<std::string>                  declaredSolutes_;
+    // The VLE world (forum 2026-07-04: THE LIQUID METHOD SLOT IS THE WORLD).
+    // Assembly-level: the Builder writes `vleWorld phiPhi;` when the package
+    // declares `liquid eos.<Model>` (same cubic both phases).  Default gammaPhi.
+    std::string                               vleWorld_ = "gammaPhi";
     std::map<std::size_t,
              std::unique_ptr<PureFluidModel>> pureFluid_;   // by component index
     std::map<std::size_t, scalar>             mixtureSeed_;  // by component index
+    std::map<std::string, std::map<std::string, scalar>> mixtureMembersByToken_;  // token -> {member:x}
     std::vector<AuditFinding>                 auditFindings_;
 };
 

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tert-butyl isopropyl ether  (C7H16O, CAS 17348-59-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tertButylIsopropylEther;
+formula     C7H16O;
+CAS         17348-59-3;
+InChIKey    HNFSPSWQNZVCTB-UHFFFAOYSA-N;
+MW          116.204;      // g/mol [origin=calculated method=formula-sum]
+Tc          557.99;      // K   [origin=predictive method=joback]
+Pc          28.293;      // bar [origin=predictive method=joback]
+omega       0.3019;      // -   [origin=predictive method=lee-kesler]
+Tb          378.51;      // K   [origin=predictive method=joback]
+HvapTb      31902.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.13 0.7374 -0.000421 8.87e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group C; count 1; } { group CH-O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH; count 1; } { group C; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-2-propan-2-yloxy-propane" "propane, 2-methyl-2-(1-methylethoxy)-" "isopropyl tert-butyl ether" "2-isopropoxy-2-methylpropane" "2-methyl-2-(1-methylethoxy)propane" "ether, tert-butyl isopropyl" "ether, tert-butyl isopropyl (6ci,7ci,8ci)" "2-methyl-2-propan-2-yloxypropane" "propane,2-methyl-2-(1-methylethoxy)-" "ether,tert-butyl isopropyl (6ci,7ci,8ci);2-isopropoxy-2-methylpropane;isopropyltert-butyl ether;tert-butyl isopropyl ether;2-isopropoxy-2-methyl-propane;" );
+gibbsFormation
+{
+    dHf_298   -334060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     391.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-96540.0
+    phase     gas;
+}

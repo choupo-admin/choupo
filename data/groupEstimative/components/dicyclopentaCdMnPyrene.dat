@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dicyclopenta[cd,mn]pyrene  (C20H10, CAS 96915-04-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dicyclopentaCdMnPyrene;
+formula     C20H10;
+CAS         96915-04-7;
+InChIKey    GIUTTXOFOWHPLW-UHFFFAOYSA-N;
+MW          250.3;      // g/mol [origin=calculated method=formula-sum]
+Tc          1033.44;      // K   [origin=predictive method=joback]
+Pc          27.701;      // bar [origin=predictive method=joback]
+omega       0.8863;      // -   [origin=predictive method=lee-kesler]
+Tb          775.60;      // K   [origin=predictive method=joback]
+HvapTb      71330.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-141.83 1.794 -0.0018274 7.25e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group ACH; count 8; } { group AC; count 10; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 10; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   553490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     252.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=707380.0
+    phase     gas;
+}

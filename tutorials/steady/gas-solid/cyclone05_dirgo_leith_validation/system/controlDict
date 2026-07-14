@@ -1,0 +1,10 @@
+application   choupoSolve;
+description   "VALIDATION vs Dirgo & Leith (1985): a Stairmand high-efficiency cyclone (D=0.305 m, 0.139 m3/s, ~15 m/s inlet, mineral-oil aerosol) run through the flow-pattern Iozia-Leith model. Swap the model slot to see the ~3x d50 spread across correlations on ONE real cyclone -- why you validate against data.";
+verbosity     3;
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    profiles       { }
+    spreadsheet    { }
+}

@@ -7,16 +7,7 @@
   Abbott (Table 13.4).
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            1.0 kmol/h;        // kmol/h
-        T            800.0 K;      // K
-        P            1.0 bar;        // bar
-        molarComposition  { CO  0.5;  water  0.5;  CO2  0.0;  H2  0.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

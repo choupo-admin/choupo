@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: previtamin d(3)  (C27H44O, CAS 1173-13-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        previtaminD3;
+formula     C27H44O;
+CAS         1173-13-3;
+InChIKey    YUGCAAVRZWBXEQ-WHTXLNIXSA-N;
+MW          384.648;      // g/mol [origin=calculated method=formula-sum]
+Tc          1189.85;      // K   [origin=predictive method=joback]
+Pc          10.603;      // bar [origin=predictive method=joback]
+omega       0.9689;      // -   [origin=predictive method=lee-kesler]
+Tb          967.49;      // K   [origin=predictive method=joback]
+HvapTb      93438.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-200.957 3.0047 -0.00219844 6.883e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 10; } { group CH; count 5; } { group C; count 1; } { group CH=CH; count 1; } { group CH=C; count 1; } { group OH; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 2; } { group dCH; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1s)-3-[(z)-2-[(1r,3ar,7ar)-7a-methyl-1-[(2r)-6-methylheptan-2-yl]-1,2,3,3a,6,7-hexahydroinden-4-yl]ethenyl]-4-methyl-cyclohex-3-en-1-ol" "previtamin d3" "(3beta,6z)-9,10-secocholesta-5(10),6,8-trien-3-ol" "precalciferol" "precholecalciferol" "(6z)-(3s)-9,10-seco-5(10),6,8-cholestatrien-3-ol" "9,10-secocholesta-5(10),6,8-trien-3" "a-ol" "previtamin d3 / precholecalciferol / (6z)-tacalciol" "(3" "a,6z)-9,10-secocholesta-5(10),6,8-trien-3-ol" "(1s)-3-[(1z)-2-[(1r,3ar,7ar)-1-[(1r)-1,5-dimethylhexyl]-2,3,3a,6,7,7a-hexahydro-7a-methyl-1h-inden-4-yl]ethenyl]-4-methyl-3-cyclohexen-1-ol" "(1s)-3-[(z)-2-[(1r,3ar,7ar)-7a-methyl-1-[(2r)-6-methylheptan-2-yl]-1,2,3,3a,6,7-hexahydroinden-4-yl]ethenyl]-4-methylcyclohex-3-en-1-ol" );
+gibbsFormation
+{
+    dHf_298   -388690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1015.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=242460.0
+    phase     gas;
+}

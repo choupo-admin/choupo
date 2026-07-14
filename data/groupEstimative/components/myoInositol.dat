@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: myo-inositol  (C6H12O6, CAS 87-89-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        myoInositol;
+formula     C6H12O6;
+CAS         87-89-8;
+InChIKey    CDAISMWEOUEBRE-UHFFFAOYSA-N;
+MW          180.156;      // g/mol [origin=calculated method=formula-sum]
+Tc          1086.57;      // K   [origin=predictive method=joback]
+Pc          69.214;      // bar [origin=predictive method=joback]
+omega       2.6960;      // -   [origin=predictive method=lee-kesler]
+Tb          886.16;      // K   [origin=predictive method=joback]
+HvapTb      127908.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.73 0.7674 -0.000289 -1.24e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 6; } { group OH; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 6; } { group OH; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclohexane-1,2,3,4,5,6-hexol" "inositol" "meso-inositol" "scyllo-inositol" "muco-inositol" "i-inositol" "myoinositol" "allo-inositol" "epi-inositol" "mesoinositol" "scyllitol" "dambose" );
+gibbsFormation
+{
+    dHf_298   -1127930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     452.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-835380.0
+    phase     gas;
+}

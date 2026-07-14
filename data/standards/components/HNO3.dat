@@ -1,0 +1,47 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Nitric acid (HNO3), pure liquid.  CAS 7697-37-2.
+
+  A strong mineral acid.  Carried here as the LIQUID-phase, dissolved-acid
+  species (role nonvolatile -> K = 0): the well-conditioned form for aqueous
+  neutralisation / nitrate-salt precipitation and acid-balance exercises,
+  where HNO3 stays in the liquid and its formation datum closes the heat of
+  neutralisation.  (Anhydrous HNO3 IS volatile, bp ~83 C; if a VLE / stripping
+  case needs it in the vapour, add a vaporPressure block and switch the role.)
+
+  Carries the LIQUID-phase formation datum and a real liquid heat capacity.
+
+  PRIMARY: Wagman et al., NBS Tables of Chemical Thermodynamic Properties,
+  J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982) -- PUBLIC DOMAIN.
+  Density: ~1.513 g/cm^3 (pure liquid, 25 C) -> Vliq below.
+\*---------------------------------------------------------------------------*/
+
+name        HNO3;
+formula     HNO3;
+CAS         7697-37-2;
+
+MW          63.013;            // kg/kmol
+
+role        nonvolatile;       // dissolved-acid treatment (K = 0); see header
+
+Vliq        4.165e-5;          // m^3/mol  (= MW / 1513 kg/m^3)
+
+gibbsFormation
+{
+    dHf_298   -174100;         // J/mol  liquid HNO3 [Wagman et al. NBS Tables 1982]
+    s_298     155.6;           // J/(mol*K) [Wagman 1982]
+    phase     liquid;
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;          // Cp = a0  [J/(mol*K)], constant
+    coefficients  ( 109.87 );          // Cp(298) [Wagman et al. NBS Tables 1982]
+    Trange        ( 232  350 );        // constant-Cp validity flag (liquid range)
+}
+
+provenance
+{
+    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982 (liquid HNO3)"; }
+    liquidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
+    Vliq { origin literature; method "pure-liquid density ~1.513 g/cm3 at 25 C"; }
+}

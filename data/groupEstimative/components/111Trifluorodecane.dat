@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1-trifluorodecane  (C10H19F3, CAS 26288-16-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111Trifluorodecane;
+formula     C10H19F3;
+CAS         26288-16-4;
+InChIKey    IGGXVAUUTYVHBN-UHFFFAOYSA-N;
+MW          196.256;      // g/mol [origin=calculated method=formula-sum]
+Tc          571.62;      // K   [origin=predictive method=joback]
+Pc          19.003;      // bar [origin=predictive method=joback]
+omega       0.5690;      // -   [origin=predictive method=lee-kesler]
+Tb          422.98;      // K   [origin=predictive method=joback]
+HvapTb      34107.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.402 1.11502 -0.0007412 1.965e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group C; count 1; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1-tris(fluoranyl)decane" "decane, 1,1,1-trifluoro" "decane, 1,1,1-trifluoro-" );
+gibbsFormation
+{
+    dHf_298   -846810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     601.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-548270.0
+    phase     gas;
+}

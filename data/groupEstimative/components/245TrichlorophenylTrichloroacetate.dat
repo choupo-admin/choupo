@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4,5-trichlorophenyl trichloroacetate  (C8H2Cl6O2, CAS 25438-23-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        245TrichlorophenylTrichloroacetate;
+formula     C8H2Cl6O2;
+CAS         25438-23-7;
+InChIKey    REMBFCXQZGOYLI-UHFFFAOYSA-N;
+MW          342.802;      // g/mol [origin=calculated method=formula-sum]
+Tc          961.43;      // K   [origin=predictive method=joback]
+Pc          27.759;      // bar [origin=predictive method=joback]
+omega       0.7010;      // -   [origin=predictive method=lee-kesler]
+Tb          703.83;      // K   [origin=predictive method=joback]
+HvapTb      70085.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (82.89 0.6182 -0.00044108 1.036e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 1; } { group CCl3; count 1; } { group ACCl; count 3; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 6; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2,4,5-tris(chloranyl)phenyl] 2,2,2-tris(chloranyl)ethanoate" "(2,4,5-trichlorophenyl) 2,2,2-trichloroacetate" "acetic acid,2,2,2-trichloro-, 2,4,5-trichlorophenyl ester" "aceticacid, trichloro-, 2,4,5-trichlorophenyl ester (8ci,9ci); phenol,2,4,5-trichloro-, trichloroacetate (8ci); trichloroacetic acid,2,4,5-trichlorophenyl ester" );
+gibbsFormation
+{
+    dHf_298   -426800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     555.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-279110.0
+    phase     gas;
+}

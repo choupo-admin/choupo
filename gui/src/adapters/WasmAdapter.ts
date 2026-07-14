@@ -55,10 +55,12 @@ License
   the Streams and Plots tabs show real values.
 \*---------------------------------------------------------------------------*/
 
+import { readEdges } from "../case/toGraph.js";
 import { fromJson, serialize } from "../dict/index.js";
 import { parseDynamicInstants } from "../case/dynamicInstants.js";
 import type { CaseFiles } from "../case/types.js";
 import type { JsonDict } from "../dict/index.js";
+import type { PairOrigin, ValidityDomain, PromotionOverride } from "./SolverAdapter.js";
 import type {
   AadRecord,
   Advisory,
@@ -73,6 +75,7 @@ import type {
   RunResult,
   SolverAdapter,
   StreamResult,
+  TimelineEvent,
   TxyData,
   UnitProfile,
   UtilityAllocationRow,
@@ -149,7 +152,7 @@ export class WasmAdapter implements SolverAdapter {
         if (signal) signal.removeEventListener("abort", onAbort);
         worker.terminate();
         const { displayLog, streams, convergence, profiles, txy, componentMolarMass, kpis,
-          utilityAllocation, computed, advisories, modelBoundaries, operationResults, thermoResolution,
+          utilityAllocation, computed, timeline, advisories, modelBoundaries, operationResults, thermoResolution,
           componentCoverage, experimentalDatasets, validation, economics } =
           extractStructured(log, caseFiles);
         const result: RunResult = { status, log: displayLog, streams, convergence };
@@ -159,6 +162,7 @@ export class WasmAdapter implements SolverAdapter {
         if (componentMolarMass) result.componentMolarMass = componentMolarMass;
         if (utilityAllocation && utilityAllocation.length > 0) result.utilityAllocation = utilityAllocation;
         if (computed && Object.keys(computed).length > 0) result.computed = computed;
+        if (timeline && timeline.length > 0) result.timeline = timeline;
         if (advisories && advisories.length > 0) result.advisories = advisories;
         if (modelBoundaries && modelBoundaries.length > 0) result.modelBoundaries = modelBoundaries;
         if (operationResults && operationResults.length > 0) result.operationResults = operationResults;
@@ -241,8 +245,12 @@ export class WasmAdapter implements SolverAdapter {
 function serialiseCase(caseFiles: CaseFiles): { [path: string]: string } {
   const files: { [path: string]: string } = {
     "system/controlDict": dictToText(caseFiles.controlDict, "controlDict"),
-    "constant/thermoPackage": dictToText(caseFiles.thermoPackage, "thermoPackage"),
   };
+  // propertyPackage cases carry an EMPTY thermoPackage ({}); the real thermo
+  // source travels in extraFiles as constant/propertyDict.  Never write an
+  // empty thermoPackage file over it.
+  if (Object.keys(caseFiles.thermoPackage).length > 0)
+    files["constant/propertyDict"] = dictToText(caseFiles.thermoPackage, "thermoPackage");
   // Either flowsheetDict (solve/batch/ctrl) or propsDict (props).
   if (caseFiles.flowsheet) {
     files["system/flowsheetDict"] =
@@ -308,6 +316,8 @@ export function extractStructured(log: string,
   /** Post-processing computed expressions (variables{} `compute` entries:
    *  W_net, eta_thermal,...), evaluated by the solver after the run. */
   computed?: { [name: string]: number };
+  /** Batch campaign timeline (fired recipe actions + unit status events). */
+  timeline?: TimelineEvent[];
   /** Solver advisories (bound active at the solution, rating, auto-init). */
   advisories?: Advisory[];
   /** Model-boundary audit findings (adjacent units on different thermo models). */
@@ -453,6 +463,8 @@ export function extractStructured(log: string,
       rows.push({
         model: p.model ?? "", i: p.i, j: p.j,
         status: p.status ?? "", source: p.source ?? "", provSource: p.provSource ?? "",
+        origin: p.origin, method: p.method, methodVersion: p.methodVersion,
+        validity: p.validity, promotedDespite: p.promotedDespite,
       });
     }
     if (rows.length > 0) thermoResolution = rows;
@@ -486,6 +498,9 @@ export function extractStructured(log: string,
       ? { utilityAllocation: parsed.utilityAllocation }
     : {}),
 ...(computed ? { computed } : {}),
+...(parsed.timeline && parsed.timeline.length > 0
+      ? { timeline: parsed.timeline }
+    : {}),
 ...(parsed.advisories && parsed.advisories.length > 0
       ? { advisories: parsed.advisories }
     : {}),
@@ -551,10 +566,12 @@ interface ResultPayload {
       composition: { [comp: string]: number };
       solids?: { [comp: string]: number };
       psd?: { diameter: number[]; massFrac: number[] };
+      H_missing?: string[];
     };
   };
   kpis: { [unitName: string]: { [k: string]: number } };
   computed?: { [name: string]: number };
+  timeline?: TimelineEvent[];
   advisories?: Advisory[];
   modelBoundaries?: ModelBoundary[];
   convergence?: { [unitName: string]: number[] };
@@ -575,7 +592,10 @@ interface ResultPayload {
   };
   utilityAllocation?: UtilityAllocationRow[];
   operationResults?: { name: string; type: string; diagnostics: { [k: string]: number }; provenance?: { [k: string]: string } }[];
-  thermoResolution?: { model: string; i: string; j: string; status: string; source: string; provSource: string }[];
+  thermoResolution?: { model: string; i: string; j: string; status: string;
+    source: string; provSource: string; origin?: PairOrigin; method?: string;
+    methodVersion?: string; validity?: ValidityDomain;
+    promotedDespite?: PromotionOverride }[];
   componentCoverage?: { name: string; criticals: boolean; psat: boolean; vliq: boolean; cpIdealGas: boolean; gibbs: boolean; nonvolatile: boolean }[];
   experimentalDatasets?: { name: string; kind: string; component: string; source: string; citation: string; nPoints: number }[];
   validation?: {
@@ -640,12 +660,19 @@ export function shapeStreams(payload: ResultPayload,
     for (const n of u.inputs ?? []) consumed.add(n);
     for (const n of u.outputs ?? []) produced.add(n);
   }
-  // Composite-case boundary names.
+  // Composite-case boundary names (legacy boundary{} block, still honoured).
   const boundary = (fs["boundary"] ?? {}) as {
     inlets?: string[]; outlets?: string[];
   };
   const boundaryInlets = new Set<string>(boundary.inlets ?? []);
   const boundaryOutlets = new Set<string>(boundary.outlets ?? []);
+  // Named-edge topology (the migrated model: no streams{}, no boundary{}).  A
+  // to-only edge is a domain INLET (feed), a from-only edge a domain OUTLET
+  // (product) -- role inferred from the graph, per the stream-state constitution.
+  for (const e of readEdges(fs)) {
+    if (!e.from && e.to) boundaryInlets.add(e.name);
+    if (e.from && !e.to) boundaryOutlets.add(e.name);
+  }
   // Tear streams: declared in `tearStreams (...)` AND in `streams {}`
   // (as initial guesses).  They are NOT feeds and NOT products even
   // though they show up in the streams block, because they are
@@ -667,6 +694,9 @@ export function shapeStreams(payload: ResultPayload,
     const isFeed = !isTear && (
       Object.prototype.hasOwnProperty.call(feedStreams, name)
       || boundaryInlets.has(name)
+      // Topology (a migrated flat case has no streams{} block): a stream a unit
+      // CONSUMES but no unit PRODUCES is a plant inlet -- symmetric to a product.
+      || (consumed.has(name) && !produced.has(name))
     );
     const isProduct = !isTear && (
       boundaryOutlets.has(name)
@@ -694,6 +724,7 @@ export function shapeStreams(payload: ResultPayload,
       psd: s.psd
         ? { diameter: [...s.psd.diameter], massFrac: [...s.psd.massFrac] }
         : undefined,
+      H_missing: s.H_missing ? [...s.H_missing] : undefined,
     });
   }
   // Stable order: feed -> intermediate -> product, then alphabetical.

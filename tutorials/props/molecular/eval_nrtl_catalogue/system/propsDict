@@ -1,0 +1,43 @@
+/*---------------------------------------------------------------------------*\
+  eval_nrtl_catalogue -- `mode evaluate`: the SCALE, not the fit.
+
+  ONE operation, one question: how good is the ethanol-water NRTL pair
+  against this 1-atm bubble-T dataset?  Nothing is adjusted, nothing is
+  written.  The propertyDict declares NO inline pairs, so what gets scored is
+  a REAL provenance-bearing pair resolved through the search path (from this
+  case's own vendored constant/binaryPairs/ copy, identical parameters and
+  full primary citation) -- not numbers typed inline into the dict.
+
+  Read the verdict (rms/aad in kelvin) and THEN decide whether a refit is
+  worth it: compare with fitNRTL01's fitted rms (0.31 K) on this same data.
+  Failures are honest: a non-converged point becomes status=nonconverged in
+  the parity CSV and never enters the statistics; no chi2_reduced is printed
+  -- without sigmas and degrees of freedom from THIS act, the name would lie.
+
+  The pinned-what-if grammar and the leakage sentinel live in the sibling
+  case eval_nrtl_pinned (a pinned path must EXIST in the dict, so what-ifs
+  run on an INLINE scaffold and say so).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        catalogue_as_assembled;
+        type        fitParameters;
+        mode        evaluate;
+        residual
+        {
+            kind        T_bubble;
+            components  ( ethanol water );
+            P           1.01325 bar;
+            data
+            (
+                0.05  361.95    0.10  359.95    0.20  358.05
+                0.30  357.30    0.40  356.85    0.50  356.20
+                0.60  355.30    0.70  354.50    0.80  353.30
+                0.90  351.85    0.95  351.45
+            );
+        }
+        output      { parity  parity_catalogue.csv; }
+    }
+);

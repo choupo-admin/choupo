@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tricyclo[5.2.1.02,6]dec-8-yl acetate  (C12H18O2, CAS 14362-73-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tricyclo521026Dec8YlAcetate;
+formula     C12H18O2;
+CAS         14362-73-3;
+InChIKey    YKFHIJHJBUDXFP-UHFFFAOYSA-N;
+MW          194.274;      // g/mol [origin=calculated method=formula-sum]
+Tc          759.26;      // K   [origin=predictive method=joback]
+Pc          24.605;      // bar [origin=predictive method=joback]
+omega       0.5441;      // -   [origin=predictive method=lee-kesler]
+Tb          547.53;      // K   [origin=predictive method=joback]
+HvapTb      49006.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-126.58 1.47912 -0.0010378 2.861e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH; count 5; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,7-methano-1h-inden-5-ol, octahydro-, acetate" "4,7-methano-1h-inden-5-ol, octahydro-, 5-acetate" "4,7-methano-1h-inden-5-ol, octahydro-, acetate, (3ar,4s,5r,7s,7ar)-rel-" "4,7-methano-1h-inden-5-ol, octahydro-, 5-acetate, (3ar,4s,5r,7s,7ar)-rel-" "dihydrodicyclopentadiene acetate" "hexahydro-4,7-methanoindan-6-yl acetate" "hexahydro-4,7-methanoindane-5-yl acetate" "octahydro-4,7-methano-1h-inden-5-yl acetate" "(3aalpha,4alpha,5alpha,7alpha,7aalpha)-octahydro-4,7-methano-1h-inden-5-yl acetate" );
+gibbsFormation
+{
+    dHf_298   -436730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     339.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-105480.0
+    phase     gas;
+}

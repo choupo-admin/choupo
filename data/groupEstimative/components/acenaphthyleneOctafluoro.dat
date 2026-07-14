@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acenaphthylene, octafluoro-  (C12F8, CAS 1554-93-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acenaphthyleneOctafluoro;
+formula     C12F8;
+CAS         1554-93-4;
+InChIKey    DOVATEMCZVQLKW-UHFFFAOYSA-N;
+MW          296.116;      // g/mol [origin=calculated method=formula-sum]
+Tc          742.80;      // K   [origin=predictive method=joback]
+Pc          22.041;      // bar [origin=predictive method=joback]
+omega       0.9380;      // -   [origin=predictive method=lee-kesler]
+Tb          570.08;      // K   [origin=predictive method=joback]
+HvapTb      46648.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (75.07 0.6916 -0.000567 1.956e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 4; } { group ACF; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 12; } { group F; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5,6,7,8-octakis(fluoranyl)acenaphthylene" "1,2,3,4,5,6,7,8-octafluoroacenaphthylene" );
+gibbsFormation
+{
+    dHf_298   -1389910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     494.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1275040.0
+    phase     gas;
+}

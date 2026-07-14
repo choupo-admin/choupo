@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propanol, 1-(2-methylpropoxy)-  (C7H16O2, CAS 23436-19-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Propanol12Methylpropoxy;
+formula     C7H16O2;
+CAS         23436-19-3;
+InChIKey    MWGRRMQNSQNFID-UHFFFAOYSA-N;
+MW          132.203;      // g/mol [origin=calculated method=formula-sum]
+Tc          640.59;      // K   [origin=predictive method=joback]
+Pc          30.899;      // bar [origin=predictive method=joback]
+omega       0.8276;      // -   [origin=predictive method=lee-kesler]
+Tb          473.48;      // K   [origin=predictive method=joback]
+HvapTb      49489.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.952 0.65146 -0.0002828 2.61e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 2; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2-methylpropoxy)propan-2-ol" "1-isobutoxypropan-2-ol" "dowanol pib-t" "dowanol pibt" "2-propanol, 1-isobutoxy-" "propylene glycol isobutyl ether" "1-isobutoxy-2-propanol" "2-propanol,1-isobutoxy-," "1-(2-methylpropoxy)-2-propanol" "propylene glycol monoisobutyl ether" );
+gibbsFormation
+{
+    dHf_298   -482820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     471.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-238640.0
+    phase     gas;
+}

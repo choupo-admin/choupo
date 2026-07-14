@@ -1,0 +1,10 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  pneumaticConveyor02_bends -- dilute-phase pneumatic conveying of sand in N2.
+
+  Conveys silica sand (~200 um) up a 8 m line with a 2 m vertical rise.
+  Shows the pressure-drop BREAKDOWN (gas/solids acceleration, gas/solids wall
+  friction, gas/solids static head) and the saltation-velocity design check.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A SHORT (8 m) conveying line routed through 6 bends -- the lesson: A FITTING ADDS PRESSURE DROP WITHOUT ADDING LENGTH. With long-radius sweeps the 6 bends cost ~10% of the total dP; swap them for blind tees (type blindTee;) and their share jumps to ~25% -- the erosion-vs-pressure trade made visible. (On this short line the straight-pipe solids friction still carries most of the dP; the bends' share GROWS as lines get shorter and bendier.) Same gas/solids as pneumaticConveyor01 (which runs 30 m / 6 m rise, bend-free) -- compare the PER-METRE dP, not the totals.";
+verbosity     3;

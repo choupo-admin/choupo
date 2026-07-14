@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimellitic anhydride, glycerine adduct  (C12H14O9, CAS 71243-42-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trimelliticAnhydrideGlycerineAdduct;
+formula     C12H14O9;
+CAS         71243-42-0;
+InChIKey    QNMNPDQTYTUETP-UHFFFAOYSA-N;
+MW          302.235;      // g/mol [origin=calculated method=formula-sum]
+Tc          1517.67;      // K   [origin=predictive method=joback]
+Pc          38.771;      // bar [origin=predictive method=joback]
+omega       1.9871;      // -   [origin=predictive method=lee-kesler]
+Tb          1224.83;      // K   [origin=predictive method=joback]
+HvapTb      147341.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (55.482 1.0 -0.00042352 3e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group ACH; count 3; } { group AC; count 3; } { group OH; count 3; } { group COOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 3; } { group COOH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzene-1,2,4-tricarboxylic acid;propane-1,2,3-triol" "benzene-1,2,4-tricarboxylic acid; propane-1,2,3-triol" "1,2,3-propanetriol 1,2,4-benzenetricarboxylate" "1,2,3-propanetriol 1,2,4-benzenetricarboxylate;glyceryl trimellitate" );
+gibbsFormation
+{
+    dHf_298   -1701820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     914.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1406080.0
+    phase     gas;
+}

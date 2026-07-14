@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): dec-1-ene- oct-1-ene(1:1)  (C18H36, CAS 66070-54-0)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           dec1EneOct1Ene11;
+formula        C18H36;
+CAS            66070-54-0;
+InChIKey       XKKPTSDYGCWOCE-UHFFFAOYSA-N;
+MW             252.486;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: dec-1-ene- oct-1-ene(1:1)

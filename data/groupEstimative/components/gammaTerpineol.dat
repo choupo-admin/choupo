@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: gamma-terpineol  (C10H18O, CAS 586-81-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        gammaTerpineol;
+formula     C10H18O;
+CAS         586-81-2;
+InChIKey    NNRLDGQZIVUQTE-UHFFFAOYSA-N;
+MW          154.253;      // g/mol [origin=calculated method=formula-sum]
+Tc          749.94;      // K   [origin=predictive method=joback]
+Pc          30.796;      // bar [origin=predictive method=joback]
+omega       0.7284;      // -   [origin=predictive method=lee-kesler]
+Tb          546.89;      // K   [origin=predictive method=joback]
+HvapTb      54678.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-105.1 1.32426 -0.001135 4.279e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group C; count 1; } { group OH; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dC; count 1; } { group CH2_ring; count 4; } { group C_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methyl-4-propan-2-ylidene-cyclohexan-1-ol" ".gamma.-terpineol" "cyclohexanol, 1-methyl-4-(1-methylethylidene)-" "1-methyl-4-(propan-2-ylidene)cyclohexanol" "1-methyl-4-propan-2-ylidenecyclohexan-1-ol" "1-methyl-4-(1-methylethylidene)cyclohexan-1-ol" );
+gibbsFormation
+{
+    dHf_298   -266160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     603.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-47630.0
+    phase     gas;
+}

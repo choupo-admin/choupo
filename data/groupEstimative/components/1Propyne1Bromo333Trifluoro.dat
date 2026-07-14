@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-propyne, 1-bromo-3,3,3-trifluoro-  (C3BrF3, CAS 819-01-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Propyne1Bromo333Trifluoro;
+formula     C3BrF3;
+CAS         819-01-2;
+InChIKey    AJZDHGUIYOQGDJ-UHFFFAOYSA-N;
+MW          172.931;      // g/mol [origin=calculated method=formula-sum]
+Tc          531.41;      // K   [origin=predictive method=joback]
+Pc          51.534;      // bar [origin=predictive method=joback]
+omega       0.2631;      // -   [origin=predictive method=lee-kesler]
+Tb          337.98;      // K   [origin=predictive method=joback]
+HvapTb      27112.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.71 0.3384 -0.00033966 1.2628e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group Br; count 1; } { group C_C; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group tC; count 2; } { group F; count 3; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-3,3,3-tris(fluoranyl)prop-1-yne" "1-bromo-3,3,3-trifluoroprop-1-yne" );
+gibbsFormation
+{
+    dHf_298   -403700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     351.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-390090.0
+    phase     gas;
+}

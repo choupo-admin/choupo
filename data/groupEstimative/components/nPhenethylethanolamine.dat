@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-phenethylethanolamine  (C10H15NO, CAS 2842-37-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nPhenethylethanolamine;
+formula     C10H15NO;
+CAS         2842-37-7;
+InChIKey    WPOHVHKEDGUEPZ-UHFFFAOYSA-N;
+MW          165.236;      // g/mol [origin=calculated method=formula-sum]
+Tc          790.98;      // K   [origin=predictive method=joback]
+Pc          32.954;      // bar [origin=predictive method=joback]
+omega       1.0448;      // -   [origin=predictive method=lee-kesler]
+Tb          597.43;      // K   [origin=predictive method=joback]
+HvapTb      63245.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-36.026 0.9851 -0.0006304 1.536e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 5; } { group ACCH2; count 1; } { group OH; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-phenylethylamino)ethanol" "2-(phenethylamino)ethanol" "2-phenylethylaminoethanol" "ethanol, 2-(phenethylamino)-" "ethanol, 2-((phenethyl)amino)-" "ethanol, 2-[(phenethyl)amino]-" "ethanol, 2-((2-phenylethyl)amino)-" "ethanol, 2-[(2-phenylethyl)amino]-" "2-[(phenylethyl)amino]ethanol" "2-[(2-phenylethyl)amino]ethan-1-ol" "ethanol, 2-((2-phenylethyl)amino)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -111960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     530.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=98300.0
+    phase     gas;
+}

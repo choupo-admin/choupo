@@ -1,0 +1,16 @@
+/*---------------------------------------------------------------------------*\
+  pneumaticConveyor01_sand / flowsheetDict   (single unit)
+
+  Operation block is HARDWARE only (the credo): pipe diameter, length, rise.
+  Every velocity, the suspended density and the pressure drop are RESULTS.
+\*---------------------------------------------------------------------------*/
+type        pneumaticConveyor;
+
+operation
+{
+    geometry { D 0.1 m;  L 30 m;  dz 6 m; }    // 100 mm line, 30 m long, 6 m up
+}
+
+boundary    { inlets ( Feed );  outlets ( conveyed ); }
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

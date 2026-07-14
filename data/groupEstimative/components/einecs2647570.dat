@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: einecs 264-757-0  (C38H74O7S2, CAS 64253-30-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        einecs2647570;
+formula     C38H74O7S2;
+CAS         64253-30-1;
+InChIKey    NMWLFOFCBZILSO-UHFFFAOYSA-N;
+MW          707.123;      // g/mol [origin=calculated method=formula-sum]
+Tc          2020.37;      // K   [origin=predictive method=joback]
+Pc          4.211;      // bar [origin=predictive method=joback]
+omega       -0.4092;      // -   [origin=predictive method=lee-kesler]
+Tb          1390.30;      // K   [origin=predictive method=joback]
+HvapTb      135860.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (134.864 3.30342 -0.0014408 1.072e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 27; } { group CH2COO; count 2; } { group CH2O; count 3; } { group CH2S; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 34; } { group O; count 3; } { group COO; count 2; } { group S; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-[2-(3-dodecylsulfanylpropanoyloxy)ethoxy]ethoxy]ethoxy]ethyl 3-dodecylsulfanylpropanoate" "oxybis(ethane-2,1-diyloxyethane-2,1-diyl) bis(3-(dodecylthio)propionate)" "propanoic acid, 3-(dodecylthio)-, 3,6,9-trioxaundecane-1,11-diyl ester" "propanoic acid, 3-(dodecylthio)-, 1,1'-(oxybis(2,1-ethanediyloxy-2,1-ethanediyl)) ester" "propanoic acid, 3-(dodecylthio)-, 1,1'-[oxybis(2,1-ethanediyloxy-2,1-ethanediyl)] ester" );
+gibbsFormation
+{
+    dHf_298   -1775130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1895.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-600420.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (-)-menthyl isobutyrate  (C14H26O2, CAS 68366-65-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        menthylIsobutyrate;
+formula     C14H26O2;
+CAS         68366-65-4;
+InChIKey    CSZKNSMAMITXAD-UHFFFAOYSA-N;
+MW          226.36;      // g/mol [origin=calculated method=formula-sum]
+Tc          786.60;      // K   [origin=predictive method=joback]
+Pc          17.332;      // bar [origin=predictive method=joback]
+omega       0.5782;      // -   [origin=predictive method=lee-kesler]
+Tb          587.47;      // K   [origin=predictive method=joback]
+HvapTb      53200.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-41.52 1.36 -0.0006198 5.05e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 5; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5-methyl-2-propan-2-yl-cyclohexyl) 2-methylpropanoate" "propanoic acid, 2-methyl-, 5-methyl-2-(1-methylethyl)cyclohexyl ester" "propanoic acid, 2-methyl-, (1r,2s,5r)-5-methyl-2-(1-methylethyl)cyclohexyl ester" "l-menthyl isobutyrate" "agn-pc-00ejy7" "(5-methyl-2-propan-2-ylcyclohexyl) 2-methylpropanoate" "(1r-(1alpha,2beta,5alpha))-5-methyl-2-(1-methylethyl)cyclohexyl isobutyrate" );
+gibbsFormation
+{
+    dHf_298   -646490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     618.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-239220.0
+    phase     gas;
+}

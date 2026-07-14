@@ -268,9 +268,9 @@ face).  In WASM these land in MEMFS.  The flow:
 `trajectory.csv` is still written + plotted (the **Trajectory** view); the
 scrubber is the richer per-instant state on top of it.
 
-Known bug: `make` alone defaults to `wasm` because `make/wasm.mk` is included
-before `all:` is declared in the top-level Makefile.  Use `make all` for the
-native build until this is fixed.
+`make` with no target builds the NATIVE binaries (`.DEFAULT_GOAL := all`, set
+before the includes -- otherwise the first rule in `make/wasm.mk` would win).
+The WASM build is always an explicit target: `make wasm-gui`.
 
 ### How to resume a debugging session
 

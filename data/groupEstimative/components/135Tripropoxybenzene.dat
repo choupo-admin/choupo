@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3,5-tripropoxybenzene  (C15H24O3, CAS 66104-54-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        135Tripropoxybenzene;
+formula     C15H24O3;
+CAS         66104-54-9;
+InChIKey    RKFICKITOKOWEV-UHFFFAOYSA-N;
+MW          252.354;      // g/mol [origin=calculated method=formula-sum]
+Tc          836.43;      // K   [origin=predictive method=joback]
+Pc          17.246;      // bar [origin=predictive method=joback]
+omega       0.8411;      // -   [origin=predictive method=lee-kesler]
+Tb          646.70;      // K   [origin=predictive method=joback]
+HvapTb      59814.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (60.446 1.04136 -0.00035632 -2.14e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group ACH; count 3; } { group AC; count 3; } { group CH2O; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzene, 1,3,5-tripropoxy-" "benzene,1,3,5-tripropoxy-" );
+gibbsFormation
+{
+    dHf_298   -536000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     655.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-146430.0
+    phase     gas;
+}

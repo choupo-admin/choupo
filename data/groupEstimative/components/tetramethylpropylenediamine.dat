@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetramethylpropylenediamine  (C7H18N2, CAS 1822-45-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetramethylpropylenediamine;
+formula     C7H18N2;
+CAS         1822-45-3;
+InChIKey    JUXXCHAGQCBNTI-UHFFFAOYSA-N;
+MW          130.235;      // g/mol [origin=calculated method=formula-sum]
+Tc          549.46;      // K   [origin=predictive method=joback]
+Pc          28.114;      // bar [origin=predictive method=joback]
+omega       0.4377;      // -   [origin=predictive method=lee-kesler]
+Tb          384.20;      // K   [origin=predictive method=joback]
+HvapTb      34874.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.539 0.9226 -0.0005854 1.464e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group CH3N; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 1; } { group CH; count 1; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n1,n1,n2,n2-tetramethylpropane-1,2-diamine" "n,n,n',n'-tetramethyl-1,2-diaminopropane" "1,2-propanediamine, n,n,n',n'-tetramethyl-" "n(sup 1),n(sup 1),n(sup 2),n(sup 2)-tetramethyl-1,2-propanediamine" "1,2-bis(dimethylamino)propane" "n,n,n',n'-tetramethylpropylenediamine" "n,n,n',n'-tetramethyl-1,2-propanediamine" "1,2-propanediamine,n1,n1,n2,n2-tetramethyl-" "1-n,1-n,2-n,2-n-tetramethylpropane-1,2-diamine" "n(sup 1),n(sup 2),n(sup 2)-tetramethyl-1,2-propanediamine" );
+gibbsFormation
+{
+    dHf_298   -58030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     451.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=227180.0
+    phase     gas;
+}

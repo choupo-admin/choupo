@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butanal, 3-(ethylthio)-  (C6H12OS, CAS 27205-24-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butanal3Ethylthio;
+formula     C6H12OS;
+CAS         27205-24-9;
+InChIKey    SIWPVNYSXLWJNM-UHFFFAOYSA-N;
+MW          132.221;      // g/mol [origin=calculated method=formula-sum]
+Tc          653.92;      // K   [origin=predictive method=joback]
+Pc          34.807;      // bar [origin=predictive method=joback]
+omega       0.4912;      // -   [origin=predictive method=lee-kesler]
+Tb          453.88;      // K   [origin=predictive method=joback]
+HvapTb      42099.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (26.752 0.54863 -0.0002586 3e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group CHO; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group OdCH_al; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-ethylsulfanylbutanal" "3-(ethylthio)butanal" "beta-(ethylthio)butyraldehyde" "3-(ethylthio)butyraldehyde" "3-(ethylsulfanyl)butanal" "butyraldehyde, 3-(ethylthio)-" "butyraldehyde, 3-(ethylthio)- (6ci)" "butyraldehyde,3-(ethylthio)- (6ci); 3-(ethylthio)butanal; 3-(ethylthio)butyraldehyde; b-(ethylthio)butyraldehyde" );
+gibbsFormation
+{
+    dHf_298   -216160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     460.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-69200.0
+    phase     gas;
+}

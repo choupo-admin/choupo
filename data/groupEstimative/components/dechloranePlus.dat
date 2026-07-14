@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dechlorane plus  (C18H12Cl12, CAS 13560-89-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dechloranePlus;
+formula     C18H12Cl12;
+CAS         13560-89-9;
+InChIKey    UGQQAJOWXNCOPY-UHFFFAOYSA-N;
+MW          653.694;      // g/mol [origin=calculated method=formula-sum]
+Tc          1410.20;      // K   [origin=predictive method=joback]
+Pc          15.403;      // bar [origin=predictive method=joback]
+omega       0.8707;      // -   [origin=predictive method=lee-kesler]
+Tb          1103.44;      // K   [origin=predictive method=joback]
+HvapTb      103144.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-322.85 3.79 -0.004787 2.2736e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 4; } { group CCl2; count 2; } { group Cl_C=C_; count 4; } { group C=C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:4
+    joback ( { group CH2_ring; count 4; } { group CH_ring; count 4; } { group C_ring; count 6; } { group dC_ring; count 4; } { group Cl; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dechloran a" "dechlorane plus 25" "dechlorane plus 35" "bis(hexachlorocyclopentadieno)cyclooctane" "dodecachlorododecahydrodimethanodibenzocyclooctane" "1,4:7,10-dimethanodibenzo(a,e)cyclooctane, 1,2,3,4,7,8,9,10,13,13,14,14-dodecachloro-1,4,4a,5,6,6a,7,10,10a,11,12,12a-dodecahydro-" "1,4:7,10-dimethanodibenzo(a,e)cyclooctene, 1,2,3,4,7,8,9,10,13,13,14,14-dodecachloro-1,4,4a,5,6,6a,7,10,10a,11,12,12a-dodecahydro-" "1,4:7,10-dimethanodibenzo[a,e]cyclooctene, 1,2,3,4,7,8,9,10,13,13,14,14-dodecachloro-1,4,4a,5,6,6a,7,10,10a,11,12,12a-dodecahydro-" "1,6,7,8,9,14,15,16,17,17,18,18-dodecachloropentacyclo(12.2.1.16,9.02,13.05,10)octadeca-7,15-diene" "dechlorane a" "1,2,3,4,7,8,9,10,13,13,14,14-dodecachloro-1,4,4a,5,6,6a,7,10,10a,11,12,12a-dodecahydro-1,4:7,10-dimethanodibenzo[a,e][8]annulene" "1,6,7,8,9,14,15,16,17,17,18,18-dodecachloropentacyclo[12.2.1.16,9.02,13.05,10]octadeca-7,15-diene" );
+gibbsFormation
+{
+    dHf_298   -198790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     972.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=174880.0
+    phase     gas;
+}

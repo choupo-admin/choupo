@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-bromo-2,4,6-trimethylaniline  (C9H12BrN, CAS 82842-52-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Bromo246Trimethylaniline;
+formula     C9H12BrN;
+CAS         82842-52-2;
+InChIKey    MVLMPTBHZPYDBZ-UHFFFAOYSA-N;
+MW          214.106;      // g/mol [origin=calculated method=formula-sum]
+Tc          829.16;      // K   [origin=predictive method=joback]
+Pc          35.221;      // bar [origin=predictive method=joback]
+omega       0.6437;      // -   [origin=predictive method=lee-kesler]
+Tb          590.81;      // K   [origin=predictive method=joback]
+HvapTb      57628.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (32.68 0.64206 -0.00034364 6.69e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 1; } { group AC; count 1; } { group ACCH3; count 3; } { group ACNH2; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group Br; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-bromanyl-2,4,6-trimethyl-aniline" "3-bromo-2,4,6-trimethylphenylamine" "3-bromo-2,4,6-trimethyl-phenylamine" "benzenamine, 3-bromo-2,4,6-trimethyl-" "aniline,3-bromo-2,4,6-trimethyl- (6ci,7ci); 3-bromo-2,4,6-trimethylaniline" );
+gibbsFormation
+{
+    dHf_298   21680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     478.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=179560.0
+    phase     gas;
+}

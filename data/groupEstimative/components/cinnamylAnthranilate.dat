@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cinnamyl anthranilate  (C16H15NO2, CAS 87-29-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cinnamylAnthranilate;
+formula     C16H15NO2;
+CAS         87-29-6;
+InChIKey    GABQNAFEZZDSCM-UHFFFAOYSA-N;
+MW          253.301;      // g/mol [origin=calculated method=formula-sum]
+Tc          1005.27;      // K   [origin=predictive method=joback]
+Pc          25.176;      // bar [origin=predictive method=joback]
+omega       0.8784;      // -   [origin=predictive method=lee-kesler]
+Tb          758.93;      // K   [origin=predictive method=joback]
+HvapTb      74430.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.449 1.3336 -0.00087456 2.066e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH=CH; count 1; } { group ACH; count 9; } { group AC; count 2; } { group ACNH2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-phenylprop-2-enyl 2-azanylbenzoate" "cinnamyl anthranylate" "2-propen-1-ol, 3-phenyl-, 2-aminobenzoate" "3-phenylprop-2-en-1-yl 2-aminobenzoate" "cinnamyl o-aminobenzoate" "cinnamyl 2-aminobenzoate" "cinnamyl alcohol, anthranilate" "3-phenyl-2-propenylanthranilate" "anthranilic acid, cinnamyl ester" "3-phenyl-2-propenyl anthranilate" "3-phenyl-2-propen-1-yl anthranilate" "3-phenyl-2-propen-1-ol 2-aminobenzoate" );
+gibbsFormation
+{
+    dHf_298   -78250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     656.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=135330.0
+    phase     gas;
+}

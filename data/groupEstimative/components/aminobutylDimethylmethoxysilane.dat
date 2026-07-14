@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (aminobutyl)dimethylmethoxysilane  (C7H19NOSi, CAS 3663-43-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H19NOSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        aminobutylDimethylmethoxysilane;
+formula     C7H19NOSi;
+CAS         3663-43-2;
+InChIKey    YQHDQYPKFWETPO-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          161.32;      // g/mol [origin=calculated method=formula-sum]
+Tc          640.47;      // K   [origin=predictive method=joback]
+Pc          25.767;      // bar [origin=predictive method=joback]
+omega       0.4948;      // -   [origin=predictive method=lee-kesler]
+Tb          456.11;      // K   [origin=predictive method=joback]
+HvapTb      44521.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (69.334 0.46136 0.0001254 -1.889e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH3O; count 1; } { group CH2NH2; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[methoxy(dimethyl)silyl]butan-1-amine" "1-butanamine, 4-(methoxydimethylsilyl)-" "4-aminobutyldimethyl methoxysilane" "1-butanamine,4-(methoxydimethylsilyl)-" "4-aminobutyldimethylmethoxysilane" "butylamine,4-(methoxydimethylsilyl)- (7ci,8ci);(4-aminobutyl)dimethylmethoxysilane;(4-aminobutyl)methoxydimethylsilane;4-(methoxydimethylsilyl)butylamine;" );
+gibbsFormation
+{
+    dHf_298   -397860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     618.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-135250.0
+    phase     gas;
+}

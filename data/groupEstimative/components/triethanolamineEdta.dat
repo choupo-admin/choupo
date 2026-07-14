@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethanolamine edta  (C16H31N3O11, CAS 60544-70-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethanolamineEdta;
+formula     C16H31N3O11;
+CAS         60544-70-9;
+InChIKey    YXSJRZBKSLLIOM-UHFFFAOYSA-N;
+MW          441.434;      // g/mol [origin=calculated method=formula-sum]
+Tc          2073.82;      // K   [origin=predictive method=joback]
+Pc          20.364;      // bar [origin=predictive method=joback]
+omega       0.3389;      // -   [origin=predictive method=lee-kesler]
+Tb          1462.98;      // K   [origin=predictive method=joback]
+HvapTb      176326.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (31.362 1.9945 -0.0011512 2.156e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group OH; count 3; } { group CH2N; count 3; } { group COOH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 12; } { group OH; count 3; } { group COOH; count 4; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[bis(2-hydroxyethyl)amino]ethanol;2-[2-[bis(2-hydroxy-2-oxoethyl)amino]ethyl-(2-hydroxy-2-oxoethyl)amino]ethanoic acid" "tea-edta" "ethylenediaminetetraacetic acid, mono(triethanolamine) salt" "tris(2-hydroxyethyl)ammonium trihydrogen ethylenediaminetetraacetate" "glycine, n,n'-1,2-ethanediylbis(n-(carboxymethyl)-, compd. with 2,2',2" "glycine, n,n'-1,2-ethanediylbis(n-(carboxymethyl)-, compd. with 2,2',2''-nitrilotris(ethanol) (1:1)" "2-[2-(bis(carboxymethyl)amino)ethyl-(carboxymethyl)amino]acetic acid; 2-(bis(2-hydroxyethyl)amino)ethanol" "2-[2-[bis(carboxymethyl)amino]ethyl-(carboxymethyl)amino]acetic acid; 2-[bis(2-hydroxyethyl)amino]ethanol" "tris(2-hydroxyethyl)ammonium trihydrogen ethylenediaminetetraacetate;tea-edta" );
+gibbsFormation
+{
+    dHf_298   -2140370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1300.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1474680.0
+    phase     gas;
+}

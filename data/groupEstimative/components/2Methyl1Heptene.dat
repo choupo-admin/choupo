@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methyl-1-heptene  (C8H16, CAS 15870-10-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methyl1Heptene;
+formula     C8H16;
+CAS         15870-10-7;
+InChIKey    RCBGGJURENJHKV-UHFFFAOYSA-N;
+MW          112.216;      // g/mol [origin=calculated method=formula-sum]
+Tc          549.34;      // K   [origin=predictive method=joback]
+Pc          26.598;      // bar [origin=predictive method=joback]
+omega       0.3529;      // -   [origin=predictive method=lee-kesler]
+Tb          379.20;      // K   [origin=predictive method=joback]
+HvapTb      32812.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.066 0.74374 -0.0004366 1.032e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH2=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH2; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylhept-1-ene" "2-methyl-hept-1-ene" "rcbggjurenjhkv-uhfffaoysa-" "1-heptene, 2-methyl- (8ci)(9ci)" );
+gibbsFormation
+{
+    dHf_298   -92810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     458.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=95770.0
+    phase     gas;
+}

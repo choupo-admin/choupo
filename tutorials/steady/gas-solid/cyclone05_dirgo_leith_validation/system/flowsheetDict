@@ -1,0 +1,38 @@
+/*---------------------------------------------------------------------------*\
+  cyclone05_dirgo_leith_validation
+  ================================
+  VALIDATION against Dirgo & Leith (1985), Aerosol Sci. Technol. 4:401 -- the
+  measured fractional-efficiency baseline for a Stairmand high-efficiency
+  cyclone.  Their pilot-plant cyclone: body diameter D = 0.305 m, design air
+  flow 0.139 m^3/s (300 cfm) -> inlet velocity ~15 m/s; test aerosol a nebulised
+  mineral oil (rho_p = 860 kg/m^3), particles >= 1 um.
+
+  This case reproduces THOSE conditions and runs the flow-pattern Iozia-Leith
+  (1989) model.  Re-run it with `model Lapple;` / `LeithLicht;` / `Barth;` /
+  `Muschelknautz;` and compare each model's d50 and grade curve against the
+  paper's measured fractional-efficiency curves (their Figures 5-6).  THE
+  LESSON: on this ONE real cyclone the models disagree by ~3x --
+      Iozia-Leith 2.2 um, Leith-Licht 2.6 um  (the fine, high-efficiency end)
+      Lapple / Muschelknautz 6.2 um, Barth 6.5 um  (the coarse end)
+  -- which is EXACTLY why you validate against data rather than trust one
+  correlation.  Dirgo & Leith's own finding: the theories BRACKET the measured
+  curve and no single one is universally best (they consistently underpredicted
+  efficiency at the highest inlet velocity, 25 m/s).  The geometry defaults to
+  the Stairmand high-efficiency ratios (a/D 0.5, b/D 0.2, De/D 0.5, S/D 0.5,
+  h/D 1.5, H/D 4, B/D 0.375) -- exactly Dirgo & Leith's cyclone -- so the
+  Iozia-Leith flow pattern (Vt_max, core) is evaluated on the real test
+  geometry; Vi = Q/(ab) ~ 15 m/s reproduces their design point.
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        cyclone;
+        type        cyclone;
+        model       IoziaLeith;
+        in          feed;
+        outputs     ( cleanGas  capturedSolids );
+        operation   { bodyDiameter 0.305 m;  numberOfTurns 5;  beta 3.5; }
+    }
+);

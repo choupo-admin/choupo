@@ -1,0 +1,85 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "components/ethanol.dat"; }
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Ethanol  (C2H6O, CAS 64-17-5)
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
+           coefficients, Cp polynomials and the ideal-gas formation datum
+           (dHf_298/s_298, JANAF convention) are individual literature
+           values -- primary re-citation pending (IST review).  The
+           Andrade/Vogel viscosity fits are least-squares over literature
+           mu(T), ~10-100 degC (see block comment); relativePermittivity
+           24.3 (25 degC) carries the same pending re-citation.
+\*---------------------------------------------------------------------------*/
+
+name        ethanol;
+formula     C2H6O;
+CAS         64-17-5;
+
+// Molecular structure (Joback first-order groups) -- IDENTITY, like the
+// formula: declared once, here; `bin/estimate ethanol` uses it (curation).
+// (Sibling of the UNIFAC `groups{}` block -- different table, same idea.)
+jobackGroups { CH3 1; CH2 1; OH 1; }
+
+
+// Molecular structure (Joback first-order groups) -- IDENTITY, like the
+// formula: declared once, here; `bin/estimate ethanol` uses it (curation).
+groups
+(
+    { group CH3;  count 1; }
+    { group CH2;  count 1; }
+    { group OH;  count 1; }
+);
+
+
+MW          46.069;
+Tc          513.92;
+Pc          61.48;
+omega       0.6490;
+Tb          351.44;
+HvapTb      38560;
+Vliq        5.850e-5;
+
+
+gibbsFormation
+{
+    dHf_298   -234950.0;        // J/mol  -- ideal-gas reference
+    s_298     281.620;         // J/(mol·K)  -- third-law absolute
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (5.37229   1670.409   -40.191);
+    Trange        (273  369);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (9.014   0.2141   -8.39e-5   1.373e-9);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (112.3);
+    Trange        (280  351);
+}
+
+// Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
+// liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
+// fitted to literature mu(T) over ~10-100 degC.
+associationFactor  1.5;
+liquidViscosity
+{
+    andrade { A -12.6467; B 1736.8; }
+    vogel   { A -10.8798; B 796.9; C 101.5; }
+}
+
+relativePermittivity 24.3;   // dielectric constant, 25 C (for mixed-solvent eNRTL / drowning-out)
+
+groups
+{
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );
+}

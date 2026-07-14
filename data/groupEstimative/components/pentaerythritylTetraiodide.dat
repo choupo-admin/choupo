@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentaerythrityl tetraiodide  (C5H8I4, CAS 1522-88-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentaerythritylTetraiodide;
+formula     C5H8I4;
+CAS         1522-88-9;
+InChIKey    HPMGSGCDKVCZHC-UHFFFAOYSA-N;
+MW          575.719;      // g/mol [origin=calculated method=formula-sum]
+Tc          1008.34;      // K   [origin=predictive method=joback]
+Pc          32.028;      // bar [origin=predictive method=joback]
+omega       0.3453;      // -   [origin=predictive method=lee-kesler]
+Tb          683.33;      // K   [origin=predictive method=joback]
+HvapTb      62920.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.634 0.7606 -0.0007456 2.798e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group C; count 1; } { group I; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group C; count 1; } { group I; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-bis(iodanyl)-2,2-bis(iodanylmethyl)propane" "methane, tetrakis(iodomethyl)-" "pentaerythritol tetraiodide" "pentaerythrityl iodide" "pentaerythryl tetraiodide" "1,3-diiodo-2,2-bis(iodomethyl)propane" "tetrakis(iodomethyl)methane" "propane, 1,3-diiodo-2,2-bis(iodomethyl)-" "propane, 2,2-bis(iodomethyl)-1,3-diiodo-" "propane,2-bis(iodomethyl)-1,3-diiodo-" "propane,3-diiodo-2,2-bis(iodomethyl)-" );
+gibbsFormation
+{
+    dHf_298   152200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     534.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=226540.0
+    phase     gas;
+}

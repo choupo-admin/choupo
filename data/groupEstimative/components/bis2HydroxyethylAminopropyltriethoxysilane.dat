@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(2-hydroxyethyl)aminopropyltriethoxysilane  (C13H31NO5Si, CAS 7538-44-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C13H31NO5Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        bis2HydroxyethylAminopropyltriethoxysilane;
+formula     C13H31NO5Si;
+CAS         7538-44-5;
+InChIKey    IYAYDWLKTPIEDC-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          309.478;      // g/mol [origin=calculated method=formula-sum]
+Tc          934.97;      // K   [origin=predictive method=joback]
+Pc          16.592;      // bar [origin=predictive method=joback]
+omega       1.4070;      // -   [origin=predictive method=lee-kesler]
+Tb          762.50;      // K   [origin=predictive method=joback]
+HvapTb      87457.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (108.28 1.03496 -0.000109 -1.811e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 6; } { group OH; count 2; } { group CH2O; count 3; } { group CH2N; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 10; } { group OH; count 2; } { group O; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-hydroxyethyl(3-triethoxysilylpropyl)amino]ethanol" "n-(3-triethoxysilylpropyl)diethanolamine" "(bis(2-hydroxyethyl)aminopropyl)triethoxysilane" "2,2'-{[3-(triethoxysilyl)propyl]imino}diethanol" "ethanol, 2,2'-[[3-(triethoxysilyl)propyl]imino]bis-" "3-[bis(2-hydroxyethyl)amino]propyl-triethoxysilane solution" "[bis(2-hydroxyethyl)aminopropyl]triethoxysilane" "ethanol, 2,2'-((3-(triethoxysilyl)propyl)imino)bis-" "2,2'-((3-(triethoxysilyl)propyl)imino)bisethanol" "3-[bis(2-hydroxyethyl)amino]propyl-triethoxysilane" "bis-(2-hydroxyethyl)-3-aminopropyltriethoxysilane" "2-(2-hydroxyethyl-(3-triethoxysilylpropyl)amino)ethanol" );
+gibbsFormation
+{
+    dHf_298   -1056860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     940.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-524040.0
+    phase     gas;
+}

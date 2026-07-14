@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: malealdehyde  (C4H4O2, CAS 3675-13-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        malealdehyde;
+formula     C4H4O2;
+CAS         3675-13-6;
+InChIKey    JGEMYUOFGVHXKV-OWOJBTEDSA-N;
+MW          84.074;      // g/mol [origin=calculated method=formula-sum]
+Tc          584.47;      // K   [origin=predictive method=joback]
+Pc          50.875;      // bar [origin=predictive method=joback]
+omega       0.4796;      // -   [origin=predictive method=lee-kesler]
+Tb          392.60;      // K   [origin=predictive method=joback]
+HvapTb      37896.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.87 0.3528 -0.0002636 7.96e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group CHO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 2; } { group OdCH_al; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e)-but-2-enedial" "2-butenedial" "fumaraldehyde" "but-2-enedial" "maleylaldehyde" "maleic dialdehyde" "maleic acid aldehyde" "2-butene-1,4-dial" "(e)-2-butenedial" );
+gibbsFormation
+{
+    dHf_298   -179830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     342.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-136020.0
+    phase     gas;
+}

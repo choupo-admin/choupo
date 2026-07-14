@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-fluorophenoxyacetic acid  (C8H7FO3, CAS 405-79-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4FluorophenoxyaceticAcid;
+formula     C8H7FO3;
+CAS         405-79-8;
+InChIKey    ZBIULCVFFJJYTN-UHFFFAOYSA-N;
+MW          170.139;      // g/mol [origin=calculated method=formula-sum]
+Tc          796.94;      // K   [origin=predictive method=joback]
+Pc          37.045;      // bar [origin=predictive method=joback]
+omega       0.8278;      // -   [origin=predictive method=lee-kesler]
+Tb          581.50;      // K   [origin=predictive method=joback]
+HvapTb      55097.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.201 0.6248 -0.00035356 6.34e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group CH2O; count 1; } { group COOH; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-fluoranylphenoxy)ethanoic acid" "p-fluorophenoxyacetic acid" "2-(4-fluorophenoxy)acetic acid" "(4-fluorophenoxy)acetic acid" "alpha-carboxy-4-fluoroanisole" "acetic acid, (4-fluorophenoxy)-" "(4-fluorophenoxy)acetic acid 98%" "acetic acid,2-(4-fluorophenoxy)-" "acetic acid, (4-fluorophenoxy)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -661990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     451.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-524460.0
+    phase     gas;
+}

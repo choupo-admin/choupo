@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4,6,9-tetrathiaspiro[4.4]nonane  (C5H8S4, CAS 13145-46-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1469Tetrathiaspiro44Nonane;
+formula     C5H8S4;
+CAS         13145-46-5;
+InChIKey    OIXFQRVSKVVDFW-UHFFFAOYSA-N;
+MW          196.359;      // g/mol [origin=calculated method=formula-sum]
+Tc          849.86;      // K   [origin=predictive method=joback]
+Pc          58.361;      // bar [origin=predictive method=joback]
+omega       0.2748;      // -   [origin=predictive method=lee-kesler]
+Tb          536.52;      // K   [origin=predictive method=joback]
+HvapTb      49472.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-86.15 1.12784 -0.0012122 5.186e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group CH2S; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group C_ring; count 1; } { group S_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "orthocarbonic acid, tetrathio-, cyclic diethylene ester" "1,4,6,9-tetrathiaspiro(4.4)nonane" "1,4,6,9-tetrathiaspiro[4.4]nonane(9ci)" );
+gibbsFormation
+{
+    dHf_298   197210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     542.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=238080.0
+    phase     gas;
+}

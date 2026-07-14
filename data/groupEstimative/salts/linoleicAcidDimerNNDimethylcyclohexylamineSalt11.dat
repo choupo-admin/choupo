@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): linoleic acid, dimer, n,n-dimethylcyclohexylamine salt (1:1)  (C44H81NO4, CAS 65150-86-9)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           linoleicAcidDimerNNDimethylcyclohexylamineSalt11;
+formula        C44H81NO4;
+CAS            65150-86-9;
+InChIKey       PARXHLNSGGUEPJ-GRVYQHKQSA-N;
+MW             688.135;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: linoleic acid, dimer, n,n-dimethylcyclohexylamine salt (1:1)

@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chlordene  (C10H6Cl6, CAS 3734-48-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chlordene;
+formula     C10H6Cl6;
+CAS         3734-48-3;
+InChIKey    XCJXQCUJXDUNDN-UHFFFAOYSA-N;
+MW          338.858;      // g/mol [origin=calculated method=formula-sum]
+Tc          954.31;      // K   [origin=predictive method=joback]
+Pc          28.475;      // bar [origin=predictive method=joback]
+omega       0.5207;      // -   [origin=predictive method=lee-kesler]
+Tb          677.13;      // K   [origin=predictive method=joback]
+HvapTb      61912.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-178.64 2.0294 -0.00258428 1.226e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 2; } { group CH=CH; count 1; } { group CCl2; count 1; } { group Cl_C=C_; count 2; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:2
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group C_ring; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group Cl; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "chlordene 50" "4,7-methano-1h-indene, 4,5,6,7,8,8-hexachloro-3a,4,7,7a-tetrahydro-" "chlorden" "1,7,8,9,10,10-hexachlorotricyclo[5.2.1.0~2,6~]deca-3,8-diene" "4,5,6,7,8,8-hexachlor-delta(sup 1,5)-tetrahydro-4,7-methanoinden" "4,5,6,7,8,8-hexachloro-3a,4,7,7a-tetrahydro-4,7-methanoindene" "4,7-methanoindene, 4,5,6,7,8,8-hexachloro-3a,4,7,7a-tetrahydro-" "4,5,6,7,8,8-hexachloro-3a,4,7,7a-tetrahydro-4,7-methano-1h-indene" "4,7-methanoindene, 4,5,6,7,8,8-hexachloro-delta(sup 1,5)-tetrahydro-" "1,7,8,9,10,10-hexachlorotricyclo[4.3.12,5]deca-3,8-diene" "addukt hexachlorcyklopentadienu s cyklopentadienem" "1,7,8,9,10,10-hexachlorotricyclo[5.2.1.0^{2,6}]deca-3,8-diene" );
+gibbsFormation
+{
+    dHf_298   -34270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     531.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=140660.0
+    phase     gas;
+}

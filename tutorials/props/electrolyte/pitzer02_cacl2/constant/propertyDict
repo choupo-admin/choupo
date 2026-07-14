@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  pitzer02_cacl2 / constant/thermoPackage
+
+  water is the only component here: it is the SOLVENT the molality scale of
+  the pitzerActivity op is built on.  The Ca2+/Cl- pair itself never enters
+  this package --- its Pitzer parameters live case-local in
+  constant/electrolyte/pairs.dat (Appelo 2015), read directly by the op.
+  ideal/idealGas are inert placeholders: no VLE is solved in this bench case.
+\*---------------------------------------------------------------------------*/
+
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }

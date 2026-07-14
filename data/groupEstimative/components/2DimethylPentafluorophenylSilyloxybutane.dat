@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-dimethyl(pentafluorophenyl)silyloxybutane  (C12H15F5OSi, CAS 62394-62-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C12H15F5OSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2DimethylPentafluorophenylSilyloxybutane;
+formula     C12H15F5OSi;
+CAS         62394-62-1;
+InChIKey    CIZYHNJYZDXRSO-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          298.326;      // g/mol [origin=calculated method=formula-sum]
+Tc          715.22;      // K   [origin=predictive method=joback]
+Pc          16.418;      // bar [origin=predictive method=joback]
+omega       0.6961;      // -   [origin=predictive method=lee-kesler]
+Tb          545.47;      // K   [origin=predictive method=joback]
+HvapTb      46123.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (124.661 0.56298 0.0001156 -2.119e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 1; } { group AC; count 1; } { group CH-O; count 1; } { group ACF; count 5; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 1; } { group dC_ring; count 6; } { group F; count 5; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butan-2-yloxy-dimethyl-[2,3,4,5,6-pentakis(fluoranyl)phenyl]silane" "sec-butoxy(dimethyl)(2,3,4,5,6-pentafluorophenyl)silane" "silane, dimethyl(1-methylpropoxy)(pentafluorophenyl)-" "butan-2-yloxy-dimethyl-(2,3,4,5,6-pentafluorophenyl)silane" );
+gibbsFormation
+{
+    dHf_298   -1341500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     772.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1071830.0
+    phase     gas;
+}

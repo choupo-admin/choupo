@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethyl n-stearyl-l-aspartate  (C24H47NO4, CAS 68630-94-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethylNStearylLAspartate;
+formula     C24H47NO4;
+CAS         68630-94-4;
+InChIKey    GMXCEYLGVZDMKZ-UHFFFAOYSA-N;
+MW          413.643;      // g/mol [origin=calculated method=formula-sum]
+Tc          1122.52;      // K   [origin=predictive method=joback]
+Pc          8.205;      // bar [origin=predictive method=joback]
+omega       0.7656;      // -   [origin=predictive method=lee-kesler]
+Tb          914.89;      // K   [origin=predictive method=joback]
+HvapTb      89880.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.998 2.25636 -0.0011444 1.702e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 16; } { group CH; count 1; } { group CH2COO; count 1; } { group CH2NH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 18; } { group CH; count 1; } { group COO; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dimethyl 2-(octadecylamino)butanedioate" "l-aspartic acid, n-octadecyl-, 1,4-dimethyl ester" "dimethyl n-octadecylaspartate" "dimethyl n-octadecyl-l-aspartate" "dimethyl (2s)-2-(octadecylamino)butanedioate" "l-aspartic acid, n-octadecyl-, dimethyl ester" );
+gibbsFormation
+{
+    dHf_298   -1125060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1224.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-382590.0
+    phase     gas;
+}

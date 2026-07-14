@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methylhexanal  (C7H14O, CAS 925-54-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methylhexanal;
+formula     C7H14O;
+CAS         925-54-2;
+InChIKey    BHVGMUDWABJNRC-UHFFFAOYSA-N;
+MW          114.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          583.70;      // K   [origin=predictive method=joback]
+Pc          30.592;      // bar [origin=predictive method=joback]
+omega       0.4722;      // -   [origin=predictive method=lee-kesler]
+Tb          407.98;      // K   [origin=predictive method=joback]
+HvapTb      37508.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.243 0.64924 -0.0003532 6.95e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexanal, 2-methyl-" "2-methyl-hexanal" );
+gibbsFormation
+{
+    dHf_298   -278670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     437.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-93900.0
+    phase     gas;
+}

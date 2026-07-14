@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methylvaline  (C6H13NO2, CAS 2480-23-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethylvaline;
+formula     C6H13NO2;
+CAS         2480-23-1;
+InChIKey    AKCRVYNORCOYQT-UHFFFAOYSA-N;
+MW          131.175;      // g/mol [origin=calculated method=formula-sum]
+Tc          730.81;      // K   [origin=predictive method=joback]
+Pc          35.600;      // bar [origin=predictive method=joback]
+omega       0.7862;      // -   [origin=predictive method=lee-kesler]
+Tb          531.68;      // K   [origin=predictive method=joback]
+HvapTb      51774.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.54 0.71266 -0.0004302 9.77e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 2; } { group CH3NH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 2; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methyl-2-(methylamino)butanoic acid" "n-methyl-l-valine" "n-methyl-dl-valine" "d-valine, n-methyl-" "meval" "l-valine, n-methyl-" "(s/r)-n-methylvaline" "2-methylamino-3-methylbutanoic acid" "3-methyl-2-methylamino-butyric acid" );
+gibbsFormation
+{
+    dHf_298   -474530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     464.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-259760.0
+    phase     gas;
+}

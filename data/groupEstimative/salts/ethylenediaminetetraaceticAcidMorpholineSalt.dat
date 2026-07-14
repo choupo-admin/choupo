@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): ethylenediaminetetraacetic acid, morpholine salt  (C14H25N3O9, CAS 67952-29-8)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           ethylenediaminetetraaceticAcidMorpholineSalt;
+formula        C14H25N3O9;
+CAS            67952-29-8;
+InChIKey       OTBUUVUWBMMSLH-UHFFFAOYSA-N;
+MW             379.366;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+dissociatesTo  { ethylenediaminetetraacetic acid 1; morpholine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-ethynyl-1-cycloheptanol  (C9H14O, CAS 2809-78-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Ethynyl1Cycloheptanol;
+formula     C9H14O;
+CAS         2809-78-1;
+InChIKey    QKJJSXGDSZZUKI-UHFFFAOYSA-N;
+MW          138.21;      // g/mol [origin=calculated method=formula-sum]
+Tc          729.65;      // K   [origin=predictive method=joback]
+Pc          40.725;      // bar [origin=predictive method=joback]
+omega       0.6168;      // -   [origin=predictive method=lee-kesler]
+Tb          511.88;      // K   [origin=predictive method=joback]
+HvapTb      51615.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-106.94 1.2033 -0.00105933 4.0179e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group C; count 1; } { group OH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 6; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethynylcycloheptan-1-ol" "1-ethynylcycloheptanol" "cycloheptanol,1-ethynyl-" );
+gibbsFormation
+{
+    dHf_298   -26020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     585.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=118010.0
+    phase     gas;
+}

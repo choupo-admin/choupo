@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-dimethylsuccinic acid  (C6H10O4, CAS 597-43-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22DimethylsuccinicAcid;
+formula     C6H10O4;
+CAS         597-43-3;
+InChIKey    GOHPTLYPQCTZSE-UHFFFAOYSA-N;
+MW          146.142;      // g/mol [origin=calculated method=formula-sum]
+Tc          840.02;      // K   [origin=predictive method=joback]
+Pc          39.209;      // bar [origin=predictive method=joback]
+omega       1.0086;      // -   [origin=predictive method=lee-kesler]
+Tb          624.67;      // K   [origin=predictive method=joback]
+HvapTb      61982.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.839 0.80124 -0.0006196 1.881e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-dimethylbutanedioic acid" "2,2-dimethyl-butanedioicacid" "2,2-dimethyl-butanedioic acid" "2,2-dimethylbutanedioate" "2,2,-dimethylsuccinate" "2,2-dimethyl succinate" "succinic acid,2-dimethyl-" "butanedioic acid, dimethyl-" "2,2-dimethyl-succinic acid" "2,2-dimethyl succinic acid" "butanedioic acid,2-dimethyl-" "alpha,alpha-dimethyl-succinate" );
+gibbsFormation
+{
+    dHf_298   -876460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     457.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-685340.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triprolidine  (C19H22N2, CAS 486-12-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triprolidine;
+formula     C19H22N2;
+CAS         486-12-4;
+InChIKey    CBEQULMOCCWAQT-WOJGMQOQSA-N;
+MW          278.399;      // g/mol [origin=calculated method=formula-sum]
+Tc          1032.79;      // K   [origin=predictive method=joback]
+Pc          21.613;      // bar [origin=predictive method=joback]
+omega       0.7746;      // -   [origin=predictive method=lee-kesler]
+Tb          778.52;      // K   [origin=predictive method=joback]
+HvapTb      71787.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-143.699 1.93688 -0.00144232 4.27e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH=C; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH3; count 1; } { group CH2N; count 1; } { group C5H4N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 4; } { group dCH_ring; count 8; } { group dC_ring; count 3; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[(e)-1-(4-methylphenyl)-3-pyrrolidin-1-yl-prop-1-enyl]pyridine" "actidil" "triprolidin" "tripolidina" "triprolidinum" "myidyl" "triprolidine [inn:ban]" "triprolidinum [inn-latin]" "triprolidine (inn)" "venen (tn)" "triprolidine hcl" "triprolidine monohydrochloride, monohydrate" );
+gibbsFormation
+{
+    dHf_298   320830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     667.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=640150.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-phenylglycine  (C8H9NO2, CAS 103-01-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nPhenylglycine;
+formula     C8H9NO2;
+CAS         103-01-5;
+InChIKey    NPKSPKHJBVJUKB-UHFFFAOYSA-N;
+MW          151.165;      // g/mol [origin=calculated method=formula-sum]
+Tc          832.20;      // K   [origin=predictive method=joback]
+Pc          41.463;      // bar [origin=predictive method=joback]
+omega       0.8584;      // -   [origin=predictive method=lee-kesler]
+Tb          605.00;      // K   [origin=predictive method=joback]
+HvapTb      59278.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-34.899 0.8119 -0.0005638 1.48e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 1; } { group CH2NH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenylazanylethanoic acid" "anilinoacetic acid" "2-(phenylamino)acetic acid" "glycine, n-phenyl-" "n-phenylaminoacetic acid" "(phenylamino)acetic acid" "glycine, phenyl-" "2-anilinoacetic acid" "phenylaminoacetic acid" "h-dl-phg-oh" "19525-59-8 (potassium salt)" "10265-69-7 (hydrochloride salt)" );
+gibbsFormation
+{
+    dHf_298   -268720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     454.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-125630.0
+    phase     gas;
+}

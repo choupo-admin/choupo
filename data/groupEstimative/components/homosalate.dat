@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: homosalate  (C16H22O3, CAS 118-56-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        homosalate;
+formula     C16H22O3;
+CAS         118-56-9;
+InChIKey    WSSJONWNBBTCMG-UHFFFAOYSA-N;
+MW          262.349;      // g/mol [origin=calculated method=formula-sum]
+Tc          981.99;      // K   [origin=predictive method=joback]
+Pc          23.003;      // bar [origin=predictive method=joback]
+omega       0.8273;      // -   [origin=predictive method=lee-kesler]
+Tb          741.65;      // K   [origin=predictive method=joback]
+HvapTb      72567.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-132.79 1.90576 -0.00154236 5.319e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 2; } { group C; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3,3,5-trimethylcyclohexyl) 2-oxidanylbenzoate" "homomenthyl salicylate" "coppertone" "3,3,5-trimethylcyclohexyl salicylate" "heliopan" "heliophan" "filtersol ''a''" "m-homomenthyl salicylate" "metahomomenthyl salicylate" "(3,3,5-trimethylcyclohexyl) 2-hydroxybenzoate" "benzoic acid, 2-hydroxy-, 3,3,5-trimethylcyclohexyl ester" "homosalatum [inn-latin]" );
+gibbsFormation
+{
+    dHf_298   -602750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     704.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-265200.0
+    phase     gas;
+}

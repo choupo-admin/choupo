@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-methyl-4-trifluoromethyl-5,6,7,8-tetrahydro-1-oxa-8-aza-anthracen-2-one  (C14H12F3NO2, CAS 53518-19-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8Methyl4Trifluoromethyl5678Tetrahydro1Oxa8AzaAnthracen2One;
+formula     C14H12F3NO2;
+CAS         53518-19-7;
+InChIKey    IMVPLRZGEHZIEM-UHFFFAOYSA-N;
+MW          283.249;      // g/mol [origin=calculated method=formula-sum]
+Tc          854.01;      // K   [origin=predictive method=joback]
+Pc          23.406;      // bar [origin=predictive method=joback]
+omega       0.8956;      // -   [origin=predictive method=lee-kesler]
+Tb          649.47;      // K   [origin=predictive method=joback]
+HvapTb      57949.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-77.49 1.55562 -0.00132472 4.394e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH=C; count 1; } { group ACH; count 2; } { group AC; count 3; } { group ACCH2; count 1; } { group CH3N; count 1; } { group CF3; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 5; } { group F; count 3; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9-methyl-4-(trifluoromethyl)-7,8-dihydro-6h-pyrano[3,2-g]quinolin-2-one" "6,7,8,9-tetrahydro-9-methyl-4-(trifluoromethyl)-2h-pyrano(3,2-q)quinolin-2-one" "2h-pyrano(3,2-g)quinolin-2-one, 6,7,8,9-tetrahydro-9-methyl-4-(trifluoromethyl)-" "2h-pyrano[3,2-g]quinolin-2-one, 6,7,8,9-tetrahydro-9-methyl-4-(trifluoromethyl)-" "6,7,8,9-tetrahydro-9-methyl-4-(trifluoromethyl)-2h-pyrano(3,2-g)quinolin-2-one" "9-methyl-4-(trifluoromethyl)-6,7,8,9-tetrahydro-2h-pyrano[3,2-g]quinolin-2-one" );
+gibbsFormation
+{
+    dHf_298   -738250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     540.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-461310.0
+    phase     gas;
+}

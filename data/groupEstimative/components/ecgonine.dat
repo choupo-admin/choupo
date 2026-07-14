@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ecgonine  (C9H15NO3, CAS 481-37-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ecgonine;
+formula     C9H15NO3;
+CAS         481-37-8;
+InChIKey    PHMBVCPLDPDESM-FKSUSPILSA-N;
+MW          185.223;      // g/mol [origin=calculated method=formula-sum]
+Tc          863.96;      // K   [origin=predictive method=joback]
+Pc          35.263;      // bar [origin=predictive method=joback]
+omega       1.2602;      // -   [origin=predictive method=lee-kesler]
+Tb          664.06;      // K   [origin=predictive method=joback]
+HvapTb      70894.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-99.82 1.30672 -0.0009646 2.834e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 4; } { group OH; count 1; } { group CH3N; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 4; } { group OH; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1s,3s,4r,5r)-8-methyl-3-oxidanyl-8-azabicyclo[3.2.1]octane-4-carboxylic acid" "(-)-ecgonine" "1-ecgonine" "3beta-hydroxy-2beta-tropanecarboxylic acid" "cocaine precusor in coca leaves" "ekgonin" "l-ecgonine" "1alphah,5alphah-tropane-2beta-carboxylic acid, 3-beta-hydroxy-" "8-azabicyclo[3.2.1]octane-2-carboxylic acid, 3-hydroxy-8-methyl-,(exo,exo)-" "(1s,3s,4r,5r)-3-hydroxy-8-methyl-8-azabicyclo[3.2.1]octane-4-carboxylic acid" "8-azabicyclo(3.2.1)octane-2-carboxylic acid, 3-hydroxy-8-methyl-, (1r,2r,3s,5s)-" "8-azabicyclo(3.2.1)octane-2-carboxylic acid, 3-hydroxy-8-methyl-, (1r-(exo,exo))-" );
+gibbsFormation
+{
+    dHf_298   -565300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     381.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-251070.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chlorindanol  (C9H9ClO, CAS 145-94-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chlorindanol;
+formula     C9H9ClO;
+CAS         145-94-8;
+InChIKey    ATAJVFBUUIBIEO-UHFFFAOYSA-N;
+MW          168.62;      // g/mol [origin=calculated method=formula-sum]
+Tc          818.71;      // K   [origin=predictive method=joback]
+Pc          44.091;      // bar [origin=predictive method=joback]
+omega       0.6237;      // -   [origin=predictive method=lee-kesler]
+Tb          571.62;      // K   [origin=predictive method=joback]
+HvapTb      56849.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-62.81 0.9997 -0.00091528 3.412e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 2; } { group ACCH2; count 2; } { group ACOH; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-chloranyl-2,3-dihydro-1h-inden-4-ol" "clorindanol" "7-chloro-4-indanol" "7-chloro-2,3-dihydro-1h-inden-4-ol" "lanesta" "4-indanol, 7-chloro-" "clorindanolum [inn-latin]" "1h-inden-4-ol, 7-chloro-2,3-dihydro-" "2,3-dihydro-7-chloro-1h-inden-4-ol" "clorindanolum" "component of lanesta" "chlorindanol [usan]" );
+gibbsFormation
+{
+    dHf_298   -115410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     399.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=19960.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetraphenylmethane  (C25H20, CAS 630-76-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetraphenylmethane;
+formula     C25H20;
+CAS         630-76-2;
+InChIKey    PEQHIRFAKIASBK-UHFFFAOYSA-N;
+MW          320.435;      // g/mol [origin=calculated method=formula-sum]
+Tc          1163.71;      // K   [origin=predictive method=joback]
+Pc          19.321;      // bar [origin=predictive method=joback]
+omega       0.6896;      // -   [origin=predictive method=lee-kesler]
+Tb          875.09;      // K   [origin=predictive method=joback]
+HvapTb      79052.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-179.93 2.189 -0.0016328 4.602e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group ACH; count 20; } { group AC; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH_ring; count 20; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(triphenylmethyl)benzene" "tetraphenyl methane" "methane, tetraphenyl-" "benzene, 1,1',1'',1'''-methanetetrayltetrakis-" "benzene, 1,1',1'',1'''-methanethetrayltetrakis-" "tritylbenzene" "1,1',1'',1'''-methanetetrayltetrabenzene" "benzene,1',1'',1'''-methanetetrayltetrakis-" "benzene, 1,1',1'',1'''-methanetetrayltetrakis- (9ci)" "1,1 inverted exclamation mark ,1 inverted exclamation mark  inverted exclamation mark ,1 inverted exclamation mark  inverted exclamation mark  inverted exclamation mark -methanethetrayltetrakis-benzen; tetraphenyl methane" );
+gibbsFormation
+{
+    dHf_298   378040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     665.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=612100.0
+    phase     gas;
+}

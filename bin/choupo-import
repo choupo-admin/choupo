@@ -1,0 +1,256 @@
+#!/usr/bin/env python3
+# choupo-import -- materialise a case's property-data dependency closure into
+# its constant/propertyData/ snapshot, so the case runs from its OWN frozen copy
+# and NEVER the installation catalogue (the Choupo-2607 data strategy).
+#
+#   choupo-import <caseDir>
+#
+# It scans every propertyPackage in the case (plant + sectors), computes the
+# closure (components, aqueous ion species, pitzer/binary/henry pairs, salt
+# chemistry, solid phases, property methods), copies each record from the
+# standards catalogue into constant/propertyData/ with a provenance stamp, and
+# writes a manifest (release id, timestamp, per-record kind + sha256, sealed).
+# Case-local records (constant/components/, constant/electrolyte/) are ALREADY
+# in the case -- they are left where they are, not re-imported.
+#
+# Curation-time tool (like bin/curate/*.py); the engine never estimates or
+# imports at runtime.
+
+import sys, os, re, hashlib, datetime, shutil
+from pathlib import Path
+
+# A sealed snapshot must never point the builder back at the installation
+# catalogue.  Method records ship active `path "data/standards/...";` search
+# declarations; the builder resolves pairs/salts by logical ID (e.g.
+# `pitzerPairs ( Na-Cl Li-Cl )`), NOT by these paths, so we drop each such
+# active declaration when copying a record into the snapshot.  Comments (`//`)
+# and `origin "data/standards/..."` provenance strings are left untouched.
+_ACTIVE_STD_PATH = re.compile(r'^\s*path\s+"data/standards/[^"]*"\s*;\s*$')
+
+def strip_install_paths(body):
+    return "".join(
+        line for line in body.splitlines(keepends=True)
+        if not _ACTIVE_STD_PATH.match(line)
+    )
+
+def _read_release(root):
+    f = root / "data" / "standards" / "CATALOGUE.dat"
+    if f.is_file():
+        txt = "\n".join(l for l in f.read_text().splitlines()
+                         if not l.lstrip().startswith("//"))
+        m = re.search(r'\brelease\s+([A-Za-z][A-Za-z0-9_.-]*)\s*;', txt)
+        if m: return m.group(1)
+    return "Choupo-unknown"
+
+STANDARD_SET = None   # set from the installed catalogue in main()
+
+def die(msg):
+    sys.stderr.write("choupo-import: " + msg + "\n"); sys.exit(1)
+
+def read(p):
+    pp = Path(p)
+    return pp.read_text() if (str(p) and pp.is_file()) else None
+
+def words(block):
+    # crude token list from a `( a b c )` list or `{ ... }` body
+    return re.findall(r'[A-Za-z0-9_+\-]+', block)
+
+def find_root():
+    # repo root = parent of data/standards
+    here = Path(__file__).resolve()
+    for p in [here] + list(here.parents):
+        if (p / "data" / "standards" / "components").is_dir():
+            return p
+    die("cannot locate the Choupo data/standards catalogue")
+
+def walk_up_local(caseDir, rel):
+    # is `rel` already a case-local record anywhere up the tree from caseDir?
+    p = Path(caseDir).resolve()
+    for _ in range(8):
+        if (p / "constant" / rel).exists(): return p / "constant" / rel
+        if p.parent == p: break
+        p = p.parent
+    return None
+
+def parse_packages(caseDir):
+    # The case's property manifest is `constant/propertyDict` (preferred name) or
+    # `constant/propertyDict` (legacy alias) -- accept either.
+    pkgs = []
+    for name in ("propertyDict", "propertyPackage"):
+        for pp in Path(caseDir).rglob("constant/" + name):
+            pkgs.append(pp)
+    return pkgs
+
+def block(text, key):
+    # extract the {...} or (...) body following `key`
+    m = re.search(key + r'\s*([\{\(])', text)
+    if not m: return None
+    op = m.group(1); cl = '}' if op == '{' else ')'
+    i = m.end() - 1; depth = 0
+    for j in range(i, len(text)):
+        if text[j] == op: depth += 1
+        elif text[j] == cl:
+            depth -= 1
+            if depth == 0: return text[i+1:j]
+    return None
+
+def main():
+    if len(sys.argv) != 2: die("usage: choupo-import <caseDir>")
+    caseDir = Path(sys.argv[1]).resolve()
+    if not caseDir.is_dir(): die("not a directory: " + str(caseDir))
+    root = find_root()
+    global STANDARD_SET
+    STANDARD_SET = _read_release(root)
+    std = root / "data" / "standards"
+
+    def harvest(text, want):
+        # Method / chemistry / parameter records declared by a block -- shared
+        # by a propertyPackage AND a per-unit thermo{} override (same grammar).
+        pm = block(text, "propertyMethods")
+        if pm:
+            for m in re.finditer(r'(liquid|vapour|solid)\s+([A-Za-z0-9_.]+)\s*;', pm):
+                fam = m.group(2)
+                if '.' in fam and not fam.startswith("builtin"):
+                    a, b = fam.split('.', 1)
+                    want("propertyMethods/" + a + "/" + b + ".dat")
+        ch = block(text, "chemistry")
+        if ch:
+            sb = block(ch, "salts")
+            for salt in (words(sb) if sb else []):
+                want("chemistry/salts/" + salt + ".dat")
+                want("phases/solid/" + salt + ".dat")
+        par = block(text, "parameters")
+        if par:
+            for m in re.finditer(r'"([^"]*data/standards/([^"]+))"', par):
+                want(m.group(2))
+            pp_blk = block(par, "pitzerPairs")
+            for pair in (words(pp_blk) if pp_blk else []):
+                want("parameters/electrolyte/pitzer/pairs/" + pair + ".dat")
+
+    # closure of ONE package (set of standards-relative record paths) -----
+    def closure_of(pp):
+        recs = {}
+        def want(rel):
+            src = std / rel
+            if src.exists():
+                # A standard record exists -> seal it into the snapshot even
+                # when the case also carries a local file: case-local records
+                # are field-by-field OVERLAYS (the Database merge), so the
+                # sealed standard is the BASE they complete.  Skipping it (the
+                # old walk_up_local guard) left partial overlays -- e.g. a
+                # case-local NaCl.dat that adds only a molecular liquid Cp --
+                # with no base once relocated away from data/standards.
+                recs[rel] = src
+            # else: purely case-local record (no standard source) -- left in place
+        t = read(pp) or ""
+        comp_blk = block(t, "components")
+        comps = words(comp_blk) if comp_blk else []
+        allions = []
+        for c in comps:
+            want("components/" + c + ".dat")
+            csrc = std / "components" / (c + ".dat")
+            loc = walk_up_local(caseDir, "components/"+c+".dat")
+            ctext = read(csrc) or (read(loc) if loc else "") or ""
+            d2t = block(ctext, "dissociatesTo")
+            if d2t:
+                ions = [w for w in words(d2t) if not w.isdigit()]
+                allions += ions
+                for ion in ions: want("species/aqueous/" + ion + ".dat")
+        harvest(t, want)          # propertyMethods / chemistry / parameters
+        cats = [i for i in allions if i in ("Na","K","Li","Ca","Mg","H","NH4")]
+        ans  = [i for i in allions if i in ("Cl","SO4","OH","CO3","HCO3","Br","NO3")]
+        for ca in cats:
+            for an in ans:
+                want("parameters/electrolyte/pitzer/pairs/" + ca + "-" + an + ".dat")
+        return recs
+
+    # PLANT package (constant/propertyDict|propertyPackage directly under the case)
+    plant_pp = caseDir / "constant" / "propertyDict"
+    if not plant_pp.exists():
+        plant_pp = caseDir / "constant" / "propertyPackage"
+    plant_recs = closure_of(plant_pp) if plant_pp.exists() else {}
+    sector_recs = {}   # sectorDir -> {rel: src}, MINUS what the plant already holds
+    for pp in parse_packages(caseDir):
+        if pp.resolve() == plant_pp.resolve(): continue
+        sectorDir = pp.parent.parent           # SECTOR/constant/propertyDict -> SECTOR
+        cl = closure_of(pp)
+        extra = {rel: src for rel, src in cl.items() if rel not in plant_recs}
+        if extra:
+            sector_recs.setdefault(sectorDir, {}).update(extra)
+
+    # A per-unit thermo{} override in a sector flowsheet (e.g. a crystalliser
+    # forced onto electrolyte.pitzer) is resolved by the FLATTENED plant against
+    # the plant ROOT snapshot -- not the sector's -- so its method/chemistry/
+    # parameter records must live in the plant snapshot too, or a relocated
+    # whole-plant run cannot find them.  Fold them into the plant closure AFTER
+    # the sector subtraction above, so the sector snapshots are unaffected.
+    def want_plant(rel):
+        src = std / rel
+        if src.exists():
+            plant_recs[rel] = src
+    for fs in Path(caseDir).rglob("system/flowsheetDict"):
+        ftext = read(fs) or ""
+        for m in re.finditer(r'\bthermo\b', ftext):
+            blk = block(ftext[m.start():], "thermo")
+            if blk:
+                harvest(blk, want_plant)
+
+    # ---- materialise: plant snapshot + one per sector ---------------------
+    now = datetime.date.today().isoformat()
+
+    def write_snapshot(baseDir, recs):
+        PDx = baseDir / "constant" / "propertyData"
+        # Rewrite from scratch: drop the whole previous record tree (copied
+        # .dat + manifest) so stale records from an earlier import -- e.g. a
+        # closure that shrank when a package changed world -- never linger.
+        # Scoped strictly to constant/propertyData/.
+        if PDx.exists():
+            shutil.rmtree(PDx)
+        PDx.mkdir(parents=True, exist_ok=True)
+        man_records = []
+        for rel, src in sorted(recs.items()):
+            dst = PDx / rel
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            body = strip_install_paths(src.read_text())
+            stamp = ('// [propertyData snapshot] provenance { kind standard; '
+                     'standardSet %s; record "%s"; }\n' % (STANDARD_SET, rel))
+            dst.write_text(stamp + body)
+            sha = hashlib.sha256((stamp + body).encode()).hexdigest()
+            man_records.append((rel, sha))
+        L = []
+        L.append("/*----------------------------------------------------------*\\")
+        L.append("  constant/propertyData/manifest.dat -- frozen property snapshot")
+        L.append("  Imported by `choupo-import` from the %s catalogue release." % STANDARD_SET)
+        L.append("  SEALED: the runtime reads ONLY this snapshot (+ the plant snapshot")
+        L.append("  it cascades to); the installation catalogue is NEVER consulted.")
+        L.append("\\*----------------------------------------------------------*/")
+        L.append("")
+        L.append("propertyDataManifest")
+        L.append("{")
+        L.append("    defaultStandardSet  %s;" % STANDARD_SET)
+        L.append('    importedAt          "%s";' % now)
+        L.append("    sealed              true;")
+        L.append('    importedBy { engineVersion "%s"; }' % STANDARD_SET)
+        L.append("    records")
+        L.append("    {")
+        for rel, sha in man_records:
+            L.append('        "%s" { kind standard; standardSet %s; sha256 "%s"; }'
+                     % (rel, STANDARD_SET, sha))
+        L.append("    }")
+        L.append("}")
+        (PDx / "manifest.dat").write_text("\n".join(L) + "\n")
+        return len(man_records)
+
+    nplant = write_snapshot(caseDir, plant_recs)
+    nsector = 0
+    for sd, recs in sector_recs.items():
+        nsector += write_snapshot(sd, recs)
+
+    print("choupo-import: plant snapshot = %d records; %d sector-specific across %d sectors"
+          % (nplant, nsector, len(sector_recs)))
+    for sd in sector_recs:
+        print("  %s: %d records" % (sd.relative_to(caseDir), len(sector_recs[sd])))
+    print("  sealed (%s) -- each sector carries its OWN records; plant holds the shared." % STANDARD_SET)
+
+if __name__ == "__main__":
+    main()

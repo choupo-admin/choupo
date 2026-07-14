@@ -1,0 +1,16 @@
+recordType modelSpecies;   // model species — summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+
+name    Cup;
+ion     "Cu+1";
+charge  +1;
+
+MW { value 63.546; unit g/mol;}
+
+aqueousThermo
+{
+    hfAq { value 71670; unit J/mol;}
+    sAq  { value 40.6;  unit J/mol/K;}
+}
+
+source "+formation: hfAq+sAq Wagman 1982 (cpAq pending; endothermic +71.67)";

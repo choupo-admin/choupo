@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 3-oxoisobutyrate  (C5H8O3, CAS 51673-64-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl3Oxoisobutyrate;
+formula     C5H8O3;
+CAS         51673-64-4;
+InChIKey    HWYJZXYVLPKDLM-UHFFFAOYSA-N;
+MW          116.116;      // g/mol [origin=calculated method=formula-sum]
+Tc          606.72;      // K   [origin=predictive method=joback]
+Pc          38.531;      // bar [origin=predictive method=joback]
+omega       0.5254;      // -   [origin=predictive method=lee-kesler]
+Tb          420.44;      // K   [origin=predictive method=joback]
+HvapTb      40463.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (33.47 0.40444 -0.0001498 -1.14e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group CHO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group OdCH_al; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-methyl-3-oxidanylidene-propanoate" "methyl-2-methyl-3-oxopropanoat" "propanoic acid, 2-methyl-3-oxo-, methyl ester" "2-methyl-3-oxo-propanoic acid methyl ester" "2-formylpropionic acid, methyl ester" "methyl 2-methyl-3-oxopropanoate" "methyl 2-methyl-3-oxopropionate" "propanoic acid,2-methyl-3-oxo-, methyl ester" "malonaldehydicacid, methyl-, methyl ester (7ci); 2-formylpropionic acid methyl ester;2-methyl-3-oxopropanoic acid methyl ester; methyl 2-formylpropanoate; methyl2-formylpropionate; methyl 2-methyl-3-oxopropanoate; methyl2-methyl-3-oxopropionate; methyl methylmalonaldehydate; methyl a-formylpropionate" );
+gibbsFormation
+{
+    dHf_298   -554670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     411.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-421110.0
+    phase     gas;
+}

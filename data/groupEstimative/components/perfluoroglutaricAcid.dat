@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluoroglutaric acid  (C5H2F6O4, CAS 376-73-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluoroglutaricAcid;
+formula     C5H2F6O4;
+CAS         376-73-8;
+InChIKey    CCUWGJDGLACFQT-UHFFFAOYSA-N;
+MW          240.055;      // g/mol [origin=calculated method=formula-sum]
+Tc          777.21;      // K   [origin=predictive method=joback]
+Pc          33.297;      // bar [origin=predictive method=joback]
+omega       1.1136;      // -   [origin=predictive method=lee-kesler]
+Tb          590.95;      // K   [origin=predictive method=joback]
+HvapTb      52262.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.33 1.0286 -0.0010072 3.536e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 2; } { group CF2; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 3; } { group F; count 6; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4-hexakis(fluoranyl)pentanedioic acid" "hexafluoroglutaric acid" "hexafluoropentanedioic acid" "pentanedioic acid, hexafluoro-" "2,2,3,3,4,4-hexafluoropentanedioic acid" "pentanedioic acid, 2,2,3,3,4,4-hexafluoro-" "perfluoropentanedioic acid" "glutaric acid, hexafluoro-" "glutaric acid, hexafluoro- (8ci)" );
+gibbsFormation
+{
+    dHf_298   -2049980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     530.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1856940.0
+    phase     gas;
+}

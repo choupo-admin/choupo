@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Sulfuric acid (H2SO4), pure liquid.  CAS 7664-93-9.
+
+  THE archetypal strong mineral acid, non-volatile at ambient (very low
+  vapour pressure): carried as the LIQUID-phase, dissolved-acid species
+  (role nonvolatile -> K = 0).  The acid for neutralisation duty
+  (H2SO4 + Ca(OH)2 -> CaSO4 + 2 H2O), sulfate-salt precipitation, pickling
+  and acid-balance exercises -- including the tartaric-acid cases that
+  previously had to carry a case-local H2SO4 stub.  This CURATED standard
+  entry supersedes any such case-local copy.
+
+  Carries the LIQUID-phase formation datum and a real liquid heat capacity,
+  so its heat of neutralisation closes from the elements reference.
+
+  PRIMARY: Wagman et al., NBS Tables of Chemical Thermodynamic Properties,
+  J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982) -- PUBLIC DOMAIN.
+  Density: ~1.830 g/cm^3 (pure liquid, 25 C) -> Vliq below.
+\*---------------------------------------------------------------------------*/
+
+name        H2SO4;
+formula     H2SO4;
+CAS         7664-93-9;
+
+MW          98.079;            // kg/kmol
+
+role        nonvolatile;       // dissolved strong acid (K = 0)
+
+Vliq        5.360e-5;          // m^3/mol  (= MW / 1830 kg/m^3)
+
+gibbsFormation
+{
+    dHf_298   -813989;         // J/mol  liquid H2SO4 [Wagman et al. NBS Tables 1982]
+    s_298     156.90;          // J/(mol*K) [Wagman 1982]
+    phase     liquid;
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;          // Cp = a0  [J/(mol*K)], constant
+    coefficients  ( 138.91 );          // Cp(298) [Wagman et al. NBS Tables 1982]
+    Trange        ( 283  330 );        // constant-Cp validity flag (liquid, near ambient)
+}
+
+provenance
+{
+    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982 (liquid H2SO4)"; }
+    liquidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
+    Vliq { origin literature; method "pure-liquid density ~1.830 g/cm3 at 25 C"; }
+}

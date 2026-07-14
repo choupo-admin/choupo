@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrabenzo[a,c,m,o]naphtho[1,2,3,4-rst]pentaphene  (C44H24, CAS 72382-91-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrabenzoACMONaphtho1234RstPentaphene;
+formula     C44H24;
+CAS         72382-91-3;
+InChIKey    RZHMLUBYECBBRT-UHFFFAOYSA-N;
+MW          552.676;      // g/mol [origin=calculated method=formula-sum]
+Tc          1787.35;      // K   [origin=predictive method=joback]
+Pc          12.040;      // bar [origin=predictive method=joback]
+omega       1.1373;      // -   [origin=predictive method=lee-kesler]
+Tb          1459.92;      // K   [origin=predictive method=joback]
+HvapTb      137536.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-254.29 3.6076 -0.00327036 1.1804e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 24; } { group AC; count 20; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 24; } { group dC_ring; count 20; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetrabenzo(a,c,m,o)naphtho(1,2,3,4-rst)pentaphene" "hexabenzo[a,e,g,klm,q,s]picene" );
+gibbsFormation
+{
+    dHf_298   1047050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     616.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1406080.0
+    phase     gas;
+}

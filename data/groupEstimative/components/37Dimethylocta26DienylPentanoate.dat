@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,7-dimethylocta-2,6-dienyl pentanoate  (C15H26O2, CAS 10522-33-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        37Dimethylocta26DienylPentanoate;
+formula     C15H26O2;
+CAS         10522-33-5;
+InChIKey    CVSWGLSBJFKWMW-UHFFFAOYSA-N;
+MW          238.371;      // g/mol [origin=calculated method=formula-sum]
+Tc          790.62;      // K   [origin=predictive method=joback]
+Pc          15.512;      // bar [origin=predictive method=joback]
+omega       0.7398;      // -   [origin=predictive method=lee-kesler]
+Tb          609.10;      // K   [origin=predictive method=joback]
+HvapTb      56467.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.084 1.41388 -0.0008698 2.086e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 5; } { group CH=C; count 2; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 6; } { group dCH; count 2; } { group dC; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "neryl valerate" "pentanoic acid, (2e)-3,7-dimethyl-2,6-octadienyl ester" "pentanoic acid, (2e)-3,7-dimethyl-2,6-octadien-1-yl ester" "pentanoic acid, (2z)-3,7-dimethyl-2,6-octadien-1-yl ester" "pentanoic acid,(2e)-3,7-dimethyl-2,6-octadien-1-yl ester" "pentanoic acid,(2z)-3,7-dimethyl-2,6-octadien-1-yl ester" "pentanoic acid (2z)-3,7-dimethyl-2,6-octadienyl ester" "pentanoicacid, (2e)-3,7-dimethyl-2,6-octadienyl ester (9ci); pentanoic acid,3,7-dimethyl-2,6-octadienyl ester, (e)-; valeric acid,3,7-dimethyl-2,6-octadienyl ester, (e)- (8ci); 2,6-octadien-1-ol,3,7-dimethyl-, valerate, (e)- (8ci); geraniol valerate; geranyl pentanoate;geranyl valerate" "pentanoicacid, (2z)-3,7-dimethyl-2,6-octadienyl ester (9ci); pentanoic acid,3,7-dimethyl-2,6-octadienyl ester, (z)-; valeric acid,(z)-3,7-dimethyl-2,6-octadienyl ester (8ci); 2,6-octadien-1-ol, 3,7-dimethyl-,valerate, (z)- (8ci); (z)-3,7-dimethylocta-2,6-dienyl pentanoate;(z)-3,7-dimethylocta-2,6-dienyl valerate; neryl valerate" );
+gibbsFormation
+{
+    dHf_298   -455350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     770.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-91610.0
+    phase     gas;
+}

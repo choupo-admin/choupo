@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,4-trichlorobutanal  (C4H5Cl3O, CAS 87459-26-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        224Trichlorobutanal;
+formula     C4H5Cl3O;
+CAS         87459-26-5;
+InChIKey    YTUCKCBFLZHHAR-UHFFFAOYSA-N;
+MW          175.433;      // g/mol [origin=calculated method=formula-sum]
+Tc          659.15;      // K   [origin=predictive method=joback]
+Pc          38.104;      // bar [origin=predictive method=joback]
+omega       0.4339;      // -   [origin=predictive method=lee-kesler]
+Tb          448.84;      // K   [origin=predictive method=joback]
+HvapTb      43077.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.852 0.5045 -0.0004198 1.332e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CHO; count 1; } { group CH2Cl; count 1; } { group CCl2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group C; count 1; } { group Cl; count 3; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,4-tris(chloranyl)butanal" "butanal,2,2,4-trichloro-" "2,2,4-trichlorobutanal;2,2,4-trichlorobutyraldehyde" );
+gibbsFormation
+{
+    dHf_298   -267440.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     391.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-149670.0
+    phase     gas;
+}

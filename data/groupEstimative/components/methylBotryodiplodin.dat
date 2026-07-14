@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl botryodiplodin  (C8H14O3, CAS 81910-05-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylBotryodiplodin;
+formula     C8H14O3;
+CAS         81910-05-6;
+InChIKey    WARLUHIUVCVFPU-UHFFFAOYSA-N;
+MW          158.197;      // g/mol [origin=calculated method=formula-sum]
+Tc          694.11;      // K   [origin=predictive method=joback]
+Pc          29.698;      // bar [origin=predictive method=joback]
+omega       0.5323;      // -   [origin=predictive method=lee-kesler]
+Tb          491.82;      // K   [origin=predictive method=joback]
+HvapTb      46707.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.81 0.74836 -0.0002844 -5.44e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 3; } { group CH3CO; count 1; } { group CH3O; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group O; count 1; } { group O_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-methoxy-3-methyl-oxolan-2-yl)ethanone" "2-methoxy-3-methyl-4-acetyltetrahydrofuran" "2-acetyl-4-methoxy-3-methyl-tetrahydrofuran" "tetrahydro-2-acetyl-4-methoxy-3-methylfuran" "furan, tetrahydro-2-acetyl-4-methoxy-3-methyl-" "1-(4-methoxy-3-methyloxolan-2-yl)ethanone" );
+gibbsFormation
+{
+    dHf_298   -565450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     319.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-282430.0
+    phase     gas;
+}

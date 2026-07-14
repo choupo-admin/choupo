@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (z)-non-2-enyl acetate  (C11H20O2, CAS 30418-89-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        zNon2EnylAcetate;
+formula     C11H20O2;
+CAS         30418-89-4;
+InChIKey    WFCCNPHGLLPSDJ-UHFFFAOYSA-N;
+MW          184.279;      // g/mol [origin=calculated method=formula-sum]
+Tc          689.00;      // K   [origin=predictive method=joback]
+Pc          20.346;      // bar [origin=predictive method=joback]
+omega       0.6575;      // -   [origin=predictive method=lee-kesler]
+Tb          513.66;      // K   [origin=predictive method=joback]
+HvapTb      47445.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.116 1.01404 -0.0005638 1.1e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CH=CH; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "non-2-enyl ethanoate" "trans-2-nonenyl acetate" "2-nonen-1-ol, acetate, (2e)-" "2-nonen-1-ol, 1-acetate, (2e)-" "non-2-enyl acetate" "2-nonenylacetate" "[(z)-non-2-enyl] acetate" "2-nonen-1-ol,1-acetate, (2e)-" "2-nonen-1-ol,acetate, (2e)- (9ci); 2-nonen-1-ol, acetate, (e)- (8ci); (e)-2-nonen-1-olacetate; (e)-2-nonenyl acetate; trans-2-nonen-1-yl acetate; trans-2-nonenylacetate" );
+gibbsFormation
+{
+    dHf_298   -470430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     629.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-188410.0
+    phase     gas;
+}

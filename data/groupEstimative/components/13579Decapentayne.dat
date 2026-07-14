@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3,5,7,9-decapentayne  (C10H2, CAS 32597-32-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13579Decapentayne;
+formula     C10H2;
+CAS         32597-32-3;
+InChIKey    RJSSSABFRNGYSJ-UHFFFAOYSA-N;
+MW          122.126;      // g/mol [origin=calculated method=formula-sum]
+Tc          721.03;      // K   [origin=predictive method=joback]
+Pc          50.875;      // bar [origin=predictive method=joback]
+omega       0.1052;      // -   [origin=predictive method=lee-kesler]
+Tb          435.64;      // K   [origin=predictive method=joback]
+HvapTb      44026.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (74.03 0.3166 -0.00023564 8.152e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH_C; count 2; } { group C_C; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tCH; count 2; } { group tC; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "deca-1,3,5,7,9-pentayne" "agn-pc-0ckkiu" );
+gibbsFormation
+{
+    dHf_298   1150970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     399.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1087860.0
+    phase     gas;
+}

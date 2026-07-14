@@ -1,31 +1,65 @@
-# esterification2sector — props-foundation test vehicle
+# esterification2sector — the fractal `constant/`, wired
 
-A two-sector fractal plant (REACTION + SEPARATION) used to develop the unified
-property/thermo-foundation architecture (see the memory memo
-`props_unified_architecture_2026_05_31`).  Demonstrates the FRACTAL constant/:
-particular data per sector, shared components, partial standard-library reuse.
+A two-sector plant that exists to prove one thing: **data lives with the sector
+that owns it**, and a whole-plant run finds it there.
 
-> **This case is in the CURATION phase — it does not simulate yet.** Neither the
-> top-level plant nor the `REACTION` / `SEPARATION` sectors carry `connections`,
-> so running any of them prints *"nothing to simulate — curation phase"* and
-> exits cleanly. That is by design: you curate the per-sector thermo/kinetics
-> first (with `choupoProps`), then WIRE the flowsheet to simulate. The
-> `system/flowsheetDict` of each sector shows the commented-out boundary +
-> connections to uncomment once curation is done. (For a fully-wired, runnable
-> multi-sector example, see `tutorials/plant/ChemicalPlantTutorial`; for runnable
-> single sectors with custom unit ops, see `tutorials/plant/twoSectorDemo/SECTOR_R`
-> and `.../SECTOR_S`.)
+```
+Feed (AcOH + EtOH)
+      |
+  [ REACTION ]    esterification CSTR
+      |             kinetics: sectors/REACTION/constant/reactions
+  reactorOut
+      |
+  [ SEPARATION ]  isothermal flash, NRTL
+      |  \           ethylAcetate-water pair: sectors/SEPARATION/constant/binaryPairs/
+   liquid vapor      ethanol-water:           inherited from the standard library
+```
 
-## Status (first slice)
-- ✅ Two-sector fractal flowsheet (Feed → REACTION cstr → SEPARATION flash → boundary).
-- ✅ **Per-sector kinetics resolve**: the esterification kinetics live in
-  `REACTION/constant/reactions` (NOT duplicated to the root) — the first slice
-  of the per-node constant/ resolution (engine Item 0).
-- ⏳ **Per-sector binary pairs**: `SEPARATION/constant/binaryPairs/NRTL/
-  ethylAcetate-water.dat` is the INTENDED particular datum, but per-node pair
-  resolution is not wired yet, so the global thermo runs `ideal` for now (the
-  next slice wires per-node pairs + flips this to NRTL).
-- ⏳ GUI foundation navigator + pair-coverage matrix + fit view: later slices.
+Components are shared across the plant.  The kinetics belong to REACTION and are
+never copied to the root.  The `ethylAcetate-water` NRTL pair belongs to
+SEPARATION — a *particular* datum, fitted for this separation — while
+`ethanol-water` walks up to the standard catalogue.  Three levels of ownership,
+one run.
 
-ethanol-water would be INHERITED from the standard library; ethylAcetate-water
-is PARTICULAR to SEPARATION (to be fitted + promoted).
+Run it and read the property-provenance block in the log:
+
+```
+"i": "ethylAcetate", "j": "water",  "status": "perNode",
+"source": "sectors/SEPARATION/constant/binaryPairs/NRTL/ethylAcetate-water.dat"
+"i": "ethanol",      "j": "water",  "status": "standard",
+"source": ".../data/standards/binaryPairs/NRTL/ethanol-water.dat"
+```
+
+That `perNode` is the whole case.  The sector's pair beat the standard library,
+and the log says so rather than leaving you to wonder which one it used.
+
+## What it does
+
+Feed 100 kmol/h equimolar acetic acid + ethanol at 360 K.  The CSTR
+(`V_R = 0.5 m³`) reaches 34.2 % conversion — a PLACEHOLDER number: the kinetics in
+`sectors/REACTION/constant/reactions` are still the pseudo-first-order stand-in,
+not the 2nd-order fit this case's own property evidence supports (see
+`CLAUDE.md`, "Pending").  The flash at 355 K, 1.013 bar splits
+the product into a vapour rich in ethyl acetate (bp 350 K) and ethanol, and a
+liquid rich in water and the unconverted acid.  Mass closes exactly:
+34.18 + 65.82 = 100.00 kmol/h.
+
+## History
+
+This case shipped for weeks marked `.known-broken`, and it earned the mark
+twice over.  Its flash carried `P 1.01325;` with no unit, which is 1.01 **pascal**
+— a hard vacuum — so the K-values exploded and everything went to the vapour.
+And it was never wired: the sectors existed as thermo regions with the
+connections commented out, awaiting a "curation phase" that never ended.
+
+Fixing it surfaced two real engine bugs, both of the same shape — data owned by a
+*sector* was invisible from a whole-plant run:
+
+* `reactions ( r1 r2 );` resolved only against the ROOT `constant/reactions`
+  (the single `reaction <name>;` form already walked up).
+* `binaryPairs` looked only in the leaf UNIT's folder, never at the sector above
+  it — so the standard library won silently, which is exactly the outcome this
+  case exists to prevent.
+
+The dictionary parser now also warns when a pressure with no unit resolves below
+100 Pa.  `P 1.01325;` will never again pass in silence.

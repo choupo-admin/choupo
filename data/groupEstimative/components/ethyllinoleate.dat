@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyllinoleate  (C20H36O2, CAS 544-35-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyllinoleate;
+formula     C20H36O2;
+CAS         544-35-4;
+InChIKey    FMMOOAYVCKXGMF-UHFFFAOYSA-N;
+MW          308.506;      // g/mol [origin=calculated method=formula-sum]
+Tc          899.12;      // K   [origin=predictive method=joback]
+Pc          10.899;      // bar [origin=predictive method=joback]
+omega       0.8822;      // -   [origin=predictive method=lee-kesler]
+Tb          723.74;      // K   [origin=predictive method=joback]
+HvapTb      67437.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.247 1.88904 -0.0011372 2.645e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 12; } { group CH=CH; count 2; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 13; } { group dCH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl octadeca-9,12-dienoate" "9,12-octadecadienoic acid, ethyl ester" "9,12-octadecadienoic acid (9z,12z)-, ethyl ester" "9,12-octadecadienoic acid, ethyl ester, (e,e)-" "9,12-octadecadienoicacid (9z,12z)-, ethyl ester" "9,12-octadecadienoicacid (z,z)-, ethyl ester; linoleic acid, ethyl ester (6ci,8ci); ethyl(z,z)-9,12-octadecadienoate; ethyl cis,cis-9,12-octadecadienoate; ethyllinolate; ethyl linoleate; mandenol; nikkol vf-e" );
+gibbsFormation
+{
+    dHf_298   -538970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     973.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-32410.0
+    phase     gas;
+}

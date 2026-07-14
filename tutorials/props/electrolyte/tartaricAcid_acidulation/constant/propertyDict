@@ -1,0 +1,14 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  thermoPackage for tartaricAcid_acidulation (a choupoProps speciation case).
+
+  IMPORTANT: `activityModel ideal` here is ONLY the molecular water carrier --
+  it does NOT govern the ions.  The aqueous activity model is chosen PER
+  OPERATION in propsDict (`activityModel pitzer` / `davies`); the speciation runs
+  Pitzer-HMW with strongly non-ideal gammas (gamma_Ca ~ 0.07, gamma_Tart ~ 0.04
+  at I = 1.8 mol/kg).  This is NOT an ideal-solution calculation.
+\*---------------------------------------------------------------------------*/
+
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }     // molecular water carrier ONLY (ions: see propsDict)
+equationOfState { model idealGas; }

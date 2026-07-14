@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ebecryl iboa  (C13H20O2, CAS 5888-33-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ebecrylIboa;
+formula     C13H20O2;
+CAS         5888-33-5;
+InChIKey    PSGCQDPCAWOCSH-BOURZNODSA-N;
+MW          208.301;      // g/mol [origin=calculated method=formula-sum]
+Tc          774.93;      // K   [origin=predictive method=joback]
+Pc          22.461;      // bar [origin=predictive method=joback]
+omega       0.5200;      // -   [origin=predictive method=lee-kesler]
+Tb          560.83;      // K   [origin=predictive method=joback]
+HvapTb      48347.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-180.22 1.98706 -0.0019601 8.121e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 2; } { group C; count 2; } { group CH2=CH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(1s,4s)-4,7,7-trimethyl-3-bicyclo[2.2.1]heptanyl] prop-2-enoate" "al-co-cure iba" "acrylic acid, isobornyl ester" "iboa" "light acrylate ib-xa" "sr 506 (acrylate)" "isobornyl acrylate" "(1s,4s)-1,7,7-trimethylbicyclo[2.2.1]hept-2-yl acrylate" "exo-1,7,7-trimethylbicyclo(2.2.1)hept-2-yl acrylate" "2-propenoic acid, 1,7,7-trimethylbicyclo(2.2.1)hept-2-yl ester, exo-" "2-propenoic acid, 1,7,7-trimethylbicyclo[2.2.1]hept-2-yl ester, exo-" "2-propenoic acid, (1r,2r,4r)-1,7,7-trimethylbicyclo(2.2.1)hept-2-yl ester, rel-" );
+gibbsFormation
+{
+    dHf_298   -374260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     602.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-80950.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: anordrin  (C28H38O4, CAS 6631-98-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        anordrin;
+formula     C28H38O4;
+CAS         6631-98-7;
+InChIKey    UAHPFFLSKIVKQH-LXCYVFLQSA-N;
+MW          438.608;      // g/mol [origin=calculated method=formula-sum]
+Tc          1196.86;      // K   [origin=predictive method=joback]
+Pc          11.037;      // bar [origin=predictive method=joback]
+omega       0.8386;      // -   [origin=predictive method=lee-kesler]
+Tb          958.33;      // K   [origin=predictive method=joback]
+HvapTb      87794.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-285.918 3.67488 -0.00331806 1.27518e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 7; } { group CH; count 6; } { group C; count 3; } { group CH2COO; count 2; } { group CH_C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group tCH; count 2; } { group tC; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 6; } { group C_ring; count 3; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(3r,3as,3bs,5as,6r,8as,8br,10as)-2,6-diethynyl-3a,5a-dimethyl-6-propanoyloxy-2,3,3b,4,5,7,8,8a,8b,9,10,10a-dodecahydro-1h-indeno[4,5-g]inden-3-yl] propanoate" "alpha-anordrin" "af-53" "(1r,3as,3br,5as,8r,8as,8bs,10as)-1,7-diethynyl-8a,10a-dimethylhexadecahydrodicyclopenta[a,f]naphthalene-1,8-diyl dipropanoate" "2,17alpha-diethynyl-a-norandrostane-2,17beta-dihydroxydipropionate" "2-alpha,17-alpha-diethynyl-a-nor-5-alpha-androstane-2-beta,17-beta-diol dipropionate" "2-epsilon,17-alpha-diethynyl, a-nor-androstane-2-epsilon, 17-beta-dihydroxydipropinate" "a-norpregn-20-yne-2,17-diol, 2-ethynyl-, dipropanoate, (2-beta,5-alpha,17-alpha)-" "a-norpregn-20-yne-2,17-diol, 2-ethynyl-, dipropanoate, (2beta,5alpha,17alpha)-" "dicyclopenta(a,f)naphthalene-1,7-diol, 1,7-diethynylhexadecahydro-8a,10a-dimethyl-, dipropanoate, (1r,3as,3br,5as,7r,8as,8bs,10as)-" "dicyclopenta(a,f)naphthalene-1,7-diol, 1,7-diethynylhexadecahydro-8a,10a-dimethyl-, dipropanoate, (1r-(1alpha,3abeta,3balpha,5abeta,7alpha,8aalpha,8bbeta,10aalpha))-" "af 53" );
+gibbsFormation
+{
+    dHf_298   -461430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1003.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=149860.0
+    phase     gas;
+}

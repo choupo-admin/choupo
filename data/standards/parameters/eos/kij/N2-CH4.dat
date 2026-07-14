@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  SRK binary interaction parameter kij for NITROGEN - METHANE.
+  Source: Knapp, H.; Doering, R.; Oellrich, L.; Ploecker, U.; Prausnitz, J.M.
+  "Vapor-Liquid Equilibria for Mixtures of Low Boiling Substances",
+  DECHEMA Chemistry Data Series Vol. VI (1982) -- the standard kij compilation
+  (regressed to the SRK EoS; the same value the SRK.H header example carries).
+  Validity: cryogenic/natural-gas VLE range.
+\*---------------------------------------------------------------------------*/
+recordType eosBinaryInteraction;
+schemaVersion 1;
+i    N2;
+j    CH4;
+kij  0.0289;
+eos  SRK;

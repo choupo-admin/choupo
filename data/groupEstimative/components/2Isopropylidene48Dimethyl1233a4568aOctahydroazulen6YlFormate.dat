@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-isopropylidene-4,8-dimethyl-1,2,3,3a,4,5,6,8a-octahydroazulen-6-yl formate  (C16H24O2, CAS 10486-25-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C16H24O2 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2Isopropylidene48Dimethyl1233a4568aOctahydroazulen6YlFormate;
+formula     C16H24O2;
+CAS         10486-25-6;
+InChIKey    DMDRCZJUQQXMNF-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          248.366;      // g/mol [origin=calculated method=formula-sum]
+Tc          788.95;      // K   [origin=predictive method=joback]
+Pc          17.463;      // bar [origin=predictive method=joback]
+omega       0.4229;      // -   [origin=predictive method=lee-kesler]
+Tb          573.98;      // K   [origin=predictive method=joback]
+HvapTb      50554.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-106.76 1.54928 -0.00103464 2.805e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 4; } { group CH=C; count 1; } { group HCOO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 4; } { group dCH_ring; count 1; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4,8-dimethyl-2-propan-2-ylidene-3,3a,4,5,6,8a-hexahydro-1h-azulen-6-yl) methanoate" "6-azulenol, 1,2,3,3a,4,5,6,8a-octahydro-4,8-dimethyl-2-(1-methylethylidene)-, 6-formate" "6-azulenol, 1,2,3,3a,4,5,6,8a-octahydro-4,8-dimethyl-2-(1-methylethylidene)-, formate" "1,2,3,3a,4,5,6,8a-octahydro-2-isopropylidene-4,8-dimethylazulen-6-yl formate" "(4,8-dimethyl-2-propan-2-ylidene-3,3a,4,5,6,8a-hexahydro-1h-azulen-6-yl) formate" );
+gibbsFormation
+{
+    dHf_298   -104290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     701.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=242720.0
+    phase     gas;
+}

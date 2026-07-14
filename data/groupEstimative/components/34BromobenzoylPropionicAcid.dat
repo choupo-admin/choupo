@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(4-bromobenzoyl)propionic acid  (C10H9BrO3, CAS 6340-79-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34BromobenzoylPropionicAcid;
+formula     C10H9BrO3;
+CAS         6340-79-0;
+InChIKey    ZODFRCZNTXLDDW-UHFFFAOYSA-N;
+MW          257.083;      // g/mol [origin=calculated method=formula-sum]
+Tc          963.81;      // K   [origin=predictive method=joback]
+Pc          37.135;      // bar [origin=predictive method=joback]
+omega       1.0865;      // -   [origin=predictive method=lee-kesler]
+Tb          725.60;      // K   [origin=predictive method=joback]
+HvapTb      71137.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.658 0.8764 -0.00060966 1.6146e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 4; } { group AC; count 2; } { group CH2CO; count 1; } { group COOH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group CdO; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(4-bromophenyl)-4-oxidanylidene-butanoic acid" "4-(4-bromophenyl)-4-oxobutanoic acid" "3-(p-bromobenzoyl)propionic acid" "beta-(p-bromobenzoyl)propionic acid" "4-(4-bromophenyl)-4-oxo-butyric acid" "4-(4-bromo-phenyl)-4-oxo-butyric acid" "3-(4-bromobenzoyl)propanoic acid" "benzenebutanoic acid, 4-bromo-gamma-oxo-" "4-(4-bromophenyl)-4-oxobutaic acid" "4-(4-bromophenyl)-4-oxobutyric acid" "4-bromo-gamma-oxo-benzenebutanoic acid" "3-(p-bromobenzoyl)propionic acid;4-(4-bromophenyl)-4-oxobutanoic acid;4-(4-bromophenyl)-4-oxobutyric acid" );
+gibbsFormation
+{
+    dHf_298   -461190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     563.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-322410.0
+    phase     gas;
+}

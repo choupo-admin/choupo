@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4'-(bis(trifluoromethyl)ethylene)diphthalic acid, diethyl ester  (C27H26F6O8, CAS 67846-42-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44BisTrifluoromethylEthyleneDiphthalicAcidDiethylEster;
+formula     C27H26F6O8;
+CAS         67846-42-8;
+InChIKey    SHDCCUHYEVELSX-UHFFFAOYSA-N;
+MW          592.485;      // g/mol [origin=calculated method=formula-sum]
+Tc          1365.04;      // K   [origin=predictive method=joback]
+Pc          8.645;      // bar [origin=predictive method=joback]
+omega       0.7834;      // -   [origin=predictive method=lee-kesler]
+Tb          1109.45;      // K   [origin=predictive method=joback]
+HvapTb      103734.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (32.494 2.40208 -0.00147464 2.824e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group C; count 1; } { group ACH; count 6; } { group AC; count 6; } { group CF3; count 2; } { group COO; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 4; } { group C; count 3; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group F; count 6; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "diethyl 4-[2-[3,4-bis(ethoxycarbonyl)phenyl]-1,1,1,3,3,3-hexakis(fluoranyl)propan-2-yl]benzene-1,2-dicarboxylate" "tetraethyl 4,4'-(2,2,2-trifluoro-1-(trifluoromethyl)ethylidene)bisphthalate" "tetraethyl 4,4'-[2,2,2-trifluoro-1-(trifluoromethyl)ethylidene]bisphthalate" "1,2-benzenedicarboxylic acid, 4,4'-(2,2,2-trifluoro-1-(trifluoromethyl)ethylidene)bis-, 1,1',2,2'-tetraethyl ester" "1,2-benzenedicarboxylic acid, 4,4'-[2,2,2-trifluoro-1-(trifluoromethyl)ethylidene]bis-, 1,1',2,2'-tetraethyl ester" "tetraethyl 4,4'-(1,1,1,3,3,3-hexafluoropropane-2,2-diyl)dibenzene-1,2-dicarboxylate" "tetraethyl 4,4'-(2,2,2-trifluoro-1-(trifluoromethyl)ethylidene)bis(phthalate)" "1,2-benzenedicarboxylic acid, 4,4'-(2,2,2-trifluoro-1-(trifluoromethyl)ethylidene)bis-, tetraethyl ester" "diethyl 4-[2-[3,4-bis(ethoxycarbonyl)phenyl]-1,1,1,3,3,3-hexafluoropropan-2-yl]benzene-1,2-dicarboxylate" );
+gibbsFormation
+{
+    dHf_298   -2645460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1248.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2039060.0
+    phase     gas;
+}

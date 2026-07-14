@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(trifluoromethyl)benzylamine  (C8H8F3N, CAS 2740-83-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3TrifluoromethylBenzylamine;
+formula     C8H8F3N;
+CAS         2740-83-2;
+InChIKey    YKNZTUQUXUXTLE-UHFFFAOYSA-N;
+MW          175.153;      // g/mol [origin=calculated method=formula-sum]
+Tc          685.15;      // K   [origin=predictive method=joback]
+Pc          33.451;      // bar [origin=predictive method=joback]
+omega       0.5391;      // -   [origin=predictive method=lee-kesler]
+Tb          481.41;      // K   [origin=predictive method=joback]
+HvapTb      43234.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.699 0.8485 -0.00063996 1.843e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group CH2NH2; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[3-(trifluoromethyl)phenyl]methanamine" "3-trifluoromethylbenzylamine" "m-trifluoromethylbenzyl amine" "(3-(trifluoromethyl)phenyl)methanamine" "3-trifluoromethyl-benzylamine" "1-[3-(trifluoromethyl)phenyl]methanamine" "benzenemethanamine, 3-(trifluoromethyl)-" "[3-(trifluoromethyl)phenyl]methylamine" "z1r cxfff" "m-trifluoromethylbenzylamine" "m-trifluoromethyl benzylamine" "m-(trifluoromethyl)benzylamine" );
+gibbsFormation
+{
+    dHf_298   -546680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     462.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-395880.0
+    phase     gas;
+}

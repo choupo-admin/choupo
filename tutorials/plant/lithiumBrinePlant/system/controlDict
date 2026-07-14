@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "lithiumBrinePlant -- THE reference case: a FRACTAL lithium-carbonate plant from salar brine, WIRED into one solver. Five SECTORS, each a thermo WORLD of its own -- BRINE (electrolyte/Pitzer), EXTRACTION (gamma-gamma NRTL LLE), CARBONATION (Li2CO3 retrograde solubility), HOTAIR (Gibbs combustion), FINISHING (drying + cyclone) -- connected sector to sector, each sector declaring its own propertyPackage (its world) on the global component set, with optional per-unit thermo overrides where a single unit needs a different world. The proof that the architecture is fractal: sectors are composite boxes, streams flow between them, model boundaries audited.";
+verbosity     3;

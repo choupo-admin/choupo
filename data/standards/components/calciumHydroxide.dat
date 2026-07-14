@@ -1,0 +1,64 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Calcium hydroxide (Ca(OH)2), PORTLANDITE.  CAS 1305-62-0.
+
+  A NON-VOLATILE crystalline base: it never enters the vapour (K = 0) and
+  carries no Antoine / liquid-Cp blocks.  The canonical strong base for
+  lime / milk-of-lime neutralisation, tartaric-acid precipitation (calcium
+  tartrate), water softening and flue-gas desulphurisation exercises -- the
+  catalogue gap that previously forced cases to bend to CaCO3.
+
+  Carries a REAL solid heat capacity (solidHeatCapacity{}) and the solid-
+  phase formation datum, so its sensible heat and its reaction heat both
+  emerge from the elements reference like any other species.
+
+  PRIMARY: Wagman et al., NBS Tables of Chemical Thermodynamic Properties,
+  J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982) -- a U.S. Government work,
+  PUBLIC DOMAIN.  Density: portlandite ~ 2.21 g/cm^3 (mineralogical).
+\*---------------------------------------------------------------------------*/
+
+name        calciumHydroxide;
+formula     "Ca(OH)2";
+CAS         1305-62-0;
+
+MW          74.093;            // kg/kmol
+
+nonvolatile true;       // never goes to the vapour (K = 0)
+
+solid
+{
+    rho_p   2211.0;            // portlandite particle density [kg/m^3]
+}
+
+// Solid-phase formation datum (portlandite).
+gibbsFormation
+{
+    dHf_298   -986090;         // J/mol  [Wagman et al. NBS Tables 1982]
+    s_298     83.39;           // J/(mol*K) third-law absolute [Wagman 1982]
+    phase     solid;
+}
+
+// Solid heat capacity, NBS 298 K value carried as a CONSTANT (single
+// coefficient) -- a deliberate near-ambient approximation; refit to a real
+// T-polynomial before high-T calcination duty is claimed.
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = a0  [J/(mol*K)], constant
+    coefficients  ( 87.49 );           // Cp(298) [Wagman et al. NBS Tables 1982]
+    Trange        ( 298  600 );        // constant-Cp validity flag (near ambient)
+}
+
+// liquid/dissolved Cp -- the solid Cp as a FLAGGED proxy, so the slurried/
+// dissolved solid carries sensible heat in an aqueous process stream.
+liquidHeatCapacity
+{
+    model         polynomial;          // Cp = a0  [J/(mol*K)], constant
+    coefficients  ( 87.49 );           // Cp(298) [Wagman et al. NBS Tables 1982]
+    Trange        ( 298  600 );        // constant-Cp validity flag (near ambient)
+}
+
+provenance
+{
+    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982"; }
+    solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
+    rho_p { origin literature; method "portlandite mineralogical density ~2.21 g/cm3"; }
+}

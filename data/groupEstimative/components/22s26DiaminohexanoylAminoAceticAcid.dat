@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-[[(2s)-2,6-diaminohexanoyl]amino]acetic acid  (C8H17N3O3, CAS 7563-03-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22s26DiaminohexanoylAminoAceticAcid;
+formula     C8H17N3O3;
+CAS         7563-03-3;
+InChIKey    HGNRJCINZYHNOU-LURJTMIESA-N;
+MW          203.242;      // g/mol [origin=calculated method=formula-sum]
+Tc          988.70;      // K   [origin=predictive method=joback]
+Pc          34.643;      // bar [origin=predictive method=joback]
+omega       1.5044;      // -   [origin=predictive method=lee-kesler]
+Tb          776.81;      // K   [origin=predictive method=joback]
+HvapTb      84642.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.665 0.9925 -0.0006039 1.3496e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2NH2; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 5; } { group CH; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group NH2; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[[(2s)-2,6-bis(azanyl)hexanoyl]amino]ethanoic acid" "lysylglycine" "l-lysylglycine" "l-lys-gly" "glycine, n-l-lysyl-" "k-g" );
+gibbsFormation
+{
+    dHf_298   -555530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     681.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-236500.0
+    phase     gas;
+}

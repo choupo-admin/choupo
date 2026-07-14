@@ -51,6 +51,8 @@ public:
         return sVector(n_, 1.0);
     }
 
+    bool isIdeal() const override { return true; }
+
     scalar molarVolume(scalar T_K, scalar P_Pa, const sVector&) const override
     {
         // R [J/(mol·K)] · T [K] / P [Pa]  =  v [m³/mol].

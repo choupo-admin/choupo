@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tricyclo[4.1.0.02,4]heptane  (C7H10, CAS 16782-44-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tricyclo410024Heptane;
+formula     C7H10;
+CAS         16782-44-8;
+InChIKey    XIIJQOYMVIJNEP-UHFFFAOYSA-N;
+MW          94.157;      // g/mol [origin=calculated method=formula-sum]
+Tc          560.95;      // K   [origin=predictive method=joback]
+Pc          39.906;      // bar [origin=predictive method=joback]
+omega       0.2806;      // -   [origin=predictive method=lee-kesler]
+Tb          366.77;      // K   [origin=predictive method=joback]
+HvapTb      30262.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-138.02 1.1142 -0.001055 4.016e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CH_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tricyclo[4.1.0.02,4]-heptane" "tricyclo(4.1.0.02,4)-heptane" "anti-tricyclo(4.1.0.0(2,4))heptane" "anti-tricyclo[4.1.0.0(2,4)]heptane" );
+gibbsFormation
+{
+    dHf_298   22570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     75.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=206800.0
+    phase     gas;
+}

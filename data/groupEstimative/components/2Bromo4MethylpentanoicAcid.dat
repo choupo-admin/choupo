@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-bromo-4-methylpentanoic acid  (C6H11BrO2, CAS 42990-24-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Bromo4MethylpentanoicAcid;
+formula     C6H11BrO2;
+CAS         42990-24-9;
+InChIKey    NNFDHJQLIFECSR-UHFFFAOYSA-N;
+MW          195.056;      // g/mol [origin=calculated method=formula-sum]
+Tc          760.04;      // K   [origin=predictive method=joback]
+Pc          38.104;      // bar [origin=predictive method=joback]
+omega       0.7537;      // -   [origin=predictive method=lee-kesler]
+Tb          547.67;      // K   [origin=predictive method=joback]
+HvapTb      51773.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.861 0.67464 -0.000453 1.213e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group COOH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanyl-4-methyl-pentanoic acid" "valeric acid, 2-bromo-4-methyl-," "(s)-2-bromo-4-methylvaleric acid" "2-bromo-4-methyl-valeric acid" "2-bromo-4-methyl pentanoic acid" );
+gibbsFormation
+{
+    dHf_298   -501670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     474.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-334830.0
+    phase     gas;
+}

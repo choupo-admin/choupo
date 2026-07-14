@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(tert-butylamino)ethyl methacrylate  (C10H19NO2, CAS 3775-90-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2TertButylaminoEthylMethacrylate;
+formula     C10H19NO2;
+CAS         3775-90-4;
+InChIKey    BEWCNXNIQCLWHP-UHFFFAOYSA-N;
+MW          185.267;      // g/mol [origin=calculated method=formula-sum]
+Tc          718.47;      // K   [origin=predictive method=joback]
+Pc          22.806;      // bar [origin=predictive method=joback]
+omega       0.6497;      // -   [origin=predictive method=lee-kesler]
+Tb          530.12;      // K   [origin=predictive method=joback]
+HvapTb      49811.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.158 1.08098 -0.0006712 1.523e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group CH2=C; count 1; } { group CH2NH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(tert-butylamino)ethyl 2-methylprop-2-enoate" "tert-butylaminoethyl methacrylate" "ageflex fm-4" "n-tert-butylaminoethyl methacrylate" "2-tert-butylaminoethyl methacrylate" "2-propenoic acid, 2-methyl-, 2-[(1,1-dimethylethyl)amino]ethyl ester" "methacrylic acid, 2-(tert-butylamino)ethyl ester" "ethanol, 2-(tert-butylamino)-, methacrylate (ester)" "2-methyl-2-propenoic acid, 2-((1,1-dimethylethyl)amino)ethyl ester" "2-propenoic acid, 2-methyl-, 2-((1,1-dimethylethyl)amino)ethyl ester" "2-((1,1-dimethylethyl)amino )ethyl 2-methyl-2-propenoate" "2-((1,1-dimethylethyl)amino)ethyl 2-methyl-2-propenoate" );
+gibbsFormation
+{
+    dHf_298   -406650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     589.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-105530.0
+    phase     gas;
+}

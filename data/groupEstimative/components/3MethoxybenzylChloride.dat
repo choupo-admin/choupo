@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methoxybenzyl chloride  (C8H9ClO, CAS 824-98-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3MethoxybenzylChloride;
+formula     C8H9ClO;
+CAS         824-98-6;
+InChIKey    VGISFWWEOGVMED-UHFFFAOYSA-N;
+MW          156.609;      // g/mol [origin=calculated method=formula-sum]
+Tc          690.55;      // K   [origin=predictive method=joback]
+Pc          33.645;      // bar [origin=predictive method=joback]
+omega       0.4239;      // -   [origin=predictive method=lee-kesler]
+Tb          474.15;      // K   [origin=predictive method=joback]
+HvapTb      43135.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.401 0.56902 -0.00028496 3.88e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group CH3O; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(chloromethyl)-3-methoxy-benzene" "m-methoxybenzyl chloride" "1-(chloromethyl)-3-methoxybenzene" "benzene, 1-(chloromethyl)-3-methoxy-" "3-(chloromethyl)anisole" "anisole, m-(chloromethyl)-" "3-methoxybenzylchloride" "m-(chloromethyl)anisole" "3-(chloromethyl)-1-methoxybenzene" "3-methoxy benzyl chloride" "benzyl chloride,3-methoxy" "toluene, .alpha.-chloro-m-methocy-" );
+gibbsFormation
+{
+    dHf_298   -131350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     399.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=2330.0
+    phase     gas;
+}

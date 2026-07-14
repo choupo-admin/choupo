@@ -58,31 +58,10 @@ variables
     // Ambas iteradas pelo DesignSpec.  Os valores aqui são apenas
     // chutes iniciais para o Newton-ND 2-D arrancar.
     A          80.0   m2;
-    F_steam   500.0   kmol/h;
-}
-
-streams
-{
-    feed
-    {
-        T             293.15 K;          // 20 °C
-        P             100.0  kPa;        // atmosférica (tag only)
-        massFlows                         // total 25000 kg/h, 10 wt% solidos
-        {
-            agua      22500.0  kg/h;
-            solidos    2500.0  kg/h;
-        }
     }
 
-    liveSteam_200kPa
-    {
-        F                $F_steam;
-        P                200.0  kPa;
-        state            saturatedVapour;   // -> T = T_sat(200 kPa) ~ 393 K
-        molarComposition  { agua 1.0; }
-        category         LP_steam_200kPa;   // utility tag for aggregation
-    }
-}
+// Stream STATE lives in 0/ (bin/choupo-init0); the designSpec knob is the
+// streams.<inlet>.F channel target declared in outerDict (forum #53).
 
 units
 (

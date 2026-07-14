@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hydroxyl-d  (DO, CAS 13587-54-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        hydroxylD;
+formula     DO;
+CAS         13587-54-7;
+InChIKey    TUJKJAMUKRIRHC-MICDWDOJSA-N;
+role        radical;
+MW          18.013;      // g/mol [origin=calculated method=formula-sum]
+
+aliases     ( "od" );
+// formation datum unavailable (element entropy missing): dHf_298=None dGf_298=None

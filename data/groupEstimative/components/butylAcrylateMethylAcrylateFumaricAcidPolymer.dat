@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl acrylate, methyl acrylate, fumaric acid polymer  (C15H22O8, CAS 63744-77-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butylAcrylateMethylAcrylateFumaricAcidPolymer;
+formula     C15H22O8;
+CAS         63744-77-4;
+InChIKey    FWUDOXHRXFVUCY-JITBQSAISA-N;
+MW          330.333;      // g/mol [origin=calculated method=formula-sum]
+Tc          1170.60;      // K   [origin=predictive method=joback]
+Pc          15.873;      // bar [origin=predictive method=joback]
+omega       1.3087;      // -   [origin=predictive method=lee-kesler]
+Tb          950.58;      // K   [origin=predictive method=joback]
+HvapTb      97332.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (110.743 0.98844 -4.82e-05 -2.431e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH2=CH; count 2; } { group CH=CH; count 1; } { group COOH; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH2; count 2; } { group dCH; count 4; } { group COOH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e)-but-2-enedioic acid;butyl prop-2-enoate;methyl prop-2-enoate" "2-butenedioic acid (2e)-, polymer with butyl 2-propenoate and methyl 2-propenoate" "(e)-but-2-enedioic acid; butyl prop-2-enoate; methyl prop-2-enoate" );
+gibbsFormation
+{
+    dHf_298   -1543190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1148.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1186760.0
+    phase     gas;
+}

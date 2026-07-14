@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dicodethal  (C22H27NO9, CAS 143-71-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dicodethal;
+formula     C22H27NO9;
+CAS         143-71-5;
+InChIKey    OJHZNMVJJKMFGX-BWCYBWMMSA-N;
+MW          449.456;      // g/mol [origin=calculated method=formula-sum]
+Tc          1711.77;      // K   [origin=predictive method=joback]
+Pc          20.530;      // bar [origin=predictive method=joback]
+omega       1.3654;      // -   [origin=predictive method=lee-kesler]
+Tb          1373.04;      // K   [origin=predictive method=joback]
+HvapTb      147571.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-128.16 2.60614 -0.00200418 6.448e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 4; } { group C; count 1; } { group ACH; count 2; } { group AC; count 3; } { group ACCH2; count 1; } { group OH; count 2; } { group CH2CO; count 1; } { group CH3O; count 1; } { group CH-O; count 1; } { group CH3N; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 2; } { group CH2_ring; count 5; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH; count 2; } { group O; count 1; } { group O_ring; count 1; } { group CdO_ring; count 1; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4r,4ar,7ar,12bs)-9-methoxy-3-methyl-1,2,4,4a,5,6,7a,13-octahydro-4,12-methanobenzofuro[3,2-e]isoquinoline-7-one;(2r,3r)-2,3-bis(oxidanyl)butanedioic acid" "biocodone" "dicodrine" "dicotrate" "hydrokon" "robidone" "stodcodon" "synkonin" "codone" "hycon" "brocodid longum" "dihydrocodeinone tartrate" );
+gibbsFormation
+{
+    dHf_298   -1444260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     770.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-806540.0
+    phase     gas;
+}

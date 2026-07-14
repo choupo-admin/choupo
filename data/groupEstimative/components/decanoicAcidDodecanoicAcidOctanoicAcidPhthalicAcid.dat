@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: decanoic acid; dodecanoic acid; octanoic acid; phthalic acid  (C38H66O10, CAS 70693-30-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        decanoicAcidDodecanoicAcidOctanoicAcidPhthalicAcid;
+formula     C38H66O10;
+CAS         70693-30-0;
+InChIKey    YYBCTDYKTPEGBN-UHFFFAOYSA-N;
+MW          682.936;      // g/mol [origin=calculated method=formula-sum]
+Tc          3076.52;      // K   [origin=predictive method=joback]
+Pc          5.239;      // bar [origin=predictive method=joback]
+omega       -0.4870;      // -   [origin=predictive method=lee-kesler]
+Tb          1832.45;      // K   [origin=predictive method=joback]
+HvapTb      189822.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (94.194 3.11086 -0.00112616 -7e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 24; } { group ACH; count 4; } { group AC; count 2; } { group COOH; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 24; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "decanoic acid;dodecanoic acid;octanoic acid;phthalic acid" "1,2-benzenedicarboxylic acid, mixed decyl and lauryl and octyl diesters" "phthalic acid mixed decyl and lauryl and octyl diesters" "(c8, c10 and c12) dialkyl phthalate" );
+gibbsFormation
+{
+    dHf_298   -2688800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     2112.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1661970.0
+    phase     gas;
+}

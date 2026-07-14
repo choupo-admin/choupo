@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------*\
+  membrane06_pitzer / constant/thermoPackage
+
+  Water + NaCl seawater (35 g/L): membrane01 re-run with the PITZER
+  osmotic-coefficient model (phi ~ 0.92 at seawater strength) replacing
+  van't Hoff (phi = 1).  That swap happens in the membrane op's `osmotic`
+  block, NOT here -- the package-level ideal activity / ideal-gas entries
+  below stay loader stubs the unit never consults.
+\*---------------------------------------------------------------------------*/
+
+components       ( water  NaCl );
+
+// Activity model is irrelevant for dilute aqueous NF/RO at v0.26:
+// the membrane unit op does not consult γ_i.  We set `ideal` to keep
+// the loader happy; v0.28+ adds a proper electrolyte activity model
+// for high-concentration brines.
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

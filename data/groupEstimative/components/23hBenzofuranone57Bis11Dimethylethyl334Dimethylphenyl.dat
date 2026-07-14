@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2(3h)-benzofuranone, 5,7-bis(1,1-dimethylethyl)-3-(3,4-dimethylphenyl)-  (C24H30O2, CAS 164391-52-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23hBenzofuranone57Bis11Dimethylethyl334Dimethylphenyl;
+formula     C24H30O2;
+CAS         164391-52-0;
+InChIKey    CYHYIIFODCKQNP-UHFFFAOYSA-N;
+MW          350.502;      // g/mol [origin=calculated method=formula-sum]
+Tc          1106.11;      // K   [origin=predictive method=joback]
+Pc          12.646;      // bar [origin=predictive method=joback]
+omega       0.8488;      // -   [origin=predictive method=lee-kesler]
+Tb          876.94;      // K   [origin=predictive method=joback]
+HvapTb      81264.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-78.78 2.19556 -0.001571 4.467e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group C; count 2; } { group ACH; count 5; } { group AC; count 4; } { group ACCH3; count 2; } { group ACCH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group C; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 7; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5,7-ditert-butyl-3-(3,4-dimethylphenyl)-3h-1-benzofuran-2-one" );
+gibbsFormation
+{
+    dHf_298   -372640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     690.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=108130.0
+    phase     gas;
+}

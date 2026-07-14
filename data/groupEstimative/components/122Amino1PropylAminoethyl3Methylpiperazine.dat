@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(2-(2-amino-1-propyl)aminoethyl)-3-methylpiperazine  (C10H24N4, CAS 75962-54-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        122Amino1PropylAminoethyl3Methylpiperazine;
+formula     C10H24N4;
+CAS         75962-54-8;
+InChIKey    IVNJEQYDZAFUEG-UWVGGRQHSA-N;
+MW          200.33;      // g/mol [origin=calculated method=formula-sum]
+Tc          834.10;      // K   [origin=predictive method=joback]
+Pc          27.789;      // bar [origin=predictive method=joback]
+omega       0.9006;      // -   [origin=predictive method=lee-kesler]
+Tb          626.93;      // K   [origin=predictive method=joback]
+HvapTb      63601.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-56.857 1.34004 -0.0007948 1.728e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group CHNH2; count 1; } { group CH2NH; count 2; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group NH2; count 1; } { group NH; count 1; } { group NH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-n1-[2-[(3s)-3-methylpiperazin-1-yl]ethyl]propane-1,2-diamine" "(2s)-1-n-[2-[(3s)-3-methylpiperazin-1-yl]ethyl]propane-1,2-diamine" "(2s)-n-[2-[(3s)-3-methylpiperazin-1-yl]ethyl]propane-1,2-diamine" );
+gibbsFormation
+{
+    dHf_298   -1930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     587.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=421760.0
+    phase     gas;
+}

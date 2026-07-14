@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexylsilane  (C6H13Si, CAS 1072-14-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C6H13Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        hexylsilane;
+formula     C6H13Si;
+CAS         1072-14-6;
+InChIKey    KRZXWIWNHRUKDF-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+role        radical;
+MW          113.255;      // g/mol [origin=calculated method=formula-sum]
+Tc          496.57;      // K   [origin=predictive method=joback]
+Pc          31.491;      // bar [origin=predictive method=joback]
+omega       0.3346;      // -   [origin=predictive method=lee-kesler]
+Tb          336.18;      // K   [origin=predictive method=joback]
+HvapTb      28803.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.975 0.67692 -0.00051 1.688e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 1; } { group CH2; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexylsilicon" "silane, hexyl-" );
+gibbsFormation
+{
+    dHf_298   -111360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     354.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=52020.0
+    phase     gas;
+}

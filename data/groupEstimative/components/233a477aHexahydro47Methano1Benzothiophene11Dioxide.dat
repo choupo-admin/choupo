@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,3a,4,7,7a-hexahydro-4,7-methano-1-benzothiophene 1,1-dioxide  (C9H12O2S, CAS 83947-07-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H12O2S (delta S+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        233a477aHexahydro47Methano1Benzothiophene11Dioxide;
+formula     C9H12O2S;
+CAS         83947-07-3;
+InChIKey    CXZZLFUSMOZARB-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          184.253;      // g/mol [origin=calculated method=formula-sum]
+Tc          580.16;      // K   [origin=predictive method=joback]
+Pc          39.906;      // bar [origin=predictive method=joback]
+omega       0.5037;      // -   [origin=predictive method=lee-kesler]
+Tb          399.23;      // K   [origin=predictive method=joback]
+HvapTb      47168.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-128.66 1.2682 -0.00103288 3.342e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 3; } { group CH=CH; count 1; } { group CH2SuCH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CH_ring; count 4; } { group dCH_ring; count 2; } { group dO_oth; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,7-methanobenzo[c]thiophene, 1,3,3a,4,7,7a-hexahydro-2,2-dioxide" "4,7-methanobenzo(c)thiophene, 1,3,3a,4,7,7a-hexahydro-, 2,2-dioxide, (3aalpha,4alpha,7alpha,7aalpha)-" "4,7-methanobenzo[c]thiophene, 1,3,3a,4,7,7a-hexahydro-2,2-dioxide, (3a.alpha.,4.alpha.,7.alpha.,7a.alpha.)-" );
+gibbsFormation
+{
+    dHf_298   -468470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     414.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-272260.0
+    phase     gas;
+}

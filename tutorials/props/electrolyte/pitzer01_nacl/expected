@@ -1,6 +1,6 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
-diag    gamma_nacl             aw_1m            0.9668             1e-4
-diag    gamma_nacl             gamma_pm_1m      0.6572             1e-4
-diag    gamma_nacl             gamma_pm_3m      0.7140             1e-4
-diag    gamma_nacl             phi_1m           0.9363             1e-4
+diag    gamma_nacl             aw_1m            0.9668           1e-4
+diag    gamma_nacl             gamma_pm_1m      0.6572           1e-4
+diag    gamma_nacl             gamma_pm_3m      0.7140           1e-4
+diag    gamma_nacl             phi_1m           0.9363           1e-4

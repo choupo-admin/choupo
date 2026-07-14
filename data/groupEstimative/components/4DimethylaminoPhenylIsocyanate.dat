@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(dimethylamino)phenyl isocyanate  (C9H10N2O, CAS 16315-59-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4DimethylaminoPhenylIsocyanate;
+formula     C9H10N2O;
+CAS         16315-59-6;
+InChIKey    YZEHDFBYSOKBED-UHFFFAOYSA-N;
+MW          162.192;      // g/mol [origin=calculated method=formula-sum]
+Tc          731.79;      // K   [origin=predictive method=joback]
+Pc          34.848;      // bar [origin=predictive method=joback]
+omega       0.5802;      // -   [origin=predictive method=lee-kesler]
+Tb          516.29;      // K   [origin=predictive method=joback]
+HvapTb      50141.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 4; } { group AC; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH3; count 2; } { group dCd; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group dO_oth; count 1; } { group N; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-isocyanato-n,n-dimethyl-aniline" "4-isocyanato-n,n-dimethylaniline" "4-(dimethylamino)benzenisocyanate" "4-dimethylaminophenyl isocyanate" "benzenamine,4-isocyanato-n,n-dimethyl-" );
+// formation datum unavailable (element entropy missing): dHf_298=58090.0 dGf_298=None

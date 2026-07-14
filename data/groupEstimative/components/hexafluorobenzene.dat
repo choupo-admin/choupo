@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexafluorobenzene  (C6F6, CAS 392-56-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexafluorobenzene;
+formula     C6F6;
+CAS         392-56-3;
+InChIKey    ZQBFAOFFOQMSGJ-UHFFFAOYSA-N;
+MW          186.054;      // g/mol [origin=calculated method=formula-sum]
+Tc          542.61;      // K   [origin=predictive method=joback]
+Pc          30.592;      // bar [origin=predictive method=joback]
+omega       0.5400;      // -   [origin=predictive method=lee-kesler]
+Tb          384.08;      // K   [origin=predictive method=joback]
+HvapTb      29634.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (71.57 0.2682 -9.7e-05 -5.2e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACF; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 6; } { group F; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5,6-hexakis(fluoranyl)benzene" "perfluorobenzene" "benzene, hexafluoro-" "hexa fluorobenzene" "1,2,3,4,5,6-hexafluorobenzene" "benzene, 1,2,3,4,5,6-hexafluoro-" "hexafluorbenzol" "c6f6" "zqbfaoffoqmsgj-uhfffaoysa-" "benzene,hexafluoro- (6ci,8ci,9ci);hexafluorobenzene;" );
+gibbsFormation
+{
+    dHf_298   -1164650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     442.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1104960.0
+    phase     gas;
+}

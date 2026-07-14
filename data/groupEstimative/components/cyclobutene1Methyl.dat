@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclobutene, 1-methyl-  (C5H8, CAS 1489-60-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclobutene1Methyl;
+formula     C5H8;
+CAS         1489-60-7;
+InChIKey    AVPHQXWAMGTQPF-UHFFFAOYSA-N;
+MW          68.119;      // g/mol [origin=calculated method=formula-sum]
+Tc          525.36;      // K   [origin=predictive method=joback]
+Pc          45.104;      // bar [origin=predictive method=joback]
+omega       0.2195;      // -   [origin=predictive method=lee-kesler]
+Tb          333.82;      // K   [origin=predictive method=joback]
+HvapTb      28072.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-40.88 0.53112 -0.00039764 1.252e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methylcyclobutene" );
+gibbsFormation
+{
+    dHf_298   -13240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     279.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=67910.0
+    phase     gas;
+}

@@ -1,0 +1,16 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     FeedComp               MV_final         5.25e-05           1e-4
+kpi     FeedComp               PV_final         0                  1e-4
+kpi     FeedComp               SP_final         5.25e-05           1e-4
+kpi     TC1                    MV_final         350.204904403      1e-4
+kpi     TC1                    PV_final         350.000124372      1e-4
+kpi     TC1                    SP_final         350                1e-4
+kpi     reactor                F_in_final       6.75e-05           1e-4
+kpi     reactor                T_final          350.000123673      1e-4
+kpi     reactor                n_compA_final    0.00879292389459   1e-4
+kpi     reactor                n_compB_final    0.00320707610541   1e-4
+kpi     reactor                t_end            1800               1e-4
+kpi     reactor                z_in_compA_final 0.777777777778     1e-4
+kpi     reactor                z_in_compB_final 0.222222222222     1e-4

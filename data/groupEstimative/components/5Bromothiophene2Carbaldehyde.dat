@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-bromothiophene-2-carbaldehyde  (C5H3BrOS, CAS 4701-17-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C5H3BrOS (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        5Bromothiophene2Carbaldehyde;
+formula     C5H3BrOS;
+CAS         4701-17-1;
+InChIKey    GFBVUFQNHLUCPX-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          191.042;      // g/mol [origin=calculated method=formula-sum]
+Tc          677.62;      // K   [origin=predictive method=joback]
+Pc          56.026;      // bar [origin=predictive method=joback]
+omega       0.3023;      // -   [origin=predictive method=lee-kesler]
+Tb          432.64;      // K   [origin=predictive method=joback]
+HvapTb      39072.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.41 0.46671 -0.00051458 2.142e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CHO; count 1; } { group Br; count 1; } { group C4H2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 2; } { group dC_ring; count 2; } { group Br; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-bromanylthiophene-2-carbaldehyde" "5-bromo-2-thiophenecarboxaldehyde" "5-bromothiophene-2-carboxaldehyde" "5-bromothenaldehyde" "5-bromo-2-formylthiophene" "2-bromo-5-thiophenecarboxaldehyde" "5-bromo-2-thiophenecarbaldehyde" "5-bromothiophene-2-aldehyde" "5-bromo-thiophene-2-carbaldehyde" "5-bromothiophene-2-carbaldehyde," "2-bromo-5-formylthiophene" "2-formyl-5-bromothiophene" );
+gibbsFormation
+{
+    dHf_298   174950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     437.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=174280.0
+    phase     gas;
+}

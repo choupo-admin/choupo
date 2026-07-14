@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (3r,4s)-8-methyl-1,7-dioxaspiro[4.4]nonane-3,4,8-triol  (C8H14O5, CAS 12228-50-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3r4s8Methyl17Dioxaspiro44Nonane348Triol;
+formula     C8H14O5;
+CAS         12228-50-1;
+InChIKey    GEMQYLVRMCCZID-NYOFMCRDSA-N;
+MW          190.195;      // g/mol [origin=calculated method=formula-sum]
+Tc          924.69;      // K   [origin=predictive method=joback]
+Pc          53.357;      // bar [origin=predictive method=joback]
+omega       1.9023;      // -   [origin=predictive method=lee-kesler]
+Tb          730.51;      // K   [origin=predictive method=joback]
+HvapTb      89881.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-157.82 1.66362 -0.0017304 7.445e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 2; } { group C; count 2; } { group OH; count 3; } { group FCH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group OH; count 3; } { group O_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "sphydrofuran" "2-methyl-4-(glyceryl)furan" "sphydrofuran(8ci); (+)-sphydrofuran" "(6s,7r)-2-methyl-3,9-dioxaspiro[4.4]nonane-2,6,7-triol" "1,7-dioxaspiro[4.4]nonane-3,4,8-triol,8-methyl-, (3r,4s,5s)-" );
+gibbsFormation
+{
+    dHf_298   -812220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     451.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-507420.0
+    phase     gas;
+}

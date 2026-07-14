@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3-bis(acetyloxy)propyl laurate  (C19H34O6, CAS 30899-62-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23BisAcetyloxyPropylLaurate;
+formula     C19H34O6;
+CAS         30899-62-8;
+InChIKey    NBMAHNZMRSQCPG-UHFFFAOYSA-N;
+MW          358.475;      // g/mol [origin=calculated method=formula-sum]
+Tc          993.26;      // K   [origin=predictive method=joback]
+Pc          10.972;      // bar [origin=predictive method=joback]
+omega       1.0122;      // -   [origin=predictive method=lee-kesler]
+Tb          808.54;      // K   [origin=predictive method=joback]
+HvapTb      79721.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (60.162 1.65036 -0.0007292 4.31e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group CH; count 1; } { group CH3COO; count 2; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 12; } { group CH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-diacetyloxypropyl dodecanoate" "dodecanoic acid, ester with 1,2,3-propanetriol diacetate" "dodecanoic acid, ester with 1,2,3 propanetriol diacetate" "dodecanoic acid, 2,3-bis(acetyloxy)propyl ester" "lauric acid, ester with hydroxypropanediyl diacetate" "dodecanoic acid, esterwith 1,2,3-propanetriol diacetate" );
+gibbsFormation
+{
+    dHf_298   -1392610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1040.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-824450.0
+    phase     gas;
+}

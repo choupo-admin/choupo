@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluorodecyl iodide  (C10F21I, CAS 423-62-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluorodecylIodide;
+formula     C10F21I;
+CAS         423-62-1;
+InChIKey    UDWBMXSQHOHKOI-UHFFFAOYSA-N;
+MW          645.968;      // g/mol [origin=calculated method=formula-sum]
+Tc          602.96;      // K   [origin=predictive method=joback]
+Pc          11.452;      // bar [origin=predictive method=joback]
+omega       0.6953;      // -   [origin=predictive method=lee-kesler]
+Tb          473.91;      // K   [origin=predictive method=joback]
+HvapTb      17110.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-111.33 2.4986 -0.002664 9.843e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group I; count 1; } { group CF3; count 1; } { group CF2; count 9; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 10; } { group F; count 21; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10-henicosakis(fluoranyl)-10-iodanyl-decane" "1-iodoperfluorodecane" "heneicosafluorodecyl iodide" "perfluoro-1-iododecane" "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10-henicosafluoro-10-iododecane" "heneicosafluoro-1-iododecane" "henicosafluoro-10-iododecane" "decane, heneicosafluoro-1-iodo-" "decane, 1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10-heneicosafluoro-10-iodo-" "decane, 1-iodo-1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heneicosafluoro-" "perfluorodecyliodide" "henicosafluorodecyl iodide" );
+gibbsFormation
+{
+    dHf_298   -4378670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     878.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3971170.0
+    phase     gas;
+}

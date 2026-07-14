@@ -1,0 +1,52 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Calcium oxide (CaO), LIME.  CAS 1305-78-8.
+
+  A NON-VOLATILE refractory crystalline oxide: never enters the vapour
+  (K = 0).  The quicklime product of limestone calcination
+  (CaCO3 -> CaO + CO2) and the feed for slaking (CaO + H2O -> Ca(OH)2) --
+  the partner species to CaCO3 / Ca(OH)2 for Gibbs-reactor and lime-cycle
+  exercises.
+
+  Carries a REAL solid heat capacity and the solid-phase formation datum.
+
+  PRIMARY: Wagman et al., NBS Tables of Chemical Thermodynamic Properties,
+  J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982) -- PUBLIC DOMAIN.
+  NOTE on S_298: Wagman lists 39.75 J/(mol*K); CODATA / Robie & Hemingway
+  (USGS Bull. 2131, 1995) give ~38.1 -- a genuine literature spread of ~1.6
+  J/(mol*K).  The NBS value is kept for batch-internal consistency; flag
+  before a Gibbs equilibrium hinges on the CaO entropy.
+\*---------------------------------------------------------------------------*/
+
+name        CaO;
+formula     CaO;
+CAS         1305-78-8;
+
+MW          56.077;            // kg/kmol
+
+role        nonvolatile;       // never goes to the vapour (K = 0)
+
+solid
+{
+    rho_p   3340.0;            // lime particle density [kg/m^3]
+}
+
+gibbsFormation
+{
+    dHf_298   -635090;         // J/mol  [Wagman et al. NBS Tables 1982]
+    s_298     39.75;           // J/(mol*K) [Wagman 1982; CODATA ~38.1, see header]
+    phase     solid;
+}
+
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = a0  [J/(mol*K)], constant
+    coefficients  ( 42.0 );            // Cp(298) [Wagman et al. NBS Tables 1982]
+    Trange        ( 298  800 );        // constant-Cp validity flag (near ambient)
+}
+
+provenance
+{
+    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982 (S_298: NBS 39.75; CODATA/Robie-Hemingway ~38.1)"; }
+    solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
+    rho_p { origin literature; method "lime crystal density ~3.34 g/cm3"; }
+}

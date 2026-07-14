@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-dimethoxyacetaldehyde  (C4H8O3, CAS 51673-84-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Dimethoxyacetaldehyde;
+formula     C4H8O3;
+CAS         51673-84-8;
+InChIKey    OGFKTAMJLKHRAZ-UHFFFAOYSA-N;
+MW          104.105;      // g/mol [origin=calculated method=formula-sum]
+Tc          562.85;      // K   [origin=predictive method=joback]
+Pc          41.409;      // bar [origin=predictive method=joback]
+omega       0.4779;      // -   [origin=predictive method=lee-kesler]
+Tb          384.18;      // K   [origin=predictive method=joback]
+HvapTb      35650.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (59.97 0.23784 3.2e-05 -7.58e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group CHO; count 1; } { group CH3O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group O; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-dimethoxyethanal" "dimethoxyacetaldehyde" "acetaldehyde, dimethoxy-" "acetaldehyde, 2,2-dimethoxy-" "glyoxal dimethylacetal" "glyoxal dimethyl acetal" "2,2-dimethoxy-acetaldehyde" "2,2-dimethoxy acetaldehyde" "acetaldehyde,2,2-dimethoxy-" "glyoxal 1-(dimethyl acetal)" "2,2-dimethoxyacetaldehyde solution" "2,2-dimethoxyacetaldehyde(60 wt. % in h2o)" );
+gibbsFormation
+{
+    dHf_298   -481190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     343.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-329160.0
+    phase     gas;
+}

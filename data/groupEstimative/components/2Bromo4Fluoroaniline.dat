@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-bromo-4-fluoroaniline  (C6H5BrFN, CAS 1003-98-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Bromo4Fluoroaniline;
+formula     C6H5BrFN;
+CAS         1003-98-1;
+InChIKey    YLMFXCIATJJKQL-UHFFFAOYSA-N;
+MW          190.015;      // g/mol [origin=calculated method=formula-sum]
+Tc          749.28;      // K   [origin=predictive method=joback]
+Pc          50.157;      // bar [origin=predictive method=joback]
+omega       0.5538;      // -   [origin=predictive method=lee-kesler]
+Tb          511.48;      // K   [origin=predictive method=joback]
+HvapTb      48809.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.9 0.4878 -0.00033092 8.66e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACNH2; count 1; } { group Br; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Br; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanyl-4-fluoranyl-aniline" "4-fluoro-2-bromoaniline" "2-bromo-4-fluorobenzenamine" "2-brom-4-fluoranilin" "2-bromo-4-fluoro-aniline" "2-bromo-4-fluoro-phenylamine" "2-bromo-4-fluorophenylamine" "2-bromo-4-fluoro aniline" "tpc-i112" "ylmfxciatjjkql-uhfffaoysa-" "benzenamine, 2-bromo-4-fluoro-" "2-bromo-4-fluoro-aniline;2-bromo-4-fluoro aniline;2-bromo-4-fluoro-phenylamine;bromofluoroaniline1;2-bromo-4-fluoroaniline 99%;2-bromo-4-fluoroaniline 98+%;benzenamine, 2-bromo-4-fluoro-;" );
+gibbsFormation
+{
+    dHf_298   -89570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     405.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-21250.0
+    phase     gas;
+}

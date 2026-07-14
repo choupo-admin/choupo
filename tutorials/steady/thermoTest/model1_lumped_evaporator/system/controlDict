@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "thermoTest model 1 -- NaCl as a LUMPED molecular component: the boiling-point elevation is the IDEAL K_b*m (van't Hoff), BPE ~ 2.11 K. Compare model2 (same evaporator, Pitzer a_w -> BPE ~ 5.07 K): the REPRESENTATION axis, lumped vs dissociated, on one operation.";
+verbosity     3;

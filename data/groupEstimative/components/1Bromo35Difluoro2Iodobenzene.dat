@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-bromo-3,5-difluoro-2-iodobenzene  (C6H2BrF2I, CAS 175278-11-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Bromo35Difluoro2Iodobenzene;
+formula     C6H2BrF2I;
+CAS         175278-11-2;
+InChIKey    KJJGFGWQNCPZBG-UHFFFAOYSA-N;
+MW          318.882;      // g/mol [origin=calculated method=formula-sum]
+Tc          785.95;      // K   [origin=predictive method=joback]
+Pc          41.570;      // bar [origin=predictive method=joback]
+omega       0.4783;      // -   [origin=predictive method=lee-kesler]
+Tb          536.34;      // K   [origin=predictive method=joback]
+HvapTb      47386.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (38.49 0.4172 -0.00031828 9.62e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 2; } { group I; count 1; } { group Br; count 1; } { group ACF; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group F; count 2; } { group Br; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-3,5-bis(fluoranyl)-2-iodanyl-benzene" "2-bromo-4,6-difluoroiodobenzene" "3,5-difluoro-2-iodobromobenzene" "benzene,1-bromo-3,5-difluoro-2-iodo-" "benzene, 1-bromo-3,5-difluoro-2-iodo-" "1-bromo-3,5-difluoro-2-iodobenzene;3,5-difluoro-2-iodobromobenzene" );
+gibbsFormation
+{
+    dHf_298   -254070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     434.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-234020.0
+    phase     gas;
+}

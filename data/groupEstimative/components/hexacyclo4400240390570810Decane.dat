@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexacyclo(4.4.0.02,4.03,9.05,7.08,10)decane  (C10H10, CAS 33840-23-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexacyclo4400240390570810Decane;
+formula     C10H10;
+CAS         33840-23-2;
+InChIKey    JGXDLFFGBKOCCX-UHFFFAOYSA-N;
+MW          130.19;      // g/mol [origin=calculated method=formula-sum]
+Tc          605.67;      // K   [origin=predictive method=joback]
+Pc          33.412;      // bar [origin=predictive method=joback]
+omega       0.4226;      // -   [origin=predictive method=lee-kesler]
+Tb          416.00;      // K   [origin=predictive method=joback]
+HvapTb      34720.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-242.93 1.83 -0.001991 8.3e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 10; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexacyclo[4.4.0.02,4.03,9.05,7.08,10]decane" "1,2,3-metheno-1h-dicycloprop[cd,hi]indene,octahydro-" );
+gibbsFormation
+{
+    dHf_298   154990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     -324.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=463780.0
+    phase     gas;
+}

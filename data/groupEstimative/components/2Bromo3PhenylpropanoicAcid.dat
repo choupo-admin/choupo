@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-bromo-3-phenylpropanoic acid  (C9H9BrO2, CAS 16503-53-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Bromo3PhenylpropanoicAcid;
+formula     C9H9BrO2;
+CAS         16503-53-0;
+InChIKey    WDRSCFNERFONKU-UHFFFAOYSA-N;
+MW          229.073;      // g/mol [origin=calculated method=formula-sum]
+Tc          884.92;      // K   [origin=predictive method=joback]
+Pc          39.805;      // bar [origin=predictive method=joback]
+omega       0.8389;      // -   [origin=predictive method=lee-kesler]
+Tb          643.43;      // K   [origin=predictive method=joback]
+HvapTb      61115.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.089 0.8748 -0.0006442 1.83e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group COOH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanyl-3-phenyl-propanoic acid" "2-bromo-3-phenyl-propionic acid" "2-bromo-3-phenylpropionic acid" "(2r)-2-bromo-3-phenylpropanoic acid" "agn-pc-00fblf" "2-bpp" "benzenepropanoic acid, a-bromo-" "benzenepropanoic-beta-14c acid, alpha-bromo-" "4-iso-propylamino-1-boc-piperidine; tert-butyl 4-(isopropylamino)piperidine-1-carboxylate" "hydrocinnamicacid, a-bromo- (6ci,8ci);2-bromo-3-phenylpropionic acid;dl-a-bromo-b-phenylpropionicacid;" );
+gibbsFormation
+{
+    dHf_298   -321780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     494.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-194720.0
+    phase     gas;
+}

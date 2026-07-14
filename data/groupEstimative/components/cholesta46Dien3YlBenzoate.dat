@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cholesta-4,6-dien-3-yl benzoate  (C34H48O2, CAS 25485-34-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cholesta46Dien3YlBenzoate;
+formula     C34H48O2;
+CAS         25485-34-1;
+InChIKey    KJRLFFDMSLSIGS-UHFFFAOYSA-N;
+MW          488.756;      // g/mol [origin=calculated method=formula-sum]
+Tc          1350.51;      // K   [origin=predictive method=joback]
+Pc          8.465;      // bar [origin=predictive method=joback]
+omega       0.7833;      // -   [origin=predictive method=lee-kesler]
+Tb          1099.62;      // K   [origin=predictive method=joback]
+HvapTb      98714.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-318.757 4.0004 -0.00322412 1.1034e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 9; } { group CH; count 7; } { group C; count 2; } { group CH=CH; count 1; } { group CH=C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[10,13-dimethyl-17-(6-methylheptan-2-yl)-2,3,8,9,11,12,14,15,16,17-decahydro-1h-cyclopenta[a]phenanthren-3-yl] benzoate" "4,6-cholestadien-3beta-ol, benzoate" "cholesta-4,6-dien-3beta-yl benzoate" "cholesta-4,6-dien-3-ol, benzoate, (3beta)-" "cholesta-4,6-dien-3-ol, 3-benzoate, (3beta)-" "cholesta-4,6-dien-3-ol, benzoate, (3.beta.)-" "cholesta-4,6-dien-3-ol, 3-benzoate, (3.beta.)-" "[(3s,8s,9s,10r,13r,14s,17r)-10,13-dimethyl-17-[(2r)-6-methylheptan-2-yl]-2,3,8,9,11,12,14,15,16,17-decahydro-1h-cyclopenta[a]phenanthren-3-yl] benzoate" );
+gibbsFormation
+{
+    dHf_298   -502450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1075.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=231240.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 2594145  (C25H14O, CAS 63040-54-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C25H14O (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        brn2594145;
+formula     C25H14O;
+CAS         63040-54-0;
+InChIKey    SMNAQDLLFBJHTK-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          330.386;      // g/mol [origin=calculated method=formula-sum]
+Tc          1153.16;      // K   [origin=predictive method=joback]
+Pc          21.061;      // bar [origin=predictive method=joback]
+omega       0.9264;      // -   [origin=predictive method=lee-kesler]
+Tb          886.80;      // K   [origin=predictive method=joback]
+HvapTb      82021.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-156.5 2.0672 -0.00197432 7.451e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 13; } { group AC; count 11; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 13; } { group dC_ring; count 11; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dibenzo(b,def)chrysene-7-carboxaldehyde" "dibenzo[c,pqr]tetraphene-7-carbaldehyde" );
+gibbsFormation
+{
+    dHf_298   606190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     526.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=795330.0
+    phase     gas;
+}

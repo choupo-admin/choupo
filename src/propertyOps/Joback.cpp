@@ -65,6 +65,18 @@ struct Group
 // Database::currentRoot()), replacing the former hard-coded table -- the
 // parameters now live as curated DATA alongside UNIFAC/Henry, visible + editable.
 // Values are unchanged (the .dat was generated from the old table verbatim).
+// The table's stable identity (`tableId` in groups.dat) -- the ONE source the
+// structured provenance's methodVersion and the drift checker both read.
+const std::string& tableId()
+{
+    static const std::string id = [] {
+        namespace fs = std::filesystem;
+        const fs::path p = fs::path(Database::currentRoot()) / "standards" / "joback" / "groups.dat";
+        return Dictionary::fromFile(p.string())->lookupWordOrDefault("tableId", "");
+    }();
+    return id;
+}
+
 const std::map<std::string, Group>& table()
 {
     static const std::map<std::string, Group> t = [] {
@@ -139,6 +151,11 @@ static const std::map<std::string, Group> t_unused = {
 // Pc in atm; Tbr = Tb/Tc.
 
 } // namespace
+
+std::string Joback::version() const
+{
+    return tableId();
+}
 
 std::vector<std::string> Joback::knownGroups() const
 {

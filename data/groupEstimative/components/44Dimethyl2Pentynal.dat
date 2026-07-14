@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4-dimethyl-2-pentynal  (C7H10O, CAS 2579-21-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44Dimethyl2Pentynal;
+formula     C7H10O;
+CAS         2579-21-7;
+InChIKey    DTMPOWDLMOYPDD-UHFFFAOYSA-N;
+MW          110.156;      // g/mol [origin=calculated method=formula-sum]
+Tc          624.29;      // K   [origin=predictive method=joback]
+Pc          37.317;      // bar [origin=predictive method=joback]
+omega       0.3138;      // -   [origin=predictive method=lee-kesler]
+Tb          414.19;      // K   [origin=predictive method=joback]
+HvapTb      38752.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.01 0.61936 -0.00042966 1.2088e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group CHO; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group tC; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,4-dimethylpent-2-ynal" "pent-2-ynal, 4,4-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -9840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     380.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=114180.0
+    phase     gas;
+}

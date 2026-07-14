@@ -1,0 +1,57 @@
+/*---------------------------------------------------------------------------*\
+  pareto01_purity_energy / system/outerDict
+
+  WHAT THIS CASE IS: the PARETO FRONT of the classic column trade-off
+  (design forum #102.6, approved #103 -- Front 4a).  Purity and energy
+  pull against each other: more distillate purity needs more reflux,
+  and V = (R+1) D grows with it.  The front is built by
+  EPSILON-CONSTRAINT -- the second objective (x_D_LK) becomes a swept
+  bound, and each point is ONE full SQP run of
+
+      minimise  V_strip   subject to   x_D_LK >= eps_k
+
+  over R in [1.5, 6].  No multi-objective solver, no population magic:
+  five auditable constrained optimisations whose optima ARE the front.
+  At each point the purity constraint is ACTIVE (the SQP prints its
+  Lagrange multiplier -- the marginal energy price of purity), R rises
+  with eps and so does V_strip: the curve the student sweeps is the
+  trade-off itself.
+
+  pareto.csv: eps, V_strip*, achieved x_D, R*, converged, feasible --
+  failed/infeasible points STAY on the table, marked (#103).  Warm
+  start point-to-point is an execution aid; a failed warm start retries
+  COLD and says so.
+\*---------------------------------------------------------------------------*/
+
+type    paretoSweep;
+method  sqp;
+
+variables
+(
+    {
+        path     units[0].operation.refluxRatio;
+        min      1.5;
+        max      6.0;
+        initial  3.0;
+    }
+);
+
+objective
+{
+    kind     kpi;
+    path     column01.V_strip;
+    sense    minimise;
+}
+
+tradeoff
+{
+    kpi      column01.x_D_LK;
+    bound    atLeast;
+    range    ( 0.96  0.994 );
+    nPoints  5;
+}
+
+report
+{
+    file     pareto.csv;
+}

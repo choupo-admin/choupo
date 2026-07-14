@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sr 59230a  (C23H29NO6, CAS 174689-39-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sr59230a;
+formula     C23H29NO6;
+CAS         174689-39-5;
+InChIKey    XTBQNQMNFXNGLR-MKSBGGEFSA-N;
+MW          415.486;      // g/mol [origin=calculated method=formula-sum]
+Tc          1543.23;      // K   [origin=predictive method=joback]
+Pc          16.619;      // bar [origin=predictive method=joback]
+omega       1.3902;      // -   [origin=predictive method=lee-kesler]
+Tb          1256.92;      // K   [origin=predictive method=joback]
+HvapTb      132512.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-34.677 2.00162 -0.00103112 1.369e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group ACH; count 8; } { group AC; count 1; } { group ACCH2; count 2; } { group ACCH; count 1; } { group CH2NH; count 1; } { group COOH; count 2; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group OH; count 1; } { group O; count 1; } { group COOH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethanedioic acid;(2s)-1-(2-ethylphenoxy)-3-[[(1s)-1,2,3,4-tetrahydronaphthalen-1-yl]amino]propan-2-ol" "sr 59230a oxalate salt" "3-(2-ethylphenoxy)-1-((1s)-1,2,3,4-tetra-hydronaphth-1-ylamino)-(2s)-2-propanol oxalate" );
+gibbsFormation
+{
+    dHf_298   -1049710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1063.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-550460.0
+    phase     gas;
+}

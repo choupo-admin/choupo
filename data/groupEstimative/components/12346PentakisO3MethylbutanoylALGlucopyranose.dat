@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,3,4,6-pentakis-o-(3-methylbutanoyl)-|a-l-glucopyranose  (C31H52O11, CAS 64058-47-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12346PentakisO3MethylbutanoylALGlucopyranose;
+formula     C31H52O11;
+CAS         64058-47-5;
+InChIKey    QDHUFMQUDACIBI-UBCPROJESA-N;
+MW          600.746;      // g/mol [origin=calculated method=formula-sum]
+Tc          1552.35;      // K   [origin=predictive method=joback]
+Pc          6.052;      // bar [origin=predictive method=joback]
+omega       0.2545;      // -   [origin=predictive method=lee-kesler]
+Tb          1225.60;      // K   [origin=predictive method=joback]
+HvapTb      123398.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (68.816 2.7176 -0.0010511 -4.22e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 10; } { group CH2; count 1; } { group CH; count 9; } { group CH2COO; count 5; } { group CH-O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 10; } { group CH2; count 6; } { group CH; count 5; } { group CH_ring; count 5; } { group O_ring; count 1; } { group COO; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(2s,3s,4r,5s,6r)-3,4,5,6-tetrakis(3-methylbutanoyloxy)oxan-2-yl]methyl 3-methylbutanoate" "d-glucopyranose, pentakis(3-methylbutanoate)" "d-glucopyranose, 1,2,3,4,6-pentakis(3-methylbutanoate)" );
+gibbsFormation
+{
+    dHf_298   -2455010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1321.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1446420.0
+    phase     gas;
+}

@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopentyl radical  (C5H9, CAS 3889-74-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        cyclopentylRadical;
+formula     C5H9;
+CAS         3889-74-5;
+InChIKey    BQOWUDKEXDCGQS-UHFFFAOYSA-N;
+role        radical;
+MW          69.127;      // g/mol [origin=calculated method=formula-sum]
+Tc          530.94;      // K   [origin=predictive method=joback]
+Pc          46.466;      // bar [origin=predictive method=joback]
+omega       0.1916;      // -   [origin=predictive method=lee-kesler]
+Tb          333.53;      // K   [origin=predictive method=joback]
+HvapTb      27436.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-64.19 0.609 -0.00042464 1.181e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH2_ring; count 4; } { group dCH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclopentane" "cyclopentanyl" "cyclopentyl" );
+gibbsFormation
+{
+    dHf_298   -36820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     324.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=50460.0
+    phase     gas;
+}

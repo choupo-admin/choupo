@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl prop-2-enoate;methyl 2-methylprop-2-enoate;prop-2-enyl 2-methylprop-2-enoate  (C17H26O6, CAS 61553-03-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylProp2EnoateMethyl2Methylprop2EnoateProp2Enyl2Methylprop;
+formula     C17H26O6;
+CAS         61553-03-5;
+InChIKey    AHDMERQHOSVRKV-UHFFFAOYSA-N;
+MW          326.389;      // g/mol [origin=calculated method=formula-sum]
+Tc          947.22;      // K   [origin=predictive method=joback]
+Pc          12.460;      // bar [origin=predictive method=joback]
+omega       0.8571;      // -   [origin=predictive method=lee-kesler]
+Tb          752.50;      // K   [origin=predictive method=joback]
+HvapTb      73725.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (133.952 0.96188 0.0001162 -3.414e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group CH2=CH; count 2; } { group CH2=C; count 2; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group dCH2; count 4; } { group dCH; count 2; } { group dC; count 2; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-propenoic acid, 2-methyl-, methyl ester, polymer with ethyl 2-propenoate and 2-propen-1-yl 2-methyl-2-propenoate" "2-propenoic acid, 2-methyl-, methyl ester, polymer with ethyl 2-propenoate and 2-propenyl 2-methyl-2-propenoate" "ethyl prop-2-enoate; methyl 2-methylprop-2-enoate; prop-2-enyl 2-methylprop-2-enoate" );
+gibbsFormation
+{
+    dHf_298   -1087150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1160.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-714110.0
+    phase     gas;
+}

@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-diisocyanato-2-methyl-benzene;2-ethyl-2-(hydroxymethyl)propane-1,3-diol;hexanedioic acid  (C21H30N2O9, CAS 52656-15-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13Diisocyanato2MethylBenzene2Ethyl2HydroxymethylPropane13Dio;
+formula     C21H30N2O9;
+CAS         52656-15-2;
+InChIKey    QBXCKQQYNQWYGI-UHFFFAOYSA-N;
+MW          454.476;      // g/mol [origin=calculated method=formula-sum]
+Tc          1862.47;      // K   [origin=predictive method=joback]
+Pc          16.155;      // bar [origin=predictive method=joback]
+omega       0.6686;      // -   [origin=predictive method=lee-kesler]
+Tb          1417.19;      // K   [origin=predictive method=joback]
+HvapTb      168661.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group C; count 1; } { group ACH; count 3; } { group AC; count 2; } { group ACCH3; count 1; } { group OH; count 3; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:2
+    joback ( { group CH3; count 2; } { group CH2; count 8; } { group C; count 1; } { group dCd; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 3; } { group COOH; count 2; } { group dO_oth; count 2; } { group Nd; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexanedioic acid, polymer with 1,3-diisocyanatomethylbenzene and 2-ethyl-2-(hydroxymethyl)-1,3-propanediol" "1,3-diisocyanato-2-methylbenzene; 2-ethyl-2-(hydroxymethyl)propane-1,3-diol; hexanedioic acid" );
+// formation datum unavailable (element entropy missing): dHf_298=-1663220.0 dGf_298=None

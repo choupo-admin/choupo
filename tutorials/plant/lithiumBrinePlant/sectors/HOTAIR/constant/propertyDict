@@ -1,0 +1,16 @@
+/*---------------------------------------------------------------------------*\
+  HOTAIR property context.
+\*---------------------------------------------------------------------------*/
+
+recordType    propertyDict;
+schemaVersion 1;
+
+inherits "../../../constant";
+
+components ( CH4 O2 N2 CO CO2 water H2 );
+
+propertyMethods
+{
+    liquid activity.ideal;
+    vapour builtin.idealGas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-heptyl-2-carbomethoxycyclopentanone  (C14H24O3, CAS 68003-53-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Heptyl2Carbomethoxycyclopentanone;
+formula     C14H24O3;
+CAS         68003-53-2;
+InChIKey    NUKUEPMJQQXHDS-UHFFFAOYSA-N;
+MW          240.343;      // g/mol [origin=calculated method=formula-sum]
+Tc          866.02;      // K   [origin=predictive method=joback]
+Pc          18.953;      // bar [origin=predictive method=joback]
+omega       0.7993;      // -   [origin=predictive method=lee-kesler]
+Tb          661.48;      // K   [origin=predictive method=joback]
+HvapTb      57518.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-58.474 1.53434 -0.0010592 3.228e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group C; count 1; } { group CH2CO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 1-heptyl-2-oxidanylidene-cyclopentane-1-carboxylate" "methyl 1-heptyl-2-oxocyclopentanecarboxylate" "cyclopentanecarboxylic acid, 1-heptyl-2-oxo-, methyl ester" "methyl 1-heptyl-2-oxocyclopentane-1-carboxylate" );
+gibbsFormation
+{
+    dHf_298   -711550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     692.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-334900.0
+    phase     gas;
+}

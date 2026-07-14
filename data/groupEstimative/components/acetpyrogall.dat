@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetpyrogall  (C12H12O6, CAS 525-52-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acetpyrogall;
+formula     C12H12O6;
+CAS         525-52-0;
+InChIKey    AQGLTPNHAAVOKN-UHFFFAOYSA-N;
+MW          252.222;      // g/mol [origin=calculated method=formula-sum]
+Tc          896.45;      // K   [origin=predictive method=joback]
+Pc          23.703;      // bar [origin=predictive method=joback]
+omega       0.9514;      // -   [origin=predictive method=lee-kesler]
+Tb          685.46;      // K   [origin=predictive method=joback]
+HvapTb      68127.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (62.9 0.78156 -0.00024232 -6.4e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group CH3COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2,3-diacetyloxyphenyl) ethanoate" "pyrogallol triacetate" "lenigallol" "pyracetol" "triacetylpyrogallol" "1,2,3-benzenetriol, triacetate" "1,2,3-triacetoxybenzene" "1,2,3-benzenetriol, 1,2,3-triacetate" "pyrogallol, triacetate" "1,3-benzenetriol, triacetate" "2,6-diacetyloxyphenyl acetate" "pyrogallol, triacetate (8ci)" );
+gibbsFormation
+{
+    dHf_298   -1029260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     658.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-787800.0
+    phase     gas;
+}

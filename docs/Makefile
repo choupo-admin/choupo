@@ -23,6 +23,11 @@ dev:    developerGuide.pdf
 theory: theoryGuide.pdf
 props:  propsGuide.pdf
 
+# The tutorials guide \input{}s one part file per category -- editing a part
+# must rebuild the master (found stale: a new still04 entry left the PDF
+# "up to date").
+tutorialsGuide.pdf: $(wildcard tutorialsGuide-*.tex)
+
 # Two passes so the TOC resolves.
 %.pdf: %.tex preamble.tex cc-by-sa-4.0.txt
 	@echo "  pdflatex (pass 1)  $<"

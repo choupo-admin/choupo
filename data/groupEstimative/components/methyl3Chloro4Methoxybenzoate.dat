@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 3-chloro-4-methoxybenzoate  (C9H9ClO3, CAS 37908-98-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl3Chloro4Methoxybenzoate;
+formula     C9H9ClO3;
+CAS         37908-98-8;
+InChIKey    PINQDVFQCCFACD-UHFFFAOYSA-N;
+MW          200.618;      // g/mol [origin=calculated method=formula-sum]
+Tc          778.27;      // K   [origin=predictive method=joback]
+Pc          29.861;      // bar [origin=predictive method=joback]
+omega       0.6279;      // -   [origin=predictive method=lee-kesler]
+Tb          560.23;      // K   [origin=predictive method=joback]
+HvapTb      53430.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (53.2 0.54974 -0.00017772 -3.13e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 3; } { group AC; count 2; } { group CH3O; count 1; } { group ACCl; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 3-chloranyl-4-methoxy-benzoate" "methyl 3-chloro-p-anisate" "benzoic acid, 3-chloro-4-methoxy-, methyl ester" "methyl3-chloro-4-methoxybenzoate" "methyl-3-chloro-4-methoxybenzoate" "2-chloro-4-(methoxycarbonyl)anisole" "methyl-4-methoxy-3-chlorobenzoate" "benzoic acid,3-chloro-4-methoxy-, methyl ester" "3-chloro-4-methoxybenzoic acid methyl ester" "benzoic acid, 3-chloro-4-methoxy-, methyl ester;methyl 3-chloro-p-anisate" "p-anisicacid, 3-chloro-, methyl ester (7ci);3-chloro-4-methoxybenzoic acid methylester;methyl 3-chloro-4-methoxybenzoate;" );
+gibbsFormation
+{
+    dHf_298   -480740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     483.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-309250.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethyl 6-oxo-6h-dibenzopyran-4,8-dicarboxylate  (C17H12O6, CAS 67801-59-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethyl6Oxo6hDibenzopyran48Dicarboxylate;
+formula     C17H12O6;
+CAS         67801-59-6;
+InChIKey    YNIKZBLWNYWZRB-UHFFFAOYSA-N;
+MW          312.277;      // g/mol [origin=calculated method=formula-sum]
+Tc          1062.22;      // K   [origin=predictive method=joback]
+Pc          21.734;      // bar [origin=predictive method=joback]
+omega       1.1692;      // -   [origin=predictive method=lee-kesler]
+Tb          835.10;      // K   [origin=predictive method=joback]
+HvapTb      82563.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.23 1.26484 -0.00082624 1.884e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group ACH; count 6; } { group AC; count 6; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dimethyl 6-oxidanylidenebenzo[c]chromene-4,8-dicarboxylate" "6h-dibenzo(b,d)pyran-4,8-dicarboxylic acid, 6-oxo-, dimethyl ester" "6h-dibenzo[b,d]pyran-4,8-dicarboxylic acid, 6-oxo-, dimethyl ester" "6h-dibenzo(b,d)pyran-4,8-dicarboxylic acid, 6-oxo-, 4,8-dimethyl ester" "6h-dibenzo[b,d]pyran-4,8-dicarboxylic acid, 6-oxo-, 4,8-dimethyl ester" "dimethyl 6-oxobenzo[c]chromene-4,8-dicarboxylate" "dimethyl 6-oxo-6h-dibenzo(b,d)pyran-4,8-dicarboxylate" );
+gibbsFormation
+{
+    dHf_298   -807250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     626.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-547790.0
+    phase     gas;
+}

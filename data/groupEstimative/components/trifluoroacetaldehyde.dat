@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trifluoroacetaldehyde  (C2HF3O, CAS 75-90-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trifluoroacetaldehyde;
+formula     C2HF3O;
+CAS         75-90-1;
+InChIKey    JVTSHOJDBRTPHD-UHFFFAOYSA-N;
+MW          98.023;      // g/mol [origin=calculated method=formula-sum]
+Tc          441.89;      // K   [origin=predictive method=joback]
+Pc          47.431;      // bar [origin=predictive method=joback]
+omega       0.3342;      // -   [origin=predictive method=lee-kesler]
+Tb          288.60;      // K   [origin=predictive method=joback]
+HvapTb      23019.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.27 0.3295 -0.000299 9.92e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CHO; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group F; count 3; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,2-tris(fluoranyl)ethanal" "fluoral" "acetaldehyde, trifluoro-" "acetaldehyde, 2,2,2-trifluoro-" "2,2,2-trifluoroacetaldehyde" "agn-pc-0d1vpe" );
+gibbsFormation
+{
+    dHf_298   -767270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     308.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-715150.0
+    phase     gas;
+}

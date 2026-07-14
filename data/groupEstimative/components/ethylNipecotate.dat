@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl nipecotate  (C8H15NO2, CAS 5006-62-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylNipecotate;
+formula     C8H15NO2;
+CAS         5006-62-2;
+InChIKey    XIWBSOUNZWSFKU-UHFFFAOYSA-N;
+MW          157.213;      // g/mol [origin=calculated method=formula-sum]
+Tc          723.18;      // K   [origin=predictive method=joback]
+Pc          32.616;      // bar [origin=predictive method=joback]
+omega       0.5368;      // -   [origin=predictive method=lee-kesler]
+Tb          508.96;      // K   [origin=predictive method=joback]
+HvapTb      47996.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.659 0.81772 -0.0003372 3.6e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 1; } { group CH2NH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group COO; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl piperidine-3-carboxylate" "ethyl 3-piperidinecarboxylate" "nipecotic acid ethyl ester" "(r)-ethyl piperidine-3-carboxylate" "3-piperidinecarboxylic acid ethyl ester" "piperidine-3-carboxylic acid ethyl ester" "(r)-piperidine-3-carboxylicacidethylester" "nipecotinic acid ethyl ester" "3-(ethoxycarbonyl)piperidine" "ethylpiperidine-3-carboxylate" "ethyl piperidine-3-carboxylate (+-)-" "m396" );
+gibbsFormation
+{
+    dHf_298   -433600.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     482.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-181730.0
+    phase     gas;
+}

@@ -31,6 +31,7 @@ License
 #include "core/Dictionary.H"
 #include "core/ResultEmitter.H"
 #include "solver/NewtonND.H"
+#include "streams/StreamOverrides.H"
 
 #include <algorithm>
 #include <fstream>
@@ -124,21 +125,32 @@ int DesignSpec::run()
 
     const std::size_t n = vars_.size();
 
-    // Validate every manipulated variable exists in the case's variables block.
-    if (!flowsheetDict_->found("variables")
-        || !flowsheetDict_->varsDict())
-    {
-        throw std::runtime_error("DesignSpec: the case's flowsheetDict has"
-            " no top-level `variables {... }` block, so $references"
-            " cannot be manipulated.  Declare the manipulated variables"
-            " there, e.g.  variables { A 100; }");
-    }
-    auto vd = flowsheetDict_->varsDict();
+    // A `streams.` variable is the driver's hand on STREAM STATE -- it goes
+    // through the StreamOverrides channel onto the seeded registry (forum #53),
+    // never through the variables block, and needs no $reference anywhere.
+    bool anyDictVar = false;
     for (const auto& v : vars_)
-        if (!vd->found(v.variable))
-            throw std::runtime_error("DesignSpec: manipulated variable '"
-                + v.variable + "' is not declared in the case's"
-                " `variables {... }` block");
+        if (v.variable.rfind("streams.", 0) != 0) anyDictVar = true;
+    // Validate every DICT-manipulated variable exists in the variables block.
+    // A case whose every manipulated variable is a `streams.` target needs no
+    // variables block at all.
+    if (anyDictVar)
+    {
+        if (!flowsheetDict_->found("variables") || !flowsheetDict_->varsDict())
+            throw std::runtime_error("DesignSpec: the case's flowsheetDict has"
+                " no top-level `variables {... }` block, so $references"
+                " cannot be manipulated.  Declare the manipulated variables"
+                " there, e.g.  variables { A 100; }");
+        auto vd = flowsheetDict_->varsDict();
+        for (const auto& v : vars_)
+        {
+            if (v.variable.rfind("streams.", 0) == 0) continue;   // channel target
+            if (!vd->found(v.variable))
+                throw std::runtime_error("DesignSpec: manipulated variable '"
+                    + v.variable + "' is not declared in the case's"
+                    " `variables {... }` block");
+        }
+    }
 
     std::cout << "\n=========================  Design Specification  =====================\n"
               << "  Equations / unknowns: " << n << "\n"
@@ -181,14 +193,23 @@ int DesignSpec::run()
     {
         ++evalCounter;
         auto clone = Dictionary::fromFile(flowsheetDict_->sourceName());
+        StreamOverrides ov;
         for (std::size_t i = 0; i < n; ++i)
         {
             const scalar xi = std::clamp(x[i], vars_[i].lo, vars_[i].hi);
             // Live-reference: writing to variables.X propagates to every
             // unit op whose dict reads `... $X;` --- no broadcast needed.
-            clone->setScalarAtPath("variables." + vars_[i].variable, xi);
+            if (vars_[i].variable.rfind("streams.", 0) == 0)
+                ov.set(
+                    StreamOverrides::fromDictPath(vars_[i].variable), xi);
+            else
+                if (vars_[i].variable.rfind("streams.", 0) == 0)
+                ov.set(
+                    StreamOverrides::fromDictPath(vars_[i].variable), xi);
+            else
+                clone->setScalarAtPath("variables." + vars_[i].variable, xi);
         }
-        SimulationResult r = simulator_(clone);
+        SimulationResult r = simulator_(clone, ov);
         sVector F(n, 0.0);
         for (std::size_t j = 0; j < n; ++j)
         {
@@ -210,8 +231,11 @@ int DesignSpec::run()
 
     std::cout << "  it   |F|_2          ";
     for (std::size_t i = 0; i < n; ++i)
+        // signed arithmetic: a long name (streams.steamIn.F) underflowed the
+        // size_t subtraction and asked for a 2^64-space pad.
         std::cout << "$" << vars_[i].variable
-                  << std::string(std::max<size_t>(0, 15 - vars_[i].variable.size() - 1), ' ');
+                  << std::string(static_cast<std::size_t>(std::max<long>(
+                         1, 15 - static_cast<long>(vars_[i].variable.size()) - 1)), ' ');
     std::cout << "\n  -----------------------";
     for (std::size_t i = 0; i < n; ++i) std::cout << "----------------";
     std::cout << "\n";
@@ -258,12 +282,17 @@ int DesignSpec::run()
 
     std::cout << "\n[replaying simulator at design point]\n";
     auto clone = Dictionary::fromFile(flowsheetDict_->sourceName());
+    StreamOverrides ov;
     for (std::size_t i = 0; i < n; ++i)
     {
         const scalar xi = std::clamp(R.x[i], vars_[i].lo, vars_[i].hi);
-        clone->setScalarAtPath("variables." + vars_[i].variable, xi);
+        if (vars_[i].variable.rfind("streams.", 0) == 0)
+            ov.set(
+                StreamOverrides::fromDictPath(vars_[i].variable), xi);
+        else
+            clone->setScalarAtPath("variables." + vars_[i].variable, xi);
     }
-    auto finalResult = simulator_(clone);
+    auto finalResult = simulator_(clone, ov);
     setFinalResult(finalResult);          // expose for the reports{} chain
     emitResultJson(std::cout, finalResult);
 

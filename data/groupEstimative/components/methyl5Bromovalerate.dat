@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 5-bromovalerate  (C6H11BrO2, CAS 5454-83-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl5Bromovalerate;
+formula     C6H11BrO2;
+CAS         5454-83-1;
+InChIKey    RAVVJKCSZXAIQP-UHFFFAOYSA-N;
+MW          195.056;      // g/mol [origin=calculated method=formula-sum]
+Tc          652.44;      // K   [origin=predictive method=joback]
+Pc          33.802;      // bar [origin=predictive method=joback]
+omega       0.5784;      // -   [origin=predictive method=lee-kesler]
+Tb          461.26;      // K   [origin=predictive method=joback]
+HvapTb      42792.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (31.034 0.55722 -0.0002794 3.72e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH2COO; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 5-bromanylpentanoate" "methyl 5-bromopentanoate" "5-bromovaleric acid methyl ester" "pentanoic acid, 5-bromo-, methyl ester" "methyl omega-bromopentanoate" "methy 5-bromovalerate" "methyl .omega.-bromopentanoate" "ravvjkcszxaiqp-uhfffaoysa-" "5-bromo-pentanoic acid methyl ester" "valeric acid, 5-bromo-, methyl ester" "q077" "valeric acid, 5-bromo-, methyl ester (8ci)" );
+gibbsFormation
+{
+    dHf_298   -458120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     492.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-296410.0
+    phase     gas;
+}

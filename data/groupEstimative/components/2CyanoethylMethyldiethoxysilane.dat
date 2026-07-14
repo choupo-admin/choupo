@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2-cyanoethyl)methyldiethoxysilane  (C8H17NO2Si, CAS 1186-11-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H17NO2Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2CyanoethylMethyldiethoxysilane;
+formula     C8H17NO2Si;
+CAS         1186-11-4;
+InChIKey    ITSZNKWGCBRYQB-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          187.314;      // g/mol [origin=calculated method=formula-sum]
+Tc          719.83;      // K   [origin=predictive method=joback]
+Pc          21.335;      // bar [origin=predictive method=joback]
+omega       0.6115;      // -   [origin=predictive method=lee-kesler]
+Tb          530.96;      // K   [origin=predictive method=joback]
+HvapTb      48994.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (104.434 0.36606 0.0002564 -2.491e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH2O; count 2; } { group CH2CN; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group O; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[diethoxy(methyl)silyl]propanenitrile" "propanenitrile, 3-(diethoxymethylsilyl)-" "(cyanoethyl)methyldiethoxysilane" "propionitrile, 3-(diethoxymethylsilyl)-" "(2-cyanoethyl)diethoxymethylsilane" "2-cyanoethyl methyl diethoxysilane" "methyl-beta-cyanoethyldiethoxysilane" "3-(diethoxymethylsilyl)propiononitrile" "methyl-.beta.-cyanoethyldiethoxysilane" "2-cyanoethylmethyldiethoxysilane" "propanenitrile,3-(diethoxymethylsilyl)-" );
+gibbsFormation
+{
+    dHf_298   -419630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     622.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-165100.0
+    phase     gas;
+}

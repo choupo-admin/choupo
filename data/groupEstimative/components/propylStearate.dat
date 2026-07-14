@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propyl stearate  (C21H42O2, CAS 3634-92-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        propylStearate;
+formula     C21H42O2;
+CAS         3634-92-2;
+InChIKey    BTAXGNQLYFDKEF-UHFFFAOYSA-N;
+MW          326.565;      // g/mol [origin=calculated method=formula-sum]
+Tc          908.73;      // K   [origin=predictive method=joback]
+Pc          9.591;      // bar [origin=predictive method=joback]
+omega       0.8710;      // -   [origin=predictive method=lee-kesler]
+Tb          738.30;      // K   [origin=predictive method=joback]
+HvapTb      69747.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.208 1.94404 -0.001024 1.816e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 17; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 18; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propyl octadecanoate" "octadecanoic acid, propyl ester" "stearic acid, propyl ester" "stearic acid propyl ester" "octadecanoic acid propyl ester" );
+gibbsFormation
+{
+    dHf_298   -794050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1025.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-184430.0
+    phase     gas;
+}

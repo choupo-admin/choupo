@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octafluorotoluene  (C7F8, CAS 434-64-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octafluorotoluene;
+formula     C7F8;
+CAS         434-64-0;
+InChIKey    USPWUOFNOTUBAD-UHFFFAOYSA-N;
+MW          236.061;      // g/mol [origin=calculated method=formula-sum]
+Tc          554.03;      // K   [origin=predictive method=joback]
+Pc          25.637;      // bar [origin=predictive method=joback]
+omega       0.6062;      // -   [origin=predictive method=lee-kesler]
+Tb          402.27;      // K   [origin=predictive method=joback]
+HvapTb      28930.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (58.37 0.5126 -0.000356 8.98e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 1; } { group ACF; count 5; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dC_ring; count 6; } { group F; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5-pentakis(fluoranyl)-6-(trifluoromethyl)benzene" "perfluorotoluene" "toluene, octafluoro-" "benzene, pentafluoro(trifluoromethyl)-" "(trifluoromethyl)pentafluorobenzene" "pentafluorobenzotrifluoride" "1,2,3,4,5-pentafluoro-6-(trifluoromethyl)benzene" "benzene, 1,2,3,4,5-pentafluoro-6-(trifluoromethyl)-" "pentafluoro-benzotrifluoride" "1,2,3,4,5-pentafluoro-6-trifluoromethyl-benzene" "2,3,4,5,6-pentafluoro-1-(trifluoromethyl)benzene" "benzene,1,2,3,4,5-pentafluoro-6-(trifluoromethyl)-" );
+gibbsFormation
+{
+    dHf_298   -1586260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     506.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1483320.0
+    phase     gas;
+}

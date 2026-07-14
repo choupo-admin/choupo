@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-ethoxy-2,3-dihydroxy-4-oxobutanoic acid  (C6H10O6, CAS 608-89-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Ethoxy23Dihydroxy4OxobutanoicAcid;
+formula     C6H10O6;
+CAS         608-89-9;
+InChIKey    ZUDZWKJBYZAGBS-UHFFFAOYSA-N;
+MW          178.14;      // g/mol [origin=calculated method=formula-sum]
+Tc          908.70;      // K   [origin=predictive method=joback]
+Pc          44.444;      // bar [origin=predictive method=joback]
+omega       1.8931;      // -   [origin=predictive method=lee-kesler]
+Tb          724.09;      // K   [origin=predictive method=joback]
+HvapTb      86103.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (34.661 0.64962 -0.0003478 4.97e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 2; } { group OH; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 2; } { group OH; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-ethoxy-2,3-bis(oxidanyl)-4-oxidanylidene-butanoic acid" "butanedioic acid, 2,3-dihydroxy- (2r,3r)-, 1-ethyl ester" "butanedioic acid, 2,3-dihydroxy- (2r,3r)-, monoethyl ester" "ethyl tartrate, acid" "(2s,3s)-4-ethoxy-2,3-dihydroxy-4-oxobutanoic acid" );
+gibbsFormation
+{
+    dHf_298   -1149740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     576.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-933160.0
+    phase     gas;
+}

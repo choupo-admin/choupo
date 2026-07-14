@@ -1,0 +1,52 @@
+/*---------------------------------------------------------------------------*\
+  pipe02_airwater_twophase -- GAS-LIQUID two-phase pressure drop
+
+    feed (air N2 + water, two-phase at 2 bar / 25 C)
+      -> [P1 pipe]  D, L, roughness, horizontal  ->  ΔP (result)
+      -> downstream (P reduced by the two-phase ΔP)
+
+  The two-phase path activates AUTOMATICALLY: the feed flashes two-phase at
+  (T, P) (N2 is supercritical -> all vapour; water -> mostly liquid), so
+  0 < V/F < 1 and the pipe routes to the gas-liquid models instead of the
+  single-phase liquid path.  Model: Lockhart-Martinelli (Chisholm multiplier
+  + Butterworth holdup).  Try `model homogeneous;` in twoPhase to compare.
+
+  The Lockhart-Martinelli correlation was developed and VALIDATED on isothermal
+  air-water (and similar gas-liquid) pipe data -- Lockhart & Martinelli, Chem.
+  Eng. Prog. 45 (1949) 39 -- so air-water is exactly the case it is trusted on.
+
+  Basis: N2 3 kmol/h (the fast light gas) + water 200 kmol/h (the slow heavy
+  liquid) -> a liquid-dominated two-phase flow (j_G ~ a few m/s, j_L ~ 0.5 m/s).
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        P1;
+        type        pipe;
+        model       Churchill;            // phase-alone friction factor
+        in          feed;
+        outputs     ( downstream );
+
+        operation
+        {
+            geometry
+            {
+                D          0.05    m;      // internal diameter
+                L          10.0    m;      // straight length, horizontal (dz = 0)
+                roughness  4.6e-5  m;      // commercial steel
+            }
+            // Liquid-viscosity override: the liquid phase is ~pure water, but the
+            // flash leaves a trace of dissolved N2 there and the per-component
+            // Vogel model has no N2 entry -- so give water's value directly
+            // (8.9e-4 Pa.s at 25 C, the liquid the line actually carries).
+            viscosity  8.9e-4 Pa.s;
+            twoPhase
+            {
+                model  LockhartMartinelli;   // LockhartMartinelli | homogeneous
+            }
+        }
+    }
+);

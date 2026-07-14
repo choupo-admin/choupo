@@ -138,6 +138,21 @@ class Parser {
       } else if (this.cur.kind === "word") {
         const w = this.cur.text;
 
+        if (w.startsWith("[")) {
+          const dimensions = this.parseDimensions(key);
+          if ((this.cur.kind as TokKind) !== "number") {
+            throw new Error(
+              `${this.tk.loc()}: expected SI value after dimension set of '${key}'`,
+            );
+          }
+          const value = this.cur.number;
+          this.cur = this.tk.next();
+          this.expect("semi", `';' after dimensioned scalar value of '${key}'`);
+          dict.set(key, { kind: "scalar", value, dimensions });
+          this.cur = this.tk.next();
+          continue;
+        }
+
         // $var reference: the C++ engine resolves these at solve time
         // against the root's `variables {... }` block.  The GUI
         // stores them as-is for display and round-trip.
@@ -165,6 +180,34 @@ class Parser {
         );
       }
     }
+  }
+
+  /** Parse `[M L T Theta N]`; leave the cursor on the following token. */
+  private parseDimensions(
+    key: string,
+  ): [number, number, number, number, number] {
+    const parts: string[] = [];
+    while (true) {
+      if (this.cur.kind !== "word" && this.cur.kind !== "number") {
+        throw new Error(
+          `${this.tk.loc()}: unterminated dimension set for '${key}'`,
+        );
+      }
+      parts.push(this.cur.text);
+      const closed = this.cur.text.endsWith("]");
+      this.cur = this.tk.next();
+      if (closed) break;
+    }
+
+    const match = /^\[\s*([+-]?\d+)\s+([+-]?\d+)\s+([+-]?\d+)\s+([+-]?\d+)\s+([+-]?\d+)\s*\]$/.exec(
+      parts.join(" "),
+    );
+    if (!match) {
+      throw new Error(
+        `${this.tk.loc()}: dimension set for '${key}' must be [M L T Theta N]; got '${parts.join(" ")}'`,
+      );
+    }
+    return match.slice(1).map(Number) as [number, number, number, number, number];
   }
 
   /** Cursor is at '('. Consumes through the closing ';' and advances past it. */

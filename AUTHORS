@@ -10,32 +10,28 @@ licensing, trademark strategy, and release responsibility are human decisions.
 The acknowledgement is deliberately explicit because pretending either "a
 human typed every line" or "an AI authored the project" would be false.
 
-This is the human-readable roll of everyone who has contributed code, cases,
-tests, models, executable examples, or project maintenance to Choupo. The
-authoritative, fine-grained record of contribution authorship is the git
+This is the human-readable authorship record for the Choupo software and its
+manuals. The authoritative fine-grained implementation record is the git
 history.
 
 Project lead and architect
   Vítor Geraldes
 
-Scientific curation, review, and editorial responsibility
+Software, cases, tests, models, and project maintenance
+  Vítor Geraldes
+
+Properties Guide and Theory Guide
   Vítor Geraldes
   Pedro Mendes
+  Miguel Rodrigues
 
 AI-assisted implementation
   Anthropic Claude Code / Claude Opus and Fable models
   Used as software-generation tools; not treated as human authors or
   copyright holders.
 
-Code, case, test, and model contributors
-  (add yourself here in your first pull request)
-
-Contributor authorship policy
-  Choupo records contributors by name in this file, by copyright lines in
-  source files they create or substantially extend, by DCO Signed-off-by
-  trailers, and by the git commit author history. Contributions are not
-  assigned to Vítor Geraldes or TalentGround Lda.; contributors keep their
-  copyright and license their work under GPL-3.0-or-later. The guides/manuals
-  are authored and curated by Vítor Geraldes and Pedro Mendes -- except the
-  Developer Guide, authored by Vítor Geraldes alone; external contributions do
-  not create guide authorship.
+Contribution policy
+  The upstream project is maintainer-led and does not accept external code or
+  pull requests. Bug reports and improvement suggestions are welcome but do
+  not create software or guide authorship. Forks may be developed and
+  redistributed under GPL-3.0-or-later with their own authorship records.

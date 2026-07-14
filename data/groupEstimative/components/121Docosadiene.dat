@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,21-docosadiene  (C22H42, CAS 53057-53-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        121Docosadiene;
+formula     C22H42;
+CAS         53057-53-7;
+InChIKey    RBJABTJRYMHYOP-UHFFFAOYSA-N;
+MW          306.578;      // g/mol [origin=calculated method=formula-sum]
+Tc          861.79;      // K   [origin=predictive method=joback]
+Pc          9.491;      // bar [origin=predictive method=joback]
+omega       0.8041;      // -   [origin=predictive method=lee-kesler]
+Tb          696.32;      // K   [origin=predictive method=joback]
+HvapTb      63226.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.092 2.0538 -0.0012188 2.854e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 18; } { group CH2=CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 18; } { group dCH2; count 2; } { group dCH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "docosa-1,21-diene" "docosa-1,21-diene;einecs 258-333-4;1,21-docasadiene);" );
+gibbsFormation
+{
+    dHf_298   -246550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1003.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=310040.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethrin  (C19H26O2, CAS 70-38-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethrin;
+formula     C19H26O2;
+CAS         70-38-2;
+InChIKey    FHNKBSDJERHDHZ-UHFFFAOYSA-N;
+MW          286.415;      // g/mol [origin=calculated method=formula-sum]
+Tc          945.95;      // K   [origin=predictive method=joback]
+Pc          15.140;      // bar [origin=predictive method=joback]
+omega       0.7472;      // -   [origin=predictive method=lee-kesler]
+Tb          730.86;      // K   [origin=predictive method=joback]
+HvapTb      67077.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-96.509 1.96592 -0.00154042 5.236e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH; count 2; } { group C; count 1; } { group CH=C; count 1; } { group ACH; count 3; } { group ACCH3; count 2; } { group ACCH2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2,4-dimethylphenyl)methyl 2,2-dimethyl-3-(2-methylprop-1-enyl)cyclopropane-1-carboxylate" "dimetrin" "dimethrine" "dimethrin [ansi]" "2,4-dimethylbenzylchrysanthemumate" "cyclopropanecarboxylic acid, 2,2-dimethyl-3-(2-methyl-1-propenyl)-, (2,4-dimethylphenyl)methyl ester" "chrysanthemumic acid 2,4-dimethylbenzyl ester" "chrysanthemumic acid, 2,4-dimethylbenzyl ester" "2,4-dimethylbenzyl-(i)-cis-trans-chrysanthemumate" "2,4-dimethylbenzyl ester of cis,trans-chrysanthemumic acid" "2,4-dimethylbenzyl 2,2-dimethyl-3-(2-methylpropenyl)cyclopropanecarboxylate" "(2,4-dimethylphenyl)methyl 2,2-dimethyl-3-(2-methyl-1-propenyl)cyclopropanecarboxylate" );
+gibbsFormation
+{
+    dHf_298   -384390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     712.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=3390.0
+    phase     gas;
+}

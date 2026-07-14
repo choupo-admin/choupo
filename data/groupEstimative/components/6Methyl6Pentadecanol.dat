@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-methyl-6-pentadecanol  (C16H34O, CAS 108836-86-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Methyl6Pentadecanol;
+formula     C16H34O;
+CAS         108836-86-8;
+InChIKey    VOTMKDUIXFFEQY-UHFFFAOYSA-N;
+MW          242.447;      // g/mol [origin=calculated method=formula-sum]
+Tc          819.08;      // K   [origin=predictive method=joback]
+Pc          14.315;      // bar [origin=predictive method=joback]
+omega       1.0293;      // -   [origin=predictive method=lee-kesler]
+Tb          654.63;      // K   [origin=predictive method=joback]
+HvapTb      66593.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.838 1.68366 -0.0010488 2.609e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 12; } { group C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 12; } { group C; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-methylpentadecan-6-ol" "6-methyl pentadecanol-6" );
+gibbsFormation
+{
+    dHf_298   -534550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     791.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-50140.0
+    phase     gas;
+}

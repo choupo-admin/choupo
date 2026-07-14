@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-ethylhexyl iodide  (C8H17I, CAS 1653-16-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2EthylhexylIodide;
+formula     C8H17I;
+CAS         1653-16-3;
+InChIKey    WNPGSEJRPYSCDQ-UHFFFAOYSA-N;
+MW          240.124;      // g/mol [origin=calculated method=formula-sum]
+Tc          675.67;      // K   [origin=predictive method=joback]
+Pc          25.000;      // bar [origin=predictive method=joback]
+omega       0.4169;      // -   [origin=predictive method=lee-kesler]
+Tb          475.34;      // K   [origin=predictive method=joback]
+HvapTb      42387.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.625 0.80874 -0.000496 1.234e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(iodanylmethyl)heptane" "3-(iodomethyl)heptane" "heptane, 3-(iodomethyl)-" "2-ethyl-1-iodohexane" "2-ethylhexyliodide;" );
+gibbsFormation
+{
+    dHf_298   -136860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     513.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=72160.0
+    phase     gas;
+}

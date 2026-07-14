@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ag-g-61397  (C15H29NO4, CAS 68239-13-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        agG61397;
+formula     C15H29NO4;
+CAS         68239-13-4;
+InChIKey    AWAPGSREZKXRMK-UHFFFAOYSA-N;
+MW          287.4;      // g/mol [origin=calculated method=formula-sum]
+Tc          1081.58;      // K   [origin=predictive method=joback]
+Pc          17.879;      // bar [origin=predictive method=joback]
+omega       1.2471;      // -   [origin=predictive method=lee-kesler]
+Tb          867.21;      // K   [origin=predictive method=joback]
+HvapTb      86078.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.025 1.57024 -0.0007162 5.31e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 9; } { group CH; count 1; } { group CH2N; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-diethylcyclohexanamine;pentanedioic acid" "pentanedioic acid, compd. with n,n-diethylcyclohexanamine(1:1)" "pentanedioic acid compd. with n,n-diethylcyclohexanamine (1:1)" "cyclohexyldiethylammonium hydrogen glutarate" "n,n-diethylcyclohexylamine, glutarate (1:1)" "pentanedioic acid - n,n-diethylcyclohexanamine (1:1)" );
+gibbsFormation
+{
+    dHf_298   -1043240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     939.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-581930.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(diisopropylamino)ethanol  (C8H19NO, CAS 96-80-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2DiisopropylaminoEthanol;
+formula     C8H19NO;
+CAS         96-80-0;
+InChIKey    ZYWUVGFIXPNBDL-UHFFFAOYSA-N;
+MW          145.246;      // g/mol [origin=calculated method=formula-sum]
+Tc          651.25;      // K   [origin=predictive method=joback]
+Pc          28.293;      // bar [origin=predictive method=joback]
+omega       0.8591;      // -   [origin=predictive method=lee-kesler]
+Tb          486.38;      // K   [origin=predictive method=joback]
+HvapTb      51348.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.148 0.93358 -0.0005608 1.302e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 2; } { group OH; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[di(propan-2-yl)amino]ethanol" "(diisopropylamino)ethanol" "2-diisopropylaminoethanol" "n,n-diisopropylethanolamine" "n,n-diisopropyl ethanolamine" "diisopropylethanolamine" "ethanol, 2-[bis(1-methylethyl)amino]-" "ethanol, 2-(diisopropylamino)-" "diisopropyl ethanolamine" "n,n-diisopropylaminoethanol" "(n,n-diisopropylamino)ethanol" "2-(diisopropylamino)ethyl alcohol" );
+gibbsFormation
+{
+    dHf_298   -303710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     515.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-14440.0
+    phase     gas;
+}

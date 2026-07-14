@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexatriacontane  (C36H74, CAS 630-06-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexatriacontane;
+formula     C36H74;
+CAS         630-06-8;
+InChIKey    YDLYQMBWCWFRAI-UHFFFAOYSA-N;
+MW          506.988;      // g/mol [origin=calculated method=formula-sum]
+Tc          1309.63;      // K   [origin=predictive method=joback]
+Pc          4.577;      // bar [origin=predictive method=joback]
+omega       -0.0078;      // -   [origin=predictive method=lee-kesler]
+Tb          1023.28;      // K   [origin=predictive method=joback]
+HvapTb      95730.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.836 3.42384 -0.0019346 4.172e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 34; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 34; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-hexatriacontane" "CH3-[CH2]34-ch3" "ai3-52389" "CH3-(CH2)34-CH3" "hexatriacontane, analytical standard" "hexatriacontane; nsc 407536; n-hexatriacontane" "hexatriacontane, 98%" "nhexatriacontane" "hexatriacontane, n-" "N-c-36" "NSC407536" "HY-W131353" );
+gibbsFormation
+{
+    dHf_298   -786370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1558.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=252240.0
+    phase     gas;
+}

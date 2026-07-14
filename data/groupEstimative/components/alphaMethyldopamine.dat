@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: alpha-methyldopamine  (C9H13NO2, CAS 3583-05-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        alphaMethyldopamine;
+formula     C9H13NO2;
+CAS         3583-05-9;
+InChIKey    KSRGADMGIRTXAF-UHFFFAOYSA-N;
+MW          167.208;      // g/mol [origin=calculated method=formula-sum]
+Tc          910.71;      // K   [origin=predictive method=joback]
+Pc          51.906;      // bar [origin=predictive method=joback]
+omega       1.0144;      // -   [origin=predictive method=lee-kesler]
+Tb          665.53;      // K   [origin=predictive method=joback]
+HvapTb      74185.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-52.229 1.15692 -0.00105632 3.981e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 3; } { group ACCH2; count 1; } { group ACOH; count 2; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(2-azanylpropyl)benzene-1,2-diol" "dl-alpha-methyldopamine" "4-(2-aminopropyl)catechol" "(+-)-4-(2-aminopropyl)-1,2-benzenediol" "pyrocatechol, 4-(2-aminopropyl)-, (+-)-" "methyldopamine" "catecholamphetamine" "3,4-dihydroxyamphetamine" "4-(2-aminopropyl)-1,2-benzenediol" "4-(2-aminopropyl)benzene-1,2-diol" "(s)-4-(2-aminopropyl)catechol" "1,2-benzenediol, 4-(2-aminopropyl)-" );
+gibbsFormation
+{
+    dHf_298   -318670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     495.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-107920.0
+    phase     gas;
+}

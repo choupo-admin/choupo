@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isopropyl isostearate  (C21H42O2, CAS 31478-84-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isopropylIsostearate;
+formula     C21H42O2;
+CAS         31478-84-9;
+InChIKey    NEOZOXKVMDBOSG-UHFFFAOYSA-N;
+MW          326.565;      // g/mol [origin=calculated method=formula-sum]
+Tc          910.05;      // K   [origin=predictive method=joback]
+Pc          9.687;      // bar [origin=predictive method=joback]
+omega       0.8515;      // -   [origin=predictive method=lee-kesler]
+Tb          737.42;      // K   [origin=predictive method=joback]
+HvapTb      68971.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.844 1.95588 -0.0010304 1.806e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 13; } { group CH; count 2; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 14; } { group CH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propan-2-yl 16-methylheptadecanoate" "isopropyl 16-methylheptadecanoate" "nikkol ipis" "isostearic acid, isopropyl ester" "2-propyl isooctadecanoate" "1-methylethyl isooctadecanoate" "isooctadecanoic acid, 1-methylethyl ester" "isopropyl 16-methylheptadecanoate;" "heptadecanoic acid,16-methyl-, 1-methylethyl ester" "heptadecanoic acid, 16-methyl-, 1-methylethyl ester" );
+gibbsFormation
+{
+    dHf_298   -804610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1006.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-189310.0
+    phase     gas;
+}

@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------*\
+  Case-local eNRTL pair overlay: the EXACT Chen & Evans 1986 Table 1
+  parameters (AIChE J. 32 (1986) 444, Literature/aic.690320311.pdf) --
+  the parameter set Song & Chen 2009 state they use for Figures 1-2.
+  With these, this case reproduces Figure 1 to the pixel (see propsDict).
+  The standards catalogue keeps its own lineages (Na-Cl: IDAES/1982 fit,
+  validated by the single-salt cases; K-Cl: refit to Hamer & Wu 1972,
+  which lands within 0.2 % of the 1986 values below -- independent
+  confirmation, both directions).
+\*---------------------------------------------------------------------------*/
+
+enrtl
+(
+    { cation Na; anion Cl; tau_m_ca 9.0234; tau_ca_m -4.5916; alpha 0.2;
+      source "Chen & Evans 1986, Table 1 (max 6 mol/kg, rms 1.2%)"; }
+    { cation K;  anion Cl; tau_m_ca 8.1354; tau_ca_m -4.1341; alpha 0.2;
+      source "Chen & Evans 1986, Table 1 (max 4.8 mol/kg, rms 0.2%)"; }
+);

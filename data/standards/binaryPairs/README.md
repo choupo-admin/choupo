@@ -66,29 +66,41 @@ parameters
 
 provenance
 {
-    source        literature | fit | estimated;
-    citation      "<text reference>";       // if literature
-    fitData       "<path to CSV>";          // if fit; else "<not refit>"
+    origin        literature | regressed | predictive | estimated | assumed | placeholder;
+    source        "<optional raw source label / dataset id>";   // TEXT, never a class
+    citation      "<primary reference>";
+    method        "<how the values were produced>";             // e.g. "Levenberg-Marquardt"
+    methodVersion "<stable method/table id>";                   // for deterministic estimates
+    fitData       "<path to CSV>";          // if regressed; else "<not refit>"
     fitDate       "YYYY-MM-DD" | "<literature, ca. YYYY>";
-    algorithm     "Levenberg-Marquardt" | "Nelder-Mead" | "<not reported>";
     chi2          <number> | "<not reported>";
     nDataPoints   <number>;
     confidenceIntervals { <param> <stderr>; … }   // optional
-    validityRange { Tmin <K>; Tmax <K>; }
+    validity { temperature { min <T> K; max <T> K; } note "..."; }
+    promotedDespite { identifiable 0; reason "..."; by "..."; date "YYYY-MM-DD"; }  // ONLY on an overridden promotion
     author        "<who curated or fitted>";
     notes         "<free text>";
 }
 ```
 
-The `source` field distinguishes three categories:
+**`origin` is the TYPED provenance class** — ranking, resolution priority and
+every badge/policy read it.  The canonical classes:
 
-* **`literature`** --- values copied from a textbook or DECHEMA volume,
-  with explicit citation.  `fitData` is `"<not refit>"`.
-* **`fit`** --- values regressed against experimental data within
-  Choupo's parameter-estimation workflow.  `fitData` points to
-  the CSV used; `chi2` and `confidenceIntervals` are populated.
-* **`estimated`** --- values from a group-contribution method (UNIFAC
-  prediction, etc.).  No experimental anchor.
+* **`literature`** — measured values from a cited primary source.
+* **`regressed`** — fitted to experimental data inside Choupo's fit workflow
+  (`fitData`/`chi2`/`confidenceIntervals` populated).
+* **`predictive`** — a MODEL's prediction transcribed as a value (a
+  UNIFAC-derived surrogate).  Announced on every run that consumes it.
+* **`estimated`** — group contribution from the substance's own structure.
+* **`assumed`** — an engineering assumption the curator owns (e.g. null
+  coefficients = ideality).
+* **`placeholder`** — a stub awaiting real values; loudly flagged.
+
+`source` and `citation` are TEXT — a source label and the primary reference —
+never a second origin class.  A curated (standards) pair file MUST declare
+`origin`; the engine refuses it otherwise.  `promotedDespite` is the auditable
+record of a human promoting past a diagnostic: all four fields are required,
+and every run that consumes such a pair repeats the warning.
 
 This metadata is the difference between this database and an opaque
 proprietary one. Every consumer can audit every number.

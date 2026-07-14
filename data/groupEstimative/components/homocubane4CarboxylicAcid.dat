@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: homocubane-4-carboxylic acid  (C10H10O2, CAS 15844-05-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        homocubane4CarboxylicAcid;
+formula     C10H10O2;
+CAS         15844-05-0;
+InChIKey    MOOVPWJLDNIYBR-UHFFFAOYSA-N;
+MW          162.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          784.28;      // K   [origin=predictive method=joback]
+Pc          37.045;      // bar [origin=predictive method=joback]
+omega       0.7771;      // -   [origin=predictive method=lee-kesler]
+Tb          568.22;      // K   [origin=predictive method=joback]
+HvapTb      51473.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-254.26 2.0291 -0.0023386 1.0251e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 7; } { group C; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 7; } { group C_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentacyclo[4.3.0.02,5.03,8.04,7]nonane-4-carboxylicacid" );
+gibbsFormation
+{
+    dHf_298   -244820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     -29.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37140.0
+    phase     gas;
+}

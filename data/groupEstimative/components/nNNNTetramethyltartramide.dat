@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n,n',n'-tetramethyltartramide  (C8H16N2O4, CAS 26549-65-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNNNTetramethyltartramide;
+formula     C8H16N2O4;
+CAS         26549-65-5;
+InChIKey    PCYDYHRBODKVEL-UHFFFAOYSA-N;
+MW          204.226;      // g/mol [origin=calculated method=formula-sum]
+Tc          875.07;      // K   [origin=predictive method=joback]
+Pc          36.115;      // bar [origin=predictive method=joback]
+omega       1.7598;      // -   [origin=predictive method=lee-kesler]
+Tb          698.74;      // K   [origin=predictive method=joback]
+HvapTb      83562.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.83 1.03548 -0.0006664 1.5932e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 2; } { group OH; count 2; } { group CON_CH3_2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 2; } { group OH; count 2; } { group CdO; count 2; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n,n',n'-tetramethyl-2,3-bis(oxidanyl)butanediamide" "2,3-dihydroxy-n,n,n',n'-tetramethylbutanediamide" "n,n,n',n'-tetramethyl-d-tartramide" "weinsaeure-bis-dimethylamid" "(r,r)-(+)-n,n,n',n'-tetramethyltartardiamide" "2,3-dihydroxy-n,n-dimethyl-n',n'-dimethylbutane-1,4-diamide" "butanediamide, 2,3-dihydroxy-n,n,n',n'-tetramethyl-, [r-(r*,r*)]-" "2,3-dihydroxy-n,n,n inverted exclamation mark ,n inverted exclamation mark -tetramethyl-succinamide" "butanediamide,2,3-dihydroxy-n,n,n',n'-tetramethyl-, [r-(r*,r*)]- (9ci);(+)-l-tartaric acidbis(n,n-dimethylamide);(r,r)-tartaric acid n,n,n',n'-tetramethyldiamide;n,n,n',n'-tetramethyl-(r,r)-tartaramide;" );
+gibbsFormation
+{
+    dHf_298   -613570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     635.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-298320.0
+    phase     gas;
+}

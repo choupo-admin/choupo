@@ -1,0 +1,10 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  pneumaticConveyor01_sand -- dilute-phase pneumatic conveying of sand in N2.
+
+  Conveys silica sand (~200 um) along a 30 m line with a 6 m vertical rise.
+  Shows the pressure-drop BREAKDOWN (gas/solids acceleration, gas/solids wall
+  friction, gas/solids static head) and the saltation-velocity design check.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Dilute-phase pneumatic conveying of sand in nitrogen: the glass-box dP breakdown + the saltation-margin safety check. Particle velocity from a mechanistic FORCE BALANCE (drag = wall friction + gravity); solids friction from Yang (1974, AIChE J 20:605); Rizk (1973) saltation. Loading ~2 kg/kg (in the Yang voidage range); solids friction DOMINATES the dP -- conveying solids IS a pressure-drop problem. u_g/u_salt = 1.72 (safe margin above plugging).";
+verbosity     3;

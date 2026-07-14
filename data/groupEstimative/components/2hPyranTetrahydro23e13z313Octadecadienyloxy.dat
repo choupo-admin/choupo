@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2h-pyran, tetrahydro-2-((3e,13z)-3,13-octadecadienyloxy)-  (C23H42O2, CAS 71655-21-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2hPyranTetrahydro23e13z313Octadecadienyloxy;
+formula     C23H42O2;
+CAS         71655-21-5;
+InChIKey    YYBPWCVCMWLJGZ-KVVPKJCYSA-N;
+MW          350.587;      // g/mol [origin=calculated method=formula-sum]
+Tc          993.56;      // K   [origin=predictive method=joback]
+Pc          10.123;      // bar [origin=predictive method=joback]
+omega       0.8631;      // -   [origin=predictive method=lee-kesler]
+Tb          803.08;      // K   [origin=predictive method=joback]
+HvapTb      74057.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.167 2.28472 -0.0013511 3.034e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 15; } { group CH; count 1; } { group CH=CH; count 2; } { group CH2O; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 13; } { group dCH; count 4; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r)-2-[(3e,13e)-octadeca-3,13-dienoxy]oxane" "2h-pyran, tetrahydro-2-((3e,13z)-3,13-octadecadien-1-yloxy)-" );
+gibbsFormation
+{
+    dHf_298   -493510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     968.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=136550.0
+    phase     gas;
+}

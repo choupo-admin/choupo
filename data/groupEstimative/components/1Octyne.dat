@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-octyne  (C8H14, CAS 629-05-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Octyne;
+formula     C8H14;
+CAS         629-05-0;
+InChIKey    UMIPWJGWASORKV-UHFFFAOYSA-N;
+MW          110.2;      // g/mol [origin=calculated method=formula-sum]
+Tc          547.78;      // K   [origin=predictive method=joback]
+Pc          29.601;      // bar [origin=predictive method=joback]
+omega       0.3327;      // -   [origin=predictive method=lee-kesler]
+Tb          372.76;      // K   [origin=predictive method=joback]
+HvapTb      33260.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.395 0.66992 -0.00040733 1.0239e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oct-1-yne" "hexylacetylene" "(hex-1-yl)acetylene" "1-octine(3ci);hexylacetylene;n-hexylacetylene;" );
+gibbsFormation
+{
+    dHf_298   83450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     437.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=239550.0
+    phase     gas;
+}

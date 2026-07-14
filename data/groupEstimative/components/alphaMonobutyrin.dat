@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: .alpha.-monobutyrin  (C7H14O4, CAS 557-25-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        alphaMonobutyrin;
+formula     C7H14O4;
+CAS         557-25-5;
+InChIKey    RIEABXYBQSLTFR-UHFFFAOYSA-N;
+MW          162.185;      // g/mol [origin=calculated method=formula-sum]
+Tc          767.37;      // K   [origin=predictive method=joback]
+Pc          34.889;      // bar [origin=predictive method=joback]
+omega       1.4883;      // -   [origin=predictive method=lee-kesler]
+Tb          601.90;      // K   [origin=predictive method=joback]
+HvapTb      71553.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (30.834 0.68792 -0.0003264 3.41e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group OH; count 2; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 1; } { group OH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-bis(oxidanyl)propyl butanoate" "alpha-monobutyrin" "butanoic acid, 2,3-dihydroxypropyl ester" "2,3-dihydroxypropyl butyrate" "2,3-dihydroxypropyl butanoate" "glycerol-alpha-mono-n-butyrate" "monobutyrin" "butanoic acid 2,3-dihydroxypropyl ester" "1-butyrylglycerol" "mono-n-butyrin" "1-mono-n-butyrin" "butyrin, 1-mono-" );
+gibbsFormation
+{
+    dHf_298   -814830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     572.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-578390.0
+    phase     gas;
+}

@@ -121,7 +121,7 @@ export function parseClaudeReply(text: string): ClaudeEdit[] {
 const DICT_FIELD: Record<string, keyof CaseFiles> = {
   "system/flowsheetDict": "flowsheet",
   "system/propsDict": "propsDict",
-  "constant/thermoPackage": "thermoPackage",
+  "constant/propertyDict": "thermoPackage",
   "constant/reactions": "reactions",
   "system/controlDict": "controlDict",
   "system/solverDict": "solverDict",

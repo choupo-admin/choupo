@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: einecs 273-236-7  (C28H33Cl3F6O11, CAS 68954-01-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        einecs2732367;
+formula     C28H33Cl3F6O11;
+CAS         68954-01-8;
+InChIKey    KVXVLCBFSKMBAR-UHFFFAOYSA-N;
+MW          765.899;      // g/mol [origin=calculated method=formula-sum]
+Tc          2211.94;      // K   [origin=predictive method=joback]
+Pc          7.510;      // bar [origin=predictive method=joback]
+omega       -0.1998;      // -   [origin=predictive method=lee-kesler]
+Tb          1505.71;      // K   [origin=predictive method=joback]
+HvapTb      160538.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (100.091 2.78392 -0.00175268 3.691e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group CH; count 3; } { group ACH; count 2; } { group AC; count 4; } { group OH; count 2; } { group CH2O; count 1; } { group COOH; count 1; } { group CH2Cl; count 3; } { group CF2; count 3; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 11; } { group CH; count 3; } { group C; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group F; count 6; } { group Cl; count 3; } { group OH; count 2; } { group O; count 1; } { group COOH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-[3-chloranyl-2-[4,4,5,5,6,6-hexakis(fluoranyl)nonoxy]propoxy]carbonyl-2,4-bis[(3-chloranyl-2-oxidanyl-propoxy)carbonyl]benzoic acid" "mixed 3-chloro-2-hydroxypropyl and gamma-omega-perfluoro-c8-14-alkyl pyromellitates" "1,2,4,5-benzenetetracarboxylic acid, mixed 3-chloro-2-hydroxypropyl and gamma-mu-perfluoro-c8-14-alkyl esters" "1,2,4,5-benzenetetracarboxylic acid, mixed 3-chloro-2-hydroxypropyl and gamma-omega-perfluoro-c8-14-alkyl esters" "5-[3-chloro-2-(4,4,5,5,6,6-hexafluorononoxy)propoxy]carbonyl-2,4-bis[(3-chloro-2-hydroxypropoxy)carbonyl]benzoic acid" );
+gibbsFormation
+{
+    dHf_298   -3423890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1587.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2588710.0
+    phase     gas;
+}

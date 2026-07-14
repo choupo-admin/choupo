@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(6-methoxy-2h-chromene-3-yl)ethan-1-one  (C12H12O3, CAS 57543-56-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        16Methoxy2hChromene3YlEthan1One;
+formula     C12H12O3;
+CAS         57543-56-3;
+InChIKey    BEOYIJRGYVVEHY-UHFFFAOYSA-N;
+MW          204.225;      // g/mol [origin=calculated method=formula-sum]
+Tc          864.89;      // K   [origin=predictive method=joback]
+Pc          30.090;      // bar [origin=predictive method=joback]
+omega       0.7510;      // -   [origin=predictive method=lee-kesler]
+Tb          633.86;      // K   [origin=predictive method=joback]
+HvapTb      60920.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.37 0.90404 -0.00053196 1.1166e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=C; count 1; } { group ACH; count 3; } { group AC; count 3; } { group CH3CO; count 1; } { group CH3O; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 4; } { group O; count 1; } { group O_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(6-methoxy-2h-chromen-3-yl)ethanone" "2h-1-benzopyran, 3-acetyl-6-methoxy-" "ketone, 6-methoxy-2h-1-benzopyran-3-yl methyl" "6-methoxy-3-acetyl-2h-chromene" "ethanone,1-(6-methoxy-2h-1-benzopyran-3-yl)-" );
+gibbsFormation
+{
+    dHf_298   -320930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     419.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-100040.0
+    phase     gas;
+}

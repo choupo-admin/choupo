@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chlorodiphenylmethane  (C13H11Cl, CAS 29921-41-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chlorodiphenylmethane;
+formula     C13H11Cl;
+CAS         29921-41-3;
+InChIKey    IKKSPFNZXBWDQA-UHFFFAOYSA-N;
+MW          202.681;      // g/mol [origin=calculated method=formula-sum]
+Tc          842.49;      // K   [origin=predictive method=joback]
+Pc          29.030;      // bar [origin=predictive method=joback]
+omega       0.4841;      // -   [origin=predictive method=lee-kesler]
+Tb          592.81;      // K   [origin=predictive method=joback]
+HvapTb      54131.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-49.549 1.0283 -0.00069916 1.786e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 1; } { group ACCH2; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-2-(phenylmethyl)benzene" "1-benzyl-2-chlorobenzene" "benzene, 1-chloro-2-(phenylmethyl)-" );
+gibbsFormation
+{
+    dHf_298   134200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     476.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=261840.0
+    phase     gas;
+}

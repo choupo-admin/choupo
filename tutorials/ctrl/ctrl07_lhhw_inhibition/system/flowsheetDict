@@ -1,0 +1,83 @@
+/*---------------------------------------------------------------------------*\
+  ctrl07_lhhw_inhibition  --  ctrl01's temperature loop, with a reaction that
+  poisons itself.
+
+  Same vessel, same PID, same setpoint.  The one change is the rate law: the
+  product compB now ADSORBS on the catalyst, so the denominator grows as the
+  reaction proceeds,
+
+      r = k(T) . c_A / (1 + K_B c_B)
+
+  and the reaction throttles itself.  A power law cannot express that at any
+  order; only the adsorption term can.  This is the same `RateLaw` that the
+  steady `cstr` and the `batchReactor` evaluate -- one definition, three reactors.
+
+  What the controller sees: an exotherm that FADES as conversion proceeds, not a
+  constant one.  The heat the loop is rejecting shrinks under it, and the jacket
+  temperature must follow.  A tuning that holds against a first-order exotherm is
+  not the same tuning that holds against a decaying one.
+
+  The adsorption constant K0 = 2.0 m^3/kmol is DIDACTIC -- chosen so the
+  inhibition is visible over the control horizon, not measured on any catalyst.
+  For a real, cited LHHW see `cstr07_lhhw_methylAcetate` and
+  `batch07_lhhw_methylAcetate` (Popken 2000, Eq 16, on UNIQUAC activities).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        dynamicCSTR;
+
+        initial
+        {
+            T            320.0 K;            // K  cold start
+            P            1.013 bar;
+            V            0.001;            // m³   (1 L)
+            totalMoles   0.012;             // kmol  (≈ 12 kmol/m³ liquid charge)
+            molarComposition  { compA 1.0;  compB 0.0; }
+        }
+
+        inlet
+        {
+            F            5.0e-5 kmol/s;           // kmol/s  (τ_res = N/F ≈ 240 s)
+            T            320.0 K;            // K   (cool feed)
+            molarComposition  { compA 1.0;  compB 0.0; }
+        }
+
+        operation
+        {
+            UA           50.0;             // W/K   (jacket coupling)
+            T_jacket     320.0 K;            // K     (initial; controller overwrites)
+        }
+
+        reaction    compA_to_compB;
+    }
+);
+
+controllers
+(
+    {
+        name         TC1;
+        type         PID;
+
+        measurement  { unit reactor;  cv T; }
+        actuator     { unit reactor;  mv T_jacket; }
+
+        setpoint     350.0;     // K
+
+        gains
+        {
+            Kp       4.0;
+            Ki       0.04;
+            Kd       0.0;
+        }
+
+        output
+        {
+            min      280.0;
+            max      420.0;
+            bias     320.0;     // jacket idles at the inlet temperature
+        }
+    }
+);

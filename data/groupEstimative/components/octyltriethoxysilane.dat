@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octyltriethoxysilane  (C14H32O3Si, CAS 2943-75-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C14H32O3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        octyltriethoxysilane;
+formula     C14H32O3Si;
+CAS         2943-75-1;
+InChIKey    MSRJTTSHWYDFIU-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          276.492;      // g/mol [origin=calculated method=formula-sum]
+Tc          752.71;      // K   [origin=predictive method=joback]
+Pc          13.388;      // bar [origin=predictive method=joback]
+omega       0.7642;      // -   [origin=predictive method=lee-kesler]
+Tb          588.58;      // K   [origin=predictive method=joback]
+HvapTb      54282.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (107.48 0.93808 1e-05 -2.262e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 7; } { group CH2O; count 3; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 10; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "triethoxy(octyl)silane" "n-octyltriethoxysilane" "triethoxyoctylsilane" "silane, triethoxyoctyl-" "octyl(triethoxy)silane" "dynasylan octeo" "a 137 (coupling agent)" "triethoxy-n-octylsilane" );
+gibbsFormation
+{
+    dHf_298   -840570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     861.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-352760.0
+    phase     gas;
+}

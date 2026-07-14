@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl tetracosanoate  (C26H52O2, CAS 24634-95-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylTetracosanoate;
+formula     C26H52O2;
+CAS         24634-95-5;
+InChIKey    AKXFYSSXNQQBNT-UHFFFAOYSA-N;
+MW          396.7;      // g/mol [origin=calculated method=formula-sum]
+Tc          1044.98;      // K   [origin=predictive method=joback]
+Pc          7.269;      // bar [origin=predictive method=joback]
+omega       0.6682;      // -   [origin=predictive method=lee-kesler]
+Tb          852.70;      // K   [origin=predictive method=joback]
+HvapTb      80877.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.663 2.41904 -0.001296 2.411e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 22; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 23; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl lignocerate" "ethyl tetracosanate" "lignoceric acid ethyl ester" "tetracosanoic acid,ethyl ester" "tetracosanoic acid ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -897250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1220.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-142330.0
+    phase     gas;
+}

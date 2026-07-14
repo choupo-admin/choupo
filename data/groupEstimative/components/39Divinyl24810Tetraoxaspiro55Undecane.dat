@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,9-divinyl-2,4,8,10-tetraoxaspiro[5.5]undecane  (C11H16O4, CAS 78-19-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        39Divinyl24810Tetraoxaspiro55Undecane;
+formula     C11H16O4;
+CAS         78-19-3;
+InChIKey    OOXMQACSWCZQLX-UHFFFAOYSA-N;
+MW          212.245;      // g/mol [origin=calculated method=formula-sum]
+Tc          820.51;      // K   [origin=predictive method=joback]
+Pc          29.893;      // bar [origin=predictive method=joback]
+omega       0.5493;      // -   [origin=predictive method=lee-kesler]
+Tb          582.84;      // K   [origin=predictive method=joback]
+HvapTb      56006.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-113.95 1.516 -0.0012504 4.386e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 2; } { group C; count 1; } { group CH2=CH; count 2; } { group FCH2O; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 2; } { group dCH; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group C_ring; count 1; } { group O_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,9-bis(ethenyl)-2,4,8,10-tetraoxaspiro[5.5]undecane" "3,9-divinylspirobi(m-dioxane)" "diallylidenepentaerythritol" "diallylidene pentaerythritol" "acrolein pentaerythritol bisacetal" "acrolein, cyclic diacetal with pentaerythritol" "acrolein-pentaerythritol dicyclic acetal" "acrolein, cyclic neopentanetetrayl acetal" "pentaerythritol diacrolein acetal" "3,9-divinyl-2,4,8,10-tetraoxaspiro(5.5)undecane" "2,4,8,10-tetraoxaspiro(5.5)undecane, 3,9-divinyl-" "2,4,8,10-tetraoxaspiro[5.5]undecane, 3,9-diethenyl-" );
+gibbsFormation
+{
+    dHf_298   -437810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     316.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-79260.0
+    phase     gas;
+}

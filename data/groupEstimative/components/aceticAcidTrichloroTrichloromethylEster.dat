@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetic acid, trichloro-, trichloromethyl ester  (C3Cl6O2, CAS 6135-29-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        aceticAcidTrichloroTrichloromethylEster;
+formula     C3Cl6O2;
+CAS         6135-29-1;
+InChIKey    YYWRWVLWCGOORG-UHFFFAOYSA-N;
+MW          280.731;      // g/mol [origin=calculated method=formula-sum]
+Tc          790.80;      // K   [origin=predictive method=joback]
+Pc          35.221;      // bar [origin=predictive method=joback]
+omega       0.4565;      // -   [origin=predictive method=lee-kesler]
+Tb          544.58;      // K   [origin=predictive method=joback]
+HvapTb      53397.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (53.97 0.5264 -0.0005108 1.652e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CCl3; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group Cl; count 6; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trichloromethyl 2,2,2-tris(chloranyl)ethanoate" "agn-pc-00ljto" );
+gibbsFormation
+{
+    dHf_298   -534470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     446.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-401890.0
+    phase     gas;
+}

@@ -1,0 +1,17 @@
+/*  isotherm01_eval_13x_co2 -- the A1b EVALUATION bench for one curated
+    adsorption-equilibrium record: CO2 on zeolite 13X (the standards pair
+    catalogue, data/standards/parameters/adsorption/equilibria/zeolite13X/).
+
+    What the student SEES: q(T,p) tabulated over a declared grid, the Henry
+    limit dq_dp(T,0) and the affinity b(T) per temperature, and FOUR physics
+    gates run aloud (adsorption contract sections 2/5):
+      (a) q/p -> henryLimit as p -> 0        (1e-6 rel at p_low = 1e-3 Pa)
+      (b) monotonic q(p) -> q_sat            (theta = 0.9999 asymptote)
+      (c) the loaded b(tRef) pins the record's raw b_298 (1e-12)
+      (d) UNIT INVARIANCE: a case-local twin record declaring the SAME
+          physics in partialPressurePa (vs the catalogue's bar) evaluates
+          identically to 1e-12 -- see constant/ for the twin.
+    A failed gate FAILS the run; the golden `expected` pins the KPIs.  */
+application   choupoProps;
+description   "Adsorption isotherm bench: CO2/zeolite13X q(T,p) grid + Henry/saturation/pin/unit-invariance gates";
+verbosity     3;

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ag-g-76409  (C32H67NO2, CAS 70729-87-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        agG76409;
+formula     C32H67NO2;
+CAS         70729-87-2;
+InChIKey    HYXKNSUXBZRZIC-UHFFFAOYSA-N;
+MW          497.893;      // g/mol [origin=calculated method=formula-sum]
+Tc          1386.01;      // K   [origin=predictive method=joback]
+Pc          5.451;      // bar [origin=predictive method=joback]
+omega       0.1565;      // -   [origin=predictive method=lee-kesler]
+Tb          1090.67;      // K   [origin=predictive method=joback]
+HvapTb      105939.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.845 3.0183 -0.0014906 2.173e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 25; } { group CH; count 1; } { group CH3N; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 25; } { group CH; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethyldodecan-1-amine;16-methylheptadecanoic acid" "n,n-dimethyldodecan-1-amine; 16-methylheptadecanoic acid" "16-methylheptadecanoic acid-n,n-dimethyldodecan-1-amine(1:1)" "dimethyl lauramine isostearate" "dimethyl laurylamine isostearate" "isooctadecanoic acid, compound with n,n-dimethyldodecylamine (1:1)" "16-methylheptadecanoic acid - n,n-dimethyldodecan-1-amine (1:1)" "isooctadecanoic acid, compound with n,n-dimethyldodecylamine (1:1);dimethyl lauramine isostearate;isooctadecanoic acid, compd. with n,n-dimethyl-1-dodecanamine (1:1);dimethyl lauramine isostearate, dimethyl laurylamine isostearate" );
+gibbsFormation
+{
+    dHf_298   -1103450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1569.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-121770.0
+    phase     gas;
+}

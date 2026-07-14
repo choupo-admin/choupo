@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-butylpyrrolidine  (C8H17N, CAS 767-10-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Butylpyrrolidine;
+formula     C8H17N;
+CAS         767-10-2;
+InChIKey    JSHASCFKOSDFHY-UHFFFAOYSA-N;
+MW          127.231;      // g/mol [origin=calculated method=formula-sum]
+Tc          594.51;      // K   [origin=predictive method=joback]
+Pc          30.864;      // bar [origin=predictive method=joback]
+omega       0.4185;      // -   [origin=predictive method=lee-kesler]
+Tb          410.76;      // K   [origin=predictive method=joback]
+HvapTb      35839.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-76.377 1.05552 -0.0007532 2.19e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH2_ring; count 4; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pyrrolidine, 1-butyl-" "n-butylpyrrolidine" "1- butyl pyrrolidine" "butylpyrrolidine" "r-(+)-3-pyrrolidinol" "1-butyl-pyrrolidine" "q329" );
+gibbsFormation
+{
+    dHf_298   -53940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     455.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=183620.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phytanic acid  (C20H40O2, CAS 14721-66-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phytanicAcid;
+formula     C20H40O2;
+CAS         14721-66-5;
+InChIKey    RLCKHJSFHOZMDR-UHFFFAOYSA-N;
+MW          312.538;      // g/mol [origin=calculated method=formula-sum]
+Tc          988.00;      // K   [origin=predictive method=joback]
+Pc          10.986;      // bar [origin=predictive method=joback]
+omega       0.9659;      // -   [origin=predictive method=lee-kesler]
+Tb          800.95;      // K   [origin=predictive method=joback]
+HvapTb      75726.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.42 1.9783 -0.0011496 2.528e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 10; } { group CH; count 4; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 10; } { group CH; count 4; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7,11,15-tetramethylhexadecanoic acid" "phytanate" "3,7,11,15-tetramethyl-hexadecansaeure" "3,7,11,15-tetramethyl-hexadecanoic acid" "3,7,11,15-tetramethylhexadecanoate" "phytanoate" "3,11,15-tetramethylhexadecanoic acid" "3,7,11,15-tetramethylhexadecoanoate" "3,7,11,15-tetramethyl-hexadecanoate" "3,7,11,15-tetramethylhexadecoanoic acid" "hexadecanoic acid,7,11,15-tetramethyl-" "3,7,11,15-tetramethyl hexadecanoic acid" );
+gibbsFormation
+{
+    dHf_298   -827520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     950.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-236150.0
+    phase     gas;
+}

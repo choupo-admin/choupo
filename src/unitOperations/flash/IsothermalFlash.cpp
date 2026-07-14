@@ -157,8 +157,37 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             (opts.llBetaRichComp == static_cast<std::size_t>(-1))
             ? n - 1 : opts.llBetaRichComp;
 
+        // ACTIVE components: restrict the Gibbs minimisation to species actually
+        // present in the feed (z > 0).  A stream in a large flowsheet carries
+        // many components that are ZERO here; searching the full simplex over
+        // them makes the LL split unfindable in high dimension.  Inactive
+        // species stay 0 in both phases -> mass is conserved EXACTLY.  When all
+        // species are active (nA == n) the search is identical to the full one,
+        // so every existing LL case is byte-unchanged.
+        std::vector<std::size_t> act;
+        for (std::size_t i = 0; i < n; ++i)
+            if (in.z[i] > 1.0e-10) act.push_back(i);
+        const std::size_t nA = act.size();
+        auto posInAct = [&](std::size_t full) -> std::size_t
+        {
+            for (std::size_t a = 0; a < nA; ++a) if (act[a] == full) return a;
+            return 0;
+        };
+
         const scalar INFEASIBLE_PENALTY = 1.0e8;
         const scalar EPS_SIMPLEX        = 1.0e-9;
+
+        // Fewer than two present species cannot split -> single liquid.
+        if (nA < 2)
+        {
+            sol.regime    = "single liquid (one component present)";
+            sol.V_over_F  = 0.0;
+            sol.x         = in.z;
+            sol.y.assign(n, 0.0);
+            sol.K.assign(n, 1.0);
+            sol.converged = true;
+            return sol;
+        }
 
         // Pack (β, x_α[0..n-2]) -> (β, x_α[0..n-1], x_β[0..n-1])  or  fail.
         auto unpack = [&](const sVector& v,
@@ -169,18 +198,19 @@ IsothermalFlash::solveCore(const FlashInput&    in,
 
             xA.assign(n, 0.0);
             scalar sumA = 0.0;
-            for (std::size_t i = 0; i < n - 1; ++i)
+            for (std::size_t a = 0; a < nA - 1; ++a)
             {
-                xA[i] = v[1 + i];
-                if (xA[i] < EPS_SIMPLEX) return false;
-                sumA += xA[i];
+                xA[act[a]] = v[1 + a];
+                if (xA[act[a]] < EPS_SIMPLEX) return false;
+                sumA += xA[act[a]];
             }
-            xA[n - 1] = 1.0 - sumA;
-            if (xA[n - 1] < EPS_SIMPLEX) return false;
+            xA[act[nA - 1]] = 1.0 - sumA;
+            if (xA[act[nA - 1]] < EPS_SIMPLEX) return false;
 
             xB.assign(n, 0.0);
-            for (std::size_t i = 0; i < n; ++i)
+            for (std::size_t a = 0; a < nA; ++a)
             {
+                const std::size_t i = act[a];
                 xB[i] = (in.z[i] - (1.0 - beta) * xA[i]) / beta;
                 if (xB[i] < EPS_SIMPLEX) return false;
             }
@@ -197,8 +227,9 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             const auto gB = thermo.phase(phaseBeta ).activityCoefficients(in.T, xB);
 
             scalar G = 0.0;
-            for (std::size_t i = 0; i < n; ++i)
+            for (std::size_t a = 0; a < nA; ++a)
             {
+                const std::size_t i = act[a];
                 const scalar lnAi = std::log(xA[i])
                                   + std::log(std::max<scalar>(gA[i], 1.0e-30));
                 const scalar lnBi = std::log(xB[i])
@@ -217,43 +248,42 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         {
             auto gZ = thermo.phase(phaseAlpha).activityCoefficients(in.T, in.z);
             gFeed = 0.0;
-            for (std::size_t i = 0; i < n; ++i)
+            for (std::size_t a = 0; a < nA; ++a)
+            {
+                const std::size_t i = act[a];
                 gFeed += in.z[i] * (std::log(std::max<scalar>(in.z[i], 1.0e-30))
                                   + std::log(std::max<scalar>(gZ[i], 1.0e-30)));
+            }
         }
 
         // Multi-start: 4 simplexes that bracket the symmetric LL
         // landscape from different basins.
         std::vector<sVector> starts;
-        auto pushStart = [&](scalar betaG, std::size_t richComp) {
-            sVector s(n, 0.0);
+        auto pushStart = [&](scalar betaG, std::size_t richPos) {
+            sVector s(nA, 0.0);
             s[0] = betaG;
-            for (std::size_t i = 0; i < n - 1; ++i)
-            {
-                if (i == richComp)            s[1 + i] = 0.92;
-                else if (i == (richComp + 1) % n) s[1 + i] = 0.04;
-                else                          s[1 + i] = 0.04;
-            }
-            // If x_α[n-1] would come out negative or >1, renormalise.
+            for (std::size_t a = 0; a < nA - 1; ++a)
+                s[1 + a] = (a == richPos) ? 0.92 : 0.04;
+            // If x_α[last] would come out negative or >1, renormalise.
             scalar sumA = 0.0;
-            for (std::size_t i = 0; i < n - 1; ++i) sumA += s[1 + i];
+            for (std::size_t a = 0; a < nA - 1; ++a) sumA += s[1 + a];
             if (sumA >= 1.0)
             {
                 const scalar scale = 0.95 / sumA;
-                for (std::size_t i = 0; i < n - 1; ++i) s[1 + i] *= scale;
+                for (std::size_t a = 0; a < nA - 1; ++a) s[1 + a] *= scale;
             }
             starts.push_back(s);
         };
 
         // Pure-iA and pure-iB biased starts at β = 0.5, plus their
-        // β = 0.25 and β = 0.75 variants.
-        pushStart(0.50, iA);
-        pushStart(0.50, iB);
-        pushStart(0.25, iA);
-        pushStart(0.75, iA);
+        // β = 0.25 and β = 0.75 variants (rich component -> its active slot).
+        pushStart(0.50, posInAct(iA));
+        pushStart(0.50, posInAct(iB));
+        pushStart(0.25, posInAct(iA));
+        pushStart(0.75, posInAct(iA));
 
         // Bounds
-        sVector lo(n, 1.0e-4), hi(n, 1.0 - 1.0e-4);
+        sVector lo(nA, 1.0e-4), hi(nA, 1.0 - 1.0e-4);
 
         solver::NMOptions nmo;
         nmo.maxIter           = 400;
@@ -651,22 +681,49 @@ IsothermalFlash::solveCore(const FlashInput&    in,
     int    outerIt      = 0;
     scalar compDelta    = 0.0;
 
-    if (opts.verbosity >= 3 && !isIdeal)
-    {
-        std::cout << "Composition outer loop  ["
-                  << (useWegstein ? "Wegstein-accelerated" : "direct substitution")
-                  << "]:\n"
-                  << "   it     |Δx|2         γ_1         γ_2";
-        for (std::size_t i = 2; i < n; ++i) std::cout << "         γ_" << (i+1);
-        std::cout << (useWegstein ? "         q_1        q_2" : "") << "\n"
-                  << "  ----  -----------  ----------  ----------"
-                  << (useWegstein ? "  ----------  ---------" : "")
-                  << "\n";
-    }
+    // The outer-loop table header prints LAZILY, right before its first row:
+    // the K-value block, the phase test and the outer-0 Rachford-Rice table
+    // all print between here and that row, so an up-front header would sit
+    // orphaned from the rows it labels.
+    bool outerHeaderPrinted = false;
 
     for (outerIt = 0; outerIt < opts.maxOuterIter; ++outerIt)
     {
         sol.K = computeK(x, y);
+
+        // TRIVIAL-K SEED (phi-phi near-critical; Stryjek points exposed it).
+        // At the UNSPLIT first iteration (x = y = z) a single-root cubic gives
+        // K_i = phi_L/phi_V = 1 identically, the Rachford-Rice gate reads
+        // g(0) = g(1) = 0 and declares a fake single phase inside a measured
+        // two-phase region.  A trivial K is USELESS in any world, so seed the
+        // FIRST iteration with the Wilson (1968) estimate
+        //     K_i = (Pc_i/P) exp[5.373 (1+omega_i)(1 - Tc_i/T)]
+        // to break the symmetry -- the next iteration re-evaluates the REAL
+        // K(x,y) on the split.  gamma-phi/Henry K's are never all-1 (Psat/P,
+        // H/P), so this fires ONLY on the phi-phi single-root pathology.
+        // (The seed lives HERE, in the flash's initialisation -- an earlier
+        // attempt inside Kvec corrupted the Gibbs phase comparison.)
+        if (outerIt == 0)
+        {
+            bool trivial = true;
+            for (std::size_t i = 0; i < n; ++i)
+                if (std::abs(sol.K[i] - 1.0) > 1.0e-9) { trivial = false; break; }
+            if (trivial)
+            {
+                for (std::size_t i = 0; i < n; ++i)
+                {
+                    const auto& c = thermo.comp(i);
+                    if (c.Tc() > 0.0 && c.Pc() > 0.0)
+                        sol.K[i] = (c.Pc() * 1.0e5 / in.P)
+                                 * std::exp(5.373 * (1.0 + c.omega())
+                                            * (1.0 - c.Tc() / in.T));
+                }
+                if (opts.verbosity >= 2)
+                    std::cout << "  trivial K at the unsplit feed "
+                                 "(single-root cubic) -- seeding iteration 0 "
+                                 "with the Wilson correlation.\n";
+            }
+        }
 
         // ---- Phase test on current K's --------------------------------
         scalar g_at_0 = 0.0, g_at_1 = 0.0;
@@ -678,6 +735,25 @@ IsothermalFlash::solveCore(const FlashInput&    in,
 
         if (outerIt == 0 && opts.verbosity >= 3)
         {
+            // The header prints in the framing the K-value ACTUALLY uses.
+            // phi-phi world: K = phi_L/phi_V from the same cubic -- gamma and
+            // Psat play NO part, so neither is shown.  gamma-phi world: the
+            // classic gamma*Psat/(phi*P) header, except a declared Henry
+            // solute whose K comes from H(T), not Psat -- name its pair file.
+            const bool phiPhi = (opts.phaseSet == PhaseSet::VL)
+                             && (thermo.vleWorld() == "phiPhi");
+            if (phiPhi)
+            {
+                std::cout << "K-values  (K = φ_L/φ_V, "
+                          << thermo.eos().modelName()
+                          << " both phases,  evaluated at x = y = z initially):\n";
+                for (std::size_t i = 0; i < n; ++i)
+                    std::cout << "  " << std::left << std::setw(12)
+                              << thermo.comp(i).name()
+                              << "    K = " << sol.K[i] << "\n";
+            }
+            else
+            {
             const std::string gammaModel = thermo.activity().modelName();
             const std::string phiModel   = (opts.phaseSet == PhaseSet::VL)
                 ? thermo.eos().modelName() : std::string("LL-mode");
@@ -688,7 +764,13 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             {
                 std::cout << "  " << std::left << std::setw(12)
                           << thermo.comp(i).name();
-                if (thermo.comp(i).hasVaporPressure())
+                if (thermo.isHenrySolute(i))
+                {
+                    std::cout << "  K from Henry pair henrysLaw/"
+                              << thermo.comp(i).name() << "-"
+                              << thermo.solventName() << ".dat";
+                }
+                else if (thermo.comp(i).hasVaporPressure())
                 {
                     scalar Psat = thermo.comp(i).vp().Psat_Pa(in.T);
                     std::cout << "  Psat = " << std::fixed << std::setprecision(4)
@@ -699,6 +781,7 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                     std::cout << "  Psat = (nonvolatile)         ";
                 }
                 std::cout << "    K = " << sol.K[i] << "\n";
+            }
             }
             std::cout << "\nPhase test:\n"
                       << "  g(V=0) = " << std::scientific
@@ -742,7 +825,7 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         if (showInner)
         {
             std::cout << "  [outer " << outerIt
-                      << "] Rachford-Rice inner Newton:\n"
+                      << "] Rachford-Rice Newton (inner):\n"
                       << "    it          V           g(V)         dg/dV"
                       << "         ΔV\n"
                       << "    ----  -----------  -------------  -------------"
@@ -765,7 +848,7 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         auto r = solver::newton1D(fres, dres, V0, nro);
 
         sol.V_over_F   = r.x;
-        sol.iterations = r.iterations;
+        sol.iterations += r.iterations;   // CUMULATIVE across outer passes (pass-4: 14-vs-1 confusion)
         sol.residual   = r.residual;
         sol.converged  = r.converged;
 
@@ -800,6 +883,22 @@ IsothermalFlash::solveCore(const FlashInput&    in,
 
         if (opts.verbosity >= 3 && !isIdeal)
         {
+            if (!outerHeaderPrinted)
+            {
+                std::cout << "Composition outer loop  ["
+                          << (useWegstein ? "Wegstein-accelerated"
+                                          : "direct substitution")
+                          << "]:\n"
+                          << "   it     |Δx|2         γ_1         γ_2";
+                for (std::size_t i = 2; i < n; ++i)
+                    std::cout << "         γ_" << (i+1);
+                std::cout << (useWegstein ? "         q_1        q_2" : "")
+                          << "\n"
+                          << "  ----  -----------  ----------  ----------"
+                          << (useWegstein ? "  ----------  ---------" : "")
+                          << "\n";
+                outerHeaderPrinted = true;
+            }
             auto gam = thermo.activity().gamma(in.T, x_next);
             std::cout << "  " << std::setw(4) << outerIt
                       << "  " << std::scientific << std::setprecision(3)
@@ -824,7 +923,7 @@ IsothermalFlash::solveCore(const FlashInput&    in,
     }
 
     if (!phaseTrivial && opts.verbosity >= 3)
-        std::cout << "\nOuter loop converged after " << (outerIt + 1)
+        std::cout << "\nComposition outer loop (gamma/K refresh) converged after " << (outerIt + 1)
                   << " composition iteration"
                   << ((outerIt + 1 == 1) ? "" : "s")
                   << "  (|Δx|2 = " << std::scientific << std::setprecision(3)
@@ -1145,7 +1244,8 @@ void printFlashResult(const FlashSolution& sol,
     std::cout << "\n=========================  Flash Result  ==========================\n";
     std::cout << "  Regime:        " << sol.regime  << "\n";
     std::cout << "  Converged:     " << (sol.converged ? "yes" : "NO")  << "\n";
-    std::cout << "  Iterations:    " << sol.iterations << "\n";
+    std::cout << "  Iterations:    " << sol.iterations
+              << "   (CUMULATIVE Rachford-Rice Newton steps across ALL composition-outer passes; only the [outer 0] table prints at verbosity 3)\n";
     std::cout << "  Final |g(V)|:  " << std::scientific << std::setprecision(3)
               << sol.residual << "\n";
     std::cout << "  V/F:           " << std::fixed << std::setprecision(6)

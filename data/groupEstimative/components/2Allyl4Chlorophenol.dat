@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-allyl-4-chlorophenol  (C9H9ClO, CAS 13997-73-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Allyl4Chlorophenol;
+formula     C9H9ClO;
+CAS         13997-73-4;
+InChIKey    NQZKLVHWFYHXGH-UHFFFAOYSA-N;
+MW          168.62;      // g/mol [origin=calculated method=formula-sum]
+Tc          785.11;      // K   [origin=predictive method=joback]
+Pc          38.483;      // bar [origin=predictive method=joback]
+omega       0.6036;      // -   [origin=predictive method=lee-kesler]
+Tb          551.91;      // K   [origin=predictive method=joback]
+HvapTb      55295.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.919 0.8618 -0.00072962 2.56e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group ACH; count 3; } { group ACCH2; count 1; } { group ACOH; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-chloranyl-2-prop-2-enyl-phenol" "phenol, 4-chloro-2-(2-propenyl)-" "4-chloro-2-allylphenol" "phenol, 2-allyl-4-chloro-" "4-chloro-2-prop-2-enylphenol" "phenol, 2-allyl-4-chloro- (8ci)" "phenol,4-chloro-2-(2-propen-1-yl)-" "phenol, 4-chloro-2-(2-propenyl)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -71650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     449.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=48970.0
+    phase     gas;
+}

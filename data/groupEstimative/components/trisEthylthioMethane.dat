@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tris(ethylthio)methane  (C7H16S3, CAS 6267-24-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trisEthylthioMethane;
+formula     C7H16S3;
+CAS         6267-24-9;
+InChIKey    HBBOGXAEKAVLGW-UHFFFAOYSA-N;
+MW          196.385;      // g/mol [origin=calculated method=formula-sum]
+Tc          800.11;      // K   [origin=predictive method=joback]
+Pc          29.828;      // bar [origin=predictive method=joback]
+omega       0.5218;      // -   [origin=predictive method=lee-kesler]
+Tb          565.66;      // K   [origin=predictive method=joback]
+HvapTb      51239.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (53.643 0.65793 -0.0002396 -1.12e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH; count 1; } { group CH2S; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group S; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(ethylsulfanyl)methylsulfanylethane" "ethyl orthotrithioformate" "triethyl orthothioformate" "triethyl trithioorthoformate" "ethane, 1,1',1''-[methylidynetris(thio)]tris-" "ethane, 1,1',1''-(methylidynetris(thio))tris-" "tris(ethyl thio)methane" "orthoformic acid, trithio-, triethyl ester" "ethane,1',1''-[methylidynetris(thio)]tris-" "orthoformic acid, trithio-, triethyl ester (8ci)" );
+gibbsFormation
+{
+    dHf_298   -67480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     603.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=104980.0
+    phase     gas;
+}

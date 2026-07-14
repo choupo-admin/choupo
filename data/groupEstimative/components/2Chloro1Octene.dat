@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloro-1-octene  (C8H15Cl, CAS 31283-43-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chloro1Octene;
+formula     C8H15Cl;
+CAS         31283-43-9;
+InChIKey    YREXOLHXOCLFHQ-UHFFFAOYSA-N;
+MW          146.658;      // g/mol [origin=calculated method=formula-sum]
+Tc          594.39;      // K   [origin=predictive method=joback]
+Pc          25.611;      // bar [origin=predictive method=joback]
+omega       0.4093;      // -   [origin=predictive method=lee-kesler]
+Tb          416.63;      // K   [origin=predictive method=joback]
+HvapTb      37197.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.825 0.75052 -0.000457 1.122e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH2=C; count 1; } { group Cl_C=C_; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH2; count 1; } { group dC; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyloct-1-ene" "2-chlorooct-1-ene" );
+gibbsFormation
+{
+    dHf_298   -108550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     492.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83840.0
+    phase     gas;
+}

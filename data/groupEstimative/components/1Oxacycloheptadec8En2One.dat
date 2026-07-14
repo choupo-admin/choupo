@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-oxacycloheptadec-8-en-2-one  (C16H28O2, CAS 123-69-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Oxacycloheptadec8En2One;
+formula     C16H28O2;
+CAS         123-69-3;
+InChIKey    NVIPUOMWGQAOIT-UHFFFAOYSA-N;
+MW          252.398;      // g/mol [origin=calculated method=formula-sum]
+Tc          934.39;      // K   [origin=predictive method=joback]
+Pc          19.753;      // bar [origin=predictive method=joback]
+omega       0.5376;      // -   [origin=predictive method=lee-kesler]
+Tb          685.71;      // K   [origin=predictive method=joback]
+HvapTb      61195.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-96.1 1.4752 -0.00045808 -1.05e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 12; } { group CH=CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 13; } { group dCH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -613850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     984.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-273310.0
+    phase     gas;
+}

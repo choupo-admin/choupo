@@ -1,0 +1,28 @@
+{
+  "choupoLayout": 1,
+  "nodes": {
+    "stream:feed": {
+      "x": 80,
+      "y": 300
+    },
+    "unit:column07": {
+      "x": 296.3636363636364,
+      "y": 298.1818181818182
+    },
+    "duty:column07:reboiler": {
+      "x": 355,
+      "y": 475
+    },
+    "duty:column07:condenser": {
+      "x": 355,
+      "y": 150
+    }
+  },
+  "viewport": {
+    "x": 307.49999999999994,
+    "y": -68.45000000000005,
+    "zoom": 1.1
+  },
+  "edges": {},
+  "handles": {}
+}

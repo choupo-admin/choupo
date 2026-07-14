@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentyl 2-methylbut-2-enoate  (C10H18O2, CAS 7785-63-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentyl2Methylbut2Enoate;
+formula     C10H18O2;
+CAS         7785-63-9;
+InChIKey    XJWDRSSGOHXOLQ-UHFFFAOYSA-N;
+MW          170.252;      // g/mol [origin=calculated method=formula-sum]
+Tc          670.67;      // K   [origin=predictive method=joback]
+Pc          22.334;      // bar [origin=predictive method=joback]
+omega       0.5830;      // -   [origin=predictive method=lee-kesler]
+Tb          490.66;      // K   [origin=predictive method=joback]
+HvapTb      45299.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.334 0.91896 -0.0005117 9.99e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group dCH; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-butenoic acid, 2-methyl-, pentyl ester, (2z)-" "ent 33334;n-amyl tiglate; n-pentyl tiglate" "2-butenoic acid,2-methyl-, pentyl ester, (2z)-" "2-butenoic acid,2-methyl-, pentyl ester, (e)- (9ci)" "2-butenoicacid, 2-methyl-, pentyl ester, (z)-; crotonic acid, 2-methyl-, pentyl ester,(z)- (8ci); amyl angelate; n-amyl angelate; n-pentyl angelate" );
+gibbsFormation
+{
+    dHf_298   -459580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     586.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-205380.0
+    phase     gas;
+}

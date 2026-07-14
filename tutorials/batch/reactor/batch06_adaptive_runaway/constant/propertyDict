@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  batch06_adaptive_runaway / constant/thermoPackage
+
+  Equimolar aceticAcid + ethanol charge reacting to ethylAcetate + water in
+  a closed adiabatic liquid batch: each species' gibbsFormation supplies the
+  formation enthalpy that makes the -26 kJ/mol runaway exotherm emerge from
+  the elements datum.  No vapour is drawn, so ideal liquid + ideal gas is
+  adequate --- the case's real subject is the ADAPTIVE Rosenbrock23 stepper
+  riding the stiff thermal transient.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water  aceticAcid  ethylAcetate );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

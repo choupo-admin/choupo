@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: beta-bourbonene  (C15H24, CAS 5208-59-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        betaBourbonene;
+formula     C15H24;
+CAS         5208-59-3;
+InChIKey    YIRAHEODBQONHI-ZQNQSHIBSA-N;
+MW          204.357;      // g/mol [origin=calculated method=formula-sum]
+Tc          769.57;      // K   [origin=predictive method=joback]
+Pc          19.983;      // bar [origin=predictive method=joback]
+omega       0.4613;      // -   [origin=predictive method=lee-kesler]
+Tb          556.91;      // K   [origin=predictive method=joback]
+HvapTb      46897.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-184.1 1.99926 -0.001739 6.473e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 5; } { group C; count 1; } { group CH2=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group dCH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 4; } { group C_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bourbonene, beta-" "(-)-beta-bourbonene" "decahydroisopropylmethylmethylenecyclobuta(1,2:3,4)dicyclopentene" "1,2,3,3a,3bbeta,4,5,6,6abeta,6balpha-decahydro-1alpha-isopropyl-3aalpha-methyl-6-methylenecyclobuta(1,2:3,4)dicyclopentene" "cyclobuta(1,2:3,4)dicyclopentene, 1,2,3,3a,3bbeta,4,5,6,6abeta,6balpha-decahydro-1alpha-isopropyl-3aalpha-methyl-6-methylene" "cyclobuta(1,2:3,4)dicyclopentene, decahydro-3a-methyl-6-methylene-1-(1-methylethyl)-, (1s-(1alpha,3aalpha,3bbeta,6abeta,6balpha))-" "decahydro-3a-methyl-6-methylene-1-(1-methylethyl)cyclobuta(1,2:3,4)dicyclopentene, (1s-(1alpha,3aalpha,3bbeta,6abeta,6balpha))-" );
+gibbsFormation
+{
+    dHf_298   -87170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     438.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=275300.0
+    phase     gas;
+}

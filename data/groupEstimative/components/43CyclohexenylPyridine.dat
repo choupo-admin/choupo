@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(3-cyclohexenyl)pyridine  (C11H13N, CAS 70644-46-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        43CyclohexenylPyridine;
+formula     C11H13N;
+CAS         70644-46-1;
+InChIKey    USWHHVUCKNMIRS-UHFFFAOYSA-N;
+MW          159.232;      // g/mol [origin=calculated method=formula-sum]
+Tc          807.99;      // K   [origin=predictive method=joback]
+Pc          34.561;      // bar [origin=predictive method=joback]
+omega       0.3974;      // -   [origin=predictive method=lee-kesler]
+Tb          550.37;      // K   [origin=predictive method=joback]
+HvapTb      49287.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-88.78 1.06976 -0.00068334 1.608e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group CH=CH; count 1; } { group C5H4N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-cyclohex-3-en-1-ylpyridine" "4-(3-cyclohexen-1-yl)pyridine" "pyridine, 4-(3-cyclohexen-1-yl)-" "4-cyclohex-3-enylpyridine" "4-[(1r)-cyclohex-3-en-1-yl]pyridine" "pyridine,4-(3-cyclohexen-1-yl)-" "4-(3-cyclohexen-1-yl)pyridine;4-(cyclohex-3-enyl)pyridine" );
+gibbsFormation
+{
+    dHf_298   111050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     422.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=285610.0
+    phase     gas;
+}

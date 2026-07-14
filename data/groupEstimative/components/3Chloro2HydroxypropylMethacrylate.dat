@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-chloro-2-hydroxypropyl methacrylate  (C7H11ClO3, CAS 13159-52-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Chloro2HydroxypropylMethacrylate;
+formula     C7H11ClO3;
+CAS         13159-52-9;
+InChIKey    DDKMFQGAZVMXQV-UHFFFAOYSA-N;
+MW          178.612;      // g/mol [origin=calculated method=formula-sum]
+Tc          724.96;      // K   [origin=predictive method=joback]
+Pc          31.740;      // bar [origin=predictive method=joback]
+omega       0.9602;      // -   [origin=predictive method=lee-kesler]
+Tb          543.71;      // K   [origin=predictive method=joback]
+HvapTb      58669.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (35.752 0.64062 -0.0003416 5.25e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group CH2=C; count 1; } { group OH; count 1; } { group CH2Cl; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group Cl; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3-chloranyl-2-oxidanyl-propyl) 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, 3-chloro-2-hydroxypropyl ester" "2-hydroxy-3-chloropropyl methacrylate" "3-chloro-2-hydroxypropyl 2-methylprop-2-enoate" "methacrylic acid 3-chloro-2-hydroxypropyl ester" "(3-chloro-2-hydroxypropyl) 2-methylprop-2-enoate" );
+gibbsFormation
+{
+    dHf_298   -562700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     545.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-374210.0
+    phase     gas;
+}

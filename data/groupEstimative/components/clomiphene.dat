@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: clomiphene  (C26H28ClNO, CAS 911-45-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        clomiphene;
+formula     C26H28ClNO;
+CAS         911-45-5;
+InChIKey    GKIRPKYJQBWNGO-UHFFFAOYSA-N;
+MW          405.966;      // g/mol [origin=calculated method=formula-sum]
+Tc          1198.45;      // K   [origin=predictive method=joback]
+Pc          13.418;      // bar [origin=predictive method=joback]
+omega       0.9539;      // -   [origin=predictive method=lee-kesler]
+Tb          955.71;      // K   [origin=predictive method=joback]
+HvapTb      89916.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-94.026 2.26494 -0.00152756 3.924e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group ACH; count 14; } { group AC; count 4; } { group CH2O; count 1; } { group CH2N; count 1; } { group Cl_C=C_; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group dC; count 2; } { group dCH_ring; count 14; } { group dC_ring; count 4; } { group Cl; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[4-(2-chloranyl-1,2-diphenyl-ethenyl)phenoxy]-n,n-diethyl-ethanamine" "clomifene" "clomifeno" "2-(4-(2-chloro-1,2-diphenylvinyl)phenoxy)-n,n-diethylethanamine" "2-(4-[2-chloro-1,2-diphenylethenyl]phenoxy)-n,n-diethylethanamine" "2-[4-(2-chloro-1,2-diphenylethenyl)phenoxy]-n,n-diethylethanamine" "{2-[4-(2-chloro-1,2-diphenylethenyl)phenoxy]ethyl}diethylamine" );
+gibbsFormation
+{
+    dHf_298   135360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     889.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=552610.0
+    phase     gas;
+}

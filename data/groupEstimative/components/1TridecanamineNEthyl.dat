@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-tridecanamine, n-ethyl-  (C15H33N, CAS 59570-06-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1TridecanamineNEthyl;
+formula     C15H33N;
+CAS         59570-06-8;
+InChIKey    PFHKGHJIWRUDBV-UHFFFAOYSA-N;
+MW          227.436;      // g/mol [origin=calculated method=formula-sum]
+Tc          755.64;      // K   [origin=predictive method=joback]
+Pc          14.294;      // bar [origin=predictive method=joback]
+omega       0.8435;      // -   [origin=predictive method=lee-kesler]
+Tb          592.97;      // K   [origin=predictive method=joback]
+HvapTb      55420.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.957 1.50504 -0.0008408 1.778e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 12; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 13; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-ethyltridecan-1-amine" "ethyltridecylamine" "agn-pc-02k8v5" );
+gibbsFormation
+{
+    dHf_298   -299460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     780.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=164810.0
+    phase     gas;
+}

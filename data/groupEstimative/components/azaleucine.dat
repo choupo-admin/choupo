@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: azaleucine  (C5H12N2O2, CAS 10138-99-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        azaleucine;
+formula     C5H12N2O2;
+CAS         10138-99-5;
+InChIKey    KEZRWUUMKVVUPT-BYPYZUCNSA-N;
+MW          132.163;      // g/mol [origin=calculated method=formula-sum]
+Tc          747.73;      // K   [origin=predictive method=joback]
+Pc          41.839;      // bar [origin=predictive method=joback]
+omega       0.8692;      // -   [origin=predictive method=lee-kesler]
+Tb          544.04;      // K   [origin=predictive method=joback]
+HvapTb      56184.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.939 0.72134 -0.00048 1.242e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CHNH2; count 1; } { group CH3N; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-2-azanyl-3-(dimethylamino)propanoic acid" "3-(dimethylamino)-l-alanine" "4-azaleucine" "l-4-azaleucine" "l-4-azaleucin" "3-(dimethylamino)alanine" "beta-(dimethylamino)alanine" "l-alanine, 3-(dimethylamino)-" "2-amino-3-dimethylaminopropionic acid" "2-amino-3-(dimethylamino)propionic acid" "propionic acid, 2-amino-3-(dimethylamino)-" "propionic acid, 2-amino-3-(dimethylamino)-, l-" );
+gibbsFormation
+{
+    dHf_298   -400760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     462.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-177900.0
+    phase     gas;
+}

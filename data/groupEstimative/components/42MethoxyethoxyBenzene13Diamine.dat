@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(2-methoxyethoxy)benzene-1,3-diamine  (C9H14N2O2, CAS 71077-37-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        42MethoxyethoxyBenzene13Diamine;
+formula     C9H14N2O2;
+CAS         71077-37-7;
+InChIKey    ZNBTUAAPXSCFBS-UHFFFAOYSA-N;
+MW          182.223;      // g/mol [origin=calculated method=formula-sum]
+Tc          856.56;      // K   [origin=predictive method=joback]
+Pc          34.561;      // bar [origin=predictive method=joback]
+omega       0.8758;      // -   [origin=predictive method=lee-kesler]
+Tb          632.06;      // K   [origin=predictive method=joback]
+HvapTb      65330.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (53.382 0.65832 -0.00022772 -1.6e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 3; } { group AC; count 1; } { group CH3O; count 1; } { group CH2O; count 1; } { group ACNH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-benzenediamine, 4-(2-methoxyethoxy)-" "1,3-diamino-4-(2-methoxyethoxy)benzene" "4-(2-methoxyethoxy)-1,3-benzenediamine" "1,3-benzenediamine,4-(2-methoxyethoxy)-" );
+gibbsFormation
+{
+    dHf_298   -212360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     513.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=40950.0
+    phase     gas;
+}

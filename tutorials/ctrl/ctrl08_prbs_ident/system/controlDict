@@ -1,0 +1,25 @@
+application   choupoCtrl;
+description   "PRBS identification experiment: T_in = 320 +/- 10 K by a maximal-length LFSR (n=4, period 15 bits x 120 s) -- deterministic, seed-declared, period-VERIFIED; the broadband excitation the sine of ctrl06 cannot give.";
+
+verbosity     3;
+
+// ---- Time integration ----
+//   3600 s = two full PRBS periods (15 bits x 120 s = 1800 s each): the
+//   first covers the startup transient, the second is the clean record from
+//   which the output amplitude ratio + phase lag are read.
+startTime       0;        // s
+endTime         3600;     // s
+deltaT          1.0;      // s
+writeInterval   5;        // s   (24 rows per 120 s bit: edges resolved)
+
+// ---- solutionControl: OpenFOAM-style transient solution directories ----
+//   ON so the feed face carries the LIVE sinusoidal T_in and the outlet face
+//   carries the forced reactor-T response --- scrub the slider to watch the
+//   flowsheet animate the input/output sinusoids (input on the feed edge,
+//   attenuated+lagged output on the product edge).  Remove this block for a
+//   byte-identical plain trajectory.csv-only run.
+solutionControl
+{
+    write           true;
+    flushEach       true;
+}

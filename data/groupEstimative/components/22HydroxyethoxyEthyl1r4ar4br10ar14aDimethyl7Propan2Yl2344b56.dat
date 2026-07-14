@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(2-hydroxyethoxy)ethyl (1r,4ar,4br,10ar)-1,4a-dimethyl-7-propan-2-yl-2,3,4,4b,5,6,10,10a-octahydrophenanthrene-1-carboxylate  (C24H38O4, CAS 10107-99-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22HydroxyethoxyEthyl1r4ar4br10ar14aDimethyl7Propan2Yl2344b56;
+formula     C24H38O4;
+CAS         10107-99-0;
+InChIKey    PXVVQEJCUSSVKQ-XWVZOOPGSA-N;
+MW          390.564;      // g/mol [origin=calculated method=formula-sum]
+Tc          1188.36;      // K   [origin=predictive method=joback]
+Pc          12.575;      // bar [origin=predictive method=joback]
+omega       1.1261;      // -   [origin=predictive method=lee-kesler]
+Tb          966.76;      // K   [origin=predictive method=joback]
+HvapTb      95022.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-190.626 2.93678 -0.00238868 8.466e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 8; } { group CH; count 3; } { group C; count 2; } { group CH=C; count 2; } { group COO; count 1; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 2; } { group C_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group OH; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-hydroxyethyloxy)ethyl (1r,4ar,4br,10ar)-1,4a-dimethyl-7-propan-2-yl-2,3,4,4b,5,6,10,10a-octahydrophenanthrene-1-carboxylate" "1-phenanthrenecarboxylic acid, 1,2,3,4,4a,4b,5,6,10,10a-decahydro-1,4a-dimethyl-7-(1-methylethyl)-, 2-(2-hydroxyethoxy)ethyl ester, (1r,4ar,4br,10ar)-" );
+gibbsFormation
+{
+    dHf_298   -855340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1033.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-259710.0
+    phase     gas;
+}

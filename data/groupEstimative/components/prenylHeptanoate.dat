@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: prenyl heptanoate  (C12H22O2, CAS 5205-10-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        prenylHeptanoate;
+formula     C12H22O2;
+CAS         5205-10-7;
+InChIKey    KRSMRYMDTIADOD-UHFFFAOYSA-N;
+MW          198.306;      // g/mol [origin=calculated method=formula-sum]
+Tc          713.10;      // K   [origin=predictive method=joback]
+Pc          18.773;      // bar [origin=predictive method=joback]
+omega       0.6750;      // -   [origin=predictive method=lee-kesler]
+Tb          536.42;      // K   [origin=predictive method=joback]
+HvapTb      49751.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.516 1.10896 -0.0006205 1.237e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH=C; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group dCH; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylbut-2-enyl heptanoate" "heptanoic acid, 3-methyl-2-butenyl ester" "heptanoic acid, 3-methyl-2-buten-1-yl ester" "3-methylbut-2-en-1-yl heptanoate" "heptanoic acid,3-methyl-2-buten-1-yl ester" "heptanoicacid, 3-methyl-2-butenyl ester (7ci,8ci,9ci);2-buten-1-ol, 3-methyl-,heptanoate (8ci);heptanoic acid, 3-methyl-2-butenyl ester;" );
+gibbsFormation
+{
+    dHf_298   -500860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     663.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-188540.0
+    phase     gas;
+}

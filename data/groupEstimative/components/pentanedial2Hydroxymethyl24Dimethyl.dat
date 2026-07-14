@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentanedial, 2-(hydroxymethyl)-2,4-dimethyl-  (C8H14O3, CAS 63951-48-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentanedial2Hydroxymethyl24Dimethyl;
+formula     C8H14O3;
+CAS         63951-48-4;
+InChIKey    CKURPKAGDUSTMO-UHFFFAOYSA-N;
+MW          158.197;      // g/mol [origin=calculated method=formula-sum]
+Tc          689.38;      // K   [origin=predictive method=joback]
+Pc          29.926;      // bar [origin=predictive method=joback]
+omega       0.6604;      // -   [origin=predictive method=lee-kesler]
+Tb          498.71;      // K   [origin=predictive method=joback]
+HvapTb      47568.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.761 0.78136 -0.0004614 9.64e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group CHO; count 2; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group O; count 1; } { group OdCH_al; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methoxy-2,4-dimethyl-pentanedial" "2,3-dideoxy-2-methyl-4-c-methyl-4-o-methylpentodialdose" "alpha,gamma-dimethyl-alpha-oxy-methyl glutaraldehyde" "glutaraldehyde, alpha,gamma-dimethyl-alpha-oxy-methyl-" "2-methoxy-2,4-dimethylpentanedial" );
+gibbsFormation
+{
+    dHf_298   -525860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     467.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-287160.0
+    phase     gas;
+}

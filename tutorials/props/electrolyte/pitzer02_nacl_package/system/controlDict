@@ -1,0 +1,13 @@
+/*---------------------------------------------------------------------------*\
+  pitzer02_nacl_package -- the FIRST case to run on the declarative property
+  architecture.  It carries NO constant/thermoPackage; it SELECTS a
+  propertyPackage (constant/propertyPackage), and the ThermoPackageBuilder
+  assembles the ThermoPackage from the NEW-format records, reading ZERO old salt
+  files (no flat NaCl.dat, no electrolyte/{ions,pairs}.dat).  The numbers MUST
+  equal pitzer01_nacl's golden -- same PitzerSingleSalt + PitzerForm, same
+  Appelo-2015 pair values, Mw_solvent at the 18.015 default.
+\*---------------------------------------------------------------------------*/
+
+application  choupoProps;
+description  "NaCl Pitzer via the NEW property-package builder (reads zero old salt files)";
+verbosity    2;

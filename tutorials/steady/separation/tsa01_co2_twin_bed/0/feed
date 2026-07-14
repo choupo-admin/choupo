@@ -1,0 +1,8 @@
+componentMolarFlows
+{
+    CO2   0.01 kmol/h;
+    He    0.99 kmol/h;
+}
+
+T   298 K;
+P   1 bar;

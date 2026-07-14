@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heptanoic acid mixed esters with dipentaerythritol and 2-ethylhexanoic acid  (C26H50O9, CAS 71662-48-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heptanoicAcidMixedEstersWithDipentaerythritolAnd2Ethylhexano;
+formula     C26H50O9;
+CAS         71662-48-1;
+InChIKey    VKWOBBQQDHLKIK-UHFFFAOYSA-N;
+MW          506.677;      // g/mol [origin=calculated method=formula-sum]
+Tc          1665.72;      // K   [origin=predictive method=joback]
+Pc          8.530;      // bar [origin=predictive method=joback]
+omega       0.1048;      // -   [origin=predictive method=lee-kesler]
+Tb          1225.84;      // K   [origin=predictive method=joback]
+HvapTb      140549.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (47.999 2.59146 -0.0014142 2.476e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 15; } { group C; count 2; } { group OH; count 3; } { group CH2COO; count 2; } { group CH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 19; } { group C; count 2; } { group OH; count 3; } { group O; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2-[[2,2-bis(hydroxymethyl)-3-oxidanyl-propoxy]methyl]-2-(hexanoyloxymethyl)-3-propoxy-propyl] heptanoate" "heptanoic acid, mixed esters with dipentaerythritol and 2-ethylhexanoic acid" "[2-(hexanoyloxymethyl)-2-[[3-hydroxy-2,2-bis(hydroxymethyl)propoxy]methyl]-3-propoxypropyl] heptanoate" );
+gibbsFormation
+{
+    dHf_298   -1953160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1368.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1067480.0
+    phase     gas;
+}

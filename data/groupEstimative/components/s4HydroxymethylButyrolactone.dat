@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (s)-4-hydroxymethyl butyrolactone  (C5H8O3, CAS 32780-06-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        s4HydroxymethylButyrolactone;
+formula     C5H8O3;
+CAS         32780-06-6;
+InChIKey    NSISJFFVIMQBRN-BYPYZUCNSA-N;
+MW          116.116;      // g/mol [origin=calculated method=formula-sum]
+Tc          653.27;      // K   [origin=predictive method=joback]
+Pc          46.214;      // bar [origin=predictive method=joback]
+omega       0.8543;      // -   [origin=predictive method=lee-kesler]
+Tb          471.14;      // K   [origin=predictive method=joback]
+HvapTb      50723.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-21.199 0.6089 -0.0004042 1.003e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group OH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5s)-5-(hydroxymethyl)oxolan-2-one" "(s)-(+)-dihydro-5-(hydroxymethyl)-2(3h)-furanone" "(s)-(+)-dihydro-5-(hydroxymethyl)furanone" "(s)-5-(hydroxymethyl)dihydrofuran-2(3h)-one" "(s)-5-hydroxymethyldihydrofuran-2-one" "(s)-5-hydroxymethyl-2-oxotetrahydrofuran" "(s)-(+)-gamma-hydroxymethyl-gamma-butyrolactone" "(s)-4,5-dihydro-5-hydroxymethyl-2(3h)-furanone" "nsisjffvimqbrn-uhfffaoysa-" "(s)-5-(hydroxymethyl)-dihydrofuran-2(3h)-one" "(s)-" "a-hydroxymethyl-" "a-butyrolactone" "(s)-5-hydroxymethyl dihydrofuran-2-one" );
+gibbsFormation
+{
+    dHf_298   -543240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     362.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-395220.0
+    phase     gas;
+}

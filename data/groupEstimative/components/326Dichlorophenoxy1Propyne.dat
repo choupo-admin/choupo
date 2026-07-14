@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(2,6-dichlorophenoxy)-1-propyne  (C9H6Cl2O, CAS 3598-66-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        326Dichlorophenoxy1Propyne;
+formula     C9H6Cl2O;
+CAS         3598-66-1;
+InChIKey    HCGOBPUSIBTNRV-UHFFFAOYSA-N;
+MW          201.046;      // g/mol [origin=calculated method=formula-sum]
+Tc          765.51;      // K   [origin=predictive method=joback]
+Pc          33.645;      // bar [origin=predictive method=joback]
+omega       0.4601;      // -   [origin=predictive method=lee-kesler]
+Tb          529.56;      // K   [origin=predictive method=joback]
+HvapTb      50266.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (54.461 0.5174 -0.00028865 5.319e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group CH2O; count 1; } { group ACCl; count 2; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-bis(chloranyl)-2-prop-2-ynoxy-benzene" "1,3-dichloro-2-(prop-2-ynyloxy)benzene" "1,3-dichloro-2-prop-2-ynyloxybenzene" "1,3-dichloro-2-prop-2-ynoxybenzene" "1,3-dichloro-2-(prop-2-yn-1-yloxy)benzene" "benzene,1,3-dichloro-2-(2-propyn-1-yloxy)-" "benzene,1,3-dichloro-2-(2-propynyloxy)- (9ci); ether, 2,6-dichlorophenyl 2-propynyl(7ci,8ci); 1,3-dichloro-2-(prop-2-ynyloxy)benzene" );
+gibbsFormation
+{
+    dHf_298   112700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     435.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=212260.0
+    phase     gas;
+}

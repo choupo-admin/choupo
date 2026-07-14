@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-chlorodocosane  (C22H45Cl, CAS 42217-03-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Chlorodocosane;
+formula     C22H45Cl;
+CAS         42217-03-8;
+InChIKey    OACXFSZVCDOBKF-UHFFFAOYSA-N;
+MW          345.052;      // g/mol [origin=calculated method=formula-sum]
+Tc          910.59;      // K   [origin=predictive method=joback]
+Pc          8.821;      // bar [origin=predictive method=joback]
+omega       0.8053;      // -   [origin=predictive method=lee-kesler]
+Tb          740.39;      // K   [origin=predictive method=joback]
+HvapTb      68951.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.219 2.10062 -0.0011934 2.596e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 20; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 21; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyldocosane" "chlorodocosane" "behenyl chloride" "docosyl chloride" "docosane, 1-chloro-" "1-chlorodocosane;behenyl chloride; docosyl chloride" );
+gibbsFormation
+{
+    dHf_298   -513150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1046.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=122430.0
+    phase     gas;
+}

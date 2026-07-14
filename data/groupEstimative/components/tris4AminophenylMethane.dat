@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tris(4-aminophenyl)methane  (C19H19N3, CAS 548-61-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tris4AminophenylMethane;
+formula     C19H19N3;
+CAS         548-61-8;
+InChIKey    ADUMIBSPEHFSLA-UHFFFAOYSA-N;
+MW          289.382;      // g/mol [origin=calculated method=formula-sum]
+Tc          1224.19;      // K   [origin=predictive method=joback]
+Pc          27.269;      // bar [origin=predictive method=joback]
+omega       1.1503;      // -   [origin=predictive method=lee-kesler]
+Tb          946.45;      // K   [origin=predictive method=joback]
+HvapTb      98237.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-55.41 1.5852 -0.00103568 2.492e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 2; } { group ACCH; count 1; } { group ACNH2; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group NH2; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[bis(4-aminophenyl)methyl]aniline" "leucoparafuchsin" "leucoparafuchsine" "triaminotriphenylmethane" "methane, tris(4-aminophenyl)-" "4,4',4''-methylidynetrianiline" "4,4',4''-methanetriyltrianiline" "p,p',p''-triaminotriphenylmethane" "4,4',4''-triaminotriphenylmethane" "aniline, 4,4',4''-methylidynetri-" "4,4',4''-methylidynetrisbenzeneamine" "tris-4-aminofenylmethan" );
+gibbsFormation
+{
+    dHf_298   335780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     703.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=614350.0
+    phase     gas;
+}

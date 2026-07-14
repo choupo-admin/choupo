@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclohexene,1-cyclohexyl-  (C12H20, CAS 3282-54-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclohexene1Cyclohexyl;
+formula     C12H20;
+CAS         3282-54-0;
+InChIKey    RFFCUDDJJDOFLS-UHFFFAOYSA-N;
+MW          164.292;      // g/mol [origin=calculated method=formula-sum]
+Tc          757.96;      // K   [origin=predictive method=joback]
+Pc          27.527;      // bar [origin=predictive method=joback]
+omega       0.3571;      // -   [origin=predictive method=lee-kesler]
+Tb          522.07;      // K   [origin=predictive method=joback]
+HvapTb      44427.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-123.09 1.299 -0.00076664 1.583e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group CH; count 1; } { group CH=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 9; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-cyclohexylcyclohexene" "1-cyclohexyl-1-cyclohexene" "cyclohexene, cyclohexyl-" "cyclohexene, 1-cyclohexyl-" );
+gibbsFormation
+{
+    dHf_298   -115720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     561.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=127100.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methyldihydrofuran-2(3h)-one  (C5H8O2, CAS 1679-47-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Methyldihydrofuran23hOne;
+formula     C5H8O2;
+CAS         1679-47-6;
+InChIKey    QGLBZNZGBLRJGS-UHFFFAOYSA-N;
+MW          100.117;      // g/mol [origin=calculated method=formula-sum]
+Tc          568.85;      // K   [origin=predictive method=joback]
+Pc          40.934;      // bar [origin=predictive method=joback]
+omega       0.3635;      // -   [origin=predictive method=lee-kesler]
+Tb          378.96;      // K   [origin=predictive method=joback]
+HvapTb      34044.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.49 0.57492 -0.0003738 9.05e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methyloxolan-2-one" "alpha-methyl-gamma-butyrolactone" "2(3h)-furanone, dihydro-3-methyl-" ".alpha.-methyl-.gamma.-butyrolactone" "4,5-dihydro-3-methyl-2(3h)-furanone" "gama-valerolactone" "2-methylbutanolide" "2-methyl-4-butanolide" "furanone, dihydromethyl-" ".alpha.-methylbutyrolactone" "2-methyl-.gamma.-butyrolactone" "3-methyl-dihydrofuran-2(3h)-one" );
+gibbsFormation
+{
+    dHf_298   -391010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     311.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-258400.0
+    phase     gas;
+}

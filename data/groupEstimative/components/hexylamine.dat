@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexylamine  (C6H15N, CAS 111-26-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexylamine;
+formula     C6H15N;
+CAS         111-26-2;
+InChIKey    BMVXCPBXGZKUPN-UHFFFAOYSA-N;
+MW          101.193;      // g/mol [origin=calculated method=formula-sum]
+Tc          589.43;      // K   [origin=predictive method=joback]
+Pc          33.144;      // bar [origin=predictive method=joback]
+omega       0.4743;      // -   [origin=predictive method=lee-kesler]
+Tb          409.41;      // K   [origin=predictive method=joback]
+HvapTb      39591.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.925 0.63572 -0.000346 7.12e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexan-1-amine" "1-aminohexane" "n-hexylamine" "1-hexanamine" "mono-n-hexylamine" "hexanamine" "1-hexylamine" "hexyl-amine" "hexyl amine" "142-81-4 (hydrochloride)" );
+gibbsFormation
+{
+    dHf_298   -133380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     441.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=66090.0
+    phase     gas;
+}

@@ -1,0 +1,25 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  tartaricAcid_acidulation -- the SOLUTION-CHEMISTRY sub-study of the tartaric-
+  acid plant (tutorials/plant/tartaricAcid).
+
+  THE SIMULATION-STRATEGY POINT (see userGuide "Strategy for a partly-
+  characterised process"): the plant flowsheet closes its MASS balance with
+  MOLECULAR reactors (Engine B, choupoSolve).  But the acidulation liquor is a
+  concentrated electrolyte brine, and whether gypsum (CaSO4) actually drops out
+  -- and at what ionic strength / activity -- is a SOLUTION-CHEMISTRY question
+  the molecular flowsheet cannot answer.  So we answer it HERE, in choupoProps
+  (Engine A), with the rigorous ion model, and feed the conclusion back.
+
+  HONEST MODEL BOUNDARY: the INORGANIC ions (Ca2+, SO4^2-, K+, Cl-) carry full
+  Pitzer binary parameters (PHREEQC), so the brine activity and the gypsum Ksp
+  are rigorous.  The ORGANIC tartrate ion has NO published Pitzer parameters --
+  the run ANNOUNCES this and treats it on the Debye-Hueckel limiting term only.
+  Pitzer-for-some, DH-for-the-rest, declared aloud.  Tartrate is a near-
+  spectator for gypsum here anyway (the acidulated acid is mostly neutral
+  H2Tart at this pH); the gypsum ceiling rests on the Ca-SO4 chemistry, which is
+  fully parametrised.
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "Tartaric-acid acidulation liquor: rigorous Pitzer brine chemistry (Ca-SO4-K-Cl) + the gypsum precipitation ceiling, with tartrate honestly on the Debye-Hueckel limit (no published Pitzer params). Davies vs Pitzer shown side by side.";
+verbosity     2;

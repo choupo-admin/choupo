@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer neutral-species interaction parameter lambda(CO2aq,Cl) --- dissolved
+  molecular CO2 with the anion Cl(-).
+  Role: the salting-out second virial for the NEUTRAL aqueous CO2 species --
+  it sets the activity coefficient of CO2(aq) in Cl-bearing brines (and hence
+  CO2 solubility), used by the pitzerHMW engine's CO2-brine set.
+  Source: Pitzer, Peiper & Busey (1984) + He & Morse (1993), as attributed in
+  the USGS PHREEQC pitzer.dat -LAMBDA listing (public domain) -- full string
+  in the source entry below.
+\*-----------------------------------------------------------------------------*/
+recordType electrolyteMixingParameter;
+schemaVersion 1;
+kind lambda;
+n CO2aq;
+ion Cl;
+value -0.005;
+source "CO2-brine lambda set: Pitzer, Peiper & Busey (1984) + He & Morse (1993) as attributed in the pitzer.dat -LAMBDA listing; via USGS PHREEQC pitzer.dat (public domain)";

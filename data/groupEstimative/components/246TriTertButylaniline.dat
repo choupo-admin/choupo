@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4,6-tri-tert-butylaniline  (C18H31N, CAS 961-38-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        246TriTertButylaniline;
+formula     C18H31N;
+CAS         961-38-6;
+InChIKey    REJGDSCBQPJPQT-UHFFFAOYSA-N;
+MW          261.453;      // g/mol [origin=calculated method=formula-sum]
+Tc          941.54;      // K   [origin=predictive method=joback]
+Pc          15.427;      // bar [origin=predictive method=joback]
+omega       0.6343;      // -   [origin=predictive method=lee-kesler]
+Tb          715.90;      // K   [origin=predictive method=joback]
+HvapTb      66677.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-71.41 1.89588 -0.00134428 3.805e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 9; } { group C; count 3; } { group ACH; count 2; } { group AC; count 3; } { group ACNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 9; } { group C; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4,6-tritert-butylaniline" "2,4,6-tri(tert-butyl)aniline" "2,4,6-tris(tert-butyl)phenylamine" "2,4,6-tritert-butylphenylamine" "2,4,6-tri-tert-butylphenylamine" "benzenamine, 2,4,6-tris(1,1-dimethylethyl)-" "3-carboxy-4-[3-(diethylamino)-6-diethyliminio-xanthen-9-yl]benzoate" );
+gibbsFormation
+{
+    dHf_298   -205190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     667.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=259170.0
+    phase     gas;
+}

@@ -1,17 +1,24 @@
 /*---------------------------------------------------------------------------*\
-  batch02_adiabatic  --  exothermic pseudo-first-order esterification
+  batch04_transient_dirs  --  the batch02_adiabatic runaway re-run with
+  REAL-TIME instant directories: the integrator dumps 0/ 30/ 60/ ... s
+  snapshots (OpenFOAM-style) so the trajectory -- conversion 0 -> 1,
+  T 320 -> ~428 K -- can be scrubbed frame by frame in the GUI.
+
+  The physics below is inherited from batch02_adiabatic, unchanged:
+  exothermic pseudo-first-order esterification
   (AcOH + EtOH -> EtOAc + H2O) in an adiabatic batch reactor.  Designed
   to show thermal runaway:
 
     * T_0 = 320 K (kinetics very slow: k_0 ~ 3.7e-4 s^-1, tau_0 ~ 2700 s).
-    * dH_rxn = -30 kJ/mol of ethanol (exotherm sized so the equimolar
-      charge lifts T by ~125 K at full conversion -> plateau ~445 K).
+    * dH_rxn = -26.06 kJ/mol of ethanol, computed from the species'
+      gibbsFormation (elements datum); lifts T ~108 K at full conversion,
+      enough to show the runaway.
     * Equimolar ethanol + acetic acid charge; ethyl acetate + water are
       the products.  Mass-conserving, so the energy balance is clean.
 
   Expected qualitative trajectory:
 
-         T |          _______ plateau (~450 K)
+         T |          _______ plateau (~428 K)
            |        _/
            |      _/
            |    _/
@@ -29,7 +36,7 @@
   the database), so the result extrapolates linearly above the nominal
   liquidHeatCapacity Trange (280-373 K) without numerical pathology
   --- consistent with a pedagogical demonstration, not a quantitative
-  prediction at 450 K.
+  prediction at ~430 K.
 \*---------------------------------------------------------------------------*/
 
 units

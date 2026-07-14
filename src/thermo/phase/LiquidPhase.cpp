@@ -31,6 +31,7 @@ License
 #include "thermo/Component.H"
 #include "thermo/activityCoefficient/Wilson.H"
 #include "thermo/activityCoefficient/UNIFAC.H"
+#include "thermo/activityCoefficient/UNIQUAC.H"
 
 namespace Choupo {
 
@@ -42,16 +43,11 @@ LiquidPhase::LiquidPhase(const DictPtr& d,
     n_(names.size())
 {
     DictPtr act = d->subDict("activity");
-    injectUnifacGroups(act, names, comps);   // UNIFAC groups from the component .dat
-    activity_ = ActivityModel::New(act, names);
-
-    // Wilson needs pure-component molar volumes injected after construction.
-    if (auto* w = dynamic_cast<Wilson*>(activity_.get()))
-    {
-        sVector V(n_);
-        for (std::size_t i = 0; i < n_; ++i) V[i] = comps[i].Vliq();
-        w->setMolarVolumes(V);
-    }
+    act = injectUnifacGroups(act, names, comps);   // groups resolved from component data (validated copy)
+    injectUniquacRQ(act, names, comps);      // UNIQUAC r/q from the component .dat
+    // Models self-configure from the resolved components in their constructors
+    // -- no Wilson dynamic_cast / setMolarVolumes dance.
+    activity_ = ActivityModel::New(act, comps);
 }
 
 sVector LiquidPhase::fEffective(scalar T, scalar /*P_Pa*/, const sVector& x) const
@@ -60,11 +56,19 @@ sVector LiquidPhase::fEffective(scalar T, scalar /*P_Pa*/, const sVector& x) con
     sVector f(n_);
     for (std::size_t i = 0; i < n_; ++i)
     {
-        // f_i = γ_i · Psat_i  (in Pa, the canonical SI internal unit).
-        // The older code multiplied a bar-valued Psat by
-        // bar_to_Pa here; now that Psat_Pa is already in Pa the
-        // multiplication is gone.
-        f[i] = gamma[i] * (*components_)[i].vp().Psat_Pa(T);
+        // f_i = γ_i · f_i^ref  (Pa, the canonical SI internal unit).
+        //
+        // The reference fugacity is the pure-liquid Psat when the species has
+        // a vapour pressure.  For a NONVOLATILE species partitioned between two
+        // liquid phases (LLE), Psat is undefined -- but it CANCELS EXACTLY in
+        // the two-liquid ratio K = f_i^α/f_i^β, so the kernel uses a UNIT
+        // reference (1 Pa) rather than forcing a fake vaporPressure into the
+        // component's data.  The hammer lives HERE, explicit and announced,
+        // not disguised as a bogus 1e-20 bar Psat in a duplicated record.
+        const scalar fRef = (*components_)[i].hasVaporPressure()
+            ? (*components_)[i].vp().Psat_Pa(T)
+            : 1.0;
+        f[i] = gamma[i] * fRef;
     }
     return f;
 }

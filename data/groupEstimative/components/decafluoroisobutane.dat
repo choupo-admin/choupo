@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: decafluoroisobutane  (C4F10, CAS 354-92-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        decafluoroisobutane;
+formula     C4F10;
+CAS         354-92-7;
+InChIKey    COQIQRBKEGPRSG-UHFFFAOYSA-N;
+MW          238.024;      // g/mol [origin=calculated method=formula-sum]
+Tc          388.12;      // K   [origin=predictive method=joback]
+Pc          25.611;      // bar [origin=predictive method=joback]
+omega       0.3888;      // -   [origin=predictive method=lee-kesler]
+Tb          270.90;      // K   [origin=predictive method=joback]
+HvapTb      11144.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.73 1.005 -0.001045 3.8e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CF3; count 3; } { group CF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 4; } { group F; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,3,3,3-heptakis(fluoranyl)-2-(trifluoromethyl)propane" "1,1,1,2,3,3,3-heptafluoro-2-(trifluoromethyl)propane" "perflisobutane" "perfluoroisobutane" "coqiqrbkegprsg-uhfffaoysa-" "propane,1,1,1,2,3,3,3-heptafluoro-2-(trifluoromethyl)-" "propane, 1,1,1,2,3,3,3-heptafluoro-2-(trifluoromethyl)-" "propane,heptafluoro-2-(trifluoromethyl)- (6ci,7ci,8ci);2-(trifluoromethyl)perfluoropropane; decafluoro-2-methylpropane;decafluoroisobutane; fluorotris(trifluoromethyl)methane; perflisobutane;perfluoroisobutane" );
+gibbsFormation
+{
+    dHf_298   -2121990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     473.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1953940.0
+    phase     gas;
+}

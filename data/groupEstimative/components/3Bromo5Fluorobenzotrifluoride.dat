@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-bromo-5-fluorobenzotrifluoride  (C7H3BrF4, CAS 130723-13-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Bromo5Fluorobenzotrifluoride;
+formula     C7H3BrF4;
+CAS         130723-13-6;
+InChIKey    LIGBGEJPUQBLTG-UHFFFAOYSA-N;
+MW          242.997;      // g/mol [origin=calculated method=formula-sum]
+Tc          657.76;      // K   [origin=predictive method=joback]
+Pc          35.389;      // bar [origin=predictive method=joback]
+omega       0.4966;      // -   [origin=predictive method=lee-kesler]
+Tb          456.41;      // K   [origin=predictive method=joback]
+HvapTb      36647.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.7 0.6821 -0.00056292 1.762e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group Br; count 1; } { group ACF; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 4; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-3-fluoranyl-5-(trifluoromethyl)benzene" "3-bromo-5-fluorotrifluoromethylbenzene" "1-bromo-3-fluoro-5-(trifluoromethyl)benzene" "3-fluoro-5-(trifluoromethyl)bromobenzene" "5-fluoro-3-bromobenzotrifluoride" "3-fluoro-5-trifluoromethylbromobenzene" "3-bromo-alpha,alpha,alpha,5-tetrafluorotoluene" "3-bromo-5-fluoro-trifluoromethylbenzene" "3-fluoro-5-bromobenzotrifluoride" "1-bromo-3-fluoro-5-trifluoromethyl benzene" "3-bromo-5-fluoro-1-(trifluoromethyl)benzene" "5-bromo-3-fluoro-1-(trifluoromethyl)benzene" );
+gibbsFormation
+{
+    dHf_298   -741080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     448.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-660870.0
+    phase     gas;
+}

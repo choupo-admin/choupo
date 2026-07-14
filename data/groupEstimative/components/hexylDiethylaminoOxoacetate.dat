@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexyl (diethylamino)oxoacetate  (C12H23NO3, CAS 60254-65-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexylDiethylaminoOxoacetate;
+formula     C12H23NO3;
+CAS         60254-65-1;
+InChIKey    MHDYJJCYEVKSPT-UHFFFAOYSA-N;
+MW          229.32;      // g/mol [origin=calculated method=formula-sum]
+Tc          772.68;      // K   [origin=predictive method=joback]
+Pc          18.838;      // bar [origin=predictive method=joback]
+omega       0.9204;      // -   [origin=predictive method=lee-kesler]
+Tb          598.69;      // K   [origin=predictive method=joback]
+HvapTb      58502.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.057 1.18496 -0.0006283 1.0286e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group COO; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 7; } { group CdO; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexyl 2-(diethylamino)-2-oxidanylidene-ethanoate" "hexyl n,n-diethyloxamate" "acetic acid, (diethylamino)oxo-, hexyl ester" "hexyl diethylcarbamoylformate" "hexyl 2-(diethylamino)-2-oxoacetate" "acetic acid,2-(diethylamino)-2-oxo-, hexyl ester" "aceticacid, (diethylamino)oxo-, hexyl ester (9ci); hexyl n,n-diethyloxamate" );
+gibbsFormation
+{
+    dHf_298   -653340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     717.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-278350.0
+    phase     gas;
+}

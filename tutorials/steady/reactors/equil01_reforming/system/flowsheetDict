@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------*\
+  equil01_reforming  --  the EQUILIBRIUM reactor (REquil) with MULTIPLE
+                         simultaneous reactions.
+
+  Steam-methane reforming: two independent reactions are driven to SIMULTANEOUS
+  chemical equilibrium at 1100 K, 1 bar -- no kinetics, no residence time.  The
+  two extents are a RESULT of each reaction's Kp(T) (from the gibbsFormation
+  data), solved together by the multivariate Newton:
+
+      smr :  CH4 + H2O  <->  CO  + 3 H2      (strongly endothermic)
+      wgs :  CO  + H2O  <->  CO2 +   H2      (mildly exothermic)
+
+  The stoichiometry lives in constant/reactions and is referenced BY NAME --
+  the same `reactions ( r1 r2 );` grammar the batch / dynamic reactors take.
+
+  Feed: 1 kmol/h CH4 + 3 kmol/h steam (steam-to-carbon = 3).  At 1100 K, 1 bar
+  the reforming is near-complete (Le Chatelier favours the mole-increasing SMR
+  at low pressure); the shift then sets the CO/CO2 split.  This is the classic
+  syngas problem -- the reactor a `conversionReactor` cannot do (it needs the
+  extents GIVEN) and a `cstr`/`pfr` cannot do without rate data.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reformer;
+        type        equilibriumReactor;
+        in          feed;
+        outputs     ( syngas );
+        operation   { T 1100 K; }        // isothermal (a fired reformer holds it)
+        reactions   ( smr wgs );         // names from constant/reactions
+    }
+);

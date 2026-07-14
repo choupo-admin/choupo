@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: vanillylacetone  (C11H14O3, CAS 122-48-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        vanillylacetone;
+formula     C11H14O3;
+CAS         122-48-5;
+InChIKey    OJYLAHXKWMRDGS-UHFFFAOYSA-N;
+MW          194.23;      // g/mol [origin=calculated method=formula-sum]
+Tc          860.25;      // K   [origin=predictive method=joback]
+Pc          32.173;      // bar [origin=predictive method=joback]
+omega       0.8992;      // -   [origin=predictive method=lee-kesler]
+Tb          639.85;      // K   [origin=predictive method=joback]
+HvapTb      65188.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.778 0.97384 -0.00066542 1.8956e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group ACOH; count 1; } { group CH3CO; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(3-methoxy-4-oxidanyl-phenyl)butan-2-one" "zingerone" "zingiberone" "4-(4-hydroxy-3-methoxyphenyl)butan-2-one" "gingerone" "zingherone" "vanillyl acetone" "4-(4-hydroxy-3-methoxyphenyl)-2-butanone" "2-butanone, 4-(4-hydroxy-3-methoxyphenyl)-" "(4-hydroxy-3-methoxyphenyl)ethyl methyl ketone" "4-hydroxy-3-methoxybenzylacetone" "(0)-paradol" );
+gibbsFormation
+{
+    dHf_298   -467420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     536.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-244020.0
+    phase     gas;
+}

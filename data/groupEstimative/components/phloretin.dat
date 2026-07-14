@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phloretin  (C15H14O5, CAS 60-82-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phloretin;
+formula     C15H14O5;
+CAS         60-82-2;
+InChIKey    VGEREEWJJVICBM-UHFFFAOYSA-N;
+MW          274.272;      // g/mol [origin=calculated method=formula-sum]
+Tc          1237.39;      // K   [origin=predictive method=joback]
+Pc          55.942;      // bar [origin=predictive method=joback]
+omega       1.8607;      // -   [origin=predictive method=lee-kesler]
+Tb          972.51;      // K   [origin=predictive method=joback]
+HvapTb      112338.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-106.878 1.8614 -0.00186134 7.4166e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 1; } { group ACCH2; count 1; } { group ACOH; count 4; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group OH_phenol; count 4; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(4-hydroxyphenyl)-1-[2,4,6-tris(oxidanyl)phenyl]propan-1-one" "dihydronaringenin" "phloretol" "3-(4-hydroxyphenyl)-1-(2,4,6-trihydroxyphenyl)propan-1-one" "3-(4-hydroxyphenyl)-1-(2,4,6-trihydroxyphenyl)-1-propanone" "1-propanone, 3-(4-hydroxyphenyl)-1-(2,4,6-trihydroxyphenyl)-" "beta-(p-hydroxyphenyl)phloropropiophenone" "2',4',6'-trihydroxy-3-(4-hydroxyphenyl)propiophenone" "beta-(p-hydroxyphenyl)-2,4,6-trihydroxypropiophenone" "b-(p-hydroxyphenyl)phloropropiophenone" "2',4',6'-trihydroxy-3-(p-hydroxyphenyl)propiophenone" "beta-(4-hydroxyphenyl)-2,4,6-trihydroxypropiophenone" );
+gibbsFormation
+{
+    dHf_298   -701690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     660.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-447160.0
+    phase     gas;
+}

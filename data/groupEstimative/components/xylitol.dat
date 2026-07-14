@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: xylitol  (C5H12O5, CAS 87-99-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        xylitol;
+formula     C5H12O5;
+CAS         87-99-0;
+InChIKey    HEBKCHPVOIAQTA-UHFFFAOYSA-N;
+MW          152.146;      // g/mol [origin=calculated method=formula-sum]
+Tc          947.80;      // K   [origin=predictive method=joback]
+Pc          67.852;      // bar [origin=predictive method=joback]
+omega       2.6946;      // -   [origin=predictive method=lee-kesler]
+Tb          773.58;      // K   [origin=predictive method=joback]
+HvapTb      108955.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.752 0.6665 -0.0004098 9.58e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 3; } { group OH; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 3; } { group OH; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentane-1,2,3,4,5-pentol" "c-xylidex cr 16055" "dl-xylitol" "eutrit" "fluorette" "klinit" "kylit" "wood sugar alcohol" "x 0018" "xivia cm 90" "xylisorb" "xylisorb 300" );
+gibbsFormation
+{
+    dHf_298   -923520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     576.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-700200.0
+    phase     gas;
+}

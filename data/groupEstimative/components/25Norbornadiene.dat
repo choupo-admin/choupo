@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,5-norbornadiene  (C7H8, CAS 121-46-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        25Norbornadiene;
+formula     C7H8;
+CAS         121-46-0;
+InChIKey    SJYNFBVQFBRSIB-UHFFFAOYSA-N;
+MW          92.141;      // g/mol [origin=calculated method=formula-sum]
+Tc          583.29;      // K   [origin=predictive method=joback]
+Pc          42.552;      // bar [origin=predictive method=joback]
+omega       0.2487;      // -   [origin=predictive method=lee-kesler]
+Tb          375.83;      // K   [origin=predictive method=joback]
+HvapTb      31758.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-93.52 0.849 -0.00072556 2.492e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 2; } { group CH=CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bicyclo[2.2.1]hepta-2,5-diene" "norbornadiene" "bicyclo(2.2.1)heptadiene" "8,9,10-trinorborna-2,5-diene" "bicyclo[2.2.1]hepta-2,5-dien" "2.5-norbornadiene" "quadricyclo[2.2.1.02,6.03.5]heptane" "(1s,4s)-bbicyclo[2.2.1]hepta-2,5-diene" "bicyclo[2.2.1]hepta-2, dimer, stereoisomer" "bicyclo(2,2,1)hepta-2,5-diene, inhibited or 2,5-norborandiene, inhibited" );
+gibbsFormation
+{
+    dHf_298   67190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     193.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=177380.0
+    phase     gas;
+}

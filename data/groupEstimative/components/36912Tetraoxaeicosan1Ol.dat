@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,6,9,12-tetraoxaeicosan-1-ol  (C16H34O5, CAS 19327-39-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        36912Tetraoxaeicosan1Ol;
+formula     C16H34O5;
+CAS         19327-39-0;
+InChIKey    FEOZZFHAVXYAMB-UHFFFAOYSA-N;
+MW          306.443;      // g/mol [origin=calculated method=formula-sum]
+Tc          917.33;      // K   [origin=predictive method=joback]
+Pc          13.418;      // bar [origin=predictive method=joback]
+omega       1.2055;      // -   [origin=predictive method=lee-kesler]
+Tb          747.54;      // K   [origin=predictive method=joback]
+HvapTb      77529.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (95.635 1.30502 -0.000433 -3.02e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group CH2O; count 3; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 15; } { group OH; count 1; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-(2-octoxyethoxy)ethoxy]ethoxy]ethanol" "(hydroxyethyloxy)tri(ethyloxy)octane" "3,6,9,12-tetraoxaicosan-1-ol" "tetraethylene glycol monoctyl ether" "tetraethylene glycol monooctyl ether" "c8e" "tetraethyleneglycol monooctyl ether solution" "tetraethyleneglycol monooctyl ether 1 mm solution" "octyltetraglycol" "c8e4" "octyl tetraethylene glycol ether" "ote" );
+gibbsFormation
+{
+    dHf_298   -1054680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     875.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-472980.0
+    phase     gas;
+}

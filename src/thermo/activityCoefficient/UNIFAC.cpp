@@ -84,10 +84,15 @@ UNIFAC::UNIFAC(const DictPtr& dict, const std::vector<std::string>& names)
             }
         }
         else
-            // No silent crutch: announce the gap; this component gets gamma = 1.
-            std::cerr << "[UNIFAC] component '" << names[i]
-                      << "' has no groups declared in activityModel.groups -> "
-                         "gamma = 1 for it (treated as ideal).\n";
+            // Forum #67 (census: zero affected cases): a UNIFAC package with a
+            // participating component that has no decomposition is an ERROR
+            // with a remedy -- the old announced gamma = 1 quietly turned a
+            // group-contribution model into "ideal for whoever lacks data".
+            throw std::runtime_error("UNIFAC: component '" + names[i]
+                + "' has no group decomposition.  Add\n"
+                  "    groups { unifac ( { group ...; count ...; } ... ); }\n"
+                  "to its component .dat (case-local overlay for a pedagogical "
+                  "alternative), or drop it from the UNIFAC package.");
     }
 
     // ---- active subgroup list (sorted -> deterministic) + parameters --------
@@ -200,31 +205,51 @@ sVector UNIFAC::gamma(scalar T, const sVector& x) const
 }
 
 
-void injectUnifacGroups(const DictPtr& activityDict,
+DictPtr injectUnifacGroups(const DictPtr& activityDict,
                         const std::vector<std::string>& names,
                         const std::vector<Component>& comps)
 {
-    if (!activityDict) return;
-    if (activityDict->lookupWordOrDefault("model", "") != "UNIFAC") return;
+    // Forum #69: the AUTHORED dict is validated and NEVER mutated; the
+    // injection lands on a DEEP COPY each consumer owns.  Idempotence falls
+    // out of the architecture (two construction paths -> two private copies),
+    // not out of a marker key an author could write to bypass the refusal --
+    // the `groupsInjected` hack lasted one commit and deserved less.
+    if (!activityDict) return activityDict;
+    if (activityDict->lookupWordOrDefault("model", "") != "UNIFAC"
+        && activityDict->lookupWordOrDefault("model", "") != "unifac")
+        return activityDict;
+    if (activityDict->found("groups"))
+        throw std::runtime_error("UNIFAC: an inline `groups {}` block in the "
+            "activity model is RETIRED -- the decomposition lives in each "
+            "component's .dat (`groups { unifac (...) }`); use a case-local "
+            "component overlay for a pedagogical alternative.");
+    if (activityDict->found("groupsInjected"))
+        throw std::runtime_error("UNIFAC: `groupsInjected` is not an authorable "
+            "key (it was a one-commit implementation marker, retired).");
 
-    const bool hadGroups = activityDict->found("groups");
-    DictPtr groups = hadGroups ? activityDict->subDict("groups")
-                               : std::make_shared<Dictionary>("groups");
-    for (std::size_t i = 0; i < names.size() && i < comps.size(); ++i)
+    if (names.size() != comps.size())
+        throw std::runtime_error("UNIFAC injection: names/components size "
+            "mismatch (" + std::to_string(names.size()) + " vs "
+            + std::to_string(comps.size()) + ") -- a builder invariant broke");
+    DictPtr out = activityDict->deepCopy();
+    DictPtr gblk = std::make_shared<Dictionary>("groups");
+    bool any = false;
+    for (std::size_t i = 0; i < names.size(); ++i)
     {
-        if (groups->found(names[i])) continue;            // inline declaration wins
-        if (!comps[i].hasGroups("unifac")) continue;      // component .dat has none
+        if (!comps[i].hasGroups("unifac")) continue;
         std::vector<DictPtr> gl;
-        for (const auto& gc : comps[i].groupsFor("unifac"))
+        for (const auto& [g, n] : comps[i].groupsFor("unifac"))
         {
-            auto gd = std::make_shared<Dictionary>();
-            gd->insert("group", gc.first);
-            gd->insert("count", static_cast<scalar>(gc.second));
-            gl.push_back(gd);
+            auto e = std::make_shared<Dictionary>("g");
+            e->insert("group", std::string(g));
+            e->insert("count", static_cast<scalar>(n));
+            gl.push_back(e);
         }
-        groups->insert(names[i], gl);
+        gblk->insert(names[i], EntryValue(gl));
+        any = true;
     }
-    if (!hadGroups) activityDict->insert("groups", groups);
+    if (any) out->insert("groups", EntryValue(gblk));
+    return out;
 }
 
 } // namespace Choupo

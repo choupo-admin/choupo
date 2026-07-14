@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trans-alloocimene  (C8H12, CAS 15192-80-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        transAlloocimene;
+formula     C8H12;
+CAS         15192-80-0;
+InChIKey    CGMDPTNRMYIZTM-NKYSMPERSA-N;
+MW          108.184;      // g/mol [origin=calculated method=formula-sum]
+Tc          585.58;      // K   [origin=predictive method=joback]
+Pc          29.861;      // bar [origin=predictive method=joback]
+omega       0.3005;      // -   [origin=predictive method=lee-kesler]
+Tb          395.12;      // K   [origin=predictive method=joback]
+HvapTb      33276.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-46.93 0.82384 -0.0006628 2.262e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH=CH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2e,4e,6e)-octa-2,4,6-triene" "(e,e,e)-2,4,6-octatriene" "octa-2,4,6-triene" "s2,4,6-octatriene, (e,e,e)-" "(2e,4e,6e)-2,4,6-octatriene" );
+gibbsFormation
+{
+    dHf_298   143210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     447.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=257140.0
+    phase     gas;
+}

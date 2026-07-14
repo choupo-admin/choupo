@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (s)-(-)-1-phenylethyl isocyanate  (C9H9NO, CAS 14649-03-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        s1PhenylethylIsocyanate;
+formula     C9H9NO;
+CAS         14649-03-7;
+InChIKey    JJSCUXAFAJEQGB-QMMMGPOBSA-N;
+MW          147.177;      // g/mol [origin=calculated method=formula-sum]
+Tc          721.03;      // K   [origin=predictive method=joback]
+Pc          35.899;      // bar [origin=predictive method=joback]
+omega       0.4834;      // -   [origin=predictive method=lee-kesler]
+Tb          498.43;      // K   [origin=predictive method=joback]
+HvapTb      47048.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 5; } { group ACCH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group dCd; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(1s)-1-isocyanatoethyl]benzene" "(s)-(-)-alpha-methylbenzyl isocyanate" "isocyanic acid (s)-(-)-a-methylbenzyl ester" "isocyanic acid (s)-(-)-alpha-methylbenzyl ester" "isocyanic acid (s)-(-)--methylbenzyl ester" "(s)-1-phenylethylisocyanate" "(s) a-methyl benzylisocyanate" "(s)-(-)-" "a-methylbenzyl isocyanate" "isocyanic acid (s)-(-)-1-phenylethyl ester" "isocyanic acid (s)-(-)-methylbenzyl ester" "isocyanic acid (s)-(-)-  cent-methylbenzyl ester" "isocyanic acid (s)-(-)-1-methylbenzyl ester" );
+// formation datum unavailable (element entropy missing): dHf_298=-3250.0 dGf_298=None

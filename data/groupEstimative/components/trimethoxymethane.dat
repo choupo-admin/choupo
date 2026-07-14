@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimethoxymethane  (C4H10O3, CAS 149-73-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trimethoxymethane;
+formula     C4H10O3;
+CAS         149-73-5;
+InChIKey    PYOKUURKVVELLB-UHFFFAOYSA-N;
+MW          106.121;      // g/mol [origin=calculated method=formula-sum]
+Tc          528.42;      // K   [origin=predictive method=joback]
+Pc          36.955;      // bar [origin=predictive method=joback]
+omega       0.3980;      // -   [origin=predictive method=lee-kesler]
+Tb          357.94;      // K   [origin=predictive method=joback]
+HvapTb      31340.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (74.07 0.20016 0.000136 -1.285e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group CH3O; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl orthoformate" "methane, trimethoxy-" "methyl orthoformate" "orthoformic acid, trimethyl ester" "orthoformic acid methyl ester" "orthomravencan methylnaty" "orthoformic acid trimethyl ester" "methylester kyseliny orthomravenci" "methoxymethylal" "pyokuurkvvellb-uhfffaoysa-" "trimethylester kyseliny orthomravenci" "2-methoxyacetaldehyde dimethyl acetal" );
+gibbsFormation
+{
+    dHf_298   -527830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     336.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-334640.0
+    phase     gas;
+}

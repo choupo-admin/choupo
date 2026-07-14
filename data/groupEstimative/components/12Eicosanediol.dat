@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-eicosanediol  (C20H42O2, CAS 39825-93-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Eicosanediol;
+formula     C20H42O2;
+CAS         39825-93-9;
+InChIKey    KUWCMTFKTVOJID-UHFFFAOYSA-N;
+MW          314.554;      // g/mol [origin=calculated method=formula-sum]
+Tc          1031.44;      // K   [origin=predictive method=joback]
+Pc          11.522;      // bar [origin=predictive method=joback]
+omega       1.0774;      // -   [origin=predictive method=lee-kesler]
+Tb          841.12;      // K   [origin=predictive method=joback]
+HvapTb      93084.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.392 1.97772 -0.0011282 2.459e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 18; } { group CH; count 1; } { group OH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 18; } { group CH; count 1; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "icosane-1,2-diol" "eicosane-1,2-diol" "1,2-dihydroxy-eicosane" "icosane-1,2-diol;arachidyl glycol;1,2-dihydroxy-eicosane;1,2-eicosanediol" );
+gibbsFormation
+{
+    dHf_298   -765870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1027.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-158560.0
+    phase     gas;
+}

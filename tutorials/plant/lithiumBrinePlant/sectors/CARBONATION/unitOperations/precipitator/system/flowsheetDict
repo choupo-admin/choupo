@@ -1,0 +1,12 @@
+name precipitator;
+type crystalliser;
+
+operation
+{
+    operatingTemperature 363.15 K;
+}
+
+// The streams this operation consumes and produces (sequential-modular:
+// a unit is defined by its streams; the sector wires them, the unit names them).
+inputs   ( carbLiquor );
+outputs  ( slurry );

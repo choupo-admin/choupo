@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-Methoxy-1-propanol  (C4H10O2, CAS 1589-47-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methoxy1Propanol;
+formula     C4H10O2;
+CAS         1589-47-5;
+InChIKey    YTTFFPATQICAQN-UHFFFAOYSA-N;
+MW          90.122;      // g/mol [origin=calculated method=formula-sum]
+Tc          571.50;      // K   [origin=predictive method=joback]
+Pc          43.340;      // bar [origin=predictive method=joback]
+omega       0.7100;      // -   [origin=predictive method=lee-kesler]
+Tb          405.28;      // K   [origin=predictive method=joback]
+HvapTb      43199.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.361 0.36054 -0.0001164 -9.1e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methoxypropan-1-ol" "1-propanol, 2-methoxy-" "2-methoxy-1-hydroxypropane" "2-methoxypropanol" "C4H10O2" "(R)-(-)-2-methoxypropanol" "2-methoxy-1-propanol; 2-methoxy-1-hydroxypropane; 2-methoxypropanol" "(S)-2-methoxypropanol" "2-methoxy-propan-1-ol" "2-methoxypropanol [HSDB]" "cs-w011348" "SB44674" );
+gibbsFormation
+{
+    dHf_298   -415620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     364.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-261460.0
+    phase     gas;
+}

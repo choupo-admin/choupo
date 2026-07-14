@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sonatox  (C10H11Cl7, CAS 51775-36-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sonatox;
+formula     C10H11Cl7;
+CAS         51775-36-1;
+InChIKey    IPVMCZLCKVSKGC-UHFFFAOYSA-N;
+MW          379.348;      // g/mol [origin=calculated method=formula-sum]
+Tc          944.32;      // K   [origin=predictive method=joback]
+Pc          21.653;      // bar [origin=predictive method=joback]
+omega       0.5608;      // -   [origin=predictive method=lee-kesler]
+Tb          690.20;      // K   [origin=predictive method=joback]
+HvapTb      63858.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-147.787 2.0633 -0.0024332 1.1207e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 1; } { group C; count 2; } { group CH2Cl; count 3; } { group CHCl; count 2; } { group CCl2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group C_ring; count 3; } { group Cl; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,5,5-tetrakis(chloranyl)-4,7,7-tris(chloromethyl)bicyclo[2.2.1]heptane" "heptachlorobornane" "2,2,5-endo,6-exo,8,9,10-heptachlorobornane" "bicyclo(2.2.1)heptane, 2,2,5,6-tetrachloro-1,7,7-tris(chloromethyl)-, (5-endo,6-exo)-" "5-endo,6-exo-2,2,5,6-tetrachloro-1,7,7-tris(chloromethyl)-bicyclo(2.2.1)heptane" "2,3,5,5-tetrachloro-4,7,7-tris(chloromethyl)bicyclo[2.2.1]heptane" "(1s,2s,3s,4s)-2,3,5,5-tetrachloro-4,7,7-tris(chloromethyl)bicyclo[2.2.1]heptane" );
+gibbsFormation
+{
+    dHf_298   -256110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     658.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=11900.0
+    phase     gas;
+}

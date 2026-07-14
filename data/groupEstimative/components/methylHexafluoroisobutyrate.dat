@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl hexafluoroisobutyrate  (C5H4F6O2, CAS 360-54-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylHexafluoroisobutyrate;
+formula     C5H4F6O2;
+CAS         360-54-3;
+InChIKey    JGGBVFLRNNDHCM-UHFFFAOYSA-N;
+MW          210.073;      // g/mol [origin=calculated method=formula-sum]
+Tc          507.01;      // K   [origin=predictive method=joback]
+Pc          27.212;      // bar [origin=predictive method=joback]
+omega       0.5182;      // -   [origin=predictive method=lee-kesler]
+Tb          360.94;      // K   [origin=predictive method=joback]
+HvapTb      26249.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.67 0.75232 -0.0005988 1.681e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group CF3; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group C; count 2; } { group F; count 6; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 3,3,3-tris(fluoranyl)-2-(trifluoromethyl)propanoate" "methyl 3,3,3-trifluoro-2-(trifluoromethyl)propanoate" "isobutyric acid, hexafluoro-, methyl ester" "methyl 3,3,3-trifluoro-2-(trifluoromethyl)propionate" "propanoic acid, 3,3,3-trifluoro-2-(trifluoromethyl)-, methyl ester" "methyl 2h-perfluoro-2-methylpropanoate" "2-(methoxycarbonyl)-2h-perfluoropropane" "methyl 2-(trifluoromethyl)-3,3,3-trifluoropropanoate" );
+gibbsFormation
+{
+    dHf_298   -1663250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     504.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1484770.0
+    phase     gas;
+}

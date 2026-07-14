@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: rmi 12936  (C20H30O2, CAS 50880-57-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        rmi12936;
+formula     C20H30O2;
+CAS         50880-57-4;
+InChIKey    ATHXJJBGDYIFLL-UQYBFTDGSA-N;
+MW          302.458;      // g/mol [origin=calculated method=formula-sum]
+Tc          1089.35;      // K   [origin=predictive method=joback]
+Pc          18.046;      // bar [origin=predictive method=joback]
+omega       1.0287;      // -   [origin=predictive method=lee-kesler]
+Tb          856.12;      // K   [origin=predictive method=joback]
+HvapTb      79277.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-260.23 2.71396 -0.00231864 8.62e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 5; } { group C; count 2; } { group CH=C; count 1; } { group OH; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 7; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(7s,8r,9s,10r,13s,14s,17s)-7,10,13-trimethyl-17-oxidanyl-1,2,4,7,8,9,11,12,14,15,16,17-dodecahydrocyclopenta[a]phenanthren-3-one" "17-beta-hydroxy-7-alpha-methylandrost-5-en-3-one" "androst-5-en-3-one, 17-hydroxy-7-methyl-, (7alpha,17beta)-" "androst-5-en-3-one, 17-hydroxy-7-methyl-, (7-alpha,17-beta)-" "17 beta-hydroxy-7 alpha-methylandrost-5-en-3-one" "17-beta-hydroxy-7 alpha-methyl-androst-5-en-3-one" "androst-5-en-3-one, 17-hydroxy-7-methyl-, (7 alpha,17 beta)-" "(7s,8r,9s,10r,13s,14s,17s)-17-hydroxy-7,10,13-trimethyl-1,2,4,7,8,9,11,12,14,15,16,17-dodecahydrocyclopenta[a]phenanthren-3-one" );
+gibbsFormation
+{
+    dHf_298   -469890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     614.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=26830.0
+    phase     gas;
+}

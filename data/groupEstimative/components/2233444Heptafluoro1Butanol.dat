@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,3,3,4,4,4-heptafluoro-1-butanol  (C4H3F7O, CAS 375-01-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2233444Heptafluoro1Butanol;
+formula     C4H3F7O;
+CAS         375-01-9;
+InChIKey    WXJFKAZDSQLPBX-UHFFFAOYSA-N;
+MW          200.053;      // g/mol [origin=calculated method=formula-sum]
+Tc          503.61;      // K   [origin=predictive method=joback]
+Pc          31.992;      // bar [origin=predictive method=joback]
+omega       0.7719;      // -   [origin=predictive method=lee-kesler]
+Tb          368.50;      // K   [origin=predictive method=joback]
+HvapTb      31570.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.239 0.8778 -0.0008544 3.011e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group OH; count 1; } { group CF3; count 1; } { group CF2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 3; } { group F; count 7; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,4-heptakis(fluoranyl)butan-1-ol" "2,2,3,3,4,4,4-heptafluorobutan-1-ol" "1h,1h-heptafluorobutanol-1" "1h,1h-heptafluoro-1-butanol" "1,1-dihydroperfluorobutyl alcohol" "1,1-dihydroperfluorobutanol" "1,1-h,h-heptafluorobutanol" "perfluoro-1,1-dihydrobutanol" "1h,1h-heptafluorobutan-1-ol" "1-butanol, 2,2,3,3,4,4,4-heptafluoro-" "alpha,alpha-dihydroperfluorobutanol" "2,2,3,3,4,4,4-heptafluoro-butanol" );
+gibbsFormation
+{
+    dHf_298   -1677140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     467.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1509170.0
+    phase     gas;
+}

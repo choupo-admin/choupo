@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-methyl-1,3-cyclopentadiene  (C6H8, CAS 96-38-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Methyl13Cyclopentadiene;
+formula     C6H8;
+CAS         96-38-8;
+InChIKey    QVRBGKYLLCLCHL-UHFFFAOYSA-N;
+MW          80.13;      // g/mol [origin=calculated method=formula-sum]
+Tc          549.74;      // K   [origin=predictive method=joback]
+Pc          42.056;      // bar [origin=predictive method=joback]
+omega       0.2091;      // -   [origin=predictive method=lee-kesler]
+Tb          350.48;      // K   [origin=predictive method=joback]
+HvapTb      29791.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.49 0.59352 -0.00040456 1.081e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group CH=CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-methylcyclopenta-1,3-diene" "1,3-cyclopentadiene, 5-methyl-" );
+gibbsFormation
+{
+    dHf_298   8870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     264.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=96110.0
+    phase     gas;
+}

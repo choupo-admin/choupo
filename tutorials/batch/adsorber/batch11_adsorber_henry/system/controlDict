@@ -1,0 +1,20 @@
+/*---------------------------------------------------------------------------*\
+  batch11_adsorber_henry / system/controlDict
+
+  Time control for the Henry-limit closed vessel -- the case with a
+  CLOSED-FORM solution (see flowsheetDict header).  k_eff = 0.09957914059
+  1/s, so endTime 60 s = ~6 relaxation times; writeInterval 5 s puts
+  trajectory rows exactly on the analytic checkpoints t = 5, 10, 30, 60 s.
+  deltaT 0.01 s makes the RK4 truncation error << the 1e-8 gate.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Closed isothermal Henry-limit uptake (linear isotherm): the coupled gas+solid system is LINEAR and the run must match q(t) = q_inf*(1 - exp(-k_eff t)) to 1e-8";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         60;       // s
+deltaT          0.01;     // s
+writeInterval   5;        // s   (rows on the analytic checkpoints)

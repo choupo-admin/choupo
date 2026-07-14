@@ -53,9 +53,10 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     // Q (an earlier optional setting) is GONE --- an adiabatic flash has
     // Q == 0 by definition; "flash with heat input" is a heater + flash
     // chain (the credo-pure way, separating the two physical pieces).  The
-    // enthalpy reference cancels in H_out - H_in for a non-reacting unit,
-    // so we anchor it on Tfeed (H_in == 0 by construction) and silence one
-    // numerical knob the student should not have to pick.
+    // When every component has the elements datum, solve on the SAME canonical
+    // surface published as stream H/H_kW.  Otherwise retain the sensible
+    // surface as an announced data-limited fallback; the GUI will refuse an
+    // elements-datum plant balance for that case rather than print a false one.
     const scalar Tref = Tfeed;
 
     const std::size_t n = thermo.n();
@@ -69,16 +70,38 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     }
     for (auto& v : z) v /= zsum;
 
-    // Inlet enthalpy [J/mol] -- treat feed as sub-cooled liquid at Tfeed.
-    // With Tref == Tfeed, Hin == 0 (the elementary cancellation made
-    // explicit), so the outer Newton residual is exactly H_out(T).
-    const scalar Hin  = thermo.Hliquid(Tfeed, z, Tref);
+    bool useFormation = true;
+    for (std::size_t i = 0; i < n; ++i)
+        if (!thermo.hasEnthalpyDatum(i)) { useFormation = false; break; }
+
+    auto liquidH = [&](scalar T, scalar P, const sVector& x) -> scalar
+    {
+        return useFormation ? thermo.H_stream_formation(T, P, 0.0, x)
+                            : thermo.Hliquid(T, x, Tref);
+    };
+    auto vapourH = [&](scalar T, scalar P, const sVector& y) -> scalar
+    {
+        return useFormation ? thermo.H_stream_formation(T, P, 1.0, y)
+                            : thermo.Hvapour(T, y, Tref);
+    };
+    auto splitH = [&](scalar T, scalar P, const FlashSolution& sol) -> scalar
+    {
+        return (1.0 - sol.V_over_F) * liquidH(T, P, sol.x)
+             +        sol.V_over_F  * vapourH(T, P, sol.y);
+    };
+
+    // The authored feed is a sub-cooled liquid.  On the canonical path this is
+    // exactly the value that Flowsheet later publishes for the feed stream.
+    const scalar Hin  = liquidH(Tfeed, Pfeed, z);
     const scalar Hreq = Hin;            // adiabatic: H_out = H_in
 
     std::cout << "Feed:       F = " << (F * 3600.0) << " kmol/h, T = " << Tfeed
               << " K, P = " << (Pfeed * 1.0e-5) << " bar\n"
               << "Outlet:     P = " << (Pout * 1.0e-5) << " bar  (adiabatic, Q = 0)\n"
-              << "Reference:  Tref = Tfeed (cancels in H_out - H_in)\n";
+              << "Enthalpy:   "
+              << (useFormation ? "elements datum (same surface as stream H/H_kW)"
+                               : "sensible fallback (missing elements datum)")
+              << "\n";
     std::cout << "Feed composition (z):\n";
     for (std::size_t i = 0; i < n; ++i)
         std::cout << "  " << thermo.comp(i).name() << "  = " << z[i] << "\n";
@@ -105,8 +128,7 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     auto f = [&](scalar T)
     {
         lastSol = flashAt(T);
-        scalar Hout = thermo.Hmixture(T, lastSol.V_over_F,
-                                      lastSol.x, lastSol.y, Tref);
+        scalar Hout = splitH(T, Pout, lastSol);
         return Hout - Hreq;
     };
     auto df = [&](scalar T)
@@ -118,7 +140,7 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     };
 
     solver::NROptions nro;
-    nro.tolerance          = 1.0;          // J/mol  (1 J/mol ~ enough for flash)
+    nro.tolerance          = 0.01;         // J/mol; keeps published H-flow closure negligible
     nro.maxIter            = 30;
     nro.lower              = 200.0;
     nro.upper              = 700.0;
@@ -151,7 +173,7 @@ int AdiabaticFlash::solve(const DictPtr& dict,
 
     // Final flash at converged T
     lastSol = flashAt(r.x);
-    scalar Hout = thermo.Hmixture(r.x, lastSol.V_over_F, lastSol.x, lastSol.y, Tref);
+    scalar Hout = splitH(r.x, Pout, lastSol);
 
     // Outlet streams (liquid + vapor) at the converged T_out and the outlet P.
     // The products ARE the point of a flash -- emit them so the flowsheet

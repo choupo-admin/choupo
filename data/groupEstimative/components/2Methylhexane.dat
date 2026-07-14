@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methylhexane  (C7H16, CAS 591-76-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methylhexane;
+formula     C7H16;
+CAS         591-76-4;
+InChIKey    GXDHCNNESPLIKD-UHFFFAOYSA-N;
+MW          100.205;      // g/mol [origin=calculated method=formula-sum]
+Tc          526.83;      // K   [origin=predictive method=joback]
+Pc          28.233;      // bar [origin=predictive method=joback]
+omega       0.3240;      // -   [origin=predictive method=lee-kesler]
+Tb          359.32;      // K   [origin=predictive method=joback]
+HvapTb      30788.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.157 0.67476 -0.0003602 7.16e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexane, 2-methyl-" "2-methyl hexane" "pentane, dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -193090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     419.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=5620.0
+    phase     gas;
+}

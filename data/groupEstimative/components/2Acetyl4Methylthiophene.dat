@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-acetyl-4-methylthiophene  (C7H8OS, CAS 13679-73-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Acetyl4Methylthiophene;
+formula     C7H8OS;
+CAS         13679-73-7;
+InChIKey    NFZNHUNPIJPRMP-UHFFFAOYSA-N;
+MW          140.2;      // g/mol [origin=calculated method=formula-sum]
+Tc          719.76;      // K   [origin=predictive method=joback]
+Pc          40.159;      // bar [origin=predictive method=joback]
+omega       0.4503;      // -   [origin=predictive method=lee-kesler]
+Tb          489.69;      // K   [origin=predictive method=joback]
+HvapTb      46208.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.44 0.58245 -0.00038028 9.816e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH3CO; count 1; } { group C4H2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group CdO; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-methylthiophen-2-yl)ethanone" "1-(4-methyl-2-thienyl)ethanone" "ethanone, 1-(4-methyl-2-thienyl)-" "1-(4-methyl-thiophen-2-yl)-ethanone" "ethanone,1-(4-methyl-2-thienyl)-" "1-(4-methyl-2-thienyl)ethan-1-one" );
+gibbsFormation
+{
+    dHf_298   -81690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     410.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=3920.0
+    phase     gas;
+}

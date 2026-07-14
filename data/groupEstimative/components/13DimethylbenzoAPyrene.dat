@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-dimethylbenzo(a)pyrene  (C22H16, CAS 16757-86-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13DimethylbenzoAPyrene;
+formula     C22H16;
+CAS         16757-86-1;
+InChIKey    YLBZZUDADDVEFK-UHFFFAOYSA-N;
+MW          280.37;      // g/mol [origin=calculated method=formula-sum]
+Tc          1076.59;      // K   [origin=predictive method=joback]
+Pc          21.042;      // bar [origin=predictive method=joback]
+omega       0.8706;      // -   [origin=predictive method=lee-kesler]
+Tb          822.76;      // K   [origin=predictive method=joback]
+HvapTb      76076.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-102.83 1.77784 -0.0015214 5.316e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 8; } { group ACCH3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-dimethylbenzo[a]pyrene" "benzo(a)pyrene, 1,3-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   400590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     437.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=619460.0
+    phase     gas;
+}

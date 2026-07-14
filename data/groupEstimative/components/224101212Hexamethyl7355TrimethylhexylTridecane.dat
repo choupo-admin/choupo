@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,4,10,12,12-hexamethyl-7-(3,5,5-trimethylhexyl)tridecane  (C28H58, CAS 3035-75-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        224101212Hexamethyl7355TrimethylhexylTridecane;
+formula     C28H58;
+CAS         3035-75-4;
+InChIKey    VJDJSJSGMRWTIK-UHFFFAOYSA-N;
+MW          394.772;      // g/mol [origin=calculated method=formula-sum]
+Tc          1018.80;      // K   [origin=predictive method=joback]
+Pc          6.864;      // bar [origin=predictive method=joback]
+omega       0.5876;      // -   [origin=predictive method=lee-kesler]
+Tb          828.79;      // K   [origin=predictive method=joback]
+HvapTb      72482.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-102.711 3.06504 -0.0020276 5.357e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 12; } { group CH2; count 9; } { group CH; count 4; } { group C; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 12; } { group CH2; count 9; } { group CH; count 4; } { group C; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tridecane, 2,2,4,10,12,12-hexamethyl-7-(3,5,5-trimethylhexyl)-" "2,4,10,12,12-hexamethyl-7-(3,5,5-trimethylhexyl)tridecane" "tridecane,2,2,4,10,12,12-hexamethyl-7-(3,5,5-trimethylhexyl)-" "tridecane,2,4,10,12,12-hexamethyl-7-(3,5,5-trimethylhexyl)-" );
+gibbsFormation
+{
+    dHf_298   -668620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1091.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=183640.0
+    phase     gas;
+}

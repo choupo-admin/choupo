@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,4-dibromosulfolane  (C4H6Br2O2S, CAS 15091-30-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C4H6Br2O2S (delta S+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        34Dibromosulfolane;
+formula     C4H6Br2O2S;
+CAS         15091-30-2;
+InChIKey    CGWKQCYAMPDEGC-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          277.958;      // g/mol [origin=calculated method=formula-sum]
+Tc          609.94;      // K   [origin=predictive method=joback]
+Pc          65.458;      // bar [origin=predictive method=joback]
+omega       0.5615;      // -   [origin=predictive method=lee-kesler]
+Tb          408.78;      // K   [origin=predictive method=joback]
+HvapTb      48962.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.15 0.6142 -0.0004296 1.102e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 2; } { group Br; count 2; } { group CH2SuCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group CH_ring; count 2; } { group Br; count 2; } { group dO_oth; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4-bis(bromanyl)thiolane 1,1-dioxide" "3,4-dibromotetrahydrothiophene 1,1-dioxide" "3,4-dibromotetrahydrothiophene-1,1-dioxide" "thiophene, 3,4-dibromotetrahydro-, 1,1-dioxide" "thiophene, tetrahydro-3,4-dibromo-, 1,1-dioxide" "3,4-dibromothiolane-1,1-dione" "thiophene,4-dibromo-, 1,1-dioxide" "thiophene,4-dibromotetrahydro-, 1,1-dioxide" "3,4-dibromothiolane 1,1-dioxide" "3,4-dibromo-1$l^{6}-thiolane-1,1-dione" "thiophene,3,4-dibromotetrahydro-, 1,1-dioxide" "(3r,4s)-3,4-dibromotetrahydrothiophene 1,1-dioxide" );
+gibbsFormation
+{
+    dHf_298   -522150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     559.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-449280.0
+    phase     gas;
+}

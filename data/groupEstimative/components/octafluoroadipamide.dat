@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octafluoroadipamide  (C6H4F8N2O2, CAS 355-66-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octafluoroadipamide;
+formula     C6H4F8N2O2;
+CAS         355-66-8;
+InChIKey    SVURUIRNGAQISR-UHFFFAOYSA-N;
+MW          288.094;      // g/mol [origin=calculated method=formula-sum]
+Tc          753.10;      // K   [origin=predictive method=joback]
+Pc          29.601;      // bar [origin=predictive method=joback]
+omega       1.0131;      // -   [origin=predictive method=lee-kesler]
+Tb          570.92;      // K   [origin=predictive method=joback]
+HvapTb      52004.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-24.03 1.2392 -0.0011704 3.9652e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CF2; count 4; } { group CONH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 4; } { group F; count 8; } { group CdO; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,5,5-octakis(fluoranyl)hexanediamide" "2,2,3,3,4,4,5,5-octafluorohexanediamide" "octafluorohexanediamide" );
+gibbsFormation
+{
+    dHf_298   -1928630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     644.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1672420.0
+    phase     gas;
+}

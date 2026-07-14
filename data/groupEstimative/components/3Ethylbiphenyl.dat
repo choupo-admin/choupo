@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-ethylbiphenyl  (C14H14, CAS 5668-93-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Ethylbiphenyl;
+formula     C14H14;
+CAS         5668-93-9;
+InChIKey    HUXKTWJQSHBZIV-UHFFFAOYSA-N;
+MW          182.266;      // g/mol [origin=calculated method=formula-sum]
+Tc          819.01;      // K   [origin=predictive method=joback]
+Pc          27.269;      // bar [origin=predictive method=joback]
+omega       0.4743;      // -   [origin=predictive method=lee-kesler]
+Tb          578.26;      // K   [origin=predictive method=joback]
+HvapTb      51972.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-63.349 1.11652 -0.00073316 1.815e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 9; } { group AC; count 2; } { group ACCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethyl-3-phenyl-benzene" "1,1'-biphenyl, 3-ethyl-" "1-ethyl-3-phenylbenzene" "biphenyl, 3-ethyl-" "1, 3-ethyl-" "biphenyl, 3-ethyl- (8ci)" "huxktwjqshbziv-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   129300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     482.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=282190.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-[2-(4-Morpholinyl)ethoxy]ethanamine  (C8H18N2O2, CAS 20207-13-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        224MorpholinylEthoxyEthanamine;
+formula     C8H18N2O2;
+CAS         20207-13-0;
+InChIKey    XXNWGSSVJMXOTP-UHFFFAOYSA-N;
+MW          174.244;      // g/mol [origin=calculated method=formula-sum]
+Tc          738.20;      // K   [origin=predictive method=joback]
+Pc          32.878;      // bar [origin=predictive method=joback]
+omega       0.7439;      // -   [origin=predictive method=lee-kesler]
+Tb          536.93;      // K   [origin=predictive method=joback]
+HvapTb      53572.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.186 1.0416 -0.0006253 1.366e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2O; count 1; } { group FCH2O; count 1; } { group CH2NH2; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group CH2_ring; count 4; } { group O; count 1; } { group O_ring; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-morpholin-4-ylethoxy)ethanamine" "2-[2-(Morpholin-4-yl)ethoxy)ethylamine" "2-[2-(morpholin-4-yl)ethoxy]ethan-1-amine" "4-[2-(2-Aminoethoxy)ethyl]morpholine" "Ethanamine, 2-[2-(4-morpholinyl)ethoxy]-" "Morpholine, 4-[2-(2-aminoethoxy)ethyl]-" "4-((2-Aminoethoxy)ethyl)morpholine" "2-(2-Morpholin-4-yl-ethoxy)-ethylamine" "2-(2-Morpholinoethoxy)ethanamine" "4-[(2-AMINOETHOXY)ETHYL]MORPHOLINE" "2-(2-Morpholin-4-yl)ethoxy)ethylamine" "Ethanamine, 2-(2-(4-morpholinyl)ethoxy)-" );
+gibbsFormation
+{
+    dHf_298   -290530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     487.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=46850.0
+    phase     gas;
+}

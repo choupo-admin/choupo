@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-dimethylaminomethylcyclohexanone  (C9H17NO, CAS 15409-60-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Dimethylaminomethylcyclohexanone;
+formula     C9H17NO;
+CAS         15409-60-6;
+InChIKey    QDHLEFBSGUGHCL-UHFFFAOYSA-N;
+MW          155.241;      // g/mol [origin=calculated method=formula-sum]
+Tc          719.20;      // K   [origin=predictive method=joback]
+Pc          29.409;      // bar [origin=predictive method=joback]
+omega       0.4823;      // -   [origin=predictive method=lee-kesler]
+Tb          505.33;      // K   [origin=predictive method=joback]
+HvapTb      42347.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-45.159 0.93654 -0.0004154 2.99e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 1; } { group CH2CO; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group CdO_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[(dimethylamino)methyl]cyclohexan-1-one" "2-[(dimethylamino)methyl]cyclohexanone" "2-(n,n-dimethylaminomethyl)cyclohexanone" "cyclohexanone, 2-[(dimethylamino)methyl]-" "2-dimethylaminomethyl-cyclohexanone" "2-((dimethylamino)methyl)cyclohexanone" "2-((dimethylamino)methyl)cyclohexan-1-one" "2-dimethylaminomethyl-cyclohexanone hydrochloride" "2-dimethylamino methyl cyclohexanone" "2-(dimethylaminomethyl)cyclohexan-1-one" "cyclohexanone,2-[(dimethylamino)methyl]-" );
+gibbsFormation
+{
+    dHf_298   -244940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     413.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37540.0
+    phase     gas;
+}

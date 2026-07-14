@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-bromo-2-fluorobenzyl alcohol  (C7H6BrFO, CAS 188582-62-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Bromo2FluorobenzylAlcohol;
+formula     C7H6BrFO;
+CAS         188582-62-9;
+InChIKey    BWBJZMQPVBWEJU-UHFFFAOYSA-N;
+MW          205.026;      // g/mol [origin=calculated method=formula-sum]
+Tc          760.75;      // K   [origin=predictive method=joback]
+Pc          46.089;      // bar [origin=predictive method=joback]
+omega       0.9254;      // -   [origin=predictive method=lee-kesler]
+Tb          554.01;      // K   [origin=predictive method=joback]
+HvapTb      57073.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.791 0.5549 -0.00037232 9.73e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group OH; count 1; } { group Br; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Br; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4-bromanyl-2-fluoranyl-phenyl)methanol" "(4-bromo-2-fluorophenyl)methanol" "4-bromo-2-fluorobenzylalcohol" "(4-bromo-2-fluorophenyl)methan-1-ol" "benzenemethanol, 4-bromo-2-fluoro-" "b145" "(4-bromo-2-fluorophenyl)methanol;3-fluoro-4-hydroxymethylbromobenzene;" );
+gibbsFormation
+{
+    dHf_298   -296230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     443.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-216100.0
+    phase     gas;
+}

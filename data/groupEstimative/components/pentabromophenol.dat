@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentabromophenol  (C6HBr5O, CAS 608-71-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentabromophenol;
+formula     C6HBr5O;
+CAS         608-71-9;
+InChIKey    SVHOVVJFOWGYJO-UHFFFAOYSA-N;
+MW          488.593;      // g/mol [origin=calculated method=formula-sum]
+Tc          1099.37;      // K   [origin=predictive method=joback]
+Pc          94.443;      // bar [origin=predictive method=joback]
+omega       1.2279;      // -   [origin=predictive method=lee-kesler]
+Tb          794.90;      // K   [origin=predictive method=joback]
+HvapTb      79063.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (52.76 0.6025 -0.000679 2.897e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 5; } { group ACOH; count 1; } { group Br; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 6; } { group Br; count 5; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,4,5,6-pentakis(bromanyl)phenol" "flammex 5bp" "phenol, pentabromo-" "2,3,4,5,6-pentabromophenol" "phenol, 2,3,4,5,6-pentabromo-" "pbr" "pentabromfenol" "phenol,2,3,4,5,6-pentabromo-" "h194" );
+gibbsFormation
+{
+    dHf_298   -22180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     540.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-9490.0
+    phase     gas;
+}

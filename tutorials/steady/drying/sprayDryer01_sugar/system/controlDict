@@ -32,8 +32,8 @@
       T_wb ~ 40-50 °C,  T_out ~ 90-100 °C
       h ~ 1000 W/(m²·K),  Re < 1 (Stokes),  τ_drying ~ 0.1 s
 
-  PHASE 2 (later): a GAB sorption isotherm + the falling-rate period + a
-  residence time will replace the "all water evaporates" assumption with a
+  The GAB isotherm + Lewis falling-rate + residence time ARE modelled — see
+  the residual-moisture block in the log (X_final ~ 0.014 kg/kg, 1.3 wt%) with a
   real residual moisture in the powder.
 
   NOTE (slice 4): the atomiser surface tension is NO LONGER a hardcoded

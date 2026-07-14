@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(diethylamino)ethyl acrylate  (C9H17NO2, CAS 2426-54-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2DiethylaminoEthylAcrylate;
+formula     C9H17NO2;
+CAS         2426-54-2;
+InChIKey    QHVBLSNVXDSMEB-UHFFFAOYSA-N;
+MW          171.24;      // g/mol [origin=calculated method=formula-sum]
+Tc          645.11;      // K   [origin=predictive method=joback]
+Pc          24.100;      // bar [origin=predictive method=joback]
+omega       0.6352;      // -   [origin=predictive method=lee-kesler]
+Tb          472.86;      // K   [origin=predictive method=joback]
+HvapTb      44408.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.434 0.90794 -0.0005067 9.36e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH2=CH; count 1; } { group CH2N; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(diethylamino)ethyl prop-2-enoate" "diethylaminoethyl acrylate" "ageflex fa-2" "2-(diethylamino)-ethyl acrylate" "2-propenoic acid, 2-(diethylamino)ethyl ester" "acrylic acid, 2-(diethylamino)ethyl ester" "n,n-diethylaminoethyl acrylate" "acrylic acid, n,n-diethylaminoethyl ester" "(diethylamino)ethyl acrylate" "n,n-diethylaminoethylacrylate" "n,n-(diethylamino)ethyl acrylate" "2-diethylaminoethyl prop-2-enoate" );
+gibbsFormation
+{
+    dHf_298   -353410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     569.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-86850.0
+    phase     gas;
+}

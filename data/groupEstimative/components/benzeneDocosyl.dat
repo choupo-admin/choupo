@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene, docosyl-  (C28H50, CAS 68855-24-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzeneDocosyl;
+formula     C28H50;
+CAS         68855-24-3;
+InChIKey    MEYUFRQDILUMEC-UHFFFAOYSA-N;
+MW          386.708;      // g/mol [origin=calculated method=formula-sum]
+Tc          1061.69;      // K   [origin=predictive method=joback]
+Pc          7.824;      // bar [origin=predictive method=joback]
+omega       0.7417;      // -   [origin=predictive method=lee-kesler]
+Tb          866.92;      // K   [origin=predictive method=joback]
+HvapTb      80198.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-56.469 2.58492 -0.0015306 3.475e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 20; } { group ACH; count 5; } { group ACCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 21; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "docosylbenzene" "benzene, c14-30-alkyl derivs." "docosane, 1-phenyl-" );
+gibbsFormation
+{
+    dHf_298   -384720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1140.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=297290.0
+    phase     gas;
+}

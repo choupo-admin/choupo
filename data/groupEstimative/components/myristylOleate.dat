@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: myristyl oleate  (C32H62O2, CAS 22393-85-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        myristylOleate;
+formula     C32H62O2;
+CAS         22393-85-7;
+InChIKey    DHZWALZKPWZSMA-UHFFFAOYSA-N;
+MW          478.846;      // g/mol [origin=calculated method=formula-sum]
+Tc          1242.78;      // K   [origin=predictive method=joback]
+Pc          5.581;      // bar [origin=predictive method=joback]
+omega       0.2780;      // -   [origin=predictive method=lee-kesler]
+Tb          994.14;      // K   [origin=predictive method=joback]
+HvapTb      94191.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.973 3.00904 -0.0017062 3.599e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 26; } { group CH=CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 27; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetradecyl octadec-9-enoate" "9-octadecenoic acid (9z)-, tetradecyl ester" );
+gibbsFormation
+{
+    dHf_298   -903870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1447.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11590.0
+    phase     gas;
+}

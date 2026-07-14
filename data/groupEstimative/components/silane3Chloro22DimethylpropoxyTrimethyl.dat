@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: silane, (3-chloro-2,2-dimethylpropoxy)trimethyl-  (C8H19ClOSi, CAS 80813-42-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H19ClOSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        silane3Chloro22DimethylpropoxyTrimethyl;
+formula     C8H19ClOSi;
+CAS         80813-42-9;
+InChIKey    DVCGIEWNXHQSFK-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          194.774;      // g/mol [origin=calculated method=formula-sum]
+Tc          628.55;      // K   [origin=predictive method=joback]
+Pc          21.816;      // bar [origin=predictive method=joback]
+omega       0.3402;      // -   [origin=predictive method=lee-kesler]
+Tb          440.66;      // K   [origin=predictive method=joback]
+HvapTb      39195.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (50.352 0.6271 -7.78e-05 -1.071e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group C; count 1; } { group CH2O; count 1; } { group CH2Cl; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 2; } { group C; count 1; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3-chloranyl-2,2-dimethyl-propoxy)-trimethyl-silane" "(3-chloro-2,2-dimethylpropoxy)-trimethylsilane" "2,2-dimethyl-3-(trimethylsilyloxy)-1-propyl chloride" );
+gibbsFormation
+{
+    dHf_298   -476780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     599.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-202370.0
+    phase     gas;
+}

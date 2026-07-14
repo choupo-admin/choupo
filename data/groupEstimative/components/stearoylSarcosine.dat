@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: stearoyl sarcosine  (C21H41NO3, CAS 142-48-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        stearoylSarcosine;
+formula     C21H41NO3;
+CAS         142-48-3;
+InChIKey    RJYOKYDKKOFLBT-UHFFFAOYSA-N;
+MW          355.563;      // g/mol [origin=calculated method=formula-sum]
+Tc          1091.94;      // K   [origin=predictive method=joback]
+Pc          10.514;      // bar [origin=predictive method=joback]
+omega       1.0140;      // -   [origin=predictive method=lee-kesler]
+Tb          891.90;      // K   [origin=predictive method=joback]
+HvapTb      88293.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.933 2.14554 -0.0012851 2.9506e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 16; } { group COOH; count 1; } { group CONCH3CH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 17; } { group CdO; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[methyl(octadecanoyl)amino]ethanoic acid" "n-methyl-n-stearoylglycine" "glycine, n-methyl-n-(1-oxooctadecyl)-" "stearoyl n-methylaminoacetic acid" "stearoyl n-methylglycine" "n-(1-oxooctadecyl)sarcosine" "n-methyl-n-octadecanoylglycine" "2-(n-methylstearamido)acetic acid" "(n-methyloctadecanamido)acetic acid" "n-methyl-n-(1-oxooctadecyl)glycine" "2-[methyl(octadecanoyl)amino]acetic acid" );
+gibbsFormation
+{
+    dHf_298   -872090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1069.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-236110.0
+    phase     gas;
+}

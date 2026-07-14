@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: aniline, 2-tert-butyl-6-chloro-  (C10H14ClN, CAS 64985-31-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        aniline2TertButyl6Chloro;
+formula     C10H14ClN;
+CAS         64985-31-5;
+InChIKey    SSKOQDSCQVSEGT-UHFFFAOYSA-N;
+MW          183.679;      // g/mol [origin=calculated method=formula-sum]
+Tc          808.60;      // K   [origin=predictive method=joback]
+Pc          29.601;      // bar [origin=predictive method=joback]
+omega       0.5194;      // -   [origin=predictive method=lee-kesler]
+Tb          571.77;      // K   [origin=predictive method=joback]
+HvapTb      55184.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.6 0.95046 -0.00065292 1.754e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACNH2; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-tert-butyl-6-chloranyl-aniline" "2-tert-butyl-6-chloroaniline" "benzenamine, 2-chloro-6-(1,1-dimethylethyl)-" );
+gibbsFormation
+{
+    dHf_298   -26840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     472.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=183830.0
+    phase     gas;
+}

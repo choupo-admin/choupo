@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl bromo isodehydro acetate  (C10H11BrO4, CAS 18152-79-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylBromoIsodehydroAcetate;
+formula     C10H11BrO4;
+CAS         18152-79-9;
+InChIKey    YMOPMHLWTLUFGX-UHFFFAOYSA-N;
+MW          275.098;      // g/mol [origin=calculated method=formula-sum]
+Tc          857.62;      // K   [origin=predictive method=joback]
+Pc          27.730;      // bar [origin=predictive method=joback]
+omega       0.9033;      // -   [origin=predictive method=lee-kesler]
+Tb          644.92;      // K   [origin=predictive method=joback]
+HvapTb      62729.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (64.261 0.70026 -0.000338 3.41e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group Br; count 1; } { group C=C; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group dC_ring; count 4; } { group Br; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 5-bromanyl-2,4-dimethyl-6-oxidanylidene-pyran-3-carboxylate" "3-bromo-5-carbethoxy-4,6-dimethyl-2-pyrone" "ethyl 3-bromo-4,6-dimethyl-2-oxo-2h-pyran-5-carboxylate" "ethyl 3-bromo-4,6-dimethyl-2h-pyran-5-carboxylate" "brd-k84505482-001-01-7" "ethyl 3-bromo-4,6-dimethyl-2-oxopyran-5-carboxylate" "ethyl 5-bromo-2,4-dimethyl-6-oxopyran-3-carboxylate" "2h-pyran-5-carboxylicacid, 3-bromo-4,6-dimethyl-2-oxo-, ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -701300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     571.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-495340.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethyl methanetricarboxylate  (C10H16O6, CAS 6279-86-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethylMethanetricarboxylate;
+formula     C10H16O6;
+CAS         6279-86-3;
+InChIKey    AGZPNUZBDCYTBB-UHFFFAOYSA-N;
+MW          232.232;      // g/mol [origin=calculated method=formula-sum]
+Tc          785.51;      // K   [origin=predictive method=joback]
+Pc          21.533;      // bar [origin=predictive method=joback]
+omega       0.9191;      // -   [origin=predictive method=lee-kesler]
+Tb          602.62;      // K   [origin=predictive method=joback]
+HvapTb      59687.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (68.343 0.79536 -0.0002396 -6.4e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tricarbethoxymethane" "methanetricarboxylic acid triethyl ester" "triethylmethanetricarboxylate" "methanetricarboxylic acid, triethyl ester" "2-ethoxycarbonyl-malonic acid diethyl ester" "carboxymalonic acid triethyl ester" "diethyl 2-(ethoxycarbonyl)malonate" "diethyl 2-(ethoxycarbonyl)propane-1,3-dioate" "triethyl carboxymalonate" "n-triethylmethanetricarboxylate" "1,1,1-triethyl methanetricarboxylate" "2-ethyl-2-methylbutane-1,1,1-tricarboxylate" );
+gibbsFormation
+{
+    dHf_298   -1206850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     689.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-900230.0
+    phase     gas;
+}

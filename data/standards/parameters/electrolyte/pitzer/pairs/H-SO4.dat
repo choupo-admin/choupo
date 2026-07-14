@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer binary ion-interaction parameters --- H(+) / SO4(2-) in aqueous
+  solution.
+  Role: the beta0 / beta1 / Cphi set (alpha1 2.0) of the Pitzer virial
+  expansion -- the cation-anion second and third virial coefficients behind
+  the mean activity and osmotic coefficients of the H-SO4 pair, consumed by
+  the pitzer (single-salt VLE) and pitzerHMW (multi-ion speciation) activity
+  engines.
+  Source: Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49 --
+  full provenance string in the source entry below.
+\*-----------------------------------------------------------------------------*/
+recordType electrolytePairParameters;
+schemaVersion 1;
+
+model pitzer;
+
+pair { cation H; anion SO4; }
+
+parameters
+{
+    beta0 0.0298;
+    beta1 0.0;
+    beta2 0.0;
+    Cphi 0.0438;
+    alpha1 2.0;
+    alpha2 12.0;
+}
+
+source "Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49";

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyanomethyl formate  (C3H3NO2, CAS 150760-95-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C3H3NO2 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        cyanomethylFormate;
+formula     C3H3NO2;
+CAS         150760-95-5;
+InChIKey    ZFLAEHBSVFWEHW-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          85.062;      // g/mol [origin=calculated method=formula-sum]
+Tc          537.24;      // K   [origin=predictive method=joback]
+Pc          43.340;      // bar [origin=predictive method=joback]
+omega       0.2605;      // -   [origin=predictive method=lee-kesler]
+Tb          346.74;      // K   [origin=predictive method=joback]
+HvapTb      30377.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.339 0.2317 -0.0002614 1.149e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group HCOO; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyanomethyl methanoate" "(formyloxy)acetonitrile" "acetonitrile,2-(formyloxy)-" "formic acid cyanomethyl ester" "acetonitrile,(formyloxy)- (9ci);cyanomethyl formate;o-formylhydroxyacetonitrile;" );
+gibbsFormation
+{
+    dHf_298   136080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     462.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=151520.0
+    phase     gas;
+}

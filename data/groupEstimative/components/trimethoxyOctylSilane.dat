@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimethoxy(octyl)silane  (C11H26O3Si, CAS 3069-40-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C11H26O3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        trimethoxyOctylSilane;
+formula     C11H26O3Si;
+CAS         3069-40-7;
+InChIKey    NMEPHPOFYLLFTK-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          234.411;      // g/mol [origin=calculated method=formula-sum]
+Tc          686.33;      // K   [origin=predictive method=joback]
+Pc          16.728;      // bar [origin=predictive method=joback]
+omega       0.6572;      // -   [origin=predictive method=lee-kesler]
+Tb          519.94;      // K   [origin=predictive method=joback]
+HvapTb      47604.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (110.207 0.65308 0.0001732 -2.619e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group CH3O; count 3; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 7; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "octyltrimethoxysilane" "trimethoxyoctylsilane" "n-octyltrimethoxysilane" "silane, trimethoxyoctyl-" "trimethoxy-octylsilane" "trimethoxy-n-octylsilane" "o410" "jh-n 318;kbm 3083;octyltrimethoxysilane;si 108;silan 108;xc 95-738;n-octyltrimethoxysilane;" );
+gibbsFormation
+{
+    dHf_298   -778650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     744.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-378020.0
+    phase     gas;
+}

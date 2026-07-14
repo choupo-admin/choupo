@@ -120,11 +120,12 @@ const GUIDE: { [id: string]: { model: string; sequence: string; trace: string } 
       + "  1     365.0000    -2.22540e+03\n"
       + "  2     380.0000     3.17088e+04\n"
       + "  3     372.5000     1.83628e+04\n"
-      + "  4     369.0596     1.77921e+03\n"
-      + "  5     368.6723     7.08286e-02   ✓\n"
+      + "  4     369.0615     1.89020e+03\n"
+      + "  5     368.6619     6.48394e-01\n"
+      + "  8     368.6618    -2.15364e-03   ✓\n"
       + "\n"
-      + "T_out = 368.67 K   (ΔT drop 11.33 K — no duty, the vapour pays for itself)\n"
-      + "V/F  = 0.0534   (two-phase)",
+      + "T_out = 368.66 K   (ΔT drop 11.34 K — no duty, the vapour pays for itself)\n"
+      + "V/F  = 0.0519   (two-phase)",
   },
 };
 
@@ -139,7 +140,8 @@ function modelOf(block: unknown): string | undefined {
 // artefacts), so the student sees Choupo is a folder of plain-text dicts.
 function caseTree(rawFiles: { [p: string]: string }, caseName: string): string {
   const keep = (p: string) =>
-    /\.cho$/.test(p) || p.startsWith("system/") || p.startsWith("constant/");
+    /\.cho$/.test(p) || p.startsWith("system/") || p.startsWith("constant/")
+      || p.startsWith("0/");
   const paths = Object.keys(rawFiles).filter(keep).sort();
   const top: string[] = [];
   const folders: { [f: string]: string[] } = {};
@@ -240,7 +242,7 @@ export function CaseIntro() {
     ? guide.model
     : (activity || eos
         ? `activity: ${activity ?? "—"},  EoS: ${eos ?? "—"}`
-        : "the thermodynamic models declared in constant/thermoPackage");
+        : "the thermodynamic models declared in constant/propertyDict");
   const trace = guide
     ? guide.trace
     : isProps

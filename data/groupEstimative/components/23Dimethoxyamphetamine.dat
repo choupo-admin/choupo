@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3-dimethoxyamphetamine  (C11H17NO2, CAS 15402-81-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23Dimethoxyamphetamine;
+formula     C11H17NO2;
+CAS         15402-81-0;
+InChIKey    DHLWJXGSZDJWKK-UHFFFAOYSA-N;
+MW          195.262;      // g/mol [origin=calculated method=formula-sum]
+Tc          818.82;      // K   [origin=predictive method=joback]
+Pc          26.516;      // bar [origin=predictive method=joback]
+omega       0.7396;      // -   [origin=predictive method=lee-kesler]
+Tb          604.85;      // K   [origin=predictive method=joback]
+HvapTb      58753.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (43.391 0.79236 -0.00029632 -3.7e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 3; } { group AC; count 2; } { group ACCH2; count 1; } { group CH3O; count 2; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2,3-dimethoxyphenyl)propan-2-amine" "benzeneethanamine,2,3-dimethoxy-.alpha.-methyl-" "dimethoxyamphetamine" "benzeneethanamine, 2,3-dimethoxy-alpha-methyl-" );
+gibbsFormation
+{
+    dHf_298   -292710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     530.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11100.0
+    phase     gas;
+}

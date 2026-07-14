@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(2-(2-methoxyethoxy)ethyl)amine  (C10H23NO4, CAS 5732-47-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis22MethoxyethoxyEthylAmine;
+formula     C10H23NO4;
+CAS         5732-47-8;
+InChIKey    FFCWGAORQXNZCL-UHFFFAOYSA-N;
+MW          221.297;      // g/mol [origin=calculated method=formula-sum]
+Tc          733.98;      // K   [origin=predictive method=joback]
+Pc          20.055;      // bar [origin=predictive method=joback]
+omega       0.9557;      // -   [origin=predictive method=lee-kesler]
+Tb          568.25;      // K   [origin=predictive method=joback]
+HvapTb      53930.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (94.588 0.77724 -0.0001248 -1.009e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH3O; count 2; } { group CH2O; count 2; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 8; } { group O; count 4; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-methoxyethoxy)-n-[2-(2-methoxyethoxy)ethyl]ethanamine" "bis[2-(2-methoxyethoxy)ethyl]amine" "diethylamine, 2,2'-bis(2-methoxyethoxy)-," "ethanamine,2-(2-methoxyethoxy)-n-[2-(2-methoxyethoxy)ethyl]-" "2,5,11,14-tetraoxa-8-azapentadecane(6ci,7ci,8ci); 2,2'-bis(2-methoxyethoxy)diethylamine; 8-aza-2,5,11,14-tetraoxapentadecane;bis(methoxyethoxyethyl)amine" );
+gibbsFormation
+{
+    dHf_298   -725140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     631.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-297290.0
+    phase     gas;
+}

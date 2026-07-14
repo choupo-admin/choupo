@@ -12,7 +12,7 @@ import { metaByName, type ComponentMeta } from "./catalogue.js";
 import { buildLocalUnifac, hasUnifacGroups } from "./unifacGroups.js";
 
 export type PlotKind = "scan" | "txy" | "flash" | "gamma" | "mccabe" | "binaryLle" | "ternary"
-  | "ternaryLle" | "phase" | "psychro" | "scaling" | "steam";
+  | "ternaryLle" | "phase" | "psychro" | "scaling" | "steam" | "gibbsmap";
 
 export type SelClass = "pure" | "organic-mixture" | "aqueous-organic"
   | "aqueous-electrolyte" | "humid-gas" | "mixed";
@@ -39,6 +39,7 @@ export function viewsFor(sel: string[], cat: ComponentMeta[],
                          localUnifac: ReturnType<typeof buildLocalUnifac>): Set<PlotKind> {
   const out = new Set<PlotKind>(["scan"]);                   // a property scan always applies
   const n = sel.length;
+  if (n >= 2) out.add("gibbsmap");                           // 2+ species: equilibrium map
   if (n === 0) return out;
   const metas = sel.map((c) => metaByName(c, cat));
   const cls = classifySelection(sel, cat);

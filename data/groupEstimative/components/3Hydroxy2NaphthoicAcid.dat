@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-hydroxy-2-naphthoic acid  (C11H8O3, CAS 92-70-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Hydroxy2NaphthoicAcid;
+formula     C11H8O3;
+CAS         92-70-6;
+InChIKey    ALKYHXVLJMQRLQ-UHFFFAOYSA-N;
+MW          188.182;      // g/mol [origin=calculated method=formula-sum]
+Tc          980.83;      // K   [origin=predictive method=joback]
+Pc          45.964;      // bar [origin=predictive method=joback]
+omega       1.0817;      // -   [origin=predictive method=lee-kesler]
+Tb          728.05;      // K   [origin=predictive method=joback]
+HvapTb      74836.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-62.48 1.1121 -0.00100444 3.625e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 3; } { group ACOH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 6; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-oxidanylnaphthalene-2-carboxylic acid" "developer bon" "2-hydroxy-3-naphthoic acid" "bon acid" "bona" "2-naphthalenecarboxylic acid, 3-hydroxy-" "2-naphthoic acid, 3-hydroxy-" "b.o.n. acid" "2-naphthol-3-carboxylic acid" "c.i. developer 20" "miketazol developer ons" "naphthol bon" );
+gibbsFormation
+{
+    dHf_298   -381820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     442.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-247360.0
+    phase     gas;
+}

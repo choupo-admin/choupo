@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octadecyl sulfide  (C36H74S, CAS 1844-09-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octadecylSulfide;
+formula     C36H74S;
+CAS         1844-09-3;
+InChIKey    IHWDIGHWDQPQMQ-UHFFFAOYSA-N;
+MW          539.048;      // g/mol [origin=calculated method=formula-sum]
+Tc          1405.98;      // K   [origin=predictive method=joback]
+Pc          4.611;      // bar [origin=predictive method=joback]
+omega       -0.0303;      // -   [origin=predictive method=lee-kesler]
+Tb          1092.06;      // K   [origin=predictive method=joback]
+HvapTb      102547.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.236 3.41823 -0.0018944 3.896e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 33; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 34; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-octadecylsulfanyloctadecane" "dioctadecyl sulfide" "distearyl sulfide" "octadecane, 1,1'-thiobis-" "stearyl sulfide" "dioctadecyl sulphide" "octadecane,1'-thiobis-" "octadecyl sulfide (8ci)" "octadecane,1,1'-thiobis-" "1-(octadecylsulfanyl)octadecane" );
+gibbsFormation
+{
+    dHf_298   -744500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1619.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=285360.0
+    phase     gas;
+}

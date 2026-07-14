@@ -1,0 +1,20 @@
+CARBONATION sector -- recover battery-grade Li2CO3 by hot precipitation.
+
+GREEN (runnable standalone: runCase tutorials/plant/lithiumBrinePlant/CARBONATION).
+
+THE HONEST HALF (shipped): a crystalliser at 90 C precipitates Li2CO3 by its
+RETROGRADE solubility -- the salt is LEAST soluble hot, so warming a
+near-saturated carbonated solution drops the excess as battery-grade crystals.
+The crystalliser reads Li2CO3's own solubility CURVE (its component record);
+no electrolyte Pitzer, no Henry -- the simplest honest container.
+
+THE DEFERRED HALF (needs grammar, documented not faked): the CO2-carbonation
+REACTION that forms the Li2CO3 upstream --
+  2 LiCl + Na2CO3 -> Li2CO3(s) + 2 NaCl   (or CO2 + 2 LiOH -> Li2CO3 + H2O)
+needs (a) the student's Arrhenius kinetics in constant/reactions, (b)
+gasSolutes { CO2 solution.henryDilute; } under an electrolyte.pitzer brine
+liquid (Henry as the CO2 solute's per-GROUP convention inside the ONE aqueous
+surface -- external-review correction #4), and (c) a per-unit eos.SRK override
+on the 60-bar CO2 compressor.  That grammar is ratified (constitution v2) but
+not yet built -- so this sector models the precipitation the reaction feeds,
+with the carbonated liquor declared as the feed.

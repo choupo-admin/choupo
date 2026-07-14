@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sotolone  (C6H8O3, CAS 28664-35-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sotolone;
+formula     C6H8O3;
+CAS         28664-35-9;
+InChIKey    UNYNVICDCJHOPO-UHFFFAOYSA-N;
+MW          128.127;      // g/mol [origin=calculated method=formula-sum]
+Tc          687.40;      // K   [origin=predictive method=joback]
+Pc          41.039;      // bar [origin=predictive method=joback]
+omega       0.9046;      // -   [origin=predictive method=lee-kesler]
+Tb          503.14;      // K   [origin=predictive method=joback]
+HvapTb      54565.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.27 0.52894 -0.0003118 6.66e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group OH; count 1; } { group C=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH_ring; count 1; } { group dC_ring; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-dimethyl-4-oxidanyl-2h-furan-5-one" "sotolon" "4,5-dimethyl-3-hydroxy-2,5-dihydrofuran-2-one" "caramel furanone" "sugar lactone" "4,5-dimethyl-3-hydroxy-2(5h)-furanone" "fenugreek lactone" "2(5h)-furanone, 3-hydroxy-4,5-dimethyl-" "3-hydroxy-4,5-dimethylfuran-2(5h)-one" "3-hydroxy-4,5-dimethyl-2(5h)-furanone" "2-hydroxy-3-methyl-2-penten-4-olide" "4-hydroxy-2,3-dimethyl-2h-furan-5-one" );
+gibbsFormation
+{
+    dHf_298   -529040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     351.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-376100.0
+    phase     gas;
+}

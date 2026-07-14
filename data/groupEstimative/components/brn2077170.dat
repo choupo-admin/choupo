@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 2077170  (C11H19N, CAS 2470-11-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn2077170;
+formula     C11H19N;
+CAS         2470-11-3;
+InChIKey    DJTQJIUJNMYMTO-UHFFFAOYSA-N;
+MW          165.28;      // g/mol [origin=calculated method=formula-sum]
+Tc          679.63;      // K   [origin=predictive method=joback]
+Pc          27.042;      // bar [origin=predictive method=joback]
+omega       0.4020;      // -   [origin=predictive method=lee-kesler]
+Tb          473.39;      // K   [origin=predictive method=joback]
+HvapTb      42410.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.628 1.20092 -0.00076413 1.8509e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group CH; count 1; } { group CH3N; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-(cyclohexylmethyl)-n-methyl-prop-2-yn-1-amine" "cyclohexanemethylamine, n-methyl-n-2-propynyl-" "n-cyclohexylmethyl-n-methylpropargylamine" "n-(cyclohexylmethyl)-n-methylprop-2-yn-1-amine" "cyclohexanemethanamine,n-methyl-n-2-propyn-1-yl-" "cyclohexanemethanamine,n-methyl-n-2-propynyl- (9ci); cyclohexanemethylamine, n-methyl-n-2-propynyl-(7ci,8ci)" );
+gibbsFormation
+{
+    dHf_298   143380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     539.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=400040.0
+    phase     gas;
+}

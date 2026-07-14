@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: valeranone  (C15H26O, CAS 55528-90-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        valeranone;
+formula     C15H26O;
+CAS         55528-90-0;
+InChIKey    HDVXJTYHXDVWQO-NWANDNLSSA-N;
+MW          222.372;      // g/mol [origin=calculated method=formula-sum]
+Tc          876.32;      // K   [origin=predictive method=joback]
+Pc          20.699;      // bar [origin=predictive method=joback]
+omega       0.5005;      // -   [origin=predictive method=lee-kesler]
+Tb          636.55;      // K   [origin=predictive method=joback]
+HvapTb      50746.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-191.01 2.08718 -0.001816 7.006e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 2; } { group C; count 2; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 1; } { group C_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4ar,7s,8as)-4a,8a-dimethyl-7-propan-2-yl-3,4,5,6,7,8-hexahydro-2h-naphthalen-1-one" "yatamanson" "(4aalpha,7beta,8aalpha)-octahydro-4a,8a-dimethyl-7-(1-methylethyl)-1(2h)-naphthalenone" );
+gibbsFormation
+{
+    dHf_298   -364810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     647.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=4800.0
+    phase     gas;
+}

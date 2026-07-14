@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: melitracen  (C21H25N, CAS 5118-29-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        melitracen;
+formula     C21H25N;
+CAS         5118-29-6;
+InChIKey    GWWLWDURRGNSRS-UHFFFAOYSA-N;
+MW          291.438;      // g/mol [origin=calculated method=formula-sum]
+Tc          994.23;      // K   [origin=predictive method=joback]
+Pc          17.005;      // bar [origin=predictive method=joback]
+omega       0.7922;      // -   [origin=predictive method=lee-kesler]
+Tb          765.19;      // K   [origin=predictive method=joback]
+HvapTb      69636.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-150.118 2.22088 -0.00192722 7.054e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group CH=C; count 1; } { group ACH; count 8; } { group AC; count 4; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group dCH; count 1; } { group C_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 5; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(10,10-dimethylanthracen-9-ylidene)-n,n-dimethyl-propan-1-amine" "melitracene" "adaptol" "dixeran" "thymeol" "trausabun" "melitracen [inn]" "melitracene [inn-french]" "melitracenum [inn-latin]" "melitracen (inn)" "1-propanamine, 3-(10,10-dimethyl-9(10h)-anthracenylidene)-n,n-dimethyl-" "n,n,10,10-tetramethyl-delta(sup 9(10),gamma)-anthracenepropylamine" );
+gibbsFormation
+{
+    dHf_298   211110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     696.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=555100.0
+    phase     gas;
+}

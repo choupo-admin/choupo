@@ -72,7 +72,7 @@ int BagFilter::solve(const DictPtr& dict,
     const scalar rho_g = P * MWg / (R * T);                                  // kg/m^3
     if (!thermo.hasTransport())
         throw std::runtime_error("BagFilter: needs a gas viscosity --- add "
-            "`transport { model Chung; }` to the thermoPackage.");
+            "`transport { viscosity { model Chung; } }` to the thermoPackage.");
     const scalar mu = thermo.viscosityGas(T, y);                            // Pa·s
 
     // Face velocity (air-to-cloth ratio) + Darcy pressure drop -----------
@@ -202,7 +202,18 @@ int BagFilter::solve(const DictPtr& dict,
                   << " m^3/s,  face velocity V = " << std::fixed << std::setprecision(4) << V
                   << " m/s  (" << std::setprecision(2) << (V*60.0) << " m/min air-to-cloth)\n"
                   << "  Pressure drop dP = " << std::setprecision(0) << dP
-                  << " Pa   (cloth + cake, W = " << std::setprecision(2) << W << " kg/m^2)\n"
+                  << " Pa   (cloth " << std::setprecision(0) << (mu * V * K1)
+                  << " + cake " << (mu * V * K2 * W) << " Pa; W = "
+                  << std::setprecision(2) << W << " kg/m^2)\n"
+                  << "  Darcy constants:  K1 = " << std::scientific << std::setprecision(1)
+                  << K1 << " 1/m, K2 = " << K2 << " m/kg"
+                  << (oper->found("K1") || oper->found("K2") ? "  (case-declared)" : "  (library defaults -- override in operation{})")
+                  << std::fixed << "\n"
+                  << "  Grade law:        eta(d) = 1 - P0 exp(-d/dc),  P0 = "
+                  << std::setprecision(3) << P0 << ", dc = " << std::scientific
+                  << std::setprecision(1) << dc << " m"
+                  << (oper->found("penetration0") || oper->found("dCharacteristic") ? "  (case-declared)" : "  (library defaults)")
+                  << std::fixed << "\n"
                   << "  Overall collection efficiency = " << std::setprecision(3)
                   << (100.0*etaGlobal) << " %   (penetration "
                   << std::scientific << std::setprecision(2) << (1.0-etaGlobal) << ")\n"

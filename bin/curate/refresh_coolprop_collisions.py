@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # refresh_coolprop_collisions.py -- promote the CoolProp-anchored collision
-# files staged in data/proposed/_coolprop_review/ over the existing proposal
-# files in data/proposed/components/, as a STRICT UPGRADE (never a field loss).
+# files staged in data/local/_coolprop_review/ over the existing proposal
+# files in data/local/components/, as a STRICT UPGRADE (never a field loss).
 #
 # WHY a MERGE, not an overwrite: CoolProp gives superior MEASURED constants
 # (Tc/Pc/omega/MW/Tb), a fitted Antoine and Cp polynomials -- but it has NO
@@ -17,16 +17,16 @@
 #     CoolProp alternative staged in proposed/, shadowed by the frozen
 #     standard at run time -- useful where the standard cites excluded sources)
 #
-# STAGE-ONLY: writes under data/proposed/components/ only; never data/standards/,
+# STAGE-ONLY: writes under data/local/components/ only; never data/standards/,
 # never git.  _coolprop_review/ is kept as the pristine pre-merge CoolProp record.
 
 import re
 from pathlib import Path
 
 ROOT   = Path(__file__).resolve().parents[2]
-COMP   = ROOT / 'data/proposed/components'
-REVIEW = ROOT / 'data/proposed/_coolprop_review'
-OUT    = ROOT / 'data/proposed/COOLPROP-REFRESH.md'
+COMP   = ROOT / 'data/local/components'
+REVIEW = ROOT / 'data/local/_coolprop_review'
+OUT    = ROOT / 'data/local/COOLPROP-REFRESH.md'
 
 # Blocks CoolProp cannot supply -> preserved from the prior proposal file.
 PRESERVE_BLOCKS = ['gibbsFormation', 'groups']

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-propylcyclopentene  (C8H14, CAS 3074-61-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Propylcyclopentene;
+formula     C8H14;
+CAS         3074-61-1;
+InChIKey    FLWGCAJANMGQBB-UHFFFAOYSA-N;
+MW          110.2;      // g/mol [origin=calculated method=formula-sum]
+Tc          603.59;      // K   [origin=predictive method=joback]
+Pc          32.579;      // bar [origin=predictive method=joback]
+omega       0.3277;      // -   [origin=predictive method=lee-kesler]
+Tb          406.73;      // K   [origin=predictive method=joback]
+HvapTb      34922.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-48.728 0.80652 -0.00051444 1.31e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclopentene, 1-propyl-" "cyclopentene, propyl-" "1-n-propylcyclopentene" "1-propyl-1-cyclopentene" );
+gibbsFormation
+{
+    dHf_298   -81320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     416.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=81070.0
+    phase     gas;
+}

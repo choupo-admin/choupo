@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acrylic acid  (C3H4O2, CAS 79-10-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acrylicAcid;
+formula     C3H4O2;
+CAS         79-10-7;
+InChIKey    NIXOWILDQLNWCW-UHFFFAOYSA-N;
+MW          72.063;      // g/mol [origin=calculated method=formula-sum]
+Tc          609.84;      // K   [origin=predictive method=joback]
+Pc          52.893;      // bar [origin=predictive method=joback]
+omega       0.5032;      // -   [origin=predictive method=lee-kesler]
+Tb          410.43;      // K   [origin=predictive method=joback]
+HvapTb      38766.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.77 0.3196 -0.0002349 6.99e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group dCH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "prop-2-enoic acid" "acroleic acid" "propenoic acid" "vinylformic acid" "carbomer" "propene acid" "ethylenecarboxylic acid" "polyacrylic acid" "polyacrylate" "acrylic polymer" "acrylic acid, glacial" "acrylic acid, polymer" );
+gibbsFormation
+{
+    dHf_298   -330090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     321.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-281690.0
+    phase     gas;
+}

@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(iodanyl)silane  (H2I2Si, CAS 13465-83-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula H2I2Si (delta H+2Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        bisIodanylSilane;
+formula     H2I2Si;
+CAS         13465-83-3;
+InChIKey    AIHCVGFMFDEUMO-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          283.901;      // g/mol [origin=calculated method=formula-sum]
+Tc          646.43;      // K   [origin=predictive method=joback]
+Pc          54.225;      // bar [origin=predictive method=joback]
+omega       0.0904;      // -   [origin=predictive method=lee-kesler]
+Tb          385.88;      // K   [origin=predictive method=joback]
+HvapTb      34340.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (26.27 0.0818 -0.000139 6.86e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group I; count 2; } { group SiH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group I; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   110410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     416.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=65360.0
+    phase     gas;
+}

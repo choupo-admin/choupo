@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-cyclohexyl-3-methylbutan-2-ol  (C11H22O, CAS 63450-10-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Cyclohexyl3Methylbutan2Ol;
+formula     C11H22O;
+CAS         63450-10-2;
+InChIKey    UNFLPVPOSGWAPY-UHFFFAOYSA-N;
+MW          170.296;      // g/mol [origin=calculated method=formula-sum]
+Tc          753.64;      // K   [origin=predictive method=joback]
+Pc          26.004;      // bar [origin=predictive method=joback]
+omega       0.8008;      // -   [origin=predictive method=lee-kesler]
+Tb          562.13;      // K   [origin=predictive method=joback]
+HvapTb      56412.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-70.789 1.21674 -0.0006924 1.381e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 3; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-cyclohexyl-3-methyl-butan-2-ol" "alpha,beta-dimethylcyclohexanepropanol" "3-methyl-4-cyclohexyl-2-butanol" "cyclohexanepropanol, alpha,beta-dimethyl-" "cyclohexanepropanol, .alpha.,.beta.-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -378840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     585.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-75510.0
+    phase     gas;
+}

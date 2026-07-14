@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propane-1,2,3-triyl tris(3-oxooctanoate)  (C27H44O9, CAS 68444-14-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        propane123TriylTris3Oxooctanoate;
+formula     C27H44O9;
+CAS         68444-14-4;
+InChIKey    DNBRLNRCKKEJHW-UHFFFAOYSA-N;
+MW          512.64;      // g/mol [origin=calculated method=formula-sum]
+Tc          1455.07;      // K   [origin=predictive method=joback]
+Pc          7.725;      // bar [origin=predictive method=joback]
+omega       0.4667;      // -   [origin=predictive method=lee-kesler]
+Tb          1153.19;      // K   [origin=predictive method=joback]
+HvapTb      117767.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (74.967 2.32636 -0.0011083 1.1118e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 11; } { group CH; count 1; } { group CH2CO; count 3; } { group CH2COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 17; } { group CH; count 1; } { group CdO; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-bis(3-oxidanylideneoctanoyloxy)propyl 3-oxidanylideneoctanoate" "glycerol tri(3-oxooctanoate)" "octanoic acid, 3-oxo-, 1,1',1''-(1,2,3-propanetriyl) ester" "glyceryl tri(3-oxooctanoate)" "2,3-bis(3-oxooctanoyloxy)propyl 3-oxooctanoate" "octanoic acid, 3-oxo-, 1,2,3-propanetriyl ester" );
+gibbsFormation
+{
+    dHf_298   -1895470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1432.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1143850.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ditridecyl fumarate  (C30H56O4, CAS 61791-92-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ditridecylFumarate;
+formula     C30H56O4;
+CAS         61791-92-2;
+InChIKey    DFKBFBPHOGVNGQ-UHFFFAOYSA-N;
+MW          480.774;      // g/mol [origin=calculated method=formula-sum]
+Tc          1254.97;      // K   [origin=predictive method=joback]
+Pc          6.139;      // bar [origin=predictive method=joback]
+omega       0.3749;      // -   [origin=predictive method=lee-kesler]
+Tb          1006.60;      // K   [origin=predictive method=joback]
+HvapTb      97146.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.254 2.76424 -0.0015028 2.79e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 24; } { group CH=CH; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 24; } { group dCH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ditridecyl but-2-enedioate" "2-butenedioic acid (2e)-, ditridecyl ester" "2-butenedioic acid (2z)-, ditridecyl ester" "2-butenedioic acid (2e)-, 1,4-ditridecyl ester" "2-butenedioic acid (2z)-, 1,4-ditridecyl ester" "2-butenedioic acid(2e)-, 1,4-ditridecyl ester" "2-butenedioicacid (2e)-, ditridecyl ester (9ci); 2-butenedioic acid (e)-, ditridecyl ester;fumaric acid, ditridecyl ester (7ci,8ci); 1-tridecanol, diester with fumaricacid (8ci); ditridecyl fumarate" );
+gibbsFormation
+{
+    dHf_298   -1179870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1420.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-338800.0
+    phase     gas;
+}

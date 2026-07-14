@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: rose crystals  (C10H9Cl3O2, CAS 90-17-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        roseCrystals;
+formula     C10H9Cl3O2;
+CAS         90-17-5;
+InChIKey    JKRWZLOCPLZZEI-UHFFFAOYSA-N;
+MW          267.53;      // g/mol [origin=calculated method=formula-sum]
+Tc          863.23;      // K   [origin=predictive method=joback]
+Pc          26.958;      // bar [origin=predictive method=joback]
+omega       0.5833;      // -   [origin=predictive method=lee-kesler]
+Tb          621.92;      // K   [origin=predictive method=joback]
+HvapTb      59008.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.18 0.97222 -0.000693 1.746e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group ACCH; count 1; } { group CH3COO; count 1; } { group CCl3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2,2,2-tris(chloranyl)-1-phenyl-ethyl] ethanoate" "2,2,2-trichloro-1-phenylethyl acetate" "rosacetol" "trichloromethylphenylcarbinyl acetate" "alpha-(trichloromethyl)benzyl acetate" "trichlor phenyl methyl carbinyl acetate" ".alpha.-(trichloromethyl)benzyl acetate" "2,2,2-trichlor-1-phenylethylacetat" "benzenemethanol, .alpha.-(trichloromethyl)-, acetate" "trichloromethyl phenyl carbinyl acetate" "alpha-(trichloromethyl)benzyl alcohol acetate" "alpha-(trichloromethyl)benzenemethanol acetate" );
+gibbsFormation
+{
+    dHf_298   -391730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     542.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-200030.0
+    phase     gas;
+}

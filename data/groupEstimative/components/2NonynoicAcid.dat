@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-nonynoic acid  (C9H14O2, CAS 1846-70-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2NonynoicAcid;
+formula     C9H14O2;
+CAS         1846-70-4;
+InChIKey    ZAWLBSATNLQTON-UHFFFAOYSA-N;
+MW          154.209;      // g/mol [origin=calculated method=formula-sum]
+Tc          764.82;      // K   [origin=predictive method=joback]
+Pc          29.763;      // bar [origin=predictive method=joback]
+omega       0.7391;      // -   [origin=predictive method=lee-kesler]
+Tb          560.03;      // K   [origin=predictive method=joback]
+HvapTb      54944.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (16.865 0.75982 -0.00044626 1.0288e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group COOH; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group tC; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "non-2-ynoic acid" "alpha-nonynoic acid" "agn-pc-03eaxa" );
+gibbsFormation
+{
+    dHf_298   -307060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     531.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-116210.0
+    phase     gas;
+}

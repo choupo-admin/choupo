@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: corydaline  (C22H27NO4, CAS 518-69-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        corydaline;
+formula     C22H27NO4;
+CAS         518-69-4;
+InChIKey    VRSRXLJTYQVOHC-YEJXKQKISA-N;
+MW          369.461;      // g/mol [origin=calculated method=formula-sum]
+Tc          1120.72;      // K   [origin=predictive method=joback]
+Pc          14.873;      // bar [origin=predictive method=joback]
+omega       1.0830;      // -   [origin=predictive method=lee-kesler]
+Tb          897.53;      // K   [origin=predictive method=joback]
+HvapTb      84427.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.18 1.7616 -0.00098856 1.989e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 4; } { group AC; count 4; } { group ACCH2; count 2; } { group ACCH; count 2; } { group CH3O; count 4; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 8; } { group O; count 4; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(13s,13ar)-2,3,9,10-tetramethoxy-13-methyl-6,8,13,13a-tetrahydro-5h-isoquinolino[2,1-b]isoquinoline" "(+)-corydaline" "corydalin" "d-corydaline" "berbine, 2,3,9,10-tetramethoxy-13-methyl-" "6h-dibenzo(a,g)quinolizine, 5,8,13,13a-tetrahydro-2,3,9,10-tetramethoxy-13-methyl-, (13s-e)-" "(+/-)-corydaline" "corydaline, (+/-)-" "corydaline dl-form [mi]" "2,3,9,10-tetramethoxy-13beta-methyl-13abeta-berbine" "brd-k13148078-001-01-2" "13abeta-berbine, 2,3,9,10-tetramethoxy-13alpha-methyl-" );
+gibbsFormation
+{
+    dHf_298   -402760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     623.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=125780.0
+    phase     gas;
+}

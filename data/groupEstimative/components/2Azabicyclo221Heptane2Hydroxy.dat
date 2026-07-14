@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-azabicyclo(2.2.1)heptane, 2-hydroxy-  (C6H10NO, CAS 85689-01-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        2Azabicyclo221Heptane2Hydroxy;
+formula     C6H10NO;
+CAS         85689-01-6;
+InChIKey    MQKQSJNURLJIDY-UHFFFAOYSA-N;
+role        radical;
+MW          112.152;      // g/mol [origin=calculated method=formula-sum]
+Tc          527.05;      // K   [origin=predictive method=joback]
+Pc          49.384;      // bar [origin=predictive method=joback]
+omega       0.4371;      // -   [origin=predictive method=lee-kesler]
+Tb          351.60;      // K   [origin=predictive method=joback]
+HvapTb      36581.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-127.33 1.1222 -0.0010503 3.87e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH2_ring; count 4; } { group CH_ring; count 2; } { group dO_oth; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-$l^{1}-oxidanyl-3-azabicyclo[2.2.1]heptane" "2-azabicyclo[2.2.1]heptane, 2-hydroxy-" );
+gibbsFormation
+{
+    dHf_298   -145840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     284.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=33470.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propane, 1-(1-chloroethoxy)-  (C5H11ClO, CAS 692-35-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        propane11Chloroethoxy;
+formula     C5H11ClO;
+CAS         692-35-3;
+InChIKey    IMULTGIDITYKPB-UHFFFAOYSA-N;
+MW          122.592;      // g/mol [origin=calculated method=formula-sum]
+Tc          550.89;      // K   [origin=predictive method=joback]
+Pc          32.878;      // bar [origin=predictive method=joback]
+omega       0.3562;      // -   [origin=predictive method=lee-kesler]
+Tb          373.41;      // K   [origin=predictive method=joback]
+HvapTb      33131.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (35.052 0.42834 -0.0001608 2e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH2O; count 1; } { group CHCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(1-chloroethyloxy)propane" );
+gibbsFormation
+{
+    dHf_298   -299770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     385.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-128150.0
+    phase     gas;
+}

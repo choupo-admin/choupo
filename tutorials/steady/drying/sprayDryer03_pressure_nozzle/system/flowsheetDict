@@ -1,0 +1,41 @@
+/*---------------------------------------------------------------------------*\
+  sprayDryer01_sugar  --  flowsheet (one unit, two feeds, two products).
+
+  feed:        100 kg/h of a 40 wt% sucrose solution at 25 °C.
+                 40 kg/h sucrose / 342.30 = 0.11686 kmol/h
+                 60 kg/h water   / 18.015 = 3.33056 kmol/h
+                 total 3.4474 kmol/h ;  z_sucrose = 0.03390
+
+  dryingAir:   50 kmol/h of hot air (real air (N2/O2/Ar)) at 200 °C, 1 bar.
+               Dry air (no inlet humidity) for a clean wet-bulb demo.
+
+  The dryer atomises the feed with a PRESSURE-SWIRL nozzle at 40 bar
+  (d32 = 9575*dP^(-1/3) um, the class-average design curve) instead of a wheel.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        dryer;
+        type        sprayDryer;
+        inputs      ( feed  dryingAir );
+        outputs     ( powder  exhaustAir );
+
+        operation
+        {
+            atomiser                            // SELECTABLE atomizer sub-model
+            {
+                model   pressureNozzle;         // dP now = feed stream P (41 bar) - chamber (1 bar) = 40 bar
+            }
+            chamberDiameter  1.0 m;             // drying chamber (HARDWARE)
+            chamberHeight    5.0 m;             // -> residence time is a RESULT (L / v_particle)
+            // flow co;  (default: co-current gas + droplets)
+            // liquidViscosity / surfaceTension default to water.
+        }
+        dryingCurve  sugarDrying;    // KINETICS: Xc + curve, in constant/dryingKinetics
+        // (the equilibrium GAB sorption ISOTHERM is in
+        //  constant/components/sucrose.dat --- thermodynamics, kept separate)
+    }
+);

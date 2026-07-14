@@ -1,0 +1,53 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Hydrogen  (H2, CAS 1333-74-0)
+  Element in its standard state -- by convention dHf_298 = 0 and the
+  third-law entropy s_298 is the only absolute thermodynamic anchor.
+  Permanent gas at any process-relevant temperature (Tc = 33.18 K).
+  Sources: constants (Tc/Pc/omega/MW/Tb) + vapour pressure cross-checked
+  against CoolProp 7.2.0 (MIT); ideal-gas formation enthalpy/entropy
+  against the NASA polynomial database (NASA TM-4513, public domain).
+\*---------------------------------------------------------------------------*/
+
+name        H2;
+formula     H2;
+CAS         1333-74-0;
+
+MW          2.016;        // kg/kmol
+Tc          33.18;        // K
+Pc          13.13;        // bar
+omega       -0.220;       // [-]   (anomalously negative for H2)
+Tb          20.39;        // K
+HvapTb      904;          // J/mol
+Vliq        2.84e-5;      // m^3/mol  (28.4 cm^3/mol at Tb)
+diffusionVolume  6.12;          // Fuller diffusion volume [-]
+
+gibbsFormation
+{
+    dHf_298   0.0;                // J/mol  -- element in standard state
+    s_298     130.680;            // J/(mol·K)  -- third-law absolute
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.54314   99.395   7.726);
+    Trange        (14  25);
+}
+
+idealGasHeatCapacity
+{
+    // CASE-LOCAL OVERRIDE for flame temperatures: the catalogue poly3 is a
+    // 250-1500 K process fit and EXTRAPOLATES WRONG at 2600 K (N2's turns
+    // NEGATIVE).  NASA-7 two-range form, GRI-Mech 3.0 thermo (7/30/99),
+    // valid 200-3500 K.
+    model    NASA7;
+    low      ( 2.34433112e+00 7.98052075e-03 -1.94781510e-05 2.01572094e-08 -7.37611761e-12 -9.17935173e+02 6.83010238e-01 );
+    high     ( 3.33727920e+00 -4.94024731e-05 4.99456778e-07 -1.79566394e-10 2.00255376e-14 -9.50158922e+02 -3.20502331e+00 );
+    Tlow     200.0;
+    Tcommon  1000.0;
+    Thigh    3500.0;
+}
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( hydrogen );

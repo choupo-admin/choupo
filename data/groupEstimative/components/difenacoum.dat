@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: difenacoum  (C31H24O3, CAS 56073-07-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        difenacoum;
+formula     C31H24O3;
+CAS         56073-07-5;
+InChIKey    FVQITOLOYMWVFU-UHFFFAOYSA-N;
+MW          444.53;      // g/mol [origin=calculated method=formula-sum]
+Tc          1470.48;      // K   [origin=predictive method=joback]
+Pc          16.259;      // bar [origin=predictive method=joback]
+omega       1.2521;      // -   [origin=predictive method=lee-kesler]
+Tb          1187.00;      // K   [origin=predictive method=joback]
+HvapTb      116891.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-179.93 2.7408 -0.00210868 6.389e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 17; } { group AC; count 4; } { group ACCH2; count 1; } { group ACCH; count 2; } { group OH; count 1; } { group C=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 17; } { group dC_ring; count 9; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-oxidanyl-3-[3-(4-phenylphenyl)-1,2,3,4-tetrahydronaphthalen-1-yl]chromen-2-one" "diphenacoum" "neosorexa" "ratak" "neosorexa pp580" "difenacoum [bsi:iso]" "3-(3-biphenyl-4-yl-1,2,3,4-tetrahydro-1-naphthyl)-4-hydroxycoumarin" "coumarin, 3-(3-(4-biphenylyl)-1,2,3,4-tetrahydro-1-naphthyl)-4-hydroxy-" "3-(3-p-diphenyl-1,2,3,4-tetrahydronaphth-1-yl) -4-hydroxycoumarin" "2h-1-benzopyran-2-one, 3-(3-(1,1'-biphenyl)-4-yl-1,2,3,4-tetrahydro-1-naphthalenyl)-4-hydroxy-" "2h-1-benzopyran-2-one, 3-(3-[1,1'-biphenyl]-4-yl-1,2,3,4-tetrahydro-1-naphthalenyl)-4-hydroxy-" "3-(3-(1,1'-biphenyl)-4-yl-1,2,3,4-tetrahydro-1-naphthalenyl)-4-hydroxy-2h-1-benzopyran-2-one" );
+gibbsFormation
+{
+    dHf_298   -74140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     773.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=307730.0
+    phase     gas;
+}

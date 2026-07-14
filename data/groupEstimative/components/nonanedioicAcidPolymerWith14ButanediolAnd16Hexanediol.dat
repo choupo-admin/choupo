@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nonanedioic acid, polymer with 1,4-butanediol and 1,6-hexanediol  (C19H40O8, CAS 71156-07-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nonanedioicAcidPolymerWith14ButanediolAnd16Hexanediol;
+formula     C19H40O8;
+CAS         71156-07-5;
+InChIKey    SSYSWGHUCQFAFJ-UHFFFAOYSA-N;
+MW          396.521;      // g/mol [origin=calculated method=formula-sum]
+Tc          1774.76;      // K   [origin=predictive method=joback]
+Pc          14.006;      // bar [origin=predictive method=joback]
+omega       0.3329;      // -   [origin=predictive method=lee-kesler]
+Tb          1296.86;      // K   [origin=predictive method=joback]
+HvapTb      159520.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (97.617 1.634 -0.000447 -1.243e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 17; } { group OH; count 4; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 17; } { group OH; count 4; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butane-1,4-diol;hexane-1,6-diol;nonanedioic acid" "azelaic acid, 1,6-hexanediol, 1,4-butanediol polymer" );
+gibbsFormation
+{
+    dHf_298   -1968190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1421.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1335520.0
+    phase     gas;
+}

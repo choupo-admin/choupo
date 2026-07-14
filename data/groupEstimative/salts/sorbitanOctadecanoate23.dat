@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): sorbitan, octadecanoate (2:3)  (C54H108O19, CAS 51938-44-4)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           sorbitanOctadecanoate23;
+formula        C54H108O19;
+CAS            51938-44-4;
+InChIKey       PAFJZWHXMSQJKV-UQZRNVAESA-N;
+MW             1061.439;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   5;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: sorbitan, octadecanoate (2:3)

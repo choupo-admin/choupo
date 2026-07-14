@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Twin-bed TSA shortcut: continuous CO2 removal from helium by alternating adsorption at 298 K and regeneration at 398 K";
+verbosity     3;

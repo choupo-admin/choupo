@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopropanecarboxaldehyde  (C4H6O, CAS 1489-69-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopropanecarboxaldehyde;
+formula     C4H6O;
+CAS         1489-69-6;
+InChIKey    JMYVMOUINOAAPA-UHFFFAOYSA-N;
+MW          70.091;      // g/mol [origin=calculated method=formula-sum]
+Tc          535.80;      // K   [origin=predictive method=joback]
+Pc          51.166;      // bar [origin=predictive method=joback]
+omega       0.3213;      // -   [origin=predictive method=lee-kesler]
+Tb          346.52;      // K   [origin=predictive method=joback]
+HvapTb      31131.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-39.59 0.5092 -0.000407 1.336e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclopropanecarbaldehyde" "cyclopropancarbaldehyd" "1-(formyl)cyclopropane" "formylcyclopropane" "cyclopropylmethanal" "cyclopropanecarboxyldehyde" "agn-pc-04y235" "1-(formyl)cyclopropane;cyclopropylcarboxaldehyde;formylcyclopropane;ac1l3vvo;ac1q6q4z;" );
+gibbsFormation
+{
+    dHf_298   -138670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     240.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-55970.0
+    phase     gas;
+}

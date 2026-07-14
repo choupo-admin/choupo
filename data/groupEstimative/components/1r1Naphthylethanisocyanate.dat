@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (1r)-1-naphthylethanisocyanate  (C13H11NO, CAS 42340-98-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1r1Naphthylethanisocyanate;
+formula     C13H11NO;
+CAS         42340-98-7;
+InChIKey    GONOHGQPZFXJOJ-SNVBAGLBSA-N;
+MW          197.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          851.31;      // K   [origin=predictive method=joback]
+Pc          30.090;      // bar [origin=predictive method=joback]
+omega       0.6430;      // -   [origin=predictive method=lee-kesler]
+Tb          613.91;      // K   [origin=predictive method=joback]
+HvapTb      58254.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 7; } { group AC; count 2; } { group ACCH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group dCd; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[(1r)-1-isocyanatoethyl]naphthalene" "(r)-nei" "(r)-(-)-1-(1-naphthyl)ethyl isocyanate" "isocyanic acid (r)-(-)-1-(1-naphthyl)ethyl ester" "isocyanic acid (s)-(+)-1-(1-naphthyl)ethyl ester" "r-(-)-1-(1-naphthyl)ethyl isocyanate" "naphthalene,1-[(1r)-1-isocyanatoethyl]-" "naphthalene,1-(1-isocyanatoethyl)-, (r)-;(-)-1-a-naphthylethyl isocyanate;(r)-(-)-1-(1-isocyanatoethyl)naphthalene;(r)-1-a-naphthylethyl isocyanate;1-[(r)-1-isocyanatoethyl]naphthalene;r-(-)-1-naphthylethyl isocyanate;" );
+// formation datum unavailable (element entropy missing): dHf_298=93790.0 dGf_298=None

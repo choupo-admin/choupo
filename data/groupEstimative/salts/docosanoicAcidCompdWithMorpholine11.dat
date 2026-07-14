@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): docosanoic acid, compd. with morpholine (1:1)  (C26H53NO3, CAS 65520-70-9)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           docosanoicAcidCompdWithMorpholine11;
+formula        C26H53NO3;
+CAS            65520-70-9;
+InChIKey       QVIIBOBYIZATCK-UHFFFAOYSA-N;
+MW             427.714;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+dissociatesTo  { docosanoic acid 1; morpholine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

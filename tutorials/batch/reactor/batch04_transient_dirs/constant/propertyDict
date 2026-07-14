@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  batch04_transient_dirs / constant/thermoPackage
+
+  Equimolar aceticAcid + ethanol reacting to ethylAcetate + water in the
+  same adiabatic batch runaway as batch02; gibbsFormation on all four
+  species yields the exotherm from the elements datum, driving T from 320
+  to ~428 K.  The closed liquid vessel draws no vapour, so ideal liquid +
+  ideal gas suffices --- the case's subject is the OpenFOAM-style real-time
+  instant directories (0/ 30/ 60/ ...), not the thermodynamics.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water  aceticAcid  ethylAcetate );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: iminodiacetic acid  (C4H7NO4, CAS 142-73-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        iminodiaceticAcid;
+formula     C4H7NO4;
+CAS         142-73-4;
+InChIKey    NBZBKCUXIYYUSX-UHFFFAOYSA-N;
+MW          133.103;      // g/mol [origin=calculated method=formula-sum]
+Tc          842.23;      // K   [origin=predictive method=joback]
+Pc          50.228;      // bar [origin=predictive method=joback]
+omega       1.2384;      // -   [origin=predictive method=lee-kesler]
+Tb          632.31;      // K   [origin=predictive method=joback]
+HvapTb      65262.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.242 0.5616 -0.0003876 1.029e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2NH; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group COOH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-hydroxy-2-oxoethylamino)ethanoic acid" "2,2'-iminodiacetic acid" "glycine, n-(carboxymethyl)-" "diglykokoll" "acetic acid, iminodi-" "aminodiacetic acid" "iminodiethanoic acid" "diglycocoll" "diglycin" "iminobis(acetic acid)" "n-(carboxymethyl)glycine" "hampshire" );
+gibbsFormation
+{
+    dHf_298   -772960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     458.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-615630.0
+    phase     gas;
+}

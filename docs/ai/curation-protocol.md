@@ -32,7 +32,7 @@ doesn't reproduce — so a hand-typed number cannot even wear a trustworthy badg
 
 ---
 
-## 2. The workflow (every time you assemble a thermoPackage)
+## 2. The workflow (every time you assemble a property package -- constant/propertyDict, flat or manifest form)
 
 1. **Read the gap report FIRST — never infer gaps from your own chemistry
    knowledge.** Run:
@@ -43,18 +43,25 @@ doesn't reproduce — so a hand-typed number cannot even wear a trustworthy badg
    `modelGaps` (per model × component × property that is MISSING or ESTIMATED),
    and a `verdict` (`clean` | `has-gaps`). This is the authoritative gap list.
 
-2. **For each gap, ADVISE in plain language** — name the consequence, e.g.
-   *"`aniline` has no NRTL/Henry pair and no formation data — a VLE run will use
-   ideal γ and an energy/Gibbs run will FAIL as-is."*
+2. **For each gap, ADVISE in plain language** — name the consequence, and
+   note that the consequence DIFFERS by form.  In a flat `propertyDict`,
+   e.g. *"`aniline` has no NRTL/Henry pair and no formation data — a VLE run
+   will use ideal γ (announced loudly, never silently) and an energy/Gibbs
+   run will FAIL as-is."*  In a `propertyPackage`, a pair the manifest
+   DECLARES in `parameters { henryPairs {…} kijPairs {…} }` is VERIFIED at
+   assembly: a declared file that is missing does not ideal-default or
+   merely warn — the builder **REFUSES**, naming the entry to add.  Teach
+   the author to declare the pair files and to expect (and welcome) that
+   refusal.
 
 3. **OFFER the bounded choice set** (§3) and let the student pick. Do not decide
    silently; do not over-persuade ("I'll just use Joback" without offering the
-   alternatives is the Aspen click-a-badge failure the GUI credo forbids).
+   alternatives is the black-box click-a-badge failure the GUI credo forbids).
 
 4. **Invoke the chosen deterministic tool.** For an estimate, forward the
    component's **stored group decomposition** (the `groups { joback (…) }` block
    in its `.dat`) to `estimateComponent` — you forward curated groups, you do not
-   invent them. The tool writes a **reviewable** `.dat` under `data/proposed/` (or
+   invent them. The tool writes a **reviewable** `.dat` under `data/local/` (or
    the case's `constant/components/`) carrying `provenance { status "UNVERIFIED
    ESTIMATE …" }`.
 
@@ -113,8 +120,16 @@ CoolProp (reference EOS), Sander 2015 Henry's-law (CC-BY), the published
 group-contribution tables (Joback & Reid 1987; Hansen 1991 UNIFAC), IUPAC /
 PSRK / Wikidata, the student's own measurements.
 
+The bundled **ChemSep v8.3 database is a narrow redistribution exception**:
+the exact databank copy carries the Artistic License 2.0 and its own copyright
+notice, so its machine-imported records may live in `data/local/` with that
+licence, source hash and warning preserved. This does **not** authorise manual
+copying from DECHEMA/DDBST publications, nor does it turn an imported pair into
+a verified fit. Use the proposed record as screening input, then validate it
+against the student's or a primary source's VLE data.
+
 NEVER (no-grant or NonCommercial — do not enter their numbers, even cited):
-NIST SRD / WebBook, DIPPR, Yaws, CRC (as a product), DECHEMA / DDBST,
+NIST SRD / WebBook, DIPPR, Yaws, CRC (as a product), direct DECHEMA / DDBST transcription,
 CAS Common Chemistry (CC-BY-NC). See `CLAUDE.md` §10 (CODE-vs-DATA policy).
 
 ---
@@ -125,7 +140,7 @@ CAS Common Chemistry (CC-BY-NC). See `CLAUDE.md` §10 (CODE-vs-DATA policy).
 >
 > **You:** I read the gap report. `ethylAcetate`+`aniline` have **no NRTL pair**,
 > so VLE would fall back to ideal γ (it misses the real deviation); and `aniline`
-> is a **data/proposed** entry (unverified) with **no formation data**, so the
+> is a **data/local** entry (unverified) with **no formation data**, so the
 > heat-of-reaction part will fail. Options:
 > (1) cite/enter a measured NRTL pair; (2) fit one if you have Txy data
 > (`fitParameters`); (3) predict γ with UNIFAC from the stored groups; or

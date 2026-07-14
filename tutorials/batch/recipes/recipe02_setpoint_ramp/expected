@@ -1,0 +1,38 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     campaign               element_C_closure_rel 3.75075346157e-16 1e-3
+kpi     campaign               element_H_closure_rel 3.00060276926e-16 1e-3
+kpi     campaign               element_O_closure_rel 2.50050230771e-16 1e-3
+kpi     campaign               element_worst_closure_rel 3.75075346157e-16 1e-3
+kpi     campaign               energy_H_external_kJ 0                1e-4
+kpi     campaign               energy_Q_ledger_kJ -104.365240634   1e-4
+kpi     campaign               energy_balance_available 1                1e-4
+kpi     campaign               energy_closure_rel 0                1e-3
+kpi     campaign               energy_dH_vessels_kJ -104.365240634   1e-3
+kpi     campaign               energy_records_invalid 0                1e-4
+kpi     campaign               energy_records_valid 5                1e-4
+kpi     campaign               energy_residual_kJ 0                1e-3
+kpi     campaign               mass_closure_rel 4.5240474843e-16 1e-3
+kpi     campaign               mass_kg_external_out 0                1e-4
+kpi     campaign               mass_kg_final    0.98161925       1e-4
+kpi     campaign               mass_kg_initial  0.98161925       1e-4
+kpi     campaign               mass_residual_kg 4.4408920985e-16 1e-3
+kpi     campaign               transfers_H_invalid 0                1e-4
+kpi     campaign               transfers_H_valid 0                1e-4
+kpi     campaign               transfers_logged 0                1e-4
+kpi     reactor                E_impulse_seg1_kJ 65.5399876371    1e-4
+kpi     reactor                E_impulse_seg3_kJ 67.3691417818    1e-4
+kpi     reactor                E_impulse_total_kJ 132.909129419    1e-4
+kpi     reactor                E_reaction_seg0_kJ -17.40941596     1e-4
+kpi     reactor                E_reaction_seg2_kJ -145.26703016    1e-4
+kpi     reactor                E_reaction_seg4_kJ -74.5979239334   1e-4
+kpi     reactor                E_reaction_total_kJ -237.274370053   1e-4
+kpi     reactor                P_final          101300           1e-4
+kpi     reactor                T_final          380              1e-4
+kpi     reactor                n_aceticAcid_final 2.08727821248e-07 1e-4
+kpi     reactor                n_ethanol_final  2.08727821248e-07 1e-4
+kpi     reactor                n_ethylAcetate_final 0.00924979127218 1e-4
+kpi     reactor                n_water_final    0.00924979127218 1e-4
+kpi     reactor                t_end            900              1e-4
+kpi     reactor                totalMoles_final 0.0185           1e-4

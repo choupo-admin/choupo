@@ -1,0 +1,22 @@
+recordType      adsorptionIsotherm;
+schemaVersion   1;
+adsorbent       zeolite13X_tsaAnchor;
+adsorbate       CO2;
+model           langmuir;
+
+parameters
+{
+    q_max   5.0;
+    b_298   9.0;
+    dH_ads  -45000;
+}
+
+tRef            298 K;
+loadingBasis    molPerKgAdsorbent;
+pressureBasis   partialPressureBar;
+
+provenance
+{
+    origin assumed;
+    method "case-local synthetic TSA arithmetic anchor; same teaching surface as batch13, not design data";
+}

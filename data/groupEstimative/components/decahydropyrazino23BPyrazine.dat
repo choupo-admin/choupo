@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: decahydropyrazino[2,3-b]pyrazine  (C6H14N4, CAS 5409-42-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        decahydropyrazino23BPyrazine;
+formula     C6H14N4;
+CAS         5409-42-7;
+InChIKey    HQJLFRMMLKYIJX-UHFFFAOYSA-N;
+MW          142.206;      // g/mol [origin=calculated method=formula-sum]
+Tc          822.58;      // K   [origin=predictive method=joback]
+Pc          56.194;      // bar [origin=predictive method=joback]
+omega       0.5997;      // -   [origin=predictive method=lee-kesler]
+Tb          561.64;      // K   [origin=predictive method=joback]
+HvapTb      56496.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-55.85 0.7836 -0.000315 7.6e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 2; } { group CH2NH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group CH_ring; count 2; } { group NH_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,4a,5,6,7,8,8a-decahydropyrazino[2,3-b]pyrazine" "decahydropyrazino(2,3-b)pyrazine" "decahydro-pyrazino[2,3-b]pyrazine" "pyrazino(2,3-b)pyrazine, decahydro-" "pyrazino[2,3-b]pyrazine, decahydro-" "2,5,7,10-tetraazabicyclo[4.4.0]decane" "pyrazino[2, decahydro-" "1,4,5,8-tetraazadecalin" "decahydropyrazino[2,3-b]piperazine" "decahydro-pyrazino[2,3-b ]pyrazine" "pyrazino[2,3-b]pyrazine, decahydro-, trans-" );
+gibbsFormation
+{
+    dHf_298   105030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     263.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=423580.0
+    phase     gas;
+}

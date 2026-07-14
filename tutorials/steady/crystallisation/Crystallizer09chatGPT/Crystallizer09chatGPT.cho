@@ -1,0 +1,114 @@
+{
+  "choupoLayout": 1,
+  "nodes": {
+    "stream:feed": {
+      "x": -29.09090909090908,
+      "y": 218.6363636363636
+    },
+    "stream:freshEthanol": {
+      "x": -29.803034837262658,
+      "y": 478.7999836767635
+    },
+    "unit:cryst1": {
+      "x": 221.81818181818176,
+      "y": 232.7272727272727
+    },
+    "unit:cryst2": {
+      "x": 443.25923813902216,
+      "y": 364.9038538282951
+    },
+    "unit:recovery": {
+      "x": 718.1479819883834,
+      "y": 182.5145414065982
+    },
+    "stream:KHT_cake": {
+      "x": 467.2727272727275,
+      "y": 551.8181818181818
+    },
+    "stream:KCl_cake": {
+      "x": 1112.7272727272727,
+      "y": 296.3636363636364
+    },
+    "stream:stillage": {
+      "x": 1135.736752677172,
+      "y": 213.7463969857933
+    },
+    "duty:recovery:reboiler": {
+      "x": 859.5424663259216,
+      "y": 519.9718385270289
+    },
+    "duty:recovery:condenser": {
+      "x": 775.909090909091,
+      "y": 105.45454545454544
+    },
+    "duty:cryst1:Q": {
+      "x": 355,
+      "y": 150
+    },
+    "duty:cryst2:Q": {
+      "x": 595,
+      "y": 150
+    }
+  },
+  "viewport": {
+    "x": -829.6008173136286,
+    "y": -504.71356062176426,
+    "zoom": 2
+  },
+  "edges": {
+    "e:unit:cryst2->stream:KCl_cake:KCl_cake": {
+      "x": 814.7802808291597,
+      "y": 379.70700431271626
+    },
+    "e:unit:cryst1->stream:KHT_cake:KHT_cake": {
+      "x": 400.1363580877131,
+      "y": 477.893934770064
+    },
+    "e:unit:cryst1->unit:cryst2:cryst1/liquor1": {
+      "x": 523.9848743785512,
+      "y": 326.63636086203843
+    },
+    "e:stream:freshEthanol->unit:cryst2:freshEthanol": {
+      "x": 260.11573359675515,
+      "y": 446.67856565914326
+    },
+    "e:unit:recovery->stream:stillage:stillage": {
+      "x": 1005.8894611107029,
+      "y": 213.411467775056
+    },
+    "e:duty:recovery:reboiler": {
+      "x": 848.4811266046825,
+      "y": 281.01632056103665
+    },
+    "e:duty:cryst2:Q": {
+      "x": 509.5454545454545,
+      "y": 251.43939763849426
+    },
+    "e:unit:recovery->unit:cryst2:recoveredEthanol": {
+      "x": 739.245568558501,
+      "y": 489.5867262808951
+    }
+  },
+  "handles": {
+    "unit:cryst1\u0000KHT_cake": {
+      "side": "bottom",
+      "d": 9.100006103515625,
+      "frac": 0.5316587019194826
+    },
+    "unit:cryst2\u0000recoveredEthanol": {
+      "side": "bottom",
+      "d": 1.600006103515625,
+      "frac": 0.523114053826583
+    },
+    "unit:cryst2\u0000KCl_cake": {
+      "side": "right",
+      "d": 3.683349609375,
+      "frac": 0.7281142471905584
+    },
+    "unit:cryst2\u0000finalLiquor": {
+      "side": "right",
+      "d": 2.4166717529296875,
+      "frac": 0.27176094980354404
+    }
+  }
+}

@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-chloranyl-4-(4-phenylcyclopenta-1,3-dien-1-yl)benzene  (C17H13Cl, CAS 80109-14-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Chloranyl44Phenylcyclopenta13Dien1YlBenzene;
+formula     C17H13Cl;
+CAS         80109-14-4;
+InChIKey    QRHARZCXIWIQLN-UHFFFAOYSA-N;
+MW          252.741;      // g/mol [origin=calculated method=formula-sum]
+Tc          980.64;      // K   [origin=predictive method=joback]
+Pc          25.379;      // bar [origin=predictive method=joback]
+omega       0.6058;      // -   [origin=predictive method=lee-kesler]
+Tb          712.56;      // K   [origin=predictive method=joback]
+HvapTb      65509.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-75.45 1.3355 -0.00094004 2.525e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH=C; count 2; } { group ACH; count 9; } { group AC; count 2; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 5; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   225080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     537.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=380440.0
+    phase     gas;
+}

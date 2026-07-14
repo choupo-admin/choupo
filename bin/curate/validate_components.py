@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # validate_components.py -- deterministic VLE sanity check of the clean
-# data/proposed/ candidate subset.  Style precedent: validate_salts.py
+# data/local/ candidate subset.  Style precedent: validate_salts.py
 # (a python replica of the C++ kernel, AAD vs an independent anchor, markdown
 # report mirroring electrolyte/VALIDATION.md).
 #
@@ -19,14 +19,14 @@
 # as 'antoine (own-fit)' -- their Psat(Tb) is the Antoine fit's own, a weaker
 # self-check; listed but not AAD-ranked here.  Solids / no-Tb files: 'no-Tb'.
 #
-# Emits data/proposed/PROPOSED-VALIDATION.md.
+# Emits data/local/PROPOSED-VALIDATION.md.
 
 import re, math
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-PROP = ROOT / 'data/proposed/components'
-OUT  = ROOT / 'data/proposed/PROPOSED-VALIDATION.md'
+PROP = ROOT / 'data/local/components'
+OUT  = ROOT / 'data/local/PROPOSED-VALIDATION.md'
 
 ATM = 101325.0           # Pa, 1 standard atmosphere
 TOL_PCT = 5.0            # AAD% threshold: PASS if Psat(Tb) within 5% of 1 atm
@@ -138,7 +138,7 @@ def main():
     rows.sort(key=key)
 
     with OUT.open('w') as o:
-        o.write('# `data/proposed/` component VLE validation — Psat(Tb) self-check\n\n')
+        o.write('# `data/local/` component VLE validation — Psat(Tb) self-check\n\n')
         o.write('Deterministic check by `bin/curate/validate_components.py`. The '
                 'anchor needs no external data: a corresponding-states vapour-'
                 'pressure model **must reproduce the compound\'s own normal '

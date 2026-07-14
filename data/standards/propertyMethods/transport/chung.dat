@@ -1,0 +1,13 @@
+/*---------------------------------------------------------------------------*\
+  propertyMethod transport.chung -- gas viscosity by Chung et al. (1988)
+  corresponding states: eta from Tc/Pc/omega/MW alone (Vc via Zc(omega), the
+  Neufeld collision integral, Fc = 1-0.2756 omega).  ~1% for simple gases (N2/CO2;
+  the single validated point N2 @ 298 K is 0.3%); degrades for strongly polar species.  Selected as
+  `transport chung;` in a propertyPackage.  Theory: theoryGuide, Part V.
+\*---------------------------------------------------------------------------*/
+recordType propertyMethod;
+schemaVersion 1;
+name chung;
+family transport;
+requires { criticalConstants true; }   // Tc, Pc, omega, MW -> Chung 1988 corresponding states
+provides { gasViscosity true; }

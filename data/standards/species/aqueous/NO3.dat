@@ -1,0 +1,16 @@
+recordType modelSpecies;   // model species — summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+
+name    NO3;
+ion     "NO3-";
+charge  -1;
+
+MW { value 62.004; unit g/mol;}
+
+aqueousThermo
+{
+    hfAq { value -207360; unit J/mol;}
+    sAq  { value 146.4;  unit J/mol/K;}
+}
+
+source "hfAq+sAq Wagman 1982";

@@ -1,5 +1,9 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Ethyl Acetate  (C4H8O2, CAS 141-78-6)
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
+           coefficients, Cp polynomials and the ideal-gas formation datum
+           (dHf_298/s_298, JANAF convention) are individual literature
+           values -- primary re-citation pending (IST review).
 \*---------------------------------------------------------------------------*/
 
 name        ethylAcetate;

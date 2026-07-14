@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (aminopropyl)dimethylethoxysilane  (C7H19NOSi, CAS 18306-79-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H19NOSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        aminopropylDimethylethoxysilane;
+formula     C7H19NOSi;
+CAS         18306-79-1;
+InChIKey    GLISOBUNKGBQCL-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          161.32;      // g/mol [origin=calculated method=formula-sum]
+Tc          640.47;      // K   [origin=predictive method=joback]
+Pc          25.767;      // bar [origin=predictive method=joback]
+omega       0.4948;      // -   [origin=predictive method=lee-kesler]
+Tb          456.11;      // K   [origin=predictive method=joback]
+HvapTb      44521.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (69.334 0.46136 0.0001254 -1.889e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH2O; count 1; } { group CH2NH2; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[ethoxy(dimethyl)silyl]propan-1-amine" "3-(ethoxydimethylsilyl)propylamine" "1-propanamine, 3-(ethoxydimethylsilyl)-" "3-aminopropyldimethylethoxysilane" "3-aminopropyldimethyl ethoxysilane" "(3-aminopropyl)dimethylethoxysilane" "3-(ethoxydimethylsilyl)propyl-amine" "3-(ethoxydimethylsilyl)propan-1-amine" "1-propanamine,3-(ethoxydimethylsilyl)-" "3-[ethoxy(dimethyl)silyl]-1-propanamine" );
+gibbsFormation
+{
+    dHf_298   -397860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     618.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-135250.0
+    phase     gas;
+}

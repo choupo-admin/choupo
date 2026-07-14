@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-stearoylaziridine  (C20H39NO, CAS 3891-30-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Stearoylaziridine;
+formula     C20H39NO;
+CAS         3891-30-3;
+InChIKey    UJBORAMHOAWXLF-UHFFFAOYSA-N;
+MW          309.538;      // g/mol [origin=calculated method=formula-sum]
+Tc          903.70;      // K   [origin=predictive method=joback]
+Pc          11.577;      // bar [origin=predictive method=joback]
+omega       0.9811;      // -   [origin=predictive method=lee-kesler]
+Tb          730.65;      // K   [origin=predictive method=joback]
+HvapTb      68953.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.684 2.18672 -0.0014801 4.1256e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 16; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 16; } { group CH2_ring; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(aziridin-1-yl)octadecan-1-one" "stearoyl ethyleneimine" "aziridine, 1-stearoyl-" );
+gibbsFormation
+{
+    dHf_298   -401880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     910.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=179940.0
+    phase     gas;
+}

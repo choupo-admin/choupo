@@ -47,6 +47,7 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
+#include "core/SimulationResult.H"   // TimelineEvent (the sequence/Gantt feed)
 #include "core/Types.H"
 #include "thermo/ThermoPackage.H"
 
@@ -128,6 +129,76 @@ public:
     virtual std::vector<std::pair<std::string, scalar>> trajectoryExtras() const
     { return {}; }
 
+    // Extra FINAL KPIs beyond the generic (t_end, T/P/moles_final) set the
+    // batch driver pins for every vessel.  A unit whose verdict is not just
+    // its final inventory (the rectifier's instantaneous x_D, R, D) returns
+    // them here; choupoBatch merges them into the golden-checkable table.
+    virtual std::map<std::string, scalar> kpis() const { return {}; }
+
+    // The vessel's TOTAL material inventory per component (kmol), ALL phases
+    // (forum #88): the fluid holdup state().n by default; a vessel holding
+    // material OUTSIDE state_.n (the crystalliser's crystal magma) overrides
+    // and ADDS it -- the campaign mass balance must never miss a phase.
+    virtual sVector materialInventory() const { return state().n; }
+
+    //  Declared model-error residual (forum #119): kmol per COMPONENT that
+    //  the unit's DECLARED closure fabricates (+) or destroys (-) by
+    //  construction -- e.g. the fixed bed's constant-(u, P, T) carrier
+    //  roll-up.  The campaign balance NEVER discounts this from the
+    //  reported numbers; it uses it only as an independent CROSS-CHECK so
+    //  the verdict can distinguish "unexplained leak" (FAIL) from "the
+    //  declared, quantified model error, matching its own prediction"
+    //  (reported LOUD, non-fatal).  Default: none.
+    virtual std::map<std::string, scalar> declaredMaterialResidual() const
+    { return {}; }
+
+    // ENERGY ledger records (forum #98.3/#99/#101): the vessel's exchanged-
+    // energy history, one EXACT-integral record per segment of constant
+    // physics.  Called ONCE by choupoBatch at campaign end (tEnd closes the
+    // last open segment -- hence non-const).  Default: none.
+    virtual std::vector<SimulationResult::EnergyRecord>
+    energyRecords(scalar tEnd) { (void) tEnd; return {}; }
+
+    // Clock notification: choupoBatch calls this on every vessel after each
+    // committed time advance (both the fixed-step and the adaptive loops),
+    // so a vessel can stamp its energy-ledger segment boundaries with the
+    // REAL time -- notifyStateChanged()/setOperationParameter() carry no
+    // time argument of their own.  Default: ignore.
+    virtual void noteTimeAdvanced(scalar t) { (void) t; }
+
+    // Total enthalpy [kJ] of the vessel's CURRENT all-phase inventory on
+    // the elements datum, each phase priced on ITS OWN reference rung.
+    // The campaign energy balance reads its dH_vessel terms through this
+    // hook (at t=0 and at the end).  Default: the whole materialInventory
+    // as ONE liquid at (T, P) -- right for every all-fluid vessel.  A
+    // vessel holding material on another rung (the crystalliser's magma:
+    // solid) OVERRIDES and prices each part where it belongs.  ok=false
+    // (named) when any species cannot be priced.
+    virtual scalar vesselEnthalpy(bool& ok, std::string& why) const
+    {
+        BatchState inv;
+        inv.n = materialInventory();
+        inv.T = state().T;
+        inv.P = state().P;
+        return packageEnthalpy_(inv, ok, why);
+    }
+
+    // The NAMED gap between this vessel's real energy physics and what its
+    // energyRecords() represent -- empty string == fully ledgered.  The
+    // campaign energy balance only claims a verdict when every vessel
+    // answers empty; otherwise it reports UNAVAILABLE quoting each gap
+    // verbatim (never a decorative closure, never a vague "not supported").
+    // Default: a unit must OPT IN honestly by overriding to "".
+    virtual std::string energyLedgerGap() const
+    { return "energy physics not yet ledgered"; }
+
+    // STATUS events for the run's sequence timeline (kind = "status"): a
+    // qualitative state change the campaign narrative needs -- the
+    // rectifier hitting refluxMax, a crystalliser exhausting supersaturation.
+    // choupoBatch merges these with the fired recipe actions, sorted by t.
+    virtual std::vector<SimulationResult::TimelineEvent> statusEvents() const
+    { return {}; }
+
     // ---------------------------------------------------------------------
     //  Recipe hooks.  Default behaviour is sensible enough that
     //  most concrete vessels do not need to override --- BatchReactor and
@@ -135,14 +206,17 @@ public:
     // ---------------------------------------------------------------------
 
     // Add the contents of `src` to this vessel.  Mole numbers are summed
-    // component-by-component.  Temperature is set to a molar-weighted
-    // mix of (current T, source T) so transferring into an empty vessel
-    // inherits the source's T, and transferring into a non-empty vessel
-    // gives an enthalpy-like average.  This is an approximation
-    // (assumes equal Cp per species, no heat of mixing); refining it
-    // requires hooking into the thermo package the same way the
-    // adiabatic flash does.  Pressure and Volume are taken from the
-    // source if the receiver was empty; otherwise unchanged.
+    // component-by-component.  The mix temperature solves H-EQUALITY on
+    // the elements datum -- H(n1+n2, T_mix) = H(n1,T1) + H(n2,T2), by a
+    // damped 1-D Newton warm-started at the molar average -- so charging
+    // is a material act that conserves enthalpy exactly (phase (b), forum
+    // #98.3-1).  An empty receiver inherits the source's T verbatim.
+    // When either side cannot be priced (missing datum, no thermo
+    // attached, failed evaluation) the charge falls back to the molar-T
+    // average, ANNOUNCED once per (unit, reason) and recorded in
+    // chargeFallbacks() so the campaign energy balance goes unavailable
+    // naming it.  Pressure and Volume are taken from the source if the
+    // receiver was empty; otherwise unchanged.
     virtual void chargeFrom(const BatchState& src);
 
     // Return the current state and zero the mole numbers of this
@@ -175,6 +249,22 @@ public:
     // bubble-T seed.
     virtual void notifyStateChanged() {}
 
+    // ---- Thermo attachment (phase (b), forum #98.3-1) --------------------
+    //  The driver attaches the case's thermo package right after
+    //  initialise(), so the BASE chargeFrom can price packages on the
+    //  elements datum and solve the mix temperature by H-EQUALITY instead
+    //  of the molar-T average.  Not owning; never null after set-up in
+    //  choupoBatch (other binaries may leave it null -- chargeFrom then
+    //  keeps the announced approximation).
+    void attachThermo(const ThermoPackage* t) { thermoPkg_ = t; }
+
+    // Named occasions this vessel's chargeFrom FELL BACK to the molar-T
+    // average (missing enthalpy datum, failed evaluation, Newton failure).
+    // The campaign energy balance drains these: an approximation never
+    // enters a balance announced as closed.
+    const std::vector<std::string>& chargeFallbacks() const
+    { return chargeFallbacks_; }
+
     // ---- Factory (explicit registry, no auto-registration macros) ----
     using Factory = std::function<std::unique_ptr<BatchUnitOperation>()>;
 
@@ -192,6 +282,16 @@ protected:
     virtual BatchState& mutableState() = 0;
 
     std::string name_;
+
+    const ThermoPackage*     thermoPkg_ = nullptr;
+    std::vector<std::string> chargeFallbacks_;
+
+    // Total enthalpy [kJ] of a package at its own (T, P) on the elements
+    // datum, liquid basis -- the SAME pricing the material ledger uses.
+    // ok=false (reason named) when any present species lacks a datum or
+    // the evaluation throws.
+    scalar packageEnthalpy_(const BatchState& pkg, bool& ok,
+                            std::string& why) const;
 
 private:
     static std::map<std::string, Factory>& registry();

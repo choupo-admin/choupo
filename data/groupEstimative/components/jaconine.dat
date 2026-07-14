@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: jaconine  (C18H26ClNO6, CAS 480-75-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        jaconine;
+formula     C18H26ClNO6;
+CAS         480-75-1;
+InChIKey    CKPJPJSVQMEGBC-SQEGYQCZSA-N;
+MW          387.857;      // g/mol [origin=calculated method=formula-sum]
+Tc          1213.78;      // K   [origin=predictive method=joback]
+Pc          19.355;      // bar [origin=predictive method=joback]
+omega       1.5475;      // -   [origin=predictive method=lee-kesler]
+Tb          989.98;      // K   [origin=predictive method=joback]
+HvapTb      108163.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-183.67 2.64806 -0.00235924 8.814e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 3; } { group C; count 2; } { group CH=C; count 1; } { group OH; count 2; } { group CH2N; count 1; } { group CHCl; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 3; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group Cl; count 1; } { group OH; count 2; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(15-alpha,20r)-20-chloro-15,20-dihydro-12,15-dihydroxysenecionan-11,16-dione" "senecionan-11,16-dione, 20-chloro-15,20-dihydro-12,15-dihydroxy-, (15-alpha,20r)-" "(1,6)dioxacyclododecino(2,3,4-gh)pyrrolizine-2,7-dione, 3-((1r)-1-chloroethyl)-3,4,5,6,9,11,13,14,14a,14b-decahydro-3,6-dihydroxy-5,6-dimethyl-, (3r,5r,6s,14ar,14br)-" "(15r)-20-chloro-12,15-dihydroxy-15,20-dihydrosenecionan-11,16-dione" );
+gibbsFormation
+{
+    dHf_298   -1071330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     901.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-557410.0
+    phase     gas;
+}

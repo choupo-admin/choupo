@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (iodomethyl)trimethylsilane  (C4H11ISi, CAS 4206-67-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C4H11ISi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        iodomethylTrimethylsilane;
+formula     C4H11ISi;
+CAS         4206-67-1;
+InChIKey    VZNYXGQMDSRJAL-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          214.117;      // g/mol [origin=calculated method=formula-sum]
+Tc          597.93;      // K   [origin=predictive method=joback]
+Pc          32.878;      // bar [origin=predictive method=joback]
+omega       0.1699;      // -   [origin=predictive method=lee-kesler]
+Tb          385.66;      // K   [origin=predictive method=joback]
+HvapTb      34165.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (51.761 0.21666 0.0001396 -1.409e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group I; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "iodanylmethyl(trimethyl)silane" "(trimethylsilyl)methyl iodide" "iodomethyltrimethylsilane" "iodomethyl(trimethyl)silane" "sila-neopentyliodide" "iodomethyl-trimethylsilane" "trimethylsilylmethyl iodide" "trimethyl(iodomethyl)silane" "vznyxgqmdsrjal-uhfffaoysa-" "1-iodo-2,2-dimethyl-2-sila-propane" "(trimethylsilyl)iodomethane;trimethyl(iodomethyl)silane;trimethylsilylmethyl iodide;" );
+gibbsFormation
+{
+    dHf_298   -160640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     493.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-63840.0
+    phase     gas;
+}

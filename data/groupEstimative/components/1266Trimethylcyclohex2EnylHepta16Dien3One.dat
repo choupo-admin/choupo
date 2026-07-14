@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(2,6,6-trimethylcyclohex-2-enyl)hepta-1,6-dien-3-one  (C16H24O, CAS 79-78-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1266Trimethylcyclohex2EnylHepta16Dien3One;
+formula     C16H24O;
+CAS         79-78-7;
+InChIKey    FXCYGAGBPZQRJE-UHFFFAOYSA-N;
+MW          232.367;      // g/mol [origin=calculated method=formula-sum]
+Tc          851.13;      // K   [origin=predictive method=joback]
+Pc          17.970;      // bar [origin=predictive method=joback]
+omega       0.6423;      // -   [origin=predictive method=lee-kesler]
+Tb          639.65;      // K   [origin=predictive method=joback]
+HvapTb      57167.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-109.048 1.76786 -0.00141304 4.9366e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group CH2=CH; count 1; } { group CH=CH; count 1; } { group CH=C; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2,6,6-trimethylcyclohex-2-en-1-yl)hepta-1,6-dien-3-one" "1,6-heptadien-3-one,1-(2,6,6-trimethyl-2-cyclohexen-1-yl)-" "1-(2,6,6-trimethyl-2-cyclohexen-1-yl)-1,6-heptadien-3-one;allyl-a-ionone; cetone v" );
+gibbsFormation
+{
+    dHf_298   -147970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     747.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=154560.0
+    phase     gas;
+}

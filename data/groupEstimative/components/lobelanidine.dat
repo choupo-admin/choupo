@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lobelanidine  (C22H29NO2, CAS 552-72-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lobelanidine;
+formula     C22H29NO2;
+CAS         552-72-7;
+InChIKey    OWGJQNXIWMMDTH-UHFFFAOYSA-N;
+MW          339.479;      // g/mol [origin=calculated method=formula-sum]
+Tc          1185.45;      // K   [origin=predictive method=joback]
+Pc          18.531;      // bar [origin=predictive method=joback]
+omega       1.4480;      // -   [origin=predictive method=lee-kesler]
+Tb          962.85;      // K   [origin=predictive method=joback]
+HvapTb      103691.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-142.938 2.24492 -0.0014872 3.689e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH; count 2; } { group ACH; count 10; } { group ACCH; count 2; } { group OH; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[1-methyl-6-(2-oxidanyl-2-phenyl-ethyl)piperidin-2-yl]-1-phenyl-ethanol" "8,10-diphenyllobelidiol" "8,10-diphenylobelidiol" "lobelidiol, 8,10-diphenyl-" "2,6-piperidinediethanol, 1-methyl-" "a," "a'-diphenyl-" "2,6-piperidinediethanol, alpha,alpha'-diphenyl-1-methyl-" "lobelanidine (8ci)" "lobelidiol,10-diphenyl-" "2, 1-methyl-.alpha.,.alpha.'-diphenyl-" "brd-a59215453-003-03-3" "2,2'-(1-methylpiperidine-2,6-diyl)bis(1-phenylethanol)" "2,6-piperidinediethanol, 1-methyl-alpha,alpha'-diphenyl-" );
+gibbsFormation
+{
+    dHf_298   -231700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     806.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=220280.0
+    phase     gas;
+}

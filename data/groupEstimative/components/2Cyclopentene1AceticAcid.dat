@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-cyclopentene-1-acetic acid  (C7H10O2, CAS 13668-61-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Cyclopentene1AceticAcid;
+formula     C7H10O2;
+CAS         13668-61-6;
+InChIKey    NNRZTJAACCRFRV-UHFFFAOYSA-N;
+MW          126.155;      // g/mol [origin=calculated method=formula-sum]
+Tc          738.25;      // K   [origin=predictive method=joback]
+Pc          39.805;      // bar [origin=predictive method=joback]
+omega       0.6269;      // -   [origin=predictive method=lee-kesler]
+Tb          519.71;      // K   [origin=predictive method=joback]
+HvapTb      48889.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-51.579 0.7953 -0.00054428 1.438e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group CH=CH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-cyclopent-2-en-1-ylethanoic acid" "2-cyclopenten-1-ylacetic acid" "2-cyclopent-2-en-1-ylacetic acid" "cyclopent-2-enylacetic acid" "2-cyclopentene-1-aceticacid" "2-cyclopent-2-enylacetic acid" "2-(1-cyclopent-2-enyl)-acetic acid" "2-(cyclopent-2-en-1-yl)acetic acid" );
+gibbsFormation
+{
+    dHf_298   -419820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     394.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-269340.0
+    phase     gas;
+}

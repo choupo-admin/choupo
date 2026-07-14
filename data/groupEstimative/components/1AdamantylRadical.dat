@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-adamantyl radical  (C10H15, CAS 19740-18-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        1AdamantylRadical;
+formula     C10H15;
+CAS         19740-18-2;
+InChIKey    UXBIXOXDACBTDG-UHFFFAOYSA-N;
+role        radical;
+MW          135.23;      // g/mol [origin=calculated method=formula-sum]
+Tc          673.99;      // K   [origin=predictive method=joback]
+Pc          32.283;      // bar [origin=predictive method=joback]
+omega       0.3550;      // -   [origin=predictive method=lee-kesler]
+Tb          457.45;      // K   [origin=predictive method=joback]
+HvapTb      38573.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-143.86 1.3094 -0.001061 3.53e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH2_ring; count 6; } { group CH_ring; count 3; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tricyclo[3.3.1.13,7]dec-1-yl" );
+gibbsFormation
+{
+    dHf_298   -20070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     269.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=208820.0
+    phase     gas;
+}

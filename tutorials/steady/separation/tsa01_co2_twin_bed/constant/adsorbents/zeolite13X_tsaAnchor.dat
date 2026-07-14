@@ -1,0 +1,18 @@
+/* Case-local numerical anchor. cpSolid is an explicit test assumption, not a
+   curated zeolite-13X property and must not be promoted to data/standards. */
+adsorbent
+{
+    name        zeolite13X_tsaAnchor;
+    type        "synthetic 13X-like TSA anchor";
+    rho_bulk    640 kg/m3;
+    cpSolid     [0 2 -2 -1 0] 920;   // J/(kg.K)
+}
+
+provenance
+{
+    identity
+    {
+        origin assumed;
+        method "case-local numerical acceptance anchor from adsorption A4-A6 handoff; not design data";
+    }
+}

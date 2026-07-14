@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,4-dihydroxybenzoic acid  (C7H6O4, CAS 99-50-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34DihydroxybenzoicAcid;
+formula     C7H6O4;
+CAS         99-50-3;
+InChIKey    YQUVCSBJEUQKSH-UHFFFAOYSA-N;
+MW          154.121;      // g/mol [origin=calculated method=formula-sum]
+Tc          944.50;      // K   [origin=predictive method=joback]
+Pc          72.802;      // bar [origin=predictive method=joback]
+omega       1.2293;      // -   [origin=predictive method=lee-kesler]
+Tb          693.19;      // K   [origin=predictive method=joback]
+HvapTb      76644.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-50.62 0.9499 -0.00097352 3.918e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACOH; count 2; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4-bis(oxidanyl)benzoic acid" "protocatechuic acid" "benzoic acid, 3,4-dihydroxy-" "protocatechuate" "protocatehuic acid" "4-carboxy-1,2-dihydroxybenzene" "3,4-dihydroxybenzoate" "beta-resorcylate" "4,5-dihydroxybenzoic acid" "3,4-dihydroxybenzoes" "3,4-dihydroxy benzoic acid" "catechol-4-carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -656170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     428.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-532680.0
+    phase     gas;
+}

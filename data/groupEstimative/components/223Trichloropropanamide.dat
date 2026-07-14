@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,3-trichloropropanamide  (C3H4Cl3NO, CAS 13601-94-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        223Trichloropropanamide;
+formula     C3H4Cl3NO;
+CAS         13601-94-0;
+InChIKey    NAXPJDCDIPVXNE-UHFFFAOYSA-N;
+MW          176.421;      // g/mol [origin=calculated method=formula-sum]
+Tc          735.37;      // K   [origin=predictive method=joback]
+Pc          45.777;      // bar [origin=predictive method=joback]
+omega       0.5352;      // -   [origin=predictive method=lee-kesler]
+Tb          503.70;      // K   [origin=predictive method=joback]
+HvapTb      51518.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.211 0.4689 -0.0003971 1.2536e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2Cl; count 1; } { group CCl2; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 1; } { group Cl; count 3; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3-tris(chloranyl)propanamide" "2,2,3-trichloropropionamide" "propanamide, 2,2,3-trichloro-" );
+gibbsFormation
+{
+    dHf_298   -240010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     412.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-121040.0
+    phase     gas;
+}

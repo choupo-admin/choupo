@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4,7,10,13-pentaoxa-16-azacyclooctadecane  (C12H25NO5, CAS 33941-15-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1471013Pentaoxa16Azacyclooctadecane;
+formula     C12H25NO5;
+CAS         33941-15-0;
+InChIKey    NBXKUSNBCPPKRA-UHFFFAOYSA-N;
+MW          263.334;      // g/mol [origin=calculated method=formula-sum]
+Tc          1008.83;      // K   [origin=predictive method=joback]
+Pc          29.155;      // bar [origin=predictive method=joback]
+omega       0.6751;      // -   [origin=predictive method=lee-kesler]
+Tb          732.92;      // K   [origin=predictive method=joback]
+HvapTb      74416.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.49 1.1488 -7.85e-05 -2.658e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group FCH2O; count 5; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 12; } { group O_ring; count 5; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-aza-18-crown-6" "1-aza-18-crown-6-ether" "1-aza-18-crown 6-ether" "1-aza-18-crown-6;1-aza-4,7,10,13,16-pentaoxacyclooctadecane; aza-18-crown-6; monoaza-18-crown-6" );
+gibbsFormation
+{
+    dHf_298   -912460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     611.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-405770.0
+    phase     gas;
+}

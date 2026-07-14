@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propenoic acid, 2-ethylhexyl ester, polymer with ethenyl acetate and 2-methyl-2,4-pentanediol  (C21H40O6, CAS 74082-33-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropenoicAcid2EthylhexylEsterPolymerWithEthenylAcetateAnd2M;
+formula     C21H40O6;
+CAS         74082-33-0;
+InChIKey    WQIKQNTUELSIIF-UHFFFAOYSA-N;
+MW          388.545;      // g/mol [origin=calculated method=formula-sum]
+Tc          1194.48;      // K   [origin=predictive method=joback]
+Pc          10.426;      // bar [origin=predictive method=joback]
+omega       0.9736;      // -   [origin=predictive method=lee-kesler]
+Tb          972.93;      // K   [origin=predictive method=joback]
+HvapTb      107688.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (93.016 1.64252 -0.0003846 -1.846e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 6; } { group CH; count 2; } { group C; count 1; } { group CH2=CH; count 2; } { group OH; count 2; } { group CH3COO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 6; } { group CH; count 2; } { group C; count 1; } { group dCH2; count 2; } { group dCH; count 2; } { group OH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethenyl ethanoate;2-ethylhexyl prop-2-enoate;2-methylpentane-2,4-diol" "ethenyl acetate, 2-ethylhexyl 2-propenoate, 2-methyl-2,4-pentanediol polymer" );
+gibbsFormation
+{
+    dHf_298   -1407480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1326.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-804320.0
+    phase     gas;
+}

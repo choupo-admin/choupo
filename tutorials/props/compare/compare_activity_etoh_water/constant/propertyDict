@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  compare_activity_etoh_water / constant/thermoPackage
+
+  Ethanol + water, the classic H-bonding non-ideal binary whose gamma_ethanol
+  the case sweeps over 280-360 K.  The GLOBAL activity model is deliberately
+  ideal (gamma = 1, the Raoult baseline curve); the other two compare ops swap
+  in NRTL and Wilson via their per-op thermo {} overrides, so all three curves
+  share one package.  Ideal gas is adequate for the vapour side at 1 atm.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

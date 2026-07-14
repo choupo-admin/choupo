@@ -1,5 +1,9 @@
 /*---------------------------------------------------------------------------*\
-  ctrl02_disturbance_rejection  --  the textbook control demo.
+  ctrl03_adaptive_disturbance  --  the ctrl02_disturbance_rejection demo
+  re-integrated with an ADAPTIVE plant integrator: the PID still samples on
+  the fixed 1 s control grid (MV held between samples) while Rosenbrock23
+  sub-steps the plant adaptively in between.  The flowsheet below is
+  ctrl02's textbook disturbance-rejection setup, unchanged:
 
   Same DynamicCSTR as ctrl01 (compA → compB, mild exotherm, jacket
   heat transfer).  Same PID temperature controller.  Two added

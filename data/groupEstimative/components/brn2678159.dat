@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 2678159  (C28H36O4, CAS 64817-78-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn2678159;
+formula     C28H36O4;
+CAS         64817-78-3;
+InChIKey    YSGMFUXPWYPKGA-UHFFFAOYSA-N;
+MW          436.592;      // g/mol [origin=calculated method=formula-sum]
+Tc          1483.94;      // K   [origin=predictive method=joback]
+Pc          14.736;      // bar [origin=predictive method=joback]
+omega       1.3042;      // -   [origin=predictive method=lee-kesler]
+Tb          1210.57;      // K   [origin=predictive method=joback]
+HvapTb      130590.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-110.158 2.89432 -0.00242034 8.5016e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group ACH; count 6; } { group AC; count 5; } { group ACOH; count 3; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 12; } { group dCH_ring; count 6; } { group dC_ring; count 8; } { group OH_phenol; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[1,2,8-tris(oxidanyl)anthracen-9-yl]tetradecan-1-one" "10-myristoyl-1,8,9-anthracenetriol" "1,8-dihydroxy-10-myristoyl-9-anthrone" "1,7,8-anthracenetriol, 9-myristoyl-" "1-(1,2,8-trihydroxyanthracen-9-yl)tetradecan-1-one" "9(10h)-anthracenone, 1,8-dihydroxy-10-(1-oxotetradecyl)-" "9(10h)-anthracenone, 1,8-dihydroxy-10-(1-oxotetradecyl)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -670030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1016.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-101450.0
+    phase     gas;
+}

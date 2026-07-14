@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (r)-4-fluorophenylglycine  (C8H8FNO2, CAS 93939-74-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        r4Fluorophenylglycine;
+formula     C8H8FNO2;
+CAS         93939-74-3;
+InChIKey    JKFYKCYQEWQPTM-SSDOTTSWSA-N;
+MW          169.155;      // g/mol [origin=calculated method=formula-sum]
+Tc          861.56;      // K   [origin=predictive method=joback]
+Pc          41.039;      // bar [origin=predictive method=joback]
+omega       0.9114;      // -   [origin=predictive method=lee-kesler]
+Tb          631.17;      // K   [origin=predictive method=joback]
+HvapTb      62940.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.49 0.7558 -0.00051116 1.287e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r)-2-azanyl-2-(4-fluorophenyl)ethanoic acid" "d(-)-4-fluorophenylglycine" "(r)-2-amino-2-(4-fluorophenyl)acetic acid" "d-4-fluorophenylglycine" "4-fluoro-d-alpha-phenylglycine" "4-fluoro-d-phenylglycine" "4-fluoro-d-a-phenylglycine" "(2r)-amino(4-fluorophenyl)acetic acid" "(2r)-2-amino-2-(4-fluorophenyl)acetic acid" "(r)-(-)-4-(fluorophenyl)glycine" "4-fluoro-d-2-phenylglycine" "(2r)-amino(4-fluorophenyl)ethanoic acid" );
+gibbsFormation
+{
+    dHf_298   -501260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     481.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-355450.0
+    phase     gas;
+}

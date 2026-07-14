@@ -15,23 +15,7 @@
   current or raise the flow / feed concentration.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    diluateFeed
-    {
-        F            20.0 mol/s;
-        T            298.15 K;
-        P            1.5 bar;
-        molarComposition { water 0.99928;  Na 0.00036;  Cl 0.00036; }
-    }
-    concentrateFeed
-    {
-        F            5.0 mol/s;
-        T            298.15 K;
-        P            1.5 bar;
-        molarComposition { water 0.982301;  Na 0.008850;  Cl 0.008850; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

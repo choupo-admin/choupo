@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5,8,11,14,17-eicosapentaenoicacid, (5z,8z,11z,14z,17e)-  (C20H30O2, CAS 10417-94-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        58111417Eicosapentaenoicacid5z8z11z14z17e;
+formula     C20H30O2;
+CAS         10417-94-4;
+InChIKey    JAZBEHYOTPTENJ-UHFFFAOYSA-N;
+MW          302.458;      // g/mol [origin=calculated method=formula-sum]
+Tc          1023.12;      // K   [origin=predictive method=joback]
+Pc          12.856;      // bar [origin=predictive method=joback]
+omega       1.0197;      // -   [origin=predictive method=lee-kesler]
+Tb          823.51;      // K   [origin=predictive method=joback]
+HvapTb      77068.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-81.602 2.05462 -0.0015558 4.918e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CH=CH; count 5; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group dCH; count 10; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "icosa-5,8,11,14,17-pentaenoic acid" "cis-5,8,11,14,17-eicosa-pentaenoic acid" "agn-pc-00kbm2" "5,8,11,14,17-eicosapentaenoicacid" "5, 8, 11, 14, 17-icosapentaenoic acid;" "eicosa-5z,8z,11z,14z,17z-pentaenoic acid (20:5, n-3)" "5,8,11,14,17-eicosapentaenoicacid, (5z,8z,11z,14z,17z)-" "5,8,11,14,17-eicosapentaenoicacid, sodium salt (1:1), (5z,8z,11z,14z,17z)-" );
+gibbsFormation
+{
+    dHf_298   -220300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     955.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=174710.0
+    phase     gas;
+}

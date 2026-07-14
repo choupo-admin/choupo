@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nalco l-699  (C13H30N2O4, CAS 139-90-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nalcoL699;
+formula     C13H30N2O4;
+CAS         139-90-2;
+InChIKey    VUTCGUXQNADIRX-UHFFFAOYSA-N;
+MW          278.393;      // g/mol [origin=calculated method=formula-sum]
+Tc          1095.63;      // K   [origin=predictive method=joback]
+Pc          23.158;      // bar [origin=predictive method=joback]
+omega       1.6344;      // -   [origin=predictive method=lee-kesler]
+Tb          889.32;      // K   [origin=predictive method=joback]
+HvapTb      114170.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.193 1.64036 -0.0010398 2.56e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 3; } { group OH; count 4; } { group CH2N; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 7; } { group CH; count 3; } { group OH; count 4; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[2-[bis(2-oxidanylpropyl)amino]ethyl-(2-hydroxyethyl)amino]propan-2-ol" "2-propanol, 1,1'-[[2-[(2-hydroxyethyl)(2-hydroxypropyl)amino]ethyl]imino]bis-" "1,1'-(2-(n-2-hydroxyethyl-2-hydroxypropylamino)ethylimino)dipropan-2-ol" "1-[2-[bis(2-hydroxypropyl)amino]ethyl-(2-hydroxyethyl)amino]propan-2-ol" "2-propanol,1'-[[2-[(2-hydroxyethyl)(2-hydroxypropy)amino]ethyl]imino]bis-" "2-propanol,1'-[[2-[(2-hydroxyethyl)(2-hydroxypropyl)amino]ethyl]imino]di-" "2-propanol, 1,1'-((2-((2-hydroxyethyl)(2-hydroxypropy)amino)ethyl)imino)bis- (9ci)" "2-propanol, 1,1'-((2-((2-hydroxyethyl)(2-hydroxypropyl)amino)ethyl)imino)di- (8ci)" );
+gibbsFormation
+{
+    dHf_298   -801350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     869.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-274460.0
+    phase     gas;
+}

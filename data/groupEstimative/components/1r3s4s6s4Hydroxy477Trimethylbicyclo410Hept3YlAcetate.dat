@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (1r,3s,4s,6s)-4-hydroxy-4,7,7-trimethylbicyclo[4.1.0]hept-3-yl acetate  (C12H20O3, CAS 28435-84-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1r3s4s6s4Hydroxy477Trimethylbicyclo410Hept3YlAcetate;
+formula     C12H20O3;
+CAS         28435-84-9;
+InChIKey    ULLVLQDHBOHWGJ-WDCWCFNPSA-N;
+MW          212.289;      // g/mol [origin=calculated method=formula-sum]
+Tc          827.63;      // K   [origin=predictive method=joback]
+Pc          25.075;      // bar [origin=predictive method=joback]
+omega       0.9298;      // -   [origin=predictive method=lee-kesler]
+Tb          628.78;      // K   [origin=predictive method=joback]
+HvapTb      63161.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-165.09 1.91958 -0.0018578 7.644e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 3; } { group C; count 2; } { group OH; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group C_ring; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(1r,3s,4s,6s)-4,7,7-trimethyl-4-oxidanyl-3-bicyclo[4.1.0]heptanyl] ethanoate" "3,4-caranediol 4-acetate" "bicyclo(4.1.0)heptane-3,4-diol, 3,7,7-trimethyl-, 4-acetate, (1r,3s,4s,6s)-rel-" "(1alpha,3beta,4alpha,6alpha)-3-hydroxy-3,7,7-trimethylbicyclo(4.1.0)hept-4-yl acetate" "[(1r,3s,4s,6s)-4-hydroxy-4,7,7-trimethyl-3-bicyclo[4.1.0]heptanyl] acetate" );
+gibbsFormation
+{
+    dHf_298   -651620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     576.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-321740.0
+    phase     gas;
+}

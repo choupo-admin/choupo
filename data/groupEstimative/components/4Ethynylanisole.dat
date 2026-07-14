@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-ethynylanisole  (C9H8O, CAS 768-60-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Ethynylanisole;
+formula     C9H8O;
+CAS         768-60-5;
+InChIKey    KBIAVTUACPKPFJ-UHFFFAOYSA-N;
+MW          132.162;      // g/mol [origin=calculated method=formula-sum]
+Tc          673.04;      // K   [origin=predictive method=joback]
+Pc          37.408;      // bar [origin=predictive method=joback]
+omega       0.3436;      // -   [origin=predictive method=lee-kesler]
+Tb          449.72;      // K   [origin=predictive method=joback]
+HvapTb      40834.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.38 0.56332 -0.00031489 6.009e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group CH3O; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethynyl-4-methoxy-benzene" "1-ethynyl-4-methoxybenzene" "4-methoxyphenylacetylene" "4'-methoxyphenyl acetylene" "4'-methoxyphenylacetylene" "1-eth-1-ynyl-4-methoxybenzene" "benzene, 1-ethynyl-4-methoxy-" "p-ethynylanisole" "4-methoxyphenyl acetylene" "4-ethynyl-1-methoxybenzene" "k952" "1-ethynyl-4-methoxybenzene; (4-methoxyphenyl)acetylene" );
+gibbsFormation
+{
+    dHf_298   155650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     374.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=245750.0
+    phase     gas;
+}

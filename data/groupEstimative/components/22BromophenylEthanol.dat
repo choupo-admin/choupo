@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(2-bromophenyl)ethanol  (C8H9BrO, CAS 1074-16-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22BromophenylEthanol;
+formula     C8H9BrO;
+CAS         1074-16-4;
+InChIKey    ADLOWZRDUHSVRU-UHFFFAOYSA-N;
+MW          201.063;      // g/mol [origin=calculated method=formula-sum]
+Tc          785.25;      // K   [origin=predictive method=joback]
+Pc          43.916;      // bar [origin=predictive method=joback]
+omega       0.9113;      // -   [origin=predictive method=lee-kesler]
+Tb          572.64;      // K   [origin=predictive method=joback]
+HvapTb      59454.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.508 0.6976 -0.00047736 1.285e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group OH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromophenethylalcohol" "2-bromophenethyl alcohol" "2-bromophenylethanol" "2-(2-bromophenyl)ethan-1-ol" "2-bromobenzeneethanol" "o-bromophenethyl alcohol" "o-bromophenylethyl alcohol" "2-(2-bromophenyl)ethanol," "2-(2-hydroxyethyl)bromobenzene" "2-(2-bromophenyl)ethyl alcohol" "phenethylalcohol, o-bromo- (7ci,8ci);2-(2-hydroxyethyl)bromobenzene;2-bromobenzeneethanol;2-bromophenethyl alcohol;o-bromophenethyl alcohol;o-bromophenylethyl alcohol;" );
+gibbsFormation
+{
+    dHf_298   -109290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     456.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3240.0
+    phase     gas;
+}

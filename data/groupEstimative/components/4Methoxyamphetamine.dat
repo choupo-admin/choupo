@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-methoxyamphetamine  (C10H15NO, CAS 64-13-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Methoxyamphetamine;
+formula     C10H15NO;
+CAS         64-13-1;
+InChIKey    NEGYEDYHPHMHGK-UHFFFAOYSA-N;
+MW          165.236;      // g/mol [origin=calculated method=formula-sum]
+Tc          773.85;      // K   [origin=predictive method=joback]
+Pc          30.390;      // bar [origin=predictive method=joback]
+omega       0.6089;      // -   [origin=predictive method=lee-kesler]
+Tb          554.57;      // K   [origin=predictive method=joback]
+HvapTb      53455.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.501 0.82004 -0.00041996 6.41e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group CH3O; count 1; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-methoxyphenyl)propan-2-amine" "p-methoxyamphetamine" "para-methoxyamphetamine" "1-(4-methoxybenzyl)ethylamine" "1-p-methoxyphenyl-2-propylamine" "1-p-methoxyphenyl-2-aminopropane" "p-methoxy-alpha-methylphenethylamine" "2-amino-1-(4'-methoxyphenyl)propane" "(+-)-p-methoxyamphetamine" "4-methoxy-alpha-methylphenethylamine" "benzeneethanamine,4-methoxy-a-methyl-" "dl-p-methoxy-alpha-methylphenethylamine" );
+gibbsFormation
+{
+    dHf_298   -128380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     486.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=95110.0
+    phase     gas;
+}

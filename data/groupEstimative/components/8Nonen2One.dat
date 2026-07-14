@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-nonen-2-one  (C9H16O, CAS 5009-32-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8Nonen2One;
+formula     C9H16O;
+CAS         5009-32-5;
+InChIKey    OIFXLYCBBBXCIB-UHFFFAOYSA-N;
+MW          140.226;      // g/mol [origin=calculated method=formula-sum]
+Tc          633.74;      // K   [origin=predictive method=joback]
+Pc          25.585;      // bar [origin=predictive method=joback]
+omega       0.5510;      // -   [origin=predictive method=lee-kesler]
+Tb          456.07;      // K   [origin=predictive method=joback]
+HvapTb      41704.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.925 0.81082 -0.00047 1.0426e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH2=CH; count 1; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH2; count 1; } { group dCH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "non-8-en-2-one" "nonenone,8-nonen-2-one" );
+gibbsFormation
+{
+    dHf_298   -216240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     528.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-16180.0
+    phase     gas;
+}

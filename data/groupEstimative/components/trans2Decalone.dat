@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trans-2-decalone  (C10H16O, CAS 16021-08-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trans2Decalone;
+formula     C10H16O;
+CAS         16021-08-2;
+InChIKey    LGVJRKCQQHOWAU-RKDXNWHRSA-N;
+MW          152.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          766.31;      // K   [origin=predictive method=joback]
+Pc          31.456;      // bar [origin=predictive method=joback]
+omega       0.4022;      // -   [origin=predictive method=lee-kesler]
+Tb          526.78;      // K   [origin=predictive method=joback]
+HvapTb      42615.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-90.74 1.0489 -0.000531 7.38e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 2; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 7; } { group CH_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4ar,8ar)-3,4,4a,5,6,7,8,8a-octahydro-1h-naphthalen-2-one" "(4ar,8ar)-octahydronaphthalen-2(1h)-one" "2(1h)-naphthalenone, octahydro-, (4ar,8ar)-rel-" "(4ar,8ar)-2-decalone" "trans-octahydronaphthalene-2(1h)-one" "2(1h)-naphthalenone, octahydro-, trans- (8ci)(9ci)" );
+gibbsFormation
+{
+    dHf_298   -266470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     365.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-16170.0
+    phase     gas;
+}

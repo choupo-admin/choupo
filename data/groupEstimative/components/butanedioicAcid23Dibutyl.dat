@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butanedioic acid, 2,3-dibutyl-  (C12H22O4, CAS 33053-07-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butanedioicAcid23Dibutyl;
+formula     C12H22O4;
+CAS         33053-07-5;
+InChIKey    BQNDPALRJDCXOY-UHFFFAOYSA-N;
+MW          230.304;      // g/mol [origin=calculated method=formula-sum]
+Tc          962.19;      // K   [origin=predictive method=joback]
+Pc          21.119;      // bar [origin=predictive method=joback]
+omega       1.2663;      // -   [origin=predictive method=lee-kesler]
+Tb          764.30;      // K   [origin=predictive method=joback]
+HvapTb      75858.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.184 1.25724 -0.0007806 1.866e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 2; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-dibutylbutanedioic acid" "2,3-dibutylsuccinic acid" "2,3-dibutyl-butanedioic acid" );
+gibbsFormation
+{
+    dHf_298   -1002110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     710.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-642540.0
+    phase     gas;
+}

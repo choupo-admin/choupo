@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: allyl phenyl sulfide  (C9H10S, CAS 5296-64-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        allylPhenylSulfide;
+formula     C9H10S;
+CAS         5296-64-0;
+InChIKey    QGNRLAFFKKBSIM-UHFFFAOYSA-N;
+MW          150.239;      // g/mol [origin=calculated method=formula-sum]
+Tc          733.72;      // K   [origin=predictive method=joback]
+Pc          34.930;      // bar [origin=predictive method=joback]
+omega       0.3824;      // -   [origin=predictive method=lee-kesler]
+Tb          497.66;      // K   [origin=predictive method=joback]
+HvapTb      44051.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.589 0.75429 -0.0004797 1.112e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "prop-2-enylsulfanylbenzene" "(allylthio)benzene" "allylphenyl sulfide" "allyl(phenyl)sulfane" "(allylsulfanyl)benzene" "prop-2-enylthiobenzene" "(prop-2-en-1-ylsulfanyl)benzene" );
+gibbsFormation
+{
+    dHf_298   174740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     456.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=258270.0
+    phase     gas;
+}

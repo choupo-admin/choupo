@@ -1,0 +1,21 @@
+/*---------------------------------------------------------------------------*\
+  batch09_adsorber_co2 / system/controlDict
+
+  Time control for the closed CO2/zeolite-13X uptake vessel.  The LDF
+  time constant linearised AT the final equilibrium is tau = 0.4768 s, so
+  endTime 600 s = ~1258 tau (over-converged on purpose: the golden pins
+  the EXACT inventory equilibrium, not a transient).  The RK4 stability
+  bound printed by the unit at start-up is deltaT < 0.4949 s (worst-case
+  k_eff at the Langmuir origin); deltaT 0.1 s sits comfortably inside it.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Closed isothermal CO2 uptake on zeolite 13X (LDF, solid film): the vessel relaxes to the inventory equilibrium p_inf = 7229.13 Pa, q_inf = 1.9708 mol/kg";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         600;      // s   (~1258 linearised time constants)
+deltaT          0.1;      // s   (RK4; the unit prints the stability bound)
+writeInterval   10;       // s   (trajectory snapshot every 10 s)

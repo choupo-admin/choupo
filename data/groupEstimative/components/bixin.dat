@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bixin  (C25H30O4, CAS 6983-79-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bixin;
+formula     C25H30O4;
+CAS         6983-79-5;
+InChIKey    RAFGELQLHMBRHD-UHFFFAOYSA-N;
+MW          394.511;      // g/mol [origin=calculated method=formula-sum]
+Tc          1244.35;      // K   [origin=predictive method=joback]
+Pc          10.849;      // bar [origin=predictive method=joback]
+omega       0.9947;      // -   [origin=predictive method=lee-kesler]
+Tb          1012.29;      // K   [origin=predictive method=joback]
+HvapTb      95757.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-116.23 2.5545 -0.0020776 6.91e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH=CH; count 5; } { group CH=C; count 4; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group dCH; count 14; } { group dC; count 4; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "20-methoxy-4,8,13,17-tetramethyl-20-oxidanylidene-icosa-2,4,6,8,10,12,14,16,18-nonaenoic acid" "20-methoxy-4,8,13,17-tetramethyl-20-oxoicosa-2,4,6,8,10,12,14,16,18-nonaenoic acid" "(2e,4e,6e,8e,10e,12e,14e,16e,18e)-20-methoxy-4,8,13,17-tetramethyl-20-oxo-icosa-2,4,6,8,10,12,14,16,18-nonaenoic acid" );
+gibbsFormation
+{
+    dHf_298   -211060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1158.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=193120.0
+    phase     gas;
+}

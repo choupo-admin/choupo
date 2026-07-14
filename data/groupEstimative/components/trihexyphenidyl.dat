@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trihexyphenidyl  (C20H31NO, CAS 144-11-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trihexyphenidyl;
+formula     C20H31NO;
+CAS         144-11-6;
+InChIKey    HWHLPVGTWGOCJO-UHFFFAOYSA-N;
+MW          301.474;      // g/mol [origin=calculated method=formula-sum]
+Tc          1051.22;      // K   [origin=predictive method=joback]
+Pc          19.237;      // bar [origin=predictive method=joback]
+omega       1.0581;      // -   [origin=predictive method=lee-kesler]
+Tb          824.77;      // K   [origin=predictive method=joback]
+HvapTb      80811.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-211.098 2.3889 -0.001674 4.487e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 11; } { group CH; count 1; } { group C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group OH; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group C; count 1; } { group CH2_ring; count 10; } { group CH_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-cyclohexyl-1-phenyl-3-piperidin-1-yl-propan-1-ol" "benzhexol" "triphenidyl" "trihexyphenidyle" "parkinane retard" "benzhexolum" "cyclodol" "artane" "trihexifenidilo" "trihexane" "sedrena (free base)" "trihexyphenidylum" );
+gibbsFormation
+{
+    dHf_298   -177910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     818.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=275440.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sabinen  (C10H16, CAS 3387-41-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sabinen;
+formula     C10H16;
+CAS         3387-41-5;
+InChIKey    NDVASEGYNIMXJL-UHFFFAOYSA-N;
+MW          136.238;      // g/mol [origin=calculated method=formula-sum]
+Tc          645.52;      // K   [origin=predictive method=joback]
+Pc          29.345;      // bar [origin=predictive method=joback]
+omega       0.3447;      // -   [origin=predictive method=lee-kesler]
+Tb          440.84;      // K   [origin=predictive method=joback]
+HvapTb      36300.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-136.07 1.43594 -0.001404 5.748e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 2; } { group C; count 1; } { group CH2=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-methylidene-1-propan-2-yl-bicyclo[3.1.0]hexane" "sabinene" "4(10)-thujene" "thuj-4(10)-ene" "thujene, 4(10)-" "bicyclo[3.1.0]hexane, 4-methylene-1-(1-methylethyl)-" "sabenene" "1-isopropyl-4-methylenebicyclo[3.1.0]hexane" "2-methylidene-5-propan-2-ylbicyclo[3.1.0]hexane" "4-methylene-1-(1-methylethyl)bicyclo[3.1.0]hexane" "4-methylidene-1-(propan-2-yl)bicyclo[3.1.0]hexane" "bicyclo(3.1.0)hexane, 4-methylene-1-(1-methylethyl)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -9930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     398.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=199970.0
+    phase     gas;
+}

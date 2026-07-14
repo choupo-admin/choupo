@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-tert-butylbiphenyl  (C16H18, CAS 1625-92-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4TertButylbiphenyl;
+formula     C16H18;
+CAS         1625-92-9;
+InChIKey    CDOYZTOFTGTGBC-UHFFFAOYSA-N;
+MW          210.32;      // g/mol [origin=calculated method=formula-sum]
+Tc          866.49;      // K   [origin=predictive method=joback]
+Pc          22.937;      // bar [origin=predictive method=joback]
+omega       0.4729;      // -   [origin=predictive method=lee-kesler]
+Tb          620.79;      // K   [origin=predictive method=joback]
+HvapTb      55128.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-89.64 1.43236 -0.00101376 2.772e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group ACH; count 9; } { group AC; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-tert-butyl-4-phenyl-benzene" "4-tert-butyl-biphenyl" "1-tert-butyl-4-phenylbenzene" "ambap1625-92-9" "4-(tert-butyl)-1,1'-biphenyl" "1,1'-biphenyl,4-(1,1-dimethylethyl)-" "biphenyl,4-tert-butyl- (6ci,7ci,8ci); 4-(1,1-dimethylethyl)-1,1'-biphenyl;4-tert-butyl-1,1'-biphenyl; 4-tert-butylbiphenyl; p-tert-butylbiphenyl;p-tert-butyldiphenyl" );
+gibbsFormation
+{
+    dHf_298   79270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     521.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=301870.0
+    phase     gas;
+}

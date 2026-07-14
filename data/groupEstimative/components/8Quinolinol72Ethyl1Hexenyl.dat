@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-quinolinol, 7-(2-ethyl-1-hexenyl)-  (C17H21NO, CAS 55877-07-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8Quinolinol72Ethyl1Hexenyl;
+formula     C17H21NO;
+CAS         55877-07-1;
+InChIKey    KVXNGMXXHWBFRX-UHFFFAOYSA-N;
+MW          255.361;      // g/mol [origin=calculated method=formula-sum]
+Tc          1013.90;      // K   [origin=predictive method=joback]
+Pc          23.070;      // bar [origin=predictive method=joback]
+omega       0.9608;      // -   [origin=predictive method=lee-kesler]
+Tb          777.56;      // K   [origin=predictive method=joback]
+HvapTb      77276.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-76.346 1.685 -0.0013536 4.569e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH=C; count 1; } { group ACH; count 2; } { group AC; count 1; } { group ACOH; count 1; } { group C5H3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-(2-ethylhex-1-enyl)quinolin-8-ol" "8-quinolinol, 7-(2-ethyl-1-hexen-1-yl)-" "agn-pc-00lap1" "7-(2-ethyl-1-hexenyl)-8-quinolinol" );
+gibbsFormation
+{
+    dHf_298   -15170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     625.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=295790.0
+    phase     gas;
+}

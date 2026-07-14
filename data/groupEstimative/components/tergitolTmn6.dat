@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tergitol tmn-6  (C14H30O2, CAS 10137-98-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tergitolTmn6;
+formula     C14H30O2;
+CAS         10137-98-1;
+InChIKey    VKKFWRYCMZBXIG-UHFFFAOYSA-N;
+MW          230.392;      // g/mol [origin=calculated method=formula-sum]
+Tc          800.07;      // K   [origin=predictive method=joback]
+Pc          16.592;      // bar [origin=predictive method=joback]
+omega       1.0318;      // -   [origin=predictive method=lee-kesler]
+Tb          632.76;      // K   [origin=predictive method=joback]
+HvapTb      64295.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.225 1.3283 -0.00067 1.084e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 4; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 5; } { group CH; count 4; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2,6,8-trimethylnonan-4-yloxy)ethanol" "tergitol tmn-10" "2-(2,6,8-trimethyl-4-nonyloxy)ethanol" "glycols, polyethylene mono(trimethylnonyl)" "2-((1-isobutyl-3,5-dimethylhexyl)oxy)ethanol" "polyoxyethylene 2,6,8-trimethyl-4-nonyl ether" "ethyleneglycolmono-2,6,8-trimethyl-4-nonyl ether" "ethanol, 2-((1-isobutyl-3,5-dimethylhexyl)oxy)-" "poly(oxy-1,2-ethanediyl), alpha-(3,5-dimethyl-1-(2-methylpropyl)hexyl)-omega-hydroxy-" "poly(oxy-1,2-ethanediyl)-alpha-(3,5-dimethyl-1-(2-methylpropyl)hexyl)-omega-hydroxy-" "ethylene glycol mono-2,6,8-trimethyl-4-nonyl ether" "polyethylene glycol mono(3,5-dimethyl-1-isobutylhexyl) ether" );
+gibbsFormation
+{
+    dHf_298   -637860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     725.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-184580.0
+    phase     gas;
+}

@@ -88,6 +88,8 @@ Dictionary form:
 
 #pragma once
 
+#include "streams/StreamOverrides.H"
+
 #include "core/Dictionary.H"
 #include "core/SimulationResult.H"
 #include "streams/ProcessStream.H"
@@ -96,6 +98,7 @@ Dictionary form:
 
 #include <functional>
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -174,8 +177,22 @@ public:
               const ThermoPackage& thermo,
               int verbosity) override;
 
+    // choupo-init0 (stream-state architecture, ratified build-order step 2):
+    // compose the graph, read whatever 0/ states the author supplied, then --
+    // instead of solving -- MATERIALISE every missing stream file by explicit
+    // propagation from the authored inlets (+ any tear seeds).  `force`
+    // regenerates internal/outlet files that already exist; an inlet file is
+    // never touched.  solve() returns right after writing.
+    void setInit0Mode(bool on, bool force)
+    { init0_ = on; init0Force_ = force; }
+
+    // The pass's stream manipulations (forum #55 D4): handed in EXPLICITLY,
+    // one immutable copy per pass, applied once to the fresh seeded state.
+    void setStreamOverrides(const StreamOverrides& ov) { streamOverrides_ = ov; }
+
     // Accessors used by the outer-driver / post-processor layers to
     // harvest the simulation result without re-parsing the log.
+    const std::set<std::string>& boundaryAliases() const { return boundaryAliases_; }
     const std::map<std::string, ProcessStream>& streams() const
     { return streams_; }
 
@@ -233,7 +250,20 @@ private:
                                    const DictPtr&       udict,
                                    const ThermoPackage& global);
 
+    // The init0 pass itself (called from solve() at the seam where the flat
+    // unit list, the seeded streams_ and the tear list all exist).
+    int runInit0(const std::vector<DictPtr>&   units,
+                 const ThermoPackage&          thermo,
+                 int                           verbosity,
+                 const std::set<std::string>&  authored,
+                 const std::vector<std::string>& tears);
+
+    bool init0_      = false;
+    bool init0Force_ = false;
+    StreamOverrides streamOverrides_;
+
     std::map<std::string, ProcessStream>                   streams_;
+    std::set<std::string>                                  boundaryAliases_;  // plant-boundary outlet aliases (state writer skips)
     std::vector<ModelBoundaryFinding>                      modelBoundaries_;
     std::vector<FlatUnit>                                  topology_;
     std::vector<EnergyWire>                                energyWires_;

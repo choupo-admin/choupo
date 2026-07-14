@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclotetracontane  (C40H80, CAS 297-54-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclotetracontane;
+formula     C40H80;
+CAS         297-54-1;
+InChIKey    AKOZSKYOLYZEAW-UHFFFAOYSA-N;
+MW          561.08;      // g/mol [origin=calculated method=formula-sum]
+Tc          1585.43;      // K   [origin=predictive method=joback]
+Pc          6.345;      // bar [origin=predictive method=joback]
+omega       0.4807;      // -   [origin=predictive method=lee-kesler]
+Tb          1284.20;      // K   [origin=predictive method=joback]
+HvapTb      111220.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-279.13 3.626 -0.000711 -5.14e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 40; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 40; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -1003710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     2403.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-93320.0
+    phase     gas;
+}

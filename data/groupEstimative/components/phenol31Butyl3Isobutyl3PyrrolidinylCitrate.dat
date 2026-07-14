@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenol, 3-(1-butyl-3-isobutyl-3-pyrrolidinyl)-, citrate  (C24H37NO8, CAS 37627-60-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenol31Butyl3Isobutyl3PyrrolidinylCitrate;
+formula     C24H37NO8;
+CAS         37627-60-4;
+InChIKey    LGFOLNFGLDTRHB-UHFFFAOYSA-N;
+MW          467.559;      // g/mol [origin=calculated method=formula-sum]
+Tc          1766.49;      // K   [origin=predictive method=joback]
+Pc          15.427;      // bar [origin=predictive method=joback]
+omega       1.0448;      // -   [origin=predictive method=lee-kesler]
+Tb          1406.15;      // K   [origin=predictive method=joback]
+HvapTb      152066.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-144.044 3.02856 -0.00239676 7.858e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 8; } { group CH; count 1; } { group C; count 2; } { group ACH; count 4; } { group AC; count 1; } { group OH; count 1; } { group ACOH; count 1; } { group CH2N; count 1; } { group COOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 1; } { group C; count 1; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group OH_phenol; count 1; } { group COOH; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[1-butyl-3-(2-methylpropyl)pyrrolidin-3-yl]phenol;2-oxidanylpropane-1,2,3-tricarboxylic acid" "3-(1-butyl-3-isobutylpyrrolidin-3-yl)phenol 2-hydroxypropane-1,2,3-tricarboxylate(1:1)" "3-(1-butyl-3-isobutyl-3-pyrrolidinyl)phenol citrate" "pyrrolidine, 1-butyl-3-(m-hydroxyphenyl)-3-isobutyl-, citrate" "3-[1-butyl-3-(2-methylpropyl)pyrrolidin-3-yl]phenol 2-hydroxypropane-1,2,3-tricarboxylate (1:1)" "3-[1-butyl-3-(2-methylpropyl)pyrrolidin-3-yl]phenol; 2-hydroxypropane-1,2,3-tricarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -1658750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1295.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1009980.0
+    phase     gas;
+}

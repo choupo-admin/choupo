@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzenepentacarboxylic acid  (C11H6O10, CAS 1585-40-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzenepentacarboxylicAcid;
+formula     C11H6O10;
+CAS         1585-40-6;
+InChIKey    QNSOHXTZPUMONC-UHFFFAOYSA-N;
+MW          298.159;      // g/mol [origin=calculated method=formula-sum]
+Tc          1500.37;      // K   [origin=predictive method=joback]
+Pc          41.197;      // bar [origin=predictive method=joback]
+omega       2.2559;      // -   [origin=predictive method=lee-kesler]
+Tb          1225.43;      // K   [origin=predictive method=joback]
+HvapTb      130824.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (39.18 0.9859 -0.00070064 1.856e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 1; } { group AC; count 5; } { group COOH; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 1; } { group dC_ring; count 5; } { group COOH; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzene-1,2,3,4,5-pentacarboxylic acid" "pentacarboxy benzene" "benzenepentacarboxylate" "1,2,3,4,5-benzenepentacarboxylicacid" "1,2,3,4,5-benzenepentacarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -1831070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     719.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1603920.0
+    phase     gas;
+}

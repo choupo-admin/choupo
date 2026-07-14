@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrahydrofuran-3-carboxylic acid  (C5H8O3, CAS 89364-31-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrahydrofuran3CarboxylicAcid;
+formula     C5H8O3;
+CAS         89364-31-8;
+InChIKey    BOTREHHXSQGWTR-UHFFFAOYSA-N;
+MW          116.116;      // g/mol [origin=calculated method=formula-sum]
+Tc          723.67;      // K   [origin=predictive method=joback]
+Pc          48.360;      // bar [origin=predictive method=joback]
+omega       0.6230;      // -   [origin=predictive method=lee-kesler]
+Tb          501.74;      // K   [origin=predictive method=joback]
+HvapTb      48655.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-40.22 0.6583 -0.0004343 1.071e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group FCH2O; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group O_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oxolane-3-carboxylic acid" "tetrahydro-3-furoic acid" "tetrahydro-furan-3-carboxylic acid" "tetrahydro-3-furoicacid" "3-oxolanecarboxylic acid" "3-carboxytetrahydrofuran" "agn-pc-02wftr" "tetrahydro-3-furancarboxylic acid" "3-furancarboxylic acid, tetrahydro-" "(r)-tetrahydro-furan-3-carboxylic acid" "oxolane-3-carboxylic acid; 3-carboxytetrahydrofuran; tetrahydrofuran-3-carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -568320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     302.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-402260.0
+    phase     gas;
+}

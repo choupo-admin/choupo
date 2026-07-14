@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyltris(sec-butylamino)silane  (C13H33N3Si, CAS 37697-65-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C13H33N3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        methyltrisSecButylaminoSilane;
+formula     C13H33N3Si;
+CAS         37697-65-7;
+InChIKey    OGVVDLMGEQARAV-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          259.513;      // g/mol [origin=calculated method=formula-sum]
+Tc          829.30;      // K   [origin=predictive method=joback]
+Pc          15.710;      // bar [origin=predictive method=joback]
+omega       0.8666;      // -   [origin=predictive method=lee-kesler]
+Tb          647.63;      // K   [origin=predictive method=joback]
+HvapTb      62970.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.213 1.27904 -0.000424 -4.37e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 7; } { group CH2; count 3; } { group CHNH; count 3; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 7; } { group CH2; count 3; } { group CH; count 3; } { group NH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-[bis(butan-2-ylamino)-methyl-silyl]butan-2-amine" "silanetriamine, 1-methyl-n,n',n''-tris(1-methylpropyl)-" "1-methyl-n,n,n-tris(1-methylpropyl)silanetriamine" "n,n',n''-tri(butan-2-yl)-1-methylsilanetriamine" "n-[bis(butan-2-ylamino)-methylsilyl]butan-2-amine" "1-methyl-n,n',n''-tris(1-methylpropyl)silanetriamine" );
+gibbsFormation
+{
+    dHf_298   -278700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     882.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=214670.0
+    phase     gas;
+}

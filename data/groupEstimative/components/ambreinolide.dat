@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ambreinolide  (C17H28O2, CAS 468-84-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ambreinolide;
+formula     C17H28O2;
+CAS         468-84-8;
+InChIKey    OXLWUQRYCMJFSG-UHFFFAOYSA-N;
+MW          264.409;      // g/mol [origin=calculated method=formula-sum]
+Tc          902.91;      // K   [origin=predictive method=joback]
+Pc          18.724;      // bar [origin=predictive method=joback]
+omega       0.5909;      // -   [origin=predictive method=lee-kesler]
+Tb          671.19;      // K   [origin=predictive method=joback]
+HvapTb      57027.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-291.34 2.81068 -0.0028148 1.1798e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 6; } { group CH; count 2; } { group C; count 3; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 7; } { group CH_ring; count 2; } { group C_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4a,7,7,10a-tetramethyl-2,5,6,6a,8,9,10,10b-octahydro-1h-benzo[f]chromen-3-one" "4a,7,7,10a-tetramethyl-dodecahydro-benzo[f]chromen-3-one" "ambreinolid" "( )-ambreinolide" "3h-naphtho(2,1-b)pyran-3-one, dodecahydro-4a,7,7,10a-tetramethyl-, (4ar,6as,10as,10br)-" "3h-naphtho[2,1-b]pyran-3-one, dodecahydro-4a,7,7,10a-tetramethyl-, (4ar,6as,10as,10br)-" "ambreinolide(cis-a/b)" "agn-pc-00gko1" "4a,7,7,10a-tetramethyldodecahydro-3h-benzo[f]chromen-3-one" "14,15,16-trinorlabdan-13-oic acid, 8-hydroxy-, .delta.-lactone" "14,15,16-trinorlabdan-13-oic acid, 8-hydroxy-, delta-lactone" "1-naphthalenepropionic acid, decahydro-2-hydroxy-2,5,5,8a-tetramethyl-,delta-lactone" );
+gibbsFormation
+{
+    dHf_298   -506530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     782.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-104050.0
+    phase     gas;
+}

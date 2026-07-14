@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(perfluorodecyl)ethyl methacrylate  (C16H9F21O2, CAS 2144-54-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PerfluorodecylEthylMethacrylate;
+formula     C16H9F21O2;
+CAS         2144-54-9;
+InChIKey    FQHLOOOXLDQLPF-UHFFFAOYSA-N;
+MW          632.204;      // g/mol [origin=calculated method=formula-sum]
+Tc          704.35;      // K   [origin=predictive method=joback]
+Pc          8.368;      // bar [origin=predictive method=joback]
+omega       0.7609;      // -   [origin=predictive method=lee-kesler]
+Tb          572.83;      // K   [origin=predictive method=joback]
+HvapTb      27910.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-105.748 2.95472 -0.0028396 9.779e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH2=C; count 1; } { group CF3; count 1; } { group CF2; count 9; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 10; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 21; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-henicosakis(fluoranyl)dodecyl 2-methylprop-2-enoate" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-henicosafluorododecyl methacrylate" "1h,1h,2h,2h-perfluorododecyl methacrylate" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-heneicosafluorododecyl methacrylate" "2-propenoic acid, 2-methyl-, 3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-heneicosafluorododecyl ester" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-henicosafluorododecyl 2-methylprop-2-enoate" "2-methyl-2-propenoic acid 3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-heneicosafluorododecyl ester" "2-propenoic acid,2-methyl-,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-heneicosafluorododecyl ester" "methacrylicacid, 3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-heneicosafluorododecylester (7ci,8ci);1-dodecanol,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-heneicosafluoro-, methacrylate(8ci);2-(perfluorodecyl)ethyl methacrylate;perfluorodecylethyl methacrylate;poly(3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heptadecafluorodecyl methacrylate);1,1,2,2-tetrahydroperfluorododecyl methacrylate;" );
+gibbsFormation
+{
+    dHf_298   -4781020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1098.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4209850.0
+    phase     gas;
+}

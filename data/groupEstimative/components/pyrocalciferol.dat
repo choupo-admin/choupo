@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pyrocalciferol  (C28H44O, CAS 128-27-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pyrocalciferol;
+formula     C28H44O;
+CAS         128-27-8;
+InChIKey    DNVPQKQSNYMLRS-OJBTWCRJSA-N;
+MW          396.659;      // g/mol [origin=calculated method=formula-sum]
+Tc          1212.16;      // K   [origin=predictive method=joback]
+Pc          10.914;      // bar [origin=predictive method=joback]
+omega       0.9638;      // -   [origin=predictive method=lee-kesler]
+Tb          982.99;      // K   [origin=predictive method=joback]
+HvapTb      92895.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-307.02 3.59102 -0.00306688 1.1236e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 7; } { group CH; count 7; } { group C; count 2; } { group CH=CH; count 1; } { group CH=C; count 2; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH; count 3; } { group dCH; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,9s,10s,13r,14r,17r)-17-[(e,2r,5r)-5,6-dimethylhept-3-en-2-yl]-10,13-dimethyl-2,3,4,9,11,12,14,15,16,17-decahydro-1h-cyclopenta[a]phenanthren-3-ol" "pyroergocalciferol" "pyrovitamin d2" "9alpha-lumisterol" "10alpha-ergosterol" "pyrocalciferol [mi]" "ergosta-5,7,22-trien-3-ol, (3beta,10alpha,22e)-" );
+gibbsFormation
+{
+    dHf_298   -329280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     968.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=317720.0
+    phase     gas;
+}

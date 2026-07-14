@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-isopropylphenylacetic acid  (C11H14O2, CAS 4476-28-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4IsopropylphenylaceticAcid;
+formula     C11H14O2;
+CAS         4476-28-2;
+InChIKey    RERBQXVRXYCGLT-UHFFFAOYSA-N;
+MW          178.231;      // g/mol [origin=calculated method=formula-sum]
+Tc          849.53;      // K   [origin=predictive method=joback]
+Pc          28.874;      // bar [origin=predictive method=joback]
+omega       0.7916;      // -   [origin=predictive method=lee-kesler]
+Tb          628.01;      // K   [origin=predictive method=joback]
+HvapTb      59794.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.799 0.96714 -0.00061456 1.478e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group ACH; count 4; } { group ACCH2; count 1; } { group ACCH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-propan-2-ylphenyl)ethanoic acid" "2-(4-isopropylphenyl)acetic acid" "4-isopropylphenylaceticacid" "p-isopropyl phenyl acetic acid" "(4-isopropylphenyl)acetic acid" "2-[4-(propan-2-yl)phenyl]acetic acid" "2-[4-(methylethyl)phenyl]acetic acid" "4-(carboxymethyl)cumene" "7-p-cymenecarboxylic acid" "4-(isopropyl)phenylacetic acid" "(4-isopropyl-phenyl)acetic acid" "4-(prop-2-yl)phenylacetic acid" );
+gibbsFormation
+{
+    dHf_298   -400860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     515.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-201830.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3,5[10]-estratriene-2,3-diol-17-one  (C18H22O3, CAS 362-06-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13510Estratriene23Diol17One;
+formula     C18H22O3;
+CAS         362-06-1;
+InChIKey    SWINWPBPEKHUOD-UHFFFAOYSA-N;
+MW          286.371;      // g/mol [origin=calculated method=formula-sum]
+Tc          1165.10;      // K   [origin=predictive method=joback]
+Pc          29.377;      // bar [origin=predictive method=joback]
+omega       1.1512;      // -   [origin=predictive method=lee-kesler]
+Tb          896.49;      // K   [origin=predictive method=joback]
+HvapTb      87498.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-219.51 2.41522 -0.00223328 8.647e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 2; } { group C; count 1; } { group ACH; count 2; } { group ACCH2; count 1; } { group ACCH; count 1; } { group ACOH; count 2; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "13-methyl-2,3-bis(oxidanyl)-7,8,9,11,12,14,15,16-octahydro-6h-cyclopenta[a]phenanthren-17-one" "2,3-dihydroxy-1,3,5[10]-estratrien-17-one" "2,3-dihydroxyestra-1(10),2,4-trien-17-one" "estra-1,3,5(1)-trien-17-one, 2,3-dihydroxy-" "estra-1,3,5(10)-trien-17-one, 2,3-dihydroxy-" "estra-1,3,5(10-trien-17-one, 2,3-dihydroxy)-" "2,3-dihydroxy-13-methyl-7,8,9,11,12,14,15,16-octahydro-6h-cyclopenta[a]phenanthren-17-one" "4,5-dihydroxy-15-methyltetracyclo[8.7.0.0^{2,7}.0^{11,15}]heptadeca-2(7),3,5-trien-14-one" );
+gibbsFormation
+{
+    dHf_298   -481130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     514.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-83520.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: iodobenzene  (C6H5I, CAS 591-50-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        iodobenzene;
+formula     C6H5I;
+CAS         591-50-4;
+InChIKey    SNHMUERNLJLMHN-UHFFFAOYSA-N;
+MW          204.006;      // g/mol [origin=calculated method=formula-sum]
+Tc          713.52;      // K   [origin=predictive method=joback]
+Pc          45.347;      // bar [origin=predictive method=joback]
+omega       0.2457;      // -   [origin=predictive method=lee-kesler]
+Tb          456.70;      // K   [origin=predictive method=joback]
+HvapTb      40599.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-24.78 0.5339 -0.0004152 1.256e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 5; } { group dC_ring; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "iodanylbenzene" "benzene, iodo-" "benzene iodide" "phenyl iodide" "iodophenyl" "iodinebenzol" "iodo-benzene" "1-iodobenzene" "idobenzene" "phenyliodide" "agn-pc-00bjgw" );
+gibbsFormation
+{
+    dHf_298   146230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     338.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=170170.0
+    phase     gas;
+}

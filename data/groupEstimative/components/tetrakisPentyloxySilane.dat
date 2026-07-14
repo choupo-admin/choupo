@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrakis(pentyloxy)silane  (C20H44O4Si, CAS 6382-12-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C20H44O4Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        tetrakisPentyloxySilane;
+formula     C20H44O4Si;
+CAS         6382-12-3;
+InChIKey    KCTGOQZIKPDZNK-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          376.653;      // g/mol [origin=calculated method=formula-sum]
+Tc          919.70;      // K   [origin=predictive method=joback]
+Pc          9.040;      // bar [origin=predictive method=joback]
+omega       0.8339;      // -   [origin=predictive method=lee-kesler]
+Tb          748.28;      // K   [origin=predictive method=joback]
+HvapTb      70048.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (127.526 1.44488 -0.0002054 -2.096e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 12; } { group CH2O; count 4; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 16; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetrapentyl silicate" "tetrapentyloxysilane" "silicic acid, tetrapentyl ester" "silicic acid (h4sio4), tetrapentyl ester" "pentyl silicate" "amyl silicate" "tetraamyl silicate" "amyl silicate ((c5h11o)4si)" "tetrapentyl orthosilicate" "pentyl silicate ((c5h11o)4si)" "tetraamyl silicate ((c5h11o)4si)" );
+gibbsFormation
+{
+    dHf_298   -1096630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1106.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-407240.0
+    phase     gas;
+}

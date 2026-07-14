@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,5-difluorophenyl isocyanate  (C7H3F2NO, CAS 39718-32-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        25DifluorophenylIsocyanate;
+formula     C7H3F2NO;
+CAS         39718-32-6;
+InChIKey    SNHIIFOXCRYGGY-UHFFFAOYSA-N;
+MW          155.103;      // g/mol [origin=calculated method=formula-sum]
+Tc          665.12;      // K   [origin=predictive method=joback]
+Pc          38.819;      // bar [origin=predictive method=joback]
+omega       0.5365;      // -   [origin=predictive method=lee-kesler]
+Tb          461.61;      // K   [origin=predictive method=joback]
+HvapTb      42674.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACF; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group dCd; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-bis(fluoranyl)-2-isocyanato-benzene" "1,4-difluoro-2-isocyanatobenzene" "isocyanic acid 2,5-difluorophenyl ester" "2,5-difluorobenzenisocyanate" "benzene,1,4-difluoro-2-isocyanato-" );
+// formation datum unavailable (element entropy missing): dHf_298=-371850.0 dGf_298=None

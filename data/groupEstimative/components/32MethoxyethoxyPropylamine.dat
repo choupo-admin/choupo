@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(2-methoxyethoxy)propylamine  (C6H15NO2, CAS 54303-31-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        32MethoxyethoxyPropylamine;
+formula     C6H15NO2;
+CAS         54303-31-0;
+InChIKey    PWGVOCGNHYMDLS-UHFFFAOYSA-N;
+MW          133.191;      // g/mol [origin=calculated method=formula-sum]
+Tc          633.59;      // K   [origin=predictive method=joback]
+Pc          31.883;      // bar [origin=predictive method=joback]
+omega       0.6346;      // -   [origin=predictive method=lee-kesler]
+Tb          454.25;      // K   [origin=predictive method=joback]
+HvapTb      44411.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (54.925 0.50932 -0.000124 -3.84e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH3O; count 1; } { group CH2O; count 1; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group O; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(2-methoxyethoxy)propan-1-amine" "1-propanamine, 3-(2-methoxyethoxy)-" "methoxyethoxypropylamine" "3-(2'-methoxy)-ethoxy propylamine" "1-propanamine,3-(2-methoxyethoxy)-" "propylamine,3-(2-methoxyethoxy)- (6ci,7ci); 3-(2-methoxyethoxy)propylamine;3-2-methoxyethoxy-1-propanamine" );
+gibbsFormation
+{
+    dHf_298   -397820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     463.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-143910.0
+    phase     gas;
+}

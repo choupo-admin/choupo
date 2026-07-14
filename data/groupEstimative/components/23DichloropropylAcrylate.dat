@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3-dichloropropyl acrylate  (C6H8Cl2O2, CAS 24910-84-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23DichloropropylAcrylate;
+formula     C6H8Cl2O2;
+CAS         24910-84-7;
+InChIKey    VNBVMEJAPNHJSI-UHFFFAOYSA-N;
+MW          183.028;      // g/mol [origin=calculated method=formula-sum]
+Tc          661.67;      // K   [origin=predictive method=joback]
+Pc          30.423;      // bar [origin=predictive method=joback]
+omega       0.5121;      // -   [origin=predictive method=lee-kesler]
+Tb          466.20;      // K   [origin=predictive method=joback]
+HvapTb      44069.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (43.952 0.5185 -0.0002749 3.8e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2=CH; count 1; } { group CH2Cl; count 1; } { group CHCl; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group Cl; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-bis(chloranyl)propyl prop-2-enoate" "2,3-dichloropropyl prop-2-enoate" "2-propenoic acid, 2,3-dichloropropyl ester" "2-propenoic acid, 2,3-dichloropropyl ester, homopolymer" "2,3-dichloropropyl acrylate, homopolymer" );
+gibbsFormation
+{
+    dHf_298   -395780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     493.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-249190.0
+    phase     gas;
+}

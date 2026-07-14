@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2r,3r)-4-bromo-1-carboxy-2,3-dihydroxycyclohexa-4,6-diene  (C7H7BrO4, CAS 115524-22-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2r3r4Bromo1Carboxy23Dihydroxycyclohexa46Diene;
+formula     C7H7BrO4;
+CAS         115524-22-6;
+InChIKey    SVPDQYJPNWAGFC-UHFFFAOYSA-N;
+MW          235.033;      // g/mol [origin=calculated method=formula-sum]
+Tc          989.71;      // K   [origin=predictive method=joback]
+Pc          56.194;      // bar [origin=predictive method=joback]
+omega       1.8849;      // -   [origin=predictive method=lee-kesler]
+Tb          778.95;      // K   [origin=predictive method=joback]
+HvapTb      90161.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.39 0.6904 -0.00042788 9.38e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 2; } { group CH=C; count 2; } { group OH; count 2; } { group COOH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group Br; count 1; } { group OH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-bromanyl-5,6-bis(oxidanyl)cyclohexa-1,3-diene-1-carboxylic acid" "1,3-cyclohexadiene-1-carboxylicacid, 4-bromo-5,6-dihydroxy-, (5r,6r)-" "4-bromo-5,6-dihydroxycyclohexa-1,3-diene-1-carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -689610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     474.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-537770.0
+    phase     gas;
+}

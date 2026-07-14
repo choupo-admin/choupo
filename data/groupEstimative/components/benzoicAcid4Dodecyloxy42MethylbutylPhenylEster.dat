@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzoic acid, 4-(dodecyloxy)-, 4-(2-methylbutyl)phenyl ester  (C30H44O3, CAS 100545-65-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzoicAcid4Dodecyloxy42MethylbutylPhenylEster;
+formula     C30H44O3;
+CAS         100545-65-1;
+InChIKey    KOWGBOBLPFEEBC-UHFFFAOYSA-N;
+MW          452.679;      // g/mol [origin=calculated method=formula-sum]
+Tc          1260.56;      // K   [origin=predictive method=joback]
+Pc          8.305;      // bar [origin=predictive method=joback]
+omega       0.7981;      // -   [origin=predictive method=lee-kesler]
+Tb          1029.52;      // K   [origin=predictive method=joback]
+HvapTb      97679.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.367 2.46496 -0.00133412 2.346e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 11; } { group CH; count 1; } { group ACH; count 8; } { group AC; count 3; } { group ACCH2; count 1; } { group CH2O; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 13; } { group CH; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[4-(2-methylbutyl)phenyl] 4-dodecoxybenzoate" "4-(2-methylbutyl)phenyl 4-(dodecyloxy)benzoate" "benzoic acid, 4-(dodecyloxy)-, 4-[(2s)-2-methylbutyl]phenyl ester" );
+gibbsFormation
+{
+    dHf_298   -667190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1152.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-10530.0
+    phase     gas;
+}

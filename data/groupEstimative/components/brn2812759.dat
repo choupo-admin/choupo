@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 2812759  (C20H16N2, CAS 795-95-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn2812759;
+formula     C20H16N2;
+CAS         795-95-9;
+InChIKey    YGXXZEGNXIPOQV-UHFFFAOYSA-N;
+MW          284.362;      // g/mol [origin=calculated method=formula-sum]
+Tc          1189.58;      // K   [origin=predictive method=joback]
+Pc          26.791;      // bar [origin=predictive method=joback]
+omega       1.0708;      // -   [origin=predictive method=lee-kesler]
+Tb          913.50;      // K   [origin=predictive method=joback]
+HvapTb      91876.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-75.81 1.6244 -0.00121868 3.624e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 6; } { group ACNH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 12; } { group dC_ring; count 8; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(1-azanylnaphthalen-2-yl)naphthalen-2-amine" "(1,2'-binaphthalene)-1,2'-diamine" "2-(2-aminonaphthalen-1-yl)naphthalen-1-amine" "1-(1-aminonaphthalen-2-yl)naphthalen-2-amine" "1,2'-diamino-2,1'-dinaphthyl" "[1,2'-binaphthalene]-1',2-diamine" );
+gibbsFormation
+{
+    dHf_298   420770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     582.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=650020.0
+    phase     gas;
+}

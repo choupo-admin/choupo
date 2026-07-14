@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (dimethylamino)acetonitrile  (C4H8N2, CAS 926-64-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethylaminoAcetonitrile;
+formula     C4H8N2;
+CAS         926-64-7;
+InChIKey    PLXBWEPPAAQASG-UHFFFAOYSA-N;
+MW          84.122;      // g/mol [origin=calculated method=formula-sum]
+Tc          595.90;      // K   [origin=predictive method=joback]
+Pc          37.684;      // bar [origin=predictive method=joback]
+omega       0.4281;      // -   [origin=predictive method=lee-kesler]
+Tb          405.64;      // K   [origin=predictive method=joback]
+HvapTb      37019.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.561 0.44254 -0.0002754 6.75e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH3N; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group N; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(dimethylamino)ethanenitrile" "dimethylaminoacetonitrile" "acetonitrile, (dimethylamino)-" "n-(cyanomethyl)dimethylamine" "n,n-dimethylglycinonitrile" "2-dimethylaminoacetonitrile" "glycinonitrile, n,n-dimethyl-" "dimethylcyanocacetamide" "glycinonitrile,n-dimethyl-" "(dimethylamino)acetonitrile hcl" "dimethyylaminoacetonitrile" "(dimethylamino)acetonitrile monohydrochloride" );
+gibbsFormation
+{
+    dHf_298   106520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     333.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=226760.0
+    phase     gas;
+}

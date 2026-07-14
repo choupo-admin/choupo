@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: glycine, n-propyl-  (C5H11NO2, CAS 25303-14-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        glycineNPropyl;
+formula     C5H11NO2;
+CAS         25303-14-4;
+InChIKey    BHUGZIJOVAVBOQ-UHFFFAOYSA-N;
+MW          117.148;      // g/mol [origin=calculated method=formula-sum]
+Tc          703.07;      // K   [origin=predictive method=joback]
+Pc          39.259;      // bar [origin=predictive method=joback]
+omega       0.8104;      // -   [origin=predictive method=lee-kesler]
+Tb          509.68;      // K   [origin=predictive method=joback]
+HvapTb      50324.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.733 0.60582 -0.0003694 8.68e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH2NH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(propylamino)ethanoic acid" "(propylamino)acetic acid" "2-(propylamino)acetic acid" );
+gibbsFormation
+{
+    dHf_298   -443330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     444.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-263300.0
+    phase     gas;
+}

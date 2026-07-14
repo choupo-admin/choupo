@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-chloro-2,4-dihydroxy-n-(2-hydroxyethyl)benzamide  (C9H10ClNO4, CAS 68758-71-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Chloro24DihydroxyN2HydroxyethylBenzamide;
+formula     C9H10ClNO4;
+CAS         68758-71-4;
+InChIKey    OZURVNLSJUSJMO-UHFFFAOYSA-N;
+MW          231.632;      // g/mol [origin=calculated method=formula-sum]
+Tc          1056.51;      // K   [origin=predictive method=joback]
+Pc          55.942;      // bar [origin=predictive method=joback]
+omega       1.8913;      // -   [origin=predictive method=lee-kesler]
+Tb          832.07;      // K   [origin=predictive method=joback]
+HvapTb      98840.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.408 1.1186 -0.00102338 3.8296e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 2; } { group AC; count 1; } { group OH; count 1; } { group ACOH; count 2; } { group ACCl; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 1; } { group OH; count 1; } { group OH_phenol; count 2; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-chloranyl-n-(2-hydroxyethyl)-2,4-bis(oxidanyl)benzamide" "benzamide, 5-chloro-2,4-dihydroxy-n-(2-hydroxyethyl)-" "2-(2,4-dihydroxy-5-chlorobenzoylamino)ethanol" );
+gibbsFormation
+{
+    dHf_298   -585730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     598.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-369840.0
+    phase     gas;
+}

@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): 1(3h)-isobenzofuranone, 3,3-bis(4-hydroxyphenyl)-, compd. with 2-(diethylamino)ethanol(1:1)  (C26H29NO5, CAS 67874-86-6)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           13hIsobenzofuranone33Bis4HydroxyphenylCompdWith2Diethylamino;
+formula        C26H29NO5;
+CAS            67874-86-6;
+InChIKey       VAZCKEBLMFALSW-UHFFFAOYSA-N;
+MW             435.52;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: 1(3h)-isobenzofuranone, 3,3-bis(4-hydroxyphenyl)-, compd. with 2-(diethylamino)ethanol(1:1)

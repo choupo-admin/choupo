@@ -1,0 +1,3 @@
+application  choupoSolve;
+description  "Complete ammonia synthesis loop (Haber-Bosch) with recycle and purge: makeup 1:3 N2:H2 (+ Ar inert) -> mix with recycle -> SRK Gibbs converter at 700 K / 200 bar (real-gas fugacity) -> chill-flash at 250 K to condense the NH3 product -> split the unreacted gas into a small Ar-bleeding PURGE and the recycle. The recycle tear + purge are the whole point: high overall N2/H2 utilisation despite a modest per-pass conversion, with the inert Ar held at steady state by the purge.";
+verbosity    3;

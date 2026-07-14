@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heptadecylcyclohexane  (C23H46, CAS 19781-73-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heptadecylcyclohexane;
+formula     C23H46;
+CAS         19781-73-8;
+InChIKey    VLHZQNGNJQYAIZ-UHFFFAOYSA-N;
+MW          322.621;      // g/mol [origin=calculated method=formula-sum]
+Tc          924.76;      // K   [origin=predictive method=joback]
+Pc          9.639;      // bar [origin=predictive method=joback]
+omega       0.7928;      // -   [origin=predictive method=lee-kesler]
+Tb          745.39;      // K   [origin=predictive method=joback]
+HvapTb      67221.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-83.624 2.31092 -0.0013084 2.721e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 21; } { group CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 16; } { group CH2_ring; count 5; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-cyclohexylheptadecane" );
+gibbsFormation
+{
+    dHf_298   -463730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1021.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=167230.0
+    phase     gas;
+}

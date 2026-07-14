@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: zr 777  (C18H28O2, CAS 37882-31-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        zr777;
+formula     C18H28O2;
+CAS         37882-31-8;
+InChIKey    FZRBKIRIBLNOAM-UHFFFAOYSA-N;
+MW          276.42;      // g/mol [origin=calculated method=formula-sum]
+Tc          856.85;      // K   [origin=predictive method=joback]
+Pc          14.048;      // bar [origin=predictive method=joback]
+omega       0.7604;      // -   [origin=predictive method=lee-kesler]
+Tb          667.10;      // K   [origin=predictive method=joback]
+HvapTb      62147.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.705 1.61688 -0.00103303 2.5989e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 2; } { group CH=CH; count 1; } { group CH=C; count 1; } { group CH_C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 2; } { group dCH; count 3; } { group dC; count 1; } { group tCH; count 1; } { group tC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "prop-2-ynyl 3,7,11-trimethyldodeca-2,4-dienoate" "2-propynyl 3,7,11-trimethyl-2,4-dodecadienoate" "2,4-dodecadienoic acid, 3,7,11-trimethyl-, 2-propynyl ester" "2,4-dodecadienoic acid, 3,7,11-trimethyl-, 2-propynyl ester, (2e,4e)-" "2,4-dodecadienoicacid, 3,7,11-trimethyl-, 2-propynyl ester, (2e,4e)- (9ci); 2,4-dodecadienoicacid, 3,7,11-trimethyl-, 2-propynyl ester, (e,e)-; ent 70531; enstar;kinoprene; xr 777; zr 77" );
+gibbsFormation
+{
+    dHf_298   -226140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     841.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=160390.0
+    phase     gas;
+}

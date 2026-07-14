@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methyl-1-nonadecene  (C20H40, CAS 52254-50-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methyl1Nonadecene;
+formula     C20H40;
+CAS         52254-50-9;
+InChIKey    HVUWESKTPPGVAP-UHFFFAOYSA-N;
+MW          280.54;      // g/mol [origin=calculated method=formula-sum]
+Tc          817.00;      // K   [origin=predictive method=joback]
+Pc          10.467;      // bar [origin=predictive method=joback]
+omega       0.7892;      // -   [origin=predictive method=lee-kesler]
+Tb          653.76;      // K   [origin=predictive method=joback]
+HvapTb      59524.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.974 1.88374 -0.0010894 2.46e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 16; } { group CH2=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 16; } { group dCH2; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylnonadec-1-ene" "1-nonadecene, 2-methyl-" );
+gibbsFormation
+{
+    dHf_298   -340490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     926.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=196810.0
+    phase     gas;
+}

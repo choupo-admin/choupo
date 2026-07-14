@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: agn-pc-03yjol  (C12H22O2, CAS 40853-56-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        agnPc03yjol;
+formula     C12H22O2;
+CAS         40853-56-3;
+InChIKey    AOWLXZIJUIFJPM-UHFFFAOYSA-N;
+MW          198.306;      // g/mol [origin=calculated method=formula-sum]
+Tc          719.23;      // K   [origin=predictive method=joback]
+Pc          19.036;      // bar [origin=predictive method=joback]
+omega       0.6114;      // -   [origin=predictive method=lee-kesler]
+Tb          535.54;      // K   [origin=predictive method=joback]
+HvapTb      48975.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.152 1.1208 -0.0006269 1.227e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group CH=C; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 2; } { group CH; count 2; } { group dCH; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5-methyl-2-propan-2-yl-hex-2-enyl) ethanoate" "[(e)-5-methyl-2-propan-2-ylhex-2-enyl] acetate" "2-hexen-1-ol,5-methyl-2-(1-methylethyl)-, 1-acetate" "2-hexen-1-ol,2-isopropyl-5-methyl-, acetate (6ci); 2-hexen-1-ol,5-methyl-2-(1-methylethyl)-, acetate (9ci); 2-isopropyl-5-methyl-2-hexen-1-ylacetate; 2-isopropyl-5-methylhex-2-enyl acetate" );
+gibbsFormation
+{
+    dHf_298   -511420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     644.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-193420.0
+    phase     gas;
+}

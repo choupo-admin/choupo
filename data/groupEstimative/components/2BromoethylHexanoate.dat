@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-bromoethyl hexanoate  (C8H15BrO2, CAS 6282-52-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2BromoethylHexanoate;
+formula     C8H15BrO2;
+CAS         6282-52-6;
+InChIKey    AHELICBDMBDYSN-UHFFFAOYSA-N;
+MW          223.11;      // g/mol [origin=calculated method=formula-sum]
+Tc          693.97;      // K   [origin=predictive method=joback]
+Pc          27.354;      // bar [origin=predictive method=joback]
+omega       0.6798;      // -   [origin=predictive method=lee-kesler]
+Tb          507.02;      // K   [origin=predictive method=joback]
+HvapTb      47244.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (29.216 0.74722 -0.0003882 6.1e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH2COO; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 6; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexanoic acid, 2-bromoethyl ester" );
+gibbsFormation
+{
+    dHf_298   -499400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     569.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-279570.0
+    phase     gas;
+}

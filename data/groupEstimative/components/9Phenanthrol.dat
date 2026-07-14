@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9-phenanthrol  (C14H10O, CAS 484-17-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        9Phenanthrol;
+formula     C14H10O;
+CAS         484-17-3;
+InChIKey    DZKIUEHLEXLYKM-UHFFFAOYSA-N;
+MW          194.233;      // g/mol [origin=calculated method=formula-sum]
+Tc          932.45;      // K   [origin=predictive method=joback]
+Pc          38.723;      // bar [origin=predictive method=joback]
+omega       0.7440;      // -   [origin=predictive method=lee-kesler]
+Tb          670.16;      // K   [origin=predictive method=joback]
+HvapTb      65990.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-101.25 1.3426 -0.00123176 4.513e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 4; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 9; } { group dC_ring; count 5; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "phenanthren-9-ol" "9-phenanthrenol" "9-hydroxyphenanthrene" "dzkiuehlexlykm-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   97600.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     397.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=228460.0
+    phase     gas;
+}

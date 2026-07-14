@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(4-fluorophenyl)propan-1-ol  (C9H11FO, CAS 701-47-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14FluorophenylPropan1Ol;
+formula     C9H11FO;
+CAS         701-47-3;
+InChIKey    CBNKDCZWGZSHNR-UHFFFAOYSA-N;
+MW          154.184;      // g/mol [origin=calculated method=formula-sum]
+Tc          718.90;      // K   [origin=predictive method=joback]
+Pc          34.159;      // bar [origin=predictive method=joback]
+omega       0.8365;      // -   [origin=predictive method=lee-kesler]
+Tb          528.19;      // K   [origin=predictive method=joback]
+HvapTb      54040.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.199 0.77212 -0.00047996 1.114e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 4; } { group ACCH; count 1; } { group OH; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "alpha-ethyl-4-fluorobenzyl alcohol" "alpha-ethyl-p-fluorobenzyl alcohol" ".alpha.-ethyl-4-fluorobenzyl alcohol" "1-(4-fluorophenyl)-1-hydroxypropane" "benzenemethanol, .alpha.-ethyl-4-fluoro-" );
+gibbsFormation
+{
+    dHf_298   -357650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     467.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-206390.0
+    phase     gas;
+}

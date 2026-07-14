@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-dibromo-1-chloroethane  (C2H3Br2Cl, CAS 598-20-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Dibromo1Chloroethane;
+formula     C2H3Br2Cl;
+CAS         598-20-9;
+InChIKey    DVTKTUMRXCKEEG-UHFFFAOYSA-N;
+MW          222.304;      // g/mol [origin=calculated method=formula-sum]
+Tc          639.31;      // K   [origin=predictive method=joback]
+Pc          59.081;      // bar [origin=predictive method=joback]
+omega       0.3793;      // -   [origin=predictive method=lee-kesler]
+Tb          414.67;      // K   [origin=predictive method=joback]
+HvapTb      36913.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.661 0.2829 -0.0002514 8.93e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CHCl; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group Cl; count 1; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-bis(bromanyl)-1-chloranyl-ethane" "ethane, 1,2-dibromo-1-chloro-" "1-chloro-1,2-dibromoethane" "ethane,1,2-dibromo-1-chloro- (6ci,7ci,8ci,9ci)" );
+gibbsFormation
+{
+    dHf_298   -52970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     359.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-19770.0
+    phase     gas;
+}

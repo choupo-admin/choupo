@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4,6-trimethylbenzyl chloride  (C10H13Cl, CAS 1585-16-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        246TrimethylbenzylChloride;
+formula     C10H13Cl;
+CAS         1585-16-6;
+InChIKey    UNRGEIXQCZHICP-UHFFFAOYSA-N;
+MW          168.664;      // g/mol [origin=calculated method=formula-sum]
+Tc          721.73;      // K   [origin=predictive method=joback]
+Pc          26.874;      // bar [origin=predictive method=joback]
+omega       0.4460;      // -   [origin=predictive method=lee-kesler]
+Tb          507.45;      // K   [origin=predictive method=joback]
+HvapTb      46501.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.681 0.70326 -0.00037068 6.76e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 1; } { group ACCH3; count 3; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(chloromethyl)-1,3,5-trimethyl-benzene" "2-(chloromethyl)-1,3,5-trimethylbenzene" "alpha-2-chloroisodurene" "alpha2-chloroisodurene" "2,4,6-trimethyl benzyl chloride" "2-chloromethyl-1,3,5-trimethylbenzene" "benzene, 2-(chloromethyl)-1,3,5-trimethyl-" ".alpha.2-chloroisodurene" "2, 4, 6-trimethylbenzyl chloride" "r066" "benzene,2-(chloromethyl)-1,3,5-trimethyl-" );
+gibbsFormation
+{
+    dHf_298   -63350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     454.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=104910.0
+    phase     gas;
+}

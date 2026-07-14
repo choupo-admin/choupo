@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dioctadecyl but-2-enedioate  (C40H76O4, CAS 7283-68-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dioctadecylBut2Enedioate;
+formula     C40H76O4;
+CAS         7283-68-3;
+InChIKey    XHSDDKAGJYJAQM-UHFFFAOYSA-N;
+MW          621.044;      // g/mol [origin=calculated method=formula-sum]
+Tc          1714.59;      // K   [origin=predictive method=joback]
+Pc          4.006;      // bar [origin=predictive method=joback]
+omega       -0.3490;      // -   [origin=predictive method=lee-kesler]
+Tb          1235.40;      // K   [origin=predictive method=joback]
+HvapTb      119406.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.164 3.71424 -0.0020468 3.98e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 34; } { group CH=CH; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 34; } { group dCH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-butenedioic acid (2e)-, dioctadecyl ester" "2-butenedioic acid (2z)-, dioctadecyl ester" "2-butenedioic acid (2e)-, 1,4-dioctadecyl ester" "2-butenedioic acid (2z)-, 1,4-dioctadecyl ester" "2-butenedioic acid(2e)-, 1,4-dioctadecyl ester" "2-butenedioic acid(2z)-, 1,4-dioctadecyl ester" "2-butenedioicacid (2e)-, dioctadecyl ester (9ci); 2-butenedioic acid (e)-, dioctadecylester; fumaric acid, dioctadecyl ester (6ci,7ci,8ci); dioctadecyl fumarate" "2-butenedioicacid (2z)-, dioctadecyl ester (9ci); 2-butenedioic acid (z)-, dioctadecylester; maleic acid, dioctadecyl ester (7ci,8ci); dioctadecyl maleate; distearylmaleate" );
+gibbsFormation
+{
+    dHf_298   -1386270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1810.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-254600.0
+    phase     gas;
+}

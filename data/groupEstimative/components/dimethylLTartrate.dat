@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (+)-dimethyl l-tartrate  (C6H10O6, CAS 608-68-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethylLTartrate;
+formula     C6H10O6;
+CAS         608-68-4;
+InChIKey    PVRATXCXJDHJJN-QWWZWVQMSA-N;
+MW          178.14;      // g/mol [origin=calculated method=formula-sum]
+Tc          810.75;      // K   [origin=predictive method=joback]
+Pc          39.856;      // bar [origin=predictive method=joback]
+omega       1.6031;      // -   [origin=predictive method=lee-kesler]
+Tb          636.80;      // K   [origin=predictive method=joback]
+HvapTb      76346.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (55.47 0.54404 -0.0001806 -3.54e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 2; } { group OH; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 2; } { group OH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dimethyl (2r,3r)-2,3-bis(oxidanyl)butanedioate" "l-(+)-tartaric acid dimethyl ester" "dimethyl l-(+)-tartrate" "(2r,3r)-dimethyl 2,3-dihydroxysuccinate" "dimethyl-l-tartrate" "(+)-dimethyl-l-tartrate" "dimethyl (2r,3r)-2,3-dihydroxybutanedioate" "butanedioic acid, 2,3-dihydroxy- (2r,3r)-, dimethyl ester" "butanedioic acid, 2,3-dihydroxy- (2r,3r)-, 1,4-dimethyl ester" "dimethyl (r(r*,r*))-tartrate" );
+gibbsFormation
+{
+    dHf_298   -1116750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     575.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-899620.0
+    phase     gas;
+}

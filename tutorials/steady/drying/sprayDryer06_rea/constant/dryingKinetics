@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  Drying-kinetics library --- the "characteristic drying curve" (CDC).
+
+  Each named block defines the KINETICS of drying for a material/process,
+  the way constant/reactions defines reaction kinetics.  A unit (the spray
+  dryer) references one by name in flowsheetDict:  dryingCurve <name>;
+
+  This is deliberately SEPARATE from the sorption isotherm (which is
+  thermodynamic equilibrium and lives on the component .dat).  The same
+  split applies: the sorption isotherm vs the drying-rate curve.
+
+  Fields:
+      model   --  falling-rate model.  `Lewis` (the only one for now):
+                  dX/dt = -k(X - Xe), with k tied to the constant-rate Nc
+                  by continuity at Xc (k = Nc/(Xc - Xe)) --- no extra knob.
+      Xc      --  critical moisture [kg water / kg dry solid]: where the
+                  surface stops being saturated and the rate starts to
+                  fall.  THE key drying-kinetics parameter (calibratable).
+\*---------------------------------------------------------------------------*/
+
+sugarDrying
+{
+    model   Lewis;
+    Xc      0.15;
+    activationDecay 15.0;    // REA (Chen): rel. activation-energy decay
+}

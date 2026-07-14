@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 3-thienylacetate  (C8H10O2S, CAS 37784-63-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl3Thienylacetate;
+formula     C8H10O2S;
+CAS         37784-63-7;
+InChIKey    FZBNQIWPYCUPAP-UHFFFAOYSA-N;
+MW          170.226;      // g/mol [origin=calculated method=formula-sum]
+Tc          731.29;      // K   [origin=predictive method=joback]
+Pc          33.920;      // bar [origin=predictive method=joback]
+omega       0.5251;      // -   [origin=predictive method=lee-kesler]
+Tb          511.94;      // K   [origin=predictive method=joback]
+HvapTb      48433.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.282 0.71013 -0.00042582 8.69e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2COO; count 1; } { group C4H3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COO; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-thiophen-3-ylethanoate" "ethyl 3-thiopheneacetate" "ethyl thiophene-3-acetate" "ethyl 2-(thiophen-3-yl)acetate" "ethyl 2-(3-thienyl)acetate" "ethyl 2-thiophen-3-ylacetate" "3-thiopheneacetic acid, ethyl ester" "2-(3-thiophenyl)acetic acid ethyl ester" "ethyl3-thienylacetate; ethyl 3-thiopheneacetate" );
+gibbsFormation
+{
+    dHf_298   -295560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     480.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-159480.0
+    phase     gas;
+}

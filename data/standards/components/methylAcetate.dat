@@ -1,0 +1,65 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Methyl acetate  (C3H6O2, CAS 79-20-9)
+
+  Added 2026-06-28 to support the reactive-distillation validation against
+  Pöpken, Steinigeweg & Gmehling, Ind. Eng. Chem. Res. 40 (2001) 1566
+  (methanol + acetic acid <=> methyl acetate + water).
+
+  Primary data: NIST WebBook / DIPPR-class compilations (critical constants,
+  Tb, Hvap); Antoine from Ambrose, Sprake & Townsend, J. Chem. Thermodyn.
+  (P in bar, T in K, log10 form).  UNIFAC decomposition 1 CH3 + 1 CH3COO
+  (Poling, Prausnitz & O'Connell, "The Properties of Gases and Liquids", 5th ed.,
+  Table 8-23 example).
+\*---------------------------------------------------------------------------*/
+
+name        methylAcetate;
+formula     C3H6O2;
+CAS         79-20-9;
+
+MW          74.079;
+Tc          506.55;
+Pc          47.50;
+omega       0.3310;
+Tb          330.02;
+HvapTb      30320;
+Vliq        7.984e-5;
+
+gibbsFormation
+{
+    dHf_298   -411900.0;       // J/mol  ideal-gas reference (NIST)
+    s_298      324.40;         // J/(mol·K)  third-law absolute (gas)
+    phase     gas;
+}
+
+vaporPressure
+{
+    model         Antoine;     // log10(P/bar) = A - B/(T/K + C)
+    coefficients  (4.18621   1156.43   -53.461);
+    Trange        (260  380);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (20.0   0.2550   -8.00e-5);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (140.0);
+    Trange        (290  360);
+}
+
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH3COO; count 1; } );
+    joback ( { group CH3; count 2; } { group COO; count 1; } );
+}
+
+uniquac
+{
+    r   2.8042;
+    q   2.5760;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
+}

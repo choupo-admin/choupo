@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trioctylsilane  (C24H51Si, CAS 18765-09-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C24H51Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        trioctylsilane;
+formula     C24H51Si;
+CAS         18765-09-8;
+InChIKey    QTKHQYWRGFZFHG-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+role        radical;
+MW          367.757;      // g/mol [origin=calculated method=formula-sum]
+Tc          919.61;      // K   [origin=predictive method=joback]
+Pc          7.725;      // bar [origin=predictive method=joback]
+omega       0.7101;      // -   [origin=predictive method=lee-kesler]
+Tb          749.42;      // K   [origin=predictive method=joback]
+HvapTb      69165.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.481 2.18076 -0.0010744 1.658e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 3; } { group CH2; count 21; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trioctylsilicon" "silane, trioctyl-" "trioctylsilyl" );
+gibbsFormation
+{
+    dHf_298   -594500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1163.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=98820.0
+    phase     gas;
+}

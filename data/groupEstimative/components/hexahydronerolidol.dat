@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexahydronerolidol  (C15H32O, CAS 7278-65-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexahydronerolidol;
+formula     C15H32O;
+CAS         7278-65-1;
+InChIKey    NUKWKMGANFONQP-UHFFFAOYSA-N;
+MW          228.42;      // g/mol [origin=calculated method=formula-sum]
+Tc          799.36;      // K   [origin=predictive method=joback]
+Pc          15.610;      // bar [origin=predictive method=joback]
+omega       0.9639;      // -   [origin=predictive method=lee-kesler]
+Tb          630.87;      // K   [origin=predictive method=joback]
+HvapTb      63591.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-33.293 1.6005 -0.0010008 2.48e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 7; } { group CH; count 2; } { group C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 7; } { group CH; count 2; } { group C; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7,11-trimethyldodecan-3-ol" "3-dodecanol, 3,7,11-trimethyl-" );
+gibbsFormation
+{
+    dHf_298   -524470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     733.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-63440.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-octan-2-yloxycarbonylbenzoic acid  (C16H22O4, CAS 21395-09-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Octan2YloxycarbonylbenzoicAcid;
+formula     C16H22O4;
+CAS         21395-09-5;
+InChIKey    DUJBEEUYBSLMGM-UHFFFAOYSA-N;
+MW          278.348;      // g/mol [origin=calculated method=formula-sum]
+Tc          1009.82;      // K   [origin=predictive method=joback]
+Pc          18.325;      // bar [origin=predictive method=joback]
+omega       1.1347;      // -   [origin=predictive method=lee-kesler]
+Tb          800.63;      // K   [origin=predictive method=joback]
+HvapTb      78331.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.935 1.38734 -0.00079196 1.502e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group ACH; count 4; } { group AC; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "mono(1-methylheptyl) phthalate" "1,2-benzenedicarboxylic acid,mono(1-methylheptyl) ester" "1,2-benzenedicarboxylic acid, 1-(1-methylheptyl) ester" "dl-2-octyl phthalate" "(1)-2-octyl hydrogen phthalate" "2-(1-methylheptoxycarbonyl)benzoic acid" "2-[octan-2-yloxy(oxo)methyl]benzoic acid" "2-{[(2r)-octan-2-yloxy]carbonyl}benzoic acid" "1,2-benzenedicarboxylic acid, mono(1-methylheptyl) ester" );
+gibbsFormation
+{
+    dHf_298   -821340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     761.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-470100.0
+    phase     gas;
+}

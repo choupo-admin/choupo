@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-phenyl-2-butanol  (C10H14O, CAS 1565-75-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Phenyl2Butanol;
+formula     C10H14O;
+CAS         1565-75-9;
+InChIKey    XGLHYBVJPSZXIF-UHFFFAOYSA-N;
+MW          150.221;      // g/mol [origin=calculated method=formula-sum]
+Tc          748.09;      // K   [origin=predictive method=joback]
+Pc          33.182;      // bar [origin=predictive method=joback]
+omega       0.7475;      // -   [origin=predictive method=lee-kesler]
+Tb          544.03;      // K   [origin=predictive method=joback]
+HvapTb      55513.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-59.289 1.03474 -0.0007536 2.15e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenylbutan-2-ol" "2-phenyl-butanol-2" "2-butanol, 2-phenyl-" ".alpha.-ethyl-.alpha.-methylbenzyl alcohol" "alpha-ethyl-alpha-methylbenzyl alcohol" "benzenemethanol, alpha-ethyl-alpha-methyl-" "benzyl alcohol, alpha-ethyl-alpha-methyl-" "(2s)-2-phenylbutan-2-ol" "benzenemethanol, a-ethyl-a-methyl-" "benzenemethanol, .alpha.-ethyl-.alpha.-methyl-, (.+/-.)-" );
+gibbsFormation
+{
+    dHf_298   -174180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     451.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=11750.0
+    phase     gas;
+}

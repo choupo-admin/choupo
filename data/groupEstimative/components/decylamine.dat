@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: decylamine  (C10H23N, CAS 2016-57-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        decylamine;
+formula     C10H23N;
+CAS         2016-57-1;
+InChIKey    MHZGKXUYDGKKIU-UHFFFAOYSA-N;
+MW          157.301;      // g/mol [origin=calculated method=formula-sum]
+Tc          675.35;      // K   [origin=predictive method=joback]
+Pc          22.229;      // bar [origin=predictive method=joback]
+omega       0.6717;      // -   [origin=predictive method=lee-kesler]
+Tb          500.93;      // K   [origin=predictive method=joback]
+HvapTb      48495.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.289 1.01572 -0.0005636 1.188e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 9; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "decan-1-amine" "1-decanamine" "1-aminodecane" "n-decylamine" "aminodecane" "monodecylamine" "1-decylamine" "kemamine p 190d" "decyl-amine" "decyl amine" "1-decaneamine" "decane,1-amino" );
+gibbsFormation
+{
+    dHf_298   -215940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     597.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=99770.0
+    phase     gas;
+}

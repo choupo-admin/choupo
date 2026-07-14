@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heptadecane, 2-methyl-  (C18H38, CAS 1560-89-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heptadecane2Methyl;
+formula     C18H38;
+CAS         1560-89-0;
+InChIKey    RJWUMFHQJJBBOD-UHFFFAOYSA-N;
+MW          254.502;      // g/mol [origin=calculated method=formula-sum]
+Tc          771.99;      // K   [origin=predictive method=joback]
+Pc          11.585;      // bar [origin=predictive method=joback]
+omega       0.7656;      // -   [origin=predictive method=lee-kesler]
+Tb          611.00;      // K   [origin=predictive method=joback]
+HvapTb      55274.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.156 1.71976 -0.0009586 2.025e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 14; } { group CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 14; } { group CH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylheptadecane" "isooctadecane" "hexadecane, dimethyl-" "heptadecane, 2-methyl- (8ci)(9ci)" "16-methylheptadecane;2-methylheptadecane;heptadecane, 2-methyl- (8ci)(9ci);" );
+gibbsFormation
+{
+    dHf_298   -420130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     847.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=98240.0
+    phase     gas;
+}

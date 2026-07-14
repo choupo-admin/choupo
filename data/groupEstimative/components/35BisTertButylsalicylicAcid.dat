@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-bis-tert-butylsalicylic acid  (C15H22O3, CAS 19715-19-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35BisTertButylsalicylicAcid;
+formula     C15H22O3;
+CAS         19715-19-6;
+InChIKey    ZWQBZEFLFSFEOS-UHFFFAOYSA-N;
+MW          250.338;      // g/mol [origin=calculated method=formula-sum]
+Tc          1032.94;      // K   [origin=predictive method=joback]
+Pc          23.092;      // bar [origin=predictive method=joback]
+omega       1.0443;      // -   [origin=predictive method=lee-kesler]
+Tb          799.11;      // K   [origin=predictive method=joback]
+HvapTb      80170.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.32 1.68802 -0.00136188 4.479e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group C; count 2; } { group ACH; count 2; } { group AC; count 3; } { group ACOH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group C; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,5-ditert-butyl-2-oxidanyl-benzoic acid" "3,5-di-tert-butylsalicylic acid" "3,5-di-tert-butyl-2-hydroxybenzoic acid" "3,5-di-tert-butylsalicylic acid hydrate" "benzoic acid, 3,5-bis(1,1-dimethylethyl)hydroxy-" "benzoic acid, 3,5-bis(1,1-dimethylethyl)-2-hydroxy-" "3,5-ditertbutyl salicylic acid" "3,5-tert-dibutyl salicylic acid" "96247-23-3 (potassium salt)" "3,5-ditert-butyl-2-hydroxybenzoic acid" "3,5-bis(tert-butyl)-2-hydroxybenzoic acid" "3,2-bis(1,1-dimethylethyl)-2-hydroxybenzoic acid" );
+gibbsFormation
+{
+    dHf_298   -684420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     623.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-324280.0
+    phase     gas;
+}

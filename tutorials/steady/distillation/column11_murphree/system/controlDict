@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Murphree tray efficiency: 15 REAL trays, not 15 ideal stages -- and the purity you actually get";
+verbosity     3;

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methyl-4-hexyn-3-ol  (C7H12O, CAS 6320-68-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Methyl4Hexyn3Ol;
+formula     C7H12O;
+CAS         6320-68-9;
+InChIKey    VLRDHNINMBNPDK-UHFFFAOYSA-N;
+MW          112.172;      // g/mol [origin=calculated method=formula-sum]
+Tc          650.55;      // K   [origin=predictive method=joback]
+Pc          38.151;      // bar [origin=predictive method=joback]
+omega       0.6047;      // -   [origin=predictive method=lee-kesler]
+Tb          457.71;      // K   [origin=predictive method=joback]
+HvapTb      48711.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.099 0.67886 -0.00046706 1.3278e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group OH; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group tC; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylhex-4-yn-3-ol" );
+gibbsFormation
+{
+    dHf_298   -76490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     412.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=76880.0
+    phase     gas;
+}

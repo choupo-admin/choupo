@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3,5-tribromobenzene  (C6H3Br3, CAS 626-39-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        135Tribromobenzene;
+formula     C6H3Br3;
+CAS         626-39-1;
+InChIKey    YWDUZLFWHVQCHY-UHFFFAOYSA-N;
+MW          314.802;      // g/mol [origin=calculated method=formula-sum]
+Tc          846.02;      // K   [origin=predictive method=joback]
+Pc          60.467;      // bar [origin=predictive method=joback]
+omega       0.5764;      // -   [origin=predictive method=lee-kesler]
+Tb          572.00;      // K   [origin=predictive method=joback]
+HvapTb      51855.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (16.7 0.4905 -0.00041392 1.382e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group Br; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3,5-tris(bromanyl)benzene" "benzene, 1,3,5-tribromo-" "1,3,5-tribromo-benzene" "1,5-tribromobenzene" "benzene,3,5-tribromo-" );
+gibbsFormation
+{
+    dHf_298   125410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     424.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=135750.0
+    phase     gas;
+}

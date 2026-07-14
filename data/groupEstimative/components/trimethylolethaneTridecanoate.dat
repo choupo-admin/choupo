@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimethylolethane tridecanoate  (C35H66O6, CAS 67874-05-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trimethylolethaneTridecanoate;
+formula     C35H66O6;
+CAS         67874-05-9;
+InChIKey    GCEHDURERRQQCZ-UHFFFAOYSA-N;
+MW          582.907;      // g/mol [origin=calculated method=formula-sum]
+Tc          1538.87;      // K   [origin=predictive method=joback]
+Pc          4.843;      // bar [origin=predictive method=joback]
+omega       -0.0818;      // -   [origin=predictive method=lee-kesler]
+Tb          1171.83;      // K   [origin=predictive method=joback]
+HvapTb      114429.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (22.827 3.29028 -0.0017682 3.059e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 24; } { group C; count 1; } { group CH2COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 27; } { group C; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[3-decanoyloxy-2-(decanoyloxymethyl)-2-methyl-propyl] decanoate" "3-(decanoyloxy)-2-[(decanoyloxy)methyl]-2-methylpropyl decanoate" "2-methyl-2-(((1-oxodecyl)oxy)methyl)-1,3-propanediyl didecanoate" "trimethanol ethane tricaprate" "2-methyl-2-[[(1-oxodecyl)oxy]methyl]-1,3-propanediyl didecanoate" "decanoic acid, 1,1'-(2-methyl-2-(((1-oxodecyl)oxy)methyl)-1,3-propanediyl) ester" "decanoic acid, 1,1'-[2-methyl-2-[[(1-oxodecyl)oxy]methyl]-1,3-propanediyl] ester" "[3-decanoyloxy-2-(decanoyloxymethyl)-2-methylpropyl] decanoate" "decanoic acid, 2-methyl-2-(((1-oxodecyl)oxy)methyl)-1,3-propanediyl ester" );
+gibbsFormation
+{
+    dHf_298   -1726320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1634.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-684450.0
+    phase     gas;
+}

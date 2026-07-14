@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4'-diaminooctafluorobiphenyl  (C12H4F8N2, CAS 1038-66-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44Diaminooctafluorobiphenyl;
+formula     C12H4F8N2;
+CAS         1038-66-0;
+InChIKey    FWOLORXQTIGHFX-UHFFFAOYSA-N;
+MW          328.162;      // g/mol [origin=calculated method=formula-sum]
+Tc          910.81;      // K   [origin=predictive method=joback]
+Pc          22.590;      // bar [origin=predictive method=joback]
+omega       1.2051;      // -   [origin=predictive method=lee-kesler]
+Tb          716.54;      // K   [origin=predictive method=joback]
+HvapTb      68224.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (128.87 0.6092 -0.000239 4e-10);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 2; } { group ACNH2; count 2; } { group ACF; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 12; } { group F; count 8; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[4-azanyl-2,3,5,6-tetrakis(fluoranyl)phenyl]-2,3,5,6-tetrakis(fluoranyl)aniline" "octafluorobenzidine" "4,4'-diaminoctafluorobiphenyl" "4,4'-diaminooctafluorodiphenyl" "2,2',3,3',5,5',6,6'-octafluorobenzidine" "[1,1'-biphenyl]-4,4'-diamine, 2,2',3,3',5,5',6,6'-octafluoro-" "benzidine, 2,2',3,3',5,5',6,6'-octafluoro-" "4-(4-amino-2,3,5,6-tetrafluorophenyl)-2,3,5,6-tetrafluoroaniline" "(1,1'-biphenyl)-4,4'-diamine, 2,2',3,3',5,5',6,6'-octafluoro-" "4,4'-diaminooctafluoro-biphenyl" "octafluoro-4,4'-biphenylenediamine" "2,3,3',5,5',6,6'-octafluorobenzidine" );
+gibbsFormation
+{
+    dHf_298   -1433950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     705.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1246900.0
+    phase     gas;
+}

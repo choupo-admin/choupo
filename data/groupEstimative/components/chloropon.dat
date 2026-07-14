@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chloropon  (C3H3Cl3O2, CAS 3278-46-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chloropon;
+formula     C3H3Cl3O2;
+CAS         3278-46-4;
+InChIKey    QZEKHJXYZSJVCL-UHFFFAOYSA-N;
+MW          177.405;      // g/mol [origin=calculated method=formula-sum]
+Tc          750.21;      // K   [origin=predictive method=joback]
+Pc          43.916;      // bar [origin=predictive method=joback]
+omega       0.6113;      // -   [origin=predictive method=lee-kesler]
+Tb          522.81;      // K   [origin=predictive method=joback]
+HvapTb      51295.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.961 0.4858 -0.000445 1.514e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 1; } { group CH2Cl; count 1; } { group CCl2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 1; } { group Cl; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3-tris(chloranyl)propanoic acid" "chloropon [iso:bsi]" "propanoic acid, 2,2,3-trichloro-" "2,2,3-trichloropropionic acid" "propionic acid, 2,2,3-trichloro-" "alpha,alpha,beta-trichloropropionic acid" "2,3-trichloropropionic acid" "2,2,3-trichloropropanoic acid" "propanoic acid,2,3-trichloro-" "propionic acid,2,3-trichloro-" "kyselina 2,2,3-trichlorpropionova" ".alpha.,.beta.-trichloropropionic acid" );
+gibbsFormation
+{
+    dHf_298   -511490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     387.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-402480.0
+    phase     gas;
+}

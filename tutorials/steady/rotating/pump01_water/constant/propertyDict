@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  pump01_water / constant/thermoPackage
+
+  Water alone: the incompressible liquid the 2 kW pump pushes.  The pump
+  relation is closed-form in v_liq and Cp_liq (both from water's .dat);
+  no VLE is ever solved, so the ideal activity + ideal-gas entries below
+  are inert loader defaults.  This case teaches the W_shaft -> (P_out, dT)
+  hardware causality, not thermodynamics.
+\*---------------------------------------------------------------------------*/
+
+components       ( water );
+
+activityModel    { model  ideal; }
+
+equationOfState  { model  idealGas; }

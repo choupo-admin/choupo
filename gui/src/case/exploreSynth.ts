@@ -42,6 +42,20 @@ export interface ExploreSpec {
   activityModel?: JsonDict;
   /** Equation of state (default idealGas). */
   equationOfState?: JsonDict;
+  /** Gibbs equilibrium map (forum 2026-07-02): iso-lines of a metric over
+   *  T x P via the gibbsMap engine op.  Species/atoms derived by the caller
+   *  (formula-parsed); metric restricted to moleFraction | elementYield. */
+  gibbsmap?: {
+    elements: string[];
+    species: { name: string; atoms: number[] }[];
+    feed: { [comp: string]: number };
+    Tfrom: number; Tto: number; nT: number;      // K
+    Pfrom: number; Pto: number; nP: number;      // Pa
+    logP: boolean;
+    metric: { type: "moleFraction" | "elementYield"; species?: string;
+              product?: string; element?: string };
+    deltaT?: number;                              // K (temperatureApproach)
+  };
   /** Transport-property model selection → thermoPackage `transport {}` block.
    *  Each present field emits its sub-block; the engine reads it to pick the
    *  correlation (Andrade vs Vogel, …).  A SIBLING of the EOS — transport NEVER
@@ -295,6 +309,23 @@ export function synthesizeExploreCase(spec: ExploreSpec): CaseFiles {
       }
     : null;
 
+  // Same dict grammar as tutorials/props/gibbs/nh3_equilibrium_map.
+  const gibbsMapOp: JsonDict | null = spec.gibbsmap
+    ? {
+        name: "explore",
+        type: "gibbsMap",
+        elements: [...spec.gibbsmap.elements],
+        species: spec.gibbsmap.species.map((sp) => ({ name: sp.name, atoms: [...sp.atoms] })),
+        feed: { ...spec.gibbsmap.feed },
+        Tgrid: { from: spec.gibbsmap.Tfrom, to: spec.gibbsmap.Tto, n: spec.gibbsmap.nT },
+        Pgrid: { from: spec.gibbsmap.Pfrom, to: spec.gibbsmap.Pto, n: spec.gibbsmap.nP,
+                 ...(spec.gibbsmap.logP ? { log: "true" } : {}) },
+        ...(spec.gibbsmap.deltaT ? { temperatureApproach: spec.gibbsmap.deltaT } : {}),
+        metric: { ...spec.gibbsmap.metric },
+        output: { file: EXPLORE_OUTPUT },
+      }
+    : null;
+
   // Same dict grammar as tutorials/props/steam/steam01_if97_verification:
   // exactly ONE mode block (saturation { from to n } | isobar { P from to n }).
   const steamOp: JsonDict | null = spec.steam
@@ -311,7 +342,7 @@ export function synthesizeExploreCase(spec: ExploreSpec): CaseFiles {
 
   const propsDict: JsonDict = {
     operations: [
-      phaseOp ?? psychroOp ?? ternaryOp ?? binaryOp ?? scalingOp ?? steamOp ?? {
+      phaseOp ?? psychroOp ?? ternaryOp ?? binaryOp ?? scalingOp ?? gibbsMapOp ?? steamOp ?? {
         name: "explore",
         type: "propertyScan1D",
         vary: {

@@ -42,6 +42,8 @@ License
 #ifndef Choupo_Origin_H
 #define Choupo_Origin_H
 
+#include <map>
+#include <optional>
 #include <string>
 
 namespace Choupo {
@@ -51,9 +53,45 @@ enum class Origin
     unattributed,   // no provenance declared (the honest default)
     literature,     // measured / experimental / from a cited table
     regressed,      // fitted to data (Antoine, Andrade, NRTL pair, ...)
-    estimated,      // group contribution / corresponding states (Joback, ...)
+    predictive,     // a MODEL's prediction transcribed as a value (UNIFAC-derived
+                    //   pair, corresponding-states surrogate) -- the P4 ladder
+                    //   rung between regressed and estimated (forum #67: a
+                    //   distinct class; collapsing it into `estimated`
+                    //   contradicted the resolution-priority ladder)
+    estimated,      // group contribution from the substance's OWN structure (Joback)
     assumed,        // an engineering assumption the curator owns
     placeholder     // a stub to be replaced
+};
+
+// ---- ValidityDomain (forum #67 D-b): the declared domain a parameter set or
+//      correlation is trusted over.  EXTENSIBLE and typed; temperature is the
+//      one dimension implemented first (it is what the current files declare);
+//      pressure and composition slots exist so the SHAPE never changes when a
+//      case needs them.  Absent = optional -- never a 0,0 sentinel.
+struct Range { double lo = 0.0; double hi = 0.0; };
+
+struct ValidityDomain
+{
+    std::optional<Range>         temperature;   // K
+    std::optional<Range>         pressure;      // Pa
+    std::map<std::string, Range> composition;   // keyed by component, dimensionless
+    std::string                  note;          // free-text qualifier, transported
+
+    bool any() const
+    { return temperature.has_value() || pressure.has_value() || !composition.empty() || !note.empty(); }
+};
+
+// ---- PromotionOverride (forum #59-E2 / #67): the AUDITABLE record of a human
+//      promoting an artefact the diagnostics flagged (identifiable:0, a failed
+//      consistency test).  Structured -- reason and authorship travel with the
+//      value to every consumption (result JSON, advisory, run header) -- never
+//      reduced to a bool, never disguising the artefact as a clean fit.
+struct PromotionOverride
+{
+    int         identifiable = -1;   // the flag at promotion time
+    std::string reason;              // the human's justification (REQUIRED)
+    std::string by;                  // who promoted (REQUIRED)
+    std::string date;                // when (REQUIRED)
 };
 
 // Per-value provenance record (a side-channel; never read by a value accessor).
@@ -61,7 +99,8 @@ struct OriginInfo
 {
     Origin      origin = Origin::unattributed;
     std::string method;        // e.g. "Andrade fit to NIST mu(T)"
-    std::string uncertainty;   // e.g. "~2% AAD"
+    std::string methodVersion; // stable table id, e.g. "joback-poling5e-table2-2"
+    std::string uncertainty;   // e.g. "~2% AAD", or "status -- reason" (structured form)
     std::string note;          // free-form
     std::string raw;           // verbatim text for the flat free-text grammar
     bool        hasValidity = false;
@@ -75,8 +114,8 @@ inline Origin originFromWord(const std::string& w)
 {
     if (w == "literature" || w == "experimental" || w == "measured") return Origin::literature;
     if (w == "regressed"  || w == "fitted")                          return Origin::regressed;
-    if (w == "estimated"  || w == "estimate" || w == "predictive"
-                          || w == "predicted")                       return Origin::estimated;
+    if (w == "predictive" || w == "predicted")                       return Origin::predictive;
+    if (w == "estimated"  || w == "estimate")                        return Origin::estimated;
     if (w == "assumed")                                              return Origin::assumed;
     if (w == "placeholder" || w == "stub")                           return Origin::placeholder;
     return Origin::unattributed;
@@ -89,6 +128,7 @@ inline const char* originToWord(Origin o)
     {
         case Origin::literature:   return "literature";
         case Origin::regressed:    return "regressed";
+        case Origin::predictive:   return "predictive";
         case Origin::estimated:    return "estimated";
         case Origin::assumed:      return "assumed";
         case Origin::placeholder:  return "placeholder";

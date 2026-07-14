@@ -1,0 +1,9 @@
+/*  MINIMAL on purpose -- and this file is NOT where this case's physics lives.
+    This is a MULTI-ION SPECIATION case: the activity engine is Pitzer-HMW,
+    selected PER OPERATION in system/propsDict (`activityModel pitzerHMW;`),
+    working on the ions via constant/electrolyte/.  The thermoPackage below is
+    only the VLE skeleton the props driver mounts (water, ideal).             */
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }

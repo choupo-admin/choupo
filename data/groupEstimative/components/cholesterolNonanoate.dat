@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cholesterol, nonanoate  (C36H62O2, CAS 1182-66-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cholesterolNonanoate;
+formula     C36H62O2;
+CAS         1182-66-7;
+InChIKey    WCLNGBQPTVENHV-UHFFFAOYSA-N;
+MW          526.89;      // g/mol [origin=calculated method=formula-sum]
+Tc          1373.87;      // K   [origin=predictive method=joback]
+Pc          6.263;      // bar [origin=predictive method=joback]
+omega       0.5211;      // -   [origin=predictive method=lee-kesler]
+Tb          1119.54;      // K   [origin=predictive method=joback]
+HvapTb      100598.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-294.45 4.32532 -0.00331444 1.0975e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 17; } { group CH; count 7; } { group C; count 2; } { group CH=C; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 10; } { group CH; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[10,13-dimethyl-17-(6-methylheptan-2-yl)-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-yl] nonanoate" "cholesteryl pelargonate" "cholest-5-en-3-ol (3.beta.)-, nonanoate" "cholesteryl nonanoate" "5-cholesten-3beta-ol 3-nonanoate" "3beta-hydroxy-5-cholestene 3-nonanoate" "cholesteryl-17-nonanoate" "cholest-5-ene-3-beta-yl nonanoate" "cholest-5-en-3-ol (3beta)-, nonanoate" "cholest-5-en-3-ol (3beta)-, 3-nonanoate" "cholest-5-en-3-ol (3.beta.)-, 3-nonanoate" "2,15-dimethyl-14-(6-methylheptan-2-yl)tetracyclo[8.7.0.0^{2,7}.0^{11,15}]heptadec-7-en-5-yl nonanoate" );
+gibbsFormation
+{
+    dHf_298   -838040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1297.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=105710.0
+    phase     gas;
+}

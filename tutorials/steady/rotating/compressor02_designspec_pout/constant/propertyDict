@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  compressor02_designspec_pout / constant/thermoPackage
+
+  Dry air as N2 + O2 -- the same gas as compressor01, here compressed to
+  exactly 8 bar via a DesignSpec on $W_shaft.  Ideal-gas EoS is
+  physically right for air at 1-8 bar / 298-612 K (Z ~ 1) and keeps the
+  isentropic relations exact; no liquid ever forms, so the activity
+  model below is never consulted.
+\*---------------------------------------------------------------------------*/
+
+components       ( N2  O2 );
+
+activityModel    { model  ideal; }
+
+equationOfState  { model  idealGas; }

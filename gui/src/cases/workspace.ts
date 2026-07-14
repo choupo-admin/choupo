@@ -115,6 +115,41 @@ export async function createCase(dir: string, name: string, statement: string,
   return { name: String(body.name), dir: String(body.dir), caseFiles: filesToCaseFiles(String(body.name), files) };
 }
 
+/** "Open materialises": write an OPENED case (a .zip/folder file-map) into the
+ *  workspace as a REAL on-disk case, so the Assistant console can run there and
+ *  the canvas live-reloads the agent's edits.  We POST the raw {relPath: rawText}
+ *  source map; the bridge slugifies the name, filters + path-guards every write,
+ *  normalises the `.cho` marker, makes it born-taught, and resolves collisions
+ *  (identical content -> reopen the SAME folder; different -> auto-suffix).  The
+ *  returned `name` is the ACTUAL folder name used (possibly suffixed). */
+export async function importCase(name: string, files: { [rel: string]: string },
+): Promise<{ name: string; dir: string; caseFiles: CaseFiles }> {
+  let r: Response;
+  try {
+    r = await fetch(`${bridgeBase()}/api/cases/import`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, files }),
+    });
+  } catch { throw new Error("bridge not reachable -- start it with  bin/runGui"); }
+  const body = await asJson(r);
+  if (!r.ok) throw new Error(String(body.error ?? `bridge returned ${r.status}`));
+  const out = body.files as { [rel: string]: string };
+  return { name: String(body.name), dir: String(body.dir), caseFiles: filesToCaseFiles(String(body.name), out) };
+}
+
+/** Client-side mirror of the bridge's import slugify -- ONLY so the open toast
+ *  can tell whether a collision suffix was applied (returned name !== this slug).
+ *  The bridge remains authoritative for what actually lands on disk. */
+export function slugifyCaseName(raw: string): string {
+  return (raw || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, "-")
+    .replace(/-{2,}/g, "-")
+    .replace(/^[^a-z0-9]+/, "")
+    .replace(/[-_]+$/, "") || "case";
+}
+
 /** Write ONE file into an existing case folder on disk (via the bridge).  Used
  *  by "Save layout to case" to drop the `<name>.cho` layout marker straight
  *  into the case dir -- no download dance, no browser File-System-Access API.

@@ -1,0 +1,22 @@
+recordType modelSpecies;   // model species — summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+
+name    Mg;
+ion     "Mg+2";
+charge  +2;
+
+MW { value 24.305; unit g/mol;}
+
+aqueousThermo
+{
+    hfAq { value -466850; unit J/mol;}
+    sAq  { value -138.1;  unit J/mol/K;}
+}
+
+transport
+{
+    radius { value 4.28e-10; unit m;}
+    D0     { value 7.06e-10;     unit m2/s;}
+}
+
+source "hfAq+sAq Wagman 1982;  radius+D0 Nightingale 1959 (lambda0 106.0 molar)";

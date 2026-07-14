@@ -1,0 +1,6 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral strontianite; formula "SrCO3"; masters ( { ion Sr; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
+      logK25 1.058; dH -16572.8; analytic ( 262.9176 0.03252849 -12391.384 -95.51199 563713.9 ); source "USGS PHREEQC phreeqc.dat (public domain)";
+

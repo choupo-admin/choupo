@@ -46,17 +46,7 @@
   The case is SELF-CONTAINED (its own constant/components/water.dat).
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;             // ~0.5 kg/s water
-        T            372.0 K;                  // saturated liquid near 1 bar
-        P              1.0 bar;
-        state         saturatedLiquid;
-        molarComposition { water 1.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

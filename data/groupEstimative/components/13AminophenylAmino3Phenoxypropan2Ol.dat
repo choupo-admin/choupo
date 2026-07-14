@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-((3-aminophenyl)amino)-3-phenoxypropan-2-ol  (C15H18N2O2, CAS 38353-82-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13AminophenylAmino3Phenoxypropan2Ol;
+formula     C15H18N2O2;
+CAS         38353-82-1;
+InChIKey    RFPKYQMWFYTWKO-UHFFFAOYSA-N;
+MW          258.321;      // g/mol [origin=calculated method=formula-sum]
+Tc          1062.17;      // K   [origin=predictive method=joback]
+Pc          28.967;      // bar [origin=predictive method=joback]
+omega       1.4241;      // -   [origin=predictive method=lee-kesler]
+Tb          838.00;      // K   [origin=predictive method=joback]
+HvapTb      89976.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.868 1.3263 -0.00080216 1.694e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 2; } { group CH2NH; count 1; } { group ACNH2; count 1; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[(3-aminophenyl)amino]-3-phenoxy-propan-2-ol" "2-propanol, 1-((3-aminophenyl)amino)-3-phenoxy-" "2-propanol, 1-[(3-aminophenyl)amino]-3-phenoxy-" "1-[(3-aminophenyl)amino]-3-phenoxypropan-2-ol" "1-(3-aminoanilino)-3-phenoxypropan-2-ol" "2-propanol,1-[(3-aminophenyl)amino]-3-phenoxy-" "phenylglycidyl ether compd. with m-phenylenediamine; m-phenylenediamine-phenylglycidyl ether adduct (1:1)" );
+gibbsFormation
+{
+    dHf_298   -93810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     666.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=202190.0
+    phase     gas;
+}

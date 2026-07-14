@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene, (1-methylene-2-propenyl)-  (C10H10, CAS 2288-18-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzene1Methylene2Propenyl;
+formula     C10H10;
+CAS         2288-18-8;
+InChIKey    IMJGQTCMUZMLRZ-UHFFFAOYSA-N;
+MW          130.19;      // g/mol [origin=calculated method=formula-sum]
+Tc          666.74;      // K   [origin=predictive method=joback]
+Pc          32.357;      // bar [origin=predictive method=joback]
+omega       0.3163;      // -   [origin=predictive method=lee-kesler]
+Tb          448.32;      // K   [origin=predictive method=joback]
+HvapTb      38870.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-45.78 0.8348 -0.0005995 1.699e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group CH2=C; count 1; } { group ACH; count 5; } { group AC; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "buta-1,3-dien-2-ylbenzene" "1,3-butadiene, 2-phenyl-" "agn-pc-0cqftj" "(1-methylene-2-propenyl)benzene" "benzene,(1-methylene-2-propen-1-yl)-" "1,3-butadiene,2-phenyl- (6ci,7ci,8ci); benzene, (1-methylene-2-propenyl)- (9ci);(1-methyleneprop-2-enyl)benzene; 2-phenyl-1,3-butadiene; 2-phenylbutadiene;phenoprene" );
+gibbsFormation
+{
+    dHf_298   227870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     425.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=312860.0
+    phase     gas;
+}

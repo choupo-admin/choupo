@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(2-hydroxyethoxy)acetamide  (C4H9NO3, CAS 123-85-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22HydroxyethoxyAcetamide;
+formula     C4H9NO3;
+CAS         123-85-3;
+InChIKey    INNWRDCESBMSQK-UHFFFAOYSA-N;
+MW          119.12;      // g/mol [origin=calculated method=formula-sum]
+Tc          716.66;      // K   [origin=predictive method=joback]
+Pc          50.514;      // bar [origin=predictive method=joback]
+omega       1.1369;      // -   [origin=predictive method=lee-kesler]
+Tb          532.12;      // K   [origin=predictive method=joback]
+HvapTb      60974.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (43.893 0.3885 -0.0001379 -6.64e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CONH2; count 1; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group OH; count 1; } { group O; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-hydroxyethyloxy)ethanamide" "o-(2-hydroxyethyl)glycolamide" "acetamide, 2-(2-hydroxyethoxy)-" "2(2-hydroxyethoxy)acetamide" "acetamide,2-(2-hydroxyethoxy)-" );
+gibbsFormation
+{
+    dHf_298   -489130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     452.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-321490.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrachloroguaiacol  (C7H4Cl4O2, CAS 2539-17-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrachloroguaiacol;
+formula     C7H4Cl4O2;
+CAS         2539-17-5;
+InChIKey    YZZVKLJKDFFSFL-UHFFFAOYSA-N;
+MW          261.907;      // g/mol [origin=calculated method=formula-sum]
+Tc          906.72;      // K   [origin=predictive method=joback]
+Pc          37.408;      // bar [origin=predictive method=joback]
+omega       0.8055;      // -   [origin=predictive method=lee-kesler]
+Tb          659.12;      // K   [origin=predictive method=joback]
+HvapTb      69064.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (87.96 0.47052 -0.000347 1.123e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 1; } { group ACOH; count 1; } { group CH3O; count 1; } { group ACCl; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dC_ring; count 6; } { group Cl; count 4; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,4,5-tetrakis(chloranyl)-6-methoxy-phenol" "phenol, 2,3,4,5-tetrachloro-6-methoxy-" "2-methoxytetrachlorophenol" "2-methoxy-3,4,5,6-tetrachlorophenol" "2,3,4,5-tetrachloro-6-methoxy-phenol" "phenol, 2-methoxy-3,4,5,6-tetrachloro-" "tetrachloromethoxyphenol" "phenol, tetrachloromethoxy-" "tetrachloropyrocatechol methyl ether" "2,3,4,5-tetrachloro-6-methoxyphenol" );
+gibbsFormation
+{
+    dHf_298   -369650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     468.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-225390.0
+    phase     gas;
+}

@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  gibbs04_wgs_temperature_sweep / constant/thermoPackage
+
+  The four water-gas-shift species: CO + H2O <-> CO2 + H2.  The equilibrium
+  constant comes entirely from each species' gibbsFormation data --- the
+  sweep shows K(T) falling as T rises (exothermic shift).  Ideal gas at
+  1 bar and 600-1200 K is essentially exact; no condensed phase is possible,
+  so the liquid activity model is never exercised.
+\*---------------------------------------------------------------------------*/
+
+components       ( CO  water  CO2  H2 );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

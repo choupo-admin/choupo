@@ -1,0 +1,68 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Salt chemistry object: NaOH dissolution anchor
+      NaOH(s)  ->  Na+(aq) + OH-(aq)
+
+  What a propertyPackage reads here: the measured solubility anchor
+  (28.5 mol/kgWater at 298.15 K) and the heat of solution
+  (-44 510 J/mol) that the ThermoPackageBuilder uses for Ksp and the
+  heat of crystallisation.
+
+  Sources
+    dissolutionEnthalpy      Wagman et al., NBS Tables, J. Phys. Chem.
+                             Ref. Data 11 Suppl. 2 (1982); US-gov
+                             public domain (cited per value below).
+    solubility 28.5 mol/kg   Seidell, "Solubilities of Inorganic and
+                             Metal Organic Compounds" lineage, via
+                             components/NaOH.dat; the in-record VERIFY
+                             flag stays -- primary re-citation pending
+                             (IST review).  Note: at 25 C the
+                             saturating solid is the MONOHYDRATE
+                             NaOH.H2O (see components/NaOH.dat header).
+\*---------------------------------------------------------------------------*/
+
+recordType saltEquilibrium;
+schemaVersion 1;
+
+name    sodiumHydroxide;
+formula "NaOH";
+
+solidPhase sodiumHydroxide;
+
+reaction
+{
+    solid sodiumHydroxide;
+
+    products
+    {
+        Na 1;
+        OH 1;
+    }
+}
+
+measuredSolubilityAnchor
+{
+    solubility
+    {
+        value 28.5;
+        unit  mol/kgWater;
+        T     298.15;
+        origin "data/standards/components/NaOH.dat electrolyte block";
+        source "Seidell solubility tables lineage; VERIFY against the primary (25 C, monohydrate-saturated)";
+    }
+
+    dissolutionEnthalpy
+    {
+        value -44510;
+        unit  J/mol;
+        basis "NaOH(s) -> Na+(aq) + OH-(aq), infinite dilution";
+        origin "data/standards/components/NaOH.dat electrolyte block";
+        source "Wagman et al., NBS Tables, J. Phys. Chem. Ref. Data 11 Suppl. 2 (1982); US-gov public domain";
+    }
+}
+
+defaultEquilibriumData measuredSolubilityAnchor;
+
+notes
+{
+    purpose "Salt chemistry object for NaOH (apparent-component property package).";
+}

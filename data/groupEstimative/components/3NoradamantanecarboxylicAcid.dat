@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-noradamantanecarboxylic acid  (C10H14O2, CAS 16200-53-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3NoradamantanecarboxylicAcid;
+formula     C10H14O2;
+CAS         16200-53-6;
+InChIKey    RXUUYFUQAGICCD-UHFFFAOYSA-N;
+MW          166.22;      // g/mol [origin=calculated method=formula-sum]
+Tc          820.07;      // K   [origin=predictive method=joback]
+Pc          35.137;      // bar [origin=predictive method=joback]
+omega       0.7004;      // -   [origin=predictive method=lee-kesler]
+Tb          589.70;      // K   [origin=predictive method=joback]
+HvapTb      53297.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-196.38 1.7227 -0.0017306 7.035e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH; count 3; } { group C; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 5; } { group CH_ring; count 3; } { group C_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "agn-pc-00hz0g" "3-noradamantane carboxylic acid" "rxuuyfuqagiccd-uhfffaoysa-" "3-noradamantanecarboxylate (nac)" "octahydro-2,5-methanopentalene-3a-carboxylic acid" "tricyclo[3.3.1.0<3,7>]nonane-3-carboxylic acid" "2,5-methanopentalene-3a(1h)-carboxylicacid, hexahydro-" "2,5-methanopentalene-3a(1h)-carboxylic acid, hexahydro-" "3-noradamantanecarboxylicacid;hexahydro-2,5-methanopentalene-3a(1h)-carboxylic acid;" );
+gibbsFormation
+{
+    dHf_298   -386700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     355.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-141540.0
+    phase     gas;
+}

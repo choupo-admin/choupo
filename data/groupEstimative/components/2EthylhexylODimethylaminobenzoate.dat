@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-ethylhexyl o-dimethylaminobenzoate  (C17H27NO2, CAS 68921-84-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2EthylhexylODimethylaminobenzoate;
+formula     C17H27NO2;
+CAS         68921-84-6;
+InChIKey    PINYIMREBAFXFI-UHFFFAOYSA-N;
+MW          277.408;      // g/mol [origin=calculated method=formula-sum]
+Tc          883.86;      // K   [origin=predictive method=joback]
+Pc          15.710;      // bar [origin=predictive method=joback]
+omega       0.8692;      // -   [origin=predictive method=lee-kesler]
+Tb          690.44;      // K   [origin=predictive method=joback]
+HvapTb      65436.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.135 1.55548 -0.00088636 1.715e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group ACH; count 4; } { group AC; count 2; } { group CH3N; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethylhexyl 2-(dimethylamino)benzoate" "benzoic acid, 2-(dimethylamino)-, 2-ethylhexyl ester" "2-(dimethylamino)benzoic acid 2-ethylhexyl ester" );
+gibbsFormation
+{
+    dHf_298   -424180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     763.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-6990.0
+    phase     gas;
+}

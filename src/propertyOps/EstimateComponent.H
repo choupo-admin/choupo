@@ -90,6 +90,9 @@ public:
             const ThermoPackage& thermo,
             int verbosity) override;
 
+    std::vector<std::string> headline() const override
+    { return { "Tb_K", "Tc_K", "Pc_bar", "omega" }; }
+
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
 
 private:

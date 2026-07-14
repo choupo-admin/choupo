@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-piperazinedipropionitrile  (C10H16N4, CAS 4159-11-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14Piperazinedipropionitrile;
+formula     C10H16N4;
+CAS         4159-11-9;
+InChIKey    QXQYJEMSNUMUPO-UHFFFAOYSA-N;
+MW          192.266;      // g/mol [origin=calculated method=formula-sum]
+Tc          883.25;      // K   [origin=predictive method=joback]
+Pc          23.935;      // bar [origin=predictive method=joback]
+omega       0.9280;      // -   [origin=predictive method=lee-kesler]
+Tb          673.12;      // K   [origin=predictive method=joback]
+HvapTb      63290.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-54.886 1.239 -0.0009126 2.676e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2N; count 2; } { group CH2CN; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group CH2_ring; count 4; } { group N; count 2; } { group CN; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[4-(2-cyanoethyl)piperazin-1-yl]propanenitrile" "1,4-piperazinedipropanenitrile" "1,4-bis(2-cyanoethyl)piperazine" "bis(cyanoethyl)piperazine" "3-[4-(2-cyano-ethyl)-piperazin-1-yl]-propionitrile" "piperazine-1,4-dipropiononitrile" "3,3'-piperazine-1,4-diyldipropanenitrile" "3,3'-piperazine-1,4-diylbis(propionitrile)" "3-[4-(2-cyanoethyl)piperazinyl]propanenitrile" );
+gibbsFormation
+{
+    dHf_298   302070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     561.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=577600.0
+    phase     gas;
+}

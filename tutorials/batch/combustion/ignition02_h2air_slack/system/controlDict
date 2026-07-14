@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  ignition02_h2air_slack -- QUANTITATIVE shock-tube validation (choupoBatch).
+
+  Stoichiometric H2/air at 1100 K and 2 atm, constant volume -- the reflected-
+  shock condition of Slack 1977 as compiled in O Conaire et al. 2004, Fig 8
+  (Int. J. Chem. Kinet. 36, 603).  Kinetics: the O Conaire mechanism, Table I
+  verbatim (constant/reactions).  The engine prints tau_ign (max dT/dt).
+
+  THE PIN (verified 2026-07-02): at 1000/T = 0.909 (1100 K), Slack's
+  measured delays and the paper's own model read ~40-60 us on Fig 8.
+  This run: tau_ign (max dT/dt) = 43 us -- inside the experimental window,
+  NO radical seed (the O Conaire mechanism SELF-INITIATES through R5,
+  H2 + M = 2H; contrast ignition01, whose GRI H/O subset carries no pure
+  initiation channel and needs its trace-H seed).  Removing the seed vice
+  moved tau from a too-fast 12 us to the honest 43 us: initial conditions
+  are physics, not knobs.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Stoich H2/air ignition, 1100 K / 2 atm (Slack shock tube; O Conaire 2004 kinetics)";
+verbosity     3;
+
+startTime       0.0;
+endTime         3.0e-4;
+deltaT          1.0e-6;
+writeInterval   1.0e-6;

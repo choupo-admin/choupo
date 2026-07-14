@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-diethylmethylamine  (C5H13N, CAS 616-39-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDiethylmethylamine;
+formula     C5H13N;
+CAS         616-39-7;
+InChIKey    GNVRJGIVDSQCOP-UHFFFAOYSA-N;
+MW          87.166;      // g/mol [origin=calculated method=formula-sum]
+Tc          488.54;      // K   [origin=predictive method=joback]
+Pc          34.602;      // bar [origin=predictive method=joback]
+omega       0.3153;      // -   [origin=predictive method=lee-kesler]
+Tb          326.44;      // K   [origin=predictive method=joback]
+HvapTb      28767.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.348 0.60276 -0.0003608 8.57e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-ethyl-n-methyl-ethanamine" "ethanamine, n-ethyl-n-methyl-" "n-methyldiethylamine" "diethylamine, n-methyl-" "n-ethyl-n-methylethanamine" "diethylmethylamine" "gnvrjgivdsqcop-uhfffaoysa-" "scavengepore&trade; phenethyl diethylamine" "diethylamine,n-methyl- (6ci,7ci,8ci);diethylmethylamine;diethylmonomethylamine;methyldiethylamine;n,n-diethyl-n-methylamine;n,n-diethylmethylamine;n-ethyl-n-methylethanamine;n-methyl-n-ethylethanamine;n-methyldiethylamine;" );
+gibbsFormation
+{
+    dHf_298   -79000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     366.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=102000.0
+    phase     gas;
+}

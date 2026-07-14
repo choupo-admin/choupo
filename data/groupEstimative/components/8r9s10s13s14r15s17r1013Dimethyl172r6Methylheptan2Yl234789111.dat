@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: [(8r,9s,10s,13s,14r,15s,17r)-10,13-dimethyl-17-[(2r)-6-methylheptan-2-yl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-15-yl] 4-chlorobutanoate  (C31H51ClO2, CAS 73112-99-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8r9s10s13s14r15s17r1013Dimethyl172r6Methylheptan2Yl234789111;
+formula     C31H51ClO2;
+CAS         73112-99-9;
+InChIKey    PFRVCMRIEKLSBS-MLTOVRLPSA-N;
+MW          491.197;      // g/mol [origin=calculated method=formula-sum]
+Tc          1278.35;      // K   [origin=predictive method=joback]
+Pc          7.922;      // bar [origin=predictive method=joback]
+omega       0.7405;      // -   [origin=predictive method=lee-kesler]
+Tb          1042.57;      // K   [origin=predictive method=joback]
+HvapTb      93853.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-277.014 3.8571 -0.00306284 1.047e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 12; } { group CH; count 7; } { group C; count 2; } { group CH=C; count 1; } { group CH2COO; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 6; } { group CH; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(8r,9s,10s,13s,14r,15s,17r)-10,13-dimethyl-17-[(2r)-6-methylheptan-2-yl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-15-yl] 4-chloranylbutanoate" );
+gibbsFormation
+{
+    dHf_298   -750580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1136.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=51680.0
+    phase     gas;
+}

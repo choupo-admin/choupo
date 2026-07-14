@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2',3,3',4,5,6'-heptachlorobiphenyl  (C12H3Cl7, CAS 38411-25-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2233456Heptachlorobiphenyl;
+formula     C12H3Cl7;
+CAS         38411-25-5;
+InChIKey    ZDLMBNHYTPHDLF-UHFFFAOYSA-N;
+MW          395.306;      // g/mol [origin=calculated method=formula-sum]
+Tc          1097.10;      // K   [origin=predictive method=joback]
+Pc          23.293;      // bar [origin=predictive method=joback]
+omega       0.7943;      // -   [origin=predictive method=lee-kesler]
+Tb          824.39;      // K   [origin=predictive method=joback]
+HvapTb      82187.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (114.5 0.6171 -0.00036492 7.13e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACCl; count 7; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 9; } { group Cl; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4-tetrakis(chloranyl)-5-[2,3,6-tris(chloranyl)phenyl]benzene" "1,1'-biphenyl, 2,2',3,3',4,5,6'-heptachloro-" "2,2',3,3',4,5,6'-heptachloro-1,1'-biphenyl" "2,2,3,3,4,5,6-heptachloro-1,1-biphenyl" "1,2,3,4-tetrachloro-5-(2,3,6-trichlorophenyl)benzene" "2,2 inverted exclamation marka,3,3 inverted exclamation marka,4,5,6 inverted exclamation marka-heptachlorobiphenyl" "2,2 inverted exclamation marka,3,3 inverted exclamation marka,4,5,6 inverted exclamation marka-pcb" );
+gibbsFormation
+{
+    dHf_298   -8420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     601.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=124060.0
+    phase     gas;
+}

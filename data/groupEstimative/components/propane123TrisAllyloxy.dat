@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propane, 1,2,3-tris(allyloxy)-  (C12H20O3, CAS 2565-21-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        propane123TrisAllyloxy;
+formula     C12H20O3;
+CAS         2565-21-1;
+InChIKey    BXZCTALFGYLMTD-UHFFFAOYSA-N;
+MW          212.289;      // g/mol [origin=calculated method=formula-sum]
+Tc          703.33;      // K   [origin=predictive method=joback]
+Pc          19.119;      // bar [origin=predictive method=joback]
+omega       0.7131;      // -   [origin=predictive method=lee-kesler]
+Tb          531.02;      // K   [origin=predictive method=joback]
+HvapTb      47138.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (57.825 0.9001 -0.0003679 1.89e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group CH2=CH; count 3; } { group CH2O; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 5; } { group CH; count 1; } { group dCH2; count 3; } { group dCH; count 3; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3-tris(prop-2-enoxy)propane" "1-propene, 3,3',3''-(1,2,3-propanetriyltris(oxy))tris-" "1-propene, 3,3',3''-[1,2,3-propanetriyltris(oxy)]tris-" "3,3',3''-(1,2,3-propanetriyltris(oxy))trispropene" "1-propene,3,3',3''-[1,2,3-propanetriyltris(oxy)]tris-" "propane,1,2,3-tris(allyloxy)- (6ci,8ci); 1,2,3-triallyloxypropane; glycerol triallylether" );
+gibbsFormation
+{
+    dHf_298   -316660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     633.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3760.0
+    phase     gas;
+}

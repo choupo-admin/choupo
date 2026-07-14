@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(3-pyridylmethylamino)propionitrile  (C9H11N3, CAS 33611-48-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33PyridylmethylaminoPropionitrile;
+formula     C9H11N3;
+CAS         33611-48-2;
+InChIKey    QLXCYILNQJKHLM-UHFFFAOYSA-N;
+MW          161.208;      // g/mol [origin=calculated method=formula-sum]
+Tc          871.71;      // K   [origin=predictive method=joback]
+Pc          32.210;      // bar [origin=predictive method=joback]
+omega       0.7789;      // -   [origin=predictive method=lee-kesler]
+Tb          638.15;      // K   [origin=predictive method=joback]
+HvapTb      61028.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.347 0.82466 -0.00052386 1.274e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2NH; count 1; } { group C5H4N; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group NH; count 1; } { group Nd_ring; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(pyridin-3-ylmethylamino)propanenitrile" "3-[(pyridin-3-ylmethyl)amino]propanenitrile" "3-pyridinemethanamine, n-(2-cyanoethyl)-" "3-(3-pyridylmethylamino)propanenitrile" "propanenitrile, 3-((3-pyridinylmethyl)amino)-" "propanenitrile, 3-[(3-pyridinylmethyl)amino]-" "3-[(3-pyridylmethyl)amino]propanenitrile" "3-{[(2-cyanoethyl)amino]methyl}pyridine" "3-((3-pyridylmethyl)amino)propiononitrile" "3-[(3-pyridinylmethyl)amino]propanenitrile" "3-[(pyridin-3-ylmethyl)-amino]-propionitrile" "propanenitrile,3-[(3-pyridinylmethyl)amino]-" );
+gibbsFormation
+{
+    dHf_298   258580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     459.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=436930.0
+    phase     gas;
+}

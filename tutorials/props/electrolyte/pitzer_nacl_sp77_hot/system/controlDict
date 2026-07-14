@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "NaCl Pitzer to 200 C -- Silvester & Pitzer 1977 T-functions, validated vs their Table V";
+verbosity     3;

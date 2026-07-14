@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "TSA refusal lesson: one undersized column cannot hold the CO2 loaded during the declared switch interval";
+verbosity     3;

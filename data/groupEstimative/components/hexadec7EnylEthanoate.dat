@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexadec-7-enyl ethanoate  (C18H34O2, CAS 23192-42-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexadec7EnylEthanoate;
+formula     C18H34O2;
+CAS         23192-42-9;
+InChIKey    QVXFGVVYTKZLJN-UHFFFAOYSA-N;
+MW          282.468;      // g/mol [origin=calculated method=formula-sum]
+Tc          843.69;      // K   [origin=predictive method=joback]
+Pc          11.981;      // bar [origin=predictive method=joback]
+omega       0.8791;      // -   [origin=predictive method=lee-kesler]
+Tb          673.82;      // K   [origin=predictive method=joback]
+HvapTb      63027.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.247 1.67904 -0.0009446 1.933e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 13; } { group CH=CH; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 13; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-hexadecen-1-ol,1-acetate, (7z)-" "7-hexadecen-1-ol,acetate, (7z)- (9ci); 7-hexadecen-1-ol, acetate, (z)- (8ci);(z)-7-hexadecen-1-ol acetate; (z)-7-hexadecen-1-yl acetate; (z)-7-hexadecenylacetate; (z)-hexalure; hexalene; hexalure; cis-1-acetoxy-7-hexadecene;cis-7-hexadecen-1-yl acetate; cis-7-hexadecenyl acetate" );
+gibbsFormation
+{
+    dHf_298   -614910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     901.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-129470.0
+    phase     gas;
+}

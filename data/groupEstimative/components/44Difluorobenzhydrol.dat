@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4'-difluorobenzhydrol  (C13H10F2O, CAS 365-24-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44Difluorobenzhydrol;
+formula     C13H10F2O;
+CAS         365-24-2;
+InChIKey    WCTZPQWLFWZYJE-UHFFFAOYSA-N;
+MW          220.218;      // g/mol [origin=calculated method=formula-sum]
+Tc          860.87;      // K   [origin=predictive method=joback]
+Pc          30.057;      // bar [origin=predictive method=joback]
+omega       0.9951;      // -   [origin=predictive method=lee-kesler]
+Tb          650.64;      // K   [origin=predictive method=joback]
+HvapTb      65065.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.35 1.0255 -0.00067812 1.652e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group ACF; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group F; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(4-fluorophenyl)methanol" "bis-(4-fluorophenyl)-methanol" "4,4'-diflurobenzylmethanol" "bis-(4-fluoro-phenyl)-methanol" "bis(4-fluorophenyl)methan-1-ol" "4,4'-difluoro benzhydrol" "4,4'-difluorobenzylmethanol" "bis(4-fluorophenyl) carbinol" "bis(4-fluorophenyl)-methanol" "bis-(4-fluorophenyl)methanol" "4,4'-difluorobenzhydryl alcohol" "benzenemethanol, 4-fluoro-alpha-(4-fluorophenyl)-" );
+gibbsFormation
+{
+    dHf_298   -411260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     541.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-264740.0
+    phase     gas;
+}

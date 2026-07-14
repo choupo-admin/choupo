@@ -1,0 +1,47 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  dryingAir              F                0.138888888889   1e-4
+stream  exhaustAir             F                0.14529654835    1e-4
+stream  feed                   F                0.00649261111111 1e-4
+stream  powder                 F                1.73405388823e-05 1e-4
+kpi     dryer                  Nu               2.33731434528    1e-4
+kpi     dryer                  Pr               0.745230561117   1e-4
+kpi     dryer                  Re               0.384509154435   1e-4
+kpi     dryer                  Sc               0.602916461126   1e-4
+kpi     dryer                  Sh               2.31430911286    1e-4
+kpi     dryer                  T_out            382.7774359      1e-4
+kpi     dryer                  T_wetbulb        315.824008236    1e-4
+kpi     dryer                  X_critical       0.5              1e-4
+kpi     dryer                  X_equilibrium    0.0134981947613  1e-4
+kpi     dryer                  X_final          0.0134981947613  1e-4
+kpi     dryer                  X_initial        5.00133830498    1e-4
+kpi     dryer                  chamberDiameter  1                1e-4
+kpi     dryer                  chamberHeight    10               1e-4
+kpi     dryer                  d10_micron       12.5346918443    1e-4
+kpi     dryer                  d50_micron       27.0053336421    1e-4
+kpi     dryer                  d90_micron       46.4190946954    1e-4
+kpi     dryer                  d_droplet        7.28954057578e-05 1e-4
+kpi     dryer                  d_droplet_micron 72.8954057578    1e-4
+kpi     dryer                  d_particle       3.43328970408e-05 1e-4
+kpi     dryer                  d_particle_micron 34.3328970408    1e-4
+kpi     dryer                  duty             289371.06347     1e-4
+kpi     dryer                  h                978.856819022    1e-4
+kpi     dryer                  k_c              1.29356579402    1e-4
+kpi     dryer                  moisture_pct_wb  1.33184201324    1e-4
+kpi     dryer                  powder_dry       0.0231430805     1e-4
+kpi     dryer                  powder_flow      0.023455470308   1e-4
+kpi     dryer                  residenceTime    1.59363037897    1e-4
+kpi     dryer                  rho_gas          0.905887689475   1e-4
+kpi     dryer                  rho_liquid       996.956281129    1e-4
+kpi     dryer                  solidMassFraction 0.166629499818   1e-4
+kpi     dryer                  span             1.25473002112    1e-4
+kpi     dryer                  t_constant_rate  0.163958025655   1e-4
+kpi     dryer                  tau_dry_constant 0.18217016775    1e-4
+kpi     dryer                  thermalEfficiency 0.512448977762   1e-4
+kpi     dryer                  v_gas            6.14540286739    1e-4
+kpi     dryer                  v_particle       6.27498078097    1e-4
+kpi     dryer                  v_terminal       0.129577913589   1e-4
+kpi     dryer                  water_activity   0.0302790967997  1e-4
+kpi     dryer                  water_evaporated 0.115433985192   1e-4
+kpi     dryer                  water_residual   0.000312389807965 1e-4

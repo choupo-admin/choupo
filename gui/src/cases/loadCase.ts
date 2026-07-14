@@ -71,8 +71,14 @@ function stripCommonTop(files: { [rel: string]: string }): { [rel: string]: stri
   return out;
 }
 
+/** What an open picker yields: the display name, the parsed in-memory CaseFiles,
+ *  AND the pre-parse raw {relPath: rawText} source map.  The raw map is the exact
+ *  source bytes the workspace importer must write to disk ("Open materialises"),
+ *  so the on-disk case is byte-identical to what the student handed over. */
+export interface OpenedCase { name: string; files: CaseFiles; raw: { [rel: string]: string }; }
+
 /** Open a hidden file picker for a single .zip and return its parsed case. */
-export async function openCaseZip(): Promise<{ name: string; files: CaseFiles } | null> {
+export async function openCaseZip(): Promise<OpenedCase | null> {
   const file = await pickFile(".zip,application/zip");
   if (!file) return null;
   const buf = new Uint8Array(await file.arrayBuffer());
@@ -85,15 +91,20 @@ export async function openCaseZip(): Promise<{ name: string; files: CaseFiles } 
   }
   const flat = stripCommonTop(raw);
   const name = file.name.replace(/\.zip$/i, "") || "uploaded-case";
-  return { name, files: filesToCaseFiles(name, flat) };
+  return { name, files: filesToCaseFiles(name, flat), raw: flat };
 }
 
-/** Open a real folder (Chromium only) and read it one-shot into a case. */
-export async function openCaseFolder(): Promise<{ name: string; files: CaseFiles } | null> {
+/**
+ * Open a real folder and read it one-shot into a case.  Uses the File System
+ * Access API `showDirectoryPicker` on Chromium; falls back to an
+ * `<input webkitdirectory>` element on Firefox / Safari (which lack the picker
+ * but DO support the directory input).  Works in every modern browser now.
+ */
+export async function openCaseFolder(): Promise<OpenedCase | null> {
   const picker = (window as unknown as {
     showDirectoryPicker?: () => Promise<FileSystemDirectoryHandleLike>;
   }).showDirectoryPicker;
-  if (typeof picker !== "function") throw new Error("This browser has no folder picker (use Chrome/Edge, or upload a .zip).");
+  if (typeof picker !== "function") return openCaseFolderInput();  // Firefox / Safari
   let dir: FileSystemDirectoryHandleLike;
   try {
     dir = await picker();
@@ -104,7 +115,29 @@ export async function openCaseFolder(): Promise<{ name: string; files: CaseFiles
   const raw: { [rel: string]: string } = {};
   await readDir(dir, "", raw);
   const name = dir.name || "opened-folder";
-  return { name, files: filesToCaseFiles(name, raw) };
+  return { name, files: filesToCaseFiles(name, raw), raw };
+}
+
+/**
+ * Firefox / Safari fallback: pick a folder via `<input type="file" webkitdirectory>`
+ * and read every file (one-shot, no live handle to write back).  `webkitRelativePath`
+ * carries the in-folder path ("caseName/system/controlDict"); we strip the top
+ * segment so the case root matches the showDirectoryPicker path.
+ */
+async function openCaseFolderInput(): Promise<OpenedCase | null> {
+  const list = await pickFolder();
+  if (!list || list.length === 0) return null;
+  const raw: { [rel: string]: string } = {};
+  let root = "";
+  for (const f of Array.from(list)) {
+    const rel = (f as File & { webkitRelativePath?: string }).webkitRelativePath || f.name;
+    const slash = rel.indexOf("/");
+    if (!root && slash > 0) root = rel.slice(0, slash);
+    const sub = slash >= 0 ? rel.slice(slash + 1) : rel;
+    raw[sub] = await f.text();
+  }
+  const name = root || "opened-folder";
+  return { name, files: filesToCaseFiles(name, raw), raw };
 }
 
 // --- helpers ----------------------------------------------------------------
@@ -122,6 +155,24 @@ function pickFile(accept: string): Promise<File | null> {
     }, { once: true });
     // If the dialog is dismissed with no file, there is no reliable event; the
     // input is simply left detached on next pick. Good enough for a picker.
+    document.body.appendChild(input);
+    input.click();
+  });
+}
+
+/** Firefox / Safari folder picker via `<input webkitdirectory>` (one-shot read). */
+function pickFolder(): Promise<FileList | null> {
+  return new Promise((resolve) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    (input as unknown as { webkitdirectory: boolean }).webkitdirectory = true;
+    input.multiple = true;
+    input.style.display = "none";
+    input.addEventListener("change", () => {
+      const fl = input.files;
+      document.body.removeChild(input);
+      resolve(fl && fl.length ? fl : null);
+    }, { once: true });
     document.body.appendChild(input);
     input.click();
   });

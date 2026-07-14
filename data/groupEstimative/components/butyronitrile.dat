@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyronitrile  (C4H7N, CAS 109-74-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butyronitrile;
+formula     C4H7N;
+CAS         109-74-0;
+InChIKey    KVNRLNFWIYMESJ-UHFFFAOYSA-N;
+MW          69.107;      // g/mol [origin=calculated method=formula-sum]
+Tc          585.43;      // K   [origin=predictive method=joback]
+Pc          37.777;      // bar [origin=predictive method=joback]
+omega       0.3689;      // -   [origin=predictive method=lee-kesler]
+Tb          393.20;      // K   [origin=predictive method=joback]
+HvapTb      34976.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (16.252 0.31862 -0.0001628 3.01e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butanenitrile" "propyl cyanide" "1-cyanopropane" "n-butyronitrile" "n-propyl cyanide" "butyrylonitrile" "butyric acid nitrile" "butane nitrile" "n-butanenitrile" "propylkyanid" );
+gibbsFormation
+{
+    dHf_298   38990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     317.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=115980.0
+    phase     gas;
+}

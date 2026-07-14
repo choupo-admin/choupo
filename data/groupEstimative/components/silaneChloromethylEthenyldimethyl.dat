@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: silane, (chloromethyl)ethenyldimethyl-  (C5H11ClSi, CAS 16709-86-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C5H11ClSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        silaneChloromethylEthenyldimethyl;
+formula     C5H11ClSi;
+CAS         16709-86-7;
+InChIKey    SZZZMXFBEKWPBU-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          134.678;      // g/mol [origin=calculated method=formula-sum]
+Tc          532.59;      // K   [origin=predictive method=joback]
+Pc          30.423;      // bar [origin=predictive method=joback]
+omega       0.2023;      // -   [origin=predictive method=lee-kesler]
+Tb          349.51;      // K   [origin=predictive method=joback]
+HvapTb      30733.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (49.061 0.25944 0.0001233 -1.425e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2=CH; count 1; } { group CH2Cl; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "chloromethyl-ethenyl-dimethyl-silane" "(chloromethyl)dimethylvinylsilane" "(chloromethyl)(dimethyl)vinylsilane" "chloromethyldimethylvinyl silane" "(chloromethyl)ethenyldimethylsilane" "silane, (chloromethyl)dimethylvinyl-" "vinyl(chloromethyl)dimethylsilane" "chloromethyl-ethenyl-dimethylsilane" "(chloromethyl)(ethenyl)dimethylsilane" "silane,(chloromethyl)ethenyldimethyl-" );
+gibbsFormation
+{
+    dHf_298   -148460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     506.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-37630.0
+    phase     gas;
+}

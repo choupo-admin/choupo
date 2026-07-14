@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,7,7-tetramethyl-8-hydroxy-9-formyljulolidine  (C17H23NO2, CAS 115662-09-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C17H23NO2 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        1177Tetramethyl8Hydroxy9Formyljulolidine;
+formula     C17H23NO2;
+CAS         115662-09-4;
+InChIKey    ZBVWJSQPIHQKQJ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          273.376;      // g/mol [origin=calculated method=formula-sum]
+Tc          950.60;      // K   [origin=predictive method=joback]
+Pc          24.435;      // bar [origin=predictive method=joback]
+omega       0.8149;      // -   [origin=predictive method=lee-kesler]
+Tb          713.62;      // K   [origin=predictive method=joback]
+HvapTb      67906.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-243.15 2.53368 -0.00275864 1.2037e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 2; } { group ACH; count 1; } { group AC; count 4; } { group ACOH; count 1; } { group CHO; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-hydroxy-1,1,7,7-tetramethyljulolidine-9-carboxaldehyde" "9-formyl-8-hydroxy-1,1,7,7-tetramethyljulolidine" "8-hydroxy-1,1,7,7-tetramethyl-2,3,6,7-tetrahydro-1h,5h-pyrido[3,2,1-ij]quinoline-9-carbaldehyde" "8-hydroxy-1,1,7,7-tetramethyljulolidine-9-carbaldehyde" "8-hydroxy-1,1,7,7-tetramethyljulolidine-9- carboxaldehyde" "2,3,6,7-tetrahydro-8-hydroxy-1,1,7,7-tetramethyl-1h,5h-benzo[ij]quinolizine-9-carboxaldehyde" "6-hydroxy-4,4,10,10-tetramethyl-1-azatricyclo[7.3.1.0^{5,13}]trideca-5,7,9(13)-triene-7-carbaldehyde" "8-hydroxy-1,1,7,7-tetramethyl-2,3,6,7-tetrahydro-1h,5h-pyrido[3,2,1-ij]quinoline-9-carboxaldehyde" );
+gibbsFormation
+{
+    dHf_298   -49340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     775.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=286420.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-iodoquinoline  (C9H6IN, CAS 13327-31-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Iodoquinoline;
+formula     C9H6IN;
+CAS         13327-31-6;
+InChIKey    WKTASELJZCIVBR-UHFFFAOYSA-N;
+MW          255.054;      // g/mol [origin=calculated method=formula-sum]
+Tc          891.87;      // K   [origin=predictive method=joback]
+Pc          42.056;      // bar [origin=predictive method=joback]
+omega       0.4387;      // -   [origin=predictive method=lee-kesler]
+Tb          603.00;      // K   [origin=predictive method=joback]
+HvapTb      55789.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-34.59 0.78946 -0.00065734 2.193e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group C5H3N; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 6; } { group dC_ring; count 3; } { group I; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-iodanylquinoline" "6-iodo-quinoline" "quinoline, 6-iodo-" "6-iodchinolin;" "agn-pc-02syej" "13327-31-6 6-iodoquinoline" "wt323" );
+gibbsFormation
+{
+    dHf_298   296700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     353.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=369500.0
+    phase     gas;
+}

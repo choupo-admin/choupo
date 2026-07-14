@@ -1,0 +1,63 @@
+/*---------------------------------------------------------------------------*\
+  column10_flooding  --  the SAME column as column09, built 1.10 m wide instead
+  of the 1.322 m that column09 designed for it.
+
+  Nothing about the separation changes.  The distillate is still 98.12 % benzene,
+  the bottoms still 98.12 % toluene, the MESH equations converge exactly as
+  before, and every number in the stream table is identical.  The column is a
+  perfectly good column -- on paper.
+
+  It floods.  The worst tray runs at 115.6 % of its entrainment-flooding
+  velocity: the vapour is fast enough to carry the liquid up to the tray above
+  instead of letting it fall.  In a real column the trays would fill, the
+  pressure drop would run away, and the separation printed above would not
+  happen at all.
+
+  This is the whole reason hydraulics exists as a separate pass.  A converged
+  solution is not a feasible column, and the stage equations have no way of
+  knowing the difference.  Widen it (column09), space the trays further apart,
+  or cut the reflux -- but do not believe the stream table until a tray can pass
+  the traffic it carries.
+
+  Note the downcomer, too: the backup reaches 271 mm against a 275 mm limit.
+  Narrow the column a little further and it would flood from below as well,
+  for an entirely different reason.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        column10;
+        type        distillationColumn;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        15;
+            feedStage      8;
+            refluxRatio    2.0;
+            distillateRate 50.0 kmol/h;
+            feedQuality    1.0;
+            P              1.01325 bar;
+
+            hydraulics
+            {
+                trayType               sieve;
+                diameter               1.10;     // m -- GIVEN: this is a RATING
+                traySpacing            0.50;     // m
+                weirHeight             0.050;    // m
+                holeDiameter           5.0e-3;   // m
+                holeAreaFraction       0.10;     // A_holes / A_active
+                downcomerAreaFraction  0.12;     // A_downcomer / A_tower
+                weirLengthFraction     0.77;     // l_weir / D  (goes with 0.12)
+                orificeCoefficient     0.84;     // C_o -- read off the Liebson chart
+                floodFraction          0.80;     // design target
+                K2                     30.7;     // weep chart at h_w + h_ow ~ 60 mm
+            }
+        }
+
+        compositionTol   1e-7;
+        maxOuterIter     200;
+    }
+);

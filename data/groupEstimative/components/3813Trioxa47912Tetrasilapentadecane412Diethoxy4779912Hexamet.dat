@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,8,13-trioxa-4,7,9,12-tetrasilapentadecane, 4,12-diethoxy-4,7,7,9,9,12-hexamethyl-  (C18H46O5Si4, CAS 227754-04-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C18H46O5Si4 (delta Si+4; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        3813Trioxa47912Tetrasilapentadecane412Diethoxy4779912Hexamet;
+formula     C18H46O5Si4;
+CAS         227754-04-3;
+InChIKey    UTJOKVDTJFBVPH-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          454.901;      // g/mol [origin=calculated method=formula-sum]
+Tc          905.19;      // K   [origin=predictive method=joback]
+Pc          8.112;      // bar [origin=predictive method=joback]
+omega       0.6415;      // -   [origin=predictive method=lee-kesler]
+Tb          729.14;      // K   [origin=predictive method=joback]
+HvapTb      68888.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (277.298 0.5732 0.0012588 -9.398e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 10; } { group CH2; count 4; } { group CH2O; count 4; } { group Si; count 3; } { group SiO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 10; } { group CH2; count 8; } { group O; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[diethoxy(methyl)silyl]ethyl-[2-[diethoxy(methyl)silyl]ethyl-dimethyl-silyl]oxy-dimethyl-silane" );
+gibbsFormation
+{
+    dHf_298   -1522430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1419.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-843360.0
+    phase     gas;
+}

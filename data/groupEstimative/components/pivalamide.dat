@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pivalamide  (C5H11NO, CAS 754-10-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pivalamide;
+formula     C5H11NO;
+CAS         754-10-9;
+InChIKey    XIPFMBOWZXULIA-UHFFFAOYSA-N;
+MW          101.149;      // g/mol [origin=calculated method=formula-sum]
+Tc          643.83;      // K   [origin=predictive method=joback]
+Pc          41.144;      // bar [origin=predictive method=joback]
+omega       0.4504;      // -   [origin=predictive method=lee-kesler]
+Tb          437.17;      // K   [origin=predictive method=joback]
+HvapTb      42815.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.28 0.63856 -0.0004447 1.2216e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-dimethylpropanamide" "trimethylacetamide" "propanamide, 2,2-dimethyl-" "2,2-dimethylpropionamide" "2,2-dimethyl-propionamide" "pivaloylamide" "tay" "xipfmbowzxulia-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -234070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     390.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-68410.0
+    phase     gas;
+}

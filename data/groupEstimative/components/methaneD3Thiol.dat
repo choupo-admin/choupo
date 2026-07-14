@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methane-d3-thiol  (CHD3S, CAS 7175-74-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula CHD3S (delta D+3H-3; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        methaneD3Thiol;
+formula     CHD3S;
+CAS         7175-74-8;
+InChIKey    LSDPWZHWYPCBBB-FIBGUPNXSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          51.121;      // g/mol [origin=calculated method=formula-sum]
+Tc          475.33;      // K   [origin=predictive method=joback]
+Pc          64.000;      // bar [origin=predictive method=joback]
+omega       0.1462;      // -   [origin=predictive method=lee-kesler]
+Tb          285.34;      // K   [origin=predictive method=joback]
+HvapTb      24557.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (16.87 0.12612 -5.3e-05 6.3e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trideuteriomethanethiol" "methyl-d3 mercaptan" "methanethiol, c-d3" "1,1,1-trideuteromethanethiol;methyl-d3 mercaptan" );
+gibbsFormation
+{
+    dHf_298   -25490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     257.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-13070.0
+    phase     gas;
+}

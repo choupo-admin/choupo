@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isoamyl acetoacetate  (C9H16O3, CAS 2308-18-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isoamylAcetoacetate;
+formula     C9H16O3;
+CAS         2308-18-1;
+InChIKey    XHRGPLDMNNGHCX-UHFFFAOYSA-N;
+MW          172.224;      // g/mol [origin=calculated method=formula-sum]
+Tc          700.92;      // K   [origin=predictive method=joback]
+Pc          24.851;      // bar [origin=predictive method=joback]
+omega       0.6963;      // -   [origin=predictive method=lee-kesler]
+Tb          517.17;      // K   [origin=predictive method=joback]
+HvapTb      49393.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.793 0.78196 -0.0003557 2.926e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group CH3CO; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylbutyl 3-oxidanylidenebutanoate" "acetoacetic acid isoamyl ester" "isopentyl acetoacetate" "3-methylbutyl 3-oxobutanoate" "butanoic acid, 3-oxo-, 3-methylbutyl ester" "isoamyl acetylacetate" "isoamyl 3-oxobutanoate" "isopentyl 3-oxobutanoate" "isoamyl beta-ketobutyrate" "3-methylbutyl acetoacetate" "isopentyl beta-ketobutyrate" "3-methylbutyl beta-ketobutyrate" );
+gibbsFormation
+{
+    dHf_298   -664230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     575.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-416830.0
+    phase     gas;
+}

@@ -84,7 +84,8 @@ inline bool isEnergyItemKpi(const std::string& k)
 {
     static const std::set<std::string> items = {
         "Q_kW", "duty_kW", "Q_reboiler_kW", "Q_condenser_kW",
-        "W_shaft_kW", "W_hydraulic_kW", "Q_removed_kW"
+        "W_shaft_kW", "W_hydraulic_kW", "Q_removed_kW",
+        "Q_regeneration_kW", "Q_adsorption_cooling_kW"
     };
     return items.count(k) > 0;
 }
@@ -163,6 +164,28 @@ inline scalar solidH_elements(const ProcessStream& s, const ThermoPackage& therm
         if (s.s[i] > 0.0)
             h += s.s[i] * thermo.comp(i).h_formation(s.T, "solid");
     return h;   // kW  (s.s [kmol/s] x h_formation [J/mol == kJ/kmol] = kW)
+}
+
+// The PRESENT components of a stream (z_i > 0 or s_i > 0) that have NO
+// elements-datum enthalpy route -- the genuine missing-DATA gap the energy
+// balance must REFUSE on, named for the student.  Composition-absent species
+// (z_i = 0 AND s_i = 0) are deliberately NOT listed: their skip is legitimate
+// physics (the silent path is correct for them).  Empty result => every
+// present species is placeable on the elements datum, so the stream's
+// enthalpy is trustworthy.  This is the no-silent-crutch boundary: a present
+// species without a datum is a refusal, not a quiet drop.
+inline std::vector<std::string> missingEnthalpyData(const ProcessStream& s,
+                                                    const ThermoPackage& thermo)
+{
+    std::vector<std::string> miss;
+    for (std::size_t i = 0; i < thermo.n(); ++i)
+    {
+        const scalar zi = (i < s.z.size()) ? s.z[i] : 0.0;
+        const scalar si = (i < s.s.size()) ? s.s[i] : 0.0;
+        if (zi <= 0.0 && si <= 0.0) continue;        // absent by composition
+        if (!thermo.hasEnthalpyDatum(i)) miss.push_back(thermo.comp(i).name());
+    }
+    return miss;
 }
 
 // ELEMENTS reference (carries Hf -> reaction heat shows up) -- the ONE datum.

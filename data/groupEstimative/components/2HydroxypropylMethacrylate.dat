@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-Hydroxypropyl methacrylate  (C7H12O3, CAS 923-26-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2HydroxypropylMethacrylate;
+formula     C7H12O3;
+CAS         923-26-2;
+InChIKey    VHSHLMUCYSAUQU-UHFFFAOYSA-N;
+MW          144.17;      // g/mol [origin=calculated method=formula-sum]
+Tc          682.47;      // K   [origin=predictive method=joback]
+Pc          33.106;      // bar [origin=predictive method=joback]
+omega       0.8941;      // -   [origin=predictive method=lee-kesler]
+Tb          506.28;      // K   [origin=predictive method=joback]
+HvapTb      54284.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (22.861 0.63384 -0.0003212 4.35e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group CH2=C; count 1; } { group OH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-hydroxypropyl 2-methylprop-2-enoate" "1,2-propanediol, 1-methacrylate" "1,2-Propanediol, 1-methacrylate (8CI)" "2-hydroxypropyl methacrylate" "2-propenoic acid, 2-methyl-, 2-hydroxypropyl ester" "acryester hp" "acryester hp" "blemmer p" "blemmer p" "light ester hop" "light ester hop-n" "light ester hop" );
+gibbsFormation
+{
+    dHf_298   -546960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     512.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-362280.0
+    phase     gas;
+}

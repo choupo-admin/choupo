@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-sec-butyl-2,6-di-tert-butylphenol  (C18H30O, CAS 17540-75-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4SecButyl26DiTertButylphenol;
+formula     C18H30O;
+CAS         17540-75-9;
+InChIKey    BFZOTKYPSZSDEV-UHFFFAOYSA-N;
+MW          262.437;      // g/mol [origin=calculated method=formula-sum]
+Tc          941.19;      // K   [origin=predictive method=joback]
+Pc          16.660;      // bar [origin=predictive method=joback]
+omega       0.7494;      // -   [origin=predictive method=lee-kesler]
+Tb          721.80;      // K   [origin=predictive method=joback]
+HvapTb      69296.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-78.329 1.92816 -0.00145568 4.551e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 8; } { group CH2; count 1; } { group C; count 2; } { group ACH; count 2; } { group AC; count 2; } { group ACCH; count 1; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2; count 1; } { group CH; count 1; } { group C; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-butan-2-yl-2,6-ditert-butyl-phenol" "2,6-di-tert-butyl-4-sec-butylphenol" "phenol, 2,6-bis(1,1-dimethylethyl)-4-(1-methylpropyl)-" "4-butan-2-yl-2,6-ditert-butylphenol" "4-(sec-butyl)-2,6-di-tert-butylphenol" "4-(butan-2-yl)-2,6-di-tert-butylphenol" "phenol,6-bis(1,1-dimethylethyl)-4-(1-methylpropyl)-" "phenol,2,6-bis(1,1-dimethylethyl)-4-(1-methylpropyl)-" );
+gibbsFormation
+{
+    dHf_298   -401350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     677.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=42450.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-mercaptopropylmethyldimethoxysilane  (C6H16O2SSi, CAS 31001-77-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C6H16O2SSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        3Mercaptopropylmethyldimethoxysilane;
+formula     C6H16O2SSi;
+CAS         31001-77-1;
+InChIKey    IKYAJDOSWUATPI-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          180.337;      // g/mol [origin=calculated method=formula-sum]
+Tc          640.28;      // K   [origin=predictive method=joback]
+Pc          28.173;      // bar [origin=predictive method=joback]
+omega       0.4195;      // -   [origin=predictive method=lee-kesler]
+Tb          445.98;      // K   [origin=predictive method=joback]
+HvapTb      40801.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (104.143 0.26856 0.0003118 -2.61e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH3O; count 2; } { group CH2SH; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group O; count 2; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[dimethoxy(methyl)silyl]propane-1-thiol" "3-mercaptopropylmethyldimethoxy silane" "(3-mercaptopropyl)methyldimethoxysilane" "3-(dimethoxymethylsilyl)-1-propanethiol" "dimethoxy-(3-mercaptopropyl)methylsilane" "(3-mercaptopropyl)dimethoxymethylsilane;(g-mercaptopropyl)dimethoxymethylsilane;3-(dimethoxymethylsilyl)-1-propanethiol;ay 43-062;dimethoxy(3-mercaptopropyl)methylsilane;dimethoxymercaptopropylmethylsilane;dimethoxymethyl(3-mercaptopropyl)silane;kbe 802;kbm 802;kem 802;methyl(3-mercaptopropyl)dimethoxysilane;sisib pc2320;" );
+gibbsFormation
+{
+    dHf_298   -504750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     601.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-285730.0
+    phase     gas;
+}

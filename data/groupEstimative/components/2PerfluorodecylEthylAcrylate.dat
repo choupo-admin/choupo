@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(perfluorodecyl)ethyl acrylate  (C15H7F21O2, CAS 17741-60-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PerfluorodecylEthylAcrylate;
+formula     C15H7F21O2;
+CAS         17741-60-5;
+InChIKey    FIAHOPQKBBASOY-UHFFFAOYSA-N;
+MW          618.177;      // g/mol [origin=calculated method=formula-sum]
+Tc          677.78;      // K   [origin=predictive method=joback]
+Pc          8.826;      // bar [origin=predictive method=joback]
+omega       0.7866;      // -   [origin=predictive method=lee-kesler]
+Tb          550.07;      // K   [origin=predictive method=joback]
+HvapTb      25604.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-105.148 2.8598 -0.0027829 9.642e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2=CH; count 1; } { group CF3; count 1; } { group CF2; count 9; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group C; count 10; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 21; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-henicosakis(fluoranyl)dodecyl prop-2-enoate" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-henicosafluorododecyl acrylate" "1h,1h,2h,2h-perfluorododecyl acrylate" "1,1,2,2-tetrahydroperfluorododecyl acrylate" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-heneicosafluorododecyl acrylate" "2-propenoic acid, 3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-heneicosafluorododecyl ester" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-henicosafluorododecyl prop-2-enoate" "2-propenoic acid, 3,3,4,4,5,5,6,6,7,7,8,8,9, 9,10,10,11,11,12,12,12-heneicosafluorododecyl ester" "2-propenoic acid,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-heneicosafluorododecyl ester" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12, 12,12- henicosafluorododecyl acrylate" "acrylicacid, 3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-heneicosafluorododecylester (8ci); 1,1,2,2-tetrahydroperfluorododecyl acrylate;2-(perfluorodecyl)ethyl acrylate; perfluorodecylethyl acrylate" );
+gibbsFormation
+{
+    dHf_298   -4750590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1063.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4209720.0
+    phase     gas;
+}

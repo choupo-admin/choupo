@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lusmit  (C30H58O4S, CAS 123-28-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lusmit;
+formula     C30H58O4S;
+CAS         123-28-4;
+InChIKey    GHKOFFNLGXMVNJ-UHFFFAOYSA-N;
+MW          514.85;      // g/mol [origin=calculated method=formula-sum]
+Tc          1346.22;      // K   [origin=predictive method=joback]
+Pc          6.034;      // bar [origin=predictive method=joback]
+omega       0.3040;      // -   [origin=predictive method=lee-kesler]
+Tb          1071.22;      // K   [origin=predictive method=joback]
+HvapTb      104005.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (46.036 2.73863 -0.0013788 2.04e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 23; } { group CH2COO; count 2; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 26; } { group COO; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodecyl 3-(3-dodecoxy-3-oxidanylidene-propyl)sulfanylpropanoate" "dilauryl thiodipropionate" "dltdp" "dmptp" "carstab dltdp" "antioxidant as" "stabilizer dlt" "plastanox ltdp" "milban f" "antioxidant ltdp" "neganox dltp" "dilauryl 3,3'-thiodipropionate" );
+gibbsFormation
+{
+    dHf_298   -1255220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1488.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-385900.0
+    phase     gas;
+}

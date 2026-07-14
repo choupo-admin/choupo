@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(bromomethyl)-3-methyloxetane  (C5H9BrO, CAS 78385-26-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Bromomethyl3Methyloxetane;
+formula     C5H9BrO;
+CAS         78385-26-9;
+InChIKey    MGBZKWOJRYGRTO-UHFFFAOYSA-N;
+MW          165.03;      // g/mol [origin=calculated method=formula-sum]
+Tc          638.68;      // K   [origin=predictive method=joback]
+Pc          48.360;      // bar [origin=predictive method=joback]
+omega       0.3524;      // -   [origin=predictive method=lee-kesler]
+Tb          418.36;      // K   [origin=predictive method=joback]
+HvapTb      36603.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-81.499 0.94722 -0.0010121 4.411e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 1; } { group FCH2O; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group Br; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(bromomethyl)-3-methyl-oxetane" "3-bromomethyl-3-methyloxetane" "oxetane, 3-(bromomethyl)-3-methyl-" "oxetane, 3-bromomethyl-3-methyl-" "3-bromomethyl-3-methyl oxetane" "ht693" "ht852" "oxetane,3-(bromomethyl)-3-methyl-" "3-bromomethyl-3-methyloxetane oxetane" "78385-26-9 3-methyl-3-bromomethyloxetane" "35842-61-6 3-(bromomethyl)-3-methyloxetane" );
+gibbsFormation
+{
+    dHf_298   -170320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     349.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-37420.0
+    phase     gas;
+}

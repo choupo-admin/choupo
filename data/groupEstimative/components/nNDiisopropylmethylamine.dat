@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-diisopropylmethylamine  (C7H17N, CAS 10342-97-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDiisopropylmethylamine;
+formula     C7H17N;
+CAS         10342-97-9;
+InChIKey    ISRXMEYARGEVIU-UHFFFAOYSA-N;
+MW          115.22;      // g/mol [origin=calculated method=formula-sum]
+Tc          541.64;      // K   [origin=predictive method=joback]
+Pc          28.414;      // bar [origin=predictive method=joback]
+omega       0.3488;      // -   [origin=predictive method=lee-kesler]
+Tb          371.32;      // K   [origin=predictive method=joback]
+HvapTb      32443.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.53 0.8046 -0.000476 1.085e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-methyl-n-propan-2-yl-propan-2-amine" "n-methyldiisopropylamine" "n-methyl-n-propan-2-ylpropan-2-amine" "diethylamine, n,1,1'-trimethyl-" "diisopropylmethylamine" "diisopropyl(methyl)amine" "2-propanamine,n-methyl-n-(1-methylethyl)-" "2-propanamine, n-methyl-n-(1-methylethyl)-" );
+gibbsFormation
+{
+    dHf_298   -130840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     425.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=113960.0
+    phase     gas;
+}

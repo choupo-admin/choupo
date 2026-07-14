@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3'-(trifluoromethyl)acetophenone  (C9H7F3O, CAS 349-76-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3TrifluoromethylAcetophenone;
+formula     C9H7F3O;
+CAS         349-76-8;
+InChIKey    ABXGMGUHGLQMAW-UHFFFAOYSA-N;
+MW          188.148;      // g/mol [origin=calculated method=formula-sum]
+Tc          685.37;      // K   [origin=predictive method=joback]
+Pc          30.223;      // bar [origin=predictive method=joback]
+omega       0.5402;      // -   [origin=predictive method=lee-kesler]
+Tb          485.63;      // K   [origin=predictive method=joback]
+HvapTb      41565.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.74 0.85362 -0.00063226 1.7616e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group CH3CO; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[3-(trifluoromethyl)phenyl]ethanone" "3-trifluoromethylacetophenone" "3-acetylbenzotrifluoride" "m-trifluoromethylacetophenone" "3-(trifluoromethyl)acetophenone" "1-(3-trifluoromethyl-phenyl)-ethanone" "1-[3-(trifluoromethyl)phenyl]ethan-1-one" "ethanone, 1-[3-(trifluoromethyl)phenyl]-" "1-acetyl-3-(trifluoromethyl)benzene" "ethanone, 1-(3-(trifluoromethyl)phenyl)-" "3-acetylbenzofluoride" "3'-trifluoromethylacetophenone" );
+gibbsFormation
+{
+    dHf_298   -713690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     476.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-582830.0
+    phase     gas;
+}

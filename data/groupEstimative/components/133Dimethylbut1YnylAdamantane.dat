@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(3,3-dimethylbut-1-ynyl)adamantane  (C16H24, CAS 103185-26-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        133Dimethylbut1YnylAdamantane;
+formula     C16H24;
+CAS         103185-26-8;
+InChIKey    LQESZBJHPCVSRE-UHFFFAOYSA-N;
+MW          216.368;      // g/mol [origin=calculated method=formula-sum]
+Tc          834.57;      // K   [origin=predictive method=joback]
+Pc          21.674;      // bar [origin=predictive method=joback]
+omega       0.3899;      // -   [origin=predictive method=lee-kesler]
+Tb          591.51;      // K   [origin=predictive method=joback]
+HvapTb      50517.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-218.47 2.20836 -0.00201766 7.6788e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 3; } { group C; count 2; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group tC; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tricyclo[3.3.1.13,7]decane, 1-(3,3-dimethyl-1-butynyl)-" "tricyclo[3.3.1.13,7]decane,1-(3,3-dimethyl-1-butyn-1-yl)-" "tricyclo(3.3.1.13,7)decane, 1-(3,3-dimethyl-1-butynyl)-" "tricyclo[3.3.1.13,7]decane,1-(3,3-dimethyl-1-butynyl)- (9ci); 1-(1-adamantyl)-3,3-dimethyl-1-butyne" );
+gibbsFormation
+{
+    dHf_298   97120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     488.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=446430.0
+    phase     gas;
+}

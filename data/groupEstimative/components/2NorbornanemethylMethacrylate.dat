@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-norbornanemethyl methacrylate  (C12H18O2, CAS 10375-00-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2NorbornanemethylMethacrylate;
+formula     C12H18O2;
+CAS         10375-00-5;
+InChIKey    LTZJEGMQCRHIKJ-UHFFFAOYSA-N;
+MW          194.274;      // g/mol [origin=calculated method=formula-sum]
+Tc          746.87;      // K   [origin=predictive method=joback]
+Pc          23.428;      // bar [origin=predictive method=joback]
+omega       0.5576;      // -   [origin=predictive method=lee-kesler]
+Tb          542.02;      // K   [origin=predictive method=joback]
+HvapTb      48812.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-84.959 1.33462 -0.0008982 2.342e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 3; } { group CH2=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-bicyclo[2.2.1]heptanylmethyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, bicyclo(2.2.1)hept-2-ylmethyl ester" "2-propenoic acid, 2-methyl-, bicyclo[2.2.1]hept-2-ylmethyl ester" "norborn-2-ylmethyl methacrylate" "2-propenoic acid,2-methyl-, bicyclo[2.2.1]hept-2-ylmethyl ester" "2-propenoic acid, 2-methyl-, bicyclo(2.2.1)hept-2-ylmethyl ester, homopolymer" "methacrylicacid, 2-norbornylmethyl ester (7ci,8ci); 2-norbornanemethanol, methacrylate(8ci); 2-norbornanemethyl methacrylate; norborn-2-ylmethyl methacrylate" );
+gibbsFormation
+{
+    dHf_298   -373550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     462.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-79230.0
+    phase     gas;
+}

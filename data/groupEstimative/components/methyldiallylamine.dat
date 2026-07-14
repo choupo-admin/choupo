@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyldiallylamine  (C7H13N, CAS 2424-01-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyldiallylamine;
+formula     C7H13N;
+CAS         2424-01-3;
+InChIKey    WGESLFUSXZBFQF-UHFFFAOYSA-N;
+MW          111.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          534.94;      // K   [origin=predictive method=joback]
+Pc          30.592;      // bar [origin=predictive method=joback]
+omega       0.3640;      // -   [origin=predictive method=lee-kesler]
+Tb          365.56;      // K   [origin=predictive method=joback]
+HvapTb      31879.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.148 0.75272 -0.0005154 1.443e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2=CH; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH2; count 2; } { group dCH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-methyl-n-prop-2-enyl-prop-2-en-1-amine" "diallylmethylamine" "2-propen-1-amine, n-methyl-n-2-propenyl-" "n-allyl-n-methylprop-2-en-1-amine" "methyldiprop-2-enylamine" "2-propen-1-amine, n-methyl-n-2-propen-1-yl-" "n-methyldiallylamine" "diallyl methylamine" "2-propen-1-amine, n-methyl-n-2-propenyl-, homopolymer" "methylbis(prop-2-en-1-yl)amine" "2-propen-1-amine, n-methyl-n-2-propen-1-yl-, homopolymer" "n-methyl-n-prop-2-enylprop-2-en-1-amine" );
+gibbsFormation
+{
+    dHf_298   130580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     435.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=294520.0
+    phase     gas;
+}

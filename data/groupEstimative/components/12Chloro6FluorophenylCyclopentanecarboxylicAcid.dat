@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(2-chloro-6-fluorophenyl)cyclopentanecarboxylic acid  (C12H12ClFO2, CAS 214263-03-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Chloro6FluorophenylCyclopentanecarboxylicAcid;
+formula     C12H12ClFO2;
+CAS         214263-03-3;
+InChIKey    XFWCGCJZUQAJGP-UHFFFAOYSA-N;
+MW          242.674;      // g/mol [origin=calculated method=formula-sum]
+Tc          952.51;      // K   [origin=predictive method=joback]
+Pc          29.633;      // bar [origin=predictive method=joback]
+omega       0.8536;      // -   [origin=predictive method=lee-kesler]
+Tb          708.53;      // K   [origin=predictive method=joback]
+HvapTb      65744.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-100.22 1.4389 -0.00129552 4.874e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group C; count 1; } { group ACH; count 3; } { group AC; count 1; } { group COOH; count 1; } { group ACCl; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2-chloranyl-6-fluoranyl-phenyl)cyclopentane-1-carboxylic acid" "1-(6-chloro-2-fluorophenyl)cyclopentanecarboxylic acid" "1-(2-chloro-6-fluorophenyl)cyclopentanecarboxylicacid" "1-(2-chloro-6-fluorophenyl)cyclopentane-1-carboxylic acid" "cyclopentanecarboxylicacid, 1-(2-chloro-6-fluorophenyl)-" );
+gibbsFormation
+{
+    dHf_298   -563820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     642.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-376280.0
+    phase     gas;
+}

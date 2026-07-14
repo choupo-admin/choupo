@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-[3-(trifluoromethyl)phenyl]propan-1-ol  (C10H11F3O, CAS 618-97-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13TrifluoromethylPhenylPropan1Ol;
+formula     C10H11F3O;
+CAS         618-97-3;
+InChIKey    SZSJCUKIEPGUMF-UHFFFAOYSA-N;
+MW          204.191;      // g/mol [origin=calculated method=formula-sum]
+Tc          728.07;      // K   [origin=predictive method=joback]
+Pc          28.354;      // bar [origin=predictive method=joback]
+omega       0.8994;      // -   [origin=predictive method=lee-kesler]
+Tb          546.38;      // K   [origin=predictive method=joback]
+HvapTb      53336.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.399 1.01652 -0.00073896 2.064e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-((3-trifluoromethyl)phenyl)propanol-1" "1-[(3-trifluoromethyl)phenyl]propanol-1" "3-trifluoromethylphenylpropanol" "1-[3-(trifluoromethyl)phenyl]propanol-1" "1-[3-(trifluoromethyl)phenyl]-1-propanol" "(1s)-1-[3-(trifluoromethyl)phenyl]propan-1-ol" "benzylalcohol, a-ethyl-m-(trifluoromethyl)-(8ci); 1-(3-trifluoromethylphenyl)-1-propanol" );
+gibbsFormation
+{
+    dHf_298   -779260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     530.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-584750.0
+    phase     gas;
+}

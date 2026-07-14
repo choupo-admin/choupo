@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,2,3-tetrachlorobuta-1,3-diene  (C4H2Cl4, CAS 921-09-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1123Tetrachlorobuta13Diene;
+formula     C4H2Cl4;
+CAS         921-09-5;
+InChIKey    RCBKHVTUYAGMLB-UHFFFAOYSA-N;
+MW          191.86;      // g/mol [origin=calculated method=formula-sum]
+Tc          667.16;      // K   [origin=predictive method=joback]
+Pc          37.135;      // bar [origin=predictive method=joback]
+omega       0.3004;      // -   [origin=predictive method=lee-kesler]
+Tb          441.32;      // K   [origin=predictive method=joback]
+HvapTb      41566.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (34.57 0.4107 -0.000389 1.426e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=C; count 1; } { group Cl_C=C_; count 4; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group dC; count 3; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2,3-tetrakis(chloranyl)buta-1,3-diene" "1,3-butadiene, 1,1,2,3-tetrachloro-" "1,1,2,3-tetrachloro-1,3-butadiene" "tetrachlorobutadiene" );
+gibbsFormation
+{
+    dHf_298   24430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     421.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77490.0
+    phase     gas;
+}

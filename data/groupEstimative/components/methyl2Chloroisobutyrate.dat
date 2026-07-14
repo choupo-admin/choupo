@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 2-chloroisobutyrate  (C5H9ClO2, CAS 22421-97-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl2Chloroisobutyrate;
+formula     C5H9ClO2;
+CAS         22421-97-2;
+InChIKey    GJWBUVKJZQLZNB-UHFFFAOYSA-N;
+MW          136.575;      // g/mol [origin=calculated method=formula-sum]
+Tc          600.99;      // K   [origin=predictive method=joback]
+Pc          34.159;      // bar [origin=predictive method=joback]
+omega       0.3608;      // -   [origin=predictive method=lee-kesler]
+Tb          406.42;      // K   [origin=predictive method=joback]
+HvapTb      37220.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.17 0.55666 -0.0003458 7.21e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:1
+    joback ( { group CH3; count 3; } { group C; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-chloranyl-2-methyl-propanoate" "methyl 2-chloro-2-methylpropanoate" "methyl alpha-chloroisobutyrate" "tl 39" "propanoic acid, 2-chloro-2-methyl-, methyl ester" "propionic acid, 2-chloro-2-methyl-, methyl ester" "methyl 2-chloro-2-methyl-propanoate" "2-chloro-2-methyl-propionic acid methyl ester" "propanoic acid,2-chloro-2-methyl-, methyl ester" "propionicacid, 2-chloro-2-methyl-, methyl ester (6ci,7ci,8ci); 2-chloromethylmethacrylate; methyl 2-chloroisobutyrate; methyl a-chloroisobutyrate" );
+gibbsFormation
+{
+    dHf_298   -488300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     396.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-328240.0
+    phase     gas;
+}

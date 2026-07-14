@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): propanoic acid, 2-hydroxy-, compd. with n-(3-(4-morpholinyl)propyl)octadecanamide  (C28H56N2O5, CAS 55852-14-7)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           propanoicAcid2HydroxyCompdWithN34MorpholinylPropylOctadecana;
+formula        C28H56N2O5;
+CAS            55852-14-7;
+InChIKey       BFWRTWBSOCPDQX-UHFFFAOYSA-N;
+MW             500.765;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: propanoic acid, 2-hydroxy-, compd. with n-(3-(4-morpholinyl)propyl)octadecanamide

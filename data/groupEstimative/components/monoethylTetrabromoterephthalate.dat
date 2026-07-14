@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: monoethyl tetrabromoterephthalate  (C10H6Br4O4, CAS 29092-13-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        monoethylTetrabromoterephthalate;
+formula     C10H6Br4O4;
+CAS         29092-13-5;
+InChIKey    OMUHVEKJVPWWEH-UHFFFAOYSA-N;
+MW          509.77;      // g/mol [origin=calculated method=formula-sum]
+Tc          1210.85;      // K   [origin=predictive method=joback]
+Pc          41.516;      // bar [origin=predictive method=joback]
+omega       1.5952;      // -   [origin=predictive method=lee-kesler]
+Tb          948.35;      // K   [origin=predictive method=joback]
+HvapTb      93751.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (94.161 0.72622 -0.0004798 1.161e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group AC; count 6; } { group COOH; count 1; } { group Br; count 4; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dC_ring; count 6; } { group Br; count 4; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,5,6-tetrakis(bromanyl)-4-ethoxycarbonyl-benzoic acid" "2,3,5,6-tetrabromo-4-(ethoxycarbonyl)benzoic acid" "1,4-benzenedicarboxylic acid, 2,3,5,6-tetrabromo-, 1-ethyl ester" "ethyl hydrogen tetrabromoterephthalate" "terephthalic acid, tetrabromo-, monoethyl ester" "2,3,5,6-tetrabromo-4-ethoxycarbonylbenzoic acid" "1,4-benzenedicarboxylic acid, 2,3,5,6-tetrabromo-, monoethyl ester" "1,4-benzenedicarboxylicacid, 2,3,5,6-tetrabromo-, 1-ethyl ester" "1,4-benzenedicarboxylicacid, 2,3,5,6-tetrabromo-, monoethyl ester (9ci); terephthalic acid, tetrabromo-,monoethyl ester (8ci)" );
+gibbsFormation
+{
+    dHf_298   -632780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     716.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-499420.0
+    phase     gas;
+}

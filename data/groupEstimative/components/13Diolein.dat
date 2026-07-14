@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-diolein  (C39H72O5, CAS 25637-84-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13Diolein;
+formula     C39H72O5;
+CAS         25637-84-7;
+InChIKey    DRAWQKGUORNASA-UHFFFAOYSA-N;
+MW          621.0;      // g/mol [origin=calculated method=formula-sum]
+Tc          1886.40;      // K   [origin=predictive method=joback]
+Pc          4.436;      // bar [origin=predictive method=joback]
+omega       -0.3750;      // -   [origin=predictive method=lee-kesler]
+Tb          1308.42;      // K   [origin=predictive method=joback]
+HvapTb      133429.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.5 3.67914 -0.0021098 4.428e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 28; } { group CH; count 1; } { group CH=CH; count 2; } { group OH; count 1; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 30; } { group CH; count 1; } { group dCH; count 4; } { group OH; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3-octadec-9-enoyloxy-2-oxidanyl-propyl) octadec-9-enoate" "glyceryl dioleate" "1,3-dioleoylglycerol" "glycerol-1,2-and-1,3-dioleate" "1,3-di-([cis]-9-octadecenoyl)-rac-glycerol" "9-octadecenoic acid (z)-, diester with 1,2,3-propanetriol" "9-octadecenoic acid (9z)-, diester with 1,2,3-propanetriol" "glyceryl dioleate technical grade" "(2-hydroxy-3-octadec-9-enoyloxypropyl) octadec-9-enoate" "9-octadecenoicacid (9z)-, 2-hydroxy-1,3-propanediyl ester (9ci); 9-octadecenoic acid (z)-,2-hydroxy-1,3-propanediyl ester; olein, 1,3-di- (7ci,8ci);(z,z)-1,3-dioctadecenoyl glycerol; 1,3-diolein; 1,3-dioleoylglycerol; glycerol1,3-dioleate; sn-1,3-dioleoylglycerol" "nikkol dgo 80;9-octadecenoic acid (9z)-,esters,diester with 1,2,3-propanetriol;glycerol dioleate;" );
+gibbsFormation
+{
+    dHf_298   -1405920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1805.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-322060.0
+    phase     gas;
+}

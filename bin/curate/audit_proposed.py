@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # audit_proposed.py -- deterministic licence/provenance audit of the
-# data/proposed/components/ proposal tier.  Style precedent: parse_speciation.py
+# data/local/components/ proposal tier.  Style precedent: parse_speciation.py
 # (deterministic, spot-checked, emits a markdown report; never guesses).
 #
 # Context (the 2026-06-07 chemicals/CoolProp MIT ingest): ~326 proposal .dat
@@ -9,7 +9,7 @@
 # excluded-source tokens in the header `Tc<-IUPAC ... Cp<-POLING_POLY` line and
 # whole commented-out coefficient tuples (a `//`-commented excluded fragment is
 # STILL redistribution).  This audit classifies every file PASS / REJECT and
-# writes data/proposed/PROPOSED-AUDIT.md.  It edits nothing -- the scrub is a
+# writes data/local/PROPOSED-AUDIT.md.  It edits nothing -- the scrub is a
 # separate, explicit step (scrub_proposed.py).
 #
 # A file is REJECT if ANY of:
@@ -30,8 +30,8 @@ import re
 from pathlib import Path
 
 ROOT  = Path(__file__).resolve().parents[2]
-PROP  = ROOT / 'data/proposed/components'
-OUT   = ROOT / 'data/proposed/PROPOSED-AUDIT.md'
+PROP  = ROOT / 'data/local/components'
+OUT   = ROOT / 'data/local/PROPOSED-AUDIT.md'
 
 # EXCLUDED source tokens (licensing memory, hard list).  Word-bounded,
 # case-insensitive.  'CAS' is handled specially (the universal `CAS <regno>;`
@@ -52,6 +52,7 @@ EXCL_RE  = re.compile(r'(?<![A-Za-z0-9_])(' + '|'.join(EXCLUDED) + r')',
 CAS_FIELD_RE  = re.compile(r'\bCAS\s+[0-9][0-9-]*\s*;?')        # registry field/header
 CAS_CPFLUID_RE = re.compile(r'\bCAS\s+\S+\.[Pp][Pp][Ff]\b')    # CoolProp `*.PPF` label
 CAS_TOKEN_RE  = re.compile(r'\bCAS\b')
+CAS_PROVENANCE_KEY_RE = re.compile(r'^\s*CAS\s*(?:\{|$)')       # provenance.CAS field
 
 # A commented-out coefficient tuple: a `//` line bearing `coefficients ( ... )`
 # with at least one number inside.
@@ -75,6 +76,8 @@ def excluded_hits(line):
     # field and any 'CAS <num>' substrings.
     stripped = CAS_FIELD_RE.sub('', line)
     stripped = CAS_CPFLUID_RE.sub('', stripped)   # CoolProp `*.PPF` fluid label
+    if CAS_PROVENANCE_KEY_RE.match(stripped):
+        stripped = ''                              # structured identity provenance
     # also drop a 'by CAS' registry-lookup mention? No -- 'by CAS' (use the CAS
     # REGISTRY NUMBER to look a value up via open methods) does NOT redistribute
     # CAS Common Chemistry data; but to stay conservative we DO flag a bare CAS
@@ -149,9 +152,9 @@ def main():
         rows.append((f.name, verdict, scrubbable, reasons))
 
     with OUT.open('w') as o:
-        o.write('# `data/proposed/` component audit — licence + provenance\n\n')
+        o.write('# `data/local/` component audit — licence + provenance\n\n')
         o.write('Deterministic audit by `bin/curate/audit_proposed.py` over '
-                f'**{len(files)}** files in `data/proposed/components/`.\n'
+                f'**{len(files)}** files in `data/local/components/`.\n'
                 'Classifies PASS / REJECT; no file is edited (the scrub is a '
                 'separate explicit step).\n\n')
         o.write('**Reject reasons:** `excluded-token` = a licence-encumbered '

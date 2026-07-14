@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,4,5-tetrachloro-3,6-bis(dichloromethyl)benzene  (C8H2Cl8, CAS 2142-31-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1245Tetrachloro36BisDichloromethylBenzene;
+formula     C8H2Cl8;
+CAS         2142-31-6;
+InChIKey    ZKNMSFSDCQDMAU-UHFFFAOYSA-N;
+MW          381.704;      // g/mol [origin=calculated method=formula-sum]
+Tc          992.31;      // K   [origin=predictive method=joback]
+Pc          24.752;      // bar [origin=predictive method=joback]
+omega       0.6999;      // -   [origin=predictive method=lee-kesler]
+Tb          732.78;      // K   [origin=predictive method=joback]
+HvapTb      73292.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (132.97 0.4536 -0.000277 5.6e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 2; } { group CHCl2; count 2; } { group ACCl; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 2; } { group dC_ring; count 6; } { group Cl; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-bis[bis(chloranyl)methyl]-2,3,5,6-tetrakis(chloranyl)benzene" "p-xylene, alpha,alpha,alpha',alpha',2,3,5,6-octachloro-" "p-xylene, .alpha.,.alpha.,.alpha.',.alpha.',2,3,5,6-octachloro-," );
+gibbsFormation
+{
+    dHf_298   -165750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     578.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-19580.0
+    phase     gas;
+}

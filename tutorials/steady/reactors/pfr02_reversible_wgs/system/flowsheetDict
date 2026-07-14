@@ -14,21 +14,7 @@
   enough that the axial profile flattens onto X_eq well before the exit.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        T            600.0 K;
-        P              10.0 bar;
-        molarFlows
-        {
-            CO       0.5 kmol/h;
-            water    0.5 kmol/h;
-            CO2      0.0 kmol/h;
-            H2       0.0 kmol/h;
-        }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

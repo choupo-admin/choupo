@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1'-(isopropylidenebis(p-phenyleneoxy))bis(3-(diallylamino)propan-2-ol)  (C33H46N2O4, CAS 6940-31-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11IsopropylidenebisPPhenyleneoxyBis3DiallylaminoPropan2Ol;
+formula     C33H46N2O4;
+CAS         6940-31-4;
+InChIKey    QXYMVIAZTSDOLA-UHFFFAOYSA-N;
+MW          534.741;      // g/mol [origin=calculated method=formula-sum]
+Tc          1593.49;      // K   [origin=predictive method=joback]
+Pc          8.625;      // bar [origin=predictive method=joback]
+omega       0.5002;      // -   [origin=predictive method=lee-kesler]
+Tb          1254.65;      // K   [origin=predictive method=joback]
+HvapTb      132440.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-65.922 3.10904 -0.00203352 5.08e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group C; count 1; } { group CH2=CH; count 4; } { group ACH; count 8; } { group AC; count 4; } { group CH2N; count 2; } { group C2H4O2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 2; } { group C; count 1; } { group dCH2; count 4; } { group dCH; count 4; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group OH; count 2; } { group O; count 2; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[bis(prop-2-enyl)amino]-3-[4-[2-[4-[3-[bis(prop-2-enyl)amino]-2-oxidanyl-propoxy]phenyl]propan-2-yl]phenoxy]propan-2-ol" "2-propanol, 1,1'-((1-methylethylidene)bis(4,1-phenyleneoxy))bis(3-(di-2-propenylamino)-" "2-propanol, 1,1'-[(1-methylethylidene)bis(4,1-phenyleneoxy)]bis[3-(di-2-propenylamino)-" "2-propanol, 1,1'-((1-methylethylidene)bis(4,1-phenyleneoxy))bis(3-(di-2-propen-1-ylamino)-" "2-propanol, 1,1'-[(1-methylethylidene)bis(4,1-phenyleneoxy)]bis[3-(di-2-propen-1-ylamino)-" "1-[bis(prop-2-enyl)amino]-3-[4-[2-[4-[3-[bis(prop-2-enyl)amino]-2-hydroxypropoxy]phenyl]propan-2-yl]phenoxy]propan-2-ol" );
+gibbsFormation
+{
+    dHf_298   -225760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1296.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=519780.0
+    phase     gas;
+}

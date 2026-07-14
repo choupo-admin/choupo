@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetradecamethylheptasilepane  (C14H42Si7, CAS 13452-94-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C14H42Si7 (delta Si+7; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        tetradecamethylheptasilepane;
+formula     C14H42Si7;
+CAS         13452-94-3;
+InChIKey    GRYINNPXWBBEBV-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          407.085;      // g/mol [origin=calculated method=formula-sum]
+Tc          718.29;      // K   [origin=predictive method=joback]
+Pc          9.105;      // bar [origin=predictive method=joback]
+omega       0.1374;      // -   [origin=predictive method=lee-kesler]
+Tb          528.32;      // K   [origin=predictive method=joback]
+HvapTb      48522.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (235.07 0.09688 0.001751 -1.1478e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 14; } { group Si; count 7; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 14; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2,2,3,3,4,4,5,5,6,6,7,7-tetradecamethyl-1,2,3,4,5,6,7-heptasilepane" "tetradecamethylcycloheptasilane" "1,1,2,2,3,3,4,4,5,5,6,6,7,7-tetradecamethylheptasilepane" "cycloheptasilane,1,1,2,2,3,3,4,4,5,5,6,6,7,7-tetradecamethyl-" "cycloheptasilane,tetradecamethyl- (8ci,9ci); permethylcycloheptasilane" );
+gibbsFormation
+{
+    dHf_298   -1002010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1479.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-561560.0
+    phase     gas;
+}

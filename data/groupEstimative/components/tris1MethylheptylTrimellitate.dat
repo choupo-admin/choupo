@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tris(1-methylheptyl) trimellitate  (C33H54O6, CAS 59431-98-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tris1MethylheptylTrimellitate;
+formula     C33H54O6;
+CAS         59431-98-0;
+InChIKey    UVCNQUKPQSCICG-UHFFFAOYSA-N;
+MW          546.789;      // g/mol [origin=calculated method=formula-sum]
+Tc          1464.35;      // K   [origin=predictive method=joback]
+Pc          6.109;      // bar [origin=predictive method=joback]
+omega       0.3101;      // -   [origin=predictive method=lee-kesler]
+Tb          1164.62;      // K   [origin=predictive method=joback]
+HvapTb      113709.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (38.765 2.79432 -0.00139432 1.844e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 15; } { group CH; count 3; } { group ACH; count 3; } { group AC; count 3; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 15; } { group CH; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trioctan-2-yl benzene-1,2,4-tricarboxylate" "1,2,4-benzenetricarboxylic acid, 1,2,4-tris(1-methylheptyl) ester" "1,2,4-benzenetricarboxylic acid, tris(1-methylheptyl) ester" "1,2,4-benzenetricarboxylic acid, tricapryl ester" "tris(1-methylheptyl) benzene-1,2,4-tricarboxylate" "1,2,4-benzenetricarboxylicacid, 1,2,4-tris(1-methylheptyl) ester" "1,2,4-benzenetricarboxylicacid, tris(1-methylheptyl) ester (9ci)" );
+gibbsFormation
+{
+    dHf_298   -1478540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1447.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-618300.0
+    phase     gas;
+}

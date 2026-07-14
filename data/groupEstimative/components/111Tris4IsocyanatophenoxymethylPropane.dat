@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1-tris(4-isocyanatophenoxymethyl)-propane  (C27H23N3O6, CAS 121514-80-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111Tris4IsocyanatophenoxymethylPropane;
+formula     C27H23N3O6;
+CAS         121514-80-5;
+InChIKey    XGTXSOCSVDGFNG-UHFFFAOYSA-N;
+MW          485.496;      // g/mol [origin=calculated method=formula-sum]
+Tc          1441.26;      // K   [origin=predictive method=joback]
+Pc          14.006;      // bar [origin=predictive method=joback]
+omega       1.2654;      // -   [origin=predictive method=lee-kesler]
+Tb          1176.38;      // K   [origin=predictive method=joback]
+HvapTb      119040.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group ACH; count 12; } { group AC; count 6; } { group CH2O; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:3
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group C; count 1; } { group dCd; count 3; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group O; count 3; } { group dO_oth; count 3; } { group Nd; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[2,2-bis[(4-isocyanatophenoxy)methyl]butoxy]-4-isocyanato-benzene" "benzene,1,1'-[2-ethyl-2-[(4-isocyanatophenoxy)methyl]-1,3-propanediylbis(oxy)]bis[4-isocyanato-(9ci)" "agn-pc-04s9iy" "1,1,1-tris-(4-isocyanatophenoxymethyl)-propane" "1-[2,2-bis[(4-isocyanatophenoxy)methyl]butoxy]-4-isocyanatobenzene" );
+// formation datum unavailable (element entropy missing): dHf_298=-347070.0 dGf_298=None

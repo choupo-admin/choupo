@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4,4-trimethyl-3-(3-oxobutyl)cyclohex-2-enone  (C13H20O2, CAS 72008-46-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        244Trimethyl33OxobutylCyclohex2Enone;
+formula     C13H20O2;
+CAS         72008-46-9;
+InChIKey    QUHPCHDTFDSTTL-UHFFFAOYSA-N;
+MW          208.301;      // g/mol [origin=calculated method=formula-sum]
+Tc          870.03;      // K   [origin=predictive method=joback]
+Pc          22.419;      // bar [origin=predictive method=joback]
+omega       0.7018;      // -   [origin=predictive method=lee-kesler]
+Tb          647.64;      // K   [origin=predictive method=joback]
+HvapTb      56419.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-44.358 1.28158 -0.0008875 2.8346e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group CH3CO; count 1; } { group CH2CO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group dC_ring; count 2; } { group CdO; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4,4-trimethyl-3-(3-oxidanylidenebutyl)cyclohex-2-en-1-one" "2,4,4-trimethyl-3-(3-oxobutyl)-2-cyclohexen-1-one" "2,4,4-trimethyl-3-(3-oxobutyl)cyclohex-2-en-1-one" "2-cyclohexen-1-one, 2,4,4-trimethyl-3-(3-oxobutyl)-" );
+gibbsFormation
+{
+    dHf_298   -457530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     599.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-163270.0
+    phase     gas;
+}

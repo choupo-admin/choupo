@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: [2-(hexanoyloxymethyl)-2-(octanoyloxymethyl)-3-pentanoyloxypropyl] decanoate  (C34H62O8, CAS 70776-02-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Hexanoyloxymethyl2Octanoyloxymethyl3PentanoyloxypropylDecan;
+formula     C34H62O8;
+CAS         70776-02-2;
+InChIKey    XHVYDBZZZRKMFL-UHFFFAOYSA-N;
+MW          598.862;      // g/mol [origin=calculated method=formula-sum]
+Tc          1595.65;      // K   [origin=predictive method=joback]
+Pc          5.066;      // bar [origin=predictive method=joback]
+omega       -0.0795;      // -   [origin=predictive method=lee-kesler]
+Tb          1207.17;      // K   [origin=predictive method=joback]
+HvapTb      119610.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (49.145 3.14048 -0.0016192 2.369e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 21; } { group C; count 1; } { group CH2COO; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 25; } { group C; count 1; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2-(hexanoyloxymethyl)-2-(octanoyloxymethyl)-3-pentanoyloxy-propyl] decanoate" "decanoic acid mixed esters with hexanoic acid octanoic acid pentaerythritol and valeric acid" "decanoic acid, mixed esters with hexanoic acid, octanoic acid, pentaerythritol and valeric acid" );
+gibbsFormation
+{
+    dHf_298   -2022960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1646.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1003240.0
+    phase     gas;
+}

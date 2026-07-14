@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-butanone-1,1,1-d3, 3,3-dimethyl-  (C6H9D3O, CAS 54699-14-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C6H9D3O (delta D+3H-3; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2Butanone111D333Dimethyl;
+formula     C6H9D3O;
+CAS         54699-14-8;
+InChIKey    PJGSXYOJTGTZAV-FIBGUPNXSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          103.179;      // g/mol [origin=calculated method=formula-sum]
+Tc          577.23;      // K   [origin=predictive method=joback]
+Pc          34.119;      // bar [origin=predictive method=joback]
+omega       0.3294;      // -   [origin=predictive method=lee-kesler]
+Tb          387.52;      // K   [origin=predictive method=joback]
+HvapTb      34400.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.68 0.67168 -0.0004557 1.2306e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group C; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1-trideuterio-3,3-dimethyl-butan-2-one" "1,1,1-trideuterio-3,3-dimethylbutan-2-one" );
+gibbsFormation
+{
+    dHf_298   -288500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     377.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-126440.0
+    phase     gas;
+}

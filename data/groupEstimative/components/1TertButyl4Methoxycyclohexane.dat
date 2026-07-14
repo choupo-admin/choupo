@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-tert-butyl-4-methoxycyclohexane  (C11H22O, CAS 15875-99-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1TertButyl4Methoxycyclohexane;
+formula     C11H22O;
+CAS         15875-99-7;
+InChIKey    XMLDPBGRPWQRBE-UHFFFAOYSA-N;
+MW          170.296;      // g/mol [origin=calculated method=formula-sum]
+Tc          690.96;      // K   [origin=predictive method=joback]
+Pc          22.676;      // bar [origin=predictive method=joback]
+omega       0.3662;      // -   [origin=predictive method=lee-kesler]
+Tb          485.35;      // K   [origin=predictive method=joback]
+HvapTb      41314.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-65.75 1.20708 -0.000661 1.182e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 2; } { group C; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group C; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-tert-butyl-4-methoxy-cyclohexane" "cyclohexane,1-(1,1-dimethylethyl)-4-methoxy-cis-" "cyclohexane,1-(1,1-dimethylethyl)-4-methoxy-trans-" "cyclohexane, 1-(1,1-dimethylethyl)-4-methoxy-, cis-" "cyclohexane, 1-(1,1-dimethylethyl)-4-methoxy-, trans-" );
+gibbsFormation
+{
+    dHf_298   -377360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     484.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-43680.0
+    phase     gas;
+}

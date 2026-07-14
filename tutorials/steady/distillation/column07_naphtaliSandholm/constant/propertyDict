@@ -1,0 +1,9 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Naphtali-Sandholm (1971) validation -- Problem 2 (the IDEAL hydrocarbon test):
+  n-butane / isopentane / n-pentane.  Ideal (Raoult); the volatility ranking is
+  set by the pure-component vapour pressures (Antoine), so the thermo is
+  reproducible -- unlike the azeotropic Problem 3.
+\*---------------------------------------------------------------------------*/
+components       ( nButane  isopentane  nPentane );
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

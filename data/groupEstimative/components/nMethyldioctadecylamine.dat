@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methyldioctadecylamine  (C37H77N, CAS 4088-22-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethyldioctadecylamine;
+formula     C37H77N;
+CAS         4088-22-6;
+InChIKey    VFLWKHBYVIUAMP-UHFFFAOYSA-N;
+MW          536.03;      // g/mol [origin=calculated method=formula-sum]
+Tc          1377.11;      // K   [origin=predictive method=joback]
+Pc          4.391;      // bar [origin=predictive method=joback]
+omega       -0.1072;      // -   [origin=predictive method=lee-kesler]
+Tb          1058.60;      // K   [origin=predictive method=joback]
+HvapTb      99999.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-41.436 3.64276 -0.0021016 4.665e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 34; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 34; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-methyl-n-octadecyl-octadecan-1-amine" "n,n-dioctadecylmethylamine" "proton ionophore iii" "1-octadecanamine, n-methyl-n-octadecyl-" "hydrogen ionophore iii" "dioctadecylamine, n-methyl-" "n-methyl-n-octadecyloctadecan-1-amine" "dioctadecyl methyl amine" "n-methyl-n-octadecyl-1-octadecanamine" "1-octadecanamine,n-methyl-n-octadecyl-" );
+gibbsFormation
+{
+    dHf_298   -739480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1613.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=371440.0
+    phase     gas;
+}

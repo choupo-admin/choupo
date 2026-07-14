@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-bis(2-cyanoethoxy)ethane  (C8H12N2O2, CAS 3386-87-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Bis2CyanoethoxyEthane;
+formula     C8H12N2O2;
+CAS         3386-87-6;
+InChIKey    VTHRQKSLPFJQHN-UHFFFAOYSA-N;
+MW          168.196;      // g/mol [origin=calculated method=formula-sum]
+Tc          830.05;      // K   [origin=predictive method=joback]
+Pc          23.338;      // bar [origin=predictive method=joback]
+omega       0.8992;      // -   [origin=predictive method=lee-kesler]
+Tb          631.64;      // K   [origin=predictive method=joback]
+HvapTb      59178.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (80.616 0.507 -0.0001274 -3.82e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2O; count 2; } { group CH2CN; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group O; count 2; } { group CN; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[2-(2-cyanoethoxy)ethoxy]propanenitrile" "3,3'-(ethylenedioxy)dipropionitrile" "ethylene glycol bis(cyanoethyl) ether" "ethylene glycol bis(2-cyanoethyl) ether" "3,3'-(ethylenedioxy)dipropiononitrile" "propanenitrile, 3,3'-(1,2-ethanediylbis(oxy))bis-" "propanenitrile, 3,3'-[1,2-ethanediylbis(oxy)]bis-" "1,2-bis(beta-cyanoethoxyethane)" "1,2-bis(beta-cyanoethyloxy)ethane" "1,2-bis(.beta.-cyanoethoxyethane)" "propionitrile,3'-(ethylenedioxy)di-" "1,2-bis(.beta.-cyanoethyloxy)ethane" );
+gibbsFormation
+{
+    dHf_298   -143130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     502.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=72840.0
+    phase     gas;
+}

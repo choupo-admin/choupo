@@ -1,0 +1,6 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral lithiumChlorideH2O; formula "LiCl:H2O"; masters ( { ion Li; nu 1; } { ion Cl; nu 1; } ); nuWater 1;
+      logK25 4.9841; source "logK25 CALIBRATED to Farelo (JCED 50, 2005, 1470) LiCl saturation 19.7 mol/kg, 298 K, via the refitted Pitzer gamma_pm + the HMW osmotic-coefficient water activity a_w (the hydrate water leg; a_w at I~20 is what makes the hydrate equilibrium work)";
+

@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Tartaric-acid plant (wine route): lime precipitation of calcium tartrate, then sulfuric acidulation to tartaric acid + gypsum. Molecular reactors; the solution chemistry sub-study is tutorials/props/electrolyte/tartaricAcid_acidulation.";
+verbosity     2;

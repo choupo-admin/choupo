@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: emd 16-795  (C28H29NO3, CAS 13619-98-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        emd16795;
+formula     C28H29NO3;
+CAS         13619-98-2;
+InChIKey    UYFNTTSLCDBZMY-UHFFFAOYSA-N;
+MW          427.544;      // g/mol [origin=calculated method=formula-sum]
+Tc          1316.27;      // K   [origin=predictive method=joback]
+Pc          14.557;      // bar [origin=predictive method=joback]
+omega       1.1288;      // -   [origin=predictive method=lee-kesler]
+Tb          1059.93;      // K   [origin=predictive method=joback]
+HvapTb      100513.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-109.978 2.40372 -0.00158018 3.925e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group ACH; count 12; } { group AC; count 6; } { group CH3O; count 1; } { group CH2O; count 1; } { group FCH2O; count 1; } { group CH2N; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 5; } { group dCH_ring; count 12; } { group dC_ring; count 8; } { group O; count 2; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[2-[4-(7-methoxy-3-phenyl-2h-chromen-4-yl)phenoxy]ethyl]pyrrolidine" "1-(2-(4-(7-methoxy-3-phenyl-2h-1-benzopyran-4-yl)phenoxy)ethyl)pyrrolidine" "pyrrolidine, 1-(2-(4-(7-methoxy-3-phenyl-2h-1-benzopyran-4-yl)phenoxy)ethyl)-" "pyrrolidine, 1-(2-(p-(7-methoxy-3-phenyl-2h-1-benzopyran-4-yl)phenoxy)ethyl)-" "pyrrolidine, 1-(2-(p-(7-methoxy-3-phenyl-2h-1-benzopyran-4-yl)phenoxy)ethyl)- (8ci)" );
+gibbsFormation
+{
+    dHf_298   -66180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     790.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=431300.0
+    phase     gas;
+}

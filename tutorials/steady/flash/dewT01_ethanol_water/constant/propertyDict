@@ -1,0 +1,34 @@
+/*---------------------------------------------------------------------------*\
+  dewT01_ethanol_water / constant/thermoPackage
+
+  Ethanol (30 %) and water (70 %): the superheated vapour whose dew point
+  the dewT unit hunts at 1 atm.  Ethanol-water is strongly non-ideal
+  (azeotrope near x_EtOH ~ 0.89), so the liquid takes NRTL with a fitted,
+  T-dependent pair (tau = a + b/T); the vapour stays ideal-gas -- exact
+  enough at 1 atm, where all the action is in gamma.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water );
+
+activityModel
+{
+    model        NRTL;
+
+    pairs
+    (
+        {
+            i          ethanol;
+            j          water;
+            a_ij      -0.8009;
+            b_ij       246.18;
+            a_ji       3.4578;
+            b_ji      -586.0809;
+            alpha      0.30;
+        }
+    );
+}
+
+equationOfState
+{
+    model        idealGas;
+}

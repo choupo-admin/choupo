@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lauric acid  (C12H24O2, CAS 143-07-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lauricAcid;
+formula     C12H24O2;
+CAS         143-07-7;
+InChIKey    POULHZVOKOAJMA-UHFFFAOYSA-N;
+MW          200.322;      // g/mol [origin=calculated method=formula-sum]
+Tc          797.84;      // K   [origin=predictive method=joback]
+Pc          19.220;      // bar [origin=predictive method=joback]
+omega       0.9568;      // -   [origin=predictive method=lee-kesler]
+Tb          619.67;      // K   [origin=predictive method=joback]
+HvapTb      59470.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.42 1.19462 -0.0007016 1.596e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 10; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodecanoic acid" "n-dodecanoic acid" "dodecylic acid" "vulvic acid" "laurostearic acid" "dodecoic acid" "duodecylic acid" "1-undecanecarboxylic acid" "aliphat no. 4" "neo-fat 12" "c12 fatty acid" "dodecanoate" );
+gibbsFormation
+{
+    dHf_298   -641280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     676.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-293750.0
+    phase     gas;
+}

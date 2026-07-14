@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: formic acid-d2  (CD2O2, CAS 920-42-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula CD2O2 (delta D+2H-1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        formicAcidD2;
+formula     CD2O2;
+CAS         920-42-3;
+InChIKey    BDAGIHXWWSANSR-PFUFQJKNSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          48.037;      // g/mol [origin=calculated method=formula-sum]
+Tc          561.54;      // K   [origin=predictive method=joback]
+Pc          67.964;      // bar [origin=predictive method=joback]
+omega       0.4607;      // -   [origin=predictive method=lee-kesler]
+Tb          367.29;      // K   [origin=predictive method=joback]
+HvapTb      34837.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.83 0.2527 -0.0003106 1.373e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group HCOOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "deuterio deuteriomethanoate" "deuterio deuterioformate" "(2h)formic (2)acid" "de490" "formic acid-d2 >99.0 atom % d (95% in d2o)" );
+gibbsFormation
+{
+    dHf_298   -358430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     259.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-333990.0
+    phase     gas;
+}

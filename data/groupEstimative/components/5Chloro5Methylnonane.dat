@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-chloro-5-methylnonane  (C10H21Cl, CAS 67282-24-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Chloro5Methylnonane;
+formula     C10H21Cl;
+CAS         67282-24-0;
+InChIKey    FYIAPWZQRBQNSP-UHFFFAOYSA-N;
+MW          176.728;      // g/mol [origin=calculated method=formula-sum]
+Tc          641.65;      // K   [origin=predictive method=joback]
+Pc          20.736;      // bar [origin=predictive method=joback]
+omega       0.4587;      // -   [origin=predictive method=lee-kesler]
+Tb          462.60;      // K   [origin=predictive method=joback]
+HvapTb      40943.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.784 1.08646 -0.0007124 1.887e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:1
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group C; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-chloranyl-5-methyl-nonane" );
+gibbsFormation
+{
+    dHf_298   -274220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     540.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=24230.0
+    phase     gas;
+}

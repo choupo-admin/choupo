@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: fertilysin  (C12H20Cl4N2O2, CAS 1477-57-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        fertilysin;
+formula     C12H20Cl4N2O2;
+CAS         1477-57-2;
+InChIKey    FAOMZVDZARKPFJ-UHFFFAOYSA-N;
+MW          366.104;      // g/mol [origin=calculated method=formula-sum]
+Tc          1036.20;      // K   [origin=predictive method=joback]
+Pc          18.108;      // bar [origin=predictive method=joback]
+omega       1.2613;      // -   [origin=predictive method=lee-kesler]
+Tb          831.08;      // K   [origin=predictive method=joback]
+HvapTb      85434.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (52.478 1.2792 -0.0007768 1.6952e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CHCl2; count 2; } { group CONHCH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 8; } { group CH; count 2; } { group Cl; count 4; } { group CdO; count 2; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-[8-[2,2-bis(chloranyl)ethanoylamino]octyl]-2,2-bis(chloranyl)ethanamide" "bis-diamine" "bisdiamine" "fertilysine" "fertilysine n" "n,n'-octamethylenebis(dichloroacetamide)" "win 18,446" "n,n'-(octane-1,8-diyl)bis(2,2-dichloroacetamide)" "n,n'-bis(dichloroacetyl)-1,8-octamethylenediamine" "n,n-bis(dichloroacetyl)-1,8-octanediamine" "n,n'-bis(dichloracetyl)-1,8-octanediamine" "n,n'-bis(dichloroacetyl)-1,8-diaminooctane" );
+gibbsFormation
+{
+    dHf_298   -482750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     872.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-81500.0
+    phase     gas;
+}

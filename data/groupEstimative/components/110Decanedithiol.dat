@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,10-decanedithiol  (C10H22S2, CAS 1191-67-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        110Decanedithiol;
+formula     C10H22S2;
+CAS         1191-67-9;
+InChIKey    UOQACRNTVQWTFF-UHFFFAOYSA-N;
+MW          206.406;      // g/mol [origin=calculated method=formula-sum]
+Tc          754.66;      // K   [origin=predictive method=joback]
+Pc          23.795;      // bar [origin=predictive method=joback]
+omega       0.6399;      // -   [origin=predictive method=lee-kesler]
+Tb          554.12;      // K   [origin=predictive method=joback]
+HvapTb      51328.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.58 1.0084 -0.000565 1.19e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH2SH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 10; } { group SH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "decane-1,10-dithiol" "1,10-dimercaptodecane" "1,10-didecyl mercaptan" "decamethylene dimercaptan" );
+gibbsFormation
+{
+    dHf_298   -172770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     670.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=92100.0
+    phase     gas;
+}

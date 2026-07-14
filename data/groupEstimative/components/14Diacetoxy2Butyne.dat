@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-diacetoxy-2-butyne  (C8H10O4, CAS 1573-17-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14Diacetoxy2Butyne;
+formula     C8H10O4;
+CAS         1573-17-7;
+InChIKey    TVIMIQVBDDNCCR-UHFFFAOYSA-N;
+MW          170.164;      // g/mol [origin=calculated method=formula-sum]
+Tc          708.86;      // K   [origin=predictive method=joback]
+Pc          30.323;      // bar [origin=predictive method=joback]
+omega       0.6090;      // -   [origin=predictive method=lee-kesler]
+Tb          508.08;      // K   [origin=predictive method=joback]
+HvapTb      50368.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (63.992 0.50444 -0.00013006 -5.122e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH3COO; count 2; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group tC; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-acetyloxybut-2-ynyl ethanoate" "butynediol diacetate" "2-butyne-1,4-diol diacetate" "2-butyne-1,4-diol, diacetate" "but-2-yne-1,4-diyl diacetate" "4-acetyloxybut-2-ynyl acetate" "2-butyne-1,4-diol, 1,4-diacetate" "2-butyne-1, diacetate" "bis(acetoxymethyl)acetylene" "ghl.pd_mitscher_leg0.686" "2-butyne-1,4-diol 1,4-diacetate" "2-butyne-1,4-diol,1,4-diacetate" );
+gibbsFormation
+{
+    dHf_298   -570710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     541.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-401460.0
+    phase     gas;
+}

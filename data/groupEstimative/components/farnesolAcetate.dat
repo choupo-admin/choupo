@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: farnesol acetate  (C17H28O2, CAS 29548-30-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        farnesolAcetate;
+formula     C17H28O2;
+CAS         29548-30-9;
+InChIKey    ZGIGZINMAOQWLX-NCZFFCEISA-N;
+MW          264.409;      // g/mol [origin=calculated method=formula-sum]
+Tc          846.32;      // K   [origin=predictive method=joback]
+Pc          13.985;      // bar [origin=predictive method=joback]
+omega       0.7572;      // -   [origin=predictive method=lee-kesler]
+Tb          658.90;      // K   [origin=predictive method=joback]
+HvapTb      60957.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.775 1.6238 -0.0010647 2.816e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 5; } { group CH=C; count 3; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 5; } { group dCH; count 3; } { group dC; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(2e,6e)-3,7,11-trimethyldodeca-2,6,10-trienyl] ethanoate" "trans,trans-farnesyl acetate" "all-trans-farnesyl acetate" "[(2e,6e)-3,7,11-trimethyldodeca-2,6,10-trienyl] acetate" "2,6,10-dodecatrien-1-ol, 3,7,11-trimethyl-, acetate, (e,e)-" "(e,e)-3,7,11-trimethyl-2,6,10-dodecatrien-1-ol acetate" "(e,e)-3,7,11-trimethyl-2,6,10-dodecatrien-1-yl acetate" "farneoylacetate" "zgigzinmaoqwlx-nczffceisa-" "3,11-trimethyl-2,6,10-dodecatrienyl acetate" "2,10-dodecatrien-1-ol, 3,7,11-trimethyl-, acetate" "(2e,6e)-3,7,11-trimethyldodeca-2,6,10-trien-1-yl acetate" );
+gibbsFormation
+{
+    dHf_298   -389200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     837.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3100.0
+    phase     gas;
+}

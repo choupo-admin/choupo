@@ -1,0 +1,24 @@
+/*  Wine-route tartaric-acid chemistry (molecular, balanced on existing components). */
+precipitation
+{
+    limitingReactant  potassiumBitartrate;
+    stoichiometry
+    (
+        { component potassiumBitartrate; nu -1; }   // KHC4H4O6
+        { component calciumHydroxide;    nu -1; }   // Ca(OH)2
+        { component calciumTartrate;     nu  1; }   // CaC4H4O6 (precipitates)
+        { component KOH;                 nu  1; }
+        { component water;               nu  1; }
+    );
+}
+acidulation
+{
+    limitingReactant  calciumTartrate;
+    stoichiometry
+    (
+        { component calciumTartrate; nu -1; }
+        { component H2SO4;           nu -1; }
+        { component tartaricAcid;    nu  1; }
+        { component CaSO4;           nu  1; }        // gypsum (precipitates)
+    );
+}

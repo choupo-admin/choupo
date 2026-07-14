@@ -1,0 +1,24 @@
+/*  isotherm03_fit_refusals -- the #119 P1 adversarial gates as a TAUGHT
+    refusal case (.expect-nonconvergence, like batch12): a fit that did not
+    EARN its verdict certifies nothing.
+
+    1. gate_henry_nonconverged   henry-regime multi-T data, reduced LM
+                                 strangled at maxIter 1: the old code would
+                                 stamp "identifiable 1" beside a NaN stderr;
+                                 now converged 0 drags identifiable 0 and
+                                 the values/CIs are REFUSED BY NAME.
+    2. gate_nonconverged         far-off initials + maxIter 1 on exact
+                                 synthetic data: converged 0 => identifiable
+                                 0, no fit.* values emitted.
+    3. gate_langfull_nonconverged  same data, b_ref initial 3e-4 puts
+                                 bp_max >= 0.05 so the FULL Langmuir branch
+                                 runs -- strangled at maxIter 1; criterion:
+                                 ABSENCE of every fit.* key (#121), the
+                                 return code does not un-emit diagnostics.
+
+    The case exits NON-ZERO on purpose -- that IS the lesson.  The green
+    identifiability demonstrations live in isotherm02_fit_jaschik.        */
+
+application  choupoProps;
+description  "Fit refusal gates: non-converged fits refuse their verdicts by name";
+verbosity    3;

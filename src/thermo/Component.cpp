@@ -27,12 +27,28 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Component.H"
+#include "thermo/electrolyte/SaltFromCatalogue.H"   // electrolyte::ionCharge (dissociatesTo -> cation/anion)
 
 #include <cmath>
 #include <stdexcept>
 #include <variant>
 
 namespace Choupo {
+
+Component Component::identity(const std::string& name, scalar MW,
+                              const std::string& role)
+{
+    Component c;
+    c.name_ = name;
+    c.MW_   = MW;
+    c.role_ = role;
+    return c;
+}
+
+void Component::setLiquidCp(const DictPtr& d)
+{
+    cpLiq_ = HeatCapacityModel::New(d);
+}
 
 void Component::readFromDict(const DictPtr& d)
 {
@@ -95,6 +111,7 @@ void Component::readFromDict(const DictPtr& d)
     }
 
     name_    = d->lookupWordOrDefault("name", "");
+    if (d->found("aliases")) aliases_ = d->lookupWordList("aliases");
     formula_ = d->lookupWordOrDefault("formula", "");
     cas_     = d->lookupWordOrDefault("CAS", "");
 
@@ -123,7 +140,19 @@ void Component::readFromDict(const DictPtr& d)
     // 1-1 salt (NaCl, NaOH, KCl), 3 for 1-2 / 2-1 (MgCl2, Na2SO4), and so
     // on.  Real solutions deviate from full dissociation; for the
     // ideal-dilute van't Hoff form is the pedagogical baseline.
-    nu_ = d->lookupScalarOrDefault("dissociation", 1.0);
+    // DERIVED from the ion map, never stored twice: nu = Σ coefficients of
+    // dissociatesTo (1 + 1 = 2 for NaCl/LiCl, 1 + 2 = 3 for CaCl2/Na2SO4).
+    // Only when there is no map do we read the legacy `dissociation` field
+    // (a non-electrolyte defaults to 1).  Two fields must never encode one
+    // fact -- the map is canonical.
+    if (d->found("dissociatesTo"))
+    {
+        nu_ = 0.0;
+        auto d2t = d->subDict("dissociatesTo");
+        for (const auto& ion : d2t->keys()) nu_ += d2t->lookupScalar(ion);
+    }
+    else
+        nu_ = d->lookupScalarOrDefault("dissociation", 1.0);
 
     // Role / category ----------------------------------------------
     // Explicit `role <word>;` wins; otherwise legacy `nonvolatile true;`
@@ -231,7 +260,11 @@ void Component::readFromDict(const DictPtr& d)
     {
         auto sd = d->subDict("solubility");
         solubilityCoeffs_ = sd->lookupList("coefficients");   // c_sat(T) polynomial in T[°C]
-        dHcryst_          = sd->lookupScalarOrDefault("dHcryst", 0.0);
+        // dHcryst: an intentional 0 here is a DECLARED simplification (the
+        // sibling `dHcrystOrigin`/comment says so), not measured chemistry --
+        // the crystalliser announces the zero-duty path it takes.
+        dHcryst_       = sd->lookupScalarOrDefault("dHcryst", 0.0);
+        dHcrystOrigin_ = sd->lookupWordOrDefault("dHcrystOrigin", "");
     }
 
     if (d->found("liquidHeatCapacity"))
@@ -317,10 +350,31 @@ void Component::readFromDict(const DictPtr& d)
             if (std::holds_alternative<DictPtr>(ev))
             {
                 auto sub = std::get<DictPtr>(ev);
-                oi.origin      = originFromWord(sub->lookupWordOrDefault("origin", "unattributed"));
-                oi.method      = sub->lookupWordOrDefault("method", "");
-                oi.uncertainty = sub->lookupWordOrDefault("uncertainty", "");
-                oi.note        = sub->lookupWordOrDefault("notes", "");
+                oi.origin        = originFromWord(sub->lookupWordOrDefault("origin", "unattributed"));
+                oi.method        = sub->lookupWordOrDefault("method", "");
+                oi.methodVersion = sub->lookupWordOrDefault("methodVersion", "");
+                oi.note          = sub->lookupWordOrDefault("notes", "");
+                // `uncertainty` has two grammars: free text ("~2% AAD") and the
+                // structured { status ...; reason "..."; } sub-dict of the
+                // estimate contract.  Discriminate the variant -- this block is
+                // parse-if-present, so a sub-dict must not throw the word lookup.
+                if (sub->found("uncertainty"))
+                {
+                    const auto& uv = sub->entryValue("uncertainty");
+                    if (std::holds_alternative<std::string>(uv))
+                    {
+                        oi.uncertainty = std::get<std::string>(uv);
+                    }
+                    else if (std::holds_alternative<DictPtr>(uv))
+                    {
+                        auto u = std::get<DictPtr>(uv);
+                        oi.uncertainty = u->lookupWordOrDefault("status", "");
+                        const std::string reason = u->lookupWordOrDefault("reason", "");
+                        if (!reason.empty())
+                            oi.uncertainty +=
+                                (oi.uncertainty.empty() ? "" : " -- ") + reason;
+                    }
+                }
                 if (sub->found("validity"))
                 {
                     auto v = sub->lookupList("validity");
@@ -361,6 +415,16 @@ void Component::readFromDict(const DictPtr& d)
         catch (...) { /* malformed groups block -- ignored (side-channel) */ }
     }
 
+    // UNIQUAC van der Waals structural parameters (intrinsic): `uniquac { r; q; }`.
+    // Read by ThermoPackage::injectUniquacRQ into the activity model, so they live
+    // ONCE in the component, not re-declared per case.
+    if (d->found("uniquac"))
+    {
+        auto u = d->subDict("uniquac");
+        rUq_ = u->lookupScalarOrDefault("r", 0.0);
+        qUq_ = u->lookupScalarOrDefault("q", 0.0);
+    }
+
     // Relative permittivity (dielectric constant) -- used by the mixed-solvent
     // electrolyte activity (eNRTL) for the drowning-out / Born effect.  Optional.
     relPermittivity_ = d->lookupScalarOrDefault("relativePermittivity", 0.0);
@@ -369,14 +433,24 @@ void Component::readFromDict(const DictPtr& d)
     // ion NAMES into data/standards/electrolyte/{ions,pairs}.dat; solubility is the
     // salt's measured saturation molality.  INTRINSIC salt chemistry, declared ONCE
     // here -- called by name, never re-typed per case.
-    if (d->found("electrolyte"))
+    // Ion decomposition for electrolyte-aware unit ops (DSPM-DE membrane): derive
+    // cation/anion from `dissociatesTo` (the formula-like ion stoichiometry) by
+    // charge sign, resolved through species/aqueous.  (The old `electrolyte{}`
+    // block is gone; dHsoln/solubility live in chemistry/salts, read via the model.)
+    if (d->found("dissociatesTo"))
     {
-        auto e = d->subDict("electrolyte");
-        elecCation_     = e->lookupWordOrDefault("cation", "");
-        elecAnion_      = e->lookupWordOrDefault("anion", "");
-        elecSolubility_ = e->lookupScalarOrDefault("solubility", 0.0);
-        elecDHsolution_ = e->lookupScalarOrDefault("dissolutionEnthalpy", 0.0);  // J/mol; Ksp(T) van't Hoff
-        hasElec_        = !elecCation_.empty() && !elecAnion_.empty();
+        auto d2t = d->subDict("dissociatesTo");
+        try
+        {
+            for (const auto& ion : d2t->keys())
+            {
+                const int z = electrolyte::ionCharge(ion);
+                if      (z > 0) elecCation_ = ion;
+                else if (z < 0) elecAnion_  = ion;
+            }
+        }
+        catch (...) { elecCation_.clear(); elecAnion_.clear(); }
+        hasElec_ = !elecCation_.empty() && !elecAnion_.empty();
     }
 }
 

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetradecyl iodide  (C14H29I, CAS 19218-94-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetradecylIodide;
+formula     C14H29I;
+CAS         19218-94-1;
+InChIKey    FHQCFGPKNSSISL-UHFFFAOYSA-N;
+MW          324.286;      // g/mol [origin=calculated method=formula-sum]
+Tc          795.98;      // K   [origin=predictive method=joback]
+Pc          14.977;      // bar [origin=predictive method=joback]
+omega       0.7142;      // -   [origin=predictive method=lee-kesler]
+Tb          613.06;      // K   [origin=predictive method=joback]
+HvapTb      56131.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.853 1.37282 -0.0008192 1.953e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 13; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 13; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-iodanyltetradecane" "tetradecane, 1-iodo-" "1-iodotetradecane" "myristyl iodide" "1-iodotetradecane;myristyl iodide; tetradecyl iodide" );
+gibbsFormation
+{
+    dHf_298   -255420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     756.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=125120.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isonicotinamide  (C6H6N2O, CAS 1453-82-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isonicotinamide;
+formula     C6H6N2O;
+CAS         1453-82-3;
+InChIKey    VFQXVTODMYMSMJ-UHFFFAOYSA-N;
+MW          122.127;      // g/mol [origin=calculated method=formula-sum]
+Tc          794.97;      // K   [origin=predictive method=joback]
+Pc          55.526;      // bar [origin=predictive method=joback]
+omega       0.6036;      // -   [origin=predictive method=lee-kesler]
+Tb          543.66;      // K   [origin=predictive method=joback]
+HvapTb      54823.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.56 0.56256 -0.00036776 8.946e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C5H4N; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 4; } { group dC_ring; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pyridine-4-carboxamide" "4-pyridinecarboxamide" "isonicotinic acid amide" "4-carbamoylpyridine" "isonicotineamide" "pyridine-4-carboxylic acid amide" "gamma-pyridinecarboxamide" "isonicotinate amide" ".gamma.-pyridinecarboxamide" "m584" "brd-k37606513-001-01-4" );
+gibbsFormation
+{
+    dHf_298   23360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     374.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=126630.0
+    phase     gas;
+}

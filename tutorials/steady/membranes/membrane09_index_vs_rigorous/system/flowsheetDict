@@ -68,26 +68,7 @@
     Ryznar, J.W. (1944) J. AWWA 36(4) 472-486.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            900.0 kmol/h;        // ~16 m3/h of seawater
-        T            298.15 K;
-        P            55.0 bar;            // SWRO operating head
-        molarComposition
-        {
-            water    0.97953676;
-            Na       8.57612838e-03;
-            Mg       9.65255602e-04;
-            Ca       1.87933677e-04;
-            K        1.86698433e-04;
-            Cl       9.98783675e-03;
-            SO4      5.17038192e-04;
-            HCO3     4.23512513e-05;
-        }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

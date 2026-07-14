@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-butoxy-3-methyl-benzene  (C11H16O, CAS 23079-65-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Butoxy3MethylBenzene;
+formula     C11H16O;
+CAS         23079-65-4;
+InChIKey    UCEBQYXBQBLMSB-UHFFFAOYSA-N;
+MW          164.248;      // g/mol [origin=calculated method=formula-sum]
+Tc          707.00;      // K   [origin=predictive method=joback]
+Pc          25.637;      // bar [origin=predictive method=joback]
+omega       0.5130;      // -   [origin=predictive method=lee-kesler]
+Tb          505.36;      // K   [origin=predictive method=joback]
+HvapTb      45428.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.217 0.84724 -0.00042776 6.55e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group ACH; count 4; } { group AC; count 1; } { group ACCH3; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -177530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     483.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=39520.0
+    phase     gas;
+}

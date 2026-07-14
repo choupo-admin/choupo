@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phendimetrazine  (C12H17NO, CAS 634-03-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phendimetrazine;
+formula     C12H17NO;
+CAS         634-03-7;
+InChIKey    MFOCDFTXLCYLKU-CMPLNLGQSA-N;
+MW          191.274;      // g/mol [origin=calculated method=formula-sum]
+Tc          776.61;      // K   [origin=predictive method=joback]
+Pc          27.614;      // bar [origin=predictive method=joback]
+omega       0.5046;      // -   [origin=predictive method=lee-kesler]
+Tb          550.84;      // K   [origin=predictive method=joback]
+HvapTb      51083.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-89.84 1.29104 -0.0008309 1.971e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group ACH; count 5; } { group ACCH; count 1; } { group FCH2O; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s,3s)-3,4-dimethyl-2-phenyl-morpholine" "mephenmetrazine" "antapentan" "sedafamen" "adphen (base)" "fendimetrazina" "phendimetrazinum" "d-2-phenyl-3,4-dimethylmorpholine" "phendimetrazine [inn:ban]" "phendimetrazinum [inn-latin]" "phendimetrazine (inn)" "(+)-3,4-dimethyl-2-phenylmorpholine" );
+gibbsFormation
+{
+    dHf_298   -78810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     389.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=216070.0
+    phase     gas;
+}

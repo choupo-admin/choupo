@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CASE-LOCAL TEST TWIN of zeolite13X -- exists ONLY to drive gate (d) of
+  isothermEval (unit invariance): its CO2 equilibrium record (in
+  constant/parameters/adsorption/equilibria/zeolite13X_paTwin/) declares the
+  SAME physics as the standards record but in pressureBasis
+  partialPressurePa (the catalogue's is partialPressureBar); every grid
+  point must evaluate identically to 1e-12.  Identity fields copied from
+  data/standards/adsorbents/zeolite13X.dat.  NOT a curated material -- a
+  bench fixture; do not promote.
+\*-----------------------------------------------------------------------------*/
+
+adsorbent
+{
+    name        zeolite13X_paTwin;
+    type        "zeolite (Na-exchanged FAU)";
+    rho_bulk    640;            // kg/m3 (copied; irrelevant to the gate)
+}
+
+provenance
+{
+    identity { origin literature; method "test twin of data/standards/adsorbents/zeolite13X.dat -- unit-invariance fixture for isothermEval gate (d)"; }
+}

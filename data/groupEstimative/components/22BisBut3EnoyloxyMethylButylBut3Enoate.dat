@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-bis[(but-3-enoyloxy)methyl]butyl but-3-enoate  (C18H26O6, CAS 13830-89-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22BisBut3EnoyloxyMethylButylBut3Enoate;
+formula     C18H26O6;
+CAS         13830-89-2;
+InChIKey    JPODCWNJUFDIEA-UHFFFAOYSA-N;
+MW          338.4;      // g/mol [origin=calculated method=formula-sum]
+Tc          961.15;      // K   [origin=predictive method=joback]
+Pc          12.884;      // bar [origin=predictive method=joback]
+omega       1.0111;      // -   [origin=predictive method=lee-kesler]
+Tb          772.91;      // K   [origin=predictive method=joback]
+HvapTb      74577.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (29.307 1.61522 -0.0009121 1.558e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group C; count 1; } { group CH2=CH; count 3; } { group CH2COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group C; count 1; } { group dCH2; count 3; } { group dCH; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-bis(but-3-enoyloxymethyl)butyl but-3-enoate" "3-butenoic acid, 2-ethyl-2-(((1-oxo-3-butenyl)oxy)methyl)-1,3-propanediyl ester" "3-butenoic acid, 2-ethyl-2-[[(1-oxo-3-butenyl)oxy]methyl]-1,3-propanediyl ester" "3-butenoic acid, 1,1'-(2-ethyl-2-(((1-oxo-3-buten-1-yl)oxy)methyl)-1,3-propanediyl) ester" "3-butenoic acid, 1,1'-[2-ethyl-2-[[(1-oxo-3-buten-1-yl)oxy]methyl]-1,3-propanediyl] ester" "trimethanolpropane tris(allyl carbonate)" );
+gibbsFormation
+{
+    dHf_298   -999150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     958.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-564070.0
+    phase     gas;
+}

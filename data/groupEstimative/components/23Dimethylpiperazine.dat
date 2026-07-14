@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3-dimethylpiperazine  (C6H14N2, CAS 84468-52-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23Dimethylpiperazine;
+formula     C6H14N2;
+CAS         84468-52-0;
+InChIKey    COWPTMLRSANSMQ-UHFFFAOYSA-N;
+MW          114.192;      // g/mol [origin=calculated method=formula-sum]
+Tc          670.51;      // K   [origin=predictive method=joback]
+Pc          40.466;      // bar [origin=predictive method=joback]
+omega       0.3800;      // -   [origin=predictive method=lee-kesler]
+Tb          448.86;      // K   [origin=predictive method=joback]
+HvapTb      42586.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.39 0.64264 -0.000207 -2.42e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 2; } { group CH2NH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group NH_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "piperazine, 2,3-dimethyl-" "2,3-dimethyl-piperazine" "agn-pc-00nvau" );
+gibbsFormation
+{
+    dHf_298   -57570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     304.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=191800.0
+    phase     gas;
+}

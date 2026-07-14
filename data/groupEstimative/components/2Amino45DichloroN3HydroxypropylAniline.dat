@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-amino-4,5-dichloro-n-(3-hydroxypropyl)aniline  (C9H12Cl2N2O, CAS 67990-12-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Amino45DichloroN3HydroxypropylAniline;
+formula     C9H12Cl2N2O;
+CAS         67990-12-9;
+InChIKey    NOEDYYVBOOXTSI-UHFFFAOYSA-N;
+MW          235.108;      // g/mol [origin=calculated method=formula-sum]
+Tc          950.23;      // K   [origin=predictive method=joback]
+Pc          34.279;      // bar [origin=predictive method=joback]
+omega       1.3391;      // -   [origin=predictive method=lee-kesler]
+Tb          736.88;      // K   [origin=predictive method=joback]
+HvapTb      82416.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (40.053 0.7871 -0.00045908 9.6e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 2; } { group AC; count 1; } { group OH; count 1; } { group CH2NH; count 1; } { group ACNH2; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 2; } { group OH; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[[2-azanyl-4,5-bis(chloranyl)phenyl]amino]propan-1-ol" "1-propanol, 3-((2-amino-4,5-dichlorophenyl)amino)-" "1-propanol, 3-[(2-amino-4,5-dichlorophenyl)amino]-" "3-(2-amino-4,5-dichloroanilino)propan-1-ol" "3-((2-amino-4,5-dichlorophenyl)amino)propan-1-ol" );
+gibbsFormation
+{
+    dHf_298   -123420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     591.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=103580.0
+    phase     gas;
+}

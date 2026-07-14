@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: retronecine  (C8H13NO2, CAS 480-85-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        retronecine;
+formula     C8H13NO2;
+CAS         480-85-3;
+InChIKey    HJSJELVDQOXCHO-HTQZYQBOSA-N;
+MW          155.197;      // g/mol [origin=calculated method=formula-sum]
+Tc          783.29;      // K   [origin=predictive method=joback]
+Pc          44.563;      // bar [origin=predictive method=joback]
+omega       1.4001;      // -   [origin=predictive method=lee-kesler]
+Tb          601.33;      // K   [origin=predictive method=joback]
+HvapTb      69755.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-88.019 1.1324 -0.00089904 2.89e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 2; } { group CH=C; count 1; } { group OH; count 2; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1r,8r)-7-(hydroxymethyl)-2,3,5,8-tetrahydro-1h-pyrrolizin-1-ol" "retronecin" "senecifolinene" "( )-retronecine" "(+)-retronecine" "(1r,7ar)-7-(hydroxymethyl)-2,3,5,7a-tetrahydro-1h-pyrrolizin-1-ol" "1h-pyrrolizine-7-methanol, 2,3,5,7a-beta-tetrahydro-1-alpha-hydroxy-" "1h-pyrrolizine-7-methanol, 2,3,5,7a-tetrahydro-1-hydroxy-, trans-" "1h-pyrrolizine-7-methanol, 2,3,5,7a-tetrahydro-1-hydroxy-, (1r-trans)-" "1h-pyrrolizine-7-methanol, 2,3,5,7a-tetrahydro-1-hydroxy-, (1r-trans)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -259630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     381.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-16650.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: marasmic acid  (C15H18O4, CAS 2212-99-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        marasmicAcid;
+formula     C15H18O4;
+CAS         2212-99-9;
+InChIKey    BIUVCPLWWOLECJ-LIHVSQBMSA-N;
+MW          262.305;      // g/mol [origin=calculated method=formula-sum]
+Tc          974.76;      // K   [origin=predictive method=joback]
+Pc          27.643;      // bar [origin=predictive method=joback]
+omega       1.2513;      // -   [origin=predictive method=lee-kesler]
+Tb          760.07;      // K   [origin=predictive method=joback]
+HvapTb      76153.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-280.51 2.70294 -0.00305544 1.3619e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 3; } { group C; count 3; } { group CH=C; count 1; } { group OH; count 1; } { group CHO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 3; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group OdCH_al; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(+)-marmasmic acid" "3h,8b-methano-1h-indeno[4,5-c]furan-4-carboxaldehyde, 5a,7,8,8a-tetrahydro-3-hydroxy-7,7-dimethyl-1-oxo-" );
+gibbsFormation
+{
+    dHf_298   -559310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     560.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-227750.0
+    phase     gas;
+}

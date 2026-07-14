@@ -60,7 +60,7 @@ License
   cells render as NaN (Plotly drops them).
 \*---------------------------------------------------------------------------*/
 
-import { Box, Group, NativeSelect, SegmentedControl, Text } from "@mantine/core";
+import { Box, Center, Group, NativeSelect, SegmentedControl, Text } from "@mantine/core";
 import { useMemo, useState } from "react";
 import { Plot, PLOT_CONFIG, PLOT_COLORS, PLOT_FONT, darkLayout } from "./plotly.js";
 import { TernaryPlot } from "./TernaryPlot.js";
@@ -95,7 +95,11 @@ export interface ExperimentalOverlay {
 }
 
 function parseCsv(csv: string): ParsedCsv | null {
-  const lines = csv.trim().split(/\r?\n/).filter((l) => l.length > 0);
+  // Curated datasets legitimately open with `#` comment lines (source + DOI
+  // citations) -- skip comments and blanks, or the first comment becomes a
+  // one-column "header" and the scan plot has nothing to draw.
+  const lines = csv.trim().split(/\r?\n/)
+    .filter((l) => l.length > 0 && !l.trimStart().startsWith("#"));
   if (lines.length < 2) return null;
   const header = lines[0]!.split(",").map((s) => s.trim());
   const rows: number[][] = [];
@@ -155,6 +159,8 @@ function detectParity(p: ParsedCsv): { iExp: number; iModel: number } | null {
     const base = h.slice(0, -"_exp".length);
     const j = p.header.indexOf(base + "_model");
     if (j >= 0) return { iExp: i, iModel: j };
+    const k = p.header.indexOf(base + "_calc");   // validation CSVs say _calc
+    if (k >= 0) return { iExp: i, iModel: k };
   }
   return null;
 }
@@ -400,11 +406,16 @@ function KineticsIsothermsPlot({ parsed, info }: {
  *  rectangular grid with the second column as the Y axis. */
 function detectGrid2D(p: ParsedCsv): boolean {
   if (p.header.length < 3) return false;
-  const uniq = new Set<number>();
-  for (const r of p.rows) uniq.add(r[0]!);
+  const counts = new Map<number, number>();
+  for (const r of p.rows) counts.set(r[0]!, (counts.get(r[0]!) ?? 0) + 1);
   // A grid has FAR fewer unique X values than rows (each X repeats
-  // for every Y).  A 1-D scan has uniq.size === rows.length.
-  return uniq.size * 2 < p.rows.length;
+  // for every Y).  A 1-D scan has counts.size === rows.length.
+  if (counts.size * 2 >= p.rows.length) return false;
+  // RECTANGULAR only: every unique x must repeat the SAME number of times.
+  // A family of scans of different lengths (a validation dataset per solvent
+  // composition, say) is NOT a grid — a heatmap of it is NaN-holed nonsense.
+  const ns = [...counts.values()];
+  return ns.every((n) => n === ns[0]);
 }
 
 // ---------------------------------------------------------------------------
@@ -440,9 +451,70 @@ function ScanLinePlot({ parsed, referenceLines, secondaryColumn }: {
   secondaryColumn?: string;
 }) {
   const prefs = useStore((s) => s.displayPrefs);
+  const xColName = parsed.header[0];
+  const secIdx = secondaryColumn ? parsed.header.indexOf(secondaryColumn) : -1;
+  // Candidate y columns: skip x + the secondary, and DROP all-NaN columns
+  // (string columns like `curve`/`role` parse to NaN — a dead legend trace
+  // that also poisons the log-axis heuristic).
+  const yIdx = parsed.header
+    .map((_, i) => i)
+    .filter((i) => i > 0 && i !== secIdx)
+    .filter((i) => parsed.rows.some((r) => Number.isFinite(r[i]!)));
+  // DEFENSIVE (credo: defensive rendering): nothing plottable — SAY so.
+  if (!xColName || yIdx.length === 0)
+    return (
+      <Center style={{ height: "100%" }}>
+        <Text size="sm" c="dimmed">
+          This file has no plottable scan columns (header: {parsed.header.join(", ") || "empty"}).
+        </Text>
+      </Center>
+    );
+  // GROUP BY DISPLAY UNIT: quantities of different dimensions must not share
+  // one axis (L_phi in J/mol beside gamma≈1 flattens the activity curves; a
+  // steam isobar's h≈3e6 J/kg flattens v, s, cp).  One stacked panel per unit.
+  const unitOf = (i: number) =>
+    axisDisplay(splitMethodCol(parsed.header[i]!).prop, prefs).unit;
+  const groups: number[][] = [];
+  const seen = new Map<string, number>();
+  for (const i of yIdx) {
+    const u = unitOf(i);
+    const g = seen.get(u);
+    if (g !== undefined) groups[g]!.push(i);
+    else { seen.set(u, groups.length); groups.push([i]); }
+  }
+  // Reference lines (SI = 0…) belong to the dimensionless group when present.
+  const dimless = seen.get("") ?? seen.get("—");
+  const refGroup = dimless ?? 0;
+  if (groups.length === 1)
+    return <ScanGroupPlot parsed={parsed} cols={groups[0]!}
+      referenceLines={referenceLines} secondaryColumn={secondaryColumn} />;
+  return (
+    <Box style={{ width: "100%", height: "100%", display: "flex",
+      flexDirection: "column", overflowY: "auto" }}>
+      {groups.map((cols, gi) => (
+        <Box key={gi} style={{ flex: `1 1 ${Math.floor(100 / groups.length)}%`, minHeight: 240 }}>
+          <ScanGroupPlot parsed={parsed} cols={cols}
+            referenceLines={gi === refGroup ? referenceLines : undefined}
+            secondaryColumn={gi === refGroup ? secondaryColumn : undefined} />
+        </Box>
+      ))}
+    </Box>
+  );
+}
+
+/** One unit-group of a 1-D scan: every column in `cols` shares a dimension,
+ *  so one y axis is honest.  (ScanLinePlot splits mixed-dimension CSVs into a
+ *  stack of these.) */
+function ScanGroupPlot({ parsed, cols, referenceLines, secondaryColumn }: {
+  parsed: ParsedCsv;
+  cols: number[];
+  referenceLines?: ReferenceLine[];
+  secondaryColumn?: string;
+}) {
+  const prefs = useStore((s) => s.displayPrefs);
   const xColName = parsed.header[0]!;
   const secIdx = secondaryColumn ? parsed.header.indexOf(secondaryColumn) : -1;
-  const yCols = parsed.header.slice(1).filter((_, i) => i + 1 !== secIdx);
+  const yCols = cols.map((i) => parsed.header[i]!);
   // Multi-method columns carry "<prop>__<model>": axis follows the prop,
   // legend shows the model.
   const yProps = yCols.map((n) => splitMethodCol(n).prop);
@@ -451,16 +523,13 @@ function ScanLinePlot({ parsed, referenceLines, secondaryColumn }: {
   const xAx = axisDisplay(xColName, prefs);
   const x = column(parsed, 0).map(xAx.conv);
   const yAxes = yProps.map((name) => axisDisplay(name, prefs));
-  const yIdx = parsed.header
-    .map((_, i) => i)
-    .filter((i) => i > 0 && i !== secIdx);
 
   const data = yCols.map((name, idx) => ({
     type: "scattergl" as const,
     mode: "lines+markers" as const,
     name: splitMethodCol(name).model ?? name,
     x,
-    y: column(parsed, yIdx[idx]!).map(yAxes[idx]!.conv),
+    y: column(parsed, cols[idx]!).map(yAxes[idx]!.conv),
     line: { color: PLOT_COLORS.series[idx % PLOT_COLORS.series.length] },
     marker: { size: 4 },
   }));
@@ -497,7 +566,7 @@ function ScanLinePlot({ parsed, referenceLines, secondaryColumn }: {
                && yProps.every((c) => logProp(c));
 
   // Y-axis title: single column uses its display label; multiple columns sharing
-  // a common prefix use that prefix's display label (assume same dimension).
+  // a common prefix use that prefix's display label (same dimension by construction).
   const yTitle = (yProps.length === 1
     ? yAxes[0]!.label
     : axisDisplay(commonPrefix(yProps) || yProps[0]!, prefs).label)
@@ -522,21 +591,21 @@ function ScanLinePlot({ parsed, referenceLines, secondaryColumn }: {
     <Plot
       data={secTrace ? [...data, secTrace] : data}
       layout={{
-...darkLayout,
+        ...darkLayout,
         autosize: true,
         xaxis: {
-...darkLayout.xaxis,
+          ...darkLayout.xaxis,
           title: { text: xAx.label },
         },
         yaxis: {
-...darkLayout.yaxis,
+          ...darkLayout.yaxis,
           title: { text: yTitle },
           type: useLogY ? ("log" as const) : ("linear" as const),
         },
         ...(secTrace
           ? {
               yaxis2: {
-...darkLayout.yaxis,
+                ...darkLayout.yaxis,
                 title: { text: secondaryColumn },
                 overlaying: "y" as const,
                 side: "right" as const,
@@ -596,6 +665,9 @@ function labelWithUnit(colName: string): string {
 export function axisDisplay(colName: string, prefs: DisplayPrefs):
   { conv: (v: number) => number; label: string; unit: string }
 {
+  // DEFENSIVE: a missing/empty column name must never throw (this was a crash
+  // path when a non-scan CSV reached the scan plot).
+  if (!colName) return { conv: (v) => v, label: "", unit: "" };
   let canon = "";
   for (const tok of colName.toLowerCase().split(/[_[\]]/)) {
     if (COL_UNITS[tok]) { canon = COL_UNITS[tok]; break; }

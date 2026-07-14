@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-chloro-9,10-bis(phenylethynyl)anthracene  (C30H17Cl, CAS 41105-35-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Chloro910BisPhenylethynylAnthracene;
+formula     C30H17Cl;
+CAS         41105-35-5;
+InChIKey    IMMCAKJISYGPDQ-UHFFFAOYSA-N;
+MW          412.916;      // g/mol [origin=calculated method=formula-sum]
+Tc          1386.57;      // K   [origin=predictive method=joback]
+Pc          17.477;      // bar [origin=predictive method=joback]
+omega       0.9119;      // -   [origin=predictive method=lee-kesler]
+Tb          1079.35;      // K   [origin=predictive method=joback]
+HvapTb      103819.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-83.78 2.0789 -0.0015432 4.5186e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 17; } { group AC; count 8; } { group ACCl; count 1; } { group C_C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tC; count 4; } { group dCH_ring; count 17; } { group dC_ring; count 9; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-9,10-bis(2-phenylethynyl)anthracene" "1-chloro-bpea" "1-chloro-9,10-bis(2-phenylethynyl)anthracene" "anthracene, 1-chloro-9,10-bis(phenylethynyl)-" "anthracene, 9,10-bis(phenylethynyl)-1-chloro-" "anthracene, 1-chloro-9,10-bis(2-phenylethynyl)-" "1-chloro-bpee" "cbpea" "1-cl-bpee" "immcakjisygpdq-uhfffaoysa-" "9,10-bis-(phenylethynyl)-1-chloroanthracene" "9,10-bis(2-phenylethynyl)-1-chloroanthracene" );
+gibbsFormation
+{
+    dHf_298   912180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     739.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1107400.0
+    phase     gas;
+}

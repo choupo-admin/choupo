@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methylallylamine  (C4H9N, CAS 2878-14-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methylallylamine;
+formula     C4H9N;
+CAS         2878-14-0;
+InChIKey    VXDHQYLFEYUMFY-UHFFFAOYSA-N;
+MW          71.123;      // g/mol [origin=calculated method=formula-sum]
+Tc          549.90;      // K   [origin=predictive method=joback]
+Pc          44.563;      // bar [origin=predictive method=joback]
+omega       0.3248;      // -   [origin=predictive method=lee-kesler]
+Tb          360.21;      // K   [origin=predictive method=joback]
+HvapTb      34549.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.061 0.42562 -0.0002624 6.66e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2=C; count 1; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylprop-2-en-1-amine" "methallylamine" "2-methylprop-2-en-1-ylamine" "2-propen-1-amine, 2-methyl-" );
+gibbsFormation
+{
+    dHf_298   23540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     354.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=128540.0
+    phase     gas;
+}

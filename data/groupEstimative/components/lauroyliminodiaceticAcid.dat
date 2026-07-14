@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lauroyliminodiacetic acid  (C16H29NO5, CAS 3775-51-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lauroyliminodiaceticAcid;
+formula     C16H29NO5;
+CAS         3775-51-7;
+InChIKey    PCNAKWUTWPAVMZ-UHFFFAOYSA-N;
+MW          315.41;      // g/mol [origin=calculated method=formula-sum]
+Tc          1131.15;      // K   [origin=predictive method=joback]
+Pc          15.810;      // bar [origin=predictive method=joback]
+omega       1.3713;      // -   [origin=predictive method=lee-kesler]
+Tb          923.01;      // K   [origin=predictive method=joback]
+HvapTb      94327.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.788 1.72132 -0.0010857 2.6356e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group COOH; count 2; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 12; } { group CdO; count 1; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[dodecanoyl(2-hydroxy-2-oxoethyl)amino]ethanoic acid" "acetic acid, (lauroylimino)di-" "glycine, n-(carboxymethyl)-n-(1-oxododecyl)-" "2,2'-(dodecanoylimino)diacetic acid" "n-carboxymethyl-n-(1-oxododecyl)-glycine" "n-lauroyliminodiacetic acid" "o193" "[n-(carboxymethyl)dodecanamido]acetic acid" "n-(carboxymethyl)-n-(1-oxododecyl)glycine" "2-[carboxymethyl(dodecanoyl)amino]acetic acid" "glycine,n-(carboxymethyl)-n-(1-oxododecyl)-" "2-[n-(carboxymethyl)dodecanoylamino]acetic acid" );
+gibbsFormation
+{
+    dHf_298   -1119160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     928.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-622120.0
+    phase     gas;
+}

@@ -1,0 +1,3 @@
+application  choupoSolve;
+description  "Full-scale ammonia plant (~59 t/h NH3, 1400 t/day): explicit syngas + recycle COMPRESSORS, feed-effluent HEAT EXCHANGER, ADIABATIC converter (the reaction heats itself -- exothermic), water cooler + refrigerated separator, product let-down, and the recycle + purge. SRK fugacity throughout; dissolved H2/N2 by measured Henry constants (Wiebe 1934, Larson-Black 1925 via IUPAC SDS 5/6).";
+verbosity    3;

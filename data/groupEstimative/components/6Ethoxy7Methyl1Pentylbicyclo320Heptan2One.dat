@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-ethoxy-7-methyl-1-pentylbicyclo(3.2.0)heptan-2-one  (C15H26O2, CAS 72928-26-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Ethoxy7Methyl1Pentylbicyclo320Heptan2One;
+formula     C15H26O2;
+CAS         72928-26-8;
+InChIKey    GDKZYNYQEYOOFW-UHFFFAOYSA-N;
+MW          238.371;      // g/mol [origin=calculated method=formula-sum]
+Tc          845.05;      // K   [origin=predictive method=joback]
+Pc          17.714;      // bar [origin=predictive method=joback]
+omega       0.7102;      // -   [origin=predictive method=lee-kesler]
+Tb          641.69;      // K   [origin=predictive method=joback]
+HvapTb      53870.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-92.535 1.72846 -0.001253 4.098e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 3; } { group C; count 1; } { group CH2CO; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group C_ring; count 1; } { group O; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-ethoxy-6-methyl-5-pentyl-bicyclo[3.2.0]heptan-4-one" "bicyclo(3.2.0)heptan-2-one, 6-ethoxy-7-methyl-1-pentyl-" "bicyclo[3.2.0]heptan-2-one, 6-ethoxy-7-methyl-1-pentyl-" "7-ethoxy-6-methyl-5-pentylbicyclo[3.2.0]heptan-4-one" "bicyclo[3.2.0]heptan-2-one,6-ethoxy-7-methyl-1-pentyl-" );
+gibbsFormation
+{
+    dHf_298   -508850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     496.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-63680.0
+    phase     gas;
+}

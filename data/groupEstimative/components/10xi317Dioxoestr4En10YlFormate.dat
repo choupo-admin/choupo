@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (10xi)-3,17-dioxoestr-4-en-10-yl formate  (C19H24O4, CAS 86831-65-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C19H24O4 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        10xi317Dioxoestr4En10YlFormate;
+formula     C19H24O4;
+CAS         86831-65-4;
+InChIKey    HPRLLPRHJQYFQS-WYDHKZDJSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          316.397;      // g/mol [origin=calculated method=formula-sum]
+Tc          1063.69;      // K   [origin=predictive method=joback]
+Pc          19.983;      // bar [origin=predictive method=joback]
+omega       0.6618;      // -   [origin=predictive method=lee-kesler]
+Tb          794.64;      // K   [origin=predictive method=joback]
+HvapTb      62864.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-259.56 2.47772 -0.00225364 8.804e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CH; count 3; } { group C; count 2; } { group CH=C; count 1; } { group CH2CO; count 2; } { group HCOO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 8; } { group CH_ring; count 3; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(8s,9s,13s,14s)-13-methyl-3,17-bis(oxidanylidene)-2,6,7,8,9,11,12,14,15,16-decahydro-1h-cyclopenta[a]phenanthren-10-yl] methanoate" "10-hedf" "10beta-hydroxy-4-estrene-3,17-dione formate" "estr-4-ene-3,17-dione, 10-(formyloxy)-" "[(8s,9s,13s,14s)-13-methyl-3,17-dioxo-2,6,7,8,9,11,12,14,15,16-decahydro-1h-cyclopenta[a]phenanthren-10-yl] formate" );
+gibbsFormation
+{
+    dHf_298   -317590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     713.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=92020.0
+    phase     gas;
+}

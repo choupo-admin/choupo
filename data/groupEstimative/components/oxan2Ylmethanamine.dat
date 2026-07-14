@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxan-2-ylmethanamine  (C6H13NO, CAS 6628-83-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oxan2Ylmethanamine;
+formula     C6H13NO;
+CAS         6628-83-7;
+InChIKey    NYGCBQKDTGBHSC-UHFFFAOYSA-N;
+MW          115.176;      // g/mol [origin=calculated method=formula-sum]
+Tc          675.97;      // K   [origin=predictive method=joback]
+Pc          42.111;      // bar [origin=predictive method=joback]
+omega       0.4279;      // -   [origin=predictive method=lee-kesler]
+Tb          455.91;      // K   [origin=predictive method=joback]
+HvapTb      44530.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-44.359 0.7548 -0.0004131 7.21e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group FCH2O; count 1; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetrahydropyran-2-ylmethylamine" "2-(aminomethyl)tetrahydropyran" "pyran, 2-(aminomethyl)tetrahydro-" "2-(aminomethyl)tetrahydro-2h-pyran" "2-aminomethyltetrahydropyran" "pyran, 2-aminomethyltetrahydro-" "2h-pyran-2-methanamine, tetrahydro-" "2h-pyran-2-methylamine, tetrahydro-" "c-(tetrahydro-pyran-2-yl)-methylamine" "2h-3,4,5,6-tetrahydropyran-2-ylmethylamine" "1-(tetrahydro-2h-pyran-2-yl)methanamine" "2h-pyran-2-methanamine, tetrahydro- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -211060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     359.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=4420.0
+    phase     gas;
+}

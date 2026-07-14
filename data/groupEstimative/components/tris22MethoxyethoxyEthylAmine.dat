@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tris(2-(2-methoxyethoxy)ethyl)amine  (C15H33NO6, CAS 70384-51-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tris22MethoxyethoxyEthylAmine;
+formula     C15H33NO6;
+CAS         70384-51-9;
+InChIKey    XGLVDUUYFKXKPL-UHFFFAOYSA-N;
+MW          323.43;      // g/mol [origin=calculated method=formula-sum]
+Tc          854.04;      // K   [origin=predictive method=joback]
+Pc          13.108;      // bar [origin=predictive method=joback]
+omega       1.0752;      // -   [origin=predictive method=lee-kesler]
+Tb          689.76;      // K   [origin=predictive method=joback]
+HvapTb      65487.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (131.562 1.17356 -0.0002388 -1.241e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH3O; count 3; } { group CH2O; count 3; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 12; } { group O; count 6; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-methoxyethoxy)-n,n-bis[2-(2-methoxyethoxy)ethyl]ethanamine" "tris(dioxa-3,6-heptyl)amine" "tris[2-(2-methoxyethoxy)ethyl]amine" "tris(3,6-dioxaheptyl)amine" "tda-1" "ethanamine, 2-(2-methoxyethoxy)-n,n-bis(2-(2-methoxyethoxy)ethyl)-" "ethanamine, 2-(2-methoxyethoxy)-n,n-bis[2-(2-methoxyethoxy)ethyl]-" "8-[2-(2-methoxyethoxy)ethyl]-2,5,11,14-tetraoxa-8-azapentadecane" );
+gibbsFormation
+{
+    dHf_298   -1078720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     824.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-443800.0
+    phase     gas;
+}

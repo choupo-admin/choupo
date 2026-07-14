@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methyl-4-phenylbut-3-en-2-one  (C11H12O, CAS 1901-26-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Methyl4Phenylbut3En2One;
+formula     C11H12O;
+CAS         1901-26-4;
+InChIKey    BQJFBHBDOAIIGS-UHFFFAOYSA-N;
+MW          160.216;      // g/mol [origin=calculated method=formula-sum]
+Tc          761.57;      // K   [origin=predictive method=joback]
+Pc          30.090;      // bar [origin=predictive method=joback]
+omega       0.5000;      // -   [origin=predictive method=lee-kesler]
+Tb          535.87;      // K   [origin=predictive method=joback]
+HvapTb      49140.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.53 0.96184 -0.0006732 1.8536e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH=C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methyl-4-phenyl-but-3-en-2-one" "3-methyl-4-phenyl-3-buten-2-one" );
+gibbsFormation
+{
+    dHf_298   -38990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     494.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=96900.0
+    phase     gas;
+}

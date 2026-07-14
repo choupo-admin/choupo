@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  still01_benzene_toluene / constant/thermoPackage
+
+  Benzene (the more volatile, alpha ~ 2.4 at 1 atm — it flashes off first)
+  and toluene (concentrates in the pot residue).  Ideal + idealGas: this
+  near-ideal aromatic pair genuinely obeys Raoult's law at 1 atm, and the
+  constant-alpha assumption is exactly what lets the trajectory be checked
+  against the closed-form Rayleigh integration.
+\*---------------------------------------------------------------------------*/
+
+components       ( benzene  toluene );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

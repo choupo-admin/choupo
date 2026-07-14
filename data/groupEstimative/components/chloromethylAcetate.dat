@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chloromethyl acetate  (C3H5ClO2, CAS 625-56-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chloromethylAcetate;
+formula     C3H5ClO2;
+CAS         625-56-9;
+InChIKey    SMJYMSAPPGLBAR-UHFFFAOYSA-N;
+MW          108.521;      // g/mol [origin=calculated method=formula-sum]
+Tc          548.02;      // K   [origin=predictive method=joback]
+Pc          42.275;      // bar [origin=predictive method=joback]
+omega       0.3613;      // -   [origin=predictive method=lee-kesler]
+Tb          363.89;      // K   [origin=predictive method=joback]
+HvapTb      34064.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (38.461 0.24082 -6.52e-05 -2.36e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3COO; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "chloromethyl ethanoate" "methanol, chloro-, acetate" "chloromethanol acetate" "ghl.pd_mitscher_leg0.478" "chloromethyl ethanoate;acetic acid chloromethyl" "methanol,chloro-, acetate (6ci,7ci,8ci,9ci);(acetyloxy)methyl chloride;acetic acid,chloromethyl ester;acetoxymethyl chloride;" );
+gibbsFormation
+{
+    dHf_298   -438270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     357.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-347920.0
+    phase     gas;
+}

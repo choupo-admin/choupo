@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(2-ethylhexyl) tetrabromophthalate  (C24H34Br4O4, CAS 26040-51-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis2EthylhexylTetrabromophthalate;
+formula     C24H34Br4O4;
+CAS         26040-51-7;
+InChIKey    UUEDINPOVKWVAZ-UHFFFAOYSA-N;
+MW          706.148;      // g/mol [origin=calculated method=formula-sum]
+Tc          1446.95;      // K   [origin=predictive method=joback]
+Pc          11.383;      // bar [origin=predictive method=joback]
+omega       1.0719;      // -   [origin=predictive method=lee-kesler]
+Tb          1180.50;      // K   [origin=predictive method=joback]
+HvapTb      114382.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (98.88 1.96248 -0.0010806 1.966e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 10; } { group CH; count 2; } { group AC; count 6; } { group Br; count 4; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 10; } { group CH; count 2; } { group dC_ring; count 6; } { group Br; count 4; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(2-ethylhexyl) 3,4,5,6-tetrakis(bromanyl)benzene-1,2-dicarboxylate" "bis(2-ethylhexyl) 3,4,5,6-tetrabromophthalate" "1,2-benzenedicarboxylic acid, 3,4,5,6-tetrabromo-, 1,2-bis(2-ethylhexyl) ester" "dp 45" "1,2-benzenedicarboxylic acid, 3,4,5,6-tetrabromo-, bis(2-ethylhexyl) ester" "pyronil 45" "uniplex frp 45" "di(2-ethylhexyl) tetrabromophthalate" "bis(2-ethylhexyl)3,4,5,6-tetrabromophthalate" "phthalic acid, tetrabromo-, bis(2-ethylhexyl) ester" "phthalic acid, tetrabromo-, di(2-ethylhexyl) ester" "bis(2-ethylhexyl) 3,4,5,6-tetrabromobenzene-1,2-dicarboxylate" );
+gibbsFormation
+{
+    dHf_298   -899310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1241.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-352880.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benz[a]anthracene  (C18H12, CAS 56-55-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzAAnthracene;
+formula     C18H12;
+CAS         56-55-3;
+InChIKey    DXBHBZVCASKNBY-UHFFFAOYSA-N;
+MW          228.294;      // g/mol [origin=calculated method=formula-sum]
+Tc          968.67;      // K   [origin=predictive method=joback]
+Pc          27.412;      // bar [origin=predictive method=joback]
+omega       0.6556;      // -   [origin=predictive method=lee-kesler]
+Tb          705.02;      // K   [origin=predictive method=joback]
+HvapTb      64182.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-113.11 1.5048 -0.00126268 4.22e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 12; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzo[a]anthracene" "1,2-benzanthracene" "tetraphene" "benzanthracene" "benzanthrene" "naphthanthracene" "benz(a)anthracene" "benzoanthracene" "2,3-benzphenanthrene" "benzo(a)anthracene" "1,2-benzanthrene" "1,2-benzanthrazen" );
+gibbsFormation
+{
+    dHf_298   371950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     411.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=513780.0
+    phase     gas;
+}

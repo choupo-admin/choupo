@@ -2,6 +2,11 @@
   Component: Acetic Acid  (CH3COOH, C2H4O2, CAS 64-19-7)
   Note: vapour-phase dimerisation is neglected here (would require
         a chemical-association EoS).  Adequate for LLE tutorial.
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
+           coefficients (marked 'individual literature value' at the block),
+           Cp polynomials and the ideal-gas formation datum -- primary
+           re-citation pending (IST review).  UNIQUAC r,q are the van der
+           Waals values (Abrams-Prausnitz) as used by Popken 2000, Table 2.
 \*---------------------------------------------------------------------------*/
 
 name        aceticAcid;
@@ -49,4 +54,10 @@ groups
 {
     unifac ( { group CH3; count 1; } { group COOH; count 1; } );
     joback ( { group CH3; count 1; } { group acid; count 1; } );
+}
+
+uniquac
+{
+    r   2.2024;
+    q   2.0720;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
 }

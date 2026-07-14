@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-ethylheptylamine  (C9H21N, CAS 66793-76-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nEthylheptylamine;
+formula     C9H21N;
+CAS         66793-76-8;
+InChIKey    IUZZLNVABCISOI-UHFFFAOYSA-N;
+MW          143.274;      // g/mol [origin=calculated method=formula-sum]
+Tc          623.17;      // K   [origin=predictive method=joback]
+Pc          23.360;      // bar [origin=predictive method=joback]
+omega       0.6034;      // -   [origin=predictive method=lee-kesler]
+Tb          455.69;      // K   [origin=predictive method=joback]
+HvapTb      42064.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.503 0.93504 -0.0005144 1.064e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 7; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-ethylheptan-1-amine" "1-heptanamine, n-ethyl-" "ethylheptylamine;n-ethylheptamine;n-ethylheptylamine;" );
+gibbsFormation
+{
+    dHf_298   -175620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     547.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=114290.0
+    phase     gas;
+}

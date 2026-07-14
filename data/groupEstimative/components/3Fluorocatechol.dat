@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-fluorocatechol  (C6H5FO2, CAS 363-52-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Fluorocatechol;
+formula     C6H5FO2;
+CAS         363-52-0;
+InChIKey    DXOSJQLIRGXWCF-UHFFFAOYSA-N;
+MW          128.102;      // g/mol [origin=calculated method=formula-sum]
+Tc          759.37;      // K   [origin=predictive method=joback]
+Pc          68.301;      // bar [origin=predictive method=joback]
+omega       0.7392;      // -   [origin=predictive method=lee-kesler]
+Tb          524.07;      // K   [origin=predictive method=joback]
+HvapTb      56437.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-48.22 0.8159 -0.00086292 3.575e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACOH; count 2; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group OH_phenol; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-fluoranylbenzene-1,2-diol" "3-fluorobenzene-1,2-diol" "pyrocatechol, 3-fluoro-" "1,2-dihydroxy-3-fluorobenzene" "1,2-benzenediol, 3-fluoro-" "1-fluoro-2,3-dihydroxybenzene" "3-fluoro-1,2-dihydroxybenzene" "3fa" "dxosjqlirgxwcf-uhfffaoysa-" "pyrocatechol,3-fluoro- (8ci);1,2-dihydroxy-3-fluorobenzene;3-fluoro-1,2-benzenediol;3-fluoro-2-hydroxyphenol;3-fluorocatechol;" );
+gibbsFormation
+{
+    dHf_298   -481370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     367.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-392000.0
+    phase     gas;
+}

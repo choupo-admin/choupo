@@ -1,0 +1,6 @@
+/* h1: heats A's inlet into the sector-internal edge `feed` -- the
+   deliberate basename TWIN of the domain inlet (a different stream). */
+type        heater;
+in          inlet;
+outputs     ( feed );
+operation   { Q 1.0 kW; }

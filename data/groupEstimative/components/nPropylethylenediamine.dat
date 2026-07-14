@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-propylethylenediamine  (C5H14N2, CAS 111-39-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nPropylethylenediamine;
+formula     C5H14N2;
+CAS         111-39-7;
+InChIKey    CFNHVUGPXZUTRR-UHFFFAOYSA-N;
+MW          102.181;      // g/mol [origin=calculated method=formula-sum]
+Tc          622.18;      // K   [origin=predictive method=joback]
+Pc          37.730;      // bar [origin=predictive method=joback]
+omega       0.5861;      // -   [origin=predictive method=lee-kesler]
+Tb          436.70;      // K   [origin=predictive method=joback]
+HvapTb      43801.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.624 0.61692 -0.0003402 6.98e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH2NH2; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n'-propylethane-1,2-diamine" "1,2-ethanediamine, n-propyl-" "ethylenediamine, n-propyl-" "n-(n-propyl)ethylenediamine" "1,2-ethanediamine, n1-propyl-" "2-propylaminoethylamine" "(2-aminoethyl)(propyl)amine" "n-(n-propyl)ethyl enediamine" "1,2-ethanediamine,n1-propyl-" "2-n-propylaminoethylamine" "ethylenediamine, n-propyl- (8ci)" "3-(ethylenediamino)propyl silica gel" );
+gibbsFormation
+{
+    dHf_298   -59270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     443.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=147060.0
+    phase     gas;
+}

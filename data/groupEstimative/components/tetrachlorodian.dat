@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrachlorodian  (C15H12Cl4O2, CAS 79-95-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrachlorodian;
+formula     C15H12Cl4O2;
+CAS         79-95-8;
+InChIKey    KYPYTERUKNKOLP-UHFFFAOYSA-N;
+MW          366.059;      // g/mol [origin=calculated method=formula-sum]
+Tc          1195.81;      // K   [origin=predictive method=joback]
+Pc          28.084;      // bar [origin=predictive method=joback]
+omega       1.1623;      // -   [origin=predictive method=lee-kesler]
+Tb          923.81;      // K   [origin=predictive method=joback]
+HvapTb      98456.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.11 1.49524 -0.00135256 4.928e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C; count 1; } { group ACH; count 4; } { group AC; count 2; } { group ACOH; count 2; } { group ACCl; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 8; } { group Cl; count 4; } { group OH_phenol; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[2-[3,5-bis(chloranyl)-4-oxidanyl-phenyl]propan-2-yl]-2,6-bis(chloranyl)phenol" "tetrachlorobisphenol a" "tetrachlordian" "4,4'-propane-2,2-diylbis(2,6-dichlorophenol)" "2,2',6,6'-tetrachlorobisphenol a" "4,4'-isopropylidenebis(2,6-dichlorophenol)" "2,2-bis(3,5-dichloro-4-hydroxyphenyl)propane" "2,2-bis(4-hydroxy-3,5-dichlorophenyl)propane" "3,3',5,5'-tetrachlorobisphenol a" "4,4'-(1-methylethylidene)bis(2,6-dichlorophenol)" "3,5,3',5'-tetrachlorobisphenol a" "phenol, 4,4'-(1-methylethylidene)bis[2,6-dichloro-" );
+gibbsFormation
+{
+    dHf_298   -352080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     650.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-92400.0
+    phase     gas;
+}

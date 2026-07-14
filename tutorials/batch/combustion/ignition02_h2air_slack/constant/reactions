@@ -1,0 +1,441 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  H2/O2 MECHANISM -- O Conaire, Curran, Simmie, Pitz & Westbrook 2004
+  (Int. J. Chem. Kinet. 36, 603, DOI 10.1002/kin.20036), Table I VERBATIM.
+
+  21 dict entries = their 19 reactions (14 and 19 are summed PAIRS, note h;
+  9 and 15 are Troe falloffs with the second line as the high-pressure
+  limit).  A stays in cm3-mol-s, Ea in kcal/mol -- the engine converts and
+  announces (kinetics.units{}), zero hand-converted numbers.  Third-body
+  efficiencies per reaction as published (Ar/He omitted: no argon or helium
+  in this case).  Reverse rates from equilibrium (curated NASA-7 thermo) --
+  the paper uses the same convention (reverse via thermochemistry).
+\*-----------------------------------------------------------------------------*/
+
+provenance
+{
+    status  "CURATED -- O Conaire 2004 H2/O2 mechanism, Table I verbatim";
+    review  { state transcribed; reviewer "session 2026-07-02 (per-entry audit of the units announce)"; }
+    kinetics_source  "O Conaire et al., Int. J. Chem. Kinet. 36 (2004) 603, DOI 10.1002/kin.20036";
+    thermo_source    "data/standards/components/*.dat + case-local NASA-7 overrides";
+}
+
+R1_H_O2_O_OH
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component O;      nu  1;  order 0; }
+        { component O2;     nu -1;  order 1; }
+        { component OH;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1.9100e+14;  b 0.0;  Ea 16.44;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R2_O_H2_H_OH
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  O;
+    stoichiometry
+    (
+        { component H;      nu  1;  order 0; }
+        { component H2;     nu -1;  order 1; }
+        { component O;      nu -1;  order 1; }
+        { component OH;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 5.0800e+04;  b 2.67;  Ea 6.292;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R3_OH_H2_H_H2O
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  OH;
+    stoichiometry
+    (
+        { component H;      nu  1;  order 0; }
+        { component H2;     nu -1;  order 1; }
+        { component OH;     nu -1;  order 1; }
+        { component water;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2.1600e+08;  b 1.51;  Ea 3.43;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R4_O_H2O_2OH
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  O;
+    stoichiometry
+    (
+        { component O;      nu -1;  order 1; }
+        { component OH;     nu  2;  order 0; }
+        { component water;  nu -1;  order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2.9700e+06;  b 2.02;  Ea 13.4;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R5_H2_M_2H_M
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  H2;
+    stoichiometry
+    (
+        { component H;      nu  2;  order 0; }
+        { component H2;     nu -1;  order 1; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 4.5700e+19;  b -1.4;  Ea 105.1;
+        thirdBody { water 12.0; H2 2.5; }
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R6_2O_M_O2_M
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  O;
+    stoichiometry
+    (
+        { component O;      nu -2;  order 2; }
+        { component O2;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 6.1700e+15;  b -0.5;  Ea 0.0;
+        thirdBody { water 12.0; H2 2.5; }
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R7_O_H_M_OH_M
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  O;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component O;      nu -1;  order 1; }
+        { component OH;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 4.7200e+18;  b -1.0;  Ea 0.0;
+        thirdBody { water 12.0; H2 2.5; }
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R8_H_OH_M_H2O_M
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component OH;     nu -1;  order 1; }
+        { component water;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 4.5000e+22;  b -2.0;  Ea 0.0;
+        thirdBody { water 12.0; H2 0.73; }
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R9_H_O2_M_HO2
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component HO2;    nu  1;  order 0; }
+        { component O2;     nu -1;  order 1; }
+    );
+    kinetics
+    {
+        type falloff;
+        A 1.4800e+12;  b 0.6;  Ea 0.0;
+        low  { A 3.4800e+16;  b -0.41;  Ea -1.12;  units { A "cm3/mol/s"; Ea "kcal/mol"; } }
+        troe ( 0.5 1e-30 1e+30 1e+100 );
+        thirdBody { H2 1.3; water 14.0; }
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R10_HO2_H_H2_O2
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  HO2;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component H2;     nu  1;  order 0; }
+        { component HO2;    nu -1;  order 1; }
+        { component O2;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1.6600e+13;  b 0.0;  Ea 0.82;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R11_HO2_H_2OH
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  HO2;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component HO2;    nu -1;  order 1; }
+        { component OH;     nu  2;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 7.0800e+13;  b 0.0;  Ea 0.3;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R12_HO2_O_OH_O2
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  HO2;
+    stoichiometry
+    (
+        { component HO2;    nu -1;  order 1; }
+        { component O;      nu -1;  order 1; }
+        { component O2;     nu  1;  order 0; }
+        { component OH;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 3.2500e+13;  b 0.0;  Ea 0.0;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R13_HO2_OH_H2O_O2
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  HO2;
+    stoichiometry
+    (
+        { component HO2;    nu -1;  order 1; }
+        { component O2;     nu  1;  order 0; }
+        { component OH;     nu -1;  order 1; }
+        { component water;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2.8900e+13;  b 0.0;  Ea -0.5;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R14a_2HO2_H2O2_O2
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    // one of a summed PAIR (Table I note h): rates add
+    reversible        true;
+    limitingReactant  HO2;
+    stoichiometry
+    (
+        { component H2O2;   nu  1;  order 0; }
+        { component HO2;    nu -2;  order 2; }
+        { component O2;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 4.2000e+14;  b 0.0;  Ea 11.98;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R14b_2HO2_H2O2_O2
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    // one of a summed PAIR (Table I note h): rates add
+    reversible        true;
+    limitingReactant  HO2;
+    stoichiometry
+    (
+        { component H2O2;   nu  1;  order 0; }
+        { component HO2;    nu -2;  order 2; }
+        { component O2;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1.3000e+11;  b 0.0;  Ea -1.629;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R15_H2O2_M_2OH
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  H2O2;
+    stoichiometry
+    (
+        { component H2O2;   nu -1;  order 1; }
+        { component OH;     nu  2;  order 0; }
+    );
+    kinetics
+    {
+        type falloff;
+        A 2.9500e+14;  b 0.0;  Ea 48.4;
+        low  { A 1.2700e+17;  b 0.0;  Ea 45.5;  units { A "cm3/mol/s"; Ea "kcal/mol"; } }
+        troe ( 0.5 1e-30 1e+30 );
+        thirdBody { water 12.0; H2 2.5; }
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R16_H2O2_H_H2O_OH
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  H2O2;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component H2O2;   nu -1;  order 1; }
+        { component OH;     nu  1;  order 0; }
+        { component water;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2.4100e+13;  b 0.0;  Ea 3.97;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R17_H2O2_H_H2_HO2
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  H2O2;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component H2;     nu  1;  order 0; }
+        { component H2O2;   nu -1;  order 1; }
+        { component HO2;    nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 6.0300e+13;  b 0.0;  Ea 7.95;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R18_H2O2_O_OH_HO2
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;
+    limitingReactant  H2O2;
+    stoichiometry
+    (
+        { component H2O2;   nu -1;  order 1; }
+        { component HO2;    nu  1;  order 0; }
+        { component O;      nu -1;  order 1; }
+        { component OH;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 9.5500e+06;  b 2.0;  Ea 3.97;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R19a_H2O2_OH_H2O_HO2
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    // one of a summed PAIR (Table I note h): rates add
+    reversible        true;
+    limitingReactant  H2O2;
+    stoichiometry
+    (
+        { component H2O2;   nu -1;  order 1; }
+        { component HO2;    nu  1;  order 0; }
+        { component OH;     nu -1;  order 1; }
+        { component water;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1.0000e+12;  b 0.0;  Ea 0.0;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
+
+R19b_H2O2_OH_H2O_HO2
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    // one of a summed PAIR (Table I note h): rates add
+    reversible        true;
+    limitingReactant  H2O2;
+    stoichiometry
+    (
+        { component H2O2;   nu -1;  order 1; }
+        { component HO2;    nu  1;  order 0; }
+        { component OH;     nu -1;  order 1; }
+        { component water;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 5.8000e+14;  b 0.0;  Ea 9.56;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}

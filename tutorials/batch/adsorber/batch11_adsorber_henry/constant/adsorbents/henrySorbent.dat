@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Adsorbent: henrySorbent  (SYNTHETIC, case-local teaching record)
+
+  What this IS: the intrinsic identity of a fictitious linear-isotherm
+  sorbent, built for batch11_adsorber_henry -- the EXACT-solution gate of
+  the batchAdsorber (a Henry isotherm makes the closed vessel linear and
+  analytically solvable, see the flowsheetDict header).  Not catalogue
+  data: it lives in the case's constant/ on purpose and eclipses nothing.
+\*-----------------------------------------------------------------------------*/
+
+adsorbent
+{
+    name        henrySorbent;
+    type        "synthetic Henry-limit teaching sorbent";
+    rho_bulk    500;            // kg/m3 nominal (unused by the closed vessel)
+}
+
+provenance
+{
+    identity { origin synthetic; method "teaching construction for the batchAdsorber exact-solution gate (A2 spec G1a); K_H chosen so alpha*m ~ 1"; }
+}

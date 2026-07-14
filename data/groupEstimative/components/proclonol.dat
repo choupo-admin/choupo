@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: proclonol  (C16H14Cl2O, CAS 14088-71-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        proclonol;
+formula     C16H14Cl2O;
+CAS         14088-71-2;
+InChIKey    BKAYSPSVVJBHHK-UHFFFAOYSA-N;
+MW          293.187;      // g/mol [origin=calculated method=formula-sum]
+Tc          1043.98;      // K   [origin=predictive method=joback]
+Pc          26.164;      // bar [origin=predictive method=joback]
+omega       1.0297;      // -   [origin=predictive method=lee-kesler]
+Tb          799.55;      // K   [origin=predictive method=joback]
+HvapTb      81152.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-94.51 1.5713 -0.00123812 3.794e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group ACH; count 8; } { group AC; count 2; } { group OH; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group Cl; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(4-chlorophenyl)-cyclopropyl-methanol" "kilacar" "proclonolum [inn-latin]" "bis-p-chlorophenyl cyclopropyl methanol" "methanol, bis(p-chlorophenyl)cyclopropyl-" "benzenemethanol, 4-chloro-alpha-(4-chlorophenyl)-alpha-cyclopropyl-" "benzenemethanol, 4-chloro-.alpha.-(4-chlorophenyl)-.alpha.-cyclopropyl-" "proclonolum" "proclonol (usan/inn)" "proclonol [usan:ban:inn]" "bis(p-chlorophenyl)cyclopropylmethanol" "bis(4-chlorophenyl)-cyclopropylmethanol" );
+gibbsFormation
+{
+    dHf_298   -43110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     542.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=192310.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: h-glu(obzl)-oh  (C12H15NO4, CAS 1676-73-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hGluObzlOh;
+formula     C12H15NO4;
+CAS         1676-73-9;
+InChIKey    BGGHCRNCRWQABU-JTQLQIEISA-N;
+MW          237.255;      // g/mol [origin=calculated method=formula-sum]
+Tc          1001.16;      // K   [origin=predictive method=joback]
+Pc          28.293;      // bar [origin=predictive method=joback]
+omega       1.2113;      // -   [origin=predictive method=lee-kesler]
+Tb          776.66;      // K   [origin=predictive method=joback]
+HvapTb      79406.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.107 1.1287 -0.0006848 1.385e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group CH2COO; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-2-azanyl-5-oxidanylidene-5-phenylmethoxy-pentanoic acid" "l-glutamic acid 5-benzyl ester" "(s)-2-amino-5-(benzyloxy)-5-oxopentanoic acid" "glutamic acid, 5-benzyl ester, l-" "l-glutamic acid gamma-benzyl ester" "pblg polymer" "poly(5-benzyl l-glutamate)" "(2s)-2-amino-4-[benzyloxycarbonyl]butanoic acid" "5-benzyl l-glutamate polymer" "gamma-benzyl l-glutamate" "l-glutamic acid  pound inverted question mark-benzyl ester" "(2s)-2-amino-5-(benzyloxy)-5-oxopentanoic acid" );
+gibbsFormation
+{
+    dHf_298   -693520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     663.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-427700.0
+    phase     gas;
+}

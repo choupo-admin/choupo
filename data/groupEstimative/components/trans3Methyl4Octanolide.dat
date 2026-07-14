@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trans-3-methyl-4-octanolide  (C9H16O2, CAS 39638-67-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trans3Methyl4Octanolide;
+formula     C9H16O2;
+CAS         39638-67-0;
+InChIKey    WNVCMFHPRIBNCW-JGVFFNPUSA-N;
+MW          156.225;      // g/mol [origin=calculated method=formula-sum]
+Tc          649.20;      // K   [origin=predictive method=joback]
+Pc          25.508;      // bar [origin=predictive method=joback]
+omega       0.5323;      // -   [origin=predictive method=lee-kesler]
+Tb          465.81;      // K   [origin=predictive method=joback]
+HvapTb      42639.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-24.187 0.92844 -0.000536 1.099e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 2; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4s,5r)-5-butyl-4-methyl-oxolan-2-one" "trans-oaklactone" "quercus lactone a" "trans-whiskey lactone" "(+-)-quercus lactone" "(+-)-whiskey lactone" "whiskey lactone, (e)-" "(+-)-trans-whisky lactone" "(+-)-trans-quercus lactone" "(+-)-trans-whiskey lactone" "(+/-)-trans-whiskey lactone" "(3s,4r)-3-methyl-4-octanolide" );
+gibbsFormation
+{
+    dHf_298   -493910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     425.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-232430.0
+    phase     gas;
+}

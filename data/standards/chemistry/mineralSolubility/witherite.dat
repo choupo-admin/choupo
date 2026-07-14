@@ -1,0 +1,6 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral witherite; formula "BaCO3"; masters ( { ion Ba; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
+      logK25 1.767; dH -11957.9; analytic ( 715.5291 0.15362649 -25163.04 -275.42041 563713.9 ); source "USGS PHREEQC phreeqc.dat (public domain)";
+

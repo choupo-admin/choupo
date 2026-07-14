@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl 2-methylprop-2-enoate; prop-1-en-2-ylbenzene; styrene  (C25H32O2, CAS 58792-64-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butyl2Methylprop2EnoateProp1En2YlbenzeneStyrene;
+formula     C25H32O2;
+CAS         58792-64-6;
+InChIKey    YPNTYBCXHKBHKH-UHFFFAOYSA-N;
+MW          364.529;      // g/mol [origin=calculated method=formula-sum]
+Tc          1104.52;      // K   [origin=predictive method=joback]
+Pc          11.178;      // bar [origin=predictive method=joback]
+omega       0.7549;      // -   [origin=predictive method=lee-kesler]
+Tb          875.78;      // K   [origin=predictive method=joback]
+HvapTb      81941.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.043 1.69366 -0.0005477 -9.84e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH2=CH; count 1; } { group CH2=C; count 2; } { group ACH; count 10; } { group AC; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group dCH2; count 3; } { group dCH; count 1; } { group dC; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butyl 2-methylprop-2-enoate;ethenylbenzene;prop-1-en-2-ylbenzene" "2-propenoic acid, 2-methyl-, butyl ester, polymer with ethenylbenzene and (1-methylethenyl)benzene" );
+gibbsFormation
+{
+    dHf_298   -270080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1161.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=110970.0
+    phase     gas;
+}

@@ -31,24 +31,7 @@
   washing?  Feed the single-output `magma` form to a downstream `filter`.)
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    brine                                       // saturated aqueous NaCl (post-evaporation)
-    {
-        F            100.0 kmol/h;
-        T            298.15 K;
-        P              1.0 bar;
-        molarComposition  { water 0.9003;  NaCl 0.0997; }   // ~6.14 mol NaCl / kg water (saturated)
-    }
-
-    ethanol                                     // the ANTISOLVENT, dosed in
-    {
-        F             60.0 kmol/h;
-        T            298.15 K;
-        P              1.0 bar;
-        molarComposition  { ethanol 1.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

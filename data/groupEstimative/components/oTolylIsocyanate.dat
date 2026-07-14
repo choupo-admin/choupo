@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: o-tolyl isocyanate  (C8H7NO, CAS 614-68-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oTolylIsocyanate;
+formula     C8H7NO;
+CAS         614-68-6;
+InChIKey    VAYMIYBJLRRIFR-UHFFFAOYSA-N;
+MW          133.15;      // g/mol [origin=calculated method=formula-sum]
+Tc          703.30;      // K   [origin=predictive method=joback]
+Pc          39.259;      // bar [origin=predictive method=joback]
+omega       0.4662;      // -   [origin=predictive method=lee-kesler]
+Tb          480.97;      // K   [origin=predictive method=joback]
+HvapTb      45872.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group ACCH3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH3; count 1; } { group dCd; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-isocyanato-2-methyl-benzene" "2-methylphenyl isocyanate" "1-isocyanato-2-methylbenzene" "2-tolyl isocyanate" "benzene, 1-isocyanato-2-methyl-" "o-toluene isocyanate" "isocyanic acid, o-tolyl ester" "o-methylphenyl isocyanate" "isocyanic acid, o-tolyl ester (7ci,8ci)" "2-toluene isocyanate" "2-methylphenylisocyanate" "isocyanic acid o-tolyl ester" );
+// formation datum unavailable (element entropy missing): dHf_298=11200.0 dGf_298=None

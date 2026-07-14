@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: coronene  (C24H12, CAS 191-07-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        coronene;
+formula     C24H12;
+CAS         191-07-1;
+InChIKey    VPUGDVKSAQVFFS-UHFFFAOYSA-N;
+MW          300.36;      // g/mol [origin=calculated method=formula-sum]
+Tc          1154.77;      // K   [origin=predictive method=joback]
+Pc          23.703;      // bar [origin=predictive method=joback]
+omega       1.0369;      // -   [origin=predictive method=lee-kesler]
+Tb          891.08;      // K   [origin=predictive method=joback]
+HvapTb      82536.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-162.61 2.1108 -0.00211468 8.288e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 12; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 12; } { group dC_ring; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexabenzobenzene" "dibenzo(ghi,pqr)perylene" "dibenzo[ghi,pqr]perylene" "superbenzene" "[6]circulene" "ambap191-07-1" "tetracosahydrocoronene;coronene, tetracosahydro-" );
+gibbsFormation
+{
+    dHf_298   650530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     292.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=838080.0
+    phase     gas;
+}

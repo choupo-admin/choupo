@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isoquinoline  (C9H7N, CAS 119-65-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isoquinoline;
+formula     C9H7N;
+CAS         119-65-3;
+InChIKey    AWJUIBRHMBBTKR-UHFFFAOYSA-N;
+MW          129.162;      // g/mol [origin=calculated method=formula-sum]
+Tc          757.78;      // K   [origin=predictive method=joback]
+Pc          44.150;      // bar [origin=predictive method=joback]
+omega       0.3912;      // -   [origin=predictive method=lee-kesler]
+Tb          504.88;      // K   [origin=predictive method=joback]
+HvapTb      45754.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-60.58 0.80996 -0.00064298 2.043e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group C5H3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 7; } { group dC_ring; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanaphthalene" "2-benzazine" "benzo[c]pyridine" ".beta.-quinoline" "isochinolin" "beta-quinoline" "benzo(c)pyridine" "2-benzanine" "3,4-benzopyridine" "isq" "agn-pc-03g819" "21364-46-5 (hydrochloride)" );
+gibbsFormation
+{
+    dHf_298   231300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     303.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=321010.0
+    phase     gas;
+}

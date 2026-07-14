@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzofenac  (C15H13ClO3, CAS 60736-70-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzofenac;
+formula     C15H13ClO3;
+CAS         60736-70-1;
+InChIKey    DFHBBMJTBBLQSA-UHFFFAOYSA-N;
+MW          276.716;      // g/mol [origin=calculated method=formula-sum]
+Tc          1053.37;      // K   [origin=predictive method=joback]
+Pc          25.227;      // bar [origin=predictive method=joback]
+omega       1.0622;      // -   [origin=predictive method=lee-kesler]
+Tb          811.48;      // K   [origin=predictive method=joback]
+HvapTb      78819.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.968 1.1464 -0.00070252 1.507e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 2; } { group ACCH2; count 1; } { group CH2O; count 1; } { group COOH; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group Cl; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(3-chloranyl-4-phenylmethoxy-phenyl)ethanoic acid" "3-chloro-4-(phenylmethoxy)benzeneacetic acid" "3-chloro-4-benzyloxyphenylacetic acid" "4-benzyloxy-3-chlorophenylacetic acid" "(3-chloro-4-(phenylmethoxy)phenyl)acetic acid" "acetic acid, (4-(benzyloxy)-3-chlorophenyl)-" "benzeneacetic acid, 3-chloro-4-(phenylmethoxy)-" "benzofac" "benzofac vufb" "3-cbpaa" "3-chloro-4-benzyloxyphenacetic acid" "3-chloro-4-benzoyloxyphenylacetic acid" );
+gibbsFormation
+{
+    dHf_298   -401040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     612.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-179860.0
+    phase     gas;
+}

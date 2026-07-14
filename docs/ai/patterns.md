@@ -9,13 +9,10 @@ the corresponding tutorial in `case-layout.md`.
 A reactor-flash chain where the flash's liquid returns to the
 reactor.  The recycle is a CYCLE; we tear one stream and solve it.
 
-```
-streams
-{
-    freshFeed { F 100 kmol/h; T 350 K; P 1 bar;
-                molarComposition { ethanol 0.5; aceticAcid 0.5; } }
-}
+Author the fresh feed in `0/freshFeed` and the cycle-breaking initial guess in
+`0/recycle`.  The values do not belong in `flowsheetDict`.
 
+```
 tearStreams   (recycle );             # one or more tear stream names
 recycleSolver Newton;                  # default; alt: Wegstein
 recycleTol    1e-8;                    # relative tol, default 1e-5
@@ -36,8 +33,12 @@ units
 );
 ```
 
-Initial guess for the tear: write the stream into `streams {... }`
-with a reasonable starting composition.  Newton converges quadratically.
+Initial guess for the tear: AUTHOR its `0/` state file (at the stream's
+ownership path, e.g. `0/recycle`) with a reasonable starting composition —
+the tear seed is a first-class authored file of the stream-state
+architecture, and `bin/choupo-init0` REFUSES to invent one (a recycle seed
+is the author's, never propagated from nothing).  Newton converges
+quadratically.
 For counter-current cases with multiple tears + over-shoot, switch to
 `recycleSolver Wegstein;` with damping (`evaporator05_counter_current`).
 
@@ -182,10 +183,11 @@ individually identifiable — a loud header warning.  Promotion is then a
 deliberate `mv` (or, in the GUI, a reviewed download-to-disk); the GUI never
 writes data files itself.
 
-**Legacy `fitBinaryPair`** (outerDict under choupoSolve, tutorial
-`steady/fitNRTL01_ethanol_water`) still works but is **superseded** —
-fitParameters does everything it did plus the statistics and the GUI Fit
-view.  Prefer fitParameters for new cases.
+**RETIRED `fitBinaryPair`** — the factory THROWS, naming
+`fitParameters` as the replacement (which subsumes it: same LM regression
+plus identifiability statistics, mode evaluate and the GUI Fit view).  The
+old tutorial was migrated to fitParameters keeping its golden.  Historical
+record only; it cannot be run.
 
 ## 5. Computed $variables — post-processing arithmetic
 (evaporator02_triple_effect_sugar)
@@ -268,24 +270,16 @@ Operators: `gt`, `ge`, `lt`, `le`.
 Counter-current backward feed: vapour flows hot → cold, liquid flows
 cold → hot.  TWO tear streams (V_1 + V_2), damped Wegstein.
 
+The feed and steam states live in `0/feed` and `0/steam`; the two authored tear
+seeds live in `0/V_1` and `0/V_2`.  `flowsheetDict` carries only the topology
+and the `$variables` used by the equipment.
+
 ```
 variables { A 17; F_steam 1500 kg/h; }
 
 tearStreams    (V_1  V_2 );
 recycleSolver  Wegstein;
 recycleQmin    -0.7;            # extra damping for counter-current
-
-streams
-{
-    feed   { F 5000 kg/h; T 298.15 K; P 1 bar;
-             massComposition { water 0.85; sucrose 0.15; } }
-    steam  { F $F_steam; T 393.15 K; P 200 kPa; state saturatedVapour;
-             molarComposition { water 1.0; } category LP_steam_200kPa; }
-    V_1    { F 1500 kg/h; T 372.0 K; P 100 kPa;
-             molarComposition { water 1.0; } }   # initial guess
-    V_2    { F 1500 kg/h; T 350.0 K; P  40 kPa;
-             molarComposition { water 1.0; } }
-}
 
 units
 (
@@ -309,111 +303,108 @@ final product concentration + a specific operating pressure.
 A plant is a TREE of folders.  Any `flowsheetDict` is ONE of two kinds:
 
 - **LEAF** — one piece of hardware.  Has `type` (+ optional `model`,
-  `reaction`, `thermo {}`), an `operation {}` block, a `boundary {}`
-  (its ports), and a default `streams {}` (so it can run alone).
-- **COMPOSITE** — a SECTOR or the PLANT.  Has `children (...)` (NOT
-  `units`), a `boundary {}`, default `streams {}`, and `connections (...)`
-  wiring the children together.  May add `tearStreams`/`recycleSolver`
+  `reaction`, `thermo {}`), an `operation {}` block and its stream
+  MENTIONS (`inputs (...)` / `outputs (...)`).  Its boundary state lives
+  in the case's `0/` files, never inline.
+- **COMPOSITE** — a SECTOR or the PLANT.  Lists its members
+  (`units (...)` / `sectors (...)` of folder names — ONE list when kinds
+  mix) plus `connections { ... }` wiring them as NAMED edges.  May add
+  `tearStreams`/`recycleSolver`
   for an internal recycle.
 
-Each name in `children (...)` is a SUBFOLDER holding its own
-`system/flowsheetDict`.  Names follow `case-layout.md`: SECTORS in
-`CAPS`, units / streams in `PascalCase`, components lowercase.
+Each member name is a SUBFOLDER: a composite under `sectors/<NAME>/`, a
+dignified unit under `unitOperations/<name>/` (a bare `<name>/` folder is
+still resolved for older cases).  Names follow `case-layout.md`: SECTORS
+in `CAPS`, units / streams in `camelCase`, components lowercase.
 
 ### The folder tree
 
 ```
-tutorials/plant/MyPlant/
-├── MyPlant.cho
+tutorials/plant/myPlant/
+├── myPlant.cho
 ├── system/
 │   ├── controlDict                 application choupoSolve; ...
-│   └── flowsheetDict               PLANT (composite): children + connections + boundary
+│   └── flowsheetDict               PLANT: sectors (...) + named-edge connections
 ├── constant/
-│   └── thermoPackage               GLOBAL thermo -- CASCADES DOWN to every sector
-├── REACTION/                       a SECTOR (composite)
-│   ├── REACTION.cho
-│   ├── system/flowsheetDict        children ( Mix Reactor ) + boundary + streams + connections
-│   ├── constant/reactions          sector-particular (cascades down to its leaves)
-│   ├── Mix/system/flowsheetDict    LEAF: type mixer
-│   └── Reactor/system/flowsheetDict LEAF: type conversionReactor
-└── SEPARATION/                     another SECTOR (composite)
-    ├── SEPARATION.cho
-    ├── system/flowsheetDict        children ( ... ) + ...
-    └── Flash/system/flowsheetDict  LEAF: type flash
+│   └── propertyDict                GLOBAL property package -- CASCADES DOWN
+├── 0/                              THE STREAM STATE (one file per stream)
+│   ├── REACTION/tolueneIn          inlet: owned by its consuming sector
+│   ├── REACTION/reactorOut         internal: owned by its producer
+│   └── SEPARATION/product          outlet: owned by its producer
+└── sectors/
+    ├── REACTION/
+    │   ├── system/flowsheetDict    units ( mix reactor ); + connections
+    │   ├── constant/reactions      sector-particular (cascades to its units)
+    │   └── unitOperations/
+    │       ├── mix/system/flowsheetDict       LEAF: type mixer
+    │       └── reactor/system/flowsheetDict   LEAF: type conversionReactor
+    └── SEPARATION/ ...
 ```
 
-### A LEAF (one unit -- runs alone, or wired by its parent)
+### A LEAF (one unit — a folder with a `type`)
 
 ```
-# REACTION/Reactor/system/flowsheetDict      (LEAF)
+# sectors/REACTION/unitOperations/reactor/system/flowsheetDict
 type        conversionReactor;
-reaction    hda;                       # resolved from REACTION/constant/reactions (cascade)
+reaction    hda;                  # resolved from REACTION/constant/reactions (cascade)
 operation   { conversion 0.75;  T 900 K; }
-boundary    { inlets ( Feed );  outlets ( Product ); }   # <- its ports
+inputs      ( feed );             # the streams this unit MENTIONS
+outputs     ( product );          # (a legacy boundary{inlets/outlets} is still read)
+```
 
-streams      # DEFAULT feed for an isolated run; a parent connection OVERRIDES it
+The input/output NAMES are the leaf's PORTS.  Wire them from outside as
+`leafName/portName` (e.g. `reactor/feed`).  The unit reads its feed
+F / T / P / composition FROM the connected stream's `0/` file — you never
+write a `feed {}` or `composition {}` block on the unit.
+
+### A SECTOR (composite — wires its members)
+
+```
+# sectors/REACTION/system/flowsheetDict
+units ( mix reactor );            # ordered member folders (ONE list; a root
+                                  # mixing `units` AND `sectors` REFUSES)
+
+connections                       # NAMED EDGES: the key IS the stream identity
 {
-    Feed { F 400 kmol/h;  T 900 K;  P 35 bar;
-           molarComposition { toluene 0.25;  H2 0.7125;  CH4 0.0375; } }
+    tolueneIn  { to mix/tolueneIn; }              # sector inlet -> leaf port
+    h2In       { to mix/h2In; }
+    mixed      { from mix/mixed;       to reactor/feed; }
+    reactorOut { from reactor/product; }          # sector outlet
 }
 ```
 
-The boundary inlet/outlet NAMES are the leaf's PORTS.  Wire them from
-outside as `LeafName/PortName` (e.g. `Reactor/Feed`, `Reactor/Product`).
-(In a flat `units (...)` list a unit names its ports with `in`/`outputs`;
-the fractal-leaf equivalent is this `boundary { inlets/outlets }` block.)
-The unit reads its feed F / T / P / composition FROM the connected inlet
-stream — you never write a `feed {}` or `composition {}` block yourself.
-
-### A SECTOR (composite -- wires its leaves; runs alone too)
-
-```
-# REACTION/system/flowsheetDict              (SECTOR -- composite)
-children    ( Mix  Reactor );                # -> ./Mix/..., ./Reactor/...
-boundary    { inlets ( TolueneIn  H2In );  outlets ( Product ); }
-
-streams      # defaults for an isolated sector run; the PLANT cables these in
-{
-    TolueneIn { F 100 kmol/h; T 900 K; P 35 bar; molarComposition { toluene 1.0; } }
-    H2In      { F 300 kmol/h; T 900 K; P 35 bar; molarComposition { H2 0.95; CH4 0.05; } }
-}
-
-connections                                  # { from <source>; to <dest>; }
-(
-    { from TolueneIn;       to Mix/TolueneIn; }   # sector inlet  -> leaf port
-    { from H2In;            to Mix/H2In;      }
-    { from Mix/Mixed;       to Reactor/Feed;  }   # leaf out      -> leaf in
-    { from Reactor/Product; to Product;       }   # leaf out      -> sector outlet
-);
-```
-
-A connection's `to` end OVERRIDES that destination's default stream with
-the source.  `from`/`to` are either this node's own boundary names
-(`TolueneIn`, `Product`) or a child's port (`Mix/Mixed`, `Reactor/Feed`).
+A connection's KEY is the stream ID — the same identity as its `0/` state
+file (at the ownership path: inlets under the consuming sector, everything
+else under its producer).  `from`/`to` are producer/consumer PORTS, never
+identities.
 
 ### Run any level
 
 ```
-runCase tutorials/plant/MyPlant                  # the whole plant
-runCase tutorials/plant/MyPlant/REACTION         # just one sector
-runCase tutorials/plant/MyPlant/REACTION/Reactor # just one unit
+runCase tutorials/plant/myPlant                     # the whole plant
+choupoSolve tutorials/plant/myPlant/sectors/REACTION  # one sector, standalone
 ```
 
-A child runs in isolation because `thermoPackage`, `controlDict`,
-`constant/reactions`, and `constant/components` **CASCADE UP** the folder
-tree — a child inherits an ancestor's copy whenever it omits its own.  So
-the SAME folder both runs standalone and assembles into the plant.
+A child runs standalone because `constant/propertyDict`, `controlDict` and
+`constant/reactions` **CASCADE UP** the folder tree, and its `0/` is
+materialised from the parent's persisted state (`converged/` by default —
+never a silent "latest").  The few drill-in sub-dicts still carrying a
+legacy `streams {}` block are the LAST counted debt of the retired reader
+and are on the migration list.
 
 ### Recycle inside a sector
 
 List the tear and seed it, exactly as a flat case (§1, §7):
 
 ```
-tearStreams   ( Recycle );
+tearStreams   ( recycle );
 recycleSolver Newton;
-streams { Recycle { F 150 kmol/h; T 310 K; P 1 bar;
-                    molarComposition { ... } } }   # the initial guess
-connections ( ... { from Splitter/Recycle; to Recycle; } ... );  # loop closes
+connections { ... recycle { from splitter/recycle; to mix/recycle; } ... }
+```
+The tear's initial guess is its AUTHORED `0/<SECTOR>/recycle` state file:
+```
+componentMolarFlows { etoh 90 kmol/h;  water 60 kmol/h; }
+T 310 K;   P 1 bar;
 ```
 
 ### Curation phase (structure before streams)
@@ -452,15 +443,9 @@ A forward heat-link wires a *producer*'s rejected duty into a
 (~1.28 MW) heats a cold process stream through a `heater` — no
 utility consumed, the heat is re-used.
 
-```
-streams
-{
-    feed        { F 100 kmol/h;  T 370 K; P 1.01325 bar;
-                  molarComposition { benzene 0.5; toluene 0.5; } }
-    coldProcess { F 1500 kmol/h; T 320 K; P 1.01325 bar;
-                  molarComposition { benzene 1.0; } }
-}
+Author `0/feed` and `0/coldProcess` separately.  The topology remains:
 
+```
 units
 (
     # PRODUCER listed FIRST so it solves before the consumer reads its KPI.
@@ -504,9 +489,11 @@ announces when it acts; it never silently props itself up** (the
 cautionary tale is ASCEND, demoed as a mystical solver while a hidden
 `1 kg/s` guess kept it from breaking).
 
-**Initial guesses live on the stream.**  A tear's `streams {}` block IS
-its guess (`process03_recycle`).  Omit it and the solver auto-seeds from
-the feed aggregate and SAYS so — and nudges you to write a real guess:
+**Initial guesses live on the stream.**  A tear's `0/` state file IS its
+guess (`process03_recycle`).  In the steady `0/` contract a MISSING tear
+file is FATAL before the solve (completeness) and `bin/choupo-init0`
+refuses to invent it — the seed is yours.  (The feed-aggregate auto-seed
+below is the legacy `streams {}` reader's behaviour only:)
 
 ```
 [init] tear 'recycle': no guess supplied -- seeded from the feed aggregate

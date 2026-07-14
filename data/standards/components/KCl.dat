@@ -6,6 +6,12 @@
   recovered by EVAPORATION or by ANTISOLVENT (drowning-out with ethanol),
   not by cooling.  Pairs with the eNRTL/Pitzer activity models exactly as
   NaCl does; the ions K+/Cl- live in electrolyte/ions.dat.
+  Sources: formation data live PER ION (K+, Cl-; H+(aq) = 0 convention) --
+           Wagman et al., NBS Tables (1982) -- cross-checked by
+           bin/curate/check_ion_pins.  Solid rho_p 1988 kg/m^3 = sylvite
+           crystallographic density (public domain).  The ~4.76 mol/kg
+           (25 C) solubility quoted above and the Dulong-Petit liquid-Cp
+           proxy: primary re-citation pending (IST review).
 \*---------------------------------------------------------------------------*/
 
 name           KCl;
@@ -15,6 +21,9 @@ CAS            7447-40-7;
 MW             74.551;         // g/mol
 nonvolatile    true;
 dissociation   2;              // K+ + Cl-
+dissociatesTo  { K 1; Cl 1; }   // ion stoichiometry (formula-like identity; the package activates it)
+
+
 
 // FORMATION DATUM lives PER ION in electrolyte/ions.dat (K+, Cl-; H+(aq)=0
 // convention, Wagman 1982), referenced BY NAME via the electrolyte{} block --
@@ -22,14 +31,6 @@ dissociation   2;              // K+ + Cl-
 // docs/ai/data-doctrine.md).  Both K+ and Cl- carry the full hfAq/sAq/cpAq
 // enthalpy tier in ions.dat.
 
-electrolyte
-{
-    cation     K;          // -> ions.dat (z = +1)
-    anion      Cl;         // -> ions.dat (z = -1); pairs.dat / enrtl.dat (K,Cl)
-    solubility 4.76;       // m_sat [mol/kg], 25 C (35.5 g / 100 g water)
-    dissolutionEnthalpy 17200;  // J/mol; +17.2 kJ/mol (endothermic; Ksp(T) van't Hoff)
-    provenance { solubility { origin measured; method "Pinho & Macedo, J. Chem. Eng. Data 50 (2005) 29 (aqueous, 25 C; primary)"; } }
-}
 
 // Crystal properties for the population-balance crystalliser (MSMPR/FVM).
 // PRIMARY: sylvite density 1.988 g/cm^3 (crystallographic, public); k_v = 1.0 (cube).

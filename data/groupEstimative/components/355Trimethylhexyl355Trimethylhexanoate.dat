@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5,5-trimethylhexyl 3,5,5-trimethylhexanoate  (C18H36O2, CAS 59219-71-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        355Trimethylhexyl355Trimethylhexanoate;
+formula     C18H36O2;
+CAS         59219-71-5;
+InChIKey    UIVPNOBLHXUKDX-UHFFFAOYSA-N;
+MW          284.484;      // g/mol [origin=calculated method=formula-sum]
+Tc          844.71;      // K   [origin=predictive method=joback]
+Pc          11.998;      // bar [origin=predictive method=joback]
+omega       0.7087;      // -   [origin=predictive method=lee-kesler]
+Tb          662.32;      // K   [origin=predictive method=joback]
+HvapTb      59701.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-40.375 1.92256 -0.0012108 2.887e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 8; } { group CH2; count 4; } { group CH; count 2; } { group C; count 2; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2; count 5; } { group CH; count 2; } { group C; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,5,5-trimethylhexyl 3,5,5-trimethylcaproat" "hexanoic acid, 3,5,5-trimethyl-, 3,5,5-trimethylhexyl ester" "isononyl isononanoate" "3,5,5-trimethyl-1-hexyl 3,5,5-trimethylhexanoate" "3,5,5-trimethylhexanoic acid 3,5,5-trimethylhexyl ester" );
+gibbsFormation
+{
+    dHf_298   -760190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     811.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-208890.0
+    phase     gas;
+}

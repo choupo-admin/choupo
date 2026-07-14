@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-stilbenamine, (e)-  (C14H13N, CAS 14064-82-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3StilbenamineE;
+formula     C14H13N;
+CAS         14064-82-5;
+InChIKey    STNDIHAVRCIBCC-MDZDMXLPSA-N;
+MW          195.265;      // g/mol [origin=calculated method=formula-sum]
+Tc          913.28;      // K   [origin=predictive method=joback]
+Pc          30.659;      // bar [origin=predictive method=joback]
+omega       0.6175;      // -   [origin=predictive method=lee-kesler]
+Tb          654.95;      // K   [origin=predictive method=joback]
+HvapTb      62571.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-71.04 1.1984 -0.00086036 2.399e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group ACH; count 9; } { group AC; count 2; } { group ACNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[(e)-2-phenylethenyl]aniline" "benzenamine, 3-(2-phenylethenyl)-, (e)-" "(e)-3-styrylaniline" "stndihavrcibcc-mdzdmxlpsa-" );
+gibbsFormation
+{
+    dHf_298   280310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     527.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=428860.0
+    phase     gas;
+}

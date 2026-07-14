@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (e)-(3,3-dimethylcyclohexylidene)acetaldehyde  (C10H16O, CAS 26532-24-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        e33DimethylcyclohexylideneAcetaldehyde;
+formula     C10H16O;
+CAS         26532-24-1;
+InChIKey    TYHKWUGMKWVPDI-UHFFFAOYSA-N;
+MW          152.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          721.56;      // K   [origin=predictive method=joback]
+Pc          30.024;      // bar [origin=predictive method=joback]
+omega       0.4555;      // -   [origin=predictive method=lee-kesler]
+Tb          503.49;      // K   [origin=predictive method=joback]
+HvapTb      44639.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-99.3 1.26484 -0.0010953 4.142e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group C; count 1; } { group CH=C; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH; count 1; } { group CH2_ring; count 4; } { group C_ring; count 1; } { group dC_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(3,3-dimethylcyclohexylidene)ethanal" "(z)-(3,3-dimethylcyclohexylidene)acetaldehyde" "acetaldehyde, 2-(3,3-dimethylcyclohexylidene)-, (2e)-" "acetaldehyde, 2-(3,3-dimethylcyclohexylidene)-, (2z)-" "2-(3,3-dimethylcyclohexylidene)acetaldehyde" "acetaldehyde, (3,3-dimethylcyclohexylidene)-" );
+gibbsFormation
+{
+    dHf_298   -189720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     575.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1780.0
+    phase     gas;
+}

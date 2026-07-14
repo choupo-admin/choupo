@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: abieta-8(14),13(15)-dien-18-oic acid  (C20H30O2, CAS 471-77-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        abieta8141315Dien18OicAcid;
+formula     C20H30O2;
+CAS         471-77-2;
+InChIKey    KGMSWPSAVZAMKR-UHFFFAOYSA-N;
+MW          302.458;      // g/mol [origin=calculated method=formula-sum]
+Tc          1092.80;      // K   [origin=predictive method=joback]
+Pc          17.047;      // bar [origin=predictive method=joback]
+omega       0.8954;      // -   [origin=predictive method=lee-kesler]
+Tb          850.75;      // K   [origin=predictive method=joback]
+HvapTb      77087.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-247.58 2.72358 -0.00246624 9.53e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 7; } { group CH; count 2; } { group C; count 2; } { group CH=C; count 1; } { group COOH; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dC; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 2; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4a-dimethyl-7-propan-2-ylidene-3,4,4b,5,6,9,10,10a-octahydro-2h-phenanthrene-1-carboxylic acid" "podocarp-8(14)-en-15-oic acid, 13-isopropylidene-" "neoabietic acid" "1-phenanthrenecarboxylic acid, 1,2,3,4,4a,4b,5,6,7,9,10,10a-dodecahydro-1,4a-dimethyl-7-(1-methylethylidene)-, [1r-(1.alpha.,4a.beta.,4b.alpha.,10a.alpha.)]-" "1-phenanthrenecarboxylic acid, 1,2,3,4,4a,4b,5,6,7,9,10,10a-dodecahydro-1,4a-dimethyl-7-(1-methylethylidene)-, (1theta-(1alpha,4abeta,4balpha,10aalpha))-" "1,2,3,4,4a,4b,5,6,7,9,10,10a-dodecahydro-1,4a-dimethyl-7-(1-methylethylidene)-, (1r-(1.alpha.,4a.beta.,4b.alpha.,10a.alpha.))-" "1-phenanthrenecarboxylic acid, 1,2,3,4,4a,4b,5,6,7,9,10, 10a-dodecahydro-1,4a-dimethyl-7-(1-methylethylidene )-, [1r-(1?,4ass,4b?,10a?)]-" );
+gibbsFormation
+{
+    dHf_298   -496110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     837.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-66090.0
+    phase     gas;
+}

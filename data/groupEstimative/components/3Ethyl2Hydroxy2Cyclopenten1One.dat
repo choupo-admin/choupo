@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-ethyl-2-hydroxy-2-cyclopenten-1-one  (C7H10O2, CAS 21835-01-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Ethyl2Hydroxy2Cyclopenten1One;
+formula     C7H10O2;
+CAS         21835-01-8;
+InChIKey    JHWFWLUAUPZUCP-UHFFFAOYSA-N;
+MW          126.155;      // g/mol [origin=calculated method=formula-sum]
+Tc          754.13;      // K   [origin=predictive method=joback]
+Pc          41.947;      // bar [origin=predictive method=joback]
+omega       0.8723;      // -   [origin=predictive method=lee-kesler]
+Tb          548.83;      // K   [origin=predictive method=joback]
+HvapTb      54284.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.201 0.51772 -0.0001794 -9e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group OH; count 1; } { group CH2CO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 2; } { group dC_ring; count 2; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-ethyl-2-oxidanyl-cyclopent-2-en-1-one" "2-cyclopenten-1-one, 3-ethyl-2-hydroxy-" "3-ethyl-2-hydroxycyclopent-2-en-1-one" "3-ethyl-2-hydroxycyclopent-2-enone" "3-ethyl-2-cyclopenten-2-ol-1-one" "2-hydroxy-3-ethyl-2-cyclopenten-1-one" "2-hydroxy-3-ethyl-2-cyclopentene-1-one" "3-ethyl-2-hydroxy-2-cyclopenten-1-one solution" "o301" "2-cyclopenten-1-one,3-ethyl-2-hydroxy-;2-hydroxy-3-ethyl-2-cyclopenten-1-one;2-hydroxy-3-ethyl-2-cyclopentenone;3-ethyl-2-cyclopenten-2-ol-1-one;ethylcyclotene;" );
+gibbsFormation
+{
+    dHf_298   -362080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     342.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-196390.0
+    phase     gas;
+}

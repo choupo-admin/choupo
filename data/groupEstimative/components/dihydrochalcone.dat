@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dihydrochalcone  (C15H14O, CAS 1083-30-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dihydrochalcone;
+formula     C15H14O;
+CAS         1083-30-3;
+InChIKey    QGGZBXOADPVUPN-UHFFFAOYSA-N;
+MW          210.276;      // g/mol [origin=calculated method=formula-sum]
+Tc          891.51;      // K   [origin=predictive method=joback]
+Pc          26.763;      // bar [origin=predictive method=joback]
+omega       0.6550;      // -   [origin=predictive method=lee-kesler]
+Tb          650.03;      // K   [origin=predictive method=joback]
+HvapTb      60282.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-71.198 1.243 -0.0008359 2.0926e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 1; } { group ACCH2; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-diphenylpropan-1-one" "3-phenylpropiophenone" "benzylacetophenone" "hydrochalcone" "hydrocinnamophenone" ".beta.-phenylpropiophenone" ".omega.-benzyl acetophenone" "1,3-diphenyl-1-propanone" "1,3-diphenyl-1-oxopropane" "phenethyl phenyl ketone" "phenyl phenethyl ketone" "1-propanone, 1,3-diphenyl-" );
+gibbsFormation
+{
+    dHf_298   7550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     554.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=171320.0
+    phase     gas;
+}

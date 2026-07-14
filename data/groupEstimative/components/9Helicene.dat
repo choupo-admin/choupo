@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (9)-helicene  (C38H22, CAS 20495-14-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        9Helicene;
+formula     C38H22;
+CAS         20495-14-1;
+InChIKey    LKCSSGNXXHZCJW-UHFFFAOYSA-N;
+MW          478.594;      // g/mol [origin=calculated method=formula-sum]
+Tc          1580.44;      // K   [origin=predictive method=joback]
+Pc          13.923;      // bar [origin=predictive method=joback]
+omega       1.1839;      // -   [origin=predictive method=lee-kesler]
+Tb          1282.42;      // K   [origin=predictive method=joback]
+HvapTb      120212.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-217.01 3.0888 -0.00269908 9.41e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 22; } { group AC; count 16; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 22; } { group dC_ring; count 16; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[9]helicene" "diphenanthro[3,4-c:4'3'-g]phenanthrene" "nonahelicene" "lkcssgnxxhzcjw-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   857150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     615.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1167280.0
+    phase     gas;
+}

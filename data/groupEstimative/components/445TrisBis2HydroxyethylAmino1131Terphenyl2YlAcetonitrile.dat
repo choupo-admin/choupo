@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: {4,4'',5'-tris[bis(2-hydroxyethyl)amino]-1,1':3',1''-terphenyl-2'-yl}acetonitrile  (C32H42N4O6, CAS 22254-88-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        445TrisBis2HydroxyethylAmino1131Terphenyl2YlAcetonitrile;
+formula     C32H42N4O6;
+CAS         22254-88-2;
+InChIKey    CDUWPUXWSJLPJR-UHFFFAOYSA-N;
+MW          578.71;      // g/mol [origin=calculated method=formula-sum]
+Tc          3075.27;      // K   [origin=predictive method=joback]
+Pc          12.303;      // bar [origin=predictive method=joback]
+omega       -0.3426;      // -   [origin=predictive method=lee-kesler]
+Tb          1729.18;      // K   [origin=predictive method=joback]
+HvapTb      213645.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-39.747 3.0201 -0.0019646 4.863e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group ACH; count 10; } { group AC; count 8; } { group OH; count 6; } { group CH2N; count 3; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 13; } { group dCH_ring; count 10; } { group dC_ring; count 8; } { group OH; count 6; } { group N; count 3; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[4-[bis(2-hydroxyethyl)amino]-2,6-bis[4-[bis(2-hydroxyethyl)amino]phenyl]phenyl]ethanenitrile" "2-[4-(bis(2-hydroxyethyl)amino)-2,6-bis[4-(bis(2-hydroxyethyl)amino)phenyl]phenyl]acetonitrile" "2-[4-[bis(2-hydroxyethyl)amino]-2,6-bis[4-[bis(2-hydroxyethyl)amino]phenyl]phenyl]acetonitrile" "benzeneacetonitrile, 4-(bis(2-hydroxyethyl)amino)-alpha,alpha-bis(4-(bis(2-hydroxyethyl)amino)phenyl)-" "benzeneacetonitrile, 4-[bis(2-hydroxyethyl)amino]-.alpha.,.alpha.-bis[4-[bis(2-hydroxyethyl)amino]phenyl]-" );
+gibbsFormation
+{
+    dHf_298   -597480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1412.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=152240.0
+    phase     gas;
+}

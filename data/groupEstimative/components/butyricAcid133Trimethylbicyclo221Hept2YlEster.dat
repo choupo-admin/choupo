@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyric acid, 1,3,3-trimethylbicyclo(2.2.1)hept-2-yl ester  (C14H24O2, CAS 67845-31-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butyricAcid133Trimethylbicyclo221Hept2YlEster;
+formula     C14H24O2;
+CAS         67845-31-2;
+InChIKey    CQNXIFHRYNSUGB-UHFFFAOYSA-N;
+MW          224.344;      // g/mol [origin=calculated method=formula-sum]
+Tc          793.44;      // K   [origin=predictive method=joback]
+Pc          19.788;      // bar [origin=predictive method=joback]
+omega       0.5903;      // -   [origin=predictive method=lee-kesler]
+Tb          587.03;      // K   [origin=predictive method=joback]
+HvapTb      51243.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-178.138 2.10208 -0.0019916 8.066e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 2; } { group C; count 2; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2,2,4-trimethyl-3-bicyclo[2.2.1]heptanyl) butanoate" "1,3,3-trimethyl-2-norbornyl butyrate" "butanoic acid, 1,3,3-trimethylbicyclo(2.2.1)hept-2-yl ester" "butanoic acid, 1,3,3-trimethylbicyclo[2.2.1]hept-2-yl ester" );
+gibbsFormation
+{
+    dHf_298   -520330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     646.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-160370.0
+    phase     gas;
+}

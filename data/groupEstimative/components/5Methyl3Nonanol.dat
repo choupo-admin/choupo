@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-methyl-3-nonanol  (C10H22O, CAS 66719-43-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Methyl3Nonanol;
+formula     C10H22O;
+CAS         66719-43-5;
+InChIKey    CCSZLOPBDJWYHV-UHFFFAOYSA-N;
+MW          158.285;      // g/mol [origin=calculated method=formula-sum]
+Tc          684.01;      // K   [origin=predictive method=joback]
+Pc          23.338;      // bar [origin=predictive method=joback]
+omega       0.8858;      // -   [origin=predictive method=lee-kesler]
+Tb          519.70;      // K   [origin=predictive method=joback]
+HvapTb      53757.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.275 0.99966 -0.000557 1.166e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 2; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-methylnonan-3-ol" "agn-pc-03ee48" );
+gibbsFormation
+{
+    dHf_298   -412520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     577.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-108380.0
+    phase     gas;
+}

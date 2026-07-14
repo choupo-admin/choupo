@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dihydro-pseudosolasodine  (C27H45NO2, CAS 68422-03-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dihydroPseudosolasodine;
+formula     C27H45NO2;
+CAS         68422-03-7;
+InChIKey    IRRHFODGOMSPEE-UHFFFAOYSA-N;
+MW          415.662;      // g/mol [origin=calculated method=formula-sum]
+Tc          1346.09;      // K   [origin=predictive method=joback]
+Pc          12.782;      // bar [origin=predictive method=joback]
+omega       1.1855;      // -   [origin=predictive method=lee-kesler]
+Tb          1098.96;      // K   [origin=predictive method=joback]
+HvapTb      113472.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-336.22 3.64288 -0.00288664 9.879e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 9; } { group CH; count 9; } { group C; count 2; } { group CH=C; count 1; } { group OH; count 2; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 1; } { group CH2_ring; count 10; } { group CH_ring; count 8; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "10,13-dimethyl-17-[1-(5-methylpiperidin-2-yl)ethyl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthrene-3,16-diol" "16-epi-dihydro-solasodine" "agn-pc-00po36" "(3beta,16alpha,17beta)-17-{(1s)-1-[(2r,5s)-5-methylpiperidin-2-yl]ethyl}androst-5-ene-3,16-diol" "(3beta,16beta)-17-{(1s)-1-[(2r,5r)-5-methylpiperidin-2-yl]ethyl}androst-5-ene-3,16-diol" "(3s,8s,9s,10r,13s,14s,16s,17r)-10,13-dimethyl-17-[(1s)-1-[(2s,5r)-5-methylpiperidin-2-yl]ethyl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthrene-3,16-diol" "10,13-dimethyl-17-[1-(5-methyl-2-piperidyl)ethyl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthrene-3,16-diol" );
+gibbsFormation
+{
+    dHf_298   -582730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     885.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=165840.0
+    phase     gas;
+}

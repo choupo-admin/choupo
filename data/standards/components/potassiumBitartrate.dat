@@ -13,6 +13,12 @@
   interaction parameters, and the curve is the honest, data-anchored route
   (the curve already embeds the dissociation).  c_sat(T) [kg KHT / kg water],
   polynomial in T[degC]; illustrative wine-chemistry order of magnitude.
+  Sources: the c_sat(T) coefficients are an illustrative wine-chemistry
+           order of magnitude -- primary re-citation pending (IST review:
+           a measured KHT solubility-vs-T study should replace them).
+           rho_p 1980 kg/m^3 = KHT crystal density (public); liquid Cp is
+           a Dulong-Petit-order closure proxy (see block comment).  K+
+           ion tier: Wagman et al., NBS Tables (1982).
 \*---------------------------------------------------------------------------*/
 
 name           potassiumBitartrate;

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3'-iminodipropionic acid  (C6H11NO4, CAS 505-47-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33IminodipropionicAcid;
+formula     C6H11NO4;
+CAS         505-47-5;
+InChIKey    TXPKUUXHNFRBPS-UHFFFAOYSA-N;
+MW          161.157;      // g/mol [origin=calculated method=formula-sum]
+Tc          882.03;      // K   [origin=predictive method=joback]
+Pc          38.916;      // bar [origin=predictive method=joback]
+omega       1.3268;      // -   [origin=predictive method=lee-kesler]
+Tb          678.07;      // K   [origin=predictive method=joback]
+HvapTb      69714.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.424 0.7516 -0.0004964 1.267e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2NH; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group COOH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(3-hydroxy-3-oxopropylamino)propanoic acid" "3,3-bis(n,n-dipropanoic acid)" "3,3'-azanediyldipropanoic acid" "n-(2-carboxyethyl)-beta-alanine" "3-(2-carboxyethylamino)propanoic acid" "3-(2-carboxy-ethylamino)-propionic acid" );
+gibbsFormation
+{
+    dHf_298   -814240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     536.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-598790.0
+    phase     gas;
+}

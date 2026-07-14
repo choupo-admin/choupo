@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: het acid, adipic acid, hydrogenated bisphenol a, diethylene glycol polymer  (C34H50Cl6O12, CAS 73287-35-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hetAcidAdipicAcidHydrogenatedBisphenolADiethyleneGlycolPolym;
+formula     C34H50Cl6O12;
+CAS         73287-35-1;
+InChIKey    KBINJBVIACGZGD-UHFFFAOYSA-N;
+MW          863.462;      // g/mol [origin=calculated method=formula-sum]
+Tc          3508.40;      // K   [origin=predictive method=joback]
+Pc          7.469;      // bar [origin=predictive method=joback]
+omega       -0.4214;      // -   [origin=predictive method=lee-kesler]
+Tb          2038.72;      // K   [origin=predictive method=joback]
+HvapTb      225700.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-133.642 4.22904 -0.0031238 9.817e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 13; } { group CH; count 6; } { group C; count 1; } { group OH; count 2; } { group CH2COO; count 1; } { group COOH; count 3; } { group CCl2; count 1; } { group Cl_C=C_; count 2; } { group C=C; count 1; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:2
+    joback ( { group CH3; count 2; } { group CH2; count 8; } { group C; count 1; } { group CH2_ring; count 8; } { group CH_ring; count 6; } { group C_ring; count 3; } { group dC_ring; count 2; } { group Cl; count 6; } { group OH; count 3; } { group O; count 1; } { group COOH; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,7,7-hexakis(chloranyl)bicyclo[2.2.1]hept-2-ene-5,6-dicarboxylic acid;2-(2-hydroxyethyloxy)ethanol;6-[4-[2-(4-oxidanylcyclohexyl)propan-2-yl]cyclohexyl]oxy-6-oxidanylidene-hexanoic acid" "bicyclo(2.2.1)hept-5-ene-2,3-dicarboxylic acid, 1,4,5,6,7,7-hexachloro-, polymer with hexanedioic acid, 4,4'-(1-methylethylidene)bis(cyclohexanol) and 2,2'-oxybis(ethanol)" );
+gibbsFormation
+{
+    dHf_298   -2801580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1957.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1786440.0
+    phase     gas;
+}

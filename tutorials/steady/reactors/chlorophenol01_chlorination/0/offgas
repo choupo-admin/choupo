@@ -1,0 +1,2 @@
+componentMolarFlows { HCl 0.9 kmol/h; Cl2 0.1 kmol/h; }
+T 353 K;  P 101325 Pa;  phase gas;

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzyl salicylate  (C14H12O3, CAS 118-58-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzylSalicylate;
+formula     C14H12O3;
+CAS         118-58-1;
+InChIKey    ZCTQGTTXIYCGGC-UHFFFAOYSA-N;
+MW          228.247;      // g/mol [origin=calculated method=formula-sum]
+Tc          960.65;      // K   [origin=predictive method=joback]
+Pc          32.803;      // bar [origin=predictive method=joback]
+omega       0.8831;      // -   [origin=predictive method=lee-kesler]
+Tb          712.12;      // K   [origin=predictive method=joback]
+HvapTb      71731.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-61.159 1.2758 -0.00096196 2.824e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 1; } { group ACCH2; count 1; } { group ACOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(phenylmethyl) 2-oxidanylbenzoate" "benzyl 2-hydroxybenzoate" "salicylic acid, benzyl ester" "benzoic acid, 2-hydroxy-, phenylmethyl ester" "benzyl o-hydroxybenzoate" "phenylmethyl 2-hydroxybenzoate" "salicylsaeurebenzylester" "salicyclic acid, benzyl ester" "2-hydroxybenzoic acid, phenylmethyl ester" "benzyl-salicylate" "salicyclic acid benzyl ester" "salicylic acid benzyl ester" );
+gibbsFormation
+{
+    dHf_298   -353820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     566.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-173170.0
+    phase     gas;
+}

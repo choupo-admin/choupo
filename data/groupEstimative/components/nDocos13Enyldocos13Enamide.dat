@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-docos-13-enyldocos-13-enamide  (C44H85NO, CAS 87075-61-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nDocos13Enyldocos13Enamide;
+formula     C44H85NO;
+CAS         87075-61-4;
+InChIKey    ABCFHTQGKNXCHE-UHFFFAOYSA-N;
+MW          644.17;      // g/mol [origin=calculated method=formula-sum]
+Tc          1927.23;      // K   [origin=predictive method=joback]
+Pc          3.612;      // bar [origin=predictive method=joback]
+omega       -0.4786;      // -   [origin=predictive method=lee-kesler]
+Tb          1318.68;      // K   [origin=predictive method=joback]
+HvapTb      126636.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-59.323 4.27204 -0.0025673 6.0866e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 36; } { group CH=CH; count 2; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 37; } { group dCH; count 4; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "13-docosenamide, n-(13z)-13-docosenyl-, (13z)-" "13-docosenamide, n-(13z)-13-docosen-1-yl-, (13z)-" "(z)-n-[(z)-docos-13-enyl]docos-13-enamide" "13-docosenamide,n-(13z)-13-docosen-1-yl-, (13z)-" "13-docosenamide,n-(13z)-13-docosenyl-, (13z)- (9ci); 13-docosenamide, n-13-docosenyl-, (z,z)-;erucyl erucamide; kemamide e 221; n-erucyl erucamide" );
+gibbsFormation
+{
+    dHf_298   -776160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1924.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=440510.0
+    phase     gas;
+}

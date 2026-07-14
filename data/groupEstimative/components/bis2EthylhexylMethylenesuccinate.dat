@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(2-ethylhexyl) methylenesuccinate  (C21H38O4, CAS 2287-83-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis2EthylhexylMethylenesuccinate;
+formula     C21H38O4;
+CAS         2287-83-4;
+InChIKey    CGNRQCGWXXLTIA-UHFFFAOYSA-N;
+MW          354.531;      // g/mol [origin=calculated method=formula-sum]
+Tc          975.11;      // K   [origin=predictive method=joback]
+Pc          10.008;      // bar [origin=predictive method=joback]
+omega       0.9082;      // -   [origin=predictive method=lee-kesler]
+Tb          792.20;      // K   [origin=predictive method=joback]
+HvapTb      75788.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.571 1.88098 -0.000961 1.427e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 10; } { group CH; count 2; } { group CH2=C; count 1; } { group CH2COO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 11; } { group CH; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(2-ethylhexyl) 2-methylidenebutanedioate" "bis(2-ethylhexyl) itaconate" "butanedioic acid, 2-methylene, di(2-ethylhexyl) ester" "dioctyl itaconate" "itaconic acid dioctyl ester" "cgnrqcgwxxltia-uhfffaoysa-" "itaconic acid di(2-ethylhexyl) ester" "itaconic acid bis(2-ethylhexyl) ester" "butanedioic acid, 2-methylene-, 1,4-bis(2-ethylhexyl) ester" "butanedioic acid, methylene-, bis(2-ethylhexyl) ester (9ci); succinicacid, methylene-, bis(2-ethylhexyl)ester (7ci,8ci); bis(2-ethylhexyl) itaconate; di-2-ethylhexyl itaconate" );
+gibbsFormation
+{
+    dHf_298   -1006250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1048.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-420390.0
+    phase     gas;
+}

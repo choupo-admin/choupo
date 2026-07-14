@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Magnesium hydroxide (Mg(OH)2), BRUCITE.  CAS 1309-42-8.
+
+  A NON-VOLATILE sparingly-soluble base: never enters the vapour (K = 0).
+  Milk-of-magnesia neutralisation, seawater-Mg recovery and flue-gas
+  scrubbing exercises; thermal-decomposition feed (Mg(OH)2 -> MgO + H2O).
+  Carries the solid-phase formation datum and a real solid heat capacity.
+
+  PRIMARY: Wagman et al., NBS Tables of Chemical Thermodynamic Properties,
+  J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982) -- PUBLIC DOMAIN.
+  Density: brucite ~ 2.34-2.36 g/cm^3 (mineralogical).
+\*---------------------------------------------------------------------------*/
+
+name        magnesiumHydroxide;
+formula     "Mg(OH)2";
+CAS         1309-42-8;
+
+MW          58.320;            // kg/kmol
+
+role        nonvolatile;       // never goes to the vapour (K = 0)
+
+solid
+{
+    rho_p   2345.0;            // brucite particle density [kg/m^3]
+}
+
+gibbsFormation
+{
+    dHf_298   -924540;         // J/mol  [Wagman et al. NBS Tables 1982]
+    s_298     63.18;           // J/(mol*K) [Wagman 1982]
+    phase     solid;
+}
+
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = a0  [J/(mol*K)], constant
+    coefficients  ( 77.03 );           // Cp(298) [Wagman et al. NBS Tables 1982]
+    Trange        ( 298  600 );        // constant-Cp validity flag (near ambient)
+}
+
+provenance
+{
+    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982"; }
+    solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
+    rho_p { origin literature; method "brucite mineralogical density ~2.34 g/cm3"; }
+}

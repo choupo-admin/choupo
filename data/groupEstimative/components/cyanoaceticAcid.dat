@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyanoacetic acid  (C3H3NO2, CAS 372-09-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyanoaceticAcid;
+formula     C3H3NO2;
+CAS         372-09-8;
+InChIKey    MLIREBYILWEBDM-UHFFFAOYSA-N;
+MW          85.062;      // g/mol [origin=calculated method=formula-sum]
+Tc          732.04;      // K   [origin=predictive method=joback]
+Pc          48.092;      // bar [origin=predictive method=joback]
+omega       0.7169;      // -   [origin=predictive method=lee-kesler]
+Tb          515.83;      // K   [origin=predictive method=joback]
+HvapTb      49914.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.761 0.2744 -0.000181 4.62e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2CN; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group COOH; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-cyanoethanoic acid" "acetic acid, cyano-" "malonic mononitrile" "monocyanoacetic acid" "acide cyanacetique" "2-cyanoacetic acid" "cyanessigsaeure" "malonic acid mononitrile" "usaf kf-17" "acetic acid, 2-cyano-" "cyanessigsaeure [german]" "acide cyanacetique [french]" );
+gibbsFormation
+{
+    dHf_298   -290640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     332.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-236350.0
+    phase     gas;
+}

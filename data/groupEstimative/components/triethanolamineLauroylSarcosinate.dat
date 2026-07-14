@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethanolamine lauroyl sarcosinate  (C21H44N2O6, CAS 16693-53-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethanolamineLauroylSarcosinate;
+formula     C21H44N2O6;
+CAS         16693-53-1;
+InChIKey    HJDITXMCJQRQLU-UHFFFAOYSA-N;
+MW          420.591;      // g/mol [origin=calculated method=formula-sum]
+Tc          1557.46;      // K   [origin=predictive method=joback]
+Pc          11.907;      // bar [origin=predictive method=joback]
+omega       0.4622;      // -   [origin=predictive method=lee-kesler]
+Tb          1182.28;      // K   [origin=predictive method=joback]
+HvapTb      140667.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (31.067 2.16524 -0.0010741 1.4466e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 15; } { group OH; count 3; } { group CH2N; count 1; } { group COOH; count 1; } { group CONCH3CH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 17; } { group OH; count 3; } { group CdO; count 1; } { group COOH; count 1; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[bis(2-hydroxyethyl)amino]ethanol;2-[dodecanoyl(methyl)amino]ethanoic acid" "n-dodecanoyl-n-methylglycine- 2,2',2''-nitrilotriethanol(1:1)" "tea-lauroyl sarcosinate" "lauroyl sarcosine, triethanolamine salt" "2-[bis(2-hydroxyethyl)amino]ethanol; 2-[dodecanoyl(methyl)amino]acetic acid" "glycine, n-methyl-n-(1-oxododecyl)-, compd. with 2,2',2''-nitrilotris(ethanol) (1:1)" "glycine, n-methyl-n-(1-oxododecyl)-, compd. with 2,2,2-nitrilotris(ethanol) (1:1)" "n-methyl-n-(1-oxododecyl)glycine, compound with 2,2',2''-nitrilotri(ethanol) (1:1)" "n-methyl-n-(1-oxododecyl)glycine, compound with 2,2a'a inverted exclamation marka'a ,2a'a inverted exclamation marka'a a'a inverted exclamation marka'a -nitrilotri(ethanol) (1:1);tea-lauroyl sarcosinate;n-lauroyl sarcosine, triethanolamine salt;glycine, n-methyl-n-(1-oxododecyl)-, compd. with 2,2,2-nitrilotrisethanol (1:1);n-methyl-n-(1-oxododecyl)glycin, verbindung mit 2,2a'a inverted exclamation markafa currency,2a'a inverted exclamation markafa currencya'a inverted exclamation markafa currency-nitrilotri(ethanol) (1:1)" );
+gibbsFormation
+{
+    dHf_298   -1372870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1346.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-640550.0
+    phase     gas;
+}

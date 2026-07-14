@@ -141,4 +141,45 @@ private:
     scalar tStart_    = 0.0;
 };
 
+// ---------------------------------------------------------------------------
+//  prbs -- pseudo-random binary sequence for identification experiments
+//  (design forum #100.4/#101).  A maximal-length Fibonacci LFSR of
+//  `registers` bits with a DECLARED nonzero seed: deterministic, exactly
+//  repeatable, period 2^n - 1 bits -- never runtime randomness.
+//
+//      value(t) = mean +/- amplitude by bit k,  k = floor((t-t0)/bitPeriod)
+//                                                   mod (2^n - 1)
+//
+//  CONVENTION (frozen; the tutorial pins a hand-derived sequence):
+//    * the state is the register vector (s_1 .. s_n); the OUTPUT bit is s_n;
+//    * the feedback bit is the XOR of the DECLARED tap positions (1-based,
+//      position n = the output end);
+//    * shift toward the output: s_i <- s_{i-1} for i = n..2, s_1 <- feedback;
+//    * the seed maps LSB -> s_1 ... bit(n-1) -> s_n.
+//
+//  `taps ( ... )` may be declared explicitly; omitted, the canonical
+//  maximal-length table `prbsTaps-1` supplies them (primitive polynomials
+//  over GF(2), n = 2..12).  EITHER WAY the initialiser WALKS the LFSR and
+//  REFUSES a tap set whose cycle length is not exactly 2^n - 1 -- a
+//  non-maximal sequence never passes as a PRBS (the #101 contract: the
+//  exact period is verified, autocorrelation alone cannot catch a wrong
+//  convention).  Seed 0 is refused (the LFSR fixed point).
+// ---------------------------------------------------------------------------
+class PrbsSignal : public Signal
+{
+public:
+    const std::string& type() const override { return type_; }
+    void   initialise(const DictPtr& d) override;
+    scalar value(scalar t) const override;
+
+private:
+    inline static const std::string type_ = "prbs";
+    scalar mean_      = 0.0;
+    scalar amplitude_ = 0.0;
+    scalar bitPeriod_ = 1.0;   // s per bit
+    scalar tStart_    = 0.0;
+    int    nReg_      = 0;
+    std::vector<char> bits_;   // the full precomputed period (2^n - 1 bits)
+};
+
 } // namespace Choupo

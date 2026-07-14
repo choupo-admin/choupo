@@ -1,0 +1,95 @@
+/*---------------------------------------------------------------------------*\
+  data/groupEstimative/ -- the group-contribution ESTIMATION lake
+\*---------------------------------------------------------------------------*/
+
+WHAT THIS TIER IS
+  A PRE-CURATION staging lake of compounds whose identity, molecular groups,
+  and pure-component properties were ESTIMATED by group contribution.  It is
+  NOT reviewed reference data.  It exists to ORGANISE and FEED curation:
+  consolidate one authoritative name + one group decomposition + a first-pass
+  property set per compound, so a human can promote selected records upward.
+
+  COVALENT SINGLE MOLECULES ONLY.
+    components/  -- single-molecule compounds (~28.5k).  Audit-clean,
+                    VLE-self-consistent, loadable, Joback-tiered.
+
+  SALTS ARE NOT JOBACK-ESTIMATED -- BUT THEY ARE NOT THROWN AWAY.
+    A salt is a perfectly valid Choupo component -- just NOT a Joback one.
+    See data/standards/components/NaCl.dat: it carries identity + MW +
+    `nonvolatile true` + `dissociatesTo { Na 1; Cl 1; }`, its formation lives
+    PER ION, and its activity is Pitzer/eNRTL.  What a salt must NEVER have is
+    a Joback MOLECULAR estimate: group contribution fragments a COVALENT
+    structure and refers to the ideal gas, and a salt (an ion pair via proton
+    transfer) has no single molecular Tc/Pc/Cp and must never route through the
+    ideal-gas reference.
+
+    So the ~116 detected salt entries leave the Joback lake but stay in the
+    project in their proper form, under `salts/`: each carries identity + MW +
+    `nonvolatile true` + a van't Hoff `dissociation` + a `dissociatesTo` map --
+    the NaCl.dat shape -- and NO Joback numbers.  `dissociatesTo` is filled as a
+    verifiable DRAFT where the constituents parse cleanly from the name (~39),
+    and left as an explicit TODO where they do not (~77) -- auto-deriving it is
+    unreliable (the split collides with commas inside the chemical name), so
+    that last mile is a per-salt curation act, exactly as NaCl was.  The
+    identity index is `salts-for-electrolyte-curation.csv`.
+    Contents:  components/ (single covalent molecules) + salts/ (electrolyte form).
+
+  Promotion path:   groupEstimative/  --(human review + PRIMARY citation)-->
+                    data/proposed/  --(committee)-->  data/standards/
+  Trust order:      groupEstimative  <  proposed  <  standards  <  case-local
+
+THE ENGINE DOES NOT READ THIS TIER.
+  No solver, no ThermoPackageBuilder, no Database lookup consumes this folder.
+  It is a curation input only.  A compound becomes engine-visible ONLY when a
+  human promotes it into proposed/ or standards/ as a cited .dat.
+
+EVERY NUMBER IS AN ESTIMATE (the warning travels with the data).
+  Anchors (Tb, Tc, Pc, Vc, Tm, Cp_ig, dHf, dGf, Hvap, Hfus): Joback & Reid 1987
+  group contribution.  omega: Lee-Kesler corresponding states from (Tb,Tc,Pc).
+  Typical AAD: Tb ~10%, Tc ~11%, Pc ~11%; WORSE for small molecules and
+  hydrogen-bonders.  Groups (UNIFAC/Dortmund/PSRK): DDBST published assignments.
+  See SOURCES.md for provenance + licences.
+
+THREE ORTHOGONAL AXES (ratified by the professors' forum; do not conflate)
+  A  role        -- PHASE behaviour (volatile/nonvolatile/solute).  Lives on
+                    the component .dat already; NOT decided here.
+  B  stability   -- INTRINSIC nature: stable vs reactiveIntermediate (radical).
+                    DERIVED here (RDKit radical-electron screen + a curated
+                    allowlist of stable inorganic radicals: NO, NO2, O2, ...).
+                    reactiveIntermediate species are KINETICS-ONLY -- they must
+                    never enter a flash / VLE / distillation (engine refusal is
+                    a separate, pending change; see NOTE).
+  C  representation (lumped/dissociated ion) -- chosen by the propertyPackage,
+                    NEVER stored on the substance.  Untouched here.
+
+COLUMNS (all derived; nothing hand-authored)
+  identity:   name, CAS, formula, InChIKey, charge
+  axis B:     stability (stable|reactiveIntermediate)
+  view:       thermo_class (molecular|radical|electrolyte|gas),
+              models_supported, unifac_vocab_ok
+  groups:     unifac, modfac, psrk  ("subgroupId:count ..."; DDBST numbering)
+  estimates:  MW, Tb, Tc, Pc, Vc, omega, Tm, dHf/dGf(ig), Hvap(Tb), Hfus,
+              Cpig_{a,b,c,d}, anchor_method, omega_method
+
+  unifac_vocab_ok = yes when every subgroup maps to a name present in
+  data/standards/unifac/groups.dat (~21k of 28.8k).  The remainder need a
+  subgroup-name reconciliation before they can feed Choupo's UNIFAC.
+
+CURRENT CONTENTS (this build)
+  28823 compounds | stability: 28661 stable, 162 reactiveIntermediate
+  thermo_class: 28661 molecular, 162 radical | unifac_vocab_ok(yes): 20996
+  (The DDBST harvest is all neutral molecules with groups; ions/light gases
+   are absent here -- they arrive from other sources with their own models.)
+
+ENFORCEMENT
+  bin/curate/check_groups.py cross-references a component tree against this
+  prelist and reports any molecular, neutral, stable, vocab-OK compound that
+  is MISSING its `groups { unifac (...) }` block.  --strict exits 1 (curation
+  gate).  It is a standalone tool and is NOT wired into bin/runTests yet.
+
+NOTE -- deferred, pending Vitor's explicit sign-off
+  * Engine refusal of reactiveIntermediate species in phase-equilibrium units
+    (touches src/.../IsothermalFlash) -- NOT done here.
+  * Separating the combustion radicals already flat in data/standards/
+    components/ (OH, HO2, CH3, O, ...) -- a migration of the frozen tree,
+    NOT done here.

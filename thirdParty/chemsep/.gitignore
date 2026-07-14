@@ -1,0 +1,13 @@
+# Raw ChemSep database files (Artistic-2.0) -- provided LOCALLY, never committed.
+# Large raw data; the curated subset is what lands in data/proposed/ (see README).
+# Only NOTICE, README.md and this .gitignore are tracked.
+chemsep1.xml
+chemsep2.xml
+ipd/
+pcd/*
+!pcd/Artistic_license_2_0.txt
+*.pcd
+*.ipd
+*.gct
+*.gcs
+*.lib

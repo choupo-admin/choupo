@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: l-7-hydroxy-1,2,3,4-tetrahydroisoquinoline-3-carboxylic acid  (C10H11NO3, CAS 128502-56-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        l7Hydroxy1234Tetrahydroisoquinoline3CarboxylicAcid;
+formula     C10H11NO3;
+CAS         128502-56-7;
+InChIKey    HIKCRLDSCSWXML-VIFPVBQESA-N;
+MW          193.202;      // g/mol [origin=calculated method=formula-sum]
+Tc          1000.10;      // K   [origin=predictive method=joback]
+Pc          47.959;      // bar [origin=predictive method=joback]
+omega       1.1469;      // -   [origin=predictive method=lee-kesler]
+Tb          745.75;      // K   [origin=predictive method=joback]
+HvapTb      77813.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-68.57 1.1487 -0.00092652 3.06e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group ACOH; count 1; } { group CH2NH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group COOH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s)-7-oxidanyl-1,2,3,4-tetrahydroisoquinoline-3-carboxylic acid" "(3s)-7-hydroxy-1,2,3,4-tetrahydroisoquinoline-3-carboxylic acid" "(s)-7-hydroxy-1,2,3,4-tetrahydroisoquinoline-3-carboxylic acid" "(s)-1,2,3,4-tetrahydro-7-hydroxyisoquinoline-3-carboxylic acid" "7-hydroxy-(3s)-1,2,3,4-tetrahydroisoquinoline-3-carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -447800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     435.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-226070.0
+    phase     gas;
+}

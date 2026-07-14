@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-phenylethenyl acetate  (C10H10O2, CAS 2206-94-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1PhenylethenylAcetate;
+formula     C10H10O2;
+CAS         2206-94-2;
+InChIKey    HWCUCNKPBMGSSC-UHFFFAOYSA-N;
+MW          162.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          728.54;      // K   [origin=predictive method=joback]
+Pc          31.036;      // bar [origin=predictive method=joback]
+omega       0.4850;      // -   [origin=predictive method=lee-kesler]
+Tb          509.86;      // K   [origin=predictive method=joback]
+HvapTb      46947.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.38 0.80002 -0.000482 9.54e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-phenylethenyl ethanoate" "1-phenylvinyl acetate" "a-acetoxystyrene" "ethenol, acetate" "alpha-acetoxystyrene" ".alpha.-acetoxystyrene" "alpha-methylenebenzyl acetate" "ethenol, 1-phenyl-, acetate" "benzyl alcohol, alpha-methylene-, acetate" "benzenemethanol, " "a-methylene-, 1-acetate" "benzenemethanol, alpha-methylene-, acetate" "benzenemethanol, .alpha.-methylene-, acetate" );
+gibbsFormation
+{
+    dHf_298   -214840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     481.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-85350.0
+    phase     gas;
+}

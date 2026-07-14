@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 562-28-7  (C20H32, CAS 562-28-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        562287;
+formula     C20H32;
+CAS         562-28-7;
+InChIKey    ONVABDHFQKWOSV-ZJXASSBSSA-N;
+MW          272.476;      // g/mol [origin=calculated method=formula-sum]
+Tc          933.63;      // K   [origin=predictive method=joback]
+Pc          16.935;      // bar [origin=predictive method=joback]
+omega       0.5141;      // -   [origin=predictive method=lee-kesler]
+Tb          691.78;      // K   [origin=predictive method=joback]
+HvapTb      56542.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-352.55 3.17426 -0.003154 1.3129e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 9; } { group CH; count 3; } { group C; count 3; } { group CH2=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH2; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 3; } { group C_ring; count 3; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -100290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     751.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=333310.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-acryloylmorpholine  (C7H11NO2, CAS 5117-12-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Acryloylmorpholine;
+formula     C7H11NO2;
+CAS         5117-12-4;
+InChIKey    XLPJNCYCZORXHG-UHFFFAOYSA-N;
+MW          141.17;      // g/mol [origin=calculated method=formula-sum]
+Tc          678.91;      // K   [origin=predictive method=joback]
+Pc          39.906;      // bar [origin=predictive method=joback]
+omega       0.5309;      // -   [origin=predictive method=lee-kesler]
+Tb          469.65;      // K   [origin=predictive method=joback]
+HvapTb      44371.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-58.9 0.8999 -0.0006427 1.7686e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2=CH; count 1; } { group FCH2O; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 4; } { group O_ring; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-morpholin-4-ylprop-2-en-1-one" "n-acrylylmorpholine" "n-acryloylmorpholine" "1-morpholinoprop-2-en-1-one" "morpholine, 4-(1-oxo-2-propenyl)-" "2-propen-1-one, 1-(4-morpholinyl)-" "pacm-i" "4-acryloyl-morpholine" "poly(acryloylmorpholine)" "acryloyl-morpholine polymer" "poly(n-acryloyl morpholine)" "4-(1-oxo-2-propenyl)morpholine" );
+gibbsFormation
+{
+    dHf_298   -158610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     407.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=35900.0
+    phase     gas;
+}

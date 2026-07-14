@@ -1,0 +1,13 @@
+/*---------------------------------------------------------------------------*\
+  NO inline pairs -- that is the point.  The NRTL ethanol-water pair resolves
+  through the search path from this case's OWN vendored copy
+  (constant/binaryPairs/NRTL/ethanol-water.dat), carrying its full primary
+  citation -- so what this case scores is a REAL, provenance-bearing catalogue
+  entry, not numbers typed inline into the dict.  (The pair is vendored
+  case-local rather than pulled from data/standards/ so the case stays
+  self-contained in the public release; the parameters are identical.)
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water );
+activityModel    { model  NRTL; }
+equationOfState  { model  idealGas; }

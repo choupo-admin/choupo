@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-diphenylthiophene  (C16H12S, CAS 3328-86-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24Diphenylthiophene;
+formula     C16H12S;
+CAS         3328-86-7;
+InChIKey    FKHVUWRLXRMJLF-UHFFFAOYSA-N;
+MW          236.332;      // g/mol [origin=calculated method=formula-sum]
+Tc          977.39;      // K   [origin=predictive method=joback]
+Pc          29.441;      // bar [origin=predictive method=joback]
+omega       0.5491;      // -   [origin=predictive method=lee-kesler]
+Tb          695.10;      // K   [origin=predictive method=joback]
+HvapTb      64048.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-79.91 1.30761 -0.00095098 2.653e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 2; } { group C4H2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 12; } { group dC_ring; count 4; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "thiophene, 2,4-diphenyl-" "2,4-diphenyl-thiophene" );
+gibbsFormation
+{
+    dHf_298   318190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     521.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=433440.0
+    phase     gas;
+}

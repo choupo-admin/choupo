@@ -129,6 +129,11 @@ public:
     // A human-readable provenance string (goes into the proposal .dat).
     virtual std::string method() const = 0;
 
+    // The stable id of the method's loaded PARAMETER TABLE (the structured
+    // provenance's `methodVersion` -- forum #67: a table id, never a movable
+    // path).  Empty when a method has no versioned table.
+    virtual std::string version() const { return ""; }
+
     // The input channel this estimator reads.  Default Groups (the historical
     // family); a scalar-input estimator overrides it to Scalars.
     virtual InputKind inputKind() const { return InputKind::Groups; }

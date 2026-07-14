@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-dimethylacetoacetamide  (C6H11NO2, CAS 2044-64-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDimethylacetoacetamide;
+formula     C6H11NO2;
+CAS         2044-64-6;
+InChIKey    YPEWWOUWRRQBAX-UHFFFAOYSA-N;
+MW          129.159;      // g/mol [origin=calculated method=formula-sum]
+Tc          644.69;      // K   [origin=predictive method=joback]
+Pc          35.856;      // bar [origin=predictive method=joback]
+omega       0.6215;      // -   [origin=predictive method=lee-kesler]
+Tb          457.06;      // K   [origin=predictive method=joback]
+HvapTb      44485.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.461 0.64176 -0.0003778 7.952e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH3CO; count 1; } { group CON_CH3_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CdO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethyl-3-oxidanylidene-butanamide" "n,n-dimethyl-3-oxobutanamide" "butanamide, n,n-dimethyl-3-oxo-" "n,n-dimethyl-3-oxobutyramide" "n-acetoacetyldimethylamine" "acetylacetamide, n,n-dimethyl-" "n,n-dimethylacetoacetamide solution" "nn-dimethylacetoacetamide" "acetoacetamide,n-dimethyl-" "acetylacetamide,n-dimethyl-" "butanamide,n-dimethyl-3-oxo-" "dimethylamid kyseliny acetoctove" );
+gibbsFormation
+{
+    dHf_298   -324800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     459.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-147420.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,2-trifluoroethyl acetate  (C4H5F3O2, CAS 406-95-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        222TrifluoroethylAcetate;
+formula     C4H5F3O2;
+CAS         406-95-1;
+InChIKey    ZOWSJJBOQDKOHI-UHFFFAOYSA-N;
+MW          142.076;      // g/mol [origin=calculated method=formula-sum]
+Tc          501.20;      // K   [origin=predictive method=joback]
+Pc          34.079;      // bar [origin=predictive method=joback]
+omega       0.4260;      // -   [origin=predictive method=lee-kesler]
+Tb          343.92;      // K   [origin=predictive method=joback]
+HvapTb      28158.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.461 0.49022 -0.0003202 6.8e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH3COO; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group F; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,2-tris(fluoranyl)ethyl ethanoate" "acetic acid, 2,2,2-trifluoroethyl ester" "2,2,2-trifluoroethyl ethanoate" "2-acetoxy-1,1,1-trifluoroethane" "acetic acid 2,2,2-trifluoroethyl ester" "1-(2,2,2-trifluoroethoxy)ethan-1-one" "ethanol,2,2,2-trifluoro-, acetate (6ci,7ci,8ci,9ci);2,2,2-trifluoroethyl acetate;trifluoroethyl acetate;" );
+gibbsFormation
+{
+    dHf_298   -1040250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     419.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-909160.0
+    phase     gas;
+}

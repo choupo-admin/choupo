@@ -1,177 +1,592 @@
-/*---------------------------------------------------------------------------*\
-  H2/O2 SKELETAL CHAIN-BRANCHING MECHANISM  --  *** SYNTHETIC / ILLUSTRATIVE ***
+/*--------------------------------*- Choupo -*--------------------------------*\
+  H2/O2 COMBUSTION MECHANISM -- the H/O subsystem of GRI-Mech 3.0, VERBATIM.
 
-  ┌─────────────────────────────────────────────────────────────────────────┐
-  │  THE RATE CONSTANTS BELOW ARE SYNTHETIC.  They are NOT transcribed from   │
-  │  any published mechanism (GRI-Mech, Ó Conaire, Burke, San Diego, …).      │
-  │  They are hand-chosen, order-of-magnitude-plausible values whose ONLY     │
-  │  purpose is to exercise the chain-branching STRUCTURE so the stiff        │
-  │  integrator (Rosenbrock23) has something stiff to integrate and an        │
-  │  ignition delay to report.  Do NOT use the τ_ign it produces as a         │
-  │  quantitative result.  Vítor must replace these k's with a curated        │
-  │  literature mechanism before this leaves the data/proposed/ tier.         │
-  └─────────────────────────────────────────────────────────────────────────┘
+  KINETICS (now REAL): all 28 reactions among {H2 O2 H O OH HO2 H2O2 H2O N2}
+  from GRI-Mech 3.0 (G.P. Smith, D.M. Golden, M. Frenklach, N.W. Moriarty,
+  B. Eiteneer, M. Goldenberg, C.T. Bowman, R.K. Hanson, S. Song,
+  W.C. Gardiner Jr., V.V. Lissianski, Z. Qin,
+  http://combustion.berkeley.edu/gri-mech/), transcribed VERBATIM by
+  bin/curate/gri_subset_to_choupo.py from thirdParty/grimech30.dat: every
+  A / b / Ea stays in the mechanism's own mol-cm-s-cal units and the engine
+  converts (and announces) via kinetics.units{} -- zero hand-converted
+  numbers.  Includes the third-body efficiencies, the explicit-collider
+  channels (H+O2+H2O, H+2O2 ... which is WHY the main H+O2+M carries zero
+  efficiencies for those colliders), the 2OH(+M)=H2O2(+M) Troe falloff, and
+  both members of each GRI DUPLICATE pair (their rates add).  The AR-collider
+  channel is omitted: this case carries no argon.
 
-  WHAT *IS* REAL HERE: nothing in this file fixes the thermodynamics.  The
-  equilibrium each reversible step relaxes toward, the heat release, and the
-  final adiabatic temperature all come from the CURATED gas-phase thermo of the
-  nine species (H2 O2 H O OH HO2 H2O2 water N2) in data/standards/components/
-  (their gibbsFormation + idealGasHeatCapacity, each individually cited).  So
-  the WHERE-it-ends-up is curated physics; only the HOW-FAST is illustrative.
+  THERMO (was always real): gibbsFormation + Cp of the nine species from
+  data/standards/components/ (per-species cited).  Reverse rates come from
+  equilibrium -- thermo-consistent by construction.
 
-  THE STRUCTURE (the part that teaches): a slow initiation builds a trace
-  radical pool; chain BRANCHING (R2, R3, R5 — one radical in, two out) then
-  outruns termination (R6, R9), the radical population explodes, and the heat
-  release runs away.  The radical lifetimes (~µs) are ~10^6× shorter than the
-  induction time (~ms): that timescale split IS the stiffness.
+  THE STRUCTURE (the lesson survives the upgrade): slow initiation builds a
+  trace radical pool; chain BRANCHING (H+O2 -> O+OH, O+H2 -> H+OH) outruns
+  termination; the radical population explodes and the heat release runs
+  away.  Radical lifetimes ~1e6 x shorter than the induction time -- that
+  timescale split IS the stiffness Rosenbrock23 exists for.
+\*-----------------------------------------------------------------------------*/
 
-  provenance:
-*/
 provenance
 {
-    status  "UNVERIFIED, SYNTHETIC -- illustrative rate constants, NOT a literature mechanism; thermo is curated (data/standards). Vítor must replace the kinetics before promotion.";
-    review  { state pending; reviewer Vitor; }
-    kinetics_source  "synthetic (hand-authored, illustrative only)";
+    status  "CURATED -- GRI-Mech 3.0 H/O subsystem, verbatim transcription (see header)";
+    review  { state transcribed; reviewer "bin/curate/gri_subset_to_choupo.py + session review"; }
+    kinetics_source  "GRI-Mech 3.0 (Smith et al., http://combustion.berkeley.edu/gri-mech/)";
     thermo_source    "data/standards/components/*.dat (curated, per-species cited)";
 }
 
-// ── Initiation (slow; high barrier) ────────────────────────────────────────
-init_H2_O2                       // H2 + O2 -> HO2 + H
+2O_M_O2_M
 {
-    limitingReactant  H2;
-    stoichiometry
-    (
-        { component H2;   nu -1;  order 1; }
-        { component O2;   nu -1;  order 1; }
-        { component HO2;  nu  1;  order 0; }
-        { component H;    nu  1;  order 0; }
-    );
-    kinetics { type Arrhenius;  A 1.0e8;   Ea 2.0e5; }   // SI (m³/kmol/s, J/mol)
-}
-
-// ── Chain branching: one radical in, two out (the engine of ignition) ──────
-branch_H_O2                      // H + O2 <-> O + OH    (declared in CHEMKIN units)
-{
-    reversible        true;
-    limitingReactant  H;
-    stoichiometry
-    (
-        { component H;   nu -1;  order 1; }
-        { component O2;  nu -1;  order 1; }
-        { component O;   nu  1;  order 0; }
-        { component OH;  nu  1;  order 0; }
-    );
-    kinetics
-    {
-        type modifiedArrhenius;
-        A    1.5e12;  b 0.0;  Ea 16730;
-        units { A "cm3/mol/s"; Ea "cal/mol"; }   // -> SI on load (announced)
-    }
-}
-
-branch_O_H2                      // O + H2 <-> H + OH    (declared in CHEMKIN units)
-{
+    // GRI-Mech 3.0:  2O+M<=>O2+M                              1.200E+17   -1.000        .00
     reversible        true;
     limitingReactant  O;
     stoichiometry
     (
-        { component O;   nu -1;  order 1; }
-        { component H2;  nu -1;  order 1; }
-        { component H;   nu  1;  order 0; }
-        { component OH;  nu  1;  order 0; }
-    );
-    kinetics
-    {
-        type modifiedArrhenius;
-        A    5.0e11;  b 0.0;  Ea 9560;
-        units { A "cm3/mol/s"; Ea "cal/mol"; }
-    }
-}
-
-// ── Propagation ────────────────────────────────────────────────────────────
-prop_OH_H2                       // OH + H2 <-> H + H2O
-{
-    reversible        true;
-    limitingReactant  OH;
-    stoichiometry
-    (
-        { component OH;     nu -1;  order 1; }
-        { component H2;     nu -1;  order 1; }
-        { component H;      nu  1;  order 0; }
-        { component water;  nu  1;  order 0; }
-    );
-    kinetics { type modifiedArrhenius; A 1.0e11; b 0.0; Ea 2.0e4; }   // SI
-}
-
-branch_O_H2O                     // O + H2O <-> OH + OH
-{
-    reversible        true;
-    limitingReactant  O;
-    stoichiometry
-    (
-        { component O;      nu -1;  order 1; }
-        { component water;  nu -1;  order 1; }
-        { component OH;     nu  2;  order 0; }
-    );
-    kinetics { type modifiedArrhenius; A 3.0e10; b 0.0; Ea 7.0e4; }   // SI
-}
-
-// ── Third-body recombination / termination (drains the radical pool) ───────
-recomb_H_O2_M                    // H + O2 + M -> HO2 + M
-{
-    limitingReactant  H;
-    stoichiometry
-    (
-        { component H;    nu -1;  order 1; }
-        { component O2;   nu -1;  order 1; }
-        { component HO2;  nu  1;  order 0; }
-    );
-    kinetics
-    {
-        type thirdBody;          // k·[M], [M] = Σ eff_j·c_j
-        A 5.0e6;  b 0.0;  Ea 0.0;
-        thirdBody { water 12.0; H2 2.5; N2 1.0; }   // unlisted => 1.0
-    }
-}
-
-ho2_H_branch                     // HO2 + H -> OH + OH
-{
-    limitingReactant  HO2;
-    stoichiometry
-    (
-        { component HO2;  nu -1;  order 1; }
-        { component H;    nu -1;  order 1; }
-        { component OH;   nu  2;  order 0; }
-    );
-    kinetics { type Arrhenius; A 1.0e11; Ea 5.0e3; }   // SI
-}
-
-ho2_H_recombine                  // HO2 + H -> H2 + O2
-{
-    limitingReactant  HO2;
-    stoichiometry
-    (
-        { component HO2;  nu -1;  order 1; }
-        { component H;    nu -1;  order 1; }
-        { component H2;   nu  1;  order 0; }
-        { component O2;   nu  1;  order 0; }
-    );
-    kinetics { type Arrhenius; A 5.0e10; Ea 5.0e3; }   // SI
-}
-
-recomb_H_OH_M                    // H + OH + M -> H2O + M  (chain termination)
-{
-    limitingReactant  H;
-    stoichiometry
-    (
-        { component H;      nu -1;  order 1; }
-        { component OH;     nu -1;  order 1; }
-        { component water;  nu  1;  order 0; }
+        { component O;      nu -2;  order 2; }
+        { component O2;     nu  1;  order 0; }
     );
     kinetics
     {
         type thirdBody;
-        A 5.0e6;  b 0.0;  Ea 0.0;
-        thirdBody { water 12.0; H2 2.5; N2 1.0; }
+        A 1.2000e+17;  b -1.0;  Ea 0.0;
+        thirdBody { H2 2.4; water 15.4; }
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+O_H_M_OH_M
+{
+    // GRI-Mech 3.0:  O+H+M<=>OH+M                             5.000E+17   -1.000        .00
+    reversible        true;
+    limitingReactant  O;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component O;      nu -1;  order 1; }
+        { component OH;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 5.0000e+17;  b -1.0;  Ea 0.0;
+        thirdBody { H2 2.0; water 6.0; }
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+O_H2_H_OH
+{
+    // GRI-Mech 3.0:  O+H2<=>H+OH                              3.870E+04    2.700    6260.00
+    reversible        true;
+    limitingReactant  O;
+    stoichiometry
+    (
+        { component H;      nu  1;  order 0; }
+        { component H2;     nu -1;  order 1; }
+        { component O;      nu -1;  order 1; }
+        { component OH;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 3.8700e+04;  b 2.7;  Ea 6260.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+O_HO2_OH_O2
+{
+    // GRI-Mech 3.0:  O+HO2<=>OH+O2                            2.000E+13     .000        .00
+    reversible        true;
+    limitingReactant  O;
+    stoichiometry
+    (
+        { component HO2;    nu -1;  order 1; }
+        { component O;      nu -1;  order 1; }
+        { component O2;     nu  1;  order 0; }
+        { component OH;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2.0000e+13;  b 0.0;  Ea 0.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+O_H2O2_OH_HO2
+{
+    // GRI-Mech 3.0:  O+H2O2<=>OH+HO2                          9.630E+06    2.000    4000.00
+    reversible        true;
+    limitingReactant  O;
+    stoichiometry
+    (
+        { component H2O2;   nu -1;  order 1; }
+        { component HO2;    nu  1;  order 0; }
+        { component O;      nu -1;  order 1; }
+        { component OH;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 9.6300e+06;  b 2.0;  Ea 4000.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+H_O2_M_HO2_M
+{
+    // GRI-Mech 3.0:  H+O2+M<=>HO2+M                           2.800E+18    -.860        .00
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component HO2;    nu  1;  order 0; }
+        { component O2;     nu -1;  order 1; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 2.8000e+18;  b -0.86;  Ea 0.0;
+        thirdBody { O2 0.0; water 0.0; N2 0.0; }
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+H_2O2_HO2_O2
+{
+    // GRI-Mech 3.0:  H+2O2<=>HO2+O2                           2.080E+19   -1.240        .00
+    reversible        true;
+    limitingReactant  O2;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component HO2;    nu  1;  order 0; }
+        { component O2;     nu -1;  order 2; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2.0800e+19;  b -1.24;  Ea 0.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+H_O2_H2O_HO2_H2O
+{
+    // GRI-Mech 3.0:  H+O2+H2O<=>HO2+H2O                       11.26E+18    -.760        .00
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component water;  nu  0;  order 1; }   // explicit collider
+        { component HO2;    nu  1;  order 0; }
+        { component O2;     nu -1;  order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1.1260e+19;  b -0.76;  Ea 0.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+H_O2_N2_HO2_N2
+{
+    // GRI-Mech 3.0:  H+O2+N2<=>HO2+N2                         2.600E+19   -1.240        .00
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component HO2;    nu  1;  order 0; }
+        { component N2;     nu  0;  order 1; }   // explicit collider
+        { component O2;     nu -1;  order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2.6000e+19;  b -1.24;  Ea 0.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+H_O2_O_OH
+{
+    // GRI-Mech 3.0:  H+O2<=>O+OH                              2.650E+16    -.6707  17041.00
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component O;      nu  1;  order 0; }
+        { component O2;     nu -1;  order 1; }
+        { component OH;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2.6500e+16;  b -0.6707;  Ea 17041.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+2H_M_H2_M
+{
+    // GRI-Mech 3.0:  2H+M<=>H2+M                              1.000E+18   -1.000        .00
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -2;  order 2; }
+        { component H2;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 1.0000e+18;  b -1.0;  Ea 0.0;
+        thirdBody { H2 0.0; water 0.0; }
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+2H_H2_2H2
+{
+    // GRI-Mech 3.0:  2H+H2<=>2H2                              9.000E+16    -.600        .00
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -2;  order 2; }
+        { component H2;     nu  1;  order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 9.0000e+16;  b -0.6;  Ea 0.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+2H_H2O_H2_H2O
+{
+    // GRI-Mech 3.0:  2H+H2O<=>H2+H2O                          6.000E+19   -1.250        .00
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -2;  order 2; }
+        { component H2;     nu  1;  order 0; }
+        { component water;  nu  0;  order 1; }   // explicit collider
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 6.0000e+19;  b -1.25;  Ea 0.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+H_OH_M_H2O_M
+{
+    // GRI-Mech 3.0:  H+OH+M<=>H2O+M                           2.200E+22   -2.000        .00
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component water;  nu  1;  order 0; }
+        { component OH;     nu -1;  order 1; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 2.2000e+22;  b -2.0;  Ea 0.0;
+        thirdBody { H2 0.73; water 3.65; }
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+H_HO2_O_H2O
+{
+    // GRI-Mech 3.0:  H+HO2<=>O+H2O                            3.970E+12     .000     671.00
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component water;  nu  1;  order 0; }
+        { component HO2;    nu -1;  order 1; }
+        { component O;      nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 3.9700e+12;  b 0.0;  Ea 671.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+H_HO2_O2_H2
+{
+    // GRI-Mech 3.0:  H+HO2<=>O2+H2                            4.480E+13     .000    1068.00
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component H2;     nu  1;  order 0; }
+        { component HO2;    nu -1;  order 1; }
+        { component O2;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 4.4800e+13;  b 0.0;  Ea 1068.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+H_HO2_2OH
+{
+    // GRI-Mech 3.0:  H+HO2<=>2OH                              0.840E+14     .000     635.00
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component HO2;    nu -1;  order 1; }
+        { component OH;     nu  2;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 8.4000e+13;  b 0.0;  Ea 635.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+H_H2O2_HO2_H2
+{
+    // GRI-Mech 3.0:  H+H2O2<=>HO2+H2                          1.210E+07    2.000    5200.00
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component H2;     nu  1;  order 0; }
+        { component H2O2;   nu -1;  order 1; }
+        { component HO2;    nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1.2100e+07;  b 2.0;  Ea 5200.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+H_H2O2_OH_H2O
+{
+    // GRI-Mech 3.0:  H+H2O2<=>OH+H2O                          1.000E+13     .000    3600.00
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component water;  nu  1;  order 0; }
+        { component H2O2;   nu -1;  order 1; }
+        { component OH;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1.0000e+13;  b 0.0;  Ea 3600.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+OH_H2_H_H2O
+{
+    // GRI-Mech 3.0:  OH+H2<=>H+H2O                            2.160E+08    1.510    3430.00
+    reversible        true;
+    limitingReactant  OH;
+    stoichiometry
+    (
+        { component H;      nu  1;  order 0; }
+        { component H2;     nu -1;  order 1; }
+        { component water;  nu  1;  order 0; }
+        { component OH;     nu -1;  order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2.1600e+08;  b 1.51;  Ea 3430.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+2OH_M_H2O2_M
+{
+    // GRI-Mech 3.0:  2OH(+M)<=>H2O2(+M)                       7.400E+13    -.370        .00
+    reversible        true;
+    limitingReactant  OH;
+    stoichiometry
+    (
+        { component H2O2;   nu  1;  order 0; }
+        { component OH;     nu -2;  order 2; }
+    );
+    kinetics
+    {
+        type falloff;
+        A 7.4000e+13;  b -0.37;  Ea 0.0;
+        low  { A 2.3000e+18;  b -0.9;  Ea -1700.0;  units { A "cm3/mol/s"; Ea "cal/mol"; } }
+        troe ( 0.7346 94.0 1756.0 5182.0 );
+        thirdBody { H2 2.0; water 6.0; }
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+2OH_O_H2O
+{
+    // GRI-Mech 3.0:  2OH<=>O+H2O                              3.570E+04    2.400   -2110.00
+    reversible        true;
+    limitingReactant  OH;
+    stoichiometry
+    (
+        { component water;  nu  1;  order 0; }
+        { component O;      nu  1;  order 0; }
+        { component OH;     nu -2;  order 2; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 3.5700e+04;  b 2.4;  Ea -2110.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+OH_HO2_O2_H2O
+{
+    // GRI-Mech 3.0:  OH+HO2<=>O2+H2O                          1.450E+13     .000    -500.00
+    // DUPLICATE pair in GRI: both entries kept, rates ADD.
+    reversible        true;
+    limitingReactant  OH;
+    stoichiometry
+    (
+        { component water;  nu  1;  order 0; }
+        { component HO2;    nu -1;  order 1; }
+        { component O2;     nu  1;  order 0; }
+        { component OH;     nu -1;  order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1.4500e+13;  b 0.0;  Ea -500.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+OH_H2O2_HO2_H2O
+{
+    // GRI-Mech 3.0:  OH+H2O2<=>HO2+H2O                        2.000E+12     .000     427.00
+    // DUPLICATE pair in GRI: both entries kept, rates ADD.
+    reversible        true;
+    limitingReactant  OH;
+    stoichiometry
+    (
+        { component water;  nu  1;  order 0; }
+        { component H2O2;   nu -1;  order 1; }
+        { component HO2;    nu  1;  order 0; }
+        { component OH;     nu -1;  order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2.0000e+12;  b 0.0;  Ea 427.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+OH_H2O2_HO2_H2O_dup2
+{
+    // GRI-Mech 3.0:  OH+H2O2<=>HO2+H2O                        1.700E+18     .000   29410.00
+    // DUPLICATE pair in GRI: both entries kept, rates ADD.
+    reversible        true;
+    limitingReactant  OH;
+    stoichiometry
+    (
+        { component water;  nu  1;  order 0; }
+        { component H2O2;   nu -1;  order 1; }
+        { component HO2;    nu  1;  order 0; }
+        { component OH;     nu -1;  order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1.7000e+18;  b 0.0;  Ea 29410.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+2HO2_O2_H2O2
+{
+    // GRI-Mech 3.0:  2HO2<=>O2+H2O2                           1.300E+11     .000   -1630.00
+    // DUPLICATE pair in GRI: both entries kept, rates ADD.
+    reversible        true;
+    limitingReactant  HO2;
+    stoichiometry
+    (
+        { component H2O2;   nu  1;  order 0; }
+        { component HO2;    nu -2;  order 2; }
+        { component O2;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1.3000e+11;  b 0.0;  Ea -1630.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+2HO2_O2_H2O2_dup2
+{
+    // GRI-Mech 3.0:  2HO2<=>O2+H2O2                           4.200E+14     .000   12000.00
+    // DUPLICATE pair in GRI: both entries kept, rates ADD.
+    reversible        true;
+    limitingReactant  HO2;
+    stoichiometry
+    (
+        { component H2O2;   nu  1;  order 0; }
+        { component HO2;    nu -2;  order 2; }
+        { component O2;     nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 4.2000e+14;  b 0.0;  Ea 12000.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+OH_HO2_O2_H2O_dup2
+{
+    // GRI-Mech 3.0:  OH+HO2<=>O2+H2O                          0.500E+16     .000   17330.00
+    // DUPLICATE pair in GRI: both entries kept, rates ADD.
+    reversible        true;
+    limitingReactant  OH;
+    stoichiometry
+    (
+        { component water;  nu  1;  order 0; }
+        { component HO2;    nu -1;  order 1; }
+        { component O2;     nu  1;  order 0; }
+        { component OH;     nu -1;  order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 5.0000e+15;  b 0.0;  Ea 17330.0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
     }
 }

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-cyclohexanedicarboxylic acid, polymer with 1,6-hexanediamine and 1,11-undecanediamine  (C25H54N4O4, CAS 72928-96-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14CyclohexanedicarboxylicAcidPolymerWith16HexanediamineAnd11;
+formula     C25H54N4O4;
+CAS         72928-96-2;
+InChIKey    ZNAWNWKBAARHQB-UHFFFAOYSA-N;
+MW          474.731;      // g/mol [origin=calculated method=formula-sum]
+Tc          1731.09;      // K   [origin=predictive method=joback]
+Pc          9.669;      // bar [origin=predictive method=joback]
+omega       0.6297;      // -   [origin=predictive method=lee-kesler]
+Tb          1370.42;      // K   [origin=predictive method=joback]
+HvapTb      148844.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (37.297 2.4112 -0.000851 -6.67e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 17; } { group CH; count 2; } { group CH2NH2; count 4; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 17; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group COOH; count 2; } { group NH2; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclohexane-1,4-dicarboxylic acid;hexane-1,6-diamine;undecane-1,11-diamine" "1,4-cyclohexanedicarboxylic acid, 1,11-undecanediamine, 1,6-hexanediamine polymer" );
+gibbsFormation
+{
+    dHf_298   -1313970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1584.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-455180.0
+    phase     gas;
+}

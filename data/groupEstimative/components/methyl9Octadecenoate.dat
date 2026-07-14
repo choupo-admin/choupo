@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl9-octadecenoate  (C19H36O2, CAS 1937-62-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl9Octadecenoate;
+formula     C19H36O2;
+CAS         1937-62-8;
+InChIKey    QYDYPVFESGNLHU-UHFFFAOYSA-N;
+MW          296.495;      // g/mol [origin=calculated method=formula-sum]
+Tc          867.19;      // K   [origin=predictive method=joback]
+Pc          11.223;      // bar [origin=predictive method=joback]
+omega       0.8865;      // -   [origin=predictive method=lee-kesler]
+Tb          696.70;      // K   [origin=predictive method=joback]
+HvapTb      65253.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.156 1.77404 -0.000999 2.052e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 13; } { group CH=CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 14; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl octadec-9-enoate" "methyl cis-9-octadecenoate" "elaidic acid methyl ester" "methyl trans-9-octadecenoate" "9-octadecenoic acid, methyl ester" "(z)-9-octadecenoic acid methyl ester" "9-octadecenoic acid, methyl ester, (9e)-" "9-octadecenoic acid,methyl ester" "9-octadecenoicacid (z)-, methyl ester;oleic acid, methyl ester (6ci,8ci);(z)-9-octadecenoicacid methyl ester;adj 100;agnique me 181u;agrique me 181-1;ce 1897;carolube 1885;edenor me 90/95v;edenor metio5;emerest 2801;emery 2301;esterol 112;exceparl m-ol;methyl (z)-9-octadecenoate;methylcis-9-octadecenoate;nissan unister m 182a;pastel m 181;phytorob926-67;priolube 1400;priolube 1403;radia 7060;synative es-me-v;unister m182a;witconol 2301;cis-9-octadecenoic acid, methyl ester;" );
+gibbsFormation
+{
+    dHf_298   -635550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     940.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-121050.0
+    phase     gas;
+}

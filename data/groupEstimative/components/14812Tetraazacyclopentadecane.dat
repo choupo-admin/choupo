@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4,8,12-tetraazacyclopentadecane  (C11H26N4, CAS 15439-16-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14812Tetraazacyclopentadecane;
+formula     C11H26N4;
+CAS         15439-16-4;
+InChIKey    KUFDRRWNPNXBRF-UHFFFAOYSA-N;
+MW          214.357;      // g/mol [origin=calculated method=formula-sum]
+Tc          991.66;      // K   [origin=predictive method=joback]
+Pc          34.159;      // bar [origin=predictive method=joback]
+omega       0.6427;      // -   [origin=predictive method=lee-kesler]
+Tb          708.13;      // K   [origin=predictive method=joback]
+HvapTb      69398.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-57.06 1.0574 -5.1e-05 -2.432e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group CH2NH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 11; } { group NH_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4,8,12-tetrazacyclopentadecane" "cyclal" );
+gibbsFormation
+{
+    dHf_298   -99910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     750.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=315840.0
+    phase     gas;
+}

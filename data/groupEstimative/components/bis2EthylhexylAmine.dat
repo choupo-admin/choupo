@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(2-ethylhexyl)amine  (C16H35N, CAS 106-20-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis2EthylhexylAmine;
+formula     C16H35N;
+CAS         106-20-7;
+InChIKey    SAIKULLUBZKPDA-UHFFFAOYSA-N;
+MW          241.463;      // g/mol [origin=calculated method=formula-sum]
+Tc          782.15;      // K   [origin=predictive method=joback]
+Pc          13.467;      // bar [origin=predictive method=joback]
+omega       0.8177;      // -   [origin=predictive method=lee-kesler]
+Tb          614.97;      // K   [origin=predictive method=joback]
+HvapTb      56870.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.23 1.61188 -0.0009016 1.887e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 9; } { group CH; count 2; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 10; } { group CH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethyl-N-(2-ethylhexyl)hexan-1-amine" "1-Hexanamine, 2-ethyl-N-(2-ethylhexyl)-" "2,2′-diethyldihexylamine" "2-Ethyl-N-(2-ethylhexyl)-1-hexanamine" "Di(2-ethylhexyl)amine" "dihexylamine, 2,2′-diethyl-" "N,N-Bis(2-ethylhexyl)amine" "N,N-Di(2-ethylhexyl)amine" "bis-2-ethylhexylamine" "diisooctylamine" "2,2'-diethyldihexylamine" "diethylhexylamine" );
+gibbsFormation
+{
+    dHf_298   -330660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     800.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=168350.0
+    phase     gas;
+}

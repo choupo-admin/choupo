@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,7,11,15-tetramethylhexadeca-1,6,10,14-tetraen-3-ol  (C20H34O, CAS 1113-21-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        371115Tetramethylhexadeca161014Tetraen3Ol;
+formula     C20H34O;
+CAS         1113-21-9;
+InChIKey    IQDXAJNQKSIPGB-UHFFFAOYSA-N;
+MW          290.491;      // g/mol [origin=calculated method=formula-sum]
+Tc          940.80;      // K   [origin=predictive method=joback]
+Pc          12.629;      // bar [origin=predictive method=joback]
+omega       0.9714;      // -   [origin=predictive method=lee-kesler]
+Tb          754.95;      // K   [origin=predictive method=joback]
+HvapTb      74941.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-79.084 2.1034 -0.0015476 4.735e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 6; } { group C; count 1; } { group CH2=CH; count 1; } { group CH=C; count 3; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 6; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 4; } { group dC; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7,11,15-tetramethyl-1,6,10,14-hexadecatetraene-3-ol" "1,6,10,14-hexadecatetraen-3-ol,3,7,11,15-tetramethyl-" "3,7,11,15-tetramethyl-3-hydroxyl-1,6,10,14-hexadecatetraen" "1,6,10,14-hexadecatetraen-3-ol,3,7,11,15-tetramethyl-, (e,e)- (8ci);(e,e)-geranyllinalool;geranyllinalool;linalool, geranyl-;" );
+gibbsFormation
+{
+    dHf_298   -169390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     910.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=286390.0
+    phase     gas;
+}

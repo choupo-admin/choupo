@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  cstr07_lhhw_methylAcetate  --  a HETEROGENEOUSLY catalysed esterification with
+  a Langmuir-Hinshelwood-Hougen-Watson rate law, on activities.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "LHHW on activities: methyl-acetate synthesis over Amberlyst 15 (Popken 2000, Eq 16)";
+verbosity     3;

@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl tricosanoate  (C25H50O2, CAS 18281-07-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylTricosanoate;
+formula     C25H50O2;
+CAS         18281-07-7;
+InChIKey    URGDXLFVAIKCMI-UHFFFAOYSA-N;
+MW          382.673;      // g/mol [origin=calculated method=formula-sum]
+Tc          1016.05;      // K   [origin=predictive method=joback]
+Pc          7.661;      // bar [origin=predictive method=joback]
+omega       0.7246;      // -   [origin=predictive method=lee-kesler]
+Tb          829.82;      // K   [origin=predictive method=joback]
+HvapTb      78651.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.572 2.32404 -0.0012416 2.292e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 21; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 22; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -876610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1181.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-150750.0
+    phase     gas;
+}

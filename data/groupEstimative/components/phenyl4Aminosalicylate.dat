@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenyl 4-aminosalicylate  (C13H11NO3, CAS 133-11-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenyl4Aminosalicylate;
+formula     C13H11NO3;
+CAS         133-11-9;
+InChIKey    DNVVZWSVACQWJE-UHFFFAOYSA-N;
+MW          229.235;      // g/mol [origin=calculated method=formula-sum]
+Tc          1025.78;      // K   [origin=predictive method=joback]
+Pc          38.675;      // bar [origin=predictive method=joback]
+omega       1.0456;      // -   [origin=predictive method=lee-kesler]
+Tb          766.75;      // K   [origin=predictive method=joback]
+HvapTb      80808.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-39.46 1.1832 -0.00088392 2.566e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 2; } { group ACOH; count 1; } { group ACNH2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 8; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "phenyl 4-azanyl-2-oxidanyl-benzoate" "fenamisal" "phenyl pas" "tebamyn" "tebanyl" "p-aminosalol" "tebamin-leo" "pheny-pas-tebamin" "tebamin" "phenyl aminosalicylate" "phenyl-pas-tebamin" "phenyl p-aminosalicylate" );
+gibbsFormation
+{
+    dHf_298   -310860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     572.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-124770.0
+    phase     gas;
+}

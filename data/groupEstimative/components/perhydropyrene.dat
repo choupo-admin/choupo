@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perhydropyrene  (C16H26, CAS 2435-85-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perhydropyrene;
+formula     C16H26;
+CAS         2435-85-0;
+InChIKey    BYBPEZLZCGOWIS-UHFFFAOYSA-N;
+MW          218.384;      // g/mol [origin=calculated method=formula-sum]
+Tc          832.54;      // K   [origin=predictive method=joback]
+Pc          20.661;      // bar [origin=predictive method=joback]
+omega       0.4584;      // -   [origin=predictive method=lee-kesler]
+Tb          600.38;      // K   [origin=predictive method=joback]
+HvapTb      50932.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-221.23 2.036 -0.001431 4.004e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group CH; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 10; } { group CH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,3a,4,5,5a,6,7,8,8a,9,10,10a,10b,10c-hexadecahydropyrene" "hexadecahydropyrene" "pyrene, hexadecahydro-" "tetracyclo[6.6.2.0<4,16>.0<11,15>]hexadecane" );
+gibbsFormation
+{
+    dHf_298   -147690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     413.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=263020.0
+    phase     gas;
+}

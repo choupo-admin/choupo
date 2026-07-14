@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4'-dimethylaminoacetophenone  (C10H13NO, CAS 2124-31-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Dimethylaminoacetophenone;
+formula     C10H13NO;
+CAS         2124-31-4;
+InChIKey    HUDYANRNMZDQGA-UHFFFAOYSA-N;
+MW          163.22;      // g/mol [origin=calculated method=formula-sum]
+Tc          739.39;      // K   [origin=predictive method=joback]
+Pc          30.830;      // bar [origin=predictive method=joback]
+omega       0.5762;      // -   [origin=predictive method=lee-kesler]
+Tb          526.37;      // K   [origin=predictive method=joback]
+HvapTb      49581.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.14 0.91136 -0.00057826 1.3676e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 4; } { group AC; count 2; } { group CH3CO; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[4-(dimethylamino)phenyl]ethanone" "p-dimethylaminoacetophenone" "4-dimethylaminoacetophenone" "1-(4-(dimethylamino)phenyl)ethanone" "p-n,n-dimethylaminoacetophenone" "4'-(n,n-dimethylamino)acetophenone" "ethanone, 1-[4-(dimethylamino)phenyl]-" "1-acetyl-4-(dimethylamino)benzene" "ethanone, 1-(4-(dimethylamino)phenyl)-" "4'-(dimethylamino)acetophenone" "4-n,n-dimethylaminoacetophenone" "1-(4-dimethylaminophenyl)ethanone" );
+gibbsFormation
+{
+    dHf_298   -69720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     475.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=117960.0
+    phase     gas;
+}

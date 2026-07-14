@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dodec-8-enyl acetate  (C14H26O2, CAS 38363-29-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dodec8EnylAcetate;
+formula     C14H26O2;
+CAS         38363-29-0;
+InChIKey    SUCYDSJQVVGOIW-UHFFFAOYSA-N;
+MW          226.36;      // g/mol [origin=calculated method=formula-sum]
+Tc          753.71;      // K   [origin=predictive method=joback]
+Pc          15.936;      // bar [origin=predictive method=joback]
+omega       0.7813;      // -   [origin=predictive method=lee-kesler]
+Tb          582.30;      // K   [origin=predictive method=joback]
+HvapTb      54123.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.389 1.29904 -0.000727 1.457e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 9; } { group CH=CH; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 9; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodec-8-enyl ethanoate" "orfralure" "(e)-8-dodecen-1-yl acetate" "8-dodecenyl acetate" "(z)-dodec-8-enyl acetate" "8-dodecen-1-ol, 1-acetate, (8e)-" "8-dodecen-1-ol, 1-acetate, (8z)-" "8-dodecen-1-ol,1-acetate" "107874-02-2 (denacyl)" "8-dodecen-1-ol,1-acetate, (8e)-" "8-dodecen-1-ol,acetate (9ci); orfralure" "8-dodecen-1-ol,acetate, (8e)- (9ci); 8-dodecen-1-ol, acetate, (e)-; (e)-8-dodecen-1-olacetate; (e)-8-dodecen-1-yl acetate; (e)-8-dodecen-1-yl acetate;(e)-8-dodecenyl acetate; trans-8-dodecen-1-yl acetate; trans-8-dodecenylacetate" );
+gibbsFormation
+{
+    dHf_298   -532350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     746.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-163150.0
+    phase     gas;
+}

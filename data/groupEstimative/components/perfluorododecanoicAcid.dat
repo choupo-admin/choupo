@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluorododecanoic acid  (C12HF23O2, CAS 307-55-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluorododecanoicAcid;
+formula     C12HF23O2;
+CAS         307-55-1;
+InChIKey    CXGONMQFMIYUJR-UHFFFAOYSA-N;
+MW          614.092;      // g/mol [origin=calculated method=formula-sum]
+Tc          699.33;      // K   [origin=predictive method=joback]
+Pc          10.359;      // bar [origin=predictive method=joback]
+omega       0.9228;      // -   [origin=predictive method=lee-kesler]
+Tb          567.35;      // K   [origin=predictive method=joback]
+HvapTb      26423.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-132.53 2.8498 -0.0029686 1.0793e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 1; } { group CF3; count 1; } { group CF2; count 10; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 11; } { group F; count 23; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-tricosakis(fluoranyl)dodecanoic acid" "tricosafluorododecanoic acid" "perfluorolauric acid" "dodecanoic acid, tricosafluoro-" "dodecanoic acid, 2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-tricosafluoro-" "tricosafluorolauric acid" "n-perfluorododecanoic acid" "perfluorododecanoic acid (pfdoa)" "perfluorododecanoic acid; perfluorolauric acid; tricosafluorolauric acid" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,12-tricosafluorododecanoic acid" "dodecanoicacid, tricosafluoro- (6ci,7ci,8ci,9ci); perfluorododecanoic acid;perfluorolauric acid" );
+gibbsFormation
+{
+    dHf_298   -5248060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     978.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4743140.0
+    phase     gas;
+}

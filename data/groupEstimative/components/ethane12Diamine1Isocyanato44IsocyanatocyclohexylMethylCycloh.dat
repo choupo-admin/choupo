@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethane-1,2-diamine;1-isocyanato-4-[(4-isocyanatocyclohexyl)methyl]cyclohexane;oxepan-2-one  (C23H40N4O4, CAS 50821-47-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethane12Diamine1Isocyanato44IsocyanatocyclohexylMethylCycloh;
+formula     C23H40N4O4;
+CAS         50821-47-1;
+InChIKey    JFBKJIKTUCMBDR-UHFFFAOYSA-N;
+MW          436.597;      // g/mol [origin=calculated method=formula-sum]
+Tc          1372.24;      // K   [origin=predictive method=joback]
+Pc          12.958;      // bar [origin=predictive method=joback]
+omega       1.1374;      // -   [origin=predictive method=lee-kesler]
+Tb          1114.97;      // K   [origin=predictive method=joback]
+HvapTb      115939.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH2; count 13; } { group CH; count 4; } { group CH2COO; count 1; } { group CH2NH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:2
+    joback ( { group CH2; count 3; } { group dCd; count 2; } { group CH2_ring; count 13; } { group CH_ring; count 4; } { group COO; count 1; } { group dO_oth; count 2; } { group NH2; count 2; } { group Nd; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethane-1,2-diamine; 1-isocyanato-4-[(4-isocyanatocyclohexyl)methyl]cyclohexane; oxepan-2-one" );
+// formation datum unavailable (element entropy missing): dHf_298=-853030.0 dGf_298=None

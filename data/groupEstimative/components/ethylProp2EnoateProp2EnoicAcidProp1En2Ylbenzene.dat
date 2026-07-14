@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl prop-2-enoate;prop-2-enoic acid;prop-1-en-2-ylbenzene  (C17H22O4, CAS 58639-86-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylProp2EnoateProp2EnoicAcidProp1En2Ylbenzene;
+formula     C17H22O4;
+CAS         58639-86-4;
+InChIKey    UOLGPBDHRYLNCG-UHFFFAOYSA-N;
+MW          290.359;      // g/mol [origin=calculated method=formula-sum]
+Tc          1035.50;      // K   [origin=predictive method=joback]
+Pc          16.391;      // bar [origin=predictive method=joback]
+omega       0.9325;      // -   [origin=predictive method=lee-kesler]
+Tb          811.69;      // K   [origin=predictive method=joback]
+HvapTb      78941.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (56.511 1.06344 -0.0001516 -1.929e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH2=CH; count 2; } { group CH2=C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH2; count 3; } { group dCH; count 2; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl prop-2-enoate; prop-2-enoic acid; prop-1-en-2-ylbenzene" "2-propenoic acid, polymer with ethyl 2-propenoate and (1-methylethenyl)benzene" "(1-methylethenyl)benzene, ethyl 2-propenoate, 2-propenoic acid polymer" );
+gibbsFormation
+{
+    dHf_298   -681970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1013.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-404160.0
+    phase     gas;
+}

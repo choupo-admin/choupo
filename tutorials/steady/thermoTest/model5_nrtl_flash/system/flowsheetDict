@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------*\
+  thermoTest model5_nrtl_flash / flowsheetDict
+  Water + ethanol as MOLECULAR components (no ions): an isothermal VLE flash
+  on the NRTL activity model, selected through the ethanolWater_NRTL property
+  package.  Model 5 of the thermoTest ladder -- the molecular gamma-phi
+  anchor beside the electrolyte rungs.
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+units
+(
+    {
+        name        flash;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+        operation   { T 353.0 K;  P 1.0 bar; }
+    }
+);

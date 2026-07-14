@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3-bis(chloranyl)-2,3-dimethyl-butane  (C6H12Cl2, CAS 594-85-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23BisChloranyl23DimethylButane;
+formula     C6H12Cl2;
+CAS         594-85-4;
+InChIKey    SJBPUCQFQDUICP-UHFFFAOYSA-N;
+MW          155.062;      // g/mol [origin=calculated method=formula-sum]
+Tc          610.93;      // K   [origin=predictive method=joback]
+Pc          29.861;      // bar [origin=predictive method=joback]
+omega       0.2345;      // -   [origin=predictive method=lee-kesler]
+Tb          405.28;      // K   [origin=predictive method=joback]
+HvapTb      35128.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-25.73 0.83908 -0.000687 2.22e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:2
+    joback ( { group CH3; count 4; } { group C; count 2; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -216150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     378.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-18540.0
+    phase     gas;
+}

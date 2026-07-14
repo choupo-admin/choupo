@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethylene glycol dimethacrylate  (C14H22O6, CAS 109-16-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethyleneGlycolDimethacrylate;
+formula     C14H22O6;
+CAS         109-16-0;
+InChIKey    HWSSEYVMGDIFMH-UHFFFAOYSA-N;
+MW          286.324;      // g/mol [origin=calculated method=formula-sum]
+Tc          854.06;      // K   [origin=predictive method=joback]
+Pc          16.103;      // bar [origin=predictive method=joback]
+omega       0.9916;      // -   [origin=predictive method=lee-kesler]
+Tb          674.32;      // K   [origin=predictive method=joback]
+HvapTb      65212.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (86.616 1.05764 -0.000377 -3e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH2=C; count 2; } { group CH2O; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group dCH2; count 2; } { group dC; count 2; } { group O; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-(2-methylprop-2-enoyloxy)ethoxy]ethoxy]ethyl 2-methylprop-2-enoate" "tedma" "nk ester 3g" "triethylene dimethacrylate" "tgm 3pc" "tgm 3s" "tgm 3" "polyester tgm 3" "methacrylic acid, diester with triethylene glycol" "tgm 35" "2-propenoic acid, 2-methyl-, 1,2-ethanediylbis(oxy-2,1-ethanediyl) ester" "ethylenebis(oxyethylene) methacrylate" );
+gibbsFormation
+{
+    dHf_298   -1000010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     808.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-605160.0
+    phase     gas;
+}

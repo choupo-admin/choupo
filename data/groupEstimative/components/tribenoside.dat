@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tribenoside  (C29H34O6, CAS 10310-32-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tribenoside;
+formula     C29H34O6;
+CAS         10310-32-4;
+InChIKey    ULLNJSBQMBKOJH-NUZMXOBKSA-N;
+MW          478.585;      // g/mol [origin=calculated method=formula-sum]
+Tc          1411.47;      // K   [origin=predictive method=joback]
+Pc          11.850;      // bar [origin=predictive method=joback]
+omega       1.1218;      // -   [origin=predictive method=lee-kesler]
+Tb          1152.80;      // K   [origin=predictive method=joback]
+HvapTb      116747.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-44.925 2.35842 -0.0011843 1.467e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 3; } { group ACH; count 15; } { group AC; count 1; } { group ACCH2; count 2; } { group OH; count 1; } { group CH2O; count 3; } { group CH-O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 1; } { group CH_ring; count 4; } { group dCH_ring; count 15; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 4; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3r,4r,5r)-5-[1,2-bis(phenylmethoxy)ethyl]-2-ethoxy-4-phenylmethoxy-oxolan-3-ol" "tribenzoside" "glivenol" "glyvenal" "glyvenol" "tbgf" "tribenosidum [inn-latin]" "ethyl 3,5,6-tri-o-benzyl-d-glucofuranoside" "ethyl-3,5,6-tri-o-benzyl-d-glucofuranoside" "glucofuranoside, ethyl-3,5,6-tri-o-benzyl-, d-" "d-glucofuranoside, ethyl-3,5,6-tris-o-(phenylmethyl)-" "tribenol" );
+gibbsFormation
+{
+    dHf_298   -751230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     824.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-101430.0
+    phase     gas;
+}

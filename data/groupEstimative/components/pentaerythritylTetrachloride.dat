@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentaerythrityl tetrachloride  (C5H8Cl4, CAS 3228-99-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentaerythritylTetrachloride;
+formula     C5H8Cl4;
+CAS         3228-99-7;
+InChIKey    KPZGRMZPZLOPBS-UHFFFAOYSA-N;
+MW          209.919;      // g/mol [origin=calculated method=formula-sum]
+Tc          668.83;      // K   [origin=predictive method=joback]
+Pc          29.959;      // bar [origin=predictive method=joback]
+omega       0.3897;      // -   [origin=predictive method=lee-kesler]
+Tb          460.49;      // K   [origin=predictive method=joback]
+HvapTb      42968.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.434 0.6318 -0.0005016 1.562e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group CH2Cl; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group C; count 1; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-bis(chloranyl)-2,2-bis(chloromethyl)propane" "1,3-dichloro-2,2-bis(chloromethyl)propane" "tetrachloride" "tetrakis(chloromethyl)methane" "pentaerythritol tetrachloride" "methane, tetrakis(chloromethyl)-" "propane, 1,3-dichloro-2,2-bis(chloromethyl)-" "1,3-dichloro-2,2-bis(chloromethyl) propane" "propane,3-dichloro-2,2-bis(chloromethyl)-" "2,2-bis(chloromethyl)-1,3-dichloropropane" "propane,1,3-dichloro-2,2-bis(chloromethyl)-" "methane, tetrakis(chloromethyl)-;pentaerythritoltetrachloride;propane, 1,3-dichloro-2,2-bis(chloromethyl)-" );
+gibbsFormation
+{
+    dHf_298   -218240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     445.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-53660.0
+    phase     gas;
+}

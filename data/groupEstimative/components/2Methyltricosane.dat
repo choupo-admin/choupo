@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methyltricosane  (C24H50, CAS 1928-30-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methyltricosane;
+formula     C24H50;
+CAS         1928-30-9;
+InChIKey    JNHSEDRFFJZMLH-UHFFFAOYSA-N;
+MW          338.664;      // g/mol [origin=calculated method=formula-sum]
+Tc          918.46;      // K   [origin=predictive method=joback]
+Pc          8.098;      // bar [origin=predictive method=joback]
+omega       0.7497;      // -   [origin=predictive method=lee-kesler]
+Tb          748.28;      // K   [origin=predictive method=joback]
+HvapTb      68630.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.61 2.28976 -0.001285 2.739e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 20; } { group CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 20; } { group CH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tricosane, 2-methyl-" );
+gibbsFormation
+{
+    dHf_298   -543970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1081.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=148760.0
+    phase     gas;
+}

@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloro-2-methylpropanoic acid  (C4H7ClO2, CAS 594-58-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chloro2MethylpropanoicAcid;
+formula     C4H7ClO2;
+CAS         594-58-1;
+InChIKey    MYCXCBCDXVFXNE-UHFFFAOYSA-N;
+MW          122.548;      // g/mol [origin=calculated method=formula-sum]
+Tc          683.71;      // K   [origin=predictive method=joback]
+Pc          42.663;      // bar [origin=predictive method=joback]
+omega       0.5346;      // -   [origin=predictive method=lee-kesler]
+Tb          470.83;      // K   [origin=predictive method=joback]
+HvapTb      44751.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.73 0.56724 -0.0004586 1.453e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:1
+    joback ( { group CH3; count 2; } { group C; count 1; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-2-methyl-propanoic acid" "l-2-chloropropinonical" "2-chloro-2-methylpropionic acid" "2-chloro isobutyric acid" "2-chloro-2-methyl-propionic acid" "propanoic acid,2-chloro-2-methyl-" "propionicacid, 2-chloro-2-methyl- (6ci,7ci,8ci); 2-chloro-2-methylpropionic acid;2-chloroisobutyric acid; a-chloroisobutyric acid" );
+gibbsFormation
+{
+    dHf_298   -500650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     359.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-370200.0
+    phase     gas;
+}

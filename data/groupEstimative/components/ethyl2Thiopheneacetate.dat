@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 2-thiopheneacetate  (C8H10O2S, CAS 57382-97-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl2Thiopheneacetate;
+formula     C8H10O2S;
+CAS         57382-97-5;
+InChIKey    QSUANHXENVRFDN-UHFFFAOYSA-N;
+MW          170.226;      // g/mol [origin=calculated method=formula-sum]
+Tc          731.29;      // K   [origin=predictive method=joback]
+Pc          33.920;      // bar [origin=predictive method=joback]
+omega       0.5251;      // -   [origin=predictive method=lee-kesler]
+Tb          511.94;      // K   [origin=predictive method=joback]
+HvapTb      48433.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.282 0.71013 -0.00042582 8.69e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2COO; count 1; } { group C4H3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COO; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-thiophen-2-ylethanoate" "ethyl 2-thienylacetate" "ethyl thiophene-2-acetate" "ethyl 2-thiophen-2-ylacetate" "ethyl 2-(thiophen-2-yl)acetate" "ethyl-2-thiophene acetate" "ethyl thiophen-2-ylacetate" "ethyl 2-(2-thienyl)acetate" "2-thienylacetic acid, ethyl ester" "2-thiopheneacetic acid, ethyl ester" "2-thienylaceticacid ethyl ester;ethyl 2-(2-thienyl)acetate;ethyl 2-thienylacetate;ethyl2-thiopheneacetate;ethyl thiophen-2-ylacetate;thiophene-2-acetic acid ethyl ester;" );
+gibbsFormation
+{
+    dHf_298   -295560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     480.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-159480.0
+    phase     gas;
+}

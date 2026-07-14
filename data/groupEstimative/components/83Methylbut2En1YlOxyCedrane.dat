@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-[(3-methylbut-2-en-1-yl)oxy]cedrane  (C20H34O, CAS 67845-45-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        83Methylbut2En1YlOxyCedrane;
+formula     C20H34O;
+CAS         67845-45-8;
+InChIKey    KZKIRFLJWHVKJB-UHFFFAOYSA-N;
+MW          290.491;      // g/mol [origin=calculated method=formula-sum]
+Tc          919.94;      // K   [origin=predictive method=joback]
+Pc          14.546;      // bar [origin=predictive method=joback]
+omega       0.5940;      // -   [origin=predictive method=lee-kesler]
+Tb          699.13;      // K   [origin=predictive method=joback]
+HvapTb      58265.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-296.789 3.09032 -0.0030387 1.2687e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 5; } { group CH; count 3; } { group C; count 3; } { group CH=C; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 3; } { group C_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cedryl isoprenyl ether" "1h-3a,7-methanoazulene, octahydro-3,6,8,8-tetramethyl-6-((3-methyl-2-buten-1-yl)oxy)-, (3r,3as,6r,7r,8as)-" "1h-3a,7-methanoazulene, octahydro-3,6,8,8-tetramethyl-6-((3-methyl-2-butenyl)oxy)-, (3r,3ar,6r,7r,8as)-" "1h-3a,7-methanoazulene, octahydro-3,6,8,8-tetramethyl-6-[(3-methyl-2-buten-1-yl)oxy]-, (3r,3as,6r,7r,8as)-" "1h-3a,7-methanoazulene, octahydro-3,6,8,8-tetramethyl-6-[(3-methyl-2-butenyl)oxy]-, (3r,3ar,6r,7r,8as)-" "(3r-(3alpha,3abeta,6alpha,7beta,8aalpha))-octahydro-3,6,8,8-tetramethyl-6-((3-methylbut-2-enyl)oxy)-1h-3a,7-methanoazulene" );
+gibbsFormation
+{
+    dHf_298   -290140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     786.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=202640.0
+    phase     gas;
+}

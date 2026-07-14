@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: decachlorobiphenyl  (C12Cl10, CAS 2051-24-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        decachlorobiphenyl;
+formula     C12Cl10;
+CAS         2051-24-3;
+InChIKey    ONXPZLFXDMAPRO-UHFFFAOYSA-N;
+MW          498.632;      // g/mol [origin=calculated method=formula-sum]
+Tc          1228.83;      // K   [origin=predictive method=joback]
+Pc          20.145;      // bar [origin=predictive method=joback]
+omega       0.9612;      // -   [origin=predictive method=lee-kesler]
+Tb          951.62;      // K   [origin=predictive method=joback]
+HvapTb      97328.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (196.07 0.459 -0.000225 2.36e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 2; } { group ACCl; count 10; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 12; } { group Cl; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5-pentakis(chloranyl)-6-[2,3,4,5,6-pentakis(chloranyl)phenyl]benzene" "pcb no 209 solution" "decachlorobiphenyl solution" "decachloro-1,1'-biphenyl" "1,1'-biphenyl, 2,2',3,3',4,4',5,5',6,6'-decachloro-" "perchlorobiphenyl" "2,2',3,3',4,4',5,5',6,6'-decachlorobiphenyl" "2,3,4,5,6,2',3',4',5',6'-decachloro-biphenyl" "2,2',3,3',4,4',5,5',6,6'-decachloro-1,1'-biphenyl" "1,2,3,4,5-pentachloro-6-(2,3,4,5,6-pentachlorophenyl)benzene" "2,2',3,3',4,4',5,5',6,6'-pcb" "2,2',3,3',4,4',5,5',6,6'&#8722;pcb" );
+gibbsFormation
+{
+    dHf_298   -90050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     683.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=59380.0
+    phase     gas;
+}

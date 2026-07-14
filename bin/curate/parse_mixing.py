@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# SUPERSEDED 2026-06-30: the monolith this importer emitted was consolidated into
+# the per-file Aspen layout (electrolyte/<file>.dat is GONE -> parameters/electrolyte/
+# and data/standards/chemistry/, single-source). The live tier is per-file; the
+# monolith->per-file migration is done by the gen_*.py scripts + guarded by the
+# check_*.py scripts. To re-import from PHREEQC, update this script to emit per-file
+# records directly (as written it regenerates the now-deleted monolith).
+
 # parse_mixing.py — deterministic import of the Pitzer TERNARY mixing parameters
 # (theta_cc'/theta_aa' for like-sign ion pairs, psi_cc'a/psi_caa' for triplets)
 # from USGS PHREEQC pitzer.dat (public domain) into the Choupo electrolyte

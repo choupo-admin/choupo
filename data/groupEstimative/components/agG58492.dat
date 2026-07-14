@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ag-g-58492  (C31H65NO3, CAS 67953-01-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        agG58492;
+formula     C31H65NO3;
+CAS         67953-01-9;
+InChIKey    AEMZBPHGIZQYMI-UHFFFAOYSA-N;
+MW          499.865;      // g/mol [origin=calculated method=formula-sum]
+Tc          1617.35;      // K   [origin=predictive method=joback]
+Pc          6.139;      // bar [origin=predictive method=joback]
+omega       0.0248;      // -   [origin=predictive method=lee-kesler]
+Tb          1220.06;      // K   [origin=predictive method=joback]
+HvapTb      128990.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (30.227 2.89524 -0.0013974 1.888e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 26; } { group CH; count 1; } { group OH; count 1; } { group CH2NH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 27; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-azanylpropan-2-ol;octacosanoic acid" "octacosanoic acid compd. with 1-amino-2-propanol (1:1)" "montanic acid, monoisopropanolamine salt" "octacosanoic acid, compd. with 1-amino-2-propanol (1:1)" "1-aminopropan-2-ol; octacosanoic acid" "octacosanoic acid, compound with 1-aminopropan-2-ol (1:1)" );
+gibbsFormation
+{
+    dHf_298   -1268780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1617.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-311340.0
+    phase     gas;
+}

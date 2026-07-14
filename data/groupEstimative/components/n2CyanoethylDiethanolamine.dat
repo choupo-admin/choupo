@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-(2-cyanoethyl)diethanolamine  (C7H14N2O2, CAS 17209-72-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        n2CyanoethylDiethanolamine;
+formula     C7H14N2O2;
+CAS         17209-72-2;
+InChIKey    ZSIRWYMANRZZPE-UHFFFAOYSA-N;
+MW          158.201;      // g/mol [origin=calculated method=formula-sum]
+Tc          830.60;      // K   [origin=predictive method=joback]
+Pc          33.297;      // bar [origin=predictive method=joback]
+omega       1.5965;      // -   [origin=predictive method=lee-kesler]
+Tb          658.64;      // K   [origin=predictive method=joback]
+HvapTb      77055.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (13.416 0.7955 -0.0004994 1.228e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group OH; count 2; } { group CH2N; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group OH; count 2; } { group N; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[bis(2-hydroxyethyl)amino]propanenitrile" "propanenitrile, 3-(bis(2-hydroxyethyl)amino)-" "propionitrile, 3-(bis(2-hydroxyethyl)amino)-" "3-(bis(2-hydroxyethyl)amino)propionitrile" "propanenitrile, 3-[bis(2-hydroxyethyl)amino]-" "3-[bis(2-hydroxyethyl)amino]propionitrile" "3-(bis(2-hydroxyethyl)amino)propanenitrile" "propionitrile, 3-[bis(2-hydroxyethyl)amino]-" "propanenitrile, 3-(bis(2-hydroxyethyl)amino)- (9ci)" "3-(bis(2-hydroxyethyl)amino)propanenitrile; {3-[bis(2-hydroxyethyl)amino]propionitrile}; propanenitrile, {3-[bis(2-hydroxyethyl)amino]-}; propionitrile, {3-[bis(2-hydroxyethyl)amino]-}" );
+gibbsFormation
+{
+    dHf_298   -259860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     552.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-21620.0
+    phase     gas;
+}

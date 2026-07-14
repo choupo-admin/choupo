@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(dimethylamino)ethanol; formic acid  (C5H13NO3, CAS 59101-30-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C5H13NO3 (delta H+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2DimethylaminoEthanolFormicAcid;
+formula     C5H13NO3;
+CAS         59101-30-3;
+InChIKey    VHVATZZFHAQBPR-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          135.163;      // g/mol [origin=calculated method=formula-sum]
+Tc          747.04;      // K   [origin=predictive method=joback]
+Pc          39.308;      // bar [origin=predictive method=joback]
+omega       1.1614;      // -   [origin=predictive method=lee-kesler]
+Tb          564.83;      // K   [origin=predictive method=joback]
+HvapTb      62757.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.952 0.58444 -0.0002564 1.49e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group OH; count 1; } { group CH3N; count 1; } { group HCOOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group OH; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(dimethylamino)ethanol;methanoic acid" "formic acid, compd. with 2-(dimethylamino)ethanol (1:1)" "formic acid, dimethylethanolamine salt" "formic acid, compound with 2-(dimethylamino)ethanol (1:1)" "formic acid compd. with 2-(dimethylamino)ethanol (1:1)" );
+gibbsFormation
+{
+    dHf_298   -637310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     590.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-431110.0
+    phase     gas;
+}

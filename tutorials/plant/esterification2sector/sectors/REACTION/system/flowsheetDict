@@ -1,0 +1,13 @@
+/*--- REACTION sector: the esterification subdomain.  One unit op, the CSTR;
+  its kinetics live in this sector's constant/reactions (walk-up from the unit). */
+
+units
+(
+    reactor
+);
+
+connections
+{
+    Feed        { to reactor/Feed; }
+    reactorOut  { from reactor/reactorOut; }
+}

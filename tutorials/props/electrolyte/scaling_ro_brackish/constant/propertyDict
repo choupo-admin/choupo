@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  scaling_ro_brackish / constant/thermoPackage
+
+  Water is the solvent and the package's only component: the brackish
+  groundwater's ions enter as the speciate / scalingScan totals, with Davies
+  activities and pH solved from electroneutrality declared in the ops.  The
+  ionic strength climbs from ~0.03 to ~0.2 mol/kg at r = 0.85 -- still
+  inside Davies' ~0.5 m trust window, which is why this case can afford the
+  simpler model.  The package itself is only the inert solvent basis.
+\*---------------------------------------------------------------------------*/
+
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }

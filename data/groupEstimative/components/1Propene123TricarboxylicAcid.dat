@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-propene-1,2,3-tricarboxylic acid  (C6H6O6, CAS 4023-65-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Propene123TricarboxylicAcid;
+formula     C6H6O6;
+CAS         4023-65-8;
+InChIKey    GTZCVFVGUGFEME-UHFFFAOYSA-N;
+MW          174.108;      // g/mol [origin=calculated method=formula-sum]
+Tc          1001.71;      // K   [origin=predictive method=joback]
+Pc          46.277;      // bar [origin=predictive method=joback]
+omega       1.5554;      // -   [origin=predictive method=lee-kesler]
+Tb          777.45;      // K   [origin=predictive method=joback]
+HvapTb      80480.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.639 0.7461 -0.0006065 1.934e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH=C; count 1; } { group COOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group COOH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "prop-1-ene-1,2,3-tricarboxylic acid" "(1z)-1-propene-1,2,3-tricarboxylic acid" "1-propene-1,2,3-tricarboxylic acid, (1e)-" "1-propene-1,2,3-tricarboxylic acid, (1z)-" "trans-aconitic acid, reag" "trans-aconitic acid, 85%" "propene-trans-1,2,3-tricarboxylic acid" "1-propene-1,2,3-tricarboxylicacid, (1e)-" "1-propene-1,2,3-tricarboxylicacid, (e)- (8ci);aconitic acid, trans- (6ci);(1e)-prop-1-ene-1,2,3-tricarboxylic acid;(e)-1-propene-1,2,3-tricarboxylicacid;(e)-aconitic acid;trans-1-propene-1,2,3-tricarboxylic acid;" );
+gibbsFormation
+{
+    dHf_298   -1110550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     538.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-960420.0
+    phase     gas;
+}

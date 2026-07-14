@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  pfr_polyesterification / constant/thermoPackage
+
+  A molten AB hydroxy-acid monomer (hydroxyhexanoicAcid) self-condenses to
+  the polycaprolactone repeat unit (pclRepeat), releasing water -- a single
+  molten phase at 450 K.  The subject is Carothers/Flory chain statistics,
+  not VLE, so ideal gamma / ideal gas are honest simplifications: no phase
+  split is computed and the polymer melt's non-ideality is not modelled.
+\*---------------------------------------------------------------------------*/
+
+components       ( hydroxyhexanoicAcid  pclRepeat  water );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

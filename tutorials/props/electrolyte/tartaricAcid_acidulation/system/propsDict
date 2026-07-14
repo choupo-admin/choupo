@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Solution chemistry of the tartaric-acid acidulation liquor.  Tartaric acid is a
+  REAL weak diprotic acid: neutral H2Tart is the speciation master, dissociating
+  H2Tart <=> HTart- <=> Tart^2- (pKa1 2.98, pKa2 4.34, dH from Kochergina 2006).
+  Neutral master => an acid liquor is electroneutral at 0.0% (the H+ is from
+  dissociation).  Every gamma below is Pitzer-HMW -- NOT ideal.
+
+  (1) acidulation_pitzer -- the acid brine, Pitzer-HMW (I=1.8): activity coeffs +
+      tartaric speciation; tartrate announced Debye-Hueckel-only (no Pitzer pair).
+  (2) acidulation_davies -- the SAME brine, Davies (self-flags beyond I~0.5).
+  (3) gypsum_ceiling     -- gypsum to SI=0 (thermodynamic MAXIMUM, a ceiling).
+  (4) pKa2_davies / (5) pKa2_pitzer -- the SAME cut (H2Tart in 1.5 m KCl, at the
+      thermodynamic pKa2) under the two models: at this REAL ionic strength Pitzer
+      drives [Tart^2-]/[HTart-] to ~17 (gamma_Tart 0.02), NOT the ideal ratio 1 --
+      the activity-coefficient shift of the apparent pKa, made quantitative.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    { name acidulation_pitzer; type speciate; activityModel pitzerHMW;
+      totals { H2Tart 0.10 mol/kg; Ca 0.50 mol/kg; SO4 0.50 mol/kg; K 0.10 mol/kg; Cl 0.10 mol/kg; }
+      pH solve; diagSpecies ( Ca SO4 H2Tart HTart Tart ); output { file acidulation_pitzer.csv; } }
+
+    { name acidulation_davies; type speciate; activityModel davies;
+      totals { H2Tart 0.10 mol/kg; Ca 0.50 mol/kg; SO4 0.50 mol/kg; K 0.10 mol/kg; Cl 0.10 mol/kg; }
+      pH solve; diagSpecies ( Ca SO4 H2Tart HTart Tart ); output { file acidulation_davies.csv; } }
+
+    { name gypsum_ceiling; type speciate; activityModel pitzerHMW;
+      totals { H2Tart 0.10 mol/kg; Ca 0.50 mol/kg; SO4 0.50 mol/kg; K 0.10 mol/kg; Cl 0.10 mol/kg; }
+      pH solve; equilibrate { minerals ( gypsum ); } diagSpecies ( Ca SO4 ); output { file gypsum_ceiling.csv; } }
+
+    { name pKa2_davies; type speciate; activityModel davies;
+      totals { H2Tart 0.10 mol/kg; K 1.5 mol/kg; Cl 1.5 mol/kg; } pH 4.34;
+      diagSpecies ( H2Tart HTart Tart ); output { file pKa2_davies.csv; } }
+    { name pKa2_pitzer; type speciate; activityModel pitzerHMW;
+      totals { H2Tart 0.10 mol/kg; K 1.5 mol/kg; Cl 1.5 mol/kg; } pH 4.34;
+      diagSpecies ( H2Tart HTart Tart ); output { file pKa2_pitzer.csv; } }
+);

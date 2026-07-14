@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl 2-butoxy-2-hydroxyacetate  (C10H20O4, CAS 68575-73-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butyl2Butoxy2Hydroxyacetate;
+formula     C10H20O4;
+CAS         68575-73-5;
+InChIKey    IVWCKBUPHQKJNH-UHFFFAOYSA-N;
+MW          204.266;      // g/mol [origin=calculated method=formula-sum]
+Tc          767.87;      // K   [origin=predictive method=joback]
+Pc          22.893;      // bar [origin=predictive method=joback]
+omega       1.1543;      // -   [origin=predictive method=lee-kesler]
+Tb          600.78;      // K   [origin=predictive method=joback]
+HvapTb      63962.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (48.316 0.87574 -0.0003482 5.2e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group OH; count 1; } { group CH2O; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 1; } { group OH; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butyl 2-butoxy-2-oxidanyl-ethanoate" "acetic acid, butoxyhydroxy-, butyl ester" "butyl butoxy(hydroxy)acetate" "acetic acid, 2-butoxy-2-hydroxy-, butyl ester" "butyl butoxyhydroxyacetate" "ivwckbuphqkjnh-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -856740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     649.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-521310.0
+    phase     gas;
+}

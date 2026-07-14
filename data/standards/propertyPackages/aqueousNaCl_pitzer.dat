@@ -1,0 +1,47 @@
+/*---------------------------------------------------------------------------*\
+  propertyPackage aqueousNaCl_pitzer -- the declarative thermo MANIFEST a case selects
+  (`package aqueousNaCl_pitzer;` in its constant/propertyPackage, or copy this record
+  inline into the case for the self-contained form).
+  Components: water NaCl.  Liquid method: electrolyte.pitzer (the world);
+  the ThermoPackageBuilder loads + verifies every declared parameter file and
+  announces the assembly in the run log.  Grammar: the 2026-07-04 forum
+  (models per PHASE, conventions per GROUP, parameters per PAIR, all cited).
+\*---------------------------------------------------------------------------*/
+recordType propertyPackage;
+schemaVersion 1;
+
+name aqueousNaCl_pitzer;
+
+components ( water NaCl );
+
+chemistry
+{
+    salts ( halite );
+
+    activeSaltEquilibriumData
+    {
+        halite measuredSolubilityAnchor;
+    }
+}
+
+propertyMethods
+{
+    liquid electrolyte.pitzer;
+    vapour builtin.idealGas;
+    solid  builtin.saltEquilibrium;
+}
+
+parameters
+{
+    pitzerPairs
+    {
+        Na-Cl "data/standards/parameters/electrolyte/pitzer/pairs/Na-Cl.dat";
+    }
+}
+
+
+notes
+{
+    purpose "Property package: the central object a case selects. Declares components, chemistry, methods, parameters and reported sets.";
+    builtinMethods "builtin.idealGas and builtin.saltEquilibrium are runtime built-ins; only electrolyte.pitzer is represented as an explicit propertyMethod record here.";
+}

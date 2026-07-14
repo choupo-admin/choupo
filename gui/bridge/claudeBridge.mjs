@@ -46,7 +46,7 @@ import { spawn } from "node-pty";
 import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join, sep, relative, basename } from "node:path";
-import { existsSync, writeFileSync, mkdirSync, readFileSync, readdirSync, statSync, watch as fsWatch } from "node:fs";
+import { existsSync, writeFileSync, mkdirSync, readFileSync, readdirSync, statSync, rmSync, watch as fsWatch } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 
 import { createArtifactWatcher, readArtifactText } from "./artifactChannel.mjs";
@@ -125,22 +125,33 @@ function buildAuthoringGuide() {
 // keep ORIENTATION instead: the agent is TOLD (in the case's CLAUDE.md /
 // AGENTS.md / ai/) to work inside this case and to read the manual + AI details
 // from the local Choupo repo.  The two settings below are pure comfort, not a
-// boundary: auto-accept edits so dict authoring flows, and pre-approve reads of
-// the repo's data/ + docs/ so consulting the catalogue + manual never prompts.
-// Bash still prompts once (the honest human-in-the-loop), with NO read-only fs
-// to block make/buildCode/runCase.
+// boundary: auto-accept edits AND bash so the agent acts AUTONOMOUSLY inside the
+// case (run choupoProps / runCase, curate a .dat) without nagging, and pre-approve
+// reads of the repo's data/ + docs/ + src/ so consulting the catalogue + manuals +
+// engine never prompts.  The repo stays READ-ONLY via the deny rules.
 function writeConfinement(cwd) {
   try {
+    // The agent EDITS only the case (its cwd).  It MAY READ the repo to consult
+    // the component catalogue (data/), the manuals (docs/, incl. docs/ai), AND the
+    // engine itself (src/ -- unit operations + property models) when it needs to
+    // understand how something works.  But it must NEVER edit anything outside the
+    // case: additionalDirectories grants the READS; the deny rules keep those repo
+    // dirs READ-ONLY, so the open case stays the one and only writable home.
+    // Paths are relative to CHOUPO_HOME (no /home/<user> literals baked in).
+    const repoRead = [join(PROJECT_ROOT, "data"), join(PROJECT_ROOT, "docs"), join(PROJECT_ROOT, "src")];
     const settings = {
-      // Edits flow without a prompt (dict authoring is the main loop); bash
-      // still asks once -- the only place a human stays in the loop.
+      // The CASE is the agent's sandbox: it acts AUTONOMOUSLY inside it.  Edits
+      // flow without a prompt (acceptEdits) AND bash runs without a prompt
+      // (allow Bash) -- so it can run choupoProps / runCase / curate a .dat /
+      // inspect the dicts and make ANY call it likes WITHIN the case, no nagging.
+      // Autonomy stays INSIDE the case: the repo (data/, docs/, src/) is granted
+      // for READING (additionalDirectories) but is kept READ-ONLY by the deny
+      // rules, so the agent can never edit the engine or the frozen catalogue.
       defaultMode: "acceptEdits",
       permissions: {
-        // Pre-approve reads of the frozen standards + the manuals so the agent
-        // can consult the catalogue + theory/user guides in the LOCAL repo
-        // without a prompt.  Relative to CHOUPO_HOME (injected at runtime) so it
-        // ports across machines -- no /home/<user> literals baked in.
-        additionalDirectories: [join(PROJECT_ROOT, "data"), join(PROJECT_ROOT, "docs")],
+        allow: ["Bash"],
+        additionalDirectories: repoRead,
+        deny: repoRead.flatMap((d) => [`Edit(${d}/**)`, `Write(${d}/**)`]),
       },
     };
     // One settings file per case dir (tagged) so concurrent consoles don't
@@ -163,6 +174,20 @@ function hasPriorSession(cwd) {
   const dir = join(homedir(), ".claude", "projects", enc);
   try { return existsSync(dir) && readdirSync(dir).some((f) => f.endsWith(".jsonl")); }
   catch { return false; }
+}
+
+// Remove any ORPHAN Claude conversation keyed to this path.  Claude Code stores
+// sessions under ~/.claude/projects/<encoded-path>, OUTSIDE the case folder -- so
+// deleting a case dir and creating a new one with the SAME name leaves the old
+// 5h conversation behind, and `-c` silently resumes it.  A freshly CREATED case
+// must start blank, so we clear it.  (Reopening an EXISTING case never calls this.)
+function clearPriorSession(cwd) {
+  try {
+    const enc = cwd.replace(/[/\\]/g, "-");
+    const dir = join(homedir(), ".claude", "projects", enc);
+    if (existsSync(dir)) { rmSync(dir, { recursive: true, force: true }); return true; }
+  } catch (e) { console.log(`[claudeBridge] could not clear prior session: ${e.message}`); }
+  return false;
 }
 
 // The two roots a case can live under.  `?root=workspace|tutorials` selects
@@ -277,6 +302,65 @@ writing Choupo "dicts" under \`system/\` + \`constant/\`, NOT editing the engine
   \`bin/buildCode <case>\` (needs the Choupo repo + a C++ compiler).
 - Deeper manuals: a Choupo repo's \`docs/*.pdf\`, else the Choupo site's \`/docs/\`.
 
+## Authoring playbook -- ESTABLISH WITH THE USER first, the flowsheet LAST
+You author this case as a process engineer IN DIALOGUE with the user, in a fixed order.
+The flowsheet is the LAST thing you build, NOT the first.  HARD RULE: do NOT write a
+single line of flowsheetDict until the user has AGREED, in this order, on (A) the THERMO
+model + the missing-data plan, and THEN (B) the REACTION pathways.  Establishing A and B
+with the user IS the work; the topology just wires up what you both agreed.  Interact --
+this is a conversation, not a delivery -- and do NOT say "done" until you have PROVEN it
+closed by quoting the engine's own output.
+
+PHASES (in order; NEVER jump ahead -- re-running an earlier one means telling the user why):
+0 SCOPE     -- Confirm the DELIVERABLE (the one KPI/question) and the binary. (ASK)
+1 SPECIES   -- Propose the component list and STOP-AND-ASK: is this an aqueous ELECTROLYTE
+              system (anything dissociates in water)?  which species leave vs stay?  Agree
+              the set first.  NEVER default electrolyte->molecular in silence.
+2 THERMO + DATA  -- *** GATE: establish WITH THE USER and get sign-off before moving on. ***
+              (a) DERIVE the thermo model from the chemistry (ions-in-water->pitzer/eNRTL +
+              electrolyte config; polar/LLE->NRTL; mild->Wilson; no pair data->UNIFAC; ideal
+              only if truly ideal), write it EXPLICITLY in constant/propertyDict, and present a
+              Modelling-Fork Ledger (each choice + the rejected alternative + one line of
+              physics).  (b) Run \`choupoProps <case> --gap-report\` (the ONLY gap authority)
+              and lay out WHICH DATA ARE MISSING.  NEVER type a property number from your
+              head.  For each gap SUGGEST the papers in literature/README.md (citation +
+              which datum + which species); the USER places the PDFs in literature/ from
+              whatever access they have -- their call, their responsibility; never judge,
+              never ask how, never fetch a paper yourself -- then READ them and pull each
+              value WITH its citation.  gibbsFormation{dHf_298;s_298;phase;} on any species
+              that reacts or flows in an energy-balanced stream.  Ions->electrolyte{} +
+              case-local ions.dat, never a faked dHf.  DO NOT PROCEED until the user has
+              signed off on the model + the data plan.
+3 REACTIONS -- *** GATE: discuss the REACTION PATHWAYS with the user and agree them. ***
+              Which reactions actually occur, their stoichiometry (MASS-BALANCED!), and the
+              basis (conversion / equilibrium K / kinetics -- kinetics need cited or fitted
+              Arrhenius, never invented).  Lay out the route, ask the user to confirm or
+              correct it, and ONLY then write the reactions dict.  DO NOT PROCEED until agreed.
+4 TOPOLOGY  -- ONLY now, with thermo + data + reactions agreed, write flowsheetDict (units:
+              type then model then operation; connections; sectors for multi-block).  Author
+              every graph stream as a complete 0/<stream> state file; no stream values in
+              flowsheetDict.
+              Heat is a stream/utility wire, never Q= on a node.
+5 SPEC      -- The USER owns flows/T/P/unit specs (named units: F 100 kmol/h; P 1 bar;). You
+              enforce DOF: feeds fixed by exactly 2 state variables; a flash GIVES Q (2 of
+              {T,P,Q,V/F}); rotating equipment on W_shaft+eta with P_out a result.  Flag
+              over/under-spec before the run; a target value is an explicit DesignSpec.
+6 CLOSURE   -- Turn on reports{ streamTable massBalance energyBalance }, run, and READ BACK
+              the artifacts.  Say "done" ONLY when: gap-report verdict=clean; massBalance
+              closure ~100% per element; globalEnergyBoundary status=OK (status=REFUSED is an
+              automatic FAIL naming an undatumed component -- back to Phase 2, never lower a
+              tolerance); no NaN/inf and the recycle relative residual converged; the
+              Modelling-Fork Ledger + per-unit DOF stated; every number cited-or-tool with
+              its [estimate] banner surfaced.  Quote the actual CSV lines as proof.
+
+INTERVIEW STYLE: this is a DIALOGUE -- err toward MORE interaction, not less.  STOP at every
+gate (species, thermo+data, reactions) and get the user's agreement BEFORE proceeding; never
+race ahead to the flowsheet.  Decide only the mechanical details silently (syntax, layout,
+binary, DOF, tutorial twin) and announce them in one italic line the user can veto -- but the
+PHYSICS forks (electrolyte-vs-ideal, the thermo model, the missing data, the reaction
+pathways) are ALWAYS discussed and agreed, never assumed.  Propose the physically-correct
+option pre-selected with a one-line trade-off; batch the questions per gate, not a drip.
+
 ## Goal (this case)
 ${desc}
 `;
@@ -288,6 +372,33 @@ ${desc}
 
 // A case name is a single folder slug (no path separators, no escape).
 const NAME_RE = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
+
+// Turn an ARBITRARY name (a browser folder name / zip stem like "my case
+// (final)") into a safe single-folder slug satisfying NAME_RE: lowercase,
+// every illegal run -> '-', collapse repeats, strip leading non-alnum (so the
+// first char is alnum), tidy a trailing separator; empty -> "case".  Unlike the
+// user-typed NAME the New dialog validates, an imported name is not under the
+// student's control, so we slugify rather than reject.
+function slugifyName(raw) {
+  const s = String(raw || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, "-")   // any illegal run -> single '-'
+    .replace(/-{2,}/g, "-")           // collapse repeats
+    .replace(/^[^a-z0-9]+/, "")       // leading char must be alnum
+    .replace(/[-_]+$/, "");           // tidy a trailing separator
+  return s || "case";
+}
+
+// Resolve `rel` UNDER `dir`, refusing any escape (a `..` segment or an absolute
+// path that lands outside the case folder).  Returns the absolute path, or null
+// when it would escape -- so a hostile zip with `../` entries cannot write
+// outside the case.  Shared by POST /api/case/file and POST /api/cases/import.
+function safeJoin(dir, rel) {
+  if (!rel || String(rel).includes("..")) return null;
+  const abs = resolve(join(dir, String(rel)));
+  if (abs !== dir && !abs.startsWith(dir + sep)) return null;
+  return abs;
+}
 
 // The deterministic 5-file skeleton, as a {relPath: content} map.  This MIRRORS
 // bin/newCase -- keep the two in sync (structure is load-bearing, never guessed;
@@ -307,24 +418,21 @@ verbosity     3;                  // 0 silent .. 3 info (Newton iters) .. 4 debu
 `;
   files["system/flowsheetDict"] =
 `/*---------------------------------------------------------------------------*\\
-  flowsheetDict  --  topology (streams + units + connections).
+  flowsheetDict  --  topology (units + connections).  Stream state lives in 0/.
 
-  CURATION phase: this case is EMPTY.  Add streams and units below; the
-  connections are implicit via stream names (a unit's \`in\` / \`outputs\`).
+  CURATION phase: this case is EMPTY.  Add units below; their \`in\` and
+  \`outputs\` names define graph streams.  Author one complete 0/<stream> file
+  for each graph stream before running.
   UNITS ARE MANDATORY on every dimensional value.
 \\*---------------------------------------------------------------------------*/
-
-streams
-{
-}
 
 units
 (
 );
 `;
-  files["constant/thermoPackage"] =
+  files["constant/propertyDict"] =
 `/*---------------------------------------------------------------------------*\\
-  thermoPackage  --  the components + thermodynamic models for this case.
+  propertyDict  --  the components + thermodynamic models for this case.
 
   EMPTY skeleton.  Add your components (from data/standards/components/) and
   choose ONE global model set -- the default.  "All models are wrong, some are
@@ -624,8 +732,87 @@ function handleRest(req, res) {
           mkdirSync(dirname(abs), { recursive: true });
           writeFileSync(abs, content, "utf8");
         }
-        console.log(`[claudeBridge] scaffolded new case ${caseDir}`);
+        const cleared = clearPriorSession(caseDir);  // a NEW case starts blank, never resumes a deleted namesake's session
+        console.log(`[claudeBridge] scaffolded new case ${caseDir}${cleared ? " (cleared an orphan Claude session)" : ""}`);
         sendJson(res, 201, { name, dir: caseDir, files });
+      } catch (e) {
+        sendJson(res, 500, { error: e.message });
+      }
+    });
+    return true;
+  }
+
+  // POST /api/cases/import  {name, files}  -> MATERIALISE an opened .zip/folder
+  // case into the WORKSPACE as a real on-disk case.  This is "Open materialises":
+  // the same scaffold-a-folder act as New Case / Duplicate, but fed the student's
+  // chosen file-map instead of a skeleton -- so the opened case gains a stable
+  // path (the console can run there via ?dir=, the Claude session is keyed to it,
+  // and the GUI live-reloads the agent's edits).  Hardened end to end:
+  //   * SLUGIFY the arbitrary name (a folder name / zip stem is not NAME_RE-clean);
+  //   * FILTER through isCaseSourceFile() (no reports/logs/csv/built binaries);
+  //   * GUARD every write with safeJoin() so a hostile zip's `../` cannot escape;
+  //   * NORMALISE the .cho marker to <slug>.cho (synthesise one if absent) so
+  //     isCaseDir() is true and the console's ?dir= gate passes;
+  //   * BORN-TAUGHT via ensureCaseTeaching() so the console works first try;
+  //   * SOFT-VALIDATE it looks like a Choupo case (a .cho / controlDict / thermo);
+  //   * COLLISION rule: identical content -> reopen the SAME folder (idempotent,
+  //     same path => same Claude session); different -> auto-suffix -2,-3,...;
+  //     NEVER overwrite an existing case.
+  //   * READ-BACK: respond with readCaseFiles(caseDir) so disk/GUI/console agree.
+  if (req.method === "POST" && url.pathname === "/api/cases/import") {
+    readBody(req).then((body) => {
+      if (!body) { sendJson(res, 400, { error: "bad JSON" }); return; }
+      const incoming = body.files && typeof body.files === "object" ? body.files : null;
+      if (!incoming) { sendJson(res, 400, { error: "no files in the import payload" }); return; }
+      const slug = slugifyName(body.name);
+
+      // Filter to source files; normalise the .cho marker name to the slug.
+      const filtered = {};
+      let hasCho = false;
+      for (const [rel0, content] of Object.entries(incoming)) {
+        if (typeof content !== "string") continue;
+        const rel = String(rel0).split("\\").join("/");
+        if (!isCaseSourceFile(rel)) continue;
+        if (rel.endsWith(".cho")) { filtered[`${slug}.cho`] = content; hasCho = true; }
+        else filtered[rel] = content;
+      }
+      // Soft validation: it must at least LOOK like a Choupo case.
+      const looksLikeCase = hasCho
+        || ("system/controlDict" in filtered)
+        || ("constant/propertyDict" in filtered);
+      if (!looksLikeCase) {
+        sendJson(res, 400, { error: "that folder/zip doesn't look like a Choupo case (no .cho, system/controlDict or constant/propertyDict)" });
+        return;
+      }
+      if (!hasCho) filtered[`${slug}.cho`] = "";   // synthesise the marker
+
+      if (!existsSync(WORKSPACE)) { try { mkdirSync(WORKSPACE, { recursive: true }); } catch { /* */ } }
+
+      // Same name = SAME case: reopen it, never silently duplicate.  (The old
+      // byte-compare keyed on the born-taught teaching files ensureCaseTeaching()
+      // writes -- which differ between copies -- so it never matched and bred
+      // acidoacetico-2 / -3 / -4.)  A folder already under this slug IS the
+      // student's case; reopening keeps the path -- and thus the Claude session
+      // -- stable.  If a student genuinely wants a second case, they rename it.
+      const name = slug;
+      const caseDir = join(WORKSPACE, name);
+      if (existsSync(caseDir) && isCaseDir(caseDir)) {
+        ensureCaseTeaching(caseDir, name);   // keep teaching current
+        console.log(`[claudeBridge] re-opened existing case ${caseDir}`);
+        sendJson(res, 200, { name, dir: caseDir, files: readCaseFiles(caseDir) });
+        return;
+      }
+      try {
+        for (const [rel, content] of Object.entries(filtered)) {
+          const abs = safeJoin(caseDir, rel);
+          if (!abs) continue;                   // hostile path -> skip (never escape)
+          mkdirSync(dirname(abs), { recursive: true });
+          writeFileSync(abs, content, "utf8");
+        }
+        clearPriorSession(caseDir);             // a freshly MATERIALISED case (slug not seen before) starts blank
+        ensureCaseTeaching(caseDir, name);      // born-taught -> console works first try
+        console.log(`[claudeBridge] imported case ${caseDir}`);
+        sendJson(res, 201, { name, dir: caseDir, files: readCaseFiles(caseDir) });
       } catch (e) {
         sendJson(res, 500, { error: e.message });
       }
@@ -654,9 +841,8 @@ function handleRest(req, res) {
       }
       if (!dir || !isAllowed(dir)) { sendJson(res, 403, { error: "case outside your home / project / workspace" }); return; }
       if (!existsSync(dir) || !isCaseDir(dir)) { sendJson(res, 404, { error: `no case at ${dir}` }); return; }
-      if (!rel || rel.includes("..")) { sendJson(res, 400, { error: "bad rel path" }); return; }
-      const abs = resolve(join(dir, rel));
-      if (abs !== dir && !abs.startsWith(dir + "/")) { sendJson(res, 400, { error: "path escapes the case folder" }); return; }
+      const abs = safeJoin(dir, rel);
+      if (!abs) { sendJson(res, 400, { error: "path escapes the case folder" }); return; }
       try {
         mkdirSync(dirname(abs), { recursive: true });
         writeFileSync(abs, String(body.content ?? ""), "utf8");
@@ -671,10 +857,10 @@ function handleRest(req, res) {
 
 // NO sandbox (decided 2026-06-03): the console runs locally, as the user.  The
 // agent is ORIENTED (not caged) -- told via the case's CLAUDE.md / AGENTS.md /
-// ai/ to work inside the case and read the manual from the local repo.  Edits
-// auto-accept; bash prompts once.  See writeConfinement().
+// ai/ to work inside the case and read the manual from the local repo.  Edits AND
+// bash auto-accept (autonomous inside the case); the repo is read-only.  See writeConfinement().
 console.log("[claudeBridge] agent: oriented, not sandboxed -- works in the case cwd, "
-  + "edits auto-accept, bash prompts once (runs locally as you).");
+  + "edits + bash auto-accept (autonomous in the case; repo read-only, runs locally as you).");
 const httpServer = createServer((req, res) => {
   try { if (handleRest(req, res)) return; } catch (e) { sendJson(res, 500, { error: e.message }); return; }
   res.writeHead(404, { "Access-Control-Allow-Origin": "*" });

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,13,13-tetramethyltetradeca-3,5,7,9,11-pentayne  (C18H18, CAS 20264-62-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        221313Tetramethyltetradeca357911Pentayne;
+formula     C18H18;
+CAS         20264-62-4;
+InChIKey    PYSSJZIUYNENIO-UHFFFAOYSA-N;
+MW          234.342;      // g/mol [origin=calculated method=formula-sum]
+Tc          950.34;      // K   [origin=predictive method=joback]
+Pc          22.504;      // bar [origin=predictive method=joback]
+omega       0.2461;      // -   [origin=predictive method=lee-kesler]
+Tb          649.98;      // K   [origin=predictive method=joback]
+HvapTb      63830.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.37 1.21652 -0.0008383 2.417e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group C; count 2; } { group C_C; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group C; count 2; } { group tC; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,5,7,9,11-tetradecapentayne, 2,2,13,13-tetramethyl-" );
+gibbsFormation
+{
+    dHf_298   929150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     638.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1120360.0
+    phase     gas;
+}

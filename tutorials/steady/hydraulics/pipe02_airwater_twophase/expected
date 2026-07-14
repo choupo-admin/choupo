@@ -1,0 +1,22 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  downstream             F                0.0563888888889    1e-4
+stream  feed                   F                0.0563888888889    1e-4
+kpi     P1                     F                0.0563888888889    1e-4
+kpi     P1                     P_in             200000             1e-4
+kpi     P1                     P_out            193263.21239       1e-4
+kpi     P1                     Re_Gs            27493.3230716      1e-4
+kpi     P1                     Re_Ls            28761.0631705      1e-4
+kpi     P1                     X_martinelli     2.67141881475      1e-4
+kpi     P1                     dP_elevation     0                  1e-4
+kpi     P1                     dP_friction      6736.78760984      1e-4
+kpi     P1                     deltaP           6736.78760984      1e-4
+kpi     P1                     holdup_liquid    0.36001183622      1e-4
+kpi     P1                     jG               4.29950133573      1e-4
+kpi     P1                     jL               0.583736217791     1e-4
+kpi     P1                     phi_L2           8.62678349253      1e-4
+kpi     P1                     quality_mass     0.0185241957377    1e-4
+kpi     P1                     rho_G            2.24732878119      1e-4
+kpi     P1                     rho_L            877.017578886      1e-4
+kpi     P1                     vaporFraction    0.012078567704     1e-4
+kpi     P1                     voidFraction     0.63998816378      1e-4

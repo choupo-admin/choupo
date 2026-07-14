@@ -1,0 +1,63 @@
+/*---------------------------------------------------------------------------*\
+  batch15_mesh_study  --  the declared-mesh lesson (A3 spec, gate G6).
+
+  The axial mesh is a DECLARED modelling choice (nCells; absent = FATAL),
+  and this case is the receipt: the batch13 breakthrough run on the
+  25/50/100/200 family, everything else identical.  First-order upwind
+  advection dominates the error, so t_b(5%) must converge MONOTONICALLY
+  with observed order p ~ 1:
+
+      N =  25   t_b5 = 2732.027658 s      (this case)
+      N =  50   t_b5 = 2838.542518 s
+      N = 100   t_b5 = 2890.669098 s      (batch13, the production mesh)
+      N = 200   t_b5 = 2915.764796 s
+      p(25/50/100) = 1.031    p(50/100/200) = 1.055
+      Richardson (p = 1): t_b5(inf) ~ 2940.86 s  -> N = 100 sits 1.7% low
+
+  The full table, the four overlaid breakthrough curves and the verdict
+  are PUBLISHED in reports/meshStudy.md (generated from the four runs; the
+  report header cites mesh, tolerances and integrator).  The ledger mass
+  closure stays <= ~1e-11 on EVERY mesh -- conservation is telescopic in
+  the FV form, it does not improve with refinement because it was never
+  discretisation-limited (gate G3).
+
+  This case pins the N = 25 member; its numbers are DELIBERATELY the worst
+  of the family (t_b5 5.8% below batch13) -- coarse-mesh optimism made
+  visible, the point of the lesson.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        bed;
+        type        fixedBedAdsorber;
+
+        operation
+        {
+            adsorbent   zeolite13X;    // vendored under constant/ (tRef 298 K
+                                       // anchor copy, as batch13)
+            L           0.5   m;
+            area        0.01  m2;
+            eps         0.4;
+            u           0.05  m/s;
+            T           298   K;
+            P           1     bar;
+            Dax  [0 2 -1 0 0]  1e-4;   // m2/s (Pe = 250)
+            nCells      25;            // the COARSE member of 25/50/100/200
+
+            feed    { molarComposition { CO2 0.15; He 0.85; } }
+            initial { molarComposition { He  1.0; } }
+
+            kLDF
+            {
+                basis    solidFilm;
+                scope    "2 mm 13X beads, teaching bed RUN-A3-ANCHOR (as batch13)";
+                source   "declared spec value (A3 anchor); Glueckauf k = 15 De/rp^2 gives the order";
+                k
+                {
+                    CO2  [0 0 -1 0 0]  0.05;   // 1/s
+                }
+            }
+        }
+    }
+);

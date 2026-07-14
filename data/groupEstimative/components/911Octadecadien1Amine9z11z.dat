@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9,11-octadecadien-1-amine, (9z,11z)-  (C18H35N, CAS 72987-34-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        911Octadecadien1Amine9z11z;
+formula     C18H35N;
+CAS         72987-34-9;
+InChIKey    WGZHUGXNTWGQEN-UHFFFAOYSA-N;
+MW          265.485;      // g/mol [origin=calculated method=formula-sum]
+Tc          870.52;      // K   [origin=predictive method=joback]
+Pc          12.893;      // bar [origin=predictive method=joback]
+omega       0.8941;      // -   [origin=predictive method=lee-kesler]
+Tb          692.29;      // K   [origin=predictive method=joback]
+HvapTb      66219.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-35.347 1.81572 -0.0011664 3.088e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 12; } { group CH=CH; count 2; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 13; } { group dCH; count 4; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "octadeca-9,11-dien-1-amine" "(9z,11z)-octadeca-9,11-dien-1-amine" );
+gibbsFormation
+{
+    dHf_298   -146620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     895.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=327570.0
+    phase     gas;
+}

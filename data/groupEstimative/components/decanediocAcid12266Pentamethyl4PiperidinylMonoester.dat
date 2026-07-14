@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: decanedioc acid, 1,2,2,6,6-pentamethyl-4-piperidinyl monoester  (C20H37NO4, CAS 83712-00-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        decanediocAcid12266Pentamethyl4PiperidinylMonoester;
+formula     C20H37NO4;
+CAS         83712-00-9;
+InChIKey    XDDLRVYDQACVBC-UHFFFAOYSA-N;
+MW          355.519;      // g/mol [origin=calculated method=formula-sum]
+Tc          1084.80;      // K   [origin=predictive method=joback]
+Pc          12.381;      // bar [origin=predictive method=joback]
+omega       1.0750;      // -   [origin=predictive method=lee-kesler]
+Tb          879.79;      // K   [origin=predictive method=joback]
+HvapTb      84065.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-144.562 2.6863 -0.0022366 8.142e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 9; } { group CH; count 1; } { group C; count 2; } { group CH2COO; count 1; } { group CH3N; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 8; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 2; } { group COOH; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "10-oxidanylidene-10-(1,2,2,6,6-pentamethylpiperidin-4-yl)oxy-decanoic acid" "decanedioic acid, 1-(1,2,2,6,6-pentamethyl-4-piperidinyl) ester" "decanedioic acid, mono(1,2,2,6,6-pentamethyl-4-piperidinyl) ester" "10-oxo-10-(1,2,2,6,6-pentamethylpiperidin-4-yl)oxydecanoic acid" "10-oxo-10-[(1,2,2,6,6-pentamethyl-4-piperidyl)oxy]decanoic acid" );
+gibbsFormation
+{
+    dHf_298   -1005870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1059.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-415830.0
+    phase     gas;
+}

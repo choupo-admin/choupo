@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis[1-(1-butoxypropan-2-yloxy)propan-2-yl] hexanedioate  (C26H50O8, CAS 189047-80-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis11Butoxypropan2YloxyPropan2YlHexanedioate;
+formula     C26H50O8;
+CAS         189047-80-1;
+InChIKey    LHMOIGUJIOPIGA-UHFFFAOYSA-N;
+MW          490.678;      // g/mol [origin=calculated method=formula-sum]
+Tc          1236.73;      // K   [origin=predictive method=joback]
+Pc          7.149;      // bar [origin=predictive method=joback]
+omega       0.5583;      // -   [origin=predictive method=lee-kesler]
+Tb          998.84;      // K   [origin=predictive method=joback]
+HvapTb      96372.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (125.344 2.13512 -0.0007702 -3.72e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 8; } { group CH; count 4; } { group CH2COO; count 2; } { group CH2O; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 14; } { group CH; count 4; } { group O; count 4; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexanedioic acid, bis(2-(2-butoxy-1-methylethoxy)-1-methylethyl) ester" "hexanedioic acid, bis[2-(2-butoxy-1-methylethoxy)-1-methylethyl] ester" "hexanedioic acid, 1,6-bis(2-(2-butoxy-1-methylethoxy)-1-methylethyl) ester" "hexanedioic acid, 1,6-bis[2-(2-butoxy-1-methylethoxy)-1-methylethyl] ester" "hexanedioic acid bis[2-(2-butoxy-1-methylethoxy)-1-methylethyl] ester" );
+gibbsFormation
+{
+    dHf_298   -1764530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1278.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-882460.0
+    phase     gas;
+}

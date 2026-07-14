@@ -1,0 +1,76 @@
+/*---------------------------------------------------------------------------*\
+  Methyl-acetate synthesis over Amberlyst 15 (a sulfonated ion-exchange resin):
+
+        CH3OH + CH3COOH  <->  CH3COOCH3 + H2O
+
+  THE RATE LAW is Eq 16 of Popken, Gotze & Gmehling, Ind. Eng. Chem. Res. 39
+  (2000) 2601-2611 -- the adsorption-based model the authors recommend (mean
+  relative error 5.4 %, against 13.9 % for the pseudo-homogeneous power law on
+  the same data):
+
+      r = m_cat ( k1 a'_HOAc a'_MeOH - k-1 a'_MeOAc a'_H2O ) / ( SUM_i a'_i )^2
+
+  with the ADSORBED activity  a'_i = K_i a_i / M_i  and  a_i = gamma_i x_i.
+
+  Read the denominator.  Water and methanol adsorb most strongly (K/M = 0.29
+  and 0.18 against 0.052 for the acid), so the water the reaction MAKES crowds
+  the acid off the resin and throttles the forward rate.  That is product
+  inhibition, and no power law of any order reproduces it -- which is precisely
+  why reactive distillation, pulling the water out as it forms, pays for itself.
+
+  There is no vacant-site term: the swollen resin is taken as fully occupied,
+  so the denominator is the bare competition sum, not `1 + SUM`.
+
+  PARAMETERS, transcribed and cited:
+    k1, Ea1, k-1, Ea-1  ..... Table 11, row "eq 16 (adsorption-based)", p. 2609
+    K_i (298 K, assumed T-independent, fitted to NON-reactive binary
+        adsorption data -- not to the kinetics) ..... Table 10, p. 2608
+    M_i ..... the molar masses in data/standards/components/
+
+  K0_i below is K_i / M_i, so the dict carries ONE number per species and the
+  arithmetic is visible:
+    aceticAcid     3.15 / 60.052 = 0.05245454
+    methanol       5.64 / 32.042 = 0.17601898
+    methylAcetate  4.15 / 74.079 = 0.05602127
+    water          5.24 / 18.015 = 0.29086872
+
+  The activation energies are the authors' APPARENT values (their word), valid
+  over the 303-333 K of their heterogeneous data.  Do not extrapolate.
+\*---------------------------------------------------------------------------*/
+
+esterification_meoac
+{
+    limitingReactant   methanol;
+
+    stoichiometry
+    (
+        { component aceticAcid;     nu -1;  order 1; }   // a'_HOAc in the forward leg
+        { component methanol;       nu -1;  order 1; }   // a'_MeOH
+        { component methylAcetate;  nu  1; }             // orderRev defaults to nu = 1
+        { component water;          nu  1; }             // orderRev defaults to nu = 1
+    );
+
+    kinetics
+    {
+        type       LHHW;
+        basis      activity;        // a_i = gamma_i x_i, gamma from UNIQUAC
+
+        A          8.497e6;         // k1^0    [mol/(g_cat.s)]   Table 11
+        Ea         6.047e4;         // Ea,1    [J/mol]           = 60.47 kJ/mol
+        A_rev      6.127e5;         // k-1^0   [mol/(g_cat.s)]
+        Ea_rev     6.373e4;         // Ea,-1   [J/mol]           = 63.73 kJ/mol
+
+        adsorption
+        {
+            exponent    2;          // the rate-determining step needs two sites
+            vacantSite  0;          // a saturated resin: only the competition matters
+            species
+            (
+                { component aceticAcid;     K0 0.05245454; }
+                { component methanol;       K0 0.17601898; }
+                { component methylAcetate;  K0 0.05602127; }
+                { component water;          K0 0.29086872; }
+            );
+        }
+    }
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n'-[(methylimino)dipropane-3,1-diyl]dioctadecanamide  (C43H87N3O2, CAS 13483-58-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNMethyliminoDipropane31DiylDioctadecanamide;
+formula     C43H87N3O2;
+CAS         13483-58-4;
+InChIKey    MYCSIFBJZVHBGE-UHFFFAOYSA-N;
+MW          678.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          2221.48;      // K   [origin=predictive method=joback]
+Pc          3.704;      // bar [origin=predictive method=joback]
+omega       -0.5418;      // -   [origin=predictive method=lee-kesler]
+Tb          1403.96;      // K   [origin=predictive method=joback]
+HvapTb      139719.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-34.592 4.30916 -0.0024878 5.4082e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 36; } { group CH3N; count 1; } { group CONHCH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 38; } { group CdO; count 2; } { group NH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-[3-[methyl-[3-(octadecanoylamino)propyl]amino]propyl]octadecanamide" "octadecanamide, n,n'-((methylimino)di-3,1-propanediyl)bis-" "octadecanamide, n,n'-[(methylimino)di-3,1-propanediyl]bis-" "n,n'-((methylimino)bis(trimethylene))bis(stearamide)" );
+gibbsFormation
+{
+    dHf_298   -981540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1981.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=342900.0
+    phase     gas;
+}

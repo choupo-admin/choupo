@@ -1,0 +1,70 @@
+/*---------------------------------------------------------------------------*\
+  nox01_zeldovich_postflame / flowsheetDict
+  Thermal NOx in post-flame H2/air gas at 2125 K / 1 atm: the Zeldovich
+  N-chemistry (Glarborg 2018 rate set) integrated in a batch reactor -- NO
+  grows on the SECONDS scale while the O/H radical pool stays equilibrated,
+  the classic separation of scales that makes thermal NOx a post-flame
+  problem.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        postflame;
+        type        batchReactor;
+
+        initial
+        {
+            T            2125.0 K;
+            P            1.0 atm;
+            V            0.001;
+            totalMoles   5.7e-6;             // PV/RT at 2125 K, 1 atm
+            // The BURNT-GAS EQUILIBRIUM pool at 2125 K/1 atm (computed with
+            // this same thermo by a gibbsReactor over the 14 species; the
+            // scratch case is reproduced in the README), with the nitrogen
+            // species zeroed and their equilibrium NO share returned to
+            // N2/O2 elementally (NO_eq/2 each).
+            molarComposition
+            {
+                H2     0.000849;
+                O2     0.056418;
+                N2     0.656101;
+                water  0.282572;
+                H      0.000105;
+                O      0.000380;
+                OH     0.003571;
+                HO2    0.0000028;
+                H2O2   0.0000002;
+                NO     0.0;
+                N      0.0;
+                N2O    0.0;
+                NNH    0.0;
+                NH     0.0;
+            }
+        }
+        operation
+        {
+            mode      isothermal;            // the post-flame zone holds T
+            energy    gasConstantV;
+        }
+        solver
+        {
+            integrator  Rosenbrock23;
+            verbosity   3;
+        }
+        reactions
+        (
+            R1_H_O2_O_OH  R2_O_H2_H_OH  R3_OH_H2_H_H2O
+            R4_O_H2O_2OH  R5_H2_M_2H_M  R6_2O_M_O2_M
+            R7_O_H_M_OH_M  R8_H_OH_M_H2O_M  R9_H_O2_M_HO2
+            R10_HO2_H_H2_O2  R11_HO2_H_2OH  R12_HO2_O_OH_O2
+            R13_HO2_OH_H2O_O2  R14a_2HO2_H2O2_O2  R14b_2HO2_H2O2_O2
+            R15_H2O2_M_2OH  R16_H2O2_H_H2O_OH  R17_H2O2_H_H2_HO2
+            R18_H2O2_O_OH_HO2  R19a_H2O2_OH_H2O_HO2  R19b_H2O2_OH_H2O_HO2
+            Z1_N_NO_O_N2  Z2_N_OH_NO_H  Z3_N_O2_NO_O
+            NNH20_NNH_N2_H  NNH21_NNH_O_N2O_H  NNH22_NNH_O_N2_OH
+            NNH23_NNH_O_NH_NO  NNH24_NNH_O2_N2_HO2  N2O15_N2O_M_O_N2
+            N2O16_N2O_H_N2_OH  N2O17_NH_NO_N2O_H  N2O18_N2O_O_2NO
+            N2O19_N2O_O_N2_O2
+        );
+    }
+);

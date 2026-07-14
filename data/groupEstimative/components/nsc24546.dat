@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nsc 24546  (C6H12I2O4, CAS 15430-91-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nsc24546;
+formula     C6H12I2O4;
+CAS         15430-91-8;
+InChIKey    VSJYBSKARROHOH-UHFFFAOYSA-N;
+MW          401.958;      // g/mol [origin=calculated method=formula-sum]
+Tc          1096.16;      // K   [origin=predictive method=joback]
+Pc          48.360;      // bar [origin=predictive method=joback]
+omega       2.2883;      // -   [origin=predictive method=lee-kesler]
+Tb          890.12;      // K   [origin=predictive method=joback]
+HvapTb      112860.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (35.252 0.8114 -0.0005998 1.772e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 4; } { group OH; count 4; } { group I; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 4; } { group I; count 2; } { group OH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,6-bis(iodanyl)hexane-2,3,4,5-tetrol" "1,6-dideoxy-1,6-diiodo-d-mannitol" "1,6-diiodo-1,6-dideoxy-d-sorbitol" "1,6-didesoxy-1,6-diiodo-d-mannitol" "d-glucitol, 1,6-dideoxy-1,6-diiodo-" "1,6-dijod-1,6-didesoxy-d-mannit [german]" "mannitol, 1,6-didehydroxy-1,6-diiodo-, d-" "djm" "mannitol, 1,6-dideoxy-1,6-diiodo-, (d)-" "1,6-didesoxy-d-mannit" "1,6-diiodo-d-mannitol" "1,6-diiodo-d-mannitol-" );
+gibbsFormation
+{
+    dHf_298   -643470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     666.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-441160.0
+    phase     gas;
+}

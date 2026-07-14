@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxazolidine a  (C5H11NO, CAS 51200-87-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oxazolidineA;
+formula     C5H11NO;
+CAS         51200-87-4;
+InChIKey    GUQMDNQYMMRJPY-UHFFFAOYSA-N;
+MW          101.149;      // g/mol [origin=calculated method=formula-sum]
+Tc          622.23;      // K   [origin=predictive method=joback]
+Pc          47.107;      // bar [origin=predictive method=joback]
+omega       0.3189;      // -   [origin=predictive method=lee-kesler]
+Tb          405.02;      // K   [origin=predictive method=joback]
+HvapTb      37098.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-77.89 0.88604 -0.0008337 3.442e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C; count 1; } { group FCH2O; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group O_ring; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,4-dimethyl-1,3-oxazolidine" "4,4-dimethyloxazolidine" "oxazolidine, 4,4-dimethyl-" "oxadine a" "dimethyl oxazolidine" "4,4-dimethyloxazolidine solution" "oxazolidine,4,4-dimethyl-" "4,4-dimethyl-1,3-oxazolidine;4,4-dimethyl-1-oxa-3-azacyclopentane; 4,4-dimethyloxazolidine; nuosept 101;nuospet 101; oxaban a; oxadine a; oxazolidine a; zoldine za" );
+gibbsFormation
+{
+    dHf_298   -165000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     312.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=23870.0
+    phase     gas;
+}

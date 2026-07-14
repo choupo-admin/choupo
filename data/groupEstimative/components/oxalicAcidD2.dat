@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxalic acid-d2  (C2D2O4, CAS 2065-73-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C2D2O4 (delta D+2H-2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        oxalicAcidD2;
+formula     C2D2O4;
+CAS         2065-73-8;
+InChIKey    MUBZPKHOEPUJKR-ZSJDYOACSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          92.046;      // g/mol [origin=calculated method=formula-sum]
+Tc          753.73;      // K   [origin=predictive method=joback]
+Pc          65.884;      // bar [origin=predictive method=joback]
+omega       0.9269;      // -   [origin=predictive method=lee-kesler]
+Tb          536.38;      // K   [origin=predictive method=joback]
+HvapTb      54374.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.27 0.2954 -0.0002302 6.86e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dideuterio ethanedioate" "oxalic (2h)acid" "ethanedioic acid-d2" "dideuterio oxalate" );
+gibbsFormation
+{
+    dHf_298   -785150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     340.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-721860.0
+    phase     gas;
+}

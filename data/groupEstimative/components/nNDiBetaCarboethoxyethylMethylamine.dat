@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-di-(beta-carboethoxyethyl)methylamine  (C11H21NO4, CAS 6315-60-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDiBetaCarboethoxyethylMethylamine;
+formula     C11H21NO4;
+CAS         6315-60-2;
+InChIKey    OXZUPKSEIKZASL-UHFFFAOYSA-N;
+MW          231.292;      // g/mol [origin=calculated method=formula-sum]
+Tc          752.34;      // K   [origin=predictive method=joback]
+Pc          19.475;      // bar [origin=predictive method=joback]
+omega       0.8994;      // -   [origin=predictive method=lee-kesler]
+Tb          580.16;      // K   [origin=predictive method=joback]
+HvapTb      56937.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (33.016 1.06316 -0.000498 4.29e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH2COO; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 3-[(3-ethoxy-3-oxidanylidene-propyl)-methyl-amino]propanoate" "diethyl 3,3'-(methylimino)dipropionate" "ethyl 3-[(3-ethoxy-3-oxopropyl)(methyl)amino]propanoate" "beta, beta'-methyliminodipropionic acid, diethyl ester" "n,n-di-(beta-carboethoxyethyl)methanamine" "ethyl 3-[(3-ethoxy-3-oxopropyl)-methylamino]propanoate" "b-alanine,n-(3-ethoxy-3-oxopropyl)-n-methyl-, ethyl ester" "diethyl 3,3'-(methylimino)dipropanoate (non-preferred name)" "ethyl 3-[(3-ethoxy-3-oxopropyl)(methyl)amino]-propanoate" "3-[(2-ethoxycarbonyl-ethyl)-methyl-amino]-pr opionic acid ethyl ester" "3-[(2-ethoxycarbonyl-ethyl)-methyl-amino]-propanoic acid ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -837400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     703.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-468220.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methylenecyclobutanecarboxylic acid  (C6H8O2, CAS 15760-36-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3MethylenecyclobutanecarboxylicAcid;
+formula     C6H8O2;
+CAS         15760-36-8;
+InChIKey    NNKLICLIBKMDOY-UHFFFAOYSA-N;
+MW          112.128;      // g/mol [origin=calculated method=formula-sum]
+Tc          706.31;      // K   [origin=predictive method=joback]
+Pc          42.663;      // bar [origin=predictive method=joback]
+omega       0.6028;      // -   [origin=predictive method=lee-kesler]
+Tb          492.56;      // K   [origin=predictive method=joback]
+HvapTb      46358.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.04 0.6484 -0.0004566 1.285e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group CH2=C; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dC_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylidenecyclobutane-1-carboxylic acid" "3-methylenecyclobutane-1-carboxylic acid" "cyclobutanecarboxylic acid, 3-methylene-" "3-methylenecyclobutylcarboxylic acid;" "3-methyl enecyclobutanecarboxylic acid" "cyclobutanecarboxylicacid, 3-methylene-" "1-carboxy-3-methylidenecyclobutane" );
+gibbsFormation
+{
+    dHf_298   -366560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     346.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-242540.0
+    phase     gas;
+}

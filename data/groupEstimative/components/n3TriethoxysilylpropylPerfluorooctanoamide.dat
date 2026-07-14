@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-(3-triethoxysilylpropyl)perfluorooctanoamide  (C17H22F15NO4Si, CAS 37043-12-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C17H22F15NO4Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        n3TriethoxysilylpropylPerfluorooctanoamide;
+formula     C17H22F15NO4Si;
+CAS         37043-12-2;
+InChIKey    WTEXGKUNHMKALI-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          617.421;      // g/mol [origin=calculated method=formula-sum]
+Tc          890.93;      // K   [origin=predictive method=joback]
+Pc          8.224;      // bar [origin=predictive method=joback]
+omega       0.7901;      // -   [origin=predictive method=lee-kesler]
+Tb          727.70;      // K   [origin=predictive method=joback]
+HvapTb      52815.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (30.956 2.32886 -0.0016317 3.9826e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH2O; count 3; } { group CF3; count 1; } { group CF2; count 6; } { group Si; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group C; count 7; } { group F; count 15; } { group O; count 3; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,5,5,6,6,7,7,8,8,8-pentadecakis(fluoranyl)-n-(3-triethoxysilylpropyl)octanamide" "fs-i" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,8-pentadecafluoro-n-(3-triethoxysilylpropyl)octanamide" "octanamide,2,2,3,3,4,4,5,5,6,6,7,7,8,8,8-pentadecafluoro-n-[3-(triethoxysilyl)propyl]-" );
+gibbsFormation
+{
+    dHf_298   -3964500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1249.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3269300.0
+    phase     gas;
+}

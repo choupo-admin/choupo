@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxetane  (C3H6O, CAS 503-30-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oxetane;
+formula     C3H6O;
+CAS         503-30-0;
+InChIKey    AHHWIHXENZJRFG-UHFFFAOYSA-N;
+MW          58.08;      // g/mol [origin=calculated method=formula-sum]
+Tc          500.74;      // K   [origin=predictive method=joback]
+Pc          56.788;      // bar [origin=predictive method=joback]
+omega       0.2121;      // -   [origin=predictive method=lee-kesler]
+Tb          310.87;      // K   [origin=predictive method=joback]
+HvapTb      27176.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-43.82 0.4536 -0.0003547 1.134e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethylene oxide" "1,3-propylene oxide" "oxacyclobutane" "cyclooxabutane" "trimethylenoxid" "oxetan" "propane, 1,3-epoxy-" "trimethylenoxid [german]" "alpha,gamma-propane oxide" "1,3-trimethylene oxide" "trimethylene oxide (8ci)" "503-30-0 oxetane" );
+gibbsFormation
+{
+    dHf_298   -150270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     193.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-55380.0
+    phase     gas;
+}

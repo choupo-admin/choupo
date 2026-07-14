@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: vitamin d2  (C28H44O, CAS 50-14-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        vitaminD2;
+formula     C28H44O;
+CAS         50-14-6;
+InChIKey    MECHNRXZTMCUDQ-UHFFFAOYSA-N;
+MW          396.659;      // g/mol [origin=calculated method=formula-sum]
+Tc          1216.69;      // K   [origin=predictive method=joback]
+Pc          10.346;      // bar [origin=predictive method=joback]
+omega       0.9447;      // -   [origin=predictive method=lee-kesler]
+Tb          989.11;      // K   [origin=predictive method=joback]
+HvapTb      94439.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-217.52 3.1236 -0.0023272 7.387e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 8; } { group CH; count 6; } { group C; count 1; } { group CH=CH; count 1; } { group CH2=C; count 1; } { group CH=C; count 2; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH; count 3; } { group dCH2; count 1; } { group dCH; count 4; } { group CH2_ring; count 8; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dC_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[2-[1-(5,6-dimethylhept-3-en-2-yl)-7a-methyl-2,3,3a,5,6,7-hexahydro-1h-inden-4-ylidene]ethylidene]-4-methylidene-cyclohexan-1-ol" "mykostin" "d-arthin" "ergocalciferol: vitamin d" "calciferol, u.s.p." "calciferol in a gelatin matrix" "vitamin d2 water dispersable u.s.p." "agn-pc-00fe4w" "cyclohexanol, 4-methylene-3-[(2e)-2-[(1r,3as,7ar)-octahydro-7a-methyl-1-[(1r,2e,4r)-1,4,5-trimethyl-2-hexen-1-yl]-4h-inden-4-ylidene]ethylidene]-, (1s,3z)-" "(1s,3z)-3-[(2e)-2-[(1r,3as,7ar)-1-[(e,2r)-5,6-dimethylhept-3-en-2-yl]-7a-methyl-2,3,3a,5,6,7-hexahydro-1h-inden-4-ylidene]ethylidene]-4-methylidenecyclohexan-1-ol" "3-[2-[1-(5,6-dimethylhept-3-en-2-yl)-7a-methyl-2,3,3a,5,6,7-hexahydro-1h-inden-4-ylidene]ethylidene]-4-methylidenecyclohexan-1-ol" );
+gibbsFormation
+{
+    dHf_298   -259460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1055.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=361410.0
+    phase     gas;
+}

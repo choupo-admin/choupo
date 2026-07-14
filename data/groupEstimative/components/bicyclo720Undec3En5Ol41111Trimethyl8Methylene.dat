@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bicyclo[7.2.0]undec-3-en-5-ol, 4,11,11-trimethyl-8-methylene-  (C15H24O, CAS 32214-88-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bicyclo720Undec3En5Ol41111Trimethyl8Methylene;
+formula     C15H24O;
+CAS         32214-88-3;
+InChIKey    DWUYGFWOANEJRE-UHFFFAOYSA-N;
+MW          220.356;      // g/mol [origin=calculated method=formula-sum]
+Tc          873.07;      // K   [origin=predictive method=joback]
+Pc          21.394;      // bar [origin=predictive method=joback]
+omega       0.8401;      // -   [origin=predictive method=lee-kesler]
+Tb          664.01;      // K   [origin=predictive method=joback]
+HvapTb      65693.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-125.29 1.72256 -0.00128064 4.18e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 3; } { group C; count 1; } { group CH2=C; count 1; } { group CH=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,11,11-trimethyl-8-methylidene-bicyclo[7.2.0]undec-3-en-5-ol" "bicyclo[7.2.0]undec-3-en-5-ol, 4,11,11-trimethyl-8-methylene-, (1r,3e,5r,9s)-" "bicyclo[7.2.0]undec-3-en-5-ol, 4,11,11-trimethyl-8-methylene-, (1r,3e,5s,9s)-" "bicyclo[7.2.0]undec-3-en-5-ol, 4,11,11-trimethyl-8-methylene-, (1r,3z,5s,9s)-rel-" );
+gibbsFormation
+{
+    dHf_298   -285250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     625.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=52100.0
+    phase     gas;
+}

@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4,6,8,10-pentamethylcyclopentasiloxane  (C5H15O5Si5, CAS 6166-86-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C5H15O5Si5 (delta Si+5; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        246810Pentamethylcyclopentasiloxane;
+formula     C5H15O5Si5;
+CAS         6166-86-5;
+InChIKey    PUNGSQUVTIDKNU-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+role        radical;
+MW          295.595;      // g/mol [origin=calculated method=formula-sum]
+Tc          689.31;      // K   [origin=predictive method=joback]
+Pc          27.412;      // bar [origin=predictive method=joback]
+omega       0.3312;      // -   [origin=predictive method=lee-kesler]
+Tb          472.20;      // K   [origin=predictive method=joback]
+HvapTb      50575.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (120.57 0.1066 0.0006755 -4.705e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 5; } { group O_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4,6,8,10-pentamethyl-1,3,5,7,9,2$l^{3},4$l^{3},6$l^{3},8$l^{3},10$l^{3}-pentaoxapentasilecane" "cyclopentasiloxane, 2,4,6,8,10-pentamethyl-" "2,4,6,8,10-pentamethyl-1,3,5,7,9,2" );
+gibbsFormation
+{
+    dHf_298   -1004760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     449.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-657020.0
+    phase     gas;
+}

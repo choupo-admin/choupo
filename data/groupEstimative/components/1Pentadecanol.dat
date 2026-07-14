@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-pentadecanol  (C15H32O, CAS 629-76-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Pentadecanol;
+formula     C15H32O;
+CAS         629-76-5;
+InChIKey    REIUXOLGHVXAEO-UHFFFAOYSA-N;
+MW          228.42;      // g/mol [origin=calculated method=formula-sum]
+Tc          793.74;      // K   [origin=predictive method=joback]
+Pc          15.188;      // bar [origin=predictive method=joback]
+omega       1.0876;      // -   [origin=predictive method=lee-kesler]
+Tb          634.98;      // K   [origin=predictive method=joback]
+HvapTb      65663.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.456 1.46282 -0.0008226 1.771e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 14; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 14; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentadecan-1-ol" "pentadecyl alcohol" "n-pentadecanol" "pentadecanol" "n-1-pentadecanol" "n-ppentadecanol" "neodol 5" "pentadecanol-(1)" "(c12-c18)-alkyl alcohol" "1-pentadecanol (acd/name 4.0)" "1991da79-7140-48b0-9f03-1e3d88ac4f28" );
+gibbsFormation
+{
+    dHf_298   -505160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     791.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-61400.0
+    phase     gas;
+}

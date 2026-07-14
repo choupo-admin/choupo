@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octadecyl isocyanate  (C19H37NO, CAS 112-96-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octadecylIsocyanate;
+formula     C19H37NO;
+CAS         112-96-9;
+InChIKey    QWDQYHPOSSHSAW-UHFFFAOYSA-N;
+MW          295.511;      // g/mol [origin=calculated method=formula-sum]
+Tc          869.88;      // K   [origin=predictive method=joback]
+Pc          11.352;      // bar [origin=predictive method=joback]
+omega       0.9282;      // -   [origin=predictive method=lee-kesler]
+Tb          700.99;      // K   [origin=predictive method=joback]
+HvapTb      67420.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 17; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH3; count 1; } { group CH2; count 17; } { group dCd; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-isocyanatooctadecane" "octadecane, 1-isocyanato-" "stearyl isocyanate" "n-octadecyl isocyanate" "baykanol oi" "bykanol oi" "mondur o" "isocyanic acid, octadecyl ester" "tonco-70" "1-octadecyl isocyanate" "millionate o" "isocyanic acid n-octadecyl ester" );
+// formation datum unavailable (element entropy missing): dHf_298=-440900.0 dGf_298=None

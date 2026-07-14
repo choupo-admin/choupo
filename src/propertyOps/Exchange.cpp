@@ -55,9 +55,14 @@ namespace {
 // materials/ and membranes/.  Returns an empty path if not found.
 fs::path resinPath(const std::string& name)
 {
-    // case-local: reuse the electrolytePaths walk, but in the resins/ subdir
+    // case-local (constant/electrolyte/resins/) reuse the electrolytePaths walk,
+    // then the standards resin ASSET at standards/assets/resins/ (resins are an
+    // engineering asset; the electrolyte/resins/ folder is gone).
     for (const auto& base : electrolyte::electrolytePaths(std::string("resins/") + name + ".dat"))
         if (fs::exists(base)) return base;
+    const fs::path st = fs::path(Database::currentRoot())
+                      / "standards" / "assets" / "resins" / (name + ".dat");
+    if (fs::exists(st)) return st;
     return {};
 }
 
@@ -115,7 +120,7 @@ void readExchange(const DictPtr& dict, electrolyte::SpeciationInput& in,
         // list what IS available (standards + case-local) for the refusal
         std::string avail;
         fs::path stdResins = fs::path(Database::currentRoot())
-                           / "standards" / "electrolyte" / "resins";
+                           / "standards" / "assets" / "resins";
         if (fs::exists(stdResins))
             for (const auto& e : fs::directory_iterator(stdResins))
                 if (e.path().extension() == ".dat")

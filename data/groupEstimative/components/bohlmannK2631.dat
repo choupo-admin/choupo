@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bohlmann k2631  (C15H20O2, CAS 546-43-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bohlmannK2631;
+formula     C15H20O2;
+CAS         546-43-0;
+InChIKey    PXOYOCNNSUAQNS-UHFFFAOYSA-N;
+MW          232.323;      // g/mol [origin=calculated method=formula-sum]
+Tc          849.63;      // K   [origin=predictive method=joback]
+Pc          21.414;      // bar [origin=predictive method=joback]
+omega       0.6342;      // -   [origin=predictive method=lee-kesler]
+Tb          628.65;      // K   [origin=predictive method=joback]
+HvapTb      56127.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-145.99 1.83994 -0.00157044 5.683e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 3; } { group C; count 1; } { group CH2=C; count 1; } { group CH=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5,8a-dimethyl-3-methylidene-5,6,7,8,9,9a-hexahydro-3ah-benzo[f][1]benzofuran-2-one" "agn-pc-00po2f" "eudesma-5,11(13)-dien-8,12-olide" "5,8a-dimethyl-3-methylene-5,6,7,8,9,9a-hexahydro-3ah-benzo[f]benzofuran-2-one" "(3ar,5s,8ar,9ar)-5,8a-dimethyl-3-methylidene-5,6,7,8,9,9a-hexahydro-3ah-benzo[f][1]benzoxol-2-one" "(3ar,5s,8ar,9as)-5,8a-dimethyl-3-methylidene-5,6,7,8,9,9a-hexahydro-3ah-benzo[f][1]benzofuran-2-one" );
+gibbsFormation
+{
+    dHf_298   -338680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     518.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-16690.0
+    phase     gas;
+}

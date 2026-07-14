@@ -12,6 +12,7 @@ formula     O3;
 CAS         10028-15-6;
 
 MW          47.9982;       // kg/kmol
+tags           ( radical gasPhase combustion );
 Tc          261.1;         // K
 Pc          55.73;         // bar
 omega       0.227;      // [-]

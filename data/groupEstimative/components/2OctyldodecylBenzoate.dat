@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-octyldodecyl benzoate  (C27H46O2, CAS 108347-89-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2OctyldodecylBenzoate;
+formula     C27H46O2;
+CAS         108347-89-3;
+InChIKey    LNRUVXAPKCPQGX-UHFFFAOYSA-N;
+MW          402.663;      // g/mol [origin=calculated method=formula-sum]
+Tc          1104.32;      // K   [origin=predictive method=joback]
+Pc          8.324;      // bar [origin=predictive method=joback]
+omega       0.7991;      // -   [origin=predictive method=lee-kesler]
+Tb          901.82;      // K   [origin=predictive method=joback]
+HvapTb      84991.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.833 2.44104 -0.0013848 2.78e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 17; } { group CH; count 1; } { group ACH; count 5; } { group AC; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 17; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-dodecanol, 2-octyl-, 1-benzoate" );
+gibbsFormation
+{
+    dHf_298   -686640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1143.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-23940.0
+    phase     gas;
+}

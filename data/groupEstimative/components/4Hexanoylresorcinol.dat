@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-hexanoylresorcinol  (C12H16O3, CAS 3144-54-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Hexanoylresorcinol;
+formula     C12H16O3;
+CAS         3144-54-5;
+InChIKey    SKUFHZAEFGZSQK-UHFFFAOYSA-N;
+MW          208.257;      // g/mol [origin=calculated method=formula-sum]
+Tc          942.61;      // K   [origin=predictive method=joback]
+Pc          35.515;      // bar [origin=predictive method=joback]
+omega       1.1434;      // -   [origin=predictive method=lee-kesler]
+Tb          715.95;      // K   [origin=predictive method=joback]
+HvapTb      77356.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-52.406 1.34612 -0.00115422 4.1426e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group ACH; count 3; } { group AC; count 1; } { group ACOH; count 2; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[2,4-bis(oxidanyl)phenyl]hexan-1-one" "1-(2,4-dihydroxyphenyl)hexan-1-on" "1-(2,4-dihydroxyphenyl)hexan-1-one" "2',4'-dihydroxyhexanophenone" "1-(2,4-dihydroxyphenyl)-1-hexanone" "1-hexanone, 1-(2,4-dihydroxyphenyl)-" "p344" "2 inverted exclamation marka,4 inverted exclamation marka-dihydroxyhexanophenone" );
+gibbsFormation
+{
+    dHf_298   -521680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     596.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-275590.0
+    phase     gas;
+}

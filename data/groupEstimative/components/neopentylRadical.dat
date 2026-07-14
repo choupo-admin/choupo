@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: neopentyl radical  (C5H11, CAS 3744-21-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        neopentylRadical;
+formula     C5H11;
+CAS         3744-21-6;
+InChIKey    GJWHXWMUGWZNTO-UHFFFAOYSA-N;
+role        radical;
+MW          71.143;      // g/mol [origin=calculated method=formula-sum]
+Tc          478.22;      // K   [origin=predictive method=joback]
+Pc          36.159;      // bar [origin=predictive method=joback]
+omega       0.1678;      // -   [origin=predictive method=lee-kesler]
+Tb          305.37;      // K   [origin=predictive method=joback]
+HvapTb      24779.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.03 0.57466 -0.000401 1.139e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 3; } { group C; count 1; } { group dCH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-dimethylpropane" "2,2-di-methylpropyl" "2,2-dimethylpropyl" "(ch3)3cch2" );
+gibbsFormation
+{
+    dHf_298   -88460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     310.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=41790.0
+    phase     gas;
+}

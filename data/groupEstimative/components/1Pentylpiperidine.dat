@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-pentylpiperidine  (C10H21N, CAS 10324-58-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Pentylpiperidine;
+formula     C10H21N;
+CAS         10324-58-0;
+InChIKey    LQWJONARYDIOSE-UHFFFAOYSA-N;
+MW          155.285;      // g/mol [origin=calculated method=formula-sum]
+Tc          648.46;      // K   [origin=predictive method=joback]
+Pc          25.846;      // bar [origin=predictive method=joback]
+omega       0.4842;      // -   [origin=predictive method=lee-kesler]
+Tb          460.79;      // K   [origin=predictive method=joback]
+HvapTb      40463.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-83.316 1.23592 -0.0008156 2.129e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH2_ring; count 5; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "piperidine, 1-pentyl-" "n-amylpiperidine" "n-pentylpiperidine" "piperidine,1-amyl- (4ci); 1-pentylpiperidine; n-amylpiperidine; n-pentylpiperidine" );
+gibbsFormation
+{
+    dHf_298   -101380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     553.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=188360.0
+    phase     gas;
+}

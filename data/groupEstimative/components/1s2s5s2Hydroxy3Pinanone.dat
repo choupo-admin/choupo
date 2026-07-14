@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (1s,2s,5s)-(-)-2-hydroxy-3-pinanone  (C10H16O2, CAS 1845-25-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1s2s5s2Hydroxy3Pinanone;
+formula     C10H16O2;
+CAS         1845-25-6;
+InChIKey    VZRRCQOUNSHSGB-BYULHYEWSA-N;
+MW          168.236;      // g/mol [origin=calculated method=formula-sum]
+Tc          811.93;      // K   [origin=predictive method=joback]
+Pc          32.954;      // bar [origin=predictive method=joback]
+omega       0.8267;      // -   [origin=predictive method=lee-kesler]
+Tb          597.29;      // K   [origin=predictive method=joback]
+HvapTb      55858.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-158.19 1.64256 -0.001655 7.129e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 2; } { group C; count 2; } { group OH; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group C_ring; count 2; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1s,4s,5s)-4,6,6-trimethyl-4-oxidanyl-bicyclo[3.1.1]heptan-3-one" "(1s,2s,5s)-2-hydroxy-2,6,6-trimethylbicyclo[3.1.1]heptan-3-one" "(1s,2s,5s)-(-)-2-hydroxy-2,6,6-trimethylbicyclo[3.1.1]heptan-3-one" );
+gibbsFormation
+{
+    dHf_298   -410420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     411.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-143090.0
+    phase     gas;
+}

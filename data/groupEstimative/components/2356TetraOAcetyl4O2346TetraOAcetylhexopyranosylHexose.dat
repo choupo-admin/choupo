@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,5,6-tetra-o-acetyl-4-o-(2,3,4,6-tetra-o-acetylhexopyranosyl)hexose  (C28H38O19, CAS 5853-08-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2356TetraOAcetyl4O2346TetraOAcetylhexopyranosylHexose;
+formula     C28H38O19;
+CAS         5853-08-7;
+InChIKey    LVXSMDFTFXVSFM-UHFFFAOYSA-N;
+MW          678.593;      // g/mol [origin=calculated method=formula-sum]
+Tc          1852.89;      // K   [origin=predictive method=joback]
+Pc          7.254;      // bar [origin=predictive method=joback]
+omega       0.1437;      // -   [origin=predictive method=lee-kesler]
+Tb          1403.14;      // K   [origin=predictive method=joback]
+HvapTb      148459.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (186.352 2.17356 -0.0004829 -3.056e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 7; } { group CHO; count 1; } { group CH3COO; count 8; } { group CH-O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2; count 2; } { group CH; count 4; } { group CH_ring; count 5; } { group O; count 1; } { group O_ring; count 1; } { group OdCH_al; count 1; } { group COO; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[3,4,5-triacetyloxy-6-(1,2,4,5-tetraacetyloxy-6-oxidanylidene-hexan-3-yl)oxy-oxan-2-yl]methyl ethanoate" "octaacetyl-aldehydo-cellobiose" "d-glucose, 2,2',3,3',4,4',6,6'-octaacetate" "[3,4,5-triacetyloxy-6-(1,2,4,5-tetraacetyloxy-6-oxohexan-3-yl)oxyoxan-2-yl]methyl acetate" "d-glucose,3,4,6-tetra-o-acetyl-.beta.-d-glucopyranosyl)-, 2,3,5,6-tetraacetate" "[(2r,3r,4s,5r,6s)-3,4,5-triacetyloxy-6-[(2r,3r,4s,5r)-1,2,4,5-tetraacetyloxy-6-oxohexan-3-yl]oxyoxan-2-yl]methyl acetate" );
+gibbsFormation
+{
+    dHf_298   -3557450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1397.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2604870.0
+    phase     gas;
+}

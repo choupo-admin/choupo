@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-bis(3-aminopropyl)methylamine  (C7H19N3, CAS 105-83-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNBis3AminopropylMethylamine;
+formula     C7H19N3;
+CAS         105-83-9;
+InChIKey    KMBPCQSCMCEPMU-UHFFFAOYSA-N;
+MW          145.25;      // g/mol [origin=calculated method=formula-sum]
+Tc          705.68;      // K   [origin=predictive method=joback]
+Pc          31.633;      // bar [origin=predictive method=joback]
+omega       0.7785;      // -   [origin=predictive method=lee-kesler]
+Tb          517.26;      // K   [origin=predictive method=joback]
+HvapTb      54501.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.184 0.91652 -0.0005564 1.315e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2NH2; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 6; } { group NH2; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n'-(3-azanylpropyl)-n'-methyl-propane-1,3-diamine" "3,3'-diamino-n-methyldipropylamine" "bis(3-aminopropyl)methylamine" "methyliminobispropylamine" "5-methyldipropylenetriamine" "n-methyliminobis propylamine" "methylbis(3-aminopropyl)amine" "3,3'-methyliminobispropylamine" "1,3-propanediamine, n-(3-aminopropyl)-n-methyl-" "dipropylamine, 3,3'-diamino-n-methyl-" "n-methyl-n,n-bis(3-aminopropyl)amine" "di(gamma-aminopropyl)methylamine" );
+gibbsFormation
+{
+    dHf_298   -52700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     547.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=251740.0
+    phase     gas;
+}

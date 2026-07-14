@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: malonic acid  (C3H4O4, CAS 141-82-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        malonicAcid;
+formula     C3H4O4;
+CAS         141-82-2;
+InChIKey    OFOBLEOULBTSOW-UHFFFAOYSA-N;
+MW          104.061;      // g/mol [origin=calculated method=formula-sum]
+Tc          772.95;      // K   [origin=predictive method=joback]
+Pc          56.703;      // bar [origin=predictive method=joback]
+omega       0.9798;      // -   [origin=predictive method=lee-kesler]
+Tb          559.26;      // K   [origin=predictive method=joback]
+HvapTb      56600.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.361 0.3904 -0.0002846 8.05e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propanedioic acid" "dicarboxymethane" "carboxyacetic acid" "methanedicarboxylic acid" "malonate" "dicarboxylate" "dicarboxylic acid" "malons" "1,3-propanedioic acid" "propanediolic acid" "kyselina malonova" "metahnedicarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -805790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     379.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-713440.0
+    phase     gas;
+}

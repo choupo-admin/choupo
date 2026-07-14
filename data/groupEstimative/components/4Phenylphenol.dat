@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-phenylphenol  (C12H10O, CAS 92-69-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Phenylphenol;
+formula     C12H10O;
+CAS         92-69-3;
+InChIKey    YXVFYQXJAXKLAK-UHFFFAOYSA-N;
+MW          170.211;      // g/mol [origin=calculated method=formula-sum]
+Tc          868.80;      // K   [origin=predictive method=joback]
+Pc          41.144;      // bar [origin=predictive method=joback]
+omega       0.6085;      // -   [origin=predictive method=lee-kesler]
+Tb          608.14;      // K   [origin=predictive method=joback]
+HvapTb      59872.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-84.75 1.1406 -0.00094776 3.157e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 2; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-hydroxybiphenyl" "p-phenylphenol" "p-hydroxybiphenyl" "biphenyl-4-ol" "4-biphenylol" "4-hydroxydiphenyl" "paraxenol" "[1,1'-biphenyl]-4-ol" "p-biphenylol" "4-diphenylol" "p-hydroxydiphenyl" "phenol p-phenyl" );
+gibbsFormation
+{
+    dHf_298   4740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     437.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=120360.0
+    phase     gas;
+}

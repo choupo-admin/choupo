@@ -5,7 +5,7 @@ stream  crystals               F                0.000380305320939 1e-4
 stream  ethanol                F                0.0166666666667  1e-4
 stream  motherLiquor           F                0.0421245706304  1e-4
 kpi     cryst                  Ksp_activity     31.135192385     1e-4
-kpi     cryst                  Q_removed        75195.9166667    1e-4
+kpi     cryst                  Q_removed        82721.44242      1e-4
 kpi     cryst                  T_op             278.15           1e-4
 kpi     cryst                  antisolvent_xfrac 0.399920015997   1e-4
 kpi     cryst                  c_sat            0.0398065230351  1e-4

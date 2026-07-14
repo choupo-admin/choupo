@@ -35,6 +35,7 @@ const DICT_BASENAMES = new Set([
   "flowsheetDict",
   "solverDict",
   "thermoPackage",
+  "propertyPackage",
   "reactions",
 ]);
 

@@ -2,7 +2,11 @@
   ignition01_h2o2 -- adiabatic constant-volume H2/O2 ignition (choupoBatch).
 
   A stoichiometric H2/O2 charge diluted in N2 is held in a closed rigid vessel
-  at 1100 K.  A slow initiation seeds radicals; chain branching then runs away
+  at 1100 K.  KINETICS ARE REAL: the GRI-Mech 3.0 H/O subsystem (28 reactions,
+  verbatim; see constant/reactions).  With the NASA-7 Cp overrides (constant/
+  components/ -- the catalogue poly3 fits stop at 1500 K) the stiff run gives
+  tau_ign ~ 16 us (max dT/dt; 1100 K, 5 bar) and T_final = 2785 K (constant-V
+  flame).  A slow initiation seeds radicals; chain branching then runs away
   and the mixture IGNITES -- a sharp temperature jump after an induction delay.
 
   The stiff solver (Rosenbrock23, chosen in flowsheetDict) integrates the
@@ -13,14 +17,14 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoBatch;
-description   "Adiabatic constant-V H2/O2 ignition at 1100 K (SYNTHETIC kinetics, curated thermo); Rosenbrock23 stiff solver; reports ignition delay";
+description   "Adiabatic constant-V H2/O2 ignition at 1100 K (GRI-Mech 3.0 H/O kinetics, curated thermo); Rosenbrock23 stiff solver; reports ignition delay";
 
 verbosity     3;
 
 // ---- Time integration ----
 startTime       0;          // s
-endTime         1.0e-2;       // s
-deltaT          1.0e-5;     // s   (the stiff integrator sub-steps adaptively
+endTime         2.0e-4;      // s  (GRI kinetics ignite ~20x faster than the old synthetic set)
+deltaT          1.0e-6;     // s   (the stiff integrator sub-steps adaptively
                             //      within each deltaT; the explicit RK4 sibling
                             //      cannot survive this step -- that is the point)
-writeInterval   1.0e-4;     // s   (trajectory snapshot)
+writeInterval   1.0e-6;     // s   (resolves the ~us-scale induction ramp)

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-amino-4-methoxybenzoic acid  (C8H9NO3, CAS 2840-26-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Amino4MethoxybenzoicAcid;
+formula     C8H9NO3;
+CAS         2840-26-8;
+InChIKey    FDGAEAYZQQCBRN-UHFFFAOYSA-N;
+MW          167.164;      // g/mol [origin=calculated method=formula-sum]
+Tc          893.94;      // K   [origin=predictive method=joback]
+Pc          41.303;      // bar [origin=predictive method=joback]
+omega       0.9737;      // -   [origin=predictive method=lee-kesler]
+Tb          659.74;      // K   [origin=predictive method=joback]
+HvapTb      67217.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (26.9 0.61542 -0.00031352 4.39e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group CH3O; count 1; } { group ACNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-azanyl-4-methoxy-benzoic acid" "3-amino-p-anisic acid" "3-amino-4-methoxybenzoicacid" "3-amino-4-anisic acid" "p-anisic acid, 3-amino-" "benzoic acid, 3-amino-4-methoxy-" "5-carboxy-2-methoxyaniline" "3-amino-methoxy benzoic acid" "3-amino-4-methoxy-benzoic acid" "kyselina 3-amino-4-methoxybenzoova" "3-amino-4-methoxy benzoic acid" "p-anisicacid, 3-amino- (7ci,8ci);4-methoxy-3-aminobenzoic acid;" );
+gibbsFormation
+{
+    dHf_298   -443560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     464.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-272830.0
+    phase     gas;
+}

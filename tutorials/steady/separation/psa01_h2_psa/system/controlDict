@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "H2-PSA: 20-bar syngas (H2/CO2/CH4/CO/N2) over zeolite 5A -> high-purity H2 raffinate + CO2-rich tail gas (equilibrium cyclic-steady-state shortcut)";
+
+verbosity     3;

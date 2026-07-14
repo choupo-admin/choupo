@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 1760420  (C8H16O3, CAS 10143-53-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn1760420;
+formula     C8H16O3;
+CAS         10143-53-0;
+InChIKey    AYMDJPGTQFHDSA-UHFFFAOYSA-N;
+MW          160.213;      // g/mol [origin=calculated method=formula-sum]
+Tc          614.09;      // K   [origin=predictive method=joback]
+Pc          25.125;      // bar [origin=predictive method=joback]
+omega       0.6059;      // -   [origin=predictive method=lee-kesler]
+Tb          446.58;      // K   [origin=predictive method=joback]
+HvapTb      39962.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (69.125 0.55422 -0.0001013 -6.3e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH2=CH; count 1; } { group CH2O; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2-ethenoxyethoxy)-2-ethoxy-ethane" "(2-(2-ethoxyethoxy)ethoxy)ethylene" "ethene, (2-(2-ethoxyethoxy)ethoxy)-" "ethene, [2-(2-ethoxyethoxy)ethoxy]-" "ether, 2-ethoxyethyl 2-(vinyloxy)ethyl" "[2-(2-ethoxyethoxy)ethoxy]ethene" "vinyl 2-(2-ethoxyethoxy)ethyl ether" "1-(2-ethenoxyethoxy)-2-ethoxyethane" "1-(2-ethoxyethoxy)-2-(vinyloxy)-ethane" );
+gibbsFormation
+{
+    dHf_298   -479680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     496.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-210680.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: anisopirol  (C21H27FN2O2, CAS 857-62-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        anisopirol;
+formula     C21H27FN2O2;
+CAS         857-62-5;
+InChIKey    LCZRXFYSMJIDQQ-UHFFFAOYSA-N;
+MW          358.457;      // g/mol [origin=calculated method=formula-sum]
+Tc          1111.38;      // K   [origin=predictive method=joback]
+Pc          17.654;      // bar [origin=predictive method=joback]
+omega       1.3259;      // -   [origin=predictive method=lee-kesler]
+Tb          897.39;      // K   [origin=predictive method=joback]
+HvapTb      90580.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-102.897 2.12612 -0.00144032 3.724e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group ACH; count 8; } { group AC; count 2; } { group ACCH; count 1; } { group OH; count 1; } { group CH3O; count 1; } { group CH2N; count 2; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group CH2_ring; count 4; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group F; count 1; } { group OH; count 1; } { group O; count 1; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-fluorophenyl)-4-[4-(2-methoxyphenyl)piperazin-1-yl]butan-1-ol" "amisopirol" "anisopirolum" "haloisol" "1-(4-p-fluorophenyl-4-hydroxybutyl)-4-o-methoxy-phenylpiperazine" "1-piperazinebutanol, alpha-(p-fluorophenyl)-4-(o-methoxyphenyl)-" "1-piperazinebutanol, beta-(4-fluorophenyl)-4-(2-methoxyphenyl)-" "( -)-beta-(p-fluorophenyl)-4-(o-methoxyphenyl)-1-piperazinebutanol" "1-piperazinebutanol, alpha-(4-fluorophenyl)-4-(2-methoxyphenyl)-" "dl-1-(4-fluorophenyl)-4-(1-(4-(2-methoxyphenyl))piperazinyl)butanol" "1-piperazinebutanol, beta-(p-fluorophenyl)-4-(o-methoxyphenyl)-, (+-)-" "alpha-(3-(4-(o-methoxyphenyl)-1-piperazinyl)propyl)-p-fluorobenzyl alcohol" );
+gibbsFormation
+{
+    dHf_298   -290450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     837.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=170350.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-dimethyl-5-pyrrolidin-2-ylidene-[1,3]dioxane-4,6-dione  (C10H13NO4, CAS 70912-52-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Dimethyl5Pyrrolidin2Ylidene13Dioxane46Dione;
+formula     C10H13NO4;
+CAS         70912-52-6;
+InChIKey    HPMYPUSZJRSKIY-UHFFFAOYSA-N;
+MW          211.217;      // g/mol [origin=calculated method=formula-sum]
+Tc          848.13;      // K   [origin=predictive method=joback]
+Pc          31.776;      // bar [origin=predictive method=joback]
+omega       0.8221;      // -   [origin=predictive method=lee-kesler]
+Tb          625.17;      // K   [origin=predictive method=joback]
+HvapTb      60198.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-63.62 1.26644 -0.0011056 4.1e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group CH2NH; count 1; } { group C=C; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dC_ring; count 2; } { group COO; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-dimethyl-5-pyrrolidin-2-ylidene-1,3-dioxane-4,6-dione" "2,2-dimethyl-5-(pyrrolidin-2-ylidene)-1,3-dioxane-4,6-dione" "bim-0037156.p001" "2,2-dimethyl-5-(2-pyrrolidinylidene)-1,3-dioxane-4,6-dione" "2,2-dimethyl-(2-tetrahydropyrrolydinene)-1,3-dioxane-4,6-dione" "2,2-dimethyl-5-(2-tetrahydropyrrolylidene)-1,3-dioxane-4,6-dione" );
+gibbsFormation
+{
+    dHf_298   -636620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     543.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-377390.0
+    phase     gas;
+}

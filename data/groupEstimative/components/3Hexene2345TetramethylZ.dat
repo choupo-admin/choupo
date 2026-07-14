@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-hexene, 2,3,4,5-tetramethyl-, (z)-  (C10H20, CAS 60643-93-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Hexene2345TetramethylZ;
+formula     C10H20;
+CAS         60643-93-8;
+InChIKey    FCZMPSIXJOCEGI-KTKRTIGZSA-N;
+MW          140.27;      // g/mol [origin=calculated method=formula-sum]
+Tc          616.30;      // K   [origin=predictive method=joback]
+Pc          22.676;      // bar [origin=predictive method=joback]
+omega       0.3502;      // -   [origin=predictive method=lee-kesler]
+Tb          431.44;      // K   [origin=predictive method=joback]
+HvapTb      37196.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.13 0.98552 -0.000615 1.578e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH; count 2; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH; count 2; } { group dC; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z)-2,3,4,5-tetramethylhex-3-ene" );
+gibbsFormation
+{
+    dHf_298   -162650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     511.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=91560.0
+    phase     gas;
+}

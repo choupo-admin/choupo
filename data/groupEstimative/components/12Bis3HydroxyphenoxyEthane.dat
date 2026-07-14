@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-bis(3-hydroxyphenoxy)ethane  (C14H14O4, CAS 61166-00-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Bis3HydroxyphenoxyEthane;
+formula     C14H14O4;
+CAS         61166-00-5;
+InChIKey    DBFHCPVZZSVFJL-UHFFFAOYSA-N;
+MW          246.262;      // g/mol [origin=calculated method=formula-sum]
+Tc          1026.74;      // K   [origin=predictive method=joback]
+Pc          37.362;      // bar [origin=predictive method=joback]
+omega       1.1686;      // -   [origin=predictive method=lee-kesler]
+Tb          779.36;      // K   [origin=predictive method=joback]
+HvapTb      82158.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-44.488 1.3588 -0.00109092 3.63e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 2; } { group ACOH; count 2; } { group CH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group OH_phenol; count 2; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[2-(3-oxidanylphenoxy)ethoxy]phenol" "3,3'-ethylenedioxydiphenol" "3,3'-(ethylenedioxy)diphenol" "phenol, 3,3'-(1,2-ethanediylbis(oxy))bis-" "phenol, 3,3'-[1,2-ethanediylbis(oxy)]bis-" "3-[2-(3-hydroxyphenoxy)ethoxy]phenol" "3,3'-(1,2-ethanediylbis(oxy))bisphenol" "ethylene glycol bis(3-hydroxyphenyl) ether" "phenol,3,3'-[1,2-ethanediylbis(oxy)]bis-" "3,3 inverted exclamation marka-(ethylenedioxy)diphenol" "phenol,3,3'-(ethylenedioxy)di- (6ci,7ci);1,2-bis(3-hydroxyphenoxy)ethane;3,3'-ethylenedioxydiphenol;3,3'-[ethane-1,2-diylbis(oxy)]diphenol;3,3'-(1,2-ethanediylbis(oxy))bisphenol;" );
+gibbsFormation
+{
+    dHf_298   -478290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     563.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-227420.0
+    phase     gas;
+}

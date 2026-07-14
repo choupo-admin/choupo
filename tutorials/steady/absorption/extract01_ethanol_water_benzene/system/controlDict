@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
-  Meta-control for this case.
+  extract01_ethanol_water_benzene -- meta-control
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;

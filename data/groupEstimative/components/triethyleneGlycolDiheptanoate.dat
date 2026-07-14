@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethylene glycol diheptanoate  (C20H38O6, CAS 7434-40-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethyleneGlycolDiheptanoate;
+formula     C20H38O6;
+CAS         7434-40-4;
+InChIKey    GCDUWJFWXVRGSM-UHFFFAOYSA-N;
+MW          374.518;      // g/mol [origin=calculated method=formula-sum]
+Tc          1002.65;      // K   [origin=predictive method=joback]
+Pc          10.002;      // bar [origin=predictive method=joback]
+omega       0.9616;      // -   [origin=predictive method=lee-kesler]
+Tb          818.48;      // K   [origin=predictive method=joback]
+HvapTb      79748.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (86.526 1.66784 -0.000653 3e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 12; } { group CH2COO; count 2; } { group CH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 16; } { group O; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-(2-heptanoyloxyethoxy)ethoxy]ethyl heptanoate" "1,2-ethanediylbis(oxy-2,1-ethanediyl) diheptanoate" "ethane-1,2-diylbis(oxyethane-2,1-diyl) bisheptanoate" "heptanoic acid, 1,1'-(1,2-ethanediylbis(oxy-2,1-ethanediyl)) ester" "heptanoic acid, 1,1'-[1,2-ethanediylbis(oxy-2,1-ethanediyl)] ester" "heptanoic acid, triethylene glycol diester" "ethane-1,2-diylbis(oxyethane-2,1-diyl) diheptanoate" "heptanoic acid, 1,2-ethanediylbis(oxy-2,1-ethanediyl) ester" "heptanoic acid,1,1'-[1,2-ethanediylbis(oxy-2,1-ethanediyl)] ester" "heptanoicacid, 1,2-ethanediylbis(oxy-2,1-ethanediyl) ester (9ci); heptanoic acid,diester with triethylene glycol (6ci,7ci,8ci); triethylene glycol, diheptanoate(6ci,8ci); nycoflex 7030; triethylene glycol bis(heptanoate)" );
+gibbsFormation
+{
+    dHf_298   -1355130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1060.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-713220.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propargyl ethyl sulfide  (C5H8S, CAS 7310-92-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        propargylEthylSulfide;
+formula     C5H8S;
+CAS         7310-92-1;
+InChIKey    HGRTUSIZMXOMCD-UHFFFAOYSA-N;
+MW          100.179;      // g/mol [origin=calculated method=formula-sum]
+Tc          577.77;      // K   [origin=predictive method=joback]
+Pc          42.552;      // bar [origin=predictive method=joback]
+omega       0.2546;      // -   [origin=predictive method=lee-kesler]
+Tb          372.90;      // K   [origin=predictive method=joback]
+HvapTb      33399.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (31.722 0.37931 -0.00020393 3.909e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH_C; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group tCH; count 1; } { group tC; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-ethylsulfanylprop-1-yne" "3-(ethylsulfanyl)-1-propyne" "propargyl ethyl sulphide" );
+gibbsFormation
+{
+    dHf_298   187240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     381.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=247410.0
+    phase     gas;
+}

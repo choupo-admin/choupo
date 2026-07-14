@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-chloro-4-ethynylbenzene  (C8H5Cl, CAS 873-73-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Chloro4Ethynylbenzene;
+formula     C8H5Cl;
+CAS         873-73-4;
+InChIKey    LFZJRTMTKGYJRS-UHFFFAOYSA-N;
+MW          136.578;      // g/mol [origin=calculated method=formula-sum]
+Tc          677.63;      // K   [origin=predictive method=joback]
+Pc          41.144;      // bar [origin=predictive method=joback]
+omega       0.2807;      // -   [origin=predictive method=lee-kesler]
+Tb          441.85;      // K   [origin=predictive method=joback]
+HvapTb      40583.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (2.68 0.5383 -0.00039189 1.1199e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group ACCl; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-4-ethynyl-benzene" "4-chlorophenylacetylene" "benzene, 1-chloro-4-ethynyl-" "(4-chlorophenyl)acetylene" "4'-chlorophenyl acetylene" "1-chlor-4-ethinylbenzol" "(p-chlorophenyl)acetylene" "1-chloro-4-ethynyl-benzene" "p-ethynylchlorobenzene" "1-chloro-4-phenylacetylene" "(4-chlorophenyl)ethyne" "(4-chlorphenyl)acetylene" );
+gibbsFormation
+{
+    dHf_298   292770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     357.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=330400.0
+    phase     gas;
+}

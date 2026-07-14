@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: terpineol acetate  (C12H20O2, CAS 80-26-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        terpineolAcetate;
+formula     C12H20O2;
+CAS         80-26-2;
+InChIKey    IGODOXYLBBXFDW-UHFFFAOYSA-N;
+MW          196.29;      // g/mol [origin=calculated method=formula-sum]
+Tc          764.86;      // K   [origin=predictive method=joback]
+Pc          22.250;      // bar [origin=predictive method=joback]
+omega       0.5080;      // -   [origin=predictive method=lee-kesler]
+Tb          552.84;      // K   [origin=predictive method=joback]
+HvapTb      49800.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-50.61 1.22148 -0.00070744 1.353e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group CH=C; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group C; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-methylcyclohex-3-en-1-yl)propan-2-yl ethanoate" "terpinenyl acetate" "a-terpinyl acetate" "terpineol, acetate" "4-terpinyl acetate" "alpha-terpinyl acetate" "3-cyclohexene-1-methanol, .alpha.,.alpha.,4-trimethyl-, acetate" "2-(4-methylcyclohex-3-en-1-yl)propan-2-yl acetate" "(+/-)-alpha-terpinyl acetate" "(+/-)-2-(4-methyl-3-cyclohexenyl)isopropyl acetate" "1-methyl-1-(4-methylcyclohex-3-en-1-yl)ethyl acetate" "terpenyl acetate" );
+gibbsFormation
+{
+    dHf_298   -516410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     561.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-212590.0
+    phase     gas;
+}

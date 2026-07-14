@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cycloheptylamine  (C7H15N, CAS 5452-35-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cycloheptylamine;
+formula     C7H15N;
+CAS         5452-35-7;
+InChIKey    VXVVUHQULXCUPF-UHFFFAOYSA-N;
+MW          113.204;      // g/mol [origin=calculated method=formula-sum]
+Tc          682.99;      // K   [origin=predictive method=joback]
+Pc          38.916;      // bar [origin=predictive method=joback]
+omega       0.3555;      // -   [origin=predictive method=lee-kesler]
+Tb          456.11;      // K   [origin=predictive method=joback]
+HvapTb      42418.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-67.71 0.8432 -0.000435 6.28e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 6; } { group CH_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cycloheptanamine" "aminocycloheptane" "sz1" "vxvvuhqulxcupf-uhfffaoysa-" "cycloheptanamine,hydrochloride (9ci)" "cycloheptanamine,hydrochloride (1:1)" );
+gibbsFormation
+{
+    dHf_298   -105860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     469.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=86860.0
+    phase     gas;
+}

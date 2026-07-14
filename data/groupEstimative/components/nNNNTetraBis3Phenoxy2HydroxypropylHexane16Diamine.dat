@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n,n',n'-tetra-bis-(3-phenoxy-2-hydroxypropyl)hexane-1,6-diamine  (C42H56N2O8, CAS 105386-85-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNNNTetraBis3Phenoxy2HydroxypropylHexane16Diamine;
+formula     C42H56N2O8;
+CAS         105386-85-4;
+InChIKey    OHERUBJDVQSNSA-UHFFFAOYSA-N;
+MW          716.916;      // g/mol [origin=calculated method=formula-sum]
+Tc          2917.73;      // K   [origin=predictive method=joback]
+Pc          7.725;      // bar [origin=predictive method=joback]
+omega       -0.3859;      // -   [origin=predictive method=lee-kesler]
+Tb          1748.80;      // K   [origin=predictive method=joback]
+HvapTb      197080.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-75.856 3.8328 -0.0023014 4.834e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group ACH; count 20; } { group AC; count 4; } { group CH2N; count 2; } { group C2H4O2; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 14; } { group CH; count 4; } { group dCH_ring; count 20; } { group dC_ring; count 4; } { group OH; count 4; } { group O; count 4; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[6-[bis(2-oxidanyl-3-phenoxy-propyl)amino]hexyl-(2-oxidanyl-3-phenoxy-propyl)amino]-3-phenoxy-propan-2-ol" "1-[6-[bis(2-hydroxy-3-phenoxy-propyl)amino]hexyl-(2-hydroxy-3-phenoxy-propyl)amino]-3-phenoxy-propan-2-ol" "1-[6-[bis(2-hydroxy-3-phenoxypropyl)amino]hexyl-(2-hydroxy-3-phenoxypropyl)amino]-3-phenoxypropan-2-ol" );
+gibbsFormation
+{
+    dHf_298   -987950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1609.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3080.0
+    phase     gas;
+}

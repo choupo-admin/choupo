@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-[2-(2-hydroxyethoxy)ethoxy]ethyl benzoate; phthalic acid  (C21H24O9, CAS 68389-55-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        222HydroxyethoxyEthoxyEthylBenzoatePhthalicAcid;
+formula     C21H24O9;
+CAS         68389-55-9;
+InChIKey    VINKHHXFCAPVEW-UHFFFAOYSA-N;
+MW          420.414;      // g/mol [origin=calculated method=formula-sum]
+Tc          1508.07;      // K   [origin=predictive method=joback]
+Pc          16.879;      // bar [origin=predictive method=joback]
+omega       1.3791;      // -   [origin=predictive method=lee-kesler]
+Tb          1226.08;      // K   [origin=predictive method=joback]
+HvapTb      131082.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (62.006 1.5297 -0.00055816 -5.33e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group ACH; count 9; } { group AC; count 3; } { group CH2O; count 1; } { group COOH; count 2; } { group COO; count 1; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 2; } { group COOH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-(2-hydroxyethyloxy)ethoxy]ethyl benzoate;phthalic acid" "1,2-benzenedicarboxylic acid, polymer with 2,2'-(1,2-ethanediylbis(oxy))bis(ethanol), benzoate" );
+gibbsFormation
+{
+    dHf_298   -1561290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1093.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1108640.0
+    phase     gas;
+}

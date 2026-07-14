@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: securininum [inn-latin]  (C13H15NO2, CAS 5610-40-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        securininumInnLatin;
+formula     C13H15NO2;
+CAS         5610-40-2;
+InChIKey    SWZMSZQQJRKFBP-ZNVNOEFISA-N;
+MW          217.268;      // g/mol [origin=calculated method=formula-sum]
+Tc          829.48;      // K   [origin=predictive method=joback]
+Pc          30.592;      // bar [origin=predictive method=joback]
+omega       0.7022;      // -   [origin=predictive method=lee-kesler]
+Tb          602.87;      // K   [origin=predictive method=joback]
+HvapTb      54038.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-221.25 2.0584 -0.00207772 8.307e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 2; } { group C; count 1; } { group CH=CH; count 1; } { group CH=C; count 1; } { group CH2N; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 5; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "securinine" "securinin" "securinine, (-)-" "securinan-11-one" "2-oxo-2,6,9,10,11,11a-hexahydro-8h-6,11b-methanofuro(2,3-c)pyrido(1,2-a)azepin" "securinina" "securininum" "(6s,11ar,11bs)-9,10,11,11a-tetrahydro-8h-6,11b-methanofuro(2,3-c)pyrido(1,2-a)azepin-2(6h)-one" "securinine [inn]" "securinan-11-one (9ci)" "7104-26-9 (nitrate)" );
+gibbsFormation
+{
+    dHf_298   -130530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     399.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=154500.0
+    phase     gas;
+}

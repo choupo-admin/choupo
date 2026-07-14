@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl n-octadecylterephthalamate  (C27H45NO3, CAS 7333-86-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylNOctadecylterephthalamate;
+formula     C27H45NO3;
+CAS         7333-86-0;
+InChIKey    FGGAQLDNXCMZJL-UHFFFAOYSA-N;
+MW          431.661;      // g/mol [origin=calculated method=formula-sum]
+Tc          1241.03;      // K   [origin=predictive method=joback]
+Pc          8.585;      // bar [origin=predictive method=joback]
+omega       0.8041;      // -   [origin=predictive method=lee-kesler]
+Tb          1011.28;      // K   [origin=predictive method=joback]
+HvapTb      99223.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.703 2.42384 -0.00134446 2.5506e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 16; } { group ACH; count 4; } { group AC; count 2; } { group COO; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 17; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group CdO; count 1; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 4-(octadecylcarbamoyl)benzoate" "benzoic acid, 4-[(octadecylamino)carbonyl]-, methyl ester" "benzoic acid, 4-((octadecylamino)carbonyl)-, methyl ester" "benzoic acid,4-[(octadecylamino)carbonyl]-, methyl ester" "terephthalamicacid, n-octadecyl-, methyl ester (6ci,7ci,8ci); methyln-octadecylterephthalamate; n-stearyl-p-methoxycarbonylbenzamide" );
+gibbsFormation
+{
+    dHf_298   -751940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1213.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-70660.0
+    phase     gas;
+}

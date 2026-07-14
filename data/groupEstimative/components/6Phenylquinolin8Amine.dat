@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-phenylquinolin-8-amine  (C15H12N2, CAS 68527-71-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Phenylquinolin8Amine;
+formula     C15H12N2;
+CAS         68527-71-9;
+InChIKey    VLTRZBCWTJABMY-UHFFFAOYSA-N;
+MW          220.275;      // g/mol [origin=calculated method=formula-sum]
+Tc          1030.53;      // K   [origin=predictive method=joback]
+Pc          33.684;      // bar [origin=predictive method=joback]
+omega       0.7729;      // -   [origin=predictive method=lee-kesler]
+Tb          751.33;      // K   [origin=predictive method=joback]
+HvapTb      73351.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-64.85 1.24396 -0.0009099 2.624e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 7; } { group AC; count 2; } { group ACNH2; count 1; } { group C5H3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 10; } { group dC_ring; count 5; } { group NH2; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-phenyl-8-quinolinamine" "8-quinolinamine, 6-phenyl-" "8-amino-6-phenylquinoline" );
+gibbsFormation
+{
+    dHf_298   354840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     470.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=531130.0
+    phase     gas;
+}

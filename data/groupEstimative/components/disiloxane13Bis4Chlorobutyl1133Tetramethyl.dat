@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: disiloxane, 1,3-bis(4-chlorobutyl)-1,1,3,3-tetramethyl-  (C12H28Cl2OSi2, CAS 72066-91-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C12H28Cl2OSi2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        disiloxane13Bis4Chlorobutyl1133Tetramethyl;
+formula     C12H28Cl2OSi2;
+CAS         72066-91-2;
+InChIKey    VNSGKFYNTMOABN-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          315.425;      // g/mol [origin=calculated method=formula-sum]
+Tc          754.99;      // K   [origin=predictive method=joback]
+Pc          13.707;      // bar [origin=predictive method=joback]
+omega       0.5628;      // -   [origin=predictive method=lee-kesler]
+Tb          574.24;      // K   [origin=predictive method=joback]
+HvapTb      54074.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (124.898 0.68188 0.0002708 -3.396e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 6; } { group CH2Cl; count 2; } { group Si; count 1; } { group SiO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 8; } { group Cl; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-chloranylbutyl-[4-chloranylbutyl(dimethyl)silyl]oxy-dimethyl-silane" "agn-pc-03kmiy" );
+gibbsFormation
+{
+    dHf_298   -677950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     954.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-288220.0
+    phase     gas;
+}

@@ -1,0 +1,29 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  bottoms                F                0.0138888888889    1e-4
+stream  distillate             F                0.0138888888889    1e-4
+stream  feed                   F                0.0277777777778    1e-4
+kpi     column11               B                0.0138888888889    1e-4
+kpi     column11               D                0.0138888888889    1e-4
+kpi     column11               L_rect           0.0277777777778    1e-4
+kpi     column11               L_strip          0.0555555555556    1e-4
+kpi     column11               Q_condenser_kW   -1284.29753602     1e-4
+kpi     column11               Q_reboiler_kW    1281.05938025      1e-4
+kpi     column11               R                2                  1e-4
+kpi     column11               T_bottom         381.492133108      1e-4
+kpi     column11               T_top            355.136328304      1e-4
+kpi     column11               V_rect           0.0416666666667    1e-4
+kpi     column11               V_strip          0.0416666666667    1e-4
+kpi     column11               dP_column_kPa    13.3652148295      1e-4
+kpi     column11               diameter         1.31296530611      1e-4
+kpi     column11               downcomerBackup_max_mm 215.748858373      1e-4
+kpi     column11               downcomerFloodStages 0                  1e-4
+kpi     column11               feedStage        8                  1e-4
+kpi     column11               floodApproach_max 0.8                1e-4
+kpi     column11               floodStage       14                 1e-4
+kpi     column11               murphreeEfficiency 0.7                1e-4
+kpi     column11               nStages          15                 1e-4
+kpi     column11               weepingStages    0                  1e-4
+kpi     column11               x_B_HK           0.950527673393     1e-4
+kpi     column11               x_D_LK           0.950527547585     1e-4

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1'-biphenyl, 4-(5-hexenyl)-  (C18H20, CAS 115181-05-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Biphenyl45Hexenyl;
+formula     C18H20;
+CAS         115181-05-0;
+InChIKey    VYKDNXHLHORSMA-UHFFFAOYSA-N;
+MW          236.358;      // g/mol [origin=calculated method=formula-sum]
+Tc          893.32;      // K   [origin=predictive method=joback]
+Pc          19.631;      // bar [origin=predictive method=joback]
+omega       0.6422;      // -   [origin=predictive method=lee-kesler]
+Tb          666.46;      // K   [origin=predictive method=joback]
+HvapTb      60206.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.976 1.4765 -0.00097366 2.465e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2=CH; count 1; } { group ACH; count 9; } { group AC; count 2; } { group ACCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-hex-5-enyl-4-phenyl-benzene" "agn-pc-0ctd9e" );
+gibbsFormation
+{
+    dHf_298   172170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     633.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=403710.0
+    phase     gas;
+}

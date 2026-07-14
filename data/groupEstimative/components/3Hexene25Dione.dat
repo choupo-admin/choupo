@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-hexene-2,5-dione  (C6H8O2, CAS 4436-75-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Hexene25Dione;
+formula     C6H8O2;
+CAS         4436-75-3;
+InChIKey    OTSKZNVDZOOHRX-UHFFFAOYSA-N;
+MW          112.128;      // g/mol [origin=calculated method=formula-sum]
+Tc          648.01;      // K   [origin=predictive method=joback]
+Pc          38.293;      // bar [origin=predictive method=joback]
+omega       0.5196;      // -   [origin=predictive method=lee-kesler]
+Tb          448.78;      // K   [origin=predictive method=joback]
+HvapTb      42400.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.03 0.53784 -0.000349 8.952e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group CH3CO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH; count 2; } { group CdO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hex-3-ene-2,5-dione" "(e)-hex-3-ene-2,5-dione" );
+gibbsFormation
+{
+    dHf_298   -275110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     436.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-177980.0
+    phase     gas;
+}

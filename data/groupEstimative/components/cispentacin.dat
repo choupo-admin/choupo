@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cispentacin  (C6H11NO2, CAS 122672-46-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cispentacin;
+formula     C6H11NO2;
+CAS         122672-46-2;
+InChIKey    JWYOAMOZLZXDER-UHNVWZDZSA-N;
+MW          129.159;      // g/mol [origin=calculated method=formula-sum]
+Tc          794.98;      // K   [origin=predictive method=joback]
+Pc          44.385;      // bar [origin=predictive method=joback]
+omega       0.7410;      // -   [origin=predictive method=lee-kesler]
+Tb          565.53;      // K   [origin=predictive method=joback]
+HvapTb      56703.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-46.02 0.7917 -0.0004906 1.105e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CH_ring; count 2; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1r,2s)-2-azanylcyclopentane-1-carboxylic acid" "(1r,2s)-2-aminocyclopentanecarboxylic acid" "(-)-cispentacin" "(-)-(1r,2s)-cispentacin" "(1r-cis)-2-aminocyclopentanecarboxylic acid" "cyclopentanecarboxylic acid, 2-amino-, (1r,2s)-" "cyclopentanecarboxylic acid, 2-amino-, (1r-cis)-" "cis-(1r,2s)-2-aminocyclopentane-1-carboxylic acid" "cis-2-amino-1-cyclopentanecarboxylic acid" "cis-pentacin" "cis-2-amino-cyclopentanecarboxylic acid" "(+/-)-cispentacin" );
+gibbsFormation
+{
+    dHf_298   -443510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     401.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-248980.0
+    phase     gas;
+}

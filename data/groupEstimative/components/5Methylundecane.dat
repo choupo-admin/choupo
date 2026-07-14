@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-methylundecane  (C12H26, CAS 1632-70-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Methylundecane;
+formula     C12H26;
+CAS         1632-70-8;
+InChIKey    QULNVKABFWNUCW-UHFFFAOYSA-N;
+MW          170.34;      // g/mol [origin=calculated method=formula-sum]
+Tc          638.01;      // K   [origin=predictive method=joback]
+Pc          17.924;      // bar [origin=predictive method=joback]
+omega       0.5588;      // -   [origin=predictive method=lee-kesler]
+Tb          473.72;      // K   [origin=predictive method=joback]
+HvapTb      41918.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.702 1.14976 -0.0006322 1.311e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 8; } { group CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 8; } { group CH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "undecane, 5-methyl-" "5-methyl-undecane" "agn-pc-0cqks3" );
+gibbsFormation
+{
+    dHf_298   -296290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     613.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=47720.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: squalene  (C30H50, CAS 111-02-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        squalene;
+formula     C30H50;
+CAS         111-02-4;
+InChIKey    YYGNTYWPHWGJRM-UHFFFAOYSA-N;
+MW          410.73;      // g/mol [origin=calculated method=formula-sum]
+Tc          1115.89;      // K   [origin=predictive method=joback]
+Pc          7.088;      // bar [origin=predictive method=joback]
+omega       0.6421;      // -   [origin=predictive method=lee-kesler]
+Tb          910.24;      // K   [origin=predictive method=joback]
+HvapTb      82602.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-107.62 2.97336 -0.0021248 6.41e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 8; } { group CH2; count 10; } { group CH=C; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2; count 10; } { group dCH; count 6; } { group dC; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6,10,15,19,23-hexamethyltetracosa-2,6,10,14,18,22-hexaene" "spinacene" "agn-pc-00ez64" "2,6,10,15,19,23-hexamethyl-2,6,10,14,18,22-tetracosahexene" "2,6,10,15,19,23-hexamethyl-2,6,10,14,18,22-tetracosahexaene" "2,6,10,14,18,22-tetracosahexaene, 2,6,10,15,19,23-hexamethyl-, (2e,6e,10e,14e,18e)-" );
+gibbsFormation
+{
+    dHf_298   -17950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1260.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=631740.0
+    phase     gas;
+}

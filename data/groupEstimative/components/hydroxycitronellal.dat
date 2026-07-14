@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hydroxycitronellal  (C10H20O2, CAS 107-75-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hydroxycitronellal;
+formula     C10H20O2;
+CAS         107-75-5;
+InChIKey    WPFVBOQKRVRMJB-UHFFFAOYSA-N;
+MW          172.268;      // g/mol [origin=calculated method=formula-sum]
+Tc          740.14;      // K   [origin=predictive method=joback]
+Pc          25.379;      // bar [origin=predictive method=joback]
+omega       0.9891;      // -   [origin=predictive method=lee-kesler]
+Tb          565.57;      // K   [origin=predictive method=joback]
+HvapTb      59569.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.666 1.09406 -0.0007186 1.869e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group OH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group OH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7-dimethyl-7-oxidanyl-octanal" "citronellal hydrate" "7-hydroxycitronellal" "7-hydroxy-3,7-dimethyloctanal" "3,7-dimethyl-7-hydroxyoctanal" "cyclalia" "cyclosia" "laurine" "phixia" "fixol" "lilyl aldehyde" "muguet synthetic" );
+gibbsFormation
+{
+    dHf_298   -501570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     566.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-202620.0
+    phase     gas;
+}

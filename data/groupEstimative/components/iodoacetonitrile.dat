@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: iodoacetonitrile  (C2H2IN, CAS 624-75-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        iodoacetonitrile;
+formula     C2H2IN;
+CAS         624-75-9;
+InChIKey    VODKOOOHHCAWFR-UHFFFAOYSA-N;
+MW          166.945;      // g/mol [origin=calculated method=formula-sum]
+Tc          676.78;      // K   [origin=predictive method=joback]
+Pc          47.107;      // bar [origin=predictive method=joback]
+omega       0.3193;      // -   [origin=predictive method=lee-kesler]
+Tb          440.58;      // K   [origin=predictive method=joback]
+HvapTb      39897.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (29.761 0.1676 -0.0001354 4.62e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2CN; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group I; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-iodanylethanenitrile" "acetonitrile, iodo-" "2-iodoacetonitrile" "iodacetonitril" "iodo-acetonitrile" "2-iodoethanenitrile" );
+gibbsFormation
+{
+    dHf_298   157140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     295.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=157260.0
+    phase     gas;
+}

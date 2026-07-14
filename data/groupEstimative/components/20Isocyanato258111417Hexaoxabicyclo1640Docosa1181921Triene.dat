@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 20-isocyanato-2,5,8,11,14,17-hexaoxabicyclo[16.4.0]docosa-1(18),19,21-triene  (C17H23NO7, CAS 83935-63-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        20Isocyanato258111417Hexaoxabicyclo1640Docosa1181921Triene;
+formula     C17H23NO7;
+CAS         83935-63-1;
+InChIKey    VWCCEWBARYUXRO-UHFFFAOYSA-N;
+MW          353.371;      // g/mol [origin=calculated method=formula-sum]
+Tc          1193.74;      // K   [origin=predictive method=joback]
+Pc          24.006;      // bar [origin=predictive method=joback]
+omega       1.0384;      // -   [origin=predictive method=lee-kesler]
+Tb          920.49;      // K   [origin=predictive method=joback]
+HvapTb      96086.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group ACH; count 3; } { group AC; count 3; } { group FCH2O; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group dCd; count 1; } { group CH2_ring; count 10; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O_ring; count 6; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16-hexadecahydrobenzo[a][18]annulen-18-iso cyanate" );
+// formation datum unavailable (element entropy missing): dHf_298=-964970.0 dGf_298=None

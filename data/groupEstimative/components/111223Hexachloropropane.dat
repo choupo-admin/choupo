@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1,2,2,3-hexachloropropane  (C3H2Cl6, CAS 24425-97-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111223Hexachloropropane;
+formula     C3H2Cl6;
+CAS         24425-97-6;
+InChIKey    OPIPOVICJAKBHX-UHFFFAOYSA-N;
+MW          250.749;      // g/mol [origin=calculated method=formula-sum]
+Tc          729.30;      // K   [origin=predictive method=joback]
+Pc          35.013;      // bar [origin=predictive method=joback]
+omega       0.3116;      // -   [origin=predictive method=lee-kesler]
+Tb          486.36;      // K   [origin=predictive method=joback]
+HvapTb      45990.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.561 0.5812 -0.0006054 2.223e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2Cl; count 1; } { group CCl2; count 1; } { group CCl3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 2; } { group Cl; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2,3-hexakis(chloranyl)propane" );
+gibbsFormation
+{
+    dHf_298   -217190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     395.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-91520.0
+    phase     gas;
+}

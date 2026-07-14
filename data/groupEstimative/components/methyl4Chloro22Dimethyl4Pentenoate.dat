@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 4-chloro-2,2-dimethyl-4-pentenoate  (C8H13ClO2, CAS 86799-85-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl4Chloro22Dimethyl4Pentenoate;
+formula     C8H13ClO2;
+CAS         86799-85-1;
+InChIKey    NMIYZQVNXZOOPF-UHFFFAOYSA-N;
+MW          176.64;      // g/mol [origin=calculated method=formula-sum]
+Tc          668.10;      // K   [origin=predictive method=joback]
+Pc          26.245;      // bar [origin=predictive method=joback]
+omega       0.4561;      // -   [origin=predictive method=lee-kesler]
+Tb          471.62;      // K   [origin=predictive method=joback]
+HvapTb      43308.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.761 0.82156 -0.0005342 1.27e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group CH2=C; count 1; } { group Cl_C=C_; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 4-chloranyl-2,2-dimethyl-pent-4-enoate" "methyl 4-chloro-2,2-dimethylpent-4-enoate" "4-chloro-2,2-dimethyl-4-pentenoic acid methyl ester" "4-pentenoicacid, 4-chloro-2,2-dimethyl-, methyl ester" );
+gibbsFormation
+{
+    dHf_298   -434580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     504.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-223690.0
+    phase     gas;
+}

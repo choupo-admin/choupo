@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: s-triazine,3,5-triisopropyl-  (C12H27N3, CAS 10556-98-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sTriazine35Triisopropyl;
+formula     C12H27N3;
+CAS         10556-98-6;
+InChIKey    FBXRCTMIDHCRDT-UHFFFAOYSA-N;
+MW          213.369;      // g/mol [origin=calculated method=formula-sum]
+Tc          700.11;      // K   [origin=predictive method=joback]
+Pc          20.869;      // bar [origin=predictive method=joback]
+omega       0.6669;      // -   [origin=predictive method=lee-kesler]
+Tb          521.57;      // K   [origin=predictive method=joback]
+HvapTb      47493.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-101.32 1.71072 -0.001252 3.698e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH; count 3; } { group CH2N; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH; count 3; } { group CH2_ring; count 3; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3,5-tri(propan-2-yl)-1,3,5-triazinane" "s-triazine, hexahydro-1,3,5-triisopropyl-" "1,3,5-triazine, hexahydro-1,3,5-tris(1-methylethyl)-" "hexahydro-1,5-triisopropyl-s-triazine" "1,3,5-triisopropyl-1,3,5-triazinane" "1,3,5-triisopropyl hexahydro-sym-triazine" "1,5-triisopropylhexahydro-1,3,5-triazine" "1,3,5-triisopropylhexahydro-1,3,5-triazine" "1,3,5-tri(isopropyl)hexahydro-1,3,5-triazine" "1,5-triazine, hexahydro-1,3,5-tris(1-methylethyl)-" "1,3,5-triazine,hexahydro-1,3,5-tris(1-methylethyl)-" );
+gibbsFormation
+{
+    dHf_298   -11120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     595.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=443640.0
+    phase     gas;
+}

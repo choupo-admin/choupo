@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 13,17,21-trimethylheptatriacontane  (C40H82, CAS 58668-40-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        131721Trimethylheptatriacontane;
+formula     C40H82;
+CAS         58668-40-9;
+InChIKey    USOBDKVYQJYRLI-UHFFFAOYSA-N;
+MW          563.096;      // g/mol [origin=calculated method=formula-sum]
+Tc          1468.50;      // K   [origin=predictive method=joback]
+Pc          3.946;      // bar [origin=predictive method=joback]
+omega       -0.2243;      // -   [origin=predictive method=lee-kesler]
+Tb          1113.48;      // K   [origin=predictive method=joback]
+HvapTb      103470.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.518 3.8216 -0.0021618 4.633e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 32; } { group CH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 32; } { group CH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "heptatriacontane, 13,17,21-trimethyl-" );
+gibbsFormation
+{
+    dHf_298   -884770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1685.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=278600.0
+    phase     gas;
+}

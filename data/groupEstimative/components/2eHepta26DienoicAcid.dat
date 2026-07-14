@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2e)-hepta-2,6-dienoic acid  (C7H10O2, CAS 38867-17-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2eHepta26DienoicAcid;
+formula     C7H10O2;
+CAS         38867-17-3;
+InChIKey    QQVKNEQDEIZBLC-AATRIKPKSA-N;
+MW          126.155;      // g/mol [origin=calculated method=formula-sum]
+Tc          705.67;      // K   [origin=predictive method=joback]
+Pc          34.319;      // bar [origin=predictive method=joback]
+omega       0.6721;      // -   [origin=predictive method=lee-kesler]
+Tb          506.11;      // K   [origin=predictive method=joback]
+HvapTb      47628.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.048 0.7196 -0.0005363 1.649e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2=CH; count 1; } { group CH=CH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6-heptadienoic acid,predominantly trans" );
+gibbsFormation
+{
+    dHf_298   -295430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     470.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-167790.0
+    phase     gas;
+}

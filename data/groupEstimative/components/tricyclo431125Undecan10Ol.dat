@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tricyclo[4.3.1.12,5]undecan-10-ol  (C11H18O, CAS 85523-06-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tricyclo431125Undecan10Ol;
+formula     C11H18O;
+CAS         85523-06-4;
+InChIKey    MVOCZQYXGOPYHU-UHFFFAOYSA-N;
+MW          166.264;      // g/mol [origin=calculated method=formula-sum]
+Tc          766.65;      // K   [origin=predictive method=joback]
+Pc          30.592;      // bar [origin=predictive method=joback]
+omega       0.7727;      // -   [origin=predictive method=lee-kesler]
+Tb          562.88;      // K   [origin=predictive method=joback]
+HvapTb      56224.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-150.91 1.4633 -0.001062 3.112e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 5; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 6; } { group CH_ring; count 5; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -257200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     319.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=47550.0
+    phase     gas;
+}

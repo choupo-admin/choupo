@@ -13,6 +13,7 @@ CAS            3170-83-0;
 
 MW             33.0067;       // kg/kmol
 nonvolatile    true;
+tags           ( radical gasPhase combustion );
 
 gibbsFormation
 {

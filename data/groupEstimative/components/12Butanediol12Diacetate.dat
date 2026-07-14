@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-butanediol,1,2-diacetate  (C8H18O6, CAS 13814-27-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Butanediol12Diacetate;
+formula     C8H18O6;
+CAS         13814-27-2;
+InChIKey    MOGXFDPQOOJGNI-UHFFFAOYSA-N;
+MW          210.226;      // g/mol [origin=calculated method=formula-sum]
+Tc          1061.58;      // K   [origin=predictive method=joback]
+Pc          31.140;      // bar [origin=predictive method=joback]
+omega       1.8693;      // -   [origin=predictive method=lee-kesler]
+Tb          860.38;      // K   [origin=predictive method=joback]
+HvapTb      101288.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (95.352 0.52696 0.000209 -2.753e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group OH; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group OH; count 2; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butane-1,2-diol;ethanoic acid" "1,2-butanediol,diacetate (7ci,8ci,9ci); 1,2-butanediyl diacetate; 1,2-butylene diacetate;1,2-butylene glycol diacetate; 1,2-diacetoxybutane" );
+gibbsFormation
+{
+    dHf_298   -1441970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     881.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1156940.0
+    phase     gas;
+}

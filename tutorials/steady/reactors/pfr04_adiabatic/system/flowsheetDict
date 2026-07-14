@@ -1,0 +1,34 @@
+/*---------------------------------------------------------------------------*\
+  pfr04_adiabatic  --  an ADIABATIC plug-flow reactor.  The temperature is a
+                       RESULT, marched with the species by the same RK4:
+
+      dF_i/dV = SUM_j nu_ij r_j(F,T)
+      dT/dV   = SUM_j (-dH_j(T)) r_j / SUM_i F_i cp_i(T)
+
+  The exothermic esterification heats its own stream, which accelerates the
+  Arrhenius rate, which releases more heat -- the positive feedback every
+  reactor engineer must see.  T(V) is in the axial profile: plot it.
+
+  `thermalMode` takes `isothermal` (default -- T imposed, duty a result),
+  `adiabatic` (here), or `heatExchange` (a jacket: U, areaPerVolume, T_coolant).
+  A non-isothermal reactor needs the heat of reaction, so every reacting species
+  must carry `gibbsFormation` -- a fictitious toy species cannot be used.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        pfr;
+        in          feed;
+        outputs     ( reactorOut );
+
+        operation
+        {
+            V_R           0.005;        // m^3  (same volume as pfr01)
+            nSteps        100;
+            thermalMode   adiabatic;    // <-- the reaction heats its own stream
+        }
+        reactions   ( esterification_etac );   // one-element list -> the general path
+    }
+);

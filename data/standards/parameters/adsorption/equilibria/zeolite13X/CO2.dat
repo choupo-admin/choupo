@@ -1,0 +1,51 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Adsorption equilibrium record --- CO2 on zeolite13X.
+
+  What this IS: the pure-component adsorption isotherm of ONE
+  (adsorbent x adsorbate) pair --- one record per pair, the pair catalogue of
+  the adsorption tree (the file under data/standards/adsorbents/ keeps the
+  material's intrinsic identity only).  Single-site Langmuir,
+
+      q = q_max * b(T) * p / (1 + b(T) * p)        [mol/kg, p in bar]
+
+  with van't Hoff affinity anchored at tRef:
+
+      b(T) = b_298 * exp( -dH_ads/R * (1/T - 1/tRef) ),   dH_ads < 0.
+
+  The PSA assembles the COMPETITIVE (extended Langmuir) form across all the
+  species records of the same adsorbent; a species with no record here
+  adsorbs nothing and reports fully to the raffinate.
+
+  CURATION: migrated 1:1 from data/standards/adsorbents/zeolite13X.dat
+  isotherms{} 2026-07-12; numbers unchanged (order-of-magnitude 298 K
+  TEACHING fits); re-fit from the primary source below is PENDING --- do not
+  trust a design number before that re-fit.  Log: choupoSolve prints the
+  competitive loadings per species in the PSA report table.
+\*-----------------------------------------------------------------------------*/
+
+recordType      adsorptionIsotherm;
+schemaVersion   1;
+
+adsorbent       zeolite13X;
+adsorbate       CO2;
+
+model           langmuir;
+
+parameters
+{
+    q_max   5.0;      // saturation loading [mol/kg]
+    b_298   9.0;      // affinity at tRef [1/bar]
+    dH_ads  -45000;   // isosteric heat of adsorption [J/mol] (<0, exothermic)
+}
+
+tRef            298.15;               // van't Hoff anchor [K]
+loadingBasis    molPerKgAdsorbent;    // q = mol adsorbate per kg adsorbent
+pressureBasis   partialPressureBar;   // p = partial pressure in bar (b_298 per bar)
+quality         teachingOnly;         // historical teaching anchor; not design-grade
+
+provenance
+{
+    origin    assumed;
+    method    "Yang (1987/1997); Cavenati, Grande & Rodrigues, J. Chem. Eng. Data 49 (2004) 1095 (CO2/CH4/N2 on 13X) -- representative 298 K teaching fits; re-fit from the primary before design use";
+    curation  "migrated 1:1 from data/standards/adsorbents/zeolite13X.dat isotherms{} 2026-07-12; numbers unchanged; re-fit from the primary source pending";
+}

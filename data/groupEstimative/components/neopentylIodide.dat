@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: neopentyl iodide  (C5H11I, CAS 15501-33-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        neopentylIodide;
+formula     C5H11I;
+CAS         15501-33-4;
+InChIKey    CJTZXIJETZZARD-UHFFFAOYSA-N;
+MW          198.043;      // g/mol [origin=calculated method=formula-sum]
+Tc          620.92;      // K   [origin=predictive method=joback]
+Pc          34.561;      // bar [origin=predictive method=joback]
+omega       0.2145;      // -   [origin=predictive method=lee-kesler]
+Tb          403.91;      // K   [origin=predictive method=joback]
+HvapTb      34801.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.439 0.64366 -0.0005014 1.601e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-iodanyl-2,2-dimethyl-propane" "1-iodo-2,2-dimethylpropane" "propane, 1-iodo-2,2-dimethyl-" "2,2-dimethyl-1-iodopropane" "1-iodo-2,2-dimethyl-propane" "propane,1-iodo-2,2-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -78410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     367.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=52180.0
+    phase     gas;
+}

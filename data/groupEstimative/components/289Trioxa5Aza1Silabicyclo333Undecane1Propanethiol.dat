@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undecane, 1-propanethiol-  (C9H19NO3SSi, CAS 29909-46-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H19NO3SSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        289Trioxa5Aza1Silabicyclo333Undecane1Propanethiol;
+formula     C9H19NO3SSi;
+CAS         29909-46-4;
+InChIKey    VAMRSLPZSVGKAC-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          249.4;      // g/mol [origin=calculated method=formula-sum]
+Tc          835.36;      // K   [origin=predictive method=joback]
+Pc          32.064;      // bar [origin=predictive method=joback]
+omega       0.6351;      // -   [origin=predictive method=lee-kesler]
+Tb          598.70;      // K   [origin=predictive method=joback]
+HvapTb      59192.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-36.037 1.1208 -0.0005563 6.09e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2O; count 3; } { group CH2N; count 1; } { group CH2SH; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group CH2_ring; count 6; } { group O_ring; count 3; } { group N; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(4,6,11-trioxa-1-aza-5-silabicyclo[3.3.3]undecan-5-yl)propane-1-thiol" "2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undecane, 1-propanethiol-" "2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undecane-1-propanethiol" );
+gibbsFormation
+{
+    dHf_298   -462900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     521.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-97430.0
+    phase     gas;
+}

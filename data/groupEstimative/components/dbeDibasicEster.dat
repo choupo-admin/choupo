@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dbe dibasic ester  (C21H36O12, CAS 95481-62-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dbeDibasicEster;
+formula     C21H36O12;
+CAS         95481-62-2;
+InChIKey    QYMFNZIUDRQRSA-UHFFFAOYSA-N;
+MW          480.507;      // g/mol [origin=calculated method=formula-sum]
+Tc          1269.45;      // K   [origin=predictive method=joback]
+Pc          8.753;      // bar [origin=predictive method=joback]
+omega       0.7988;      // -   [origin=predictive method=lee-kesler]
+Tb          1032.20;      // K   [origin=predictive method=joback]
+HvapTb      107370.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (217.889 1.25772 0.0002786 -5.383e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 3; } { group CH2COO; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 9; } { group COO; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dimethyl butanedioate;dimethyl hexanedioate;dimethyl pentanedioate" "estasol" "dimethyl butanedioate; dimethyl hexanedioate; dimethyl pentanedioate" "dba dibasic acid (mixture of glutaric acid, succinic acid and adipic acid)" "dibasic ester" "rdpe" "hexanedioic acid, dimethyl ester, mixt. with dimethyl butanedioate and dimethyl pentanedioate" "dibasic dimethyl esters of adipic acid, succinic acid  glutaric acid" "pentanedioic acid, dimethyl ester, mixt. with dimethyl butanedioate and dimethyl hexanedioate" "hexanedioic acid, dimethyl ester, mixt. with dimethyl butandedioate and dimethyl pentanedioate" );
+gibbsFormation
+{
+    dHf_298   -2603690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1497.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1945800.0
+    phase     gas;
+}

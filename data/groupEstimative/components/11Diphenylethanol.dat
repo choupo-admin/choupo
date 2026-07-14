@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1-diphenylethanol  (C14H14O, CAS 599-67-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Diphenylethanol;
+formula     C14H14O;
+CAS         599-67-7;
+InChIKey    GIMDPFBLSKQRNP-UHFFFAOYSA-N;
+MW          198.265;      // g/mol [origin=calculated method=formula-sum]
+Tc          894.81;      // K   [origin=predictive method=joback]
+Pc          31.245;      // bar [origin=predictive method=joback]
+omega       0.8435;      // -   [origin=predictive method=lee-kesler]
+Tb          662.23;      // K   [origin=predictive method=joback]
+HvapTb      66693.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-96.83 1.33582 -0.0010024 2.881e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group C; count 1; } { group ACH; count 10; } { group AC; count 2; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzhydrol, .alpha.-methyl-" "diphenylmethylcarbinol" "methyldiphenylcarbinol" "alpha-methylbenzhydrol" "1,1-diphenyl-1-ethanol" "benzenemethanol, .alpha.-methyl-.alpha.-phenyl-" "1,1-diphenylethan-1-ol" "a-methylbenzhydrol" "1,1-diphenyl-ethanol" ".alpha.-methylbenzhydrol" "alpha-methylbenzhydryl alcohol" "1,1-diphenyl ethanol" );
+gibbsFormation
+{
+    dHf_298   -20210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     500.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=157840.0
+    phase     gas;
+}

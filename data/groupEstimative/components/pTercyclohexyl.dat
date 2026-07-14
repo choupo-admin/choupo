@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: p-tercyclohexyl  (C18H32, CAS 1795-19-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pTercyclohexyl;
+formula     C18H32;
+CAS         1795-19-3;
+InChIKey    OHLFVTCARHBZDH-UHFFFAOYSA-N;
+MW          248.454;      // g/mol [origin=calculated method=formula-sum]
+Tc          910.85;      // K   [origin=predictive method=joback]
+Pc          17.894;      // bar [origin=predictive method=joback]
+omega       0.4588;      // -   [origin=predictive method=lee-kesler]
+Tb          665.42;      // K   [origin=predictive method=joback]
+HvapTb      56640.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-204.35 2.0536 -0.001143 2.036e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 14; } { group CH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 14; } { group CH_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-dicyclohexylcyclohexane" "1,1':4',1''-tercyclohexane" "1,1'-tercyclohexane" "1,4-(dicyclohexyl)cyclohexane" "1,1',4',1''-tercyclohexane" );
+gibbsFormation
+{
+    dHf_298   -272230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     723.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=166320.0
+    phase     gas;
+}

@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): 2-propenoic acid, homopolymer, compd. with 2-(dimethylamino)-2-methyl-1-propanol  (C9H19NO3, CAS 167078-09-3)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           2PropenoicAcidHomopolymerCompdWith2Dimethylamino2Methyl1Prop;
+formula        C9H19NO3;
+CAS            167078-09-3;
+InChIKey       PWCYWEYVGYWVGC-UHFFFAOYSA-N;
+MW             189.255;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: 2-propenoic acid, homopolymer, compd. with 2-(dimethylamino)-2-methyl-1-propanol

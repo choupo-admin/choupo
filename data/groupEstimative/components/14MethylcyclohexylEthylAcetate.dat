@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(4-methylcyclohexyl)ethyl acetate  (C11H20O2, CAS 63573-88-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14MethylcyclohexylEthylAcetate;
+formula     C11H20O2;
+CAS         63573-88-6;
+InChIKey    GSJZDPJIZODMLX-UHFFFAOYSA-N;
+MW          184.279;      // g/mol [origin=calculated method=formula-sum]
+Tc          727.80;      // K   [origin=predictive method=joback]
+Pc          22.915;      // bar [origin=predictive method=joback]
+omega       0.4994;      // -   [origin=predictive method=lee-kesler]
+Tb          523.94;      // K   [origin=predictive method=joback]
+HvapTb      47219.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-43.05 1.09556 -0.0005088 4.35e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 3; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-methylcyclohexyl)ethyl ethanoate" "cis-alpha,4-dimethylcyclohexylmethyl acetate" "trans-alpha,4-dimethylcyclohexylmethyl acetate" "cyclohexanemethanol, alpha,4-dimethyl-, acetate, cis-" "cyclohexanemethanol, .alpha.,4-dimethyl-, acetate, cis-" "cyclohexanemethanol, alpha,4-dimethyl-, 1-acetate, cis-" "cyclohexanemethanol, alpha,4-dimethyl-, acetate, trans-" "cyclohexanemethanol, .alpha.,4-dimethyl-, 1-acetate, cis-" "cyclohexanemethanol, .alpha.,4-dimethyl-, acetate, trans-" "cyclohexanemethanol, alpha,4-dimethyl-, 1-acetate, trans-" "cyclohexanemethanol, .alpha.,4-dimethyl-, 1-acetate, trans-" );
+gibbsFormation
+{
+    dHf_298   -558950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     553.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-254330.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 10-undecenal  (C11H20O, CAS 112-45-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        10Undecenal;
+formula     C11H20O;
+CAS         112-45-8;
+InChIKey    OFHHDSQXFXLTKC-UHFFFAOYSA-N;
+MW          168.28;      // g/mol [origin=calculated method=formula-sum]
+Tc          667.20;      // K   [origin=predictive method=joback]
+Pc          21.473;      // bar [origin=predictive method=joback]
+omega       0.6769;      // -   [origin=predictive method=lee-kesler]
+Tb          496.62;      // K   [origin=predictive method=joback]
+HvapTb      46130.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.298 1.0033 -0.0005905 1.35e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH2=CH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 8; } { group dCH2; count 1; } { group dCH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "undec-10-enal" "undecylenic aldehyde" "hendecenal" "undecylenaldehyde" "10-undecylenealdehyde" "10-hendecenal" "c-11 aldehyde, undecylenic" "aldehyde c-11, undecylenic" "10-undecenyl aldehyde" "10-undecylenic aldehyde" "u220" "brd-k33235400-001-01-2" );
+gibbsFormation
+{
+    dHf_298   -230520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     598.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=30060.0
+    phase     gas;
+}

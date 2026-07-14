@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bornyl chloride  (C10H17Cl, CAS 464-41-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bornylChloride;
+formula     C10H17Cl;
+CAS         464-41-5;
+InChIKey    XXZAOMJCZBZKPV-UHFFFAOYSA-N;
+MW          172.696;      // g/mol [origin=calculated method=formula-sum]
+Tc          695.88;      // K   [origin=predictive method=joback]
+Pc          27.527;      // bar [origin=predictive method=joback]
+omega       0.3150;      // -   [origin=predictive method=lee-kesler]
+Tb          474.72;      // K   [origin=predictive method=joback]
+HvapTb      39317.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-187.02 1.78366 -0.001889 8.251e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group C; count 2; } { group CHCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-chloranyl-4,7,7-trimethyl-bicyclo[2.2.1]heptane" "2-chlorobornane" "2-chlorocamphane" "turpentine camphor" "terpene hydrochloride" "endo-2-chlorobornane" "bornane, 2-chloro-, endo-" "2-chloro-1,7,7-trimethylbicyclo[2.2.1]heptane" "endo-2-chloro-1,7,7-trimethylbicyclo(2.2.1)heptane" "bicyclo[2.2.1]heptane, 2-chloro-1,7,7-trimethyl-, endo-" "bicyclo(2.2.1)heptane, 2-chloro-1,7,7-trimethyl-, endo-" "bornane, 2-chloro-, exo-" );
+gibbsFormation
+{
+    dHf_298   -136230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     472.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=104390.0
+    phase     gas;
+}

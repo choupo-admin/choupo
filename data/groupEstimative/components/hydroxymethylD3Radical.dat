@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hydroxymethyl-d3 radical  (CHD3O, CAS 6853-31-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula CHD3O (delta D+3H-3; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        hydroxymethylD3Radical;
+formula     CHD3O;
+CAS         6853-31-2;
+InChIKey    OKKJLVBELUTLKV-FUDHJZNOSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          35.06;      // g/mol [origin=calculated method=formula-sum]
+Tc          475.80;      // K   [origin=predictive method=joback]
+Pc          66.966;      // bar [origin=predictive method=joback]
+omega       0.5055;      // -   [origin=predictive method=lee-kesler]
+Tb          314.66;      // K   [origin=predictive method=joback]
+HvapTb      34499.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.27 0.13282 -6.1e-05 1.05e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dideuterio(deuteriooxy)methane" );
+gibbsFormation
+{
+    dHf_298   -216200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     245.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-179280.0
+    phase     gas;
+}

@@ -1,0 +1,13 @@
+/*---------------------------------------------------------------------------*\
+  column04_multifeed_sidedraw / constant/thermoPackage
+
+  A three-aromatic ladder: benzene (light, tops), toluene (intermediate,
+  concentrated at the side draw), oXylene (heavy, bottoms).  All three are
+  chemically similar aromatics, so Raoult + ideal gas at ~1 atm is a fair
+  model --- the case's lesson is the multi-feed / side-draw MESH topology,
+  not activity-coefficient refinement.
+\*---------------------------------------------------------------------------*/
+
+components      ( benzene  toluene  oXylene );    // light / intermediate / heavy
+activityModel   { model ideal; }
+equationOfState { model idealGas; }

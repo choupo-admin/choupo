@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3,5,7-octatetraene  (C8H10, CAS 1482-91-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1357Octatetraene;
+formula     C8H10;
+CAS         1482-91-3;
+InChIKey    VXQUABLSXKFKLO-UHFFFAOYSA-N;
+MW          106.168;      // g/mol [origin=calculated method=formula-sum]
+Tc          573.18;      // K   [origin=predictive method=joback]
+Pc          30.933;      // bar [origin=predictive method=joback]
+omega       0.2882;      // -   [origin=predictive method=lee-kesler]
+Tb          384.32;      // K   [origin=predictive method=joback]
+HvapTb      31978.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.73 0.7638 -0.0006248 2.136e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 2; } { group CH=CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 2; } { group dCH; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "octa-1,3,5,7-tetraene" "(e,e)-1,3,5,7-octatetraene" "1,3,5,7-octatetraene, (e,z)-" "1,3,5,7-octatetraene, (z,z)-" );
+gibbsFormation
+{
+    dHf_298   276850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     445.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=352600.0
+    phase     gas;
+}

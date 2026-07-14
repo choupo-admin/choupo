@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloro-4-(dimethylamino)benzaldehyde  (C9H10ClNO, CAS 1424-66-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H10ClNO (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2Chloro4DimethylaminoBenzaldehyde;
+formula     C9H10ClNO;
+CAS         1424-66-4;
+InChIKey    XSQFAWMDRFSIMY-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          183.635;      // g/mol [origin=calculated method=formula-sum]
+Tc          681.25;      // K   [origin=predictive method=joback]
+Pc          31.704;      // bar [origin=predictive method=joback]
+omega       0.4068;      // -   [origin=predictive method=lee-kesler]
+Tb          468.45;      // K   [origin=predictive method=joback]
+HvapTb      43283.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.9 0.79974 -0.00064892 2.147e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 3; } { group AC; count 2; } { group CHO; count 1; } { group CH3N; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-4-(dimethylamino)benzaldehyde" "benzaldehyde, 2-chloro-4-(dimethylamino)-" "4-(dimethylamino)-2-chlorobenzaldehyde" "2-chloro-4-dimethylaminobenzaldehyde" "3-chloro-n,n-dimethyl-4-formylaniline" "benzaldehyde, 2-chloro-4-dimethylamino-" "benzaldehyde,2-chloro-4-(dimethylamino)-" );
+gibbsFormation
+{
+    dHf_298   112740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     518.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=260860.0
+    phase     gas;
+}

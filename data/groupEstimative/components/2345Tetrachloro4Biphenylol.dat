@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,4,5-tetrachloro-4'-biphenylol  (C12H6Cl4O, CAS 67651-34-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2345Tetrachloro4Biphenylol;
+formula     C12H6Cl4O;
+CAS         67651-34-7;
+InChIKey    RESKVBRHSNTJNG-UHFFFAOYSA-N;
+MW          307.979;      // g/mol [origin=calculated method=formula-sum]
+Tc          1049.69;      // K   [origin=predictive method=joback]
+Pc          32.028;      // bar [origin=predictive method=joback]
+omega       0.8664;      // -   [origin=predictive method=lee-kesler]
+Tb          777.78;      // K   [origin=predictive method=joback]
+HvapTb      80060.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.01 0.9298 -0.0007612 2.521e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 2; } { group ACOH; count 1; } { group ACCl; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 5; } { group dC_ring; count 7; } { group Cl; count 4; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[2,3,4,5-tetrakis(chloranyl)phenyl]phenol" "2',3',4',5'-tetrachloro-4-biphenylol" "4-hydroxy-2',3',4',5'-tetrachlorobiphenyl" "4-hydroxy-2',3',4'-5'-tetrachlorobiphenyl" "2',3',4',5'-tetrachloro-(1,1'-biphenyl)-4-ol" "oh-pcb-61" "(1,1'-biphenyl)-4-ol, 2',3',4',5'-tetrachloro-" "[1,1'-biphenyl]-4-ol, 2',3',4',5'-tetrachloro-" "4-(2,3,4,5-tetrachlorophenyl)phenol" "2',3',4',5'-tetrachlorobiphenyl-4-ol" "4'-hydroxy-2,3,4,5-tetrachlorobiphenyl" "[1,1'-biphenyl]-4-ol, 2',3',4',5'-tetrachloro- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -104100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     546.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=34120.0
+    phase     gas;
+}

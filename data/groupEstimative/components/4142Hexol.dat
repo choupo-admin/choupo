@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 41,42-hexol  (C60H72O6, CAS 104789-79-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4142Hexol;
+formula     C60H72O6;
+CAS         104789-79-9;
+InChIKey    HUYWXTRCNXGJSG-UHFFFAOYSA-N;
+MW          889.23;      // g/mol [origin=calculated method=formula-sum]
+Tc          3639.36;      // K   [origin=predictive method=joback]
+Pc          6.275;      // bar [origin=predictive method=joback]
+omega       -0.3863;      // -   [origin=predictive method=lee-kesler]
+Tb          2297.54;      // K   [origin=predictive method=joback]
+HvapTb      247248.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-218.65 5.62824 -0.00431668 1.3904e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 12; } { group ACH; count 12; } { group AC; count 6; } { group ACCH2; count 6; } { group ACCH; count 6; } { group ACOH; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 12; } { group CH; count 6; } { group CH2_ring; count 6; } { group dCH_ring; count 12; } { group dC_ring; count 24; } { group OH_phenol; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5,11,17,23,29,35-hexaisopropylheptacyclo(31.3.1.1(3,7).1(9,13).1(15,19).1(21,25).1(27,31))dotetraconta-1(37),3(42),4,6,9(41),10,12,15(40),16,18,21(39),22,24,27(38),28,30,33,35-octadecaene-37,38,39,40,41,42-hexol" "5,11,17,23,29,35-hexaisopropylheptacyclo[31.3.1.1~3,7~.1~9,13~.1~15,19~.1~21,25~.1~27,31~]dotetraconta-1(37),3(42),4,6,9(41),10,12,15(40),16,18,21(39),22,24,27(38),28,30,33,35-octadecaene-37,38,39,40," );
+gibbsFormation
+{
+    dHf_298   -1021070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1894.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=103020.0
+    phase     gas;
+}

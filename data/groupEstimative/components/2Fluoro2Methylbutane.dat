@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-fluoro-2-methylbutane  (C5H11F, CAS 661-53-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Fluoro2Methylbutane;
+formula     C5H11F;
+CAS         661-53-0;
+InChIKey    HLLCNVLEVVFTJB-UHFFFAOYSA-N;
+MW          90.141;      // g/mol [origin=calculated method=formula-sum]
+Tc          474.07;      // K   [origin=predictive method=joback]
+Pc          33.645;      // bar [origin=predictive method=joback]
+omega       0.2243;      // -   [origin=predictive method=lee-kesler]
+Tb          310.04;      // K   [origin=predictive method=joback]
+HvapTb      24611.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.039 0.61646 -0.0004364 1.258e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-fluoranyl-2-methyl-butane" "agn-pc-00nno0" "butane, 2-fluoro-2-methyl-" "2-methyl-2-fluorobutane;tert-amylfluoride;2-fluoro-2-methylbutane" );
+gibbsFormation
+{
+    dHf_298   -351390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     343.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-200750.0
+    phase     gas;
+}

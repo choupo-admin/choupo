@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-triacontanol  (C30H62O, CAS 593-50-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Triacontanol;
+formula     C30H62O;
+CAS         593-50-0;
+InChIKey    REZQBEBOWJAQKS-UHFFFAOYSA-N;
+MW          438.825;      // g/mol [origin=calculated method=formula-sum]
+Tc          1233.28;      // K   [origin=predictive method=joback]
+Pc          6.231;      // bar [origin=predictive method=joback]
+omega       0.3070;      // -   [origin=predictive method=lee-kesler]
+Tb          978.18;      // K   [origin=predictive method=joback]
+HvapTb      99053.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.091 2.88782 -0.0016386 3.556e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 29; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 29; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "triacontan-1-ol" "melissyl alcohol" "myricyl alcohol" "n-triacontanol" "triacontyl alcohol" "triacontanol" "triacontanol-1" "miraculan" "1-hydroxytriacontane" "myricyl alcohol (van)" "prosopol" "tomatex" );
+gibbsFormation
+{
+    dHf_298   -814760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1375.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=64900.0
+    phase     gas;
+}

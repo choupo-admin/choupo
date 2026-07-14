@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-phenyl-3-butyn-2-ol  (C10H10O, CAS 127-66-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Phenyl3Butyn2Ol;
+formula     C10H10O;
+CAS         127-66-2;
+InChIKey    KSLSOBUAIFEGLT-UHFFFAOYSA-N;
+MW          146.189;      // g/mol [origin=calculated method=formula-sum]
+Tc          752.87;      // K   [origin=predictive method=joback]
+Pc          39.655;      // bar [origin=predictive method=joback]
+omega       0.6722;      // -   [origin=predictive method=lee-kesler]
+Tb          534.15;      // K   [origin=predictive method=joback]
+HvapTb      55371.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-45.51 0.94082 -0.00074953 2.3339e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group OH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 1; } { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenylbut-3-yn-2-ol" "methylphenylethynylcarbinol" "3-butyn-2-ol, 2-phenyl-" "3-hydroxy-3-phenyl-1-butyne" "3-phenyl-butin-1-ol-(3) [german]" "alpha-ethynyl-alpha-methylbenzyl alcohol" "alpha-ethynyl-alpha-methylbenzenemethanol" "benzenemethanol, alpha-ethynyl-alpha-methyl-" "benzyl alcohol, alpha-ethynyl-alpha-methyl-" "benzenemethanol, .alpha.-ethynyl-.alpha.-methyl-" "3-phenyl-butin-1-ol-(3)" "kslsobuaifeglt-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   117720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     420.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=234820.0
+    phase     gas;
+}

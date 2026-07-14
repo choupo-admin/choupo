@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-aminopropan-2-ol; octanoic acid  (C11H25NO3, CAS 68171-53-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Aminopropan2OlOctanoicAcid;
+formula     C11H25NO3;
+CAS         68171-53-9;
+InChIKey    NWHZTFUOECHPPL-UHFFFAOYSA-N;
+MW          219.325;      // g/mol [origin=calculated method=formula-sum]
+Tc          952.60;      // K   [origin=predictive method=joback]
+Pc          22.334;      // bar [origin=predictive method=joback]
+omega       1.4060;      // -   [origin=predictive method=lee-kesler]
+Tb          762.46;      // K   [origin=predictive method=joback]
+HvapTb      84470.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (48.407 0.99524 -0.0003094 -4.92e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 1; } { group OH; count 1; } { group CH2NH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 7; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-azanylpropan-2-ol;octanoic acid" "octanoic acid compd. with 1-amino-2-propanol (1:1)" "octanoic acid isopropanolamine salt" "caprylic acid, isopropanolamine salt" "octanoic acid, compd. with 1-amino-2-propanol (1:1)" "octanoic acid - 1-aminopropan-2-ol (1:1)" "octanoic acid, compound with 1-aminopropan-2-ol (1:1)" );
+gibbsFormation
+{
+    dHf_298   -855980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     838.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-479740.0
+    phase     gas;
+}

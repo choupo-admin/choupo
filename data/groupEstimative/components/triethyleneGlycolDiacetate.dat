@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethylene glycol diacetate  (C10H18O6, CAS 111-21-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethyleneGlycolDiacetate;
+formula     C10H18O6;
+CAS         111-21-7;
+InChIKey    OVOUKWFJRHALDD-UHFFFAOYSA-N;
+MW          234.248;      // g/mol [origin=calculated method=formula-sum]
+Tc          763.59;      // K   [origin=predictive method=joback]
+Pc          20.624;      // bar [origin=predictive method=joback]
+omega       0.9508;      // -   [origin=predictive method=lee-kesler]
+Tb          589.68;      // K   [origin=predictive method=joback]
+HvapTb      57488.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (95.616 0.71784 -0.000109 -1.16e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH3COO; count 2; } { group CH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group O; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-(2-acetyloxyethoxy)ethoxy]ethyl ethanoate" "triethylene glycol, diacetate" "tdac" "triglycol diacetate" "triglycol, diacetate" "acetic acid, triethylene glycol diester" "2,2'-(ethylenedioxy)di(ethyl acetate)" "ethanol, 2,2'-[1,2-ethanediylbis(oxy)]bis-, diacetate" "ethanol, 2,2'-ethylenedioxydi-, diacetate" "2-[2-(2-acetyloxyethoxy)ethoxy]ethyl acetate" "ethane-1,2-diylbis(oxyethane-2,1-diyl) diacetate" "2,2'-(ethane-1,2-diylbis(oxy))bisethyl diacetate" );
+gibbsFormation
+{
+    dHf_298   -1148730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     670.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-797420.0
+    phase     gas;
+}

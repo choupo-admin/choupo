@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(3-oxobutyl)phenyl acetate  (C12H14O3, CAS 3572-06-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        43OxobutylPhenylAcetate;
+formula     C12H14O3;
+CAS         3572-06-3;
+InChIKey    UMIKWXDGXDJQJK-UHFFFAOYSA-N;
+MW          206.241;      // g/mol [origin=calculated method=formula-sum]
+Tc          830.03;      // K   [origin=predictive method=joback]
+Pc          25.354;      // bar [origin=predictive method=joback]
+omega       0.7718;      // -   [origin=predictive method=lee-kesler]
+Tb          617.91;      // K   [origin=predictive method=joback]
+HvapTb      59397.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.142 0.92264 -0.00047986 6.606e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group CH3CO; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[4-(3-oxidanylidenebutyl)phenyl] ethanoate" "4-(p-acetoxyphenyl)-2-butanone" "4-(4-acetoxyphenyl)-2-butanone" "cue-lure" "p-(3-oxobutyl)phenyl acetate" "pherocon qff" "q-lure" "para-(2-acetylethyl)phenyl acetate" "4-(4-(acetyloxy)phenyl)-2-butanone" "acetate of 4-(hydroxyphenyl)-2-butanone" "hydroxyphenylbutanone acetate, p-" "4-(4-acetyloxyphenyl)-2-butanone" );
+gibbsFormation
+{
+    dHf_298   -495810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     588.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-286350.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (1,4a-dimethyl-7-propan-2-yl-2,3,4,9,10,10a-hexahydrophenanthren-1-yl)methanol  (C20H30O, CAS 3772-55-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14aDimethyl7Propan2Yl23491010aHexahydrophenanthren1YlMethano;
+formula     C20H30O;
+CAS         3772-55-2;
+InChIKey    WSKGRAGZAQRSED-UHFFFAOYSA-N;
+MW          286.459;      // g/mol [origin=calculated method=formula-sum]
+Tc          1023.57;      // K   [origin=predictive method=joback]
+Pc          17.803;      // bar [origin=predictive method=joback]
+omega       1.0058;      // -   [origin=predictive method=lee-kesler]
+Tb          803.41;      // K   [origin=predictive method=joback]
+HvapTb      77564.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-221.759 2.58578 -0.00235232 9.184e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 1; } { group C; count 2; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group ACCH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "podocarpa-8,11,13-trien-15-ol, 13-isopropyl-" "1-phenanthrenemethanol, 1,2,3,4,4a,9,10,10a-octahydro-1,4a-dimethyl-7-(1-methylethyl)-, (1r,4as,10ar)-" "1-phenanthrenemethanol, 1,2,3,4,4a,9,10,10a-octahydro-1,4a-dimethyl-7-(1-methylethyl)-, [1r-(1.alpha.,4a.beta.,10a.alpha.)]-" "podocarpa-8,11,13-trien-16-ol, 13-isopropyl-" "[(1s,4as,10ar)-1,4a-dimethyl-7-propan-2-yl-2,3,4,9,10,10a-hexahydrophenanthren-1-yl]methanol" "1-phenanthrenemethanol, 1,2,3,4,4a,9,10,10a-octahydro-1,4a-dimethyl-7-(1-methylethyl)-, [1s-(1.alpha.,4a.alpha.,10a.beta.)]-" );
+gibbsFormation
+{
+    dHf_298   -256630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     813.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=150020.0
+    phase     gas;
+}

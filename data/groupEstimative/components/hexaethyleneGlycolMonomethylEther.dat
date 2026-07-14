@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexaethylene glycol monomethyl ether  (C13H28O7, CAS 23601-40-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexaethyleneGlycolMonomethylEther;
+formula     C13H28O7;
+CAS         23601-40-3;
+InChIKey    FHHGCKHKTAJLOM-UHFFFAOYSA-N;
+MW          296.36;      // g/mol [origin=calculated method=formula-sum]
+Tc          890.91;      // K   [origin=predictive method=joback]
+Pc          16.312;      // bar [origin=predictive method=joback]
+omega       1.3379;      // -   [origin=predictive method=lee-kesler]
+Tb          723.74;      // K   [origin=predictive method=joback]
+HvapTb      75671.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (149.362 0.89362 -4.78e-05 -1.755e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH3O; count 1; } { group CH2O; count 4; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 12; } { group OH; count 1; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-[2-[2-(2-methoxyethoxy)ethoxy]ethoxy]ethoxy]ethoxy]ethanol" "3,6,9,12,15,18-hexaoxanonadecan-1-ol" "hexaethyleneglycol monomethyl ether" "2,5,8,11,14,17-hexaoxanonadecan-19-ol(8ci,9ci);hexaethylene glycol methyl ether;hexaethylene glycol, monomethylether;methoxyhexaethylene glycol;" );
+gibbsFormation
+{
+    dHf_298   -1257200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     780.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-708240.0
+    phase     gas;
+}

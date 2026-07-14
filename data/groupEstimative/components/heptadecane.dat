@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heptadecane  (C17H36, CAS 629-78-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heptadecane;
+formula     C17H36;
+CAS         629-78-7;
+InChIKey    NDJKXXJCMXVBJW-UHFFFAOYSA-N;
+MW          240.475;      // g/mol [origin=calculated method=formula-sum]
+Tc          747.25;      // K   [origin=predictive method=joback]
+Pc          12.311;      // bar [origin=predictive method=joback]
+omega       0.7673;      // -   [origin=predictive method=lee-kesler]
+Tb          588.56;      // K   [origin=predictive method=joback]
+HvapTb      53436.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.565 1.61884 -0.000901 1.911e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 15; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 15; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ecojour ts 7" "pcm 17" "ts 7" "n-heptadecane" "heptadekan" "normal-heptadecane" "BRN 1738898" "ai3-36898" "CH3-[CH2]15-ch3" "4-01-00-00548 (Beilstein Handbook Reference)" "hexadecane, methyl-" "heptadecane, analytical standard" );
+gibbsFormation
+{
+    dHf_298   -394210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     818.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=92260.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propenamide, polymer with ethenylbenzene and n-methyl-n-2-propenyl-2-propen-1-amine acetate  (C20H30N2O3, CAS 69929-04-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropenamidePolymerWithEthenylbenzeneAndNMethylN2Propenyl2Pr;
+formula     C20H30N2O3;
+CAS         69929-04-0;
+InChIKey    VGRDZSRCALFECO-UHFFFAOYSA-N;
+MW          346.471;      // g/mol [origin=calculated method=formula-sum]
+Tc          1190.68;      // K   [origin=predictive method=joback]
+Pc          13.758;      // bar [origin=predictive method=joback]
+omega       1.0858;      // -   [origin=predictive method=lee-kesler]
+Tb          959.15;      // K   [origin=predictive method=joback]
+HvapTb      97186.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (69.052 1.33494 -0.0001525 -2.6234e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH2=CH; count 4; } { group ACH; count 5; } { group AC; count 1; } { group CH3N; count 1; } { group COOH; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH2; count 4; } { group dCH; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethanoic acid;ethenylbenzene;n-methyl-n-prop-2-enyl-prop-2-en-1-amine;prop-2-enamide" "2-propenamide, polymer with ethenylbenzene and n-methyl-n-2-propen-1-yl-2-propen-1-amine acetate (1:1)" );
+gibbsFormation
+{
+    dHf_298   -414270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1280.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-28590.0
+    phase     gas;
+}

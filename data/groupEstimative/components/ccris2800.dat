@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ccris 2800  (C21H16O2, CAS 17526-24-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ccris2800;
+formula     C21H16O2;
+CAS         17526-24-8;
+InChIKey    TUXPBTQUURFHPD-UHFFFAOYSA-N;
+MW          300.357;      // g/mol [origin=calculated method=formula-sum]
+Tc          1083.67;      // K   [origin=predictive method=joback]
+Pc          20.512;      // bar [origin=predictive method=joback]
+omega       0.9472;      // -   [origin=predictive method=lee-kesler]
+Tb          836.86;      // K   [origin=predictive method=joback]
+HvapTb      78929.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-76.129 1.67552 -0.00126424 3.757e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 11; } { group AC; count 6; } { group ACCH2; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 7; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzo[a]anthracen-7-ylmethyl ethanoate" "10-acetoxymethyl-1,2-benzanthracene" "benz(a)anthracene-7-methanol, acetate" "acetic acid, benz(a)anthracene-7-methanol ester" "7-acetoxymethylbenz[a]anthracene" "benz[a]anthracene-7-methanol acetate" "benzo[a]anthracen-7-ylmethyl acetate" "benz[a]anthracene-7-methanol 7-acetate" );
+gibbsFormation
+{
+    dHf_298   -18720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     573.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=219040.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methylpropyl 1-methyl-4-(4-methyl-3-pentenyl)cyclohex-3-ene-1-carboxylate  (C18H30O2, CAS 72727-55-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methylpropyl1Methyl44Methyl3PentenylCyclohex3Ene1Carboxylat;
+formula     C18H30O2;
+CAS         72727-55-0;
+InChIKey    CBAABHLYEHHMIM-UHFFFAOYSA-N;
+MW          278.436;      // g/mol [origin=calculated method=formula-sum]
+Tc          902.03;      // K   [origin=predictive method=joback]
+Pc          14.736;      // bar [origin=predictive method=joback]
+omega       0.7321;      // -   [origin=predictive method=lee-kesler]
+Tb          697.19;      // K   [origin=predictive method=joback]
+HvapTb      62951.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-97.137 1.9834 -0.00148394 4.815e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 6; } { group CH; count 1; } { group C; count 1; } { group CH=C; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylpropyl 1-methyl-4-(4-methylpent-3-enyl)cyclohex-3-ene-1-carboxylate" "3-cyclohexene-1-carboxylic acid, 1-methyl-4-(4-methyl-3-penten-1-yl)-, 2-methylpropyl ester" "3-cyclohexene-1-carboxylic acid, 1-methyl-4-(4-methyl-3-pentenyl)-, 2-methylpropyl ester" "1-methyl-4-(4-methylpent-3-enyl)cyclohex-3-ene-1-carboxylic acid, 2-methylpropyl ester" "3-cyclohexene-1-carboxylicacid, 1-methyl-4-(4-methyl-3-penten-1-yl)-, 2-methylpropyl ester" "3-cyclohexene-1-carboxylicacid, 1-methyl-4-(4-methyl-3-pentenyl)-, 2-methylpropyl ester (9ci)" );
+gibbsFormation
+{
+    dHf_298   -514110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     883.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-101170.0
+    phase     gas;
+}

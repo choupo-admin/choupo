@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heneicosane, 11-pentyl-  (C26H54, CAS 14739-72-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heneicosane11Pentyl;
+formula     C26H54;
+CAS         14739-72-1;
+InChIKey    MSKKJKLPGKYANX-UHFFFAOYSA-N;
+MW          366.718;      // g/mol [origin=calculated method=formula-sum]
+Tc          972.20;      // K   [origin=predictive method=joback]
+Pc          7.281;      // bar [origin=predictive method=joback]
+omega       0.6787;      // -   [origin=predictive method=lee-kesler]
+Tb          794.04;      // K   [origin=predictive method=joback]
+HvapTb      73082.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.428 2.47976 -0.0013938 2.977e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 22; } { group CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 22; } { group CH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "11-pentylhenicosane" "11-n-pentylheneicosane" );
+gibbsFormation
+{
+    dHf_298   -585250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1159.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=165600.0
+    phase     gas;
+}

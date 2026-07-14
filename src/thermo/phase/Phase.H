@@ -87,6 +87,13 @@ public:
     // True for vapor / liquid / crystallizing solid.  False for inert solid.
     virtual bool isEquilibriumActive() const { return true; }
 
+    // Re-point a phase's BORROWED component vector after its owning
+    // ThermoPackage is moved (a default-moved package leaves its liquid phases
+    // pointing at the emptied SOURCE vector -> a dangling read in fEffective).
+    // Default no-op; LiquidPhase, which borrows &components_ for its reference
+    // fugacity, overrides it.
+    virtual void rebindComponents(const std::vector<Component>* /*comps*/) {}
+
     // ---- Factory (run-time selection) -------------------------------------
     using Factory = std::function<std::unique_ptr<Phase>(const DictPtr&,
         const std::vector<std::string>&,

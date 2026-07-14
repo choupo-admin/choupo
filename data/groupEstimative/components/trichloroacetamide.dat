@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trichloroacetamide  (C2H2Cl3NO, CAS 594-65-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trichloroacetamide;
+formula     C2H2Cl3NO;
+CAS         594-65-0;
+InChIKey    UPQQXPKAYZYUKO-UHFFFAOYSA-N;
+MW          162.394;      // g/mol [origin=calculated method=formula-sum]
+Tc          716.70;      // K   [origin=predictive method=joback]
+Pc          52.358;      // bar [origin=predictive method=joback]
+omega       0.4843;      // -   [origin=predictive method=lee-kesler]
+Tb          480.82;      // K   [origin=predictive method=joback]
+HvapTb      49292.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (29.12 0.3739 -0.0003427 1.1346e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CCl3; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group Cl; count 3; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,2-tris(chloranyl)ethanamide" "2,2,2-trichloroacetamide" "acetamide, alpha-trichloro-" ".alpha.,.alpha.,.alpha.-trichloroacetamide" "snylgqdjhtqdtaetp@" "2,2-trichloroacetamide" "trichloroethanimidic acid" "amid kyseliny trichloroctove" "2,2,2-trichloro-acetamide" "acetamide, .alpha.-trichloro-" ".alpha.,.alpha.-trichloroacetamide" "ethanimidic acid, 2,2,2-trichloro-" );
+gibbsFormation
+{
+    dHf_298   -219370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     373.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-129460.0
+    phase     gas;
+}

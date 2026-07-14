@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-diphenyl-4-mercaptobutyric acid  (C16H16O2S, CAS 73758-57-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Diphenyl4MercaptobutyricAcid;
+formula     C16H16O2S;
+CAS         73758-57-3;
+InChIKey    ZWILEONEUTXNPU-UHFFFAOYSA-N;
+MW          272.362;      // g/mol [origin=calculated method=formula-sum]
+Tc          1089.20;      // K   [origin=predictive method=joback]
+Pc          27.127;      // bar [origin=predictive method=joback]
+omega       0.9431;      // -   [origin=predictive method=lee-kesler]
+Tb          824.18;      // K   [origin=predictive method=joback]
+HvapTb      78367.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-84.448 1.5699 -0.0011758 3.357e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group C; count 1; } { group ACH; count 10; } { group AC; count 2; } { group COOH; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group C; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COOH; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-diphenyl-4-sulfanyl-butanoic acid" "butyric acid, 2,2-diphenyl-4-mercapto-" "butyric acid,2-diphenyl-4-mercapto-" "2,2-diphenyl-4-sulfanylbutanoic acid" "benzeneacetic acid, alpha-(2-mercaptoethyl)-alpha-phenyl-" "benzeneacetic acid, .alpha.-(2-mercaptoethyl)-.alpha.-phenyl-" "benzeneacetic acid, alpha-(2-mercaptoethyl)-alpha-phenyl- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -221050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     643.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3020.0
+    phase     gas;
+}

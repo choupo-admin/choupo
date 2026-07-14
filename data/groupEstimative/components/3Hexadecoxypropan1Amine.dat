@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-hexadecoxypropan-1-amine  (C19H41NO, CAS 4673-33-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Hexadecoxypropan1Amine;
+formula     C19H41NO;
+CAS         4673-33-0;
+InChIKey    HPIKNEFNXLGDDK-UHFFFAOYSA-N;
+MW          299.543;      // g/mol [origin=calculated method=formula-sum]
+Tc          901.20;      // K   [origin=predictive method=joback]
+Pc          11.096;      // bar [origin=predictive method=joback]
+omega       0.9545;      // -   [origin=predictive method=lee-kesler]
+Tb          729.27;      // K   [origin=predictive method=joback]
+HvapTb      70939.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.608 1.80752 -0.0009422 1.711e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 16; } { group CH2O; count 1; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 18; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-propanamine, 3-(hexadecyloxy)-" "3-(hexadecyloxy)propylamine" "3-hexadecyloxy propylamine" "3-hexadecoxy-1-propanamine" );
+gibbsFormation
+{
+    dHf_298   -533920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     958.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=70550.0
+    phase     gas;
+}

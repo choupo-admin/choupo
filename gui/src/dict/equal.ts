@@ -49,15 +49,16 @@ export function valueEquals(a: DictValue, b: DictValue): boolean {
   if (a.kind !== b.kind) return false;
   switch (a.kind) {
     case "scalar":
-      // Compare on the canonical SI value only.  The unit + originalValue
-      // metadata is preserved by the parser so the text serializer can
-      // round-trip verbatim, but it is intentionally NOT compared here:
-      // `fromJson` cannot reconstruct it (the JSON bridge only carries
-      // plain numbers), and a JSON round-trip is just as valid as a
-      // text round-trip from the semantic point of view.
-      return numberEquals(a.value,
-        (b as { kind: "scalar"; value: number }).value,
-      );
+      // Named-unit spelling is cosmetic once converted to canonical SI.
+      // Explicit dimensions are semantic and must survive every bridge.
+      {
+        const bs = b as Extract<DictValue, { kind: "scalar" }>;
+        if (!numberEquals(a.value, bs.value)) return false;
+        if (a.dimensions === undefined || bs.dimensions === undefined) {
+          return a.dimensions === bs.dimensions;
+        }
+        return a.dimensions.every((x, i) => x === bs.dimensions![i]);
+      }
     case "word":
       return a.value === (b as { kind: "word"; value: string }).value;
     case "scalarList": {

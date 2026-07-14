@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9-cinnamylidenefluorene  (C22H16, CAS 2871-26-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        9Cinnamylidenefluorene;
+formula     C22H16;
+CAS         2871-26-3;
+InChIKey    FDELSKWIDIUQDN-UHFFFAOYSA-N;
+MW          280.37;      // g/mol [origin=calculated method=formula-sum]
+Tc          1070.36;      // K   [origin=predictive method=joback]
+Pc          21.178;      // bar [origin=predictive method=joback]
+omega       0.7603;      // -   [origin=predictive method=lee-kesler]
+Tb          806.63;      // K   [origin=predictive method=joback]
+HvapTb      73341.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-139.25 1.8772 -0.00155322 5.129e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group CH=C; count 1; } { group ACH; count 13; } { group AC; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 3; } { group dCH_ring; count 13; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   487950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     558.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=670670.0
+    phase     gas;
+}

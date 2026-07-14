@@ -32,11 +32,14 @@ License
 #include "thermo/ThermoPackage.H"
 #include "thermo/Component.H"
 #include "thermo/reaction/Reaction.H"
+#include "unitOperations/reactor/ReactionHeat.H"
+#include "thermo/ThermoAnnounce.H"
 #include "solver/ODE/ODEIntegrator.H"
 
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <optional>
 #include <stdexcept>
 
 namespace Choupo {
@@ -70,6 +73,7 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
     //  Operation mode: isothermal | adiabatic
     // -----------------------------------------------------------------
     auto opDict = unitDict->subDict("operation");
+    catalystLoading_ = opDict->lookupScalarOrDefault("catalystLoading", 0.0);  // kg/m^3
     const std::string mode = opDict->lookupWordOrDefault("mode", "isothermal");
     if (mode == "isothermal")
     {
@@ -99,14 +103,22 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
     //  so omitting the block changes nothing.  Stiff chemistry (detailed
     //  kinetics) selects Rosenbrock23.
     // -----------------------------------------------------------------
+    // Default verbosity = the run's controlDict level (mirrored into the
+    // load-phase announce gate by every application main).  Without this,
+    // the resolved dH_rxn announcement (gated >= 2 in reactionHeat) never
+    // printed for the common no-`solver{}`-block case: the old hardcoded
+    // member default of 1 silently out-voted the case's verbosity 3.
+    verbosity_ = thermoAnnounceLevel();
     if (unitDict->found("solver"))
     {
         auto solverDict = unitDict->subDict("solver");
         integrator_ = solverDict->lookupWordOrDefault("integrator", "RK4");
         // The stiff integrators announce their step/stiffness verdict at
-        // verbosity>=3 (numerical-honesty credo).  Read it here, default 3 so
-        // a case that opted into a stiff method gets the lesson by default.
-        verbosity_  = static_cast<int>(solverDict->lookupScalarOrDefault("verbosity", 3));
+        // verbosity>=3 (numerical-honesty credo).  Read it here, default =
+        // the run level so a case that opted into a stiff method still gets
+        // the lesson; an explicit per-unit value overrides.
+        verbosity_  = static_cast<int>(
+            solverDict->lookupScalarOrDefault("verbosity", verbosity_));
     }
 
     // -----------------------------------------------------------------
@@ -161,7 +173,11 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
             const std::string cname = s->lookupWord("component");
             r.comps.push_back(thermo.indexOf(cname));
             r.nu.push_back(s->lookupScalar("nu"));
-            r.order.push_back(s->lookupScalar("order"));
+            // A species with no `order` does not appear in the forward rate law -- the
+            // steady reactors have always read it that way, and a reaction library is
+            // shared between them.  Requiring it here made the same file legal in a CSTR
+            // and illegal in a batch vessel.
+            r.order.push_back(s->lookupScalarOrDefault("order", 0.0));
         }
 
         auto kin = rxn->subDict("kinetics");
@@ -216,18 +232,52 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
             r.tbEff = kin->found("thirdBody")
                       ? thirdBodyEfficiencies_(kin, thermo) : sVector{};
         }
+        else if (ktype == "LHHW")
+        {
+            // Langmuir-Hinshelwood-Hougen-Watson.  No CHEMKIN unit conversion and no
+            // molecularity: an LHHW rate constant is reported in whatever basis its
+            // paper used, and the adsorption denominator is dimensionless in it.
+            r.form = RateForm::LHHW;
+            r.law  = RateLaw::fromDict(rxn, thermo,
+                                       "BatchReactor: reaction '" + rxnName + "'");
+        }
         else
         {
             throw std::runtime_error("BatchReactor: reaction '" + rxnName
                 + "': unknown kinetics type '" + ktype + "' (expected Arrhenius,"
-                " modifiedArrhenius, thirdBody, or falloff)");
+                " modifiedArrhenius, thirdBody, falloff, or LHHW)");
         }
 
-        // Heat of reaction.  Optional (default 0) so isothermal cases that
-        // don't care about it can omit it without error.  For adiabatic
-        // cases the user MUST set it explicitly or the energy balance
-        // will be inert.
-        r.dH = rxn->lookupScalarOrDefault("dH_rxn", 0.0);
+        // Heat of reaction on the ONE enthalpy base (elements/formation datum).
+        // Resolved ONCE here through the shared helper so the LiquidDH and
+        // GasConstantV bases speak the SAME convention: when every reacting
+        // species carries gibbsFormation, dH_rxn(T) = Σ νᵢ·hᵢ(T) is authoritative
+        // (LiquidDH -> h_formation(T,"liquid"); GasConstantV -> h_pure_ig), and a
+        // present dict `dH_rxn` is cross-checked (mismatch warned, never silently
+        // overriding); species lacking formation data fall to the announced dict
+        // override.  Only consulted for the energy balance in ADIABATIC mode --
+        // isothermal pins T, so its heat of reaction is inert and we skip the
+        // resolve/announce to keep those cases byte-identical and quiet.
+        std::optional<scalar> dictDH;
+        if (rxn->found("dH_rxn")) dictDH = rxn->lookupScalar("dH_rxn");
+        {
+            // Resolved in BOTH modes since the energy ledger (phase (a)):
+            // the isothermal jacket duty IS this heat of reaction -- the old
+            // "isothermal pins T, dH is inert" shortcut hid the one number
+            // the student's cooling-duty question needs.  A reaction that
+            // resolves to "none" (no formation data, no override) does not
+            // throw: it POISONS the duty record, named below.
+            const std::string phase =
+                (energy_ == Energy::GasConstantV) ? "gas" : "liquid";
+            std::string heatSource;
+            r.dH = reactionHeat(thermo, r.comps, r.nu, state_.T, phase, dictDH,
+                                "BatchReactor '" + name_ + "' reaction '"
+                                    + rxnName + "'",
+                                verbosity_, heatSource);
+            if (heatSource == "none")
+                dutyMissing_.push_back("reaction '" + rxnName
+                    + "': no formation data and no dH_rxn override");
+        }
 
         // Optional reversible flag: k_rev derived from k_fwd / K_eq
         // by detailed balance, K_eq(T) re-evaluated each step (T may drift in
@@ -235,6 +285,19 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
         r.reversible = rxn->lookupWordOrDefault("reversible", "false") == "true";
 
         reactions_.push_back(std::move(r));
+    }
+
+    // Energy-ledger duty branch, decided once: state-difference pricing
+    // needs h_i(T) for EVERY species any reaction touches (the Hess identity
+    // Sum_j dH_j*dXi_j == Sum_i dn_i*h_i(T) only holds on the full formation
+    // datum); otherwise fall to per-reaction extents with the announced
+    // overrides.  dutyMissing_ non-empty overrides both (poisoned, named).
+    {
+        dutyByStateDiff_ = true;
+        for (const auto& r : reactions_)
+            for (std::size_t s = 0; s < r.comps.size(); ++s)
+                if (!thermo.comp(r.comps[s]).hasGibbsData())
+                    dutyByStateDiff_ = false;
     }
 
     if (mode_ == Mode::Adiabatic)
@@ -327,6 +390,23 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
     // Forward rate constant k_eff(T, c), with third-body [M] and fall-off
     // blending folded in.  Concentration vector c_j = n_j/V (kmol/m³) is only
     // needed for [M] (third-body / fall-off); cheap to skip otherwise.
+    // LHHW answers for itself: the shared RateLaw carries the basis (concentration
+    // or activity), the adsorption denominator and the reverse leg.  The rate comes
+    // back per unit of whatever the constants were reported in; `catalystLoading`
+    // (kg of dry catalyst per m^3) converts a per-gram constant into the reactor's
+    // volumetric kmol/(m^3.s).  With conc in kmol/m^3 the factor is the loading
+    // itself: mol/(g.s) x kg/m^3 = kmol/(m^3.s), exactly.
+    if (rxn.form == RateForm::LHHW)
+    {
+        const std::size_t nc = n.size();
+        sVector conc(nc, 0.0), x(nc, 0.0);
+        scalar ntot = 0.0;
+        for (std::size_t j = 0; j < nc; ++j) { conc[j] = std::max<scalar>(n[j], 0.0) / V; ntot += std::max<scalar>(n[j], 0.0); }
+        if (ntot > 0.0) for (std::size_t j = 0; j < nc; ++j) x[j] = std::max<scalar>(n[j], 0.0) / ntot;
+        const scalar cf = (catalystLoading_ > 0.0) ? catalystLoading_ : 1.0;
+        return cf * rxn.law.netRate(*thermo_, T, conc, x);
+    }
+
     scalar k = 0.0;
     switch (rxn.form)
     {
@@ -337,6 +417,7 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
             k = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
             break;
         case RateForm::ThirdBody:
+        case RateForm::LHHW: break;   // handled above
         case RateForm::Falloff:
         {
             sVector conc(n.size());
@@ -460,6 +541,18 @@ void BatchReactor::setOperationParameter(const std::string& key, scalar value)
                 " set T_setpoint on a non-isothermal reactor (mode is"
                 " adiabatic --- temperature is integrated by the energy"
                 " balance, not user-supplied)");
+        // A T change ends the current constant-physics segment, and the
+        // JUMP itself is an energy intervention: an impulse record prices
+        // it as a state difference (phase (e), #99-3).
+        if (value != T_setpoint_)
+        {
+            closeSegment_(lastTime_);
+            emitImpulse_(T_setpoint_, value);
+            T_setpoint_ = value;
+            state_.T    = value;
+            openSegment_(lastTime_);
+            return;
+        }
         T_setpoint_ = value;
         state_.T    = value;
         return;
@@ -469,12 +562,283 @@ void BatchReactor::setOperationParameter(const std::string& key, scalar value)
         // For adiabatic mode, allow direct T forcing (e.g. external
         // jacket coming on).  In isothermal mode this is equivalent to
         // T_setpoint.
+        if (value != state_.T)
+        {
+            closeSegment_(lastTime_);
+            emitImpulse_(state_.T, value);
+            state_.T    = value;
+            if (mode_ == Mode::Isothermal) T_setpoint_ = value;
+            openSegment_(lastTime_);
+            return;
+        }
         state_.T    = value;
         if (mode_ == Mode::Isothermal) T_setpoint_ = value;
         return;
     }
     // Anything else: delegate to base so the standard error fires.
     BatchUnitOperation::setOperationParameter(key, value);
+}
+
+// ---- Energy ledger (phase (a)): exact per-segment duty --------------------
+
+void BatchReactor::noteTimeAdvanced(scalar t)
+{
+    lastTime_ = t;
+    if (!timeSeen_)
+    {
+        timeSeen_ = true;
+        openSegment_(t);
+    }
+}
+
+void BatchReactor::notifyStateChanged()
+{
+    // Recipe material charge/discharge: the state difference the segment
+    // prices must stay PURELY reactive, so the boundary lands here.
+    closeSegment_(lastTime_);
+    openSegment_(lastTime_);
+}
+
+std::vector<SimulationResult::EnergyRecord>
+BatchReactor::energyRecords(scalar tEnd)
+{
+    closeSegment_(tEnd);
+    return energyLog_;
+}
+
+std::string BatchReactor::energyLedgerGap() const
+{
+    // Isothermal: the jacket duty is ledgered per segment.
+    if (mode_ == Mode::Isothermal) return "";
+    // Adiabatic liquidDH: the ODE conserves a FROZEN-dH surrogate (r.dH
+    // resolved once at the charge T drives dT/dt over Cp), not the
+    // canonical H surface -- so the vessel's end-state dH is ~dCp_rxn*
+    // dT*xi away from zero (5.4 kJ on batch02, 2.6%; surfaced by the #106
+    // golden scrutiny).  Until the adiabatic ODE integrates on the
+    // canonical surface, the balance must not claim a verdict over it.
+    if (energy_ == Energy::LiquidDH)
+        return "adiabatic liquidDH ODE conserves a frozen-dH surrogate, not"
+               " the canonical H surface (dH_rxn pinned at the charge T);"
+               " canonical-H adiabatic integration pending";
+    return "constant-volume vessel (gasConstantV): an H-based balance is"
+           " the wrong functional; U-based accounting pending";
+}
+
+void BatchReactor::openSegment_(scalar t)
+{
+    segStart_ = t;
+    segN0_    = state_.n;
+    segT_     = state_.T;
+}
+
+void BatchReactor::emitImpulse_(scalar T_old, scalar T_new)
+{
+    if (!timeSeen_ || T_new == T_old) return;
+
+    SimulationResult::EnergyRecord er;
+    er.tStart = er.tEnd = lastTime_;
+    er.unit   = name_;
+    er.kind   = "impulse";
+    er.T_service_K = T_new;   // worst case either way: heating must reach
+                              // T_new; cooling must get below it
+
+    bool ok = true;
+    scalar H0 = 0.0, H1 = 0.0;   // kmol * J/mol = kJ
+    try
+    {
+        scalar nTot = 0.0;
+        for (auto v : state_.n) nTot += v;
+        for (std::size_t i = 0; i < state_.n.size(); ++i)
+        {
+            if (state_.n[i] <= 0.0) continue;
+            const auto& c = thermo_->comp(i);
+            if (!c.hasGibbsData())
+            {
+                ok = false;
+                er.E_missing.push_back("no enthalpy datum for '"
+                                       + c.name() + "'");
+            }
+        }
+        if (ok && nTot > 0.0)
+        {
+            // Priced on the SAME canonical surface as the duty and the
+            // vessel terms (H_stream_formation) -- a second surface would
+            // leak a fake residual into the balance.
+            const scalar vf =
+                (energy_ == Energy::GasConstantV) ? 1.0 : 0.0;
+            const scalar P_Pa = state_.P > 0.0 ? state_.P * 1.0e5 : 1.0e5;
+            sVector z(state_.n.size());
+            for (std::size_t i = 0; i < state_.n.size(); ++i)
+                z[i] = state_.n[i] / nTot;
+            H0 = thermo_->H_stream_formation(T_old, P_Pa, vf, z) * nTot;
+            H1 = thermo_->H_stream_formation(T_new, P_Pa, vf, z) * nTot;
+        }
+    }
+    catch (const std::exception& ex)
+    {
+        ok = false;
+        er.E_missing.push_back(std::string("enthalpy evaluation failed: ")
+                               + ex.what());
+    }
+
+    if (ok)
+    {
+        er.E_kJ    = H1 - H0;
+        er.E_valid = true;
+        er.basis   = "instantaneous setParameter T: E = H(n,T_new) -"
+                     " H(n,T_old) on the elements datum (state difference,"
+                     " never Sum n*Cp*dT)";
+    }
+    else
+    {
+        er.E_valid = false;
+        er.basis   = "setParameter T impulse UNAVAILABLE: unpriceable"
+                     " inventory";
+    }
+    energyLog_.push_back(std::move(er));
+}
+
+void BatchReactor::closeSegment_(scalar t)
+{
+    if (mode_ != Mode::Isothermal || !timeSeen_) return;
+
+    bool changed = false;
+    for (std::size_t i = 0; i < state_.n.size() && i < segN0_.size(); ++i)
+        if (state_.n[i] != segN0_[i]) { changed = true; break; }
+    if (!changed && t <= segStart_ + 1.0e-12) return;   // empty boundary echo
+
+    SimulationResult::EnergyRecord er;
+    er.tStart = segStart_;
+    er.tEnd   = t;
+    er.unit   = name_;
+    er.kind   = "reaction";
+    er.T_service_K = segT_;   // isothermal: the jacket serves at the held T
+
+    if (!dutyMissing_.empty())
+    {
+        er.E_valid   = false;
+        er.E_missing = dutyMissing_;
+        er.basis     = "isothermal jacket duty UNAVAILABLE:"
+                       " unresolved heat of reaction";
+        energyLog_.push_back(std::move(er));
+        return;
+    }
+
+    try
+    {
+        if (dutyByStateDiff_)
+        {
+            // Q = dH of the closed constant-P isothermal segment: an exact
+            // state difference priced on the CANONICAL enthalpy surface
+            // (H_stream_formation -- the same one the vessel terms and the
+            // material ledger read; two surfaces would leak a fake residual
+            // into the balance, found live on batch05/batch01).
+            const scalar vf =
+                (energy_ == Energy::GasConstantV) ? 1.0 : 0.0;
+            const scalar P_Pa = state_.P > 0.0 ? state_.P * 1.0e5 : 1.0e5;
+            auto mixH = [&](const sVector& nv) -> scalar
+            {
+                scalar nTot = 0.0;
+                for (auto v : nv) nTot += v;
+                if (nTot <= 0.0) return 0.0;
+                sVector z(nv.size());
+                for (std::size_t i = 0; i < nv.size(); ++i)
+                    z[i] = nv[i] / nTot;
+                return thermo_->H_stream_formation(segT_, P_Pa, vf, z)
+                     * nTot;   // J/mol * kmol = kJ
+            };
+            er.E_kJ    = mixH(state_.n) - mixH(segN0_);
+            er.E_valid = true;
+            er.basis   = "isothermal closed vessel at constant P:"
+                         " Q = dH = H(n1,T) - H(n0,T), canonical elements-"
+                         "datum surface (H_stream_formation)";
+        }
+        else
+        {
+            // Extent branch: solve N*xi = dn (normal equations, pivot-
+            // checked Gauss) and price with the per-reaction resolved dH --
+            // the announced dict override where formation data is absent.
+            const std::size_t nR = reactions_.size();
+            sVector dn(state_.n.size(), 0.0);
+            for (std::size_t i = 0;
+                 i < state_.n.size() && i < segN0_.size(); ++i)
+                dn[i] = state_.n[i] - segN0_[i];
+
+            // A = N^T N, b = N^T dn  (nR x nR; nR is small)
+            std::vector<sVector> A(nR, sVector(nR, 0.0));
+            sVector b(nR, 0.0);
+            auto nuOf = [&](const ReactionSpec& r, std::size_t i) -> scalar
+            {
+                for (std::size_t s = 0; s < r.comps.size(); ++s)
+                    if (r.comps[s] == i) return r.nu[s];
+                return 0.0;
+            };
+            for (std::size_t j = 0; j < nR; ++j)
+            {
+                for (std::size_t k = 0; k < nR; ++k)
+                    for (std::size_t i = 0; i < dn.size(); ++i)
+                        A[j][k] += nuOf(reactions_[j], i)
+                                 * nuOf(reactions_[k], i);
+                for (std::size_t i = 0; i < dn.size(); ++i)
+                    b[j] += nuOf(reactions_[j], i) * dn[i];
+            }
+            // Gauss with partial pivoting; a vanishing pivot means the
+            // reaction set is linearly dependent and extents cannot be
+            // separated from state differences -- refuse, NAMED.
+            bool singular = false;
+            for (std::size_t p = 0; p < nR && !singular; ++p)
+            {
+                std::size_t best = p;
+                for (std::size_t r2 = p + 1; r2 < nR; ++r2)
+                    if (std::abs(A[r2][p]) > std::abs(A[best][p])) best = r2;
+                std::swap(A[p], A[best]);
+                std::swap(b[p], b[best]);
+                if (std::abs(A[p][p]) < 1.0e-30) { singular = true; break; }
+                for (std::size_t r2 = p + 1; r2 < nR; ++r2)
+                {
+                    const scalar f = A[r2][p] / A[p][p];
+                    for (std::size_t c2 = p; c2 < nR; ++c2)
+                        A[r2][c2] -= f * A[p][c2];
+                    b[r2] -= f * b[p];
+                }
+            }
+            if (singular)
+            {
+                er.E_valid   = false;
+                er.E_missing = { "linearly dependent reaction set:"
+                                 " extents unrecoverable from state"
+                                 " differences" };
+                er.basis     = "isothermal jacket duty UNAVAILABLE";
+                energyLog_.push_back(std::move(er));
+                return;
+            }
+            sVector xi(nR, 0.0);
+            for (std::size_t p = nR; p-- > 0;)
+            {
+                scalar s = b[p];
+                for (std::size_t c2 = p + 1; c2 < nR; ++c2)
+                    s -= A[p][c2] * xi[c2];
+                xi[p] = s / A[p][p];
+            }
+            scalar E = 0.0;   // J/mol * kmol = kJ
+            for (std::size_t j = 0; j < nR; ++j)
+                E += reactions_[j].dH * xi[j];
+            er.E_kJ    = E;
+            er.E_valid = true;
+            er.basis   = "isothermal closed vessel: Q = sum(dH_j*xi_j),"
+                         " extents solved from N*xi = dn (announced dH_rxn"
+                         " override where formation data is absent)";
+        }
+    }
+    catch (const std::exception& ex)
+    {
+        er.E_valid   = false;
+        er.E_missing = { std::string("enthalpy evaluation failed: ")
+                         + ex.what() };
+        er.basis     = "isothermal jacket duty UNAVAILABLE";
+        er.E_kJ      = 0.0;
+    }
+    energyLog_.push_back(std::move(er));
 }
 
 void BatchReactor::step(scalar /*t*/, scalar dt)

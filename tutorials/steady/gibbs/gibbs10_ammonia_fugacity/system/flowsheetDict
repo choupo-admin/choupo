@@ -1,0 +1,29 @@
+/*---------------------------------------------------------------------------*\
+  gibbs10_ammonia_fugacity -- the high-pressure equilibrium done RIGHT
+  ===================================================================
+  N2 + 3 H2 <-> 2 NH3 at 700 K and 200 bar, a stoichiometric feed.  The Gibbs
+  reactor minimises the REAL-gas Gibbs energy: it pulls the fugacity
+  coefficients from the package EoS (SRK here) and adds ln(phi_i) to each
+  species' chemical potential.  At 200 bar this MATTERS -- the fugacity ratio
+  Kphi = phi_NH3^2/(phi_N2 phi_H2^3) ~ 0.75 shifts the equilibrium toward NH3
+  (the fewer-moles side): 30.0 % (ideal) -> 32.4 % (SRK), toward the measured
+  ~35-40 %.  Set the package EoS to idealGas and NH3 falls back to 30.0 %.
+  (A cornerstone of the classic ammonia synthesis loop: the reactor is only
+  quantitative at pressure once fugacity is in.)
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+units
+(
+    {
+        name       ammonia;
+        type       gibbsReactor;
+        in         feed;
+        outputs    ( products );
+        operation
+        {
+            T 700.0 K; P 200.0 bar;
+            elements ( N H );
+            species ( { name N2; atoms ( 2 0 ); } { name H2; atoms ( 0 2 ); } { name NH3; atoms ( 1 3 ); } );
+        }
+    }
+);

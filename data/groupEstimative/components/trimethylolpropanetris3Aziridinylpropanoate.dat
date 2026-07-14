@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimethylolpropanetris(3-aziridinylpropanoate)  (C21H35N3O6, CAS 52234-82-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trimethylolpropanetris3Aziridinylpropanoate;
+formula     C21H35N3O6;
+CAS         52234-82-9;
+InChIKey    KDRBAEZRIDZKRP-UHFFFAOYSA-N;
+MW          425.526;      // g/mol [origin=calculated method=formula-sum]
+Tc          1114.83;      // K   [origin=predictive method=joback]
+Pc          12.828;      // bar [origin=predictive method=joback]
+omega       1.1901;      // -   [origin=predictive method=lee-kesler]
+Tb          910.25;      // K   [origin=predictive method=joback]
+HvapTb      89544.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-149.7 2.89292 -0.0023104 7.237e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group C; count 1; } { group CH2COO; count 3; } { group CH2N; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 10; } { group C; count 1; } { group CH2_ring; count 6; } { group COO; count 3; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-bis[3-(aziridin-1-yl)propanoyloxymethyl]butyl 3-(aziridin-1-yl)propanoate" "trimethylolpropane tris(3-aziridinylpropanoate)" "2,2-bis({[3-(aziridin-1-yl)propanoyl]oxy}methyl)butyl 3-(aziridin-1-yl)propanoate" "2-((3-aziridin-1-ylpropionyl)methyl)-2-ethylpropane-1,3-diyl bis(aziridine-1-propionate)" "2-(((3-(aziridin-1-yl)propanoyl)oxy)methyl)-2-ethylpropane-1,3-diyl bis(3-(aziridin-1-yl)propanoate)" "trimethylolpropane tris(3-(1-aziridinyl)propionate)" "trimethylolpropane tris[3-(1-aziridinyl)propionate]" "1-aziridinepropanoic acid, 1,1'-(2-((3-(1-aziridinyl)-1-oxopropoxy)methyl)-2-ethyl-1,3-propanediyl) ester" "1-aziridinepropanoic acid, 1,1'-[2-[[3-(1-aziridinyl)-1-oxopropoxy]methyl]-2-ethyl-1,3-propanediyl] ester" "trimethylolpropane tris(3-aziridinyl propanoate)" "trimethylolpropane-tris-(beta-n-aziridinyl)propionate" "trimethylolpropane, tris(beta-(n-aziridinyl)propionate)ester" );
+gibbsFormation
+{
+    dHf_298   -936870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     933.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-228310.0
+    phase     gas;
+}

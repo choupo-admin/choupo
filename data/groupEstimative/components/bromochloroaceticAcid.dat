@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bromochloroacetic acid  (C2H2BrClO2, CAS 5589-96-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bromochloroaceticAcid;
+formula     C2H2BrClO2;
+CAS         5589-96-8;
+InChIKey    GEHJBWKLJVFKPS-UHFFFAOYSA-N;
+MW          173.39;      // g/mol [origin=calculated method=formula-sum]
+Tc          721.31;      // K   [origin=predictive method=joback]
+Pc          60.940;      // bar [origin=predictive method=joback]
+omega       0.6487;      // -   [origin=predictive method=lee-kesler]
+Tb          494.02;      // K   [origin=predictive method=joback]
+HvapTb      47642.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.07 0.2955 -0.0002526 8.32e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 1; } { group CHCl; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group Cl; count 1; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanyl-2-chloranyl-ethanoic acid" "acetic acid, bromochloro-" "2-bromo-2-chloroacetic acid" "chlorobromoacetic acid" "bromo(chloro)acetic acid" "bromochloracetic acid" "brch(cl)cooh" "bromochloroethanoic acid" "brch(cl)co2h" "2-bromo-2-chloroethanoic acid" "water disinfection byproducts(bromochloroacetic acid)" "aceticacid, bromochloro- (7ci,8ci,9ci); bromochloroacetic acid; chlorobromoaceticacid" );
+gibbsFormation
+{
+    dHf_298   -429570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     361.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-378000.0
+    phase     gas;
+}

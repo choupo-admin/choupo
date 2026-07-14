@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl icosanoate  (C24H48O2, CAS 26718-91-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butylIcosanoate;
+formula     C24H48O2;
+CAS         26718-91-2;
+InChIKey    WZRBMKGXBAVSQL-UHFFFAOYSA-N;
+MW          368.646;      // g/mol [origin=calculated method=formula-sum]
+Tc          988.03;      // K   [origin=predictive method=joback]
+Pc          8.085;      // bar [origin=predictive method=joback]
+omega       0.7737;      // -   [origin=predictive method=lee-kesler]
+Tb          806.94;      // K   [origin=predictive method=joback]
+HvapTb      76425.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.481 2.22904 -0.0011872 2.173e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 20; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 21; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "eicosanoic acid, butyl ester" "eicosanoic acid, butylester" "butylarachate; butyl arachidate; butyl eicosanoate" );
+gibbsFormation
+{
+    dHf_298   -855970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1142.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-159170.0
+    phase     gas;
+}

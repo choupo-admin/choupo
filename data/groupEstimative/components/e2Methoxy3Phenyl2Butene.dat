@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (e)-2-methoxy-3-phenyl-2-butene  (C11H14O, CAS 101948-72-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        e2Methoxy3Phenyl2Butene;
+formula     C11H14O;
+CAS         101948-72-5;
+InChIKey    MYQHDZLKXQJBCW-MDZDMXLPSA-N;
+MW          162.232;      // g/mol [origin=calculated method=formula-sum]
+Tc          722.51;      // K   [origin=predictive method=joback]
+Pc          27.759;      // bar [origin=predictive method=joback]
+omega       0.4234;      // -   [origin=predictive method=lee-kesler]
+Tb          504.30;      // K   [origin=predictive method=joback]
+HvapTb      44884.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.08 0.92656 -0.0005832 1.414e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group ACH; count 5; } { group AC; count 1; } { group CH3O; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dC; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(e)-3-methoxybut-2-en-2-yl]benzene" );
+gibbsFormation
+{
+    dHf_298   -68420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     474.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=112270.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: polyphenylsilsequixoane  (C24H24O8Si4, CAS 62725-49-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C24H24O8Si4 (delta Si+4; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        polyphenylsilsequixoane;
+formula     C24H24O8Si4;
+CAS         62725-49-9;
+InChIKey    HSUXWOJYMFIRNM-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          552.788;      // g/mol [origin=calculated method=formula-sum]
+Tc          1668.02;      // K   [origin=predictive method=joback]
+Pc          21.473;      // bar [origin=predictive method=joback]
+omega       1.5607;      // -   [origin=predictive method=lee-kesler]
+Tb          1353.24;      // K   [origin=predictive method=joback]
+HvapTb      164448.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (37.87 1.4352 -4.26e-05 -3.904e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 20; } { group AC; count 4; } { group OH; count 4; } { group SiO; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 20; } { group dC_ring; count 4; } { group OH; count 4; } { group O_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,4,4-tetrakis(oxidanyl)-6,6,8,8-tetraphenyl-1,3,5,7,2,4,6,8-tetraoxatetrasilocane" "tetraphenyltetrahydroxycyclotetrasiloxane" "polyphenylsilsequixoane);tetraphenyltetrahydroxycyclotetrasiloxane" );
+gibbsFormation
+{
+    dHf_298   -1088990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1141.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-653600.0
+    phase     gas;
+}

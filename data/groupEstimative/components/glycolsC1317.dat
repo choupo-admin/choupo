@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: glycols, c13-17  (C13H28O2, CAS 90091-76-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        glycolsC1317;
+formula     C13H28O2;
+CAS         90091-76-2;
+InChIKey    IOYXJNDDBALLFR-ZDUSSCGKSA-N;
+MW          216.365;      // g/mol [origin=calculated method=formula-sum]
+Tc          843.18;      // K   [origin=predictive method=joback]
+Pc          19.338;      // bar [origin=predictive method=joback]
+omega       1.4060;      // -   [origin=predictive method=lee-kesler]
+Tb          680.96;      // K   [origin=predictive method=joback]
+HvapTb      77502.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.029 1.31272 -0.0007474 1.626e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group CH; count 1; } { group OH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 11; } { group CH; count 1; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-tridecane-1,2-diol" );
+gibbsFormation
+{
+    dHf_298   -621390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     754.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-217500.0
+    phase     gas;
+}

@@ -1,0 +1,34 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    harned_nacl_kcl        consistent       0.00e+00           1e-4
+diag    harned_nacl_kcl        formulation_gap_mid 3.69e-02           1e-4
+diag    harned_nacl_kcl        gamma1_pure      7.83e-01           1e-4
+diag    harned_nacl_kcl        gamma1_trace     6.08e-01           1e-4
+diag    harned_nacl_kcl        gamma2_pure      5.75e-01           1e-4
+diag    harned_nacl_kcl        gamma2_trace     7.18e-01           1e-4
+diag    harned_nacl_kcl        gibbsDuhem_dev_mid 5.09e-01           1e-4
+diag    harned_nacl_kcl        harned_R2_min    9.98e-01           1e-4
+diag    harned_nacl_kcl        harned_alpha_1   2.76e-02           1e-4
+diag    harned_nacl_kcl        harned_alpha_2   -2.42e-02          1e-4
+diag    harned_nacl_kcl        harned_slope_1   -2.55e-01          1e-4
+diag    harned_nacl_kcl        harned_slope_2   -2.23e-01          1e-4
+diag    harned_nacl_kcl        oracle_pure_dev  2.35e-09           1e-4
+diag    harned_nacl_kcl        reduction_pin_dev 0.00e+00           1e-4
+diag    harned_nacl_kcl        tauEE            0.00e+00           1e-4
+diag    harned_nacl_kcl        totalMolality    4.00e+00           1e-4
+diag    harned_nacl_kcl_refined consistent       1.00e+00           1e-4
+diag    harned_nacl_kcl_refined formulation_gap_mid 3.69e-02           1e-4
+diag    harned_nacl_kcl_refined gamma1_pure      7.83e-01           1e-4
+diag    harned_nacl_kcl_refined gamma1_trace     6.67e-01           1e-4
+diag    harned_nacl_kcl_refined gamma2_pure      5.75e-01           1e-4
+diag    harned_nacl_kcl_refined gamma2_trace     6.87e-01           1e-4
+diag    harned_nacl_kcl_refined gibbsDuhem_dev_mid 9.59e-09           1e-4
+diag    harned_nacl_kcl_refined harned_R2_min    9.99e-01           1e-4
+diag    harned_nacl_kcl_refined harned_alpha_1   1.73e-02           1e-4
+diag    harned_nacl_kcl_refined harned_alpha_2   -1.93e-02          1e-4
+diag    harned_nacl_kcl_refined harned_slope_1   -1.60e-01          1e-4
+diag    harned_nacl_kcl_refined harned_slope_2   -1.78e-01          1e-4
+diag    harned_nacl_kcl_refined oracle_pure_dev  2.35e-09           1e-4
+diag    harned_nacl_kcl_refined reduction_pin_dev 0.00e+00           1e-4
+diag    harned_nacl_kcl_refined tauEE            0.00e+00           1e-4
+diag    harned_nacl_kcl_refined totalMolality    4.00e+00           1e-4

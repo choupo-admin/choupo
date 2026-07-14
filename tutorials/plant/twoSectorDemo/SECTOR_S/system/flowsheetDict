@@ -1,11 +1,7 @@
 /*--- SECTOR_S: one custom distillation (compiled from code/). Build + run:
         bin/buildCode tutorials/plant/twoSectorDemo/SECTOR_S
         runCase       tutorials/plant/twoSectorDemo/SECTOR_S                       ---*/
-streams
-{
-    feed { F 100 kmol/h;  T 350 K;  P 1.01325 bar;
-           molarComposition { compA 0.2; compB 0.2; compC 0.2; compH 0.2; compJ 0.2; } }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 units
 (
     { name C1;  type sharpSplitColumn;  in feed;  outputs ( top bottom );

@@ -1,0 +1,6 @@
+recordType gasLiquidEquilibrium;
+schemaVersion 1;
+
+gas H2; reaction "H2(g) = H2"; dissolved "H2";
+      logK25 -3.1; dH -3300; analytic ( -8.841 0.0086515 942.8 ); Tc 33.2; Pc 12.8; omega -0.225; source "USGS PHREEQC phreeqc.dat (public domain); lit: 5.7 at 100oC; Zhu, 2022; Chabab 2020; Gordon 1977; Crozier, 1974";
+

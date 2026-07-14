@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: thiophene  (C4H4S, CAS 110-02-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        thiophene;
+formula     C4H4S;
+CAS         110-02-1;
+InChIKey    YTPLMLYBLZKORZ-UHFFFAOYSA-N;
+MW          84.136;      // g/mol [origin=calculated method=formula-sum]
+Tc          579.64;      // K   [origin=predictive method=joback]
+Pc          57.132;      // bar [origin=predictive method=joback]
+omega       0.1914;      // -   [origin=predictive method=lee-kesler]
+Tb          357.22;      // K   [origin=predictive method=joback]
+HvapTb      31460.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.79 0.44441 -0.00036986 1.213e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C4H4S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 4; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "thiofuran" "thiole" "thiacyclopentadiene" "thiophen" "thiotetrole" "divinylene sulfide" "thiofurfuran" "thiaphene" "thiofuram" "furan, thio-" "huile hso" "huile h50" );
+gibbsFormation
+{
+    dHf_298   115750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     279.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=126840.0
+    phase     gas;
+}

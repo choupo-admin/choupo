@@ -30,6 +30,7 @@ License
 #include "core/Dictionary.H"
 
 #include <filesystem>
+#include <limits>
 #include <map>
 #include <stdexcept>
 
@@ -122,6 +123,25 @@ std::vector<std::string> UtilityCatalogue::availableNames()
     v.reserve(registry().size());
     for (const auto& kv : registry()) v.push_back(kv.first);
     return v;
+}
+
+const Utility* UtilityCatalogue::pickForDuty(bool heating, scalar T,
+                                             scalar dTmin)
+{
+    const Utility* best = nullptr;
+    scalar bestMargin = std::numeric_limits<scalar>::infinity();
+    for (const auto& name : availableNames())
+    {
+        const Utility& u = byName(name);
+        if (heating && u.tier != "heating") continue;
+        if (!heating && u.tier != "cooling") continue;
+        if (u.dutyPerKg <= 0.0) continue;
+        scalar margin;
+        if (heating) { if (u.T_in < T + dTmin) continue; margin = u.T_in - T; }
+        else         { if (u.T_in > T - dTmin) continue; margin = T - u.T_in; }
+        if (margin < bestMargin) { bestMargin = margin; best = &u; }
+    }
+    return best;
 }
 
 } // namespace Choupo

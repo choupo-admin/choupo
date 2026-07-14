@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzhydryl 2-chloroethyl ether  (C15H15ClO, CAS 32669-06-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzhydryl2ChloroethylEther;
+formula     C15H15ClO;
+CAS         32669-06-0;
+InChIKey    ZNVASENTCOLNJT-UHFFFAOYSA-N;
+MW          246.734;      // g/mol [origin=calculated method=formula-sum]
+Tc          895.01;      // K   [origin=predictive method=joback]
+Pc          23.982;      // bar [origin=predictive method=joback]
+omega       0.6279;      // -   [origin=predictive method=lee-kesler]
+Tb          655.57;      // K   [origin=predictive method=joback]
+HvapTb      59943.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-41.848 1.2205 -0.0007672 1.72e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 1; } { group ACCH; count 1; } { group CH2O; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2-chloroethyloxy(phenyl)methyl]benzene" "((2-chloroethoxy)methylene)dibenzene" "2-chloroethyl diphenylmethyl ether" "benzhydryl .beta.-chloroethyl ether" "[2-chloroethoxy(phenyl)methyl]benzene" "[(2-chloroethoxy)(phenyl)methyl]benzene" "1-(diphenylmethoxy)-2-chloroethane" "rac 2-chloroethyl benzhydryl ether" "(2-chloroethoxy-phenylmethyl)benzene" "benzhydryl b-chloroethyl ether" "1,1'-[(2-chloroethoxy)methylene]bis-benzene" "1,1'-[(2-chloroethoxy)methylene]bis[benzene]" );
+gibbsFormation
+{
+    dHf_298   -33110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     562.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=180870.0
+    phase     gas;
+}

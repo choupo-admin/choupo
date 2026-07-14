@@ -1,0 +1,11 @@
+# A4 F3: N=25 A3 t_b5 is 2732.027881 s; explicit continuity + Ergun
+# moves it later and eliminates the 9.19 mol carrier fabrication.
+# kind   name   key                         expected          reltol
+kpi     bed    t_breakthrough_5pct_CO2     2767.86955912     2e-5
+kpi     bed    t_50_CO2                    3030.27628270     2e-5
+kpi     bed    t_breakthrough_95pct_CO2    3282.90182463     2e-5
+kpi     bed    carrier_fabricated_mol      0                 1e-10
+kpi     bed    physical_mass_closure_rel   0                 1e-10
+kpi     bed    mass_closure_CO2            0                 1e-10
+kpi     campaign mass_closure_rel          0                 1e-10
+kpi     campaign element_worst_closure_rel 0                 1e-10

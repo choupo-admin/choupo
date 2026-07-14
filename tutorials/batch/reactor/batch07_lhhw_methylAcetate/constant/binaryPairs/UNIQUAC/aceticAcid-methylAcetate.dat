@@ -1,0 +1,23 @@
+/*---------------------------------------------------------------------------*\
+  UNIQUAC binary interaction parameters --- aceticAcid-methylAcetate
+  Delta u_ij(T) = a_ij + b_ij*T + c_ij*T^2  [a in K, b dimensionless, c in K^-1];
+  tau_ij = exp(-Delta u_ij / T).
+\*---------------------------------------------------------------------------*/
+
+components ( aceticAcid methylAcetate );
+model       UNIQUAC;
+
+parameters
+{
+    i      aceticAcid;
+    j      methylAcetate;
+    a_ij   -62.186;    a_ji   81.848;     // K
+    b_ij   -0.43637;    b_ji   1.1162;
+    c_ij   2.7235e-3;    c_ji   -1.3309e-3;
+}
+
+provenance
+{
+    origin     literature;
+    citation   "Popken, Gotze & Gmehling, Ind. Eng. Chem. Res. 39 (2000) 2601, Table 3 (UNIQUAC Delta u = a + b T + c T^2; fitted simultaneously to DDB VLE + gamma-infinity + h^E, 1998)";
+}

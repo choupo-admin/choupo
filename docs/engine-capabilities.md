@@ -13,21 +13,18 @@
 
 ## 1. Current state (counts)
 
-* **148 tutorials** under `tutorials/{steady,batch,ctrl,props,plant}/`;
-  `bin/runTests` validates **126** of them via golden-master KPI
-  comparison + NaN/inf guard (batch/ctrl trajectory cases + the `plant/`
-  showcase are run-only, no `expected` file).  KNOWN GAP: the composite
-  `plant/esterification2sector` sectors run (choupoProps now cascades
-  controlDict/thermoPackage UP the tree, as choupoSolve does) but are not
-  yet wired into `runTests` — their canonical dispatch (a sector is both a
-  curate/props node and a simulate/flowsheet node) is an open call.
-* **56 components** in the standard catalogue (data/standards/components/),
+* **211 tutorials** under `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`;
+  `bin/runTests` validates **255** checks (golden-master KPI comparison +
+  NaN/inf guard on every case + the doctrine gate; one deliberate
+  EXPECTED-FAIL teaching case).  Batch/ctrl cases carry goldens too —
+  including the campaign material/energy-ledger KPIs.
+* **194 components** in the standard catalogue (data/standards/components/),
   plus per-case overlays under `<case>/constant/components/` for
   sample-specific data (sorption isotherms, drying kinetics, …).
-* **8 Henry's-law pairs** (CO2 / NH3 / O2 / H2S / SO2 / CH4 / Cl2 / HCl
-  in water), van't Hoff temperature dependence.
-* **4 materials** (carbonSteel / SS304 / SS316 / aluminium) and **2
-  membranes** (SW30HR seawater RO, NF270 loose NF) in the catalogue.
+* **205 Henry's-law pairs**, van't Hoff temperature dependence.
+* **4 materials** (carbonSteel / SS304 / SS316 / aluminium) and **4
+  membranes** (SW30HR seawater RO, NF270 loose NF, NF270_dspmde, CMX_AMX
+  ion-exchange) in the catalogue.
 
 ### Three-axiom property layout
 
@@ -52,7 +49,22 @@
                           default; Wegstein available)
       choupoBatch   --   batch / time-dependent simulation,  dY/dt = f,
                           with a recipe layer (time-triggered + condition-
-                          triggered events, partial transfers, accumulators)
+                          triggered events, partial transfers, accumulators);
+                          every FIRED action + unit status event lands in the
+                          result JSON's `timeline` (t, kind, action, detail,
+                          trigger) -- the machine-readable campaign sequence
+                          a Gantt view reads.  Underneath: TWO structured
+                          campaign ledgers (2026-07-11) -- `transfers` (the
+                          material ledger: per-edge, per-package enthalpy at
+                          each package's own T, monotonic H-validity) and
+                          `energyLedger` (per-segment duty records: reaction /
+                          reboiler / condenser / latent / impulse, every
+                          integral an exact state difference on the elements
+                          datum; chargeFrom solves T_mix by H-equality).  The
+                          campaign closes mass (per-element), and closes
+                          ENERGY only when every piece is ledgered+priceable
+                          -- otherwise `energy balance UNAVAILABLE` naming
+                          each gap (recipe01 closes end-to-end at 6e-16)
       choupoCtrl    --   dynamic continuous + control loops,
                           dY/dt = f(Y, u, t) with controllers writing MVs
       choupoProps   --   property evaluation + the PROPS BENCH

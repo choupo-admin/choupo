@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 3-fluorobenzoate  (C9H9FO2, CAS 451-02-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl3Fluorobenzoate;
+formula     C9H9FO2;
+CAS         451-02-5;
+InChIKey    SMMIKBXLEWTSJD-UHFFFAOYSA-N;
+MW          168.167;      // g/mol [origin=calculated method=formula-sum]
+Tc          698.06;      // K   [origin=predictive method=joback]
+Pc          30.659;      // bar [origin=predictive method=joback]
+omega       0.5473;      // -   [origin=predictive method=lee-kesler]
+Tb          494.67;      // K   [origin=predictive method=joback]
+HvapTb      45156.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.601 0.67742 -0.00035176 4.5e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACF; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 3-fluoranylbenzoate" "ethyl m-fluorobenzoate" "benzoic acid, 3-fluoro-, ethyl ester" "3-fluorobenzoic acid ethyl ester" "benzoic acid, m-fluoro-, ethyl ester" "3-fluoro-benzoicaciethylester" "i468" "benzoicacid, m-fluoro-, ethyl ester (6ci,7ci,8ci);ethyl 3-fluorobenzoate;" );
+gibbsFormation
+{
+    dHf_298   -517420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     476.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-377500.0
+    phase     gas;
+}

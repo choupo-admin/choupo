@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dihydrothebaine  (C19H23NO3, CAS 1385-04-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dihydrothebaine;
+formula     C19H23NO3;
+CAS         1385-04-2;
+InChIKey    XJZOLKDBHJPTAT-ATNYCFDYSA-N;
+MW          313.397;      // g/mol [origin=calculated method=formula-sum]
+Tc          1015.01;      // K   [origin=predictive method=joback]
+Pc          19.930;      // bar [origin=predictive method=joback]
+omega       0.9684;      // -   [origin=predictive method=lee-kesler]
+Tb          787.24;      // K   [origin=predictive method=joback]
+HvapTb      72806.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-171.52 2.33556 -0.00209662 7.892e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 2; } { group C; count 1; } { group CH=C; count 1; } { group ACH; count 2; } { group AC; count 3; } { group ACCH2; count 1; } { group CH3O; count 2; } { group CH-O; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 5; } { group O; count 2; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4r,4ar,7ar,12bs)-7,9-dimethoxy-3-methyl-2,4,4a,5,7a,13-hexahydro-1h-4,12-methanobenzofuro[3,2-e]isoquinoline" "thebaine, dihydro-" "8,14-dihydrothebaine" "delta(sup 6)-dihydrothebaine" "(5alpha)-6,7-didehydro-4,5-epoxy-3,6-dimethoxy-17-methylmorphinan" "4,5alpha-epoxy-3,6-dimethoxy-17-methyl-6-morphinen" "(5r,9r,13s,14r)-4,5-epoxy-3,6-dimethoxy-n-methyl-6-morphinen" "morphinan, 6,7-didehydro-4,5-alpha-epoxy-3,6-dimethoxy-17-methyl-" "(5r,9r,13s,14r)-4,5-epoxy-3,6-dimethoxy-n-methyl-6-morphinen [iupac]" "morphinan, 6,7-didehydro-4,5-alpha-epoxy-3,6-dimethoxy-17-methyl- (8ci)" "morphinan, 6,7-didehydro-4,5-epoxy-3,6-dimethoxy-17-methyl- (5-alpha,14-xi)-" "morphinan, 6,7-didehydro-4,5-epoxy-3,6-dimethoxy-17-methyl- (5-alpha,14-xi)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -203370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     403.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=277220.0
+    phase     gas;
+}

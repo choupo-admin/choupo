@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methyl-1-naphthaleneacetamide  (C13H13NO, CAS 85-07-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methyl1Naphthaleneacetamide;
+formula     C13H13NO;
+CAS         85-07-4;
+InChIKey    AFOVBPMGZPJPKX-UHFFFAOYSA-N;
+MW          199.253;      // g/mol [origin=calculated method=formula-sum]
+Tc          920.19;      // K   [origin=predictive method=joback]
+Pc          30.864;      // bar [origin=predictive method=joback]
+omega       0.8150;      // -   [origin=predictive method=lee-kesler]
+Tb          679.06;      // K   [origin=predictive method=joback]
+HvapTb      67159.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.829 1.07112 -0.00074194 2.0226e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 2; } { group ACCH3; count 1; } { group ACCH2; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-methylnaphthalen-1-yl)ethanamide" "1-naphthaleneacetamide, 2-methyl-" "2-methylnaphthalene-1-acetamide" "2-(2-methylnaphthalen-1-yl)acetamide" );
+gibbsFormation
+{
+    dHf_298   14220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     513.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=195910.0
+    phase     gas;
+}

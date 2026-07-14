@@ -8,8 +8,10 @@ project's documentation.
 
 "Choupo" is the project name.  The name and any associated marks are
 owned by **TalentGround Lda.**, the founder's family holding company.
-The Choupo mark is protected in Portugal by TalentGround Lda. for the
-project's software and related services.
+The CHOUPO mark is the subject of Portuguese trademark application
+**769805 MNA** filed by TalentGround Lda. (published 2026-06-16); it is a
+pending application, **not** a granted registration.  Pending that
+outcome, the mark is used with the "™" symbol (not "®").
 
 The GNU GPL, version 3 (under which the code is released)
 explicitly does **not** grant trademark rights (as no open-source licence does) --- the

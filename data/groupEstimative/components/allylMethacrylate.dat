@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: allyl methacrylate  (C7H10O2, CAS 96-05-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        allylMethacrylate;
+formula     C7H10O2;
+CAS         96-05-9;
+InChIKey    FBCQUCJYYPMKRO-UHFFFAOYSA-N;
+MW          126.155;      // g/mol [origin=calculated method=formula-sum]
+Tc          594.81;      // K   [origin=predictive method=joback]
+Pc          31.002;      // bar [origin=predictive method=joback]
+omega       0.4233;      // -   [origin=predictive method=lee-kesler]
+Tb          411.22;      // K   [origin=predictive method=joback]
+HvapTb      37323.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (16.261 0.57392 -0.0003105 5.16e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2=CH; count 1; } { group CH2=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "prop-2-enyl 2-methylprop-2-enoate" "methacrylic acid, allyl ester" "ageflex ama" "2-propenoic acid, 2-methyl-, 2-propenyl ester" "prop-2-en-1-yl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, 2-propen-1-yl ester" "allyl 2-methylacrylate" "methacrylic acid allyl ester" "allylester kyseliny methakrylove" "methacrylic acid, allyl ester (8ci)" );
+gibbsFormation
+{
+    dHf_298   -264020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     466.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-135180.0
+    phase     gas;
+}

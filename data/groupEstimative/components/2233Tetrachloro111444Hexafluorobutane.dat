@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,3,3-tetrachloro-1,1,1,4,4,4-hexafluorobutane  (C4Cl4F6, CAS 375-34-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2233Tetrachloro111444Hexafluorobutane;
+formula     C4Cl4F6;
+CAS         375-34-8;
+InChIKey    BZBLUUDREZEDDJ-UHFFFAOYSA-N;
+MW          303.832;      // g/mol [origin=calculated method=formula-sum]
+Tc          608.25;      // K   [origin=predictive method=joback]
+Pc          26.461;      // bar [origin=predictive method=joback]
+omega       0.3913;      // -   [origin=predictive method=lee-kesler]
+Tb          423.54;      // K   [origin=predictive method=joback]
+HvapTb      31952.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.53 0.985 -0.001061 3.936e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CCl2; count 2; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 4; } { group F; count 6; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3-tetrakis(chloranyl)-1,1,1,4,4,4-hexakis(fluoranyl)butane" "butane, 2,2,3,3-tetrachlorohexafluoro-" "butane s2-46" "butane, 2,2,3,3-tetrachloro-1,1,1,4,4,4-hexafluoro-" "2,2,3,3-tetrachlorohexafluorobutane" "butane,2,3,3-tetrachlorohexafluoro-" "hexafluoro-2,2,3,3-tetrachlorobutane" "1,1,1,4,4,4-hexafluoro-tetrachlorobutane" "butane,2,3,3-tetrachloro-1,1,1,4,4,4-hexafluoro-" "butane,2,2,3,3-tetrachloro-1,1,1,4,4,4-hexafluoro-" );
+gibbsFormation
+{
+    dHf_298   -1400510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     480.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1222420.0
+    phase     gas;
+}

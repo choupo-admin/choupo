@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzo[a]pyren-3-ol  (C20H12O, CAS 13345-21-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzoAPyren3Ol;
+formula     C20H12O;
+CAS         13345-21-6;
+InChIKey    SPUUWWRWIAEPDB-UHFFFAOYSA-N;
+MW          268.315;      // g/mol [origin=calculated method=formula-sum]
+Tc          1116.23;      // K   [origin=predictive method=joback]
+Pc          30.558;      // bar [origin=predictive method=joback]
+omega       1.0484;      // -   [origin=predictive method=lee-kesler]
+Tb          847.66;      // K   [origin=predictive method=joback]
+HvapTb      83314.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-138.53 1.8614 -0.00180304 6.907e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 11; } { group AC; count 8; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 11; } { group dC_ring; count 9; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-hydroxybenzo(a)pyrene" "3-hydroxybenzo[a]pyrene" "benzo(a)pyren-3-ol" "bp-3-hydroxy" "8-hydroxy-3,4-benzpyrene" "benzo(a)pyrene, 3-hydroxy-" "3-hydroxy benzopyrene" "benzo[def]chrysen-3-ol" "3-hydroxy benzo[a]pyrene" "benzo[pqr]tetraphen-3-ol" "3-hydroxy-3,4-benzo[a]pyrene" "3-hydroxy-3,4-benzo[a]pyrene;3-hydroxybenzo[a]pyrene; 3-hydroxybenzopyrene" );
+gibbsFormation
+{
+    dHf_298   287500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     398.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=467260.0
+    phase     gas;
+}

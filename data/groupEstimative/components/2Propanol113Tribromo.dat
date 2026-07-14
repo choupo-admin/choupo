@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propanol, 1,1,3-tribromo-,  (C3H5Br3O, CAS 59228-00-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Propanol113Tribromo;
+formula     C3H5Br3O;
+CAS         59228-00-1;
+InChIKey    QDJVPMNYRGTTFU-UHFFFAOYSA-N;
+MW          296.784;      // g/mol [origin=calculated method=formula-sum]
+Tc          778.87;      // K   [origin=predictive method=joback]
+Pc          70.498;      // bar [origin=predictive method=joback]
+omega       1.0093;      // -   [origin=predictive method=lee-kesler]
+Tb          558.02;      // K   [origin=predictive method=joback]
+HvapTb      57480.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (26.661 0.4492 -0.0003904 1.356e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 2; } { group OH; count 1; } { group Br; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 2; } { group Br; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,3-tris(bromanyl)propan-2-ol" "1,1,3-tribromopropan-2-ol" "2-propanol, 1,1,3-tribromo-" );
+gibbsFormation
+{
+    dHf_298   -189050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     457.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-124360.0
+    phase     gas;
+}

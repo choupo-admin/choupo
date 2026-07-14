@@ -1,3 +1,0 @@
-components       ( ethanol  benzene );
-activityModel    { model ideal; }
-equationOfState  { model idealGas; }

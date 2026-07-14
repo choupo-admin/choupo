@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloro-4',4''-bis(dimethylamino)trityl alcohol  (C23H25ClN2O, CAS 596-42-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chloro44BisDimethylaminoTritylAlcohol;
+formula     C23H25ClN2O;
+CAS         596-42-9;
+InChIKey    OWOSWOVOVQGAHZ-UHFFFAOYSA-N;
+MW          380.916;      // g/mol [origin=calculated method=formula-sum]
+Tc          1210.31;      // K   [origin=predictive method=joback]
+Pc          17.246;      // bar [origin=predictive method=joback]
+omega       1.2384;      // -   [origin=predictive method=lee-kesler]
+Tb          972.08;      // K   [origin=predictive method=joback]
+HvapTb      99460.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-104.51 2.18808 -0.00156768 4.298e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C; count 1; } { group ACH; count 12; } { group AC; count 5; } { group OH; count 1; } { group CH3N; count 2; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group C; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group Cl; count 1; } { group OH; count 1; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2-chlorophenyl)-bis[4-(dimethylamino)phenyl]methanol" "2-chlorophenyl bis(4-dimethylaminophenyl) methanol" "(2-chlorophenyl)-bis(4-dimethylaminophenyl)methanol" "(2-chlorophenyl){bis[4-(dimethylamino)phenyl]}methanol" "benzenemethanol,2-chloro-a,a-bis[4-(dimethylamino)phenyl]-" "2-chloro-alpha,alpha-bis(4-(dimethylamino)phenyl)benzenemethanol" "benzenemethanol, 2-chloro-alpha,alpha-bis(4-(dimethylamino)phenyl)-" "benzenemethanol, 2-chloro-.alpha.,.alpha.-bis[4-(dimethylamino)phenyl]-" "methanol,(o-chlorophenyl)bis[p-(dimethylamino)phenyl]- (8ci); c.i. 42025b; c.i. pigmentblue 9, carbinol base; methylene cyanine n base" );
+gibbsFormation
+{
+    dHf_298   115470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     791.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=526770.0
+    phase     gas;
+}

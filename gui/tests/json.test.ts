@@ -65,6 +65,13 @@ describe("AST <-> JSON round-trip on tutorials/", () => {
 });
 
 describe("AST <-> JSON unit cases", () => {
+  it("preserves explicit dimensions across JSON", () => {
+    const ast = parse("Dax [0 2 -1 0 0] 0.00012;");
+    const json = toJson(ast);
+    expect(json).toEqual({ Dax: "[0 2 -1 0 0] 0.00012" });
+    expect(dictEquals(ast, fromJson(json))).toBe(true);
+  });
+
   it("encodes scalar/word/lists into idiomatic JSON", () => {
     const ast = parse(`
       a 1;

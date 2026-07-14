@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-dichloronorbornane  (C7H10Cl2, CAS 2941-51-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14Dichloronorbornane;
+formula     C7H10Cl2;
+CAS         2941-51-7;
+InChIKey    YBNBENMSAFGIQF-UHFFFAOYSA-N;
+MW          165.057;      // g/mol [origin=calculated method=formula-sum]
+Tc          692.10;      // K   [origin=predictive method=joback]
+Pc          39.605;      // bar [origin=predictive method=joback]
+omega       0.2808;      // -   [origin=predictive method=lee-kesler]
+Tb          452.85;      // K   [origin=predictive method=joback]
+HvapTb      37642.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-183.28 1.5584 -0.001857 8.548e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:2
+    joback ( { group CH2_ring; count 5; } { group C_ring; count 2; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-bis(chloranyl)bicyclo[2.2.1]heptane" "1,4-dichlorobicyclo[2.2.1]heptane" );
+gibbsFormation
+{
+    dHf_298   -49370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     473.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=82620.0
+    phase     gas;
+}

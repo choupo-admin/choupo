@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 10-bromodecyl tetrahydropyranyl ether  (C15H29BrO2, CAS 51795-88-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        10BromodecylTetrahydropyranylEther;
+formula     C15H29BrO2;
+CAS         51795-88-1;
+InChIKey    CRFTXRBAGSTOLW-UHFFFAOYSA-N;
+MW          321.299;      // g/mol [origin=calculated method=formula-sum]
+Tc          873.28;      // K   [origin=predictive method=joback]
+Pc          17.217;      // bar [origin=predictive method=joback]
+omega       0.8755;      // -   [origin=predictive method=lee-kesler]
+Tb          677.88;      // K   [origin=predictive method=joback]
+HvapTb      62768.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-25.34 1.5229 -0.0008197 1.475e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 12; } { group CH; count 1; } { group CH2O; count 1; } { group FCH2O; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 10; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group Br; count 1; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(10-bromanyldecoxy)oxane" "2-((10-bromodecyl)oxy)tetrahydro-2h-pyran" "2h-pyran, 2-((10-bromodecyl)oxy)tetrahydro-" "2h-pyran, 2-[(10-bromodecyl)oxy]tetrahydro-" "2-[(10-bromodecyl)oxy]tetrahydro-2h-pyran" "2-(10-bromodecoxy)oxane" );
+gibbsFormation
+{
+    dHf_298   -536500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     720.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76930.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-dimethylbenzaldehyde  (C9H10O, CAS 15764-16-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H10O (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        24Dimethylbenzaldehyde;
+formula     C9H10O;
+CAS         15764-16-6;
+InChIKey    GISVICWQYMUPJF-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          134.178;      // g/mol [origin=calculated method=formula-sum]
+Tc          627.38;      // K   [origin=predictive method=joback]
+Pc          33.144;      // bar [origin=predictive method=joback]
+omega       0.2937;      // -   [origin=predictive method=lee-kesler]
+Tb          418.58;      // K   [origin=predictive method=joback]
+HvapTb      36855.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.1 0.66904 -0.00051592 1.683e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACCH3; count 2; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzaldehyde, 2,4-dimethyl-" "2,4-trimethyl benzaldehyde" "2,4-xylylaldehyde" "m-xylene-4-carboxaldehyde" "1-formyl-2,4-dimethylbenzene" "2,4-dimethylbenzenecarboxaldehyde" "15764-16-6 2,4-dimethylbenzaldehyde" "l074" );
+gibbsFormation
+{
+    dHf_298   60950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     468.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=162010.0
+    phase     gas;
+}

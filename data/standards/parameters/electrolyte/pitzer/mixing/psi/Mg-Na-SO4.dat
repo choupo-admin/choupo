@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer ternary mixing parameter psi(Mg,Na|SO4) --- the two cations Mg(2+)
+  and Na(+) with the common anion SO4(2-).
+  Role: the triple-ion correction of the Harvie-Moller-Weare formulation,
+  active in the pitzerHMW multi-ion engine only when all three ions coexist
+  in solution; it refines the theta(Mg,Na) mixing term and the binary
+  beta/Cphi pair sets, it never replaces them.
+  Source: Harvie, Moller & Weare, Geochim. Cosmochim. Acta 48 (1984) 723 (HMW
+  seawater system); via USGS PHREEQC pitzer.dat (public domain) -- full
+  string in the source entry below.
+\*-----------------------------------------------------------------------------*/
+recordType electrolyteMixingParameter;
+schemaVersion 1;
+kind psi;
+a Mg;
+b Na;
+c SO4;
+value -0.015;
+source "Harvie, Moller & Weare, Geochim. Cosmochim. Acta 48 (1984) 723 (HMW seawater system); via USGS PHREEQC pitzer.dat (public domain)";

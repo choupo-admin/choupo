@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenol, p-(3-hydroxy-3-methylbutyl)-  (C11H16O2, CAS 4237-73-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenolP3Hydroxy3Methylbutyl;
+formula     C11H16O2;
+CAS         4237-73-4;
+InChIKey    BGHHDJUQYBAXSB-UHFFFAOYSA-N;
+MW          180.247;      // g/mol [origin=calculated method=formula-sum]
+Tc          858.62;      // K   [origin=predictive method=joback]
+Pc          35.305;      // bar [origin=predictive method=joback]
+omega       1.0724;      // -   [origin=predictive method=lee-kesler]
+Tb          647.53;      // K   [origin=predictive method=joback]
+HvapTb      70753.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.118 1.28434 -0.00106436 3.6e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group ACH; count 4; } { group ACCH2; count 1; } { group OH; count 1; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(3-methyl-3-oxidanyl-butyl)phenol" "benzenepropanol, 4-hydroxy-.alpha.,.alpha.-dimethyl-" "4-(3-hydroxy-3-methylbutyl)phenol" "phenol, p-(3-hydroxy-3-methyl-butyl)-" "2-butanol, 4-(p-hydroxyphenyl)-2-methyl-" "benzenepropanol, 4-hydroxy-alpha,alpha-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -372130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     516.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134450.0
+    phase     gas;
+}

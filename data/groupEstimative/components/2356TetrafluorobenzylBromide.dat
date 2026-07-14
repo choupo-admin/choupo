@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,5,6-tetrafluorobenzyl bromide  (C7H3BrF4, CAS 53001-73-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2356TetrafluorobenzylBromide;
+formula     C7H3BrF4;
+CAS         53001-73-3;
+InChIKey    QHZBSXQCGIQSID-UHFFFAOYSA-N;
+MW          242.997;      // g/mol [origin=calculated method=formula-sum]
+Tc          661.04;      // K   [origin=predictive method=joback]
+Pc          33.412;      // bar [origin=predictive method=joback]
+omega       0.6012;      // -   [origin=predictive method=lee-kesler]
+Tb          469.60;      // K   [origin=predictive method=joback]
+HvapTb      39267.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (52.371 0.4373 -0.00025704 5.45e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 1; } { group ACCH2; count 1; } { group Br; count 1; } { group ACF; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group F; count 4; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(bromomethyl)-1,2,4,5-tetrakis(fluoranyl)benzene" "3-(bromomethyl)-1,2,4,5-tetrafluorobenzene" "2,3,5,6-tetrafluorobenzylbromide" "a-bromo-2,3,4,6-tetrafluorotoluene" "t187" "benzene,3-(bromomethyl)-1,2,4,5-tetrafluoro-" "2,3,5,6-tetrafluorobenzyl bromide;alpha-bromo-2,3,5,6-tetrafluorotoluene;" );
+gibbsFormation
+{
+    dHf_298   -755270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     475.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-682970.0
+    phase     gas;
+}

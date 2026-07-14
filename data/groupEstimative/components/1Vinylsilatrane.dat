@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-vinylsilatrane  (C8H15NO3Si, CAS 2097-18-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H15NO3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        1Vinylsilatrane;
+formula     C8H15NO3Si;
+CAS         2097-18-9;
+InChIKey    JETUZEFHWCTPQD-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          201.297;      // g/mol [origin=calculated method=formula-sum]
+Tc          735.52;      // K   [origin=predictive method=joback]
+Pc          34.930;      // bar [origin=predictive method=joback]
+omega       0.4839;      // -   [origin=predictive method=lee-kesler]
+Tb          509.64;      // K   [origin=predictive method=joback]
+HvapTb      49559.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-53.01 0.9785 -0.0005024 6.08e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2=CH; count 1; } { group CH2O; count 3; } { group CH2N; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 6; } { group O_ring; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-ethenyl-4,6,11-trioxa-1-aza-5-silabicyclo[3.3.3]undecane" "vinylsilatrane" "1-ethenylsilatrane" "vinylsilatran [german]" "2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undecane, 1-ethenyl-" "1-vinyl-2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undecane" "1-vinyl-2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undecane" "2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undecane, 1-ethenyl-" "2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undecane, 1-vinyl-" "vinylsilatran" "jetuzefhwctpqd-uhfffaoysa-" "1-vinyl-2,8,9-trioxa-5-aza-1-sila-bicyclo[3.3.3]undecane" );
+gibbsFormation
+{
+    dHf_298   -355310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     415.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-47400.0
+    phase     gas;
+}

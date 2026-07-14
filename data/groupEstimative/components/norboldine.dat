@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: norboldine  (C18H19NO4, CAS 5890-18-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        norboldine;
+formula     C18H19NO4;
+CAS         5890-18-6;
+InChIKey    KYVJVURXKAZJRK-LBPRGKRZSA-N;
+MW          313.353;      // g/mol [origin=calculated method=formula-sum]
+Tc          1213.16;      // K   [origin=predictive method=joback]
+Pc          30.796;      // bar [origin=predictive method=joback]
+omega       1.4846;      // -   [origin=predictive method=lee-kesler]
+Tb          958.21;      // K   [origin=predictive method=joback]
+HvapTb      101093.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-61.01 1.76584 -0.00145492 5.099e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 4; } { group ACCH2; count 2; } { group ACCH; count 1; } { group ACOH; count 2; } { group CH3O; count 2; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 9; } { group OH_phenol; count 2; } { group O; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(6as)-1,10-dimethoxy-5,6,6a,7-tetrahydro-4h-dibenzo[de,g]quinoline-2,9-diol" "laurolitsine" "laurolistine" "1,10-dimethoxy-6a-alpha-noraporphine-2,9-diol" "dimethoxy-1,10 dihydroxy-2,9 nor-aporphine" "4h-dibenzo(de,g)quinoline-2,9-diol, 5,6,6a,7-tetrahydro-1,10-dimethoxy-" "dimethoxy-1,10 dihydroxy-2,9 nor-aporphine [french]" "6a-alpha-noraporphine-2,9-diol, 1,10-dimethoxy-" "4h-dibenzo[de,g]quinoline-2,9-diol, 5,6,6a,7-tetrahydro-1,10-dimethoxy-" "(+)-norboldine" "1,10-dimethoxy-5,6,6a,7-tetrahydro-4h-dibenzo[de,g]quinoline-2,9-diol" "4h-dibenzo[de,g]quinoline-2,9-diol, 5,6,6a,7-tetrahydro-1,10-dimethoxy-, (6as)-" );
+gibbsFormation
+{
+    dHf_298   -408290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     524.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-12870.0
+    phase     gas;
+}

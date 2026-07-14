@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-bis(3-aminopropoxy)butane  (C10H24N2O2, CAS 7300-34-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14Bis3AminopropoxyButane;
+formula     C10H24N2O2;
+CAS         7300-34-7;
+InChIKey    YOOSAIJKYCBPFW-UHFFFAOYSA-N;
+MW          204.314;      // g/mol [origin=calculated method=formula-sum]
+Tc          800.74;      // K   [origin=predictive method=joback]
+Pc          22.719;      // bar [origin=predictive method=joback]
+omega       1.0148;      // -   [origin=predictive method=lee-kesler]
+Tb          618.30;      // K   [origin=predictive method=joback]
+HvapTb      63956.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (57.78 0.9512 -0.000385 2.02e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH2O; count 2; } { group CH2NH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 10; } { group O; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[4-(3-azanylpropoxy)butoxy]propan-1-amine" "4,9-dioxa-1,12-dodecanediamine" "4,9-dioxadodecanediamine" "1,4-butanediol bis(3-aminopropyl)ether" "3,3'-(tetramethylenedioxy)bis(propylamine)" "1,12-diamino-4,9-dioxadodecane" "1,4-bis(gamma-aminopropoxy)butane" "alpha,omega-diamino-4,9-dioxadodecane" "1,4-butanediol bis(gamma-aminopropyl) ether" "propylamine, 3,3'-(tetramethylenedioxy)bis-" "3,3'-(butane-1,4-diylbis(oxy))bispropanamine" "1-propanamine, 3,3'-(1,4-butanediylbis(oxy))bis-" );
+gibbsFormation
+{
+    dHf_298   -446590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     671.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-43780.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethyl n-(3-chloropropyl)imino-3,3'-dipropionate  (C13H24ClNO4, CAS 53935-67-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diethylN3ChloropropylImino33Dipropionate;
+formula     C13H24ClNO4;
+CAS         53935-67-4;
+InChIKey    RQSSPYOYPHMNPB-UHFFFAOYSA-N;
+MW          293.788;      // g/mol [origin=calculated method=formula-sum]
+Tc          838.61;      // K   [origin=predictive method=joback]
+Pc          16.064;      // bar [origin=predictive method=joback]
+omega       1.0090;      // -   [origin=predictive method=lee-kesler]
+Tb          663.35;      // K   [origin=predictive method=joback]
+HvapTb      65774.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (44.089 1.25994 -0.0006272 7.57e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group CH2COO; count 2; } { group CH2N; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 9; } { group Cl; count 1; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 3-[3-chloranylpropyl-(3-ethoxy-3-oxidanylidene-propyl)amino]propanoate" "diethyl 3,3'-[(3-chloropropyl)imino]dipropanoate(non-preferred name)" "ethyl 3-(3-chloropropyl-(2-ethoxycarbonylethyl)amino)propanoate" "beta-alanine, n-(3-chloropropyl)-n-(3-ethoxy-3-oxopropyl)-, ethyl ester" "ethyl 3-[3-chloropropyl-(3-ethoxy-3-oxopropyl)amino]propanoate" ".beta.-alanine, n-(3-chloropropyl)-n-(3-ethoxy-3-oxopropyl)-, ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -894420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     814.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-463310.0
+    phase     gas;
+}

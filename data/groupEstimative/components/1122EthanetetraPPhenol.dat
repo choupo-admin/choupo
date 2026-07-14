@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,2,2-ethanetetra-p-phenol  (C26H22O4, CAS 7727-33-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1122EthanetetraPPhenol;
+formula     C26H22O4;
+CAS         7727-33-5;
+InChIKey    HDPBBNNDDQOWPJ-UHFFFAOYSA-N;
+MW          398.458;      // g/mol [origin=calculated method=formula-sum]
+Tc          1518.78;      // K   [origin=predictive method=joback]
+Pc          31.633;      // bar [origin=predictive method=joback]
+omega       1.7769;      // -   [origin=predictive method=lee-kesler]
+Tb          1222.80;      // K   [origin=predictive method=joback]
+HvapTb      133854.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-195.41 2.7884 -0.00254724 9.316e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 16; } { group AC; count 2; } { group ACCH; count 2; } { group ACOH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 2; } { group dCH_ring; count 16; } { group dC_ring; count 8; } { group OH_phenol; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[1,2,2-tris(4-hydroxyphenyl)ethyl]phenol" "4,4',4'',4'''-(ethane-1,1,2,2-tetrayl)tetraphenol" "1,1,2,2-tetrakis(p-hydroxyphenyl)ethane" "4,4',4'',4'''-ethanediylidenetetraphenol" "phenol, 4,4',4'',4'''-(1,2-ethanediylidene)tetrakis-" "ethanediylidenetetrakisphenol" "1,1,2,2-tetrakis(4-hydroxyphenyl)ethane" "4,4'',4'''-(1,2-ethanediylidene)tetrakis(phenol)" "phenol,4',4'',4'''-(1,2-ethanediylidene)tetrakis-" "4,4',4'',4'''-(1,2-ethanediylidene)tetrakis-phenol" "4,4',4'',4'''-(1,2-ethanediylidene)tetrakis(phenol)" );
+gibbsFormation
+{
+    dHf_298   -353650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     829.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-5680.0
+    phase     gas;
+}

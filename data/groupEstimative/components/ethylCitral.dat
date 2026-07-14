@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl citral  (C11H18O, CAS 41448-29-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylCitral;
+formula     C11H18O;
+CAS         41448-29-7;
+InChIKey    BCEQJZNLIKMDEU-UHFFFAOYSA-N;
+MW          166.264;      // g/mol [origin=calculated method=formula-sum]
+Tc          696.92;      // K   [origin=predictive method=joback]
+Pc          22.981;      // bar [origin=predictive method=joback]
+omega       0.5751;      // -   [origin=predictive method=lee-kesler]
+Tb          508.02;      // K   [origin=predictive method=joback]
+HvapTb      46876.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.457 1.06316 -0.0007398 2.16e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH=C; count 2; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group dCH; count 2; } { group dC; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7-dimethylnona-2,6-dienal" );
+gibbsFormation
+{
+    dHf_298   -141090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     581.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=85560.0
+    phase     gas;
+}

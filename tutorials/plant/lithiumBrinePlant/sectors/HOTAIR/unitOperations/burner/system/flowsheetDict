@@ -1,0 +1,18 @@
+/*--- HOTAIR sector -- the GIBBS combustion world: CH4/air adiabatic burner;
+      the flue gas is FINISHING's drying medium.  A leaf unit with its boundary. ---*/
+name        burner;
+type        gibbsReactor;
+operation
+{
+    T 1100 K;  P 1.0 bar;  mode adiabatic;  elements ( C H O N );
+    species ( { name CH4; atoms (1 4 0 0); } { name O2; atoms (0 0 2 0); }
+              { name N2; atoms (0 0 0 2); } { name CO; atoms (1 0 1 0); }
+              { name CO2; atoms (1 0 2 0); } { name water; atoms (0 2 1 0); }
+              { name H2; atoms (0 2 0 0); } );
+}
+// boundary inferred from the parent named edges (topology is the truth)
+
+// The streams this operation consumes and produces (sequential-modular:
+// a unit is defined by its streams; the sector wires them, the unit names them).
+inputs   ( fuelAir );
+outputs  ( hotAir );

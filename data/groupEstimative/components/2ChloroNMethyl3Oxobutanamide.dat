@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloro-n-methyl-3-oxobutanamide  (C5H8ClNO2, CAS 4116-10-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2ChloroNMethyl3Oxobutanamide;
+formula     C5H8ClNO2;
+CAS         4116-10-3;
+InChIKey    XIWMZCRVSYHMER-UHFFFAOYSA-N;
+MW          149.574;      // g/mol [origin=calculated method=formula-sum]
+Tc          713.56;      // K   [origin=predictive method=joback]
+Pc          39.655;      // bar [origin=predictive method=joback]
+omega       0.7049;      // -   [origin=predictive method=lee-kesler]
+Tb          508.90;      // K   [origin=predictive method=joback]
+HvapTb      50649.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.06 0.51174 -0.000283 4.922e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3CO; count 1; } { group CHCl; count 1; } { group CONHCH3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group Cl; count 1; } { group CdO; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-n-methyl-3-oxidanylidene-butanamide" "butanamide, 2-chloro-n-methyl-3-oxo-" "2-chloro-n-methylacetoacetamide" "n-methyl-2-chloroacetoacetamide" "2-chloro-n-methyl-3-oxobutyramide" "acetoacetamide, 2-chloro-n-ethyl-" "alpha-chloroacetoacetic acid monoethylamide" "alpha-chloracetessigsaeureaethylamid [german]" "alpha-chloracetessigsaeureaethylamid" "butanamide,2-chloro-n-methyl-3-oxo-" "acetoacetamide,2-chloro-n-methyl- (7ci,8ci); 2-chloro-n-methyl-3-oxobutanamide;2-chloro-n-methylacetoacetamide; n-methyl-2-chloroacetoacetamide" );
+gibbsFormation
+{
+    dHf_298   -339240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     468.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-191600.0
+    phase     gas;
+}

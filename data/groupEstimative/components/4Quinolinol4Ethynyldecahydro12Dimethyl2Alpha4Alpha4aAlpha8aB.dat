@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-quinolinol, 4-ethynyldecahydro-1,2-dimethyl-, (2.alpha.,4.alpha.,4a.alpha.,8a.beta.)-  (C13H21NO, CAS 14788-65-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Quinolinol4Ethynyldecahydro12Dimethyl2Alpha4Alpha4aAlpha8aB;
+formula     C13H21NO;
+CAS         14788-65-9;
+InChIKey    OMBITJGEGMMNIO-UHFFFAOYSA-N;
+MW          207.317;      // g/mol [origin=calculated method=formula-sum]
+Tc          817.31;      // K   [origin=predictive method=joback]
+Pc          27.297;      // bar [origin=predictive method=joback]
+omega       0.8201;      // -   [origin=predictive method=lee-kesler]
+Tb          608.97;      // K   [origin=predictive method=joback]
+HvapTb      61685.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-154.51 1.81474 -0.00154533 5.5959e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 3; } { group C; count 1; } { group OH; count 1; } { group CH3N; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 3; } { group C_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-ethynyl-1,2-dimethyl-2,3,4a,5,6,7,8,8a-octahydroquinolin-4-ol" "4-quinolinol, 4-ethynyldecahydro-1,2-dimethyl-, (2.alpha.,4.alpha.,4a.beta.,8a.alpha.)-" "4-quinolinol, 4-ethynyldecahydro-1,2-dimethyl-, (2.alpha.,4.beta.,4a.alpha.,8a.beta.)-" "4-quinolinol, 4.alpha.-ethynyl-1,2,3,4,4a.alpha.,5,6,7,8,8a.beta.-decahydro-1,2.alpha.-dimethyl-" "4-quinolinol, 4.alpha.-ethynyl-1,2,3,4,4a.alpha.,5,6,7,8,8a.beta.-decahydro-1,2.beta.-dimethyl-" "4-quinolinol, 4.alpha.-ethynyl-1,2,3,4,4a.beta.,5,6,7,8,8a.alpha.-decahydro-1,2.beta.-dimethyl-" "4-quinolinol, 4-ethynyldecahydro-1,2-dimethyl-, (2alpha,4beta,4aalpha,8abeta)-" "(2s,4r,4as,8as)-4-ethynyl-1,2-dimethyl-2,3,4a,5,6,7,8,8a-octahydroquinolin-4-ol" "4-quinolinol, 4-ethynyldecahydro-1,2-dimethyl-, (2alpha,4alpha,4aalpha,8abeta)-" "4-quinolinol, 4-ethynyldecahydro-1,2-dimethyl-, (2alpha,4alpha,4abeta,8aalpha)-" );
+gibbsFormation
+{
+    dHf_298   -2770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     562.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=319900.0
+    phase     gas;
+}

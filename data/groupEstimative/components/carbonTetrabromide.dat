@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: carbon tetrabromide  (CBr4, CAS 558-13-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        carbonTetrabromide;
+formula     CBr4;
+CAS         558-13-4;
+InChIKey    HJUGFYREWKUQJT-UHFFFAOYSA-N;
+MW          331.627;      // g/mol [origin=calculated method=formula-sum]
+Tc          758.19;      // K   [origin=predictive method=joback]
+Pc          96.306;      // bar [origin=predictive method=joback]
+omega       0.4676;      // -   [origin=predictive method=lee-kesler]
+Tb          483.89;      // K   [origin=predictive method=joback]
+HvapTb      42264.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.27 0.3774 -0.000488 2.09e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group Br; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group Br; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetrakis(bromanyl)methane" "tetrabromomethane" "methane, tetrabromo-" "carbon bromide" "methane tetrabromide" "carbon bromide (cbr4)" "methane, tetrabromide" "tetrabrommethan" "bromid uhlicity" "tetrabromidocarbon" "carbontetrabromide" "tetrabromkohlenstoff" );
+gibbsFormation
+{
+    dHf_298   32600.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     360.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=17660.0
+    phase     gas;
+}

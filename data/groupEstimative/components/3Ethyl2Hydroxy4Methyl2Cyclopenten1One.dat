@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-ethyl-2-hydroxy-4-methyl-2-cyclopenten-1-one  (C8H12O2, CAS 42348-12-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Ethyl2Hydroxy4Methyl2Cyclopenten1One;
+formula     C8H12O2;
+CAS         42348-12-9;
+InChIKey    RSVAFMGHIDKYKB-UHFFFAOYSA-N;
+MW          140.182;      // g/mol [origin=calculated method=formula-sum]
+Tc          769.15;      // K   [origin=predictive method=joback]
+Pc          35.728;      // bar [origin=predictive method=joback]
+omega       0.8866;      // -   [origin=predictive method=lee-kesler]
+Tb          567.04;      // K   [origin=predictive method=joback]
+HvapTb      56201.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (13.231 0.58624 -0.0001784 -2.53e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group CH2CO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group dC_ring; count 2; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-ethyl-4-methyl-2-oxidanyl-cyclopent-2-en-1-one" "3-ethyl-2-hydroxy-4-methylcyclopent-2-en-1-one" "2-cyclopenten-1-one, 3-ethyl-2-hydroxy-4-methyl-" "2-cyclopenten-1-one, 2-hydroxy-3-ethyl-4-methyl" "3-ethyl-4-methylcyclotene" "2-cyclopenten-1-one,3-ethyl-2-hydroxy-4-methyl-" "2-hydroxy-3-ethyl-4-methylcyclopent-2-en-1-one;3-ethyl-2-hydroxy-4-methyl-cyclopent-2-en-1-one" );
+gibbsFormation
+{
+    dHf_298   -403060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     339.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-195680.0
+    phase     gas;
+}

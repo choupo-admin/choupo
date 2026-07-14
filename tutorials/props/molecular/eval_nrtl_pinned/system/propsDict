@@ -1,0 +1,90 @@
+/*---------------------------------------------------------------------------*\
+  eval_nrtl_pinned -- the pinned WHAT-IF, and the LEAKAGE SENTINEL.
+
+  TRANSITIONAL SCAFFOLD: pinning by dict path requires an inline pair; the
+  permanent surface (ParameterOverrides on the RESOLVED parameter registry,
+  design forum #67/#69) replaces this case when it lands.
+
+  Three evaluations of the same dataset:
+    1. scaffold_as_is      -- the inline pair, untouched (the baseline).
+    2. rough_paper_values  -- the SAME dict with four coefficients PINNED to
+                              deliberately rough values.  The pin operates on
+                              a DEEP COPY (Dictionary::deepCopy, forum #63-7);
+                              nothing on disk or in memory survives the op.
+    3. scaffold_again      -- repeats 1 AFTER the pinned run.  Its verdict
+                              must be IDENTICAL to 1's: the golden pins both,
+                              so the working-tree isolation is guarded by the
+                              corpus forever.  Before deepCopy existed, the
+                              old alias bug would make THIS operation report
+                              the rough values' score.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        scaffold_as_is;
+        type        fitParameters;
+        mode        evaluate;
+        residual
+        {
+            kind        T_bubble;
+            components  ( ethanol water );
+            P           1.01325 bar;
+            data
+            (
+                0.05  361.95    0.10  359.95    0.20  358.05
+                0.30  357.30    0.40  356.85    0.50  356.20
+                0.60  355.30    0.70  354.50    0.80  353.30
+                0.90  351.85    0.95  351.45
+            );
+        }
+        output      { parity  parity_scaffold.csv; }
+    }
+
+    {
+        name        rough_paper_values;
+        type        fitParameters;
+        mode        evaluate;
+        parameters
+        (
+            { path  activityModel.pairs[0].a_ij;  value -0.5;   }
+            { path  activityModel.pairs[0].b_ij;  value  100.0; }
+            { path  activityModel.pairs[0].a_ji;  value  2.0;   }
+            { path  activityModel.pairs[0].b_ji;  value -300.0; }
+        );
+        residual
+        {
+            kind        T_bubble;
+            components  ( ethanol water );
+            P           1.01325 bar;
+            data
+            (
+                0.05  361.95    0.10  359.95    0.20  358.05
+                0.30  357.30    0.40  356.85    0.50  356.20
+                0.60  355.30    0.70  354.50    0.80  353.30
+                0.90  351.85    0.95  351.45
+            );
+        }
+        output      { parity  parity_pinned.csv; }
+    }
+
+    {
+        name        scaffold_again;
+        type        fitParameters;
+        mode        evaluate;
+        residual
+        {
+            kind        T_bubble;
+            components  ( ethanol water );
+            P           1.01325 bar;
+            data
+            (
+                0.05  361.95    0.10  359.95    0.20  358.05
+                0.30  357.30    0.40  356.85    0.50  356.20
+                0.60  355.30    0.70  354.50    0.80  353.30
+                0.90  351.85    0.95  351.45
+            );
+        }
+        output      { parity  parity_scaffold_again.csv; }
+    }
+);

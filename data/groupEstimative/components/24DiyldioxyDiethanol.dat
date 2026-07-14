@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-diyldioxy)diethanol  (C8H14O4, CAS 1606-85-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24DiyldioxyDiethanol;
+formula     C8H14O4;
+CAS         1606-85-5;
+InChIKey    IXAWTPMDMPUGLV-UHFFFAOYSA-N;
+MW          174.196;      // g/mol [origin=calculated method=formula-sum]
+Tc          792.69;      // K   [origin=predictive method=joback]
+Pc          35.600;      // bar [origin=predictive method=joback]
+omega       1.4842;      // -   [origin=predictive method=lee-kesler]
+Tb          620.84;      // K   [origin=predictive method=joback]
+HvapTb      73732.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (74.756 0.5556 -0.00015806 -2.702e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group C_C; count 1; } { group C2H5O2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group tC; count 2; } { group OH; count 2; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[4-(2-hydroxyethyloxy)but-2-ynoxy]ethanol" "1,4-bis(2-hydroxyethoxy)-2-butyne" "2-[4-(2-hydroxyethoxy)but-2-ynoxy]ethanol" "2,2'-(but-2-yne-1,4-diylbis(oxy))diethanol" "2-[4-(2-hydroxyethoxy)but-2-ynyloxy]ethan-1-ol" "ethanol, 2,2'-(2-butyne-1,4-diylbis(oxy))bis-" "ethanol, 2,2'-[2-butyne-1,4-diylbis(oxy)]bis-" "1,4-butynediol, ethoxylated" "2,2'-but-2-ynylenedioxydiethanol" "3,8-dioxa-5-decyne-1,10-diol" "ethanol,2'-(2-butynylenedioxy)di-" "1,4-di(2-hydroxyethoxy)-2-butyne" );
+gibbsFormation
+{
+    dHf_298   -505050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     563.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-264360.0
+    phase     gas;
+}

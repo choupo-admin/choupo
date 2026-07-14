@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,5,7-tetramethyltetralin  (C14H20, CAS 23342-25-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2257Tetramethyltetralin;
+formula     C14H20;
+CAS         23342-25-8;
+InChIKey    LPZOMHQRIWIZSX-UHFFFAOYSA-N;
+MW          188.314;      // g/mol [origin=calculated method=formula-sum]
+Tc          800.55;      // K   [origin=predictive method=joback]
+Pc          23.203;      // bar [origin=predictive method=joback]
+omega       0.4711;      // -   [origin=predictive method=lee-kesler]
+Tb          572.79;      // K   [origin=predictive method=joback]
+HvapTb      49954.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-106.2 1.50968 -0.00127428 4.736e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group ACH; count 2; } { group ACCH3; count 2; } { group ACCH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3,6,8-tetramethyl-2,4-dihydro-1h-naphthalene" "2,2,5,7-tetramethyl-1,2,3,4-tetrahydronaphthalene" "naphthalene, 1,2,3,4-tetrahydro-2,2,5,7-tetramethyl-" "naphthalene,1,2,3,4-tetrahydro-2,2,5,7-tetramethyl-" );
+gibbsFormation
+{
+    dHf_298   -48290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     575.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=193680.0
+    phase     gas;
+}

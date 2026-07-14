@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: succinic acid  (C4H6O4, CAS 110-15-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        succinicAcid;
+formula     C4H6O4;
+CAS         110-15-6;
+InChIKey    KDYFGRWQOYBRFD-UHFFFAOYSA-N;
+MW          118.088;      // g/mol [origin=calculated method=formula-sum]
+Tc          792.32;      // K   [origin=predictive method=joback]
+Pc          49.315;      // bar [origin=predictive method=joback]
+omega       1.0320;      // -   [origin=predictive method=lee-kesler]
+Tb          582.14;      // K   [origin=predictive method=joback]
+HvapTb      58826.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.452 0.4854 -0.000339 9.24e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butanedioic acid" "asuccin" "amber acid" "katasuccin" "bernsteinsaure" "dihydrofumaric acid" "wormwood acid" "1,2-ethanedicarboxylic acid" "succinate" "1,4-butanedioic acid" "ethylenesuccinic acid" "wormwood" );
+gibbsFormation
+{
+    dHf_298   -826430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     418.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-705020.0
+    phase     gas;
+}

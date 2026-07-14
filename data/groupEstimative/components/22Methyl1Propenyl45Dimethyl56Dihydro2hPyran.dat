@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(2-methyl-1-propenyl)-4,5-dimethyl-5,6-dihydro-2h-pyran  (C11H18O, CAS 64929-56-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Methyl1Propenyl45Dimethyl56Dihydro2hPyran;
+formula     C11H18O;
+CAS         64929-56-2;
+InChIKey    WGEIRZDNNHZMRY-UHFFFAOYSA-N;
+MW          166.264;      // g/mol [origin=calculated method=formula-sum]
+Tc          711.34;      // K   [origin=predictive method=joback]
+Pc          24.195;      // bar [origin=predictive method=joback]
+omega       0.4109;      // -   [origin=predictive method=lee-kesler]
+Tb          501.29;      // K   [origin=predictive method=joback]
+HvapTb      45702.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-41.25 1.04588 -0.00059264 1.209e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH; count 2; } { group CH=C; count 2; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4-dimethyl-6-(2-methylprop-1-enyl)-3,6-dihydro-2h-pyran" "2h-pyran, 5,6-dihydro-4,5-dimethyl-2-(2-methyl-1-propenyl)-" "2h-pyran, 5,6-dihydro-4,5-dimethyl-2-(2-methyl-1-propen-1-yl)-" "5,6-dihydro-4,5-dimethyl-2-(2-methyl-1-propenyl)-2h-pyran" "3,4-dimethyl-6-(2-methylprop-1-en-1-yl)-3,6-dihydro-2h-pyran" );
+gibbsFormation
+{
+    dHf_298   -214650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     406.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=64360.0
+    phase     gas;
+}

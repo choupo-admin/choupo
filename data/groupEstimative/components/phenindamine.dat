@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenindamine  (C19H19N, CAS 82-88-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenindamine;
+formula     C19H19N;
+CAS         82-88-2;
+InChIKey    ISFHAYSTHMVOJR-UHFFFAOYSA-N;
+MW          261.368;      // g/mol [origin=calculated method=formula-sum]
+Tc          980.27;      // K   [origin=predictive method=joback]
+Pc          22.719;      // bar [origin=predictive method=joback]
+omega       0.7359;      // -   [origin=predictive method=lee-kesler]
+Tb          732.37;      // K   [origin=predictive method=joback]
+HvapTb      66896.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-148.63 1.86872 -0.00146676 4.596e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group ACH; count 9; } { group AC; count 2; } { group ACCH; count 1; } { group CH3N; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 5; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-9-phenyl-1,3,4,9-tetrahydroindeno[2,1-c]pyridine" "thephorin" "fenindamina" "phenindaminum" "nolahist" "phenindaminum [inn-latin]" "phenindiamine" "phenindamine [inn:ban]" "phenindamine (inn)" "569-59-5 (tartrate)" "5503-08-2 (hydrochloride)" "2,3,4,9-tetrahydro-2-methyl-9-phenyl-1h-indeno(2,1-c)pyridine" );
+gibbsFormation
+{
+    dHf_298   294410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     505.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=574980.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-bis(hydroxymethyl)propane-1,3-diol; hexanedioic acid; 2-(2-hydroxyethoxy)ethanol  (C15H32O11, CAS 67784-94-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22BisHydroxymethylPropane13DiolHexanedioicAcid22Hydroxyethox;
+formula     C15H32O11;
+CAS         67784-94-5;
+InChIKey    DBKMFZPOVLAQOO-UHFFFAOYSA-N;
+MW          388.41;      // g/mol [origin=calculated method=formula-sum]
+Tc          2073.54;      // K   [origin=predictive method=joback]
+Pc          22.633;      // bar [origin=predictive method=joback]
+omega       0.2225;      // -   [origin=predictive method=lee-kesler]
+Tb          1408.89;      // K   [origin=predictive method=joback]
+HvapTb      185088.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (112.862 1.3846 -0.000351 -1.352e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group C; count 1; } { group OH; count 5; } { group COOH; count 2; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 12; } { group C; count 1; } { group OH; count 6; } { group O; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-bis(hydroxymethyl)propane-1,3-diol;hexanedioic acid;2-(2-hydroxyethyloxy)ethanol" "hexanedioic acid, polymer with 2,2-bis(hydroxymethyl)-1,3-propanediol and 2,2'-oxybis(ethanol)" );
+gibbsFormation
+{
+    dHf_298   -2331060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1339.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1745000.0
+    phase     gas;
+}

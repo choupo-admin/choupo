@@ -1,0 +1,35 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl amino radical  (CH4N, CAS 49784-84-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        methylAminoRadical;
+formula     CH4N;
+CAS         49784-84-1;
+InChIKey    YKPQUSLRUFLVDA-UHFFFAOYSA-N;
+role        radical;
+MW          30.05;      // g/mol [origin=calculated method=formula-sum]
+Tb          304.86;      // K   [origin=predictive method=joback]
+HvapTb      29842.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.74 0.1978 -0.00011 2.05e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 1; } { group dNH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "$l^{2}-azanylmethane" "ch3nh" );
+gibbsFormation
+{
+    dHf_298   85540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     215.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=129580.0
+    phase     gas;
+}

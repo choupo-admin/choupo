@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3,5-heptatriene  (C7H10, CAS 2196-23-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        135Heptatriene;
+formula     C7H10;
+CAS         2196-23-8;
+InChIKey    USKZHEQYENVSMH-UHFFFAOYSA-N;
+MW          94.157;      // g/mol [origin=calculated method=formula-sum]
+Tc          550.44;      // K   [origin=predictive method=joback]
+Pc          32.878;      // bar [origin=predictive method=joback]
+omega       0.2645;      // -   [origin=predictive method=lee-kesler]
+Tb          364.76;      // K   [origin=predictive method=joback]
+HvapTb      30422.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-34.83 0.68882 -0.0005475 1.843e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2=CH; count 1; } { group CH=CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dCH; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hepta-1,3,5-triene" "1,3,5-heptatriene, (z,e)-" "1,3,5-heptatriene, (z,z)-" "1,3,5-heptatriene,(3e,5e)-" "1,3,5-heptatriene,(3z,5e)-" "1,3,5-heptatriene,(e,z)- (8ci); trans,cis-1,3,5-heptatriene" "1,3,5-heptatriene,(e,e)- (8ci);all-trans-1,3,5-heptatriene;trans,trans-1,3,5-heptatriene;" );
+gibbsFormation
+{
+    dHf_298   172060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     410.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=256340.0
+    phase     gas;
+}

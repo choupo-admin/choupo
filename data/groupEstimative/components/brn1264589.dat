@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 1264589  (C22H27NO2, CAS 35133-59-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn1264589;
+formula     C22H27NO2;
+CAS         35133-59-6;
+InChIKey    XQLBAPHRSPLANO-UHFFFAOYSA-N;
+MW          337.463;      // g/mol [origin=calculated method=formula-sum]
+Tc          1137.97;      // K   [origin=predictive method=joback]
+Pc          17.955;      // bar [origin=predictive method=joback]
+omega       1.2388;      // -   [origin=predictive method=lee-kesler]
+Tb          911.55;      // K   [origin=predictive method=joback]
+HvapTb      91656.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-98.229 2.02574 -0.0013098 3.151e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group CH=C; count 1; } { group ACH; count 9; } { group AC; count 1; } { group ACCH2; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group CH3O; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group CH2_ring; count 3; } { group dCH_ring; count 10; } { group dC_ring; count 4; } { group OH; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-methoxyphenyl)-2-[4-(phenylmethyl)-3,6-dihydro-2h-pyridin-1-yl]propan-1-ol" "2-(4-benzyl-1,2,3,6-tetrahydropyridino)-1-(4'-methoxyphenyl)-1-propanol" "1(2h)-pyridineethanol, 3,6-dihydro-4-benzyl-alpha-(4-methoxyphenyl)-beta-methyl-" "3,6-dihydro-alpha-(4-methoxyphenyl)-beta-methyl-4-(phenylmethyl)-1(2h)-pyridineethanol" "2-(4-benzyl-3,6-dihydro-2h-pyridin-1-yl)-1-(4-methoxyphenyl)propan-1-ol" );
+gibbsFormation
+{
+    dHf_298   -136170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     801.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=278220.0
+    phase     gas;
+}

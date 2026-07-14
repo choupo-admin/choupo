@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl 2-chloroacrylate  (C7H11ClO2, CAS 13401-85-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butyl2Chloroacrylate;
+formula     C7H11ClO2;
+CAS         13401-85-9;
+InChIKey    JJFAJTXZGDAWTR-UHFFFAOYSA-N;
+MW          162.613;      // g/mol [origin=calculated method=formula-sum]
+Tc          638.52;      // K   [origin=predictive method=joback]
+Pc          28.444;      // bar [origin=predictive method=joback]
+omega       0.5070;      // -   [origin=predictive method=lee-kesler]
+Tb          451.97;      // K   [origin=predictive method=joback]
+HvapTb      42378.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (32.143 0.60072 -0.000308 4.32e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH2=C; count 1; } { group Cl_C=C_; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH2; count 1; } { group dC; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butyl 2-chloranylprop-2-enoate" "butyl .alpha.-chloroacrylate" "butyl 2-chloroprop-2-enoate" "2-propenoic acid,2-chloro-, butyl ester" "2-propenoic acid, 2-chloro-, butyl ester" "acrylicacid, 2-chloro-, butyl ester (6ci,7ci,8ci); 2-chloroacrylic acid butyl ester;butyl 2-chloroacrylate; butyl a-chloroacrylate" );
+gibbsFormation
+{
+    dHf_298   -405190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     504.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-234950.0
+    phase     gas;
+}

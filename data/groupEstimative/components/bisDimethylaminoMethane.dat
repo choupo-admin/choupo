@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(dimethylamino)methane  (C5H14N2, CAS 51-80-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bisDimethylaminoMethane;
+formula     C5H14N2;
+CAS         51-80-9;
+InChIKey    VGIVLIHKENZQHQ-UHFFFAOYSA-N;
+MW          102.181;      // g/mol [origin=calculated method=formula-sum]
+Tc          500.28;      // K   [origin=predictive method=joback]
+Pc          34.521;      // bar [origin=predictive method=joback]
+omega       0.3720;      // -   [origin=predictive method=lee-kesler]
+Tb          338.88;      // K   [origin=predictive method=joback]
+HvapTb      30810.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.039 0.72668 -0.0004734 1.231e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH3N; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n,n',n'-tetramethylmethanediamine" "methanediamine, n,n,n',n'-tetramethyl-" "tetramethylmethylenediamine" "methylenebis(dimethylamine)" "n,n,n',n'-tetramethyldiaminomethane" "dimethyl((dimethylamino)methyl)amine" "n,n,n',n'-tetramethylmethylenediamine" "methylenediamine, n,n,n',n'-tetramethyl-" "n,n,n',n'-tetramethyldiaminomethan [german]" "tetramethyl methylene diamine" "n,n',n'-tetramethyldiaminomethan" "n,n',n'-tetramethylmethanediamine" );
+gibbsFormation
+{
+    dHf_298   -11470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     382.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=212780.0
+    phase     gas;
+}

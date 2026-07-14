@@ -1,0 +1,28 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary -- kerosene_C12cut(i) + water(j).  PARTICULAR to the EXTRACTION
+  sector (case-local, never in the standard library).  TUNED (non-identifiable demonstration closure) -- see the
+  provenance block: strong mutual immiscibility of the paraffinic diluent and the brine -- the two-liquid backbone
+\*---------------------------------------------------------------------------*/
+
+components  ( kerosene_C12cut  water );
+model       NRTL;
+
+parameters
+{
+    i           kerosene_C12cut;
+    j           water;
+    a_ij        0.0;
+    b_ij        1600;        // K
+    a_ji        0.0;
+    b_ji        1600;        // K
+    alpha       0.20;
+}
+
+provenance
+{
+    source        tuned;
+    status        "non-identifiable demonstration closure";
+    target       "target single-stage LiCl distribution K_D(x-basis) ~ 19 -> ~89% to the loaded organic";
+    author        "lithiumBrinePlant reference case, 2026-07-05";
+    notes         "strong mutual immiscibility of the paraffinic diluent and the brine -- the two-liquid backbone";
+}

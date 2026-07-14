@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: spiro[5.6]dodecane  (C12H22, CAS 181-15-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        spiro56Dodecane;
+formula     C12H22;
+CAS         181-15-7;
+InChIKey    ZDNANLAHKKNCTC-UHFFFAOYSA-N;
+MW          166.308;      // g/mol [origin=calculated method=formula-sum]
+Tc          760.72;      // K   [origin=predictive method=joback]
+Pc          28.233;      // bar [origin=predictive method=joback]
+omega       0.3185;      // -   [origin=predictive method=lee-kesler]
+Tb          518.17;      // K   [origin=predictive method=joback]
+HvapTb      42322.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-195.16 1.7064 -0.001379 4.77e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 11; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 11; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "spiro(5.6)dodecane" "spiro(5,6)dodecane" "spiro[5.6]dodecane(6ci,7ci,8ci,9ci)" );
+gibbsFormation
+{
+    dHf_298   -146790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     674.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=101280.0
+    phase     gas;
+}

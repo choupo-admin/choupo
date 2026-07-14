@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenylsulfanylmethylaniline  (C13H13NS, CAS 13738-70-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenylsulfanylmethylaniline;
+formula     C13H13NS;
+CAS         13738-70-0;
+InChIKey    BETHGEVRYKIURN-UHFFFAOYSA-N;
+MW          215.314;      // g/mol [origin=calculated method=formula-sum]
+Tc          967.26;      // K   [origin=predictive method=joback]
+Pc          32.840;      // bar [origin=predictive method=joback]
+omega       0.6781;      // -   [origin=predictive method=lee-kesler]
+Tb          696.69;      // K   [origin=predictive method=joback]
+HvapTb      67204.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-36.349 1.07779 -0.00068196 1.53e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 2; } { group ACNH2; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(phenylsulfanylmethyl)aniline" "4-[(phenylsulfanyl)methyl]aniline" "alpha-(phenylthio)-p-toluidine" ".alpha.-(phenylthio)-p-toluidine" "p-toluidine, alpha-(phenylthio)-" "4-(phenylthiomethyl)phenylamine" "benzenamine, 4-((phenylthio)methyl)-" "benzenamine, 4-[(phenylthio)methyl]-" "4-[(phenylthio)methyl]aniline" "benzenamine,4-[(phenylthio)methyl]-" "p-toluidine, .alpha.-(phenylthio)-" "benzenamine, 4-((phenylthio)methyl)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   225600.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     556.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=373340.0
+    phase     gas;
+}

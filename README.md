@@ -4,11 +4,12 @@
 directories, modular thermo, file-based component database, browser GUI
 (WASM).
 
-> v0.9.0 — four binaries, one per problem class
+> **Choupo-2607** (pre-1.0) — four binaries, one per problem class
 > (`choupoSolve` steady, `choupoBatch` time-dependent + recipes,
 > `choupoCtrl` dynamic continuous + control loops, `choupoProps`
-> property evaluation + parameter fitting); 194 tutorials; three-layer
-> simulator architecture (outer driver / simulator / post).
+> property evaluation + parameter fitting); 191 tutorials guarded by 243
+> regression checks (golden-master KPIs + a NaN/inf guard on every case);
+> three-layer simulator architecture (outer driver / simulator / post).
 > Thermo: NRTL / Wilson activity, SRK + Peng-Robinson cubic EoS,
 > gas + liquid transport (viscosity, conductivity, diffusivity),
 > Henry's law, Pitzer electrolyte osmotic pressure.  Unit ops: flash
@@ -44,10 +45,6 @@ make wasm             # WebAssembly builds for the browser GUI — one.wasm per 
 make wasm-clean
 make distclean        # wipe the whole build/ tree
 ```
-
-> **Note:** `make` alone resolves to the `wasm` target due to include
-> order in the top-level Makefile (known bug, planned fix).  Always use
-> `make all` for the native build.
 
 ## Run a tutorial
 
@@ -170,12 +167,12 @@ WASM is not built.  See [`gui/README.md`](gui/README.md).
 
 ## Authorship and Provenance
 
-**Copyright © 2026 Vítor Geraldes and contributors.**  Choupo was
+**Copyright © 2026 Vítor Geraldes.**  Choupo was
 conceived and architected by Vítor Geraldes, and substantial parts of the
 initial implementation, documentation, and tutorial corpus were produced
 with assistance from Anthropic Claude Code using Claude Opus/Fable models.
 The published project is human-curated, reviewed, corrected, and maintained
-by Vítor Geraldes and Pedro Mendes.  The academic-citation entry is in
+by Vítor Geraldes.  The academic-citation entry is in
 [`CITATION.cff`](CITATION.cff); the authoritative fine-grained record of
 authorship is [`AUTHORS`](AUTHORS), source headers, DCO sign-offs, and git
 history.
@@ -186,9 +183,9 @@ equipment and accounts, including a personally paid Claude Code subscription.
 The *Choupo* name and marks are separately held as a trademark by TalentGround
 Lda.; the GPL licence covers the software, not the brand.
 
-Contributions are welcome — models, validation cases, new unit
-operations, bug reports, and documentation — via the issue tracker and
-pull requests.  See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+Bug reports and concrete improvement suggestions are welcome through the issue
+tracker. The project is maintainer-led and does not accept external code
+contributions or pull requests; see [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Licence
 
@@ -200,16 +197,14 @@ The guides/manuals under [`docs/`](docs) are a separate documentary work:
 their prose, figures, and explanatory text are licensed under
 **CC BY-SA 4.0**.  Code excerpts, Choupo case files, and other
 machine-readable examples inside the guides stay under **GPL-3.0-or-later**.
-The guides are authored, curated, and editorially maintained by Vítor
-Geraldes and Pedro Mendes — except the Developer Guide, authored by Vítor
-Geraldes alone.
+The Properties Guide and Theory Guide are authored by Vítor Geraldes, Pedro
+Mendes, and Miguel Rodrigues. The Developer Guide and remaining manuals are
+authored by Vítor Geraldes alone.
 
-Use it, modify it, redistribute it, build on it.  Contributions are
-accepted for code, cases, tests, models, and executable examples under
-GPL-3.0-or-later.  There is no CLA and no copyright assignment: contributors
-keep their copyright, are credited in [`AUTHORS`](AUTHORS), and the
-fine-grained authorship record is the git history.  Commits must be signed
-off under the Developer Certificate of Origin; see [`CONTRIBUTING.md`](CONTRIBUTING.md).
+Use it, modify it, redistribute it, and build on it under GPL-3.0-or-later.
+Forks remain welcome under that licence, but this upstream repository does not
+accept external patches or pull requests. Suggestions do not transfer
+copyright and do not guarantee implementation.
 The licence does **not** grant rights to the *Choupo*
 name or marks — the code is open; the name is a trademark of
 **TalentGround Lda.** (the founder's family holding).  See
@@ -217,8 +212,8 @@ name or marks — the code is open; the name is a trademark of
 
 ## Roadmap
 
-**v0.9.0 — pre-1.0 consolidation.**  Four binaries, three-layer architecture
-(outer driver / simulator / post-processor), 194 tutorials.  Thermo:
+**Choupo-2607 — pre-1.0 consolidation.**  Four binaries, three-layer architecture
+(outer driver / simulator / post-processor), 191 tutorials.  Thermo:
 ideal / NRTL / Wilson activity, SRK + Peng-Robinson cubic EoS,
 ideal-gas H/S, Henry's law, Pitzer electrolyte osmotic, gas + liquid
 transport (viscosity / conductivity / diffusivity, selectable

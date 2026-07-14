@@ -30,6 +30,19 @@ describe("tokenizer / parser corner cases", () => {
     expect(d.get("c")).toEqual({ kind: "scalar", value: -7.0e4 });
   });
 
+  it("parses and preserves an explicit dimension set", () => {
+    const d = parse("Dax [0 2 -1 0 0] 0.00012;");
+    expect(d.get("Dax")).toEqual({
+      kind: "scalar",
+      value: 0.00012,
+      dimensions: [0, 2, -1, 0, 0],
+    });
+  });
+
+  it("rejects malformed explicit dimensions", () => {
+    expect(() => parse("Dax [0 2 -1 0] 0.1;")).toThrow(/must be \[M L T Theta N\]/);
+  });
+
   it("treats CAS-style 71-43-2 as a word, not a number", () => {
     const d = parse("cas 71-43-2;");
     expect(d.get("cas")).toEqual({ kind: "word", value: "71-43-2" });

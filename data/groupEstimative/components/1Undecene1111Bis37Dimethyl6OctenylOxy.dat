@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-undecene, 11,11-bis((3,7-dimethyl-6-octenyl)oxy)-  (C31H58O2, CAS 67785-67-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Undecene1111Bis37Dimethyl6OctenylOxy;
+formula     C31H58O2;
+CAS         67785-67-5;
+InChIKey    DMBCVRVYNSAREL-UHFFFAOYSA-N;
+MW          462.803;      // g/mol [origin=calculated method=formula-sum]
+Tc          1177.14;      // K   [origin=predictive method=joback]
+Pc          6.103;      // bar [origin=predictive method=joback]
+omega       0.4792;      // -   [origin=predictive method=lee-kesler]
+Tb          957.16;      // K   [origin=predictive method=joback]
+HvapTb      87662.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.074 2.86002 -0.0016453 3.624e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 14; } { group CH; count 3; } { group CH2=CH; count 1; } { group CH=C; count 2; } { group CH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 16; } { group CH; count 3; } { group dCH2; count 1; } { group dCH; count 3; } { group dC; count 2; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "11,11-bis(3,7-dimethyloct-6-enoxy)undec-1-ene" "1-undecene, 11,11-bis[(3,7-dimethyl-6-octenyl)oxy]-" "1-undecene, 11,11-bis((3,7-dimethyl-6(or 7)-octenyl)oxy)-" "1-undecene, 11,11-bis((3,7-dimethyl-6-octen-1-yl)oxy)-" "1-undecene, 11,11-bis[(3,7-dimethyl-6-octen-1-yl)oxy]-" "1-undecene, 11,11-bis[[3,7-dimethyl-6(or 7)-octenyl]oxy]-" "1-undecene, 11,11-bis((3,7-dimethyl-6(or 7)-octen-1-yl)oxy)-" "1-undecene, 11,11-bis[[3,7-dimethyl-6(or 7)-octen-1-yl]oxy]-" "undeceylenic aldehyde, dicitronellyl acetal" "11,11-bis(3,7-dimethyl-6-octen-1-oxy)-1-undecene" );
+gibbsFormation
+{
+    dHf_298   -623160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1331.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=224000.0
+    phase     gas;
+}

@@ -20,5 +20,8 @@ hda
         { component benzene;  nu  1; }
         { component CH4;      nu  1; }
     );
-    dH_rxn  -42.0e3;   // J/mol (informational; the reactor computes its own from h_ig)
+    // dH_rxn: NOT specified.  Every species carries gibbsFormation, so the
+    // engine derives the authoritative dH_rxn(T) = Sum nu_i * h_i(T)
+    // (~ -48.4 kJ/mol) from the elements datum.  A dH_rxn key here would be a
+    // redundant second source; it belongs only where a species lacks formation.
 }

@@ -1,21 +1,13 @@
 /*---------------------------------------------------------------------------*\
-  flowsheetDict  --  isothermal flash of ethanol/water at 355 K, 1 atm
+  process04_research_workflow  --  isothermal flash of ethanol/water at
+  355 K, 1 atm
 
   Identical to flash02_ethanol_water, but this case demonstrates the
   RESEARCH WORKFLOW: parameters loaded from case-local binaryPairs file
   rather than declared inline.  See README.md for the full discussion.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            355.0 K;
-        P            1.01325 bar;
-        molarComposition  { ethanol 0.50;  water 0.50; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

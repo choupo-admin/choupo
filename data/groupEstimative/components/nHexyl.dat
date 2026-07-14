@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-hexyl  (C6H13, CAS 2679-29-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        nHexyl;
+formula     C6H13;
+CAS         2679-29-0;
+InChIKey    PQGAHNJECSVDEI-UHFFFAOYSA-N;
+role        radical;
+MW          85.17;      // g/mol [origin=calculated method=formula-sum]
+Tc          493.81;      // K   [origin=predictive method=joback]
+Pc          31.633;      // bar [origin=predictive method=joback]
+omega       0.3010;      // -   [origin=predictive method=lee-kesler]
+Tb          331.48;      // K   [origin=predictive method=joback]
+HvapTb      28301.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.534 0.54382 -0.0002836 5.39e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-hexyl radical" "1-c6h13" );
+gibbsFormation
+{
+    dHf_298   -100350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     388.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=47370.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-benzoyl-4-piperidone  (C12H13NO2, CAS 24686-78-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nBenzoyl4Piperidone;
+formula     C12H13NO2;
+CAS         24686-78-0;
+InChIKey    NZAXGZYPZGEVBD-UHFFFAOYSA-N;
+MW          203.241;      // g/mol [origin=calculated method=formula-sum]
+Tc          904.02;      // K   [origin=predictive method=joback]
+Pc          33.412;      // bar [origin=predictive method=joback]
+omega       0.7248;      // -   [origin=predictive method=lee-kesler]
+Tb          654.92;      // K   [origin=predictive method=joback]
+HvapTb      58184.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-75.25 1.1507 -0.0006929 1.4016e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH2CO; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group CdO_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(phenylcarbonyl)piperidin-4-one" "1-benzoylpiperidin-4-one" "1-benzoyl-4-piperidone" "4-piperidinone, 1-benzoyl-" "1-benzoyl-4-oxopiperidine" "1-benzoyl-4-piperidinone" "4-piperidone, 1-benzoyl-" );
+gibbsFormation
+{
+    dHf_298   -156410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     472.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=66100.0
+    phase     gas;
+}

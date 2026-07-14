@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-isobutoxytetrahydropyran  (C9H18O2, CAS 32767-68-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Isobutoxytetrahydropyran;
+formula     C9H18O2;
+CAS         32767-68-3;
+InChIKey    ZDFZISUAJPDZKM-UHFFFAOYSA-N;
+MW          158.241;      // g/mol [origin=calculated method=formula-sum]
+Tc          676.11;      // K   [origin=predictive method=joback]
+Pc          27.847;      // bar [origin=predictive method=joback]
+omega       0.4468;      // -   [origin=predictive method=lee-kesler]
+Tb          474.00;      // K   [origin=predictive method=joback]
+HvapTb      42589.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.759 0.92064 -0.0004251 4.15e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 2; } { group CH2O; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-methylpropoxy)oxane" "2h-pyran, tetrahydro-2-(2-methylpropoxy)-" "pyran, 2-isobutoxy-tetrahydro-" "2h-pyran, tetrahydro-2-isobutoxy-" "tetrahydropyrane, 2-(2-methylpropyl)" "2-isobutoxy tetrahydropyran" "2h-pyran, tetrahydro-2-isobutoxy- (8ci)" );
+gibbsFormation
+{
+    dHf_298   -444270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     426.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-144210.0
+    phase     gas;
+}

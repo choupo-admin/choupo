@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexatetracontane  (C46H94, CAS 7098-24-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexatetracontane;
+formula     C46H94;
+CAS         7098-24-0;
+InChIKey    PVQAQPUODMPGGG-UHFFFAOYSA-N;
+MW          647.258;      // g/mol [origin=calculated method=formula-sum]
+Tc          1856.44;      // K   [origin=predictive method=joback]
+Pc          3.150;      // bar [origin=predictive method=joback]
+omega       -0.5465;      // -   [origin=predictive method=lee-kesler]
+Tb          1252.08;      // K   [origin=predictive method=joback]
+HvapTb      117990.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.926 4.37384 -0.0024786 5.362e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 44; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 44; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-hexatetracontane" "hexatetracontane, analytical standard" "STL453692" "HY-W127565" "DB-243591" "CS-0185787" "Q18456677" "C46" "nc46" "n-c46" );
+gibbsFormation
+{
+    dHf_298   -992770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1947.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=336440.0
+    phase     gas;
+}

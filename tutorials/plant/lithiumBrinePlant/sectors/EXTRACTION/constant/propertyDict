@@ -1,0 +1,50 @@
+/*---------------------------------------------------------------------------*\
+  EXTRACTION property context.
+  Local NRTL method/pairs shadow or extend the inherited plant context.
+\*---------------------------------------------------------------------------*/
+
+recordType    propertyDict;
+schemaVersion 1;
+
+inherits "../../../constant";
+
+components
+(
+    water
+    LiCl
+    kerosene_C12cut
+    LiX_extractant
+);
+
+propertyMethods
+{
+    liquid activity.NRTL;
+    vapour builtin.idealGas;
+}
+
+phases
+{
+    aqueous
+    {
+        type liquid;
+        activityModel NRTL;
+    }
+
+    organicPhase
+    {
+        type liquid;
+        activityModel NRTL;
+    }
+}
+
+parameters
+{
+    binaryPairs
+    {
+        kerosene-water "parameters/activity/NRTL/kerosene_C12cut-water.dat";
+        LiX-water      "parameters/activity/NRTL/LiX_extractant-water.dat";
+        LiCl-water     "parameters/activity/NRTL/LiCl-water.dat";
+        LiCl-kerosene  "parameters/activity/NRTL/LiCl-kerosene_C12cut.dat";
+        LiCl-LiX       "parameters/activity/NRTL/LiCl-LiX_extractant.dat";
+    }
+}

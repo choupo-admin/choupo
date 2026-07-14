@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenylpropiolic acid  (C9H6O2, CAS 637-44-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenylpropiolicAcid;
+formula     C9H6O2;
+CAS         637-44-5;
+InChIKey    XNERWVPQCYSMLC-UHFFFAOYSA-N;
+MW          146.145;      // g/mol [origin=calculated method=formula-sum]
+Tc          840.08;      // K   [origin=predictive method=joback]
+Pc          44.326;      // bar [origin=predictive method=joback]
+omega       0.6277;      // -   [origin=predictive method=lee-kesler]
+Tb          586.71;      // K   [origin=predictive method=joback]
+HvapTb      57220.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.04 0.6809 -0.00047746 1.2838e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 1; } { group COOH; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tC; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-phenylprop-2-ynoic acid" "phenylpropynoic acid" "3-phenylpropiolic acid" "phenylacetylenecarboxylic acid" "3-phenylpropynoic acid" "2-propynoic acid, 3-phenyl-" "phenylpropiolate" "3-phenyl-2-propynoic acid" "phenyl-propiolic acid" "phenylacetylene monocarboxylic acid" "propiolic acid, 3-phenyl-" "phenyl propiolic acid" );
+gibbsFormation
+{
+    dHf_298   -70530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     425.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3800.0
+    phase     gas;
+}

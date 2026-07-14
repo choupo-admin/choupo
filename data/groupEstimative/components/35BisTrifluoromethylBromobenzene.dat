@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-bis(trifluoromethyl)bromobenzene  (C8H3BrF6, CAS 328-70-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35BisTrifluoromethylBromobenzene;
+formula     C8H3BrF6;
+CAS         328-70-1;
+InChIKey    CSVCVIHEBDJTCJ-UHFFFAOYSA-N;
+MW          293.004;      // g/mol [origin=calculated method=formula-sum]
+Tc          665.34;      // K   [origin=predictive method=joback]
+Pc          29.282;      // bar [origin=predictive method=joback]
+omega       0.5638;      // -   [origin=predictive method=lee-kesler]
+Tb          474.60;      // K   [origin=predictive method=joback]
+HvapTb      35943.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.9 0.9265 -0.00082192 2.712e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group Br; count 1; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 6; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-3,5-bis(trifluoromethyl)benzene" "1-bromo-3,5-bis(trifluoromethyl)benzene" "3,5-di(trifluoromethyl)bromobenzene" "1,3-bis(trifluoromethyl)-5-bromobenzene" "mbt-br" "fxffr ce exfff" "3,5-bis(trifluoromethyl)-1-bromobenzene" "5-bromo-alpha,alpha,alpha,alpha',alpha',alpha'-hexafluoro-m-xylene" "benzene, 1-bromo-3,5-bis(trifluoromethyl)-" "328-70-1 3,5-bis(trifluoromethyl)bromobenzene" "agn-pc-0d4ura" "csvcvihebdjtcj-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -1162690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     512.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1039230.0
+    phase     gas;
+}

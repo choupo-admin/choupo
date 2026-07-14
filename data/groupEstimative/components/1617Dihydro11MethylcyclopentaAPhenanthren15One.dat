@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 16,17-dihydro-11-methylcyclopenta(a)phenanthren-15-one  (C18H14O, CAS 24684-42-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1617Dihydro11MethylcyclopentaAPhenanthren15One;
+formula     C18H14O;
+CAS         24684-42-2;
+InChIKey    QIYZRJMQFLRFFW-UHFFFAOYSA-N;
+MW          246.309;      // g/mol [origin=calculated method=formula-sum]
+Tc          1036.54;      // K   [origin=predictive method=joback]
+Pc          25.328;      // bar [origin=predictive method=joback]
+omega       0.8065;      // -   [origin=predictive method=lee-kesler]
+Tb          775.23;      // K   [origin=predictive method=joback]
+HvapTb      68335.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-72.82 1.39862 -0.00102348 3.056e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 7; } { group AC; count 5; } { group ACCH3; count 1; } { group ACCH2; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 7; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "11-methyl-16,17-dihydrocyclopenta[a]phenanthren-15-one" "cyclopenta(a)phenanthren-15-one, 16,17-dihydro-11-methyl-" "16,17-dihydro-11-methyl-15h-cyclopenta(a)phenanthren-15-one" "11-methylgona-1(10),2,4,6,8,11,13-heptaen-15-one" );
+gibbsFormation
+{
+    dHf_298   113380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     381.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=333740.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: aminodiphenylmethane  (C13H13N, CAS 91-00-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        aminodiphenylmethane;
+formula     C13H13N;
+CAS         91-00-9;
+InChIKey    MGHPNCMVUAKAIE-UHFFFAOYSA-N;
+MW          183.254;      // g/mol [origin=calculated method=formula-sum]
+Tc          880.33;      // K   [origin=predictive method=joback]
+Pc          33.067;      // bar [origin=predictive method=joback]
+omega       0.5695;      // -   [origin=predictive method=lee-kesler]
+Tb          622.49;      // K   [origin=predictive method=joback]
+HvapTb      59337.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-71.93 1.1488 -0.0007924 2.05e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 2; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "diphenylmethanamine" "benzhydrylamine" "1,1-diphenylmethylamine" "diphenylmethylamine" "alpha-aminodiphenylmethane" "(diphenylmethyl)amine" "alpha-phenylbenzylamine" "1,1-diphenylmethanamine" "alpha-phenylbenzenemethanamine" "methanamine, 1,1-diphenyl-" "benzenemethanamine, alpha-phenyl-" "methylamine, 1,1-diphenyl- (6ci,7ci,8ci)" );
+gibbsFormation
+{
+    dHf_298   189920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     491.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=347410.0
+    phase     gas;
+}

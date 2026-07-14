@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (s)-(-)-2-acetoxypropionic acid  (C5H8O4, CAS 6034-46-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        s2AcetoxypropionicAcid;
+formula     C5H8O4;
+CAS         6034-46-4;
+InChIKey    WTLNOANVTIKPEE-VKHMYHEASA-N;
+MW          132.115;      // g/mol [origin=calculated method=formula-sum]
+Tc          718.19;      // K   [origin=predictive method=joback]
+Pc          39.259;      // bar [origin=predictive method=joback]
+omega       0.7653;      // -   [origin=predictive method=lee-kesler]
+Tb          517.29;      // K   [origin=predictive method=joback]
+HvapTb      50907.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (26.67 0.48074 -0.0002294 1.87e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group CH3COO; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-2-acetyloxypropanoic acid" "(s)-2-acetoxypropanoic acid" "(-)-o-acetyl-l-lactic aicd" "(-)-o-acetyl-l-lactic acid" "(s)-(-)-2-acetoxypropionicacid" "o-acetyl-l-lactic acid" "(s)-a-2-acetoxypropionic acid" "(s)-alpha-acetoxypropionic acid" "(s)-(-)-2-acetoxy propionic acid" "(s)-(-)-2-acetoxypropionic acid," "propanoic acid,2-(acetyloxy)-, (2s)-" "lacticacid, acetate, l- (8ci);propanoic acid, 2-(acetyloxy)-, (s)-;(+)-lactic acidacetate;(+)-a-acetoxypropionicacid;(2s)-2-(acetyloxy)propanoic acid;(2s)-2-acetoxypropanoic acid;(s)-(+)-2-acetoxypropanoic acid;(s)-(+)-2-acetoxypropionic acid;(s)-(-)-2-acetoxypropanoic acid;(s)-2-acetoxypropanoic acid;(s)-2-acetoxypropionic acid;(s)-o-acetyllactic acid;2(s)-acetoxypropionicacid;l-(+)-o-acetylactic acid;l-lactic acid acetate;o-acetyl-(s)-lacticacid;a-(acetyloxy)-l-propionic acid;" );
+gibbsFormation
+{
+    dHf_298   -819360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     445.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-665500.0
+    phase     gas;
+}

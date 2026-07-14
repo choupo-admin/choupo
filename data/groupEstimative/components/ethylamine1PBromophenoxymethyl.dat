@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethylamine, 1-(p-bromophenoxymethyl)-,  (C9H12BrNO, CAS 70289-30-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylamine1PBromophenoxymethyl;
+formula     C9H12BrNO;
+CAS         70289-30-4;
+InChIKey    YUTZZDODRVJTBD-UHFFFAOYSA-N;
+MW          230.105;      // g/mol [origin=calculated method=formula-sum]
+Tc          834.84;      // K   [origin=predictive method=joback]
+Pc          36.776;      // bar [origin=predictive method=joback]
+omega       0.6956;      // -   [origin=predictive method=lee-kesler]
+Tb          597.85;      // K   [origin=predictive method=joback]
+HvapTb      57664.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (13.601 0.76322 -0.00043696 8.63e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 4; } { group AC; count 2; } { group CH2O; count 1; } { group CHNH2; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-bromanylphenoxy)propan-2-amine" "1-(4-bromophenoxy)propan-2-amine" );
+gibbsFormation
+{
+    dHf_298   -81410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     498.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=101010.0
+    phase     gas;
+}

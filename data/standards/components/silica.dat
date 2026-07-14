@@ -2,12 +2,19 @@
   Component: Silica  (SiO2) --- a generic mineral particulate / dust.
 
   A NON-VOLATILE solid: it never enters the vapour (K = 0) and carries
-  no Antoine / Cp blocks.  The `solid { rho_p; }` block gives the
-  particle density used by gas-solid separation (the cyclone d50).
-  `k_v` defaults to a sphere; no `dHf_solid` -> it is a pseudo-solid
-  (cannot react / crystallise), only physically separated.
+  no Antoine / ideal-gas Cp blocks.  The `solid { rho_p; }` block gives
+  the particle density used by gas-solid separation (the cyclone d50);
+  `k_v` defaults to a sphere.  Silica IS a real solid (enriched
+  2026-06-07): `gibbsFormation` (dHf_298 / s_298, solid phase) puts it
+  on the elements/formation datum and `solidHeatCapacity` carries its
+  sensible heat, so it can react / appear in energy balances --- it is
+  NOT a mere pseudo-solid that is only physically separated.
 
   rho_p for amorphous silica / sand ~ 2650 kg/m^3.
+  Sources: dHf_298/s_298 from CODATA Key Values (Cox, Wagman & Medvedev
+           1989); solidHeatCapacity fitted to Robie & Hemingway, USGS
+           Bull. 2131 (1995, public domain); rho_p ~2650 kg/m^3 (amorphous
+           silica / sand) -- primary re-citation pending (IST review).
 \*---------------------------------------------------------------------------*/
 
 name        silica;

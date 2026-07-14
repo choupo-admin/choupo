@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tridecylbenzene  (C19H32, CAS 123-02-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tridecylbenzene;
+formula     C19H32;
+CAS         123-02-4;
+InChIKey    MCVUKOYZUCWLQQ-UHFFFAOYSA-N;
+MW          260.465;      // g/mol [origin=calculated method=formula-sum]
+Tc          845.16;      // K   [origin=predictive method=joback]
+Pc          13.606;      // bar [origin=predictive method=joback]
+omega       0.7774;      // -   [origin=predictive method=lee-kesler]
+Tb          661.00;      // K   [origin=predictive method=joback]
+HvapTb      60164.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-48.288 1.72992 -0.001041 2.404e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group ACH; count 5; } { group ACCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 12; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzene, tridecyl-" "1-phenyltridecane" "tridecane, 1-phenyl-" "tridane" "benzene, c10-16-alkyl derivs." "n-tridecylbenzene" "benzene, mono-c12-14-alkyl derivs." "detergent alkylate no. 5" "tridecylbenzene (mixed isomers)" );
+gibbsFormation
+{
+    dHf_298   -198960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     789.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=221510.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluorohexyl iodide  (C6F13I, CAS 355-43-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluorohexylIodide;
+formula     C6F13I;
+CAS         355-43-1;
+InChIKey    BULLJMKUVKYZDJ-UHFFFAOYSA-N;
+MW          445.94;      // g/mol [origin=calculated method=formula-sum]
+Tc          548.01;      // K   [origin=predictive method=joback]
+Pc          19.119;      // bar [origin=predictive method=joback]
+omega       0.5051;      // -   [origin=predictive method=lee-kesler]
+Tb          401.15;      // K   [origin=predictive method=joback]
+HvapTb      19926.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-58.53 1.521 -0.001628 6.043e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group I; count 1; } { group CF3; count 1; } { group CF2; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 6; } { group F; count 13; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6-tridecakis(fluoranyl)-6-iodanyl-hexane" "tridecafluorohexyl iodide" "perfluoro-n-hexyl iodide" "tridecafluoro-1-iodohexane" "1-iodoperfluorohexane" "perfluoro-1-iodohexane" "1,1,1,2,2,3,3,4,4,5,5,6,6-tridecafluoro-6-iodohexane" "1,1,2,2-tetrahydroperfluorohexyliodide" "1-iodotridecafluorohexane" "hexane, 1,1,1,2,2,3,3,4,4,5,5,6,6-tridecafluoro-6-iodo-" "perfluorohexyliodide" "perfluoro-n-hexyliodide" );
+gibbsFormation
+{
+    dHf_298   -2692230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     624.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2457730.0
+    phase     gas;
+}

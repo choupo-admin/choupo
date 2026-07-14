@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4'-dimethoxyoctafluorobiphenyl  (C14H6F8O2, CAS 2200-71-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44Dimethoxyoctafluorobiphenyl;
+formula     C14H6F8O2;
+CAS         2200-71-7;
+InChIKey    TVUPJKALGKCABC-UHFFFAOYSA-N;
+MW          358.184;      // g/mol [origin=calculated method=formula-sum]
+Tc          836.90;      // K   [origin=predictive method=joback]
+Pc          16.742;      // bar [origin=predictive method=joback]
+omega       1.0417;      // -   [origin=predictive method=lee-kesler]
+Tb          662.08;      // K   [origin=predictive method=joback]
+HvapTb      56214.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (165.07 0.54904 -3.9e-05 -1.074e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 4; } { group CH3O; count 2; } { group ACF; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dC_ring; count 12; } { group F; count 8; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,4,5-tetrakis(fluoranyl)-3-methoxy-6-[2,3,5,6-tetrakis(fluoranyl)-4-methoxy-phenyl]benzene" "2,2',3,3',5,5',6,6'-octafluoro-4,4'-dimethoxybiphenyl" "1,2,4,5-tetrafluoro-3-methoxy-6-(2,3,5,6-tetrafluoro-4-methoxyphenyl)benzene" "octafluoro-4,4'-dimethoxybiphenyl" "bim-0007529.p001" "2,2',3,3',5,5',6,6'-octafluoro-4,4'-dimethoxy-1,1'-biphenyl" "1,1'-biphenyl,2,2',3,3',5,5',6,6'-octafluoro-4,4'-dimethoxy-" );
+gibbsFormation
+{
+    dHf_298   -1807250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     702.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1572960.0
+    phase     gas;
+}

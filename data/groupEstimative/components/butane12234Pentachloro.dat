@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butane, 1,2,2,3,4-pentachloro-  (C4H5Cl5, CAS 2431-52-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butane12234Pentachloro;
+formula     C4H5Cl5;
+CAS         2431-52-9;
+InChIKey    KJPPHEWEJWPNFJ-UHFFFAOYSA-N;
+MW          230.334;      // g/mol [origin=calculated method=formula-sum]
+Tc          697.36;      // K   [origin=predictive method=joback]
+Pc          32.283;      // bar [origin=predictive method=joback]
+omega       0.3669;      // -   [origin=predictive method=lee-kesler]
+Tb          474.60;      // K   [origin=predictive method=joback]
+HvapTb      44739.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (37.552 0.5495 -0.0004708 1.528e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2Cl; count 2; } { group CHCl; count 1; } { group CCl2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group Cl; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,2,3,4-pentakis(chloranyl)butane" "agn-pc-00kvb8" "1,2,2,3,4-pentachlorobutane" );
+gibbsFormation
+{
+    dHf_298   -218620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     430.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76450.0
+    phase     gas;
+}

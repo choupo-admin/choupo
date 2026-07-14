@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ttnpb  (C24H28O2, CAS 71441-28-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ttnpb;
+formula     C24H28O2;
+CAS         71441-28-6;
+InChIKey    FOIVPCKZDPCJJY-JQIJEIRASA-N;
+MW          348.486;      // g/mol [origin=calculated method=formula-sum]
+Tc          1225.92;      // K   [origin=predictive method=joback]
+Pc          15.415;      // bar [origin=predictive method=joback]
+omega       1.0170;      // -   [origin=predictive method=lee-kesler]
+Tb          973.39;      // K   [origin=predictive method=joback]
+HvapTb      90232.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-202.52 2.7169 -0.00248538 9.651e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 2; } { group C; count 2; } { group CH=C; count 1; } { group ACH; count 7; } { group AC; count 5; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 2; } { group C_ring; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[(e)-2-(5,5,8,8-tetramethyl-6,7-dihydronaphthalen-2-yl)prop-1-enyl]benzoic acid" "arotinoid acid" "arotinoic acid" "4-[(e)-2-(5,6,7,8-tetrahydro-5,5,8,8-tetramethyl-2-naphthalenyl)-1-propenyl]benzoic acid" "4-(2-(5,6,7,8-tetrahydro-5,5,8,8-tetramethyl-2-naphthalenyl)-1-propenyl)benzoic acid" "4-(2-(5,6,7,8-tetrahydro-5,5,8,8-tetramethyl-2-naphthenyl)-1e-propen-1-yl)benzoic acid" "p-((e)-2-(5,6,7,8-tetrahydro-5,5,8,8-tetramethyl-2-naphthyl)propenyl)benzoic acid" "(e)-4-(2-(5,6,7,8-tetrahydro-5,5,8,8-tetramethyl-2-naphthalenyl)-1-propen-1-yl)benzoic acid" "benzoic acid, 4-(2-(5,6,7,8-tetrahydro-5,5,8,8-tetramethyl-2-naphthalenyl)-1-propenyl)-, (e)-" "4-[(1e)-2-(5,5,8,8-tetramethyl-5,6,7,8-tetrahydronaphthalen-2-yl)prop-1-enyl]benzoic acid" "bml2-e10" "brd-k49685476-001-02-7" );
+gibbsFormation
+{
+    dHf_298   -266100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     928.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=104850.0
+    phase     gas;
+}

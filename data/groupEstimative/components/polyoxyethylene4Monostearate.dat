@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: polyoxyethylene (4) monostearate  (C26H52O6, CAS 106-07-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        polyoxyethylene4Monostearate;
+formula     C26H52O6;
+CAS         106-07-0;
+InChIKey    SBKDIDITONHJHI-UHFFFAOYSA-N;
+MW          460.696;      // g/mol [origin=calculated method=formula-sum]
+Tc          1278.11;      // K   [origin=predictive method=joback]
+Pc          7.433;      // bar [origin=predictive method=joback]
+omega       0.4312;      // -   [origin=predictive method=lee-kesler]
+Tb          1012.14;      // K   [origin=predictive method=joback]
+HvapTb      104786.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (86.454 2.26342 -0.0009934 8.65e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 19; } { group CH2COO; count 1; } { group CH2O; count 2; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 24; } { group OH; count 1; } { group O; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-(2-hydroxyethyloxy)ethoxy]ethoxy]ethyl octadecanoate" "2-(2-(2-(2-hydroxyethoxy)ethoxy)ethoxy)ethyl stearate" "octadecanoic acid, 2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethyl ester" "peg-4 stearate" "2-(2-(2-(2-hydroxyethoxy)ethoxy)ethoxy)ethyl octadecanoate" "2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethyl octadecanoate" "octadecanoic acid, 2-(2-(2-(2-hydroxyethoxy)ethoxy)ethoxy)ethyl ester" "polyethylene glycol 200 monostearate" "octadecanoic acid,2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethyl ester" "octadecanoic acid 2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethyl ester" "stearicacid, 2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethyl ester (8ci); tetraethyleneglycol, monostearate (8ci); awiwol as 4; tetraethylene glycolmonooctadecanoate, octadecanoate" );
+gibbsFormation
+{
+    dHf_298   -1446140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1304.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-594150.0
+    phase     gas;
+}

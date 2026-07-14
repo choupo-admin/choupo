@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-bis[(dimethylamino)dimethylsilyl]ethane  (C10H28N2Si2, CAS 91166-50-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C10H28N2Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        12BisDimethylaminoDimethylsilylEthane;
+formula     C10H28N2Si2;
+CAS         91166-50-6;
+InChIKey    MRAAXSSHMOFDJR-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          232.518;      // g/mol [origin=calculated method=formula-sum]
+Tc          626.53;      // K   [origin=predictive method=joback]
+Pc          17.047;      // bar [origin=predictive method=joback]
+omega       0.4138;      // -   [origin=predictive method=lee-kesler]
+Tb          456.08;      // K   [origin=predictive method=joback]
+HvapTb      42528.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (54.052 0.78936 8.42e-05 -2.518e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 2; } { group CH3N; count 2; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2; count 2; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-[2-[dimethylamino(dimethyl)silyl]ethyl-dimethyl-silyl]-n-methyl-methanamine" "1,1'-ethylenebis(n,n,1,1-tetramethylsilanamine)" "2,5-bis(dimethylamino)-2,5-dimethyl-2,5-disilahexane" "1,4-bis(dimethylamino)-1,1,4,4-tetramethyl-1,4-disilabutane" "1,1 inverted exclamation marka-ethylenebis(n,n,1,1-tetramethylsilanamine)" "n-[2-[dimethylamino(dimethyl)silyl]ethyl-dimethylsilyl]-n-methylmethanamine" );
+gibbsFormation
+{
+    dHf_298   -337910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     830.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=45360.0
+    phase     gas;
+}

@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dichloromethylene  (CCl2, CAS 1605-72-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula CCl2 (delta C+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        dichloromethylene;
+formula     CCl2;
+CAS         1605-72-7;
+InChIKey    PFBUKDPBVNJDEW-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+role        radical;
+MW          82.911;      // g/mol [origin=calculated method=formula-sum]
+Tc          454.54;      // K   [origin=predictive method=joback]
+Pc          57.046;      // bar [origin=predictive method=joback]
+omega       0.1329;      // -   [origin=predictive method=lee-kesler]
+Tb          274.46;      // K   [origin=predictive method=joback]
+HvapTb      24364.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.67 0.0174 -1.7e-05 6.8e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(chloranyl)methane" "dichlorocarbene" "ccl2" "carbonous chloride" "dichloromethylidene" "carbon(ii) chloride" "methylene, dichloro-" "dichloridocarbon(2.)" "dichloro-" "e2-methane" "dichloromethylenecarbene" );
+gibbsFormation
+{
+    dHf_298   -74810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     228.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-74740.0
+    phase     gas;
+}

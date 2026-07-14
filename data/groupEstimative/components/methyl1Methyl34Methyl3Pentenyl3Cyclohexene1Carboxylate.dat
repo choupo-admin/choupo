@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 1-methyl-3-(4-methyl-3-pentenyl)-3-cyclohexene-1-carboxylate  (C15H24O2, CAS 146918-71-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl1Methyl34Methyl3Pentenyl3Cyclohexene1Carboxylate;
+formula     C15H24O2;
+CAS         146918-71-0;
+InChIKey    FIOIVVKQUPSJFR-UHFFFAOYSA-N;
+MW          236.355;      // g/mol [origin=calculated method=formula-sum]
+Tc          838.90;      // K   [origin=predictive method=joback]
+Pc          18.499;      // bar [origin=predictive method=joback]
+omega       0.6429;      // -   [origin=predictive method=lee-kesler]
+Tb          628.99;      // K   [origin=predictive method=joback]
+HvapTb      56661.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-92.728 1.69248 -0.00131754 4.463e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 5; } { group C; count 1; } { group CH=C; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 1-methyl-3-(4-methylpent-3-enyl)cyclohex-3-ene-1-carboxylate" "3-cyclohexene-1-carboxylic acid, 1-methyl-3-(4-methyl-3-pentenyl)-, methyl ester" "3-cyclohexene-1-carboxylic acid, 1-methyl-3(or 4)-(4-methyl-3-penten-1-yl)-, methyl ester" "3-cyclohexene-1-carboxylic acid, 1-methyl-3(or 4)-(4-methyl-3-pentenyl)-, methyl ester" "3-cyclohexene-1-carboxylic acid, 1-methyl-3-(4-methyl-3-penten-1-yl)-, methyl ester" "1-methyl-(3 or 4)-(4-methylpent-3-enyl)cyclohex-3-enecarboxylic acid" "methyl 1-methyl-3-(4-methylpent-3-en-1-yl)cyclohex-3-ene-1-carboxylate" );
+gibbsFormation
+{
+    dHf_298   -446910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     776.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-123990.0
+    phase     gas;
+}

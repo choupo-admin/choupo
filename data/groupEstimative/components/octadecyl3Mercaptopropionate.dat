@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octadecyl 3-mercaptopropionate  (C21H42O2S, CAS 31778-15-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octadecyl3Mercaptopropionate;
+formula     C21H42O2S;
+CAS         31778-15-1;
+InChIKey    UCUPUEARJPTGKU-UHFFFAOYSA-N;
+MW          358.625;      // g/mol [origin=calculated method=formula-sum]
+Tc          984.91;      // K   [origin=predictive method=joback]
+Pc          9.983;      // bar [origin=predictive method=joback]
+omega       0.9197;      // -   [origin=predictive method=lee-kesler]
+Tb          801.16;      // K   [origin=predictive method=joback]
+HvapTb      76484.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.099 1.97132 -0.0010464 1.872e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 17; } { group CH2COO; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 19; } { group COO; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "octadecyl 3-sulfanylpropanoate" "propanoic acid, 3-mercapto-, octadecyl ester" "stearyl 3-mercaptopropionate" "3-mercaptopropionic acid stearyl ester" "3-mercaptopropionic acid octadecyl ester" "propanoic acid,3-mercapto-, octadecyl ester" "propionicacid, 3-mercapto-, octadecyl ester (8ci);octadecyl 3-mercaptopropionate;octadecyl b-mercaptopropionate;stearyl3-mercaptopropionate;stearyl b-mercaptopropionate;b-mercaptopropionic acid stearyl ester;octadecyl 3-sulfanylpropanoate;propanoic acid, 3-mercapto-, octadecyl ester;octadecyl 3-sulfanylpropanoate;" );
+gibbsFormation
+{
+    dHf_298   -755570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1087.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-155040.0
+    phase     gas;
+}

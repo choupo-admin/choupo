@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-bis(2-hydroxyethyl)formamide  (C5H11NO3, CAS 25209-66-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C5H11NO3 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        nNBis2HydroxyethylFormamide;
+formula     C5H11NO3;
+CAS         25209-66-9;
+InChIKey    AGQSGSYOSSBGLI-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          133.147;      // g/mol [origin=calculated method=formula-sum]
+Tc          642.48;      // K   [origin=predictive method=joback]
+Pc          46.151;      // bar [origin=predictive method=joback]
+omega       1.2892;      // -   [origin=predictive method=lee-kesler]
+Tb          487.22;      // K   [origin=predictive method=joback]
+HvapTb      59752.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-21.266 0.6788 -0.0005746 2.02e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group OH; count 2; } { group CONCH3CH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-bis(2-hydroxyethyl)methanamide" "n,n-di(2-hydroxyethyl)formamide" "formamide, n,n-bis(2-hydroxyethyl)-" "n-n-bis(2-hydroxyethyl)formamide" "formamide,n-bis(2-hydroxyethyl)-" "n,n-bis(beta-hydroxyethyl)formamide" "formamide,n,n-bis(2-hydroxyethyl)-" "n,n-di-(beta-hydroxyethyl) formamide" "n,n-bis(.beta.-hydroxyethyl)formamide" "n,n-di-(.beta.-hydroxyethyl) formamide" );
+gibbsFormation
+{
+    dHf_298   -307010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     549.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-127680.0
+    phase     gas;
+}

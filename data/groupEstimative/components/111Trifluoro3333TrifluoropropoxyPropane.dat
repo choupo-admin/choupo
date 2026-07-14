@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1-trifluoro-3-(3,3,3-trifluoropropoxy)propane  (C6H8F6O, CAS 674-65-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111Trifluoro3333TrifluoropropoxyPropane;
+formula     C6H8F6O;
+CAS         674-65-7;
+InChIKey    IWDSRIHZWYDMFC-UHFFFAOYSA-N;
+MW          210.117;      // g/mol [origin=calculated method=formula-sum]
+Tc          483.54;      // K   [origin=predictive method=joback]
+Pc          23.959;      // bar [origin=predictive method=joback]
+omega       0.5271;      // -   [origin=predictive method=lee-kesler]
+Tb          348.46;      // K   [origin=predictive method=joback]
+HvapTb      23866.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.534 0.833 -0.0006336 1.828e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2O; count 1; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group C; count 2; } { group F; count 6; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1-tris(fluoranyl)-3-[3,3,3-tris(fluoranyl)propoxy]propane" "bis(3,3,3-trifluoropropyl)ether" "bis(3,3,3-trifluoropropyl)-ether" );
+gibbsFormation
+{
+    dHf_298   -1493550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     513.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1268540.0
+    phase     gas;
+}

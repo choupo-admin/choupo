@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluoroheptyl iodide  (C7F15I, CAS 335-58-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluoroheptylIodide;
+formula     C7F15I;
+CAS         335-58-0;
+InChIKey    AHUMDLIBMIYQMU-UHFFFAOYSA-N;
+MW          495.947;      // g/mol [origin=calculated method=formula-sum]
+Tc          560.61;      // K   [origin=predictive method=joback]
+Pc          16.605;      // bar [origin=predictive method=joback]
+omega       0.5640;      // -   [origin=predictive method=lee-kesler]
+Tb          419.34;      // K   [origin=predictive method=joback]
+HvapTb      19222.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-71.73 1.7654 -0.001887 6.993e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group I; count 1; } { group CF3; count 1; } { group CF2; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 7; } { group F; count 15; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7-pentadecakis(fluoranyl)-7-iodanyl-heptane" "perfluoro-n-heptyl iodide" "1-iodopentadecafluoroheptane" "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7-pentadecafluoro-7-iodoheptane" "heptane, 1,1,1,2,2,3,3,4,4,5,5,6,6,7,7-pentadecafluoro-7-iodo-" "1h,1h-perfluoroheptyl iodide; 1h,1h-tridecafluoro-1-iodoheptane" "heptane,1,1,1,2,2,3,3,4,4,5,5,6,6,7,7-pentadecafluoro-7-iodo-" "perfluoro(1-iodoheptane), 7-iodo-1,1,1,2,2,3,3,4,4,5,5,6,6,7,7-pentadecafluoroheptane" "heptane,pentadecafluoro-1-iodo- (7ci,8ci);1-iodoperfluoroheptane;pentadecafluoro-1-iodoheptane;pentadecafluoroheptyl iodide;perfluoro-1-iodoheptane;perfluoro-n-heptyl iodide;perfluoroheptyl iodide;" );
+gibbsFormation
+{
+    dHf_298   -3113840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     687.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2836090.0
+    phase     gas;
+}

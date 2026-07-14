@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: carane  (C10H18, CAS 554-59-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        carane;
+formula     C10H18;
+CAS         554-59-6;
+InChIKey    BWRHOYDPVJPXMF-UHFFFAOYSA-N;
+MW          138.254;      // g/mol [origin=calculated method=formula-sum]
+Tc          642.39;      // K   [origin=predictive method=joback]
+Pc          27.297;      // bar [origin=predictive method=joback]
+omega       0.3003;      // -   [origin=predictive method=lee-kesler]
+Tb          437.05;      // K   [origin=predictive method=joback]
+HvapTb      36083.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-149.92 1.48496 -0.001336 5.181e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 3; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 3; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,7,7-trimethylbicyclo[4.1.0]heptane" "(-)-cis-carane" "3,7,7-trimethylbicyclo[4.1.0]heptane" "bicyclo[4.1.0]heptane, 3,7,7-trimethyl-" "bicyclo(4.1.0)heptane, 3,7,7-trimethyl-" "carane, trans-" "carane, (1s,3s,6r)-(-)-" "bicyclo[4.1.0]heptane, 3,7,7-trimethyl-, (1.alpha.,3.alpha.,6.alpha.)-" "bicyclo[4.1.0]heptane, 3,7,7-trimethyl-, [1s-(1.alpha.,3.alpha.,6.alpha.)]-" "bicyclo[4.1.0]heptane, 3,7,7-trimethyl-, [1s-(1.alpha.,3.beta.,6.alpha.)]-" );
+gibbsFormation
+{
+    dHf_298   -135730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     369.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=121810.0
+    phase     gas;
+}

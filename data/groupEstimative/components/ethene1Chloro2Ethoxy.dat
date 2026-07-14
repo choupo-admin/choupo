@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethene, 1-chloro-2-ethoxy-  (C4H7ClO, CAS 928-56-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethene1Chloro2Ethoxy;
+formula     C4H7ClO;
+CAS         928-56-3;
+InChIKey    OFCHIOZFUUTWEM-ARJAWSKDSA-N;
+MW          106.549;      // g/mol [origin=calculated method=formula-sum]
+Tc          538.34;      // K   [origin=predictive method=joback]
+Pc          38.868;      // bar [origin=predictive method=joback]
+omega       0.3055;      // -   [origin=predictive method=lee-kesler]
+Tb          355.13;      // K   [origin=predictive method=joback]
+HvapTb      31251.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.461 0.34742 -0.000187 3.8e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH=CH; count 1; } { group CH2O; count 1; } { group Cl_C=C_; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH; count 2; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z)-1-chloranyl-2-ethoxy-ethene" "cis-2-chlorovinyl ethyl ether" "(z)-1-chloro-2-ethoxyethene" );
+gibbsFormation
+{
+    dHf_298   -156630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     349.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-53910.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butoxy(triethyl)silane  (C10H24OSi, CAS 2751-87-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C10H24OSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        butoxyTriethylSilane;
+formula     C10H24OSi;
+CAS         2751-87-3;
+InChIKey    HVCBWAHRVCPLEM-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          188.386;      // g/mol [origin=calculated method=formula-sum]
+Tc          620.12;      // K   [origin=predictive method=joback]
+Pc          18.659;      // bar [origin=predictive method=joback]
+omega       0.4703;      // -   [origin=predictive method=lee-kesler]
+Tb          452.22;      // K   [origin=predictive method=joback]
+HvapTb      40558.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (60.116 0.68448 5.6e-06 -1.642e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 5; } { group CH2O; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 6; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butyloxytriethylsilane" "1-triethylsilyloxybutane" );
+gibbsFormation
+{
+    dHf_298   -493570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     683.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-176440.0
+    phase     gas;
+}

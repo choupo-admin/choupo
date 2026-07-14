@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: azelaic acid, isophthalic acid, 1,6 hexanediol polyester  (C23H36O10, CAS 67875-34-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        azelaicAcidIsophthalicAcid16HexanediolPolyester;
+formula     C23H36O10;
+CAS         67875-34-7;
+InChIKey    QFAQXALTNHPAGV-UHFFFAOYSA-N;
+MW          472.531;      // g/mol [origin=calculated method=formula-sum]
+Tc          2082.33;      // K   [origin=predictive method=joback]
+Pc          13.262;      // bar [origin=predictive method=joback]
+omega       0.3217;      // -   [origin=predictive method=lee-kesler]
+Tb          1526.70;      // K   [origin=predictive method=joback]
+HvapTb      172332.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (72.993 1.9092 -0.00071316 -3.97e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 13; } { group ACH; count 4; } { group AC; count 2; } { group OH; count 2; } { group COOH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 13; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 2; } { group COOH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzene-1,3-dicarboxylic acid;hexane-1,6-diol;nonanedioic acid" "1,3-benzenedicarboxylic acid, polymer with 1,6-hexanediol and nonanedioic acid" "benzene-1,3-dicarboxylic acid; hexane-1,6-diol; nonanedioic acid" );
+gibbsFormation
+{
+    dHf_298   -2221770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1468.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1613240.0
+    phase     gas;
+}

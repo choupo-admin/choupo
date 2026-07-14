@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-isopropenyl-5-methylhex-4-enal  (C10H16O, CAS 6544-40-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Isopropenyl5Methylhex4Enal;
+formula     C10H16O;
+CAS         6544-40-7;
+InChIKey    PAIVGFRXYIGODL-UHFFFAOYSA-N;
+MW          152.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          667.64;      // K   [origin=predictive method=joback]
+Pc          25.201;      // bar [origin=predictive method=joback]
+omega       0.5049;      // -   [origin=predictive method=lee-kesler]
+Tb          477.22;      // K   [origin=predictive method=joback]
+HvapTb      43634.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.039 0.93406 -0.0006277 1.736e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group CH2=C; count 1; } { group CH=C; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dC; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-methyl-2-prop-1-en-2-yl-hex-4-enal" "(r)-5-methyl-2-(1-methylvinyl)hex-4-enal" "4-hexenal, 5-methyl-2-(1-methylethenyl)-, (2r)-" "2-isopropenyl-5-methyl-4-hexenal" "5-methyl-2-isopropenyl-4-hexenal" "5-methyl-2-prop-1-en-2-ylhex-4-enal" "4-hexenal, 5-methyl-2-(1-methylethenyl)-" );
+gibbsFormation
+{
+    dHf_298   -117520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     535.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=82320.0
+    phase     gas;
+}

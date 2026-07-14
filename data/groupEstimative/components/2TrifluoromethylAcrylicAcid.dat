@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(trifluoromethyl)acrylic acid  (C4H3F3O2, CAS 381-98-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2TrifluoromethylAcrylicAcid;
+formula     C4H3F3O2;
+CAS         381-98-6;
+InChIKey    VLSRKCIBHNJFHA-UHFFFAOYSA-N;
+MW          140.06;      // g/mol [origin=calculated method=formula-sum]
+Tc          610.29;      // K   [origin=predictive method=joback]
+Pc          39.956;      // bar [origin=predictive method=joback]
+omega       0.6035;      // -   [origin=predictive method=lee-kesler]
+Tb          427.77;      // K   [origin=predictive method=joback]
+HvapTb      37325.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.03 0.5757 -0.0005126 1.723e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=C; count 1; } { group COOH; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(trifluoromethyl)prop-2-enoic acid" "2-(trifluoromethyl)propenoic acid" "tfmaa" "2-trifluoromethylacrylic acid" "2-trifluoromethyl-acrylic acid" "vlsrkcibhnjfha-uhfffaoysa-" "tfmaa; 2-(trifluoromethyl)propenoic acid" "acrylicacid, 2-(trifluoromethyl)- (8ci);2-trifluoromethylpropenoic acid;a-(trifluoromethyl)acrylic acid;" );
+gibbsFormation
+{
+    dHf_298   -957600.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     412.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-863410.0
+    phase     gas;
+}

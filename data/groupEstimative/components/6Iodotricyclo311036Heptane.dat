@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-iodotricyclo[3.1.1.03,6]heptane  (C7H9I, CAS 74725-76-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Iodotricyclo311036Heptane;
+formula     C7H9I;
+CAS         74725-76-1;
+InChIKey    SDKCTBIGJWUAJT-UHFFFAOYSA-N;
+MW          220.049;      // g/mol [origin=calculated method=formula-sum]
+Tc          704.82;      // K   [origin=predictive method=joback]
+Pc          41.091;      // bar [origin=predictive method=joback]
+omega       0.2849;      // -   [origin=predictive method=lee-kesler]
+Tb          460.15;      // K   [origin=predictive method=joback]
+HvapTb      38484.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-176.32 1.4451 -0.001669 7.395e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 3; } { group C; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CH_ring; count 3; } { group C_ring; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-iodotricyclo(3.1.1.03,6)heptane" "6-iodonorcubane" "tricyclo[3.1.1.03,6]heptane,6-iodo-" "tricyclo[3.1.1.03,6]heptane, 6-iodo-" );
+gibbsFormation
+{
+    dHf_298   114680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     200.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=259430.0
+    phase     gas;
+}

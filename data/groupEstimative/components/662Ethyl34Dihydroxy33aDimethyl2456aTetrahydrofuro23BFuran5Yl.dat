@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-[6-(2-ethyl-3,4-dihydroxy-3,3a-dimethyl-2,4,5,6a-tetrahydrofuro[2,3-b]furan-5-yl)hexa-1,3,5-trienyl]-4-methoxy-5-methylpyran-2-one  (C23H30O7, CAS 79663-49-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        662Ethyl34Dihydroxy33aDimethyl2456aTetrahydrofuro23BFuran5Yl;
+formula     C23H30O7;
+CAS         79663-49-3;
+InChIKey    GPXPJKFETRLRAS-UHFFFAOYSA-N;
+MW          418.486;      // g/mol [origin=calculated method=formula-sum]
+Tc          1335.49;      // K   [origin=predictive method=joback]
+Pc          14.424;      // bar [origin=predictive method=joback]
+omega       1.2912;      // -   [origin=predictive method=lee-kesler]
+Tb          1089.98;      // K   [origin=predictive method=joback]
+HvapTb      118457.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-154.229 2.8306 -0.00250004 9.483e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 2; } { group C; count 2; } { group CH=CH; count 3; } { group CH=C; count 1; } { group OH; count 2; } { group CH3O; count 1; } { group CH-O; count 2; } { group C=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 1; } { group dCH; count 6; } { group CH_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 3; } { group OH; count 2; } { group O; count 1; } { group O_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-[6-[2-ethyl-3,3a-dimethyl-3,4-bis(oxidanyl)-2,4,5,6a-tetrahydrofuro[2,3-b]furan-5-yl]hexa-1,3,5-trienyl]-4-methoxy-5-methyl-pyran-2-one" "6-[(1e,3e,5e)-6-[(2r,3r,3ar,4r,5r,6ar)-2-ethyl-3,4-dihydroxy-3,3a-dimethyl-2,4,5,6a-tetrahydrofuro[2,3-b]furan-5-yl]hexa-1,3,5-trienyl]-4-methoxy-5-methylpyran-2-one" );
+gibbsFormation
+{
+    dHf_298   -933820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     801.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-334940.0
+    phase     gas;
+}

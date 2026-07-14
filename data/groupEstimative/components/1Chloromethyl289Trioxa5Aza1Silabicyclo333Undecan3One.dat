@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(chloromethyl)-2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undecan-3-one  (C7H12ClNO4Si, CAS 81382-20-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H12ClNO4Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        1Chloromethyl289Trioxa5Aza1Silabicyclo333Undecan3One;
+formula     C7H12ClNO4Si;
+CAS         81382-20-9;
+InChIKey    YKVBLHUJBYGRLU-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          237.711;      // g/mol [origin=calculated method=formula-sum]
+Tc          769.17;      // K   [origin=predictive method=joback]
+Pc          34.159;      // bar [origin=predictive method=joback]
+omega       0.6537;      // -   [origin=predictive method=lee-kesler]
+Tb          550.24;      // K   [origin=predictive method=joback]
+HvapTb      54941.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.889 0.8777 -0.0004576 5.19e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2COO; count 1; } { group CH2O; count 2; } { group CH2N; count 1; } { group CH2Cl; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 5; } { group Cl; count 1; } { group O_ring; count 2; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-(chloromethyl)-4,6,11-trioxa-1-aza-5-silabicyclo[3.3.3]undecan-3-one" "2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undecan-3-one, 1-chloromethyl-" "2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undecan-3-one, 1-chloromethyl-" );
+gibbsFormation
+{
+    dHf_298   -648800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     477.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-355640.0
+    phase     gas;
+}

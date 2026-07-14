@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triisotridecyl trimellitate  (C48H84O6, CAS 72361-35-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triisotridecylTrimellitate;
+formula     C48H84O6;
+CAS         72361-35-4;
+InChIKey    IGQFKXMQIMEIJV-UHFFFAOYSA-N;
+MW          757.194;      // g/mol [origin=calculated method=formula-sum]
+Tc          2386.47;      // K   [origin=predictive method=joback]
+Pc          3.323;      // bar [origin=predictive method=joback]
+omega       -0.5743;      // -   [origin=predictive method=lee-kesler]
+Tb          1507.82;      // K   [origin=predictive method=joback]
+HvapTb      147099.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.13 4.21932 -0.00221032 3.629e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 30; } { group CH; count 3; } { group ACH; count 3; } { group AC; count 3; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 30; } { group CH; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tris(11-methyldodecyl) benzene-1,2,4-tricarboxylate" "triisotridecyl benzene-1,2,4-tricarboxylate" "1,2,4-benzenetricarboxylic acid, 1,2,4-triisotridecyl ester" "tris(isotridecyl)trimellitate" "1,2,4-benzenetricarboxylic acid, triisotridecyl ester" "1,2,4-benzenetricarboxylicacid, 1,2,4-triisotridecyl ester" "1,2,4-benzenetricarboxylicacid, triisotridecyl ester (9ci)" );
+gibbsFormation
+{
+    dHf_298   -1788140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     2032.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-492000.0
+    phase     gas;
+}

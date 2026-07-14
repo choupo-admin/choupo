@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): 5-(7-carboxyheptyl)-2-hexylcyclohex-3-ene-1-carboxylic acid- 2,2',2''-nitrilotriethanol(1:2)  (C33H66N2O10, CAS 67859-77-2)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           57Carboxyheptyl2Hexylcyclohex3Ene1CarboxylicAcid222Nitrilotr;
+formula        C33H66N2O10;
+CAS            67859-77-2;
+InChIKey       GRFNJRQHEQBPPC-UHFFFAOYSA-N;
+MW             650.895;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   3;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: 5-(7-carboxyheptyl)-2-hexylcyclohex-3-ene-1-carboxylic acid- 2,2',2''-nitrilotriethanol(1:2)

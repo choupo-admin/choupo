@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hex-3-enyl benzoate  (C13H16O2, CAS 25152-85-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hex3EnylBenzoate;
+formula     C13H16O2;
+CAS         25152-85-6;
+InChIKey    BCOXBEHFBZOJJZ-UHFFFAOYSA-N;
+MW          204.269;      // g/mol [origin=calculated method=formula-sum]
+Tc          795.25;      // K   [origin=predictive method=joback]
+Pc          23.158;      // bar [origin=predictive method=joback]
+omega       0.6502;      // -   [origin=predictive method=lee-kesler]
+Tb          586.10;      // K   [origin=predictive method=joback]
+HvapTb      54173.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.607 1.12512 -0.0007038 1.593e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH=CH; count 1; } { group ACH; count 5; } { group AC; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cis-3-hexen-1-yl benzoate" "3-hexen-1-ol, 1-benzoate, (3z)-" "cis-3-hexenylbenzoate" "3-hexen-1-ol,1-benzoate" "3-hexen-1-ol,benzoate (9ci);3-hexenyl benzoate;" "3-hexen-1-ol,benzoate, (3z)- (9ci);3-hexen-1-ol, benzoate, (z)- (8ci);(z)-3-hexen-1-ylbenzoate;(z)-3-hexenyl benzoate;cis-3-hexenyl benzoate;" );
+gibbsFormation
+{
+    dHf_298   -275180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     600.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-59160.0
+    phase     gas;
+}

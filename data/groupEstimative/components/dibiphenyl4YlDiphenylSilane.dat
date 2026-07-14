@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dibiphenyl-4-yl(diphenyl)silane  (C36H28Si, CAS 3172-33-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C36H28Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        dibiphenyl4YlDiphenylSilane;
+formula     C36H28Si;
+CAS         3172-33-6;
+InChIKey    HCKMRFVWQPVCFY-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          488.705;      // g/mol [origin=calculated method=formula-sum]
+Tc          1497.85;      // K   [origin=predictive method=joback]
+Pc          12.416;      // bar [origin=predictive method=joback]
+omega       0.8943;      // -   [origin=predictive method=lee-kesler]
+Tb          1194.72;      // K   [origin=predictive method=joback]
+HvapTb      111004.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-163.85 2.6252 -0.00157292 3.032e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 28; } { group AC; count 8; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 28; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "diphenyl-bis(4-phenylphenyl)silane" "bis(p-biphenyl)diphenylsilane" "1,1'-biphenyl, 4,4''-(diphenylsilylene)bis-" "silane, bis((1,1'-biphenyl)-4-yl)diphenyl-" "silane, bis([1,1'-biphenyl]-4-yl)diphenyl-" "silane, bis(4-biphenylyl)diphenyl-" "bis((1,1'-biphenyl)-4-yl)diphenylsilane" "silane, bis(4-biphenylyl)diphenyl- (8ci)" "1,1'-biphenyl,4,4''-(diphenylsilylene)bis-" );
+gibbsFormation
+{
+    dHf_298   498250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1033.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=802680.0
+    phase     gas;
+}

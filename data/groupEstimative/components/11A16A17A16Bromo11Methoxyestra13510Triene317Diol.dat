@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (11|a,16|a,17|a)-16-bromo-11-methoxyestra-1,3,5(10)-triene-3,17-diol  (C19H25BrO3, CAS 867-62-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11A16A17A16Bromo11Methoxyestra13510Triene317Diol;
+formula     C19H25BrO3;
+CAS         867-62-9;
+InChIKey    FERUVNCWJYIAQM-RUOITVIXSA-N;
+MW          381.31;      // g/mol [origin=calculated method=formula-sum]
+Tc          1176.71;      // K   [origin=predictive method=joback]
+Pc          23.114;      // bar [origin=predictive method=joback]
+omega       1.3764;      // -   [origin=predictive method=lee-kesler]
+Tb          937.68;      // K   [origin=predictive method=joback]
+HvapTb      97060.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-191.13 2.45344 -0.00209992 7.61e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 5; } { group C; count 1; } { group ACH; count 3; } { group ACCH2; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group ACOH; count 1; } { group CH3O; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 6; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group OH; count 1; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(8s,9s,11s,13s,14s,16r,17r)-16-bromanyl-11-methoxy-13-methyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthrene-3,17-diol" "16-bromomethoxyestradiol" "16alpha-bromo-11beta-methoxyestradiol-17beta" "16alpha-bromo-11beta-methoxy-17beta-estradiol" "(8s,9s,11s,13s,14s,16r,17r)-16-bromo-11-methoxy-13-methyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthrene-3,17-diol" "estra-1,3,5(10)-triene-3,17-diol, 16-(bromo-77br)-11-methoxy-, (11beta,16alpha,17beta)-" );
+gibbsFormation
+{
+    dHf_298   -505900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     592.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-48520.0
+    phase     gas;
+}

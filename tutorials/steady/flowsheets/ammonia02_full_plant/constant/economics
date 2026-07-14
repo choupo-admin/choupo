@@ -1,0 +1,35 @@
+/*---------------------------------------------------------------------------*\
+  constant/economics -- the ammonia plant's market/time tier (case-scoped).
+  Representative teaching figures; each carries its costYear + a primary source.
+  Refresh the value + costYear for a live appraisal.  Currency: EUR/kg.
+\*---------------------------------------------------------------------------*/
+products
+(
+    {
+        stream    productNH3;
+        price     0.50;                 // EUR/kg NH3 (~500 EUR/t, mid-cycle CFR NW Europe)
+        costYear  2025;
+        provenance
+        {
+            origin  "CRU / Argus ammonia CFR NW Europe (representative teaching figure)";
+            method  "bulk contract mid-cycle price";
+        }
+    }
+);
+rawMaterials
+(
+    {
+        stream    makeup;               // fresh N2:H2 = 1:3 syngas (+ Ar)
+        price     0.22;                 // EUR/kg makeup syngas (EU gas mid-cycle)
+        costYear  2025;
+        provenance
+        {
+            origin  "natural-gas-derived syngas production cost, EU gas ~30 EUR/MWh (teaching figure)";
+            method  "steam-reforming H2 + air-separation N2, blended per kg makeup";
+        }
+    }
+);
+labourRate      42.0;                   // EUR/h loaded operating labour
+labourRateYear  2025;
+usdToEur        0.92;                   // ECB reference
+taxRate         0.21;

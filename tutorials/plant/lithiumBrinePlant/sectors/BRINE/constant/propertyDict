@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------*\
+  BRINE property context.
+  Inherits the plant context and overrides the electrolyte world.
+\*---------------------------------------------------------------------------*/
+
+recordType    propertyDict;
+schemaVersion 1;
+
+inherits "../../../constant";
+
+components ( water NaCl LiCl );
+
+chemistry
+{
+    salts ( halite );
+
+    activeSaltEquilibriumData
+    {
+        halite measuredSolubilityAnchor;
+    }
+}
+
+propertyMethods
+{
+    liquid electrolyte.pitzer;
+    vapour builtin.idealGas;
+    solid  builtin.saltEquilibrium;
+}
+
+parameters
+{
+    pitzerPairs ( Na-Cl Li-Cl );
+}

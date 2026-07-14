@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sc-8117  (C22H32O2, CAS 7359-80-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sc8117;
+formula     C22H32O2;
+CAS         7359-80-0;
+InChIKey    NSAOURSVFVQOPI-BPMWXVLLSA-N;
+MW          328.496;      // g/mol [origin=calculated method=formula-sum]
+Tc          1137.22;      // K   [origin=predictive method=joback]
+Pc          16.484;      // bar [origin=predictive method=joback]
+omega       1.0670;      // -   [origin=predictive method=lee-kesler]
+Tb          902.79;      // K   [origin=predictive method=joback]
+HvapTb      82980.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-272.66 2.91634 -0.00250894 9.309e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 7; } { group CH; count 5; } { group C; count 2; } { group CH2=CH; count 1; } { group CH=C; count 1; } { group OH; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 8; } { group CH_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(8r,9s,10r,13s,14s,17r)-17-[(2r)-but-3-en-2-yl]-13-methyl-17-oxidanyl-1,2,6,7,8,9,10,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthren-3-one" "17-beta-hydroxy-17-alpha-(1-methylallyl)estr-4-en-3-one" "estr-4-en-3-one, 17-beta-hydroxy-17-alpha-(1-methylallyl)-" );
+gibbsFormation
+{
+    dHf_298   -370680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     720.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=136780.0
+    phase     gas;
+}

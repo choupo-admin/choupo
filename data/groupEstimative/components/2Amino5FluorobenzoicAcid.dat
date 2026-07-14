@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-amino-5-fluorobenzoic acid  (C7H6FNO2, CAS 446-08-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Amino5FluorobenzoicAcid;
+formula     C7H6FNO2;
+CAS         446-08-2;
+InChIKey    FPQMGQZTBWIHDN-UHFFFAOYSA-N;
+MW          155.128;      // g/mol [origin=calculated method=formula-sum]
+Tc          844.74;      // K   [origin=predictive method=joback]
+Pc          45.164;      // bar [origin=predictive method=joback]
+omega       0.8969;      // -   [origin=predictive method=lee-kesler]
+Tb          613.71;      // K   [origin=predictive method=joback]
+HvapTb      61764.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.4 0.5954 -0.00038652 9.24e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACNH2; count 1; } { group COOH; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-5-fluoranyl-benzoic acid" "5-fluoroanthranilic acid" "5-faa" "2-amino-5-fluoro-benzoic acid" "benzoic acid, 2-amino-5-fluoro-" "5rg" "buttpark 19\04-54" "2-amino-5-fluorbenzoic acid" "5-fluoro-2-aminobenzoic acid" "5-fluoroanthranilic acid;2-amino-5-fluoro-benzoate;2-amino-5-fluoro-benzoic acid;" );
+gibbsFormation
+{
+    dHf_298   -486810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     446.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-371060.0
+    phase     gas;
+}

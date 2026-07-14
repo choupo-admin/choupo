@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dihydrokavain  (C14H16O3, CAS 587-63-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dihydrokavain;
+formula     C14H16O3;
+CAS         587-63-3;
+InChIKey    VOOYTQRREPYRIW-UHFFFAOYSA-N;
+MW          232.279;      // g/mol [origin=calculated method=formula-sum]
+Tc          860.87;      // K   [origin=predictive method=joback]
+Pc          23.406;      // bar [origin=predictive method=joback]
+omega       0.7440;      // -   [origin=predictive method=lee-kesler]
+Tb          642.39;      // K   [origin=predictive method=joback]
+HvapTb      59890.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.118 1.16272 -0.00065744 1.177e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group CH=C; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group CH3O; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 2; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-methoxy-2-(2-phenylethyl)-2,3-dihydropyran-6-one" "dihydrokawain" "7,8-dihydrokawain" "marindinin" "kavain, dihydro-" "kawain, dihydro-" "2h-pyran-2-one, 5,6-dihydro-4-methoxy-6-phenethyl-" "agn-pc-00q4y3" "4-methoxy-2-phenethyl-2,3-dihydropyran-6-one" "4-methoxy-6-(2-phenylethyl)-5,6-dihydro-2h-pyran-2-one" "2h-pyran-2-one, 5,6-dihydro-4-methoxy-6-(2-phenylethyl)-" "2h-pyran-2-one, 5,6-dihydro-4-methoxy-6-(2-phenylethyl)-, (s)-" );
+gibbsFormation
+{
+    dHf_298   -432310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     543.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-166980.0
+    phase     gas;
+}

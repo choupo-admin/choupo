@@ -1,0 +1,55 @@
+/*---------------------------------------------------------------------------*\
+  pitzer_nacl_sp77_hot
+  ====================
+
+  HOT BRINE: the NaCl Pitzer surface from 25 to 200 C on the FULL
+  Silvester & Pitzer 1977 temperature functions (J. Phys. Chem. 81, 1822 --
+  eqs 30-32, Table IV coefficients VERBATIM in the standards Na-Cl.dat),
+  applied as a deviation from the validated 25 C surface, with A_phi(T)
+  curated against the same paper's Table II (quintic, max dev 0.17 %,
+  0-300 C; the old closed form drifted +67 % at 300 C).
+
+  Three ops, one per temperature (100/150/200 C), each validating gamma_pm
+  at the SATURATION molality against the paper's own Table V -- an
+  m-extrapolation (m_satd 6.7-8.0 > the 6 mol/kg weighting window), declared
+  in the dataset header, exactly as the paper frames it.
+
+  What to look at: gamma_pm(1 m) falls 0.657 -> ~0.53 from 25 to 200 C
+  (electrostatics intensify as eps_w collapses -- the paper's central
+  observation), and the validation AADs stay single-digit % even at the
+  saturated-extrapolated edge.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      nacl_100C;
+        type      pitzerActivity;
+        cation    Na;   anion Cl;
+        temperature 373.15;
+        source    "SP77 T-functions (Na-Cl.dat); A_phi: SP77 Table II";
+        molality  { from 0.1; to 6.7; n 34; }
+        validation { dataset "constant/experiments/sp77_tableV.dat"; series satd100C; }
+        output    { file pitzer_nacl_100C.csv; }
+    }
+    {
+        name      nacl_150C;
+        type      pitzerActivity;
+        cation    Na;   anion Cl;
+        temperature 423.15;
+        source    "SP77 T-functions (Na-Cl.dat); A_phi: SP77 Table II";
+        molality  { from 0.1; to 7.2; n 36; }
+        validation { dataset "constant/experiments/sp77_tableV.dat"; series satd150C; }
+        output    { file pitzer_nacl_150C.csv; }
+    }
+    {
+        name      nacl_200C;
+        type      pitzerActivity;
+        cation    Na;   anion Cl;
+        temperature 473.15;
+        source    "SP77 T-functions (Na-Cl.dat); A_phi: SP77 Table II";
+        molality  { from 0.1; to 8.0; n 40; }
+        validation { dataset "constant/experiments/sp77_tableV.dat"; series satd200C; }
+        output    { file pitzer_nacl_200C.csv; }
+    }
+);

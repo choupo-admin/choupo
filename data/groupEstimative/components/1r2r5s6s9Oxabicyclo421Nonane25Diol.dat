@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (1r,2r,5s,6s)-9-oxabicyclo[4.2.1]nonane-2,5-diol  (C8H14O3, CAS 2021-21-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1r2r5s6s9Oxabicyclo421Nonane25Diol;
+formula     C8H14O3;
+CAS         2021-21-8;
+InChIKey    GJZQHDOUUCAZHY-KVFPUHGPSA-N;
+MW          158.197;      // g/mol [origin=calculated method=formula-sum]
+Tc          802.49;      // K   [origin=predictive method=joback]
+Pc          42.056;      // bar [origin=predictive method=joback]
+omega       1.2714;      // -   [origin=predictive method=lee-kesler]
+Tb          610.90;      // K   [origin=predictive method=joback]
+HvapTb      70994.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-80.45 1.0488 -0.0006487 1.474e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 3; } { group OH; count 2; } { group CH-O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group CH_ring; count 4; } { group OH; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(endo,endo)-9-oxabicyclo(4.2.1)nonane-2,5-diol" );
+gibbsFormation
+{
+    dHf_298   -558470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     312.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-273500.0
+    phase     gas;
+}

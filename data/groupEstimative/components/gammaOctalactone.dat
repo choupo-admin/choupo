@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: gamma-octalactone  (C8H14O2, CAS 104-50-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        gammaOctalactone;
+formula     C8H14O2;
+CAS         104-50-7;
+InChIKey    IPBFYZQJXZJBFQ-UHFFFAOYSA-N;
+MW          142.198;      // g/mol [origin=calculated method=formula-sum]
+Tc          633.12;      // K   [origin=predictive method=joback]
+Pc          29.187;      // bar [origin=predictive method=joback]
+omega       0.5120;      // -   [origin=predictive method=lee-kesler]
+Tb          447.60;      // K   [origin=predictive method=joback]
+HvapTb      40722.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.217 0.85992 -0.000537 1.262e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-butyloxolan-2-one" "4-octanolide" "2(3h)-furanone, 5-butyldihydro-" "gamma-octanolactone" "octanolide-1,4" "8-oxo-5-octanolide" "gamma-octanoic lactone" "octan-4-olide" "octanoic acid, gamma lactone" "5-butyltetrahydro-2-furanone" "4-hydroxyoctanoic acid lactone" "5-butyldihydro-2(3h)-furanone" );
+gibbsFormation
+{
+    dHf_298   -452930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     428.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-233140.0
+    phase     gas;
+}

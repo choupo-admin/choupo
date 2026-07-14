@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-bromo-2-methoxybenzyl alcohol  (C8H9BrO2, CAS 80866-82-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Bromo2MethoxybenzylAlcohol;
+formula     C8H9BrO2;
+CAS         80866-82-6;
+InChIKey    HAOOGRLZVQWDBY-UHFFFAOYSA-N;
+MW          217.062;      // g/mol [origin=calculated method=formula-sum]
+Tc          811.27;      // K   [origin=predictive method=joback]
+Pc          42.111;      // bar [origin=predictive method=joback]
+omega       1.0025;      // -   [origin=predictive method=lee-kesler]
+Tb          600.04;      // K   [origin=predictive method=joback]
+HvapTb      62526.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (29.291 0.57492 -0.00029932 4.88e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACCH2; count 1; } { group OH; count 1; } { group CH3O; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5-bromanyl-2-methoxy-phenyl)methanol" "(5-bromo-2-methoxyphenyl)methanol" "4-bromo-2-(hydroxymethyl)anisole" "(5-bromo-2-methoxy-phenyl)-methanol" "5-bromo-o-anisyl alcohol" "benzenemethanol, 5-bromo-2-methoxy-" "4-bromo-(hydroxymethyl)anisole" "(5-bromo-2-methoxyphenyl)methan-1-ol" "2-methoxy-5-bromobenzyl alcohol" "5-bromo-2-methoxybenzenemethanol" "haoogrlzvqwdby-uhfffaoysa-" "benzenemethanol,5-bromo-2-methoxy-" );
+gibbsFormation
+{
+    dHf_298   -252980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     462.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-117870.0
+    phase     gas;
+}

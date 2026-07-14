@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propanal, 3-hydroxy-2-methyl-  (C4H8O2, CAS 38433-80-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        propanal3Hydroxy2Methyl;
+formula     C4H8O2;
+CAS         38433-80-6;
+InChIKey    JTMCAHGCWBGWRV-UHFFFAOYSA-N;
+MW          88.106;      // g/mol [origin=calculated method=formula-sum]
+Tc          604.62;      // K   [origin=predictive method=joback]
+Pc          49.039;      // bar [origin=predictive method=joback]
+omega       0.8094;      // -   [origin=predictive method=lee-kesler]
+Tb          431.52;      // K   [origin=predictive method=joback]
+HvapTb      47509.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.261 0.39822 -0.0002204 4.36e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-3-oxidanyl-propanal" );
+gibbsFormation
+{
+    dHf_298   -368980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     371.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-255980.0
+    phase     gas;
+}

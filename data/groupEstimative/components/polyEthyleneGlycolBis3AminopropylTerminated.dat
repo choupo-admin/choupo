@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: poly(ethylene glycol) bis(3-aminopropyl) terminated  (C5H15NO3, CAS 34901-14-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        polyEthyleneGlycolBis3AminopropylTerminated;
+formula     C5H15NO3;
+CAS         34901-14-9;
+InChIKey    ZEXFKFYUMFXUBE-UHFFFAOYSA-N;
+MW          137.179;      // g/mol [origin=calculated method=formula-sum]
+Tc          833.91;      // K   [origin=predictive method=joback]
+Pc          47.366;      // bar [origin=predictive method=joback]
+omega       1.9429;      // -   [origin=predictive method=lee-kesler]
+Tb          664.47;      // K   [origin=predictive method=joback]
+HvapTb      87696.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (61.525 0.4365 3.2e-05 -1.285e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group OH; count 1; } { group CH2NH2; count 1; } { group _CH2OH_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 5; } { group OH; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-azanylpropan-1-ol;ethane-1,2-diol" "o,o'-bis(3-aminopropyl)polyethylene glycol" "o,o'-bis(3-aminopropyl)polyethylene glycol 1,500" "o,o inverted exclamation marka-bis(3-aminopropyl)polyethylene glycol" "o,o inverted exclamation marka-bis(3-aminopropyl)polyethylene glycol 1,500" );
+gibbsFormation
+{
+    dHf_298   -681050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     662.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-457550.0
+    phase     gas;
+}

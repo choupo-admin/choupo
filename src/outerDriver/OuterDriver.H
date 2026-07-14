@@ -60,6 +60,7 @@ Description
 
 #include "core/Dictionary.H"
 #include "core/SimulationResult.H"
+#include "streams/StreamOverrides.H"
 
 #include <functional>
 #include <map>
@@ -76,8 +77,12 @@ public:
     //   given a modified flowsheetDict, run the full simulator pass and
     //   return the (streams + KPIs) result.  The driver does NOT itself
     //   know about ThermoPackage / Flowsheet — it stays algorithm-pure.
+    // The pass's inputs, BOTH explicit (forum #55 D4): the dict and the
+    // driver's declared hand on stream state.  A pass without manipulations
+    // passes an empty StreamOverrides{} -- never a global, never a default.
     using Simulator =
-        std::function<SimulationResult(const DictPtr& flowsheetDict)>;
+        std::function<SimulationResult(const DictPtr&        flowsheetDict,
+                                       const StreamOverrides& overrides)>;
 
     virtual ~OuterDriver() = default;
 

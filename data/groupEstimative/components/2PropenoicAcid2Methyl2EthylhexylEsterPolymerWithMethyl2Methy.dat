@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propenoic acid, 2-methyl-, 2-ethylhexyl ester, polymer with methyl 2-methyl-2-propenoate and 2-propenenitrile  (C20H33NO4, CAS 72986-57-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropenoicAcid2Methyl2EthylhexylEsterPolymerWithMethyl2Methy;
+formula     C20H33NO4;
+CAS         72986-57-3;
+InChIKey    UQVTZUUWPSBDME-UHFFFAOYSA-N;
+MW          351.487;      // g/mol [origin=calculated method=formula-sum]
+Tc          1072.03;      // K   [origin=predictive method=joback]
+Pc          9.858;      // bar [origin=predictive method=joback]
+omega       0.8569;      // -   [origin=predictive method=lee-kesler]
+Tb          867.88;      // K   [origin=predictive method=joback]
+HvapTb      83756.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (124.125 1.2624 -9.09e-05 -2.728e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 5; } { group CH; count 1; } { group CH2=C; count 2; } { group ACRY; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 5; } { group CH; count 1; } { group dCH2; count 3; } { group dCH; count 1; } { group dC; count 2; } { group COO; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethylhexyl 2-methylprop-2-enoate;methyl 2-methylprop-2-enoate;prop-2-enenitrile" "2-propenoic acid, 2-methyl-, methyl ester, polymer with 2-ethylhexyl 2-methyl-2-propenoate and 2-propenenitrile" );
+gibbsFormation
+{
+    dHf_298   -797620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1227.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-335580.0
+    phase     gas;
+}

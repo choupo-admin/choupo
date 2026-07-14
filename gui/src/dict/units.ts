@@ -168,6 +168,18 @@ const TABLE: Record<string, UnitSpec> = {
   kW: { factor: 1.0e3, affine: false },
   MW_power: { factor: 1.0e6, affine: false },
 
+  // molar energy → J/mol  (Choupo's canonical molar enthalpy / Gibbs unit;
+  // mirrors src/core/Units.cpp -- e.g. `dH_rxn -60 kJ/mol`)
+  "J/mol": { factor: 1.0, affine: false },
+  "kJ/mol": { factor: 1.0e3, affine: false },
+  "J/kmol": { factor: 1.0e-3, affine: false },
+  "kJ/kmol": { factor: 1.0, affine: false },
+
+  // molar heat capacity → J/(mol.K)  (mirrors src/core/Units.cpp)
+  "J/(mol.K)": { factor: 1.0, affine: false },
+  "J/(kmol.K)": { factor: 1.0e-3, affine: false },
+  "kJ/(kmol.K)": { factor: 1.0, affine: false },
+
   // amount → kmol
   mol: { factor: 1.0e-3, affine: false },
   kmol: { factor: 1.0, affine: false },

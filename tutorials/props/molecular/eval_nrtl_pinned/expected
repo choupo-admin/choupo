@@ -1,0 +1,36 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    scaffold_as_is         aad              2.0400             1e-4
+diag    scaffold_as_is         chi2             60.1945            1e-4
+diag    scaffold_as_is         max_abs_resid    3.4379             1e-4
+diag    scaffold_as_is         max_resid_x1     0.5000             1e-4
+diag    scaffold_as_is         mode_evaluate    1.0000             1e-4
+diag    scaffold_as_is         n_data           11.0000            1e-4
+diag    scaffold_as_is         n_feasible       11.0000            1e-4
+diag    scaffold_as_is         partial          0.0000             1e-4
+diag    scaffold_as_is         penalised_points 0.0000             1e-4
+diag    scaffold_as_is         rms              2.3393             1e-4
+diag    scaffold_as_is         sse              60.1945            1e-4
+diag    rough_paper_values     aad              1.5942             1e-4
+diag    rough_paper_values     chi2             61.7621            1e-4
+diag    rough_paper_values     max_abs_resid    5.5866             1e-4
+diag    rough_paper_values     max_resid_x1     0.0500             1e-4
+diag    rough_paper_values     mode_evaluate    1.0000             1e-4
+diag    rough_paper_values     n_data           11.0000            1e-4
+diag    rough_paper_values     n_feasible       11.0000            1e-4
+diag    rough_paper_values     partial          0.0000             1e-4
+diag    rough_paper_values     penalised_points 0.0000             1e-4
+diag    rough_paper_values     rms              2.3695             1e-4
+diag    rough_paper_values     sse              61.7621            1e-4
+diag    scaffold_again         aad              2.0400             1e-4
+diag    scaffold_again         chi2             60.1945            1e-4
+diag    scaffold_again         max_abs_resid    3.4379             1e-4
+diag    scaffold_again         max_resid_x1     0.5000             1e-4
+diag    scaffold_again         mode_evaluate    1.0000             1e-4
+diag    scaffold_again         n_data           11.0000            1e-4
+diag    scaffold_again         n_feasible       11.0000            1e-4
+diag    scaffold_again         partial          0.0000             1e-4
+diag    scaffold_again         penalised_points 0.0000             1e-4
+diag    scaffold_again         rms              2.3393             1e-4
+diag    scaffold_again         sse              60.1945            1e-4

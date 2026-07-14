@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ag-g-60816  (C17H22O6, CAS 68735-92-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        agG60816;
+formula     C17H22O6;
+CAS         68735-92-2;
+InChIKey    BPAVWKYYIPGEQX-UHFFFAOYSA-N;
+MW          322.357;      // g/mol [origin=calculated method=formula-sum]
+Tc          1199.56;      // K   [origin=predictive method=joback]
+Pc          17.985;      // bar [origin=predictive method=joback]
+omega       1.4172;      // -   [origin=predictive method=lee-kesler]
+Tb          974.00;      // K   [origin=predictive method=joback]
+HvapTb      98383.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.055 1.47364 -0.00085192 1.652e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group ACH; count 3; } { group AC; count 3; } { group COOH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COOH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(2-ethylhexoxycarbonyl)benzene-1,3-dicarboxylic acid" "4-{[(2-ethylhexyl)oxy]carbonyl}isophthalic acid" "1,2,4-benzenetricarboxylic acid, 1(or 2)-(2-ethylhexyl) ester" "trimellitic anhydride, mono-2-ethylhexyl ester" "1,2,4-benzenetricarboxylic acid 2-ethylhexyl ester" "1(or 2)-(2-ethylhexyl) dihydrogen benzene-1,2,4-tricarboxylate" );
+gibbsFormation
+{
+    dHf_298   -1203720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     847.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-815220.0
+    phase     gas;
+}

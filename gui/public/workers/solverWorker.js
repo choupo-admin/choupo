@@ -213,7 +213,7 @@ self.addEventListener("message", async (e) => {
                   try { st = Module.FS.stat(path); } catch (_) { continue; }
                   if (Module.FS.isDir(st.mode)) {
                     walk(path, name);
-                  } else if (name.endsWith(".csv") || /\.estimate-.*\.dat$/.test(name)) {
+                  } else if (name.endsWith(".csv") || /\.(estimate-.*|estimated)\.dat$/.test(name)) {
                     try {
                       const body = Module.FS.readFile(path, { encoding: "utf8" });
                       const rel = path.startsWith("/case/")

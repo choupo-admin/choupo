@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 0156937  (C16H10S, CAS 227-86-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn0156937;
+formula     C16H10S;
+CAS         227-86-1;
+InChIKey    NMWGLCVKRMOELQ-UHFFFAOYSA-N;
+MW          234.316;      // g/mol [origin=calculated method=formula-sum]
+Tc          978.72;      // K   [origin=predictive method=joback]
+Pc          31.385;      // bar [origin=predictive method=joback]
+omega       0.6445;      // -   [origin=predictive method=lee-kesler]
+Tb          703.66;      // K   [origin=predictive method=joback]
+HvapTb      65078.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-92.13 1.39481 -0.0012317 4.327e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 4; } { group C4H2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 10; } { group dC_ring; count 6; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "naphtho[2,3-g][1]benzothiole" "anthra[1,2-b]thiophene" "anthra[1,2-b]thiophene(8ci,9ci)" );
+gibbsFormation
+{
+    dHf_298   406870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     401.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=518940.0
+    phase     gas;
+}

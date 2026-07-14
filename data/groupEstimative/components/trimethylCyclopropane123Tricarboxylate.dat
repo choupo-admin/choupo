@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimethyl cyclopropane-1,2,3-tricarboxylate  (C9H12O6, CAS 717-69-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trimethylCyclopropane123Tricarboxylate;
+formula     C9H12O6;
+CAS         717-69-1;
+InChIKey    MXSHXNGWYJQIBM-UHFFFAOYSA-N;
+MW          216.189;      // g/mol [origin=calculated method=formula-sum]
+Tc          770.55;      // K   [origin=predictive method=joback]
+Pc          24.925;      // bar [origin=predictive method=joback]
+omega       0.8146;      // -   [origin=predictive method=lee-kesler]
+Tb          577.58;      // K   [origin=predictive method=joback]
+HvapTb      57144.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (32.57 0.79236 -0.0002914 -3.25e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH; count 3; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH_ring; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dl-trans-cyclopropane-1,2,3-tricarboxylic acid" "cyclopropane-1,2,3-tricarboxylic acid trimethyl ester" "dl-trans-cyclopropane-1,2,3-tricarboxylic acid methyl ester" );
+gibbsFormation
+{
+    dHf_298   -1148810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     485.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-860880.0
+    phase     gas;
+}

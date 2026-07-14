@@ -59,3 +59,8 @@ provenance
     liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
     triplePoint    "CoolProp reference EOS triple-point T,P";
 }
+
+groups
+{
+    unifac ( { group H2O; count 1; } );   // added from data/groupEstimative (UNIFAC decomposition; vocab-checked vs groups.dat)
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-[3,4-bis(oxidanyl)butoxy-[2,3-bis(oxidanyl)propoxy]methoxy]butane-1,2-diol  (C12H26O9, CAS 25791-96-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        434BisOxidanylButoxy23BisOxidanylPropoxyMethoxyButane12Diol;
+formula     C12H26O9;
+CAS         25791-96-2;
+InChIKey    ZSKSVMDBXFSLMZ-UHFFFAOYSA-N;
+MW          314.331;      // g/mol [origin=calculated method=formula-sum]
+Tc          1429.86;      // K   [origin=predictive method=joback]
+Pc          29.633;      // bar [origin=predictive method=joback]
+omega       1.0892;      // -   [origin=predictive method=lee-kesler]
+Tb          1092.74;      // K   [origin=predictive method=joback]
+HvapTb      148058.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (93.498 1.1818 -0.0004912 2.4e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH; count 3; } { group OH; count 5; } { group CH2O; count 2; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 8; } { group CH; count 4; } { group OH; count 6; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "poly[oxy(methyl-1,2-ethanediyl)], .alpha.,.alpha.',.alpha.''-1,2,3-propanetriyltris[.omega.-hydroxy-" );
+gibbsFormation
+{
+    dHf_298   -1622170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     924.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1095520.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(4-chlorophenyl)-2-methylpropanoic acid  (C10H11ClO2, CAS 6258-30-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24Chlorophenyl2MethylpropanoicAcid;
+formula     C10H11ClO2;
+CAS         6258-30-6;
+InChIKey    SSFDAZXGUKDEAH-UHFFFAOYSA-N;
+MW          198.646;      // g/mol [origin=calculated method=formula-sum]
+Tc          877.80;      // K   [origin=predictive method=joback]
+Pc          31.175;      // bar [origin=predictive method=joback]
+omega       0.7308;      // -   [origin=predictive method=lee-kesler]
+Tb          639.77;      // K   [origin=predictive method=joback]
+HvapTb      61045.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.79 0.99884 -0.00074916 2.173e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C; count 1; } { group ACH; count 4; } { group AC; count 1; } { group COOH; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-chlorophenyl)-2-methyl-propanoic acid" "2-(4-chlorophenyl)-2-methylpropionic acid" "2-(p-chlorophenyl)-2-methylpropionic acid" "4-chloro-alpha,alpha-dimethylphenylacetic acid" "4-chloro-.alpha.,.alpha.-dimethylphenylacetic acid" "4-chloro-a,a-dimethylphenylacetic acid" "hydratropicacid, p-chloro-a-methyl-(6ci,7ci); hydratropic acid, a-methyl-p-chloro- (8ci); 2-(4-chlorophenyl)-2-methylpropanoic acid;2-(4-chlorophenyl)-2-methylpropionic acid; 2-(p-chlorophenyl)-2-methylpropionicacid; 4-chloro-a,a-dimethylbenzeneacetic acid" );
+gibbsFormation
+{
+    dHf_298   -399430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     480.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-216900.0
+    phase     gas;
+}

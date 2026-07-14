@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nn-dimethylsuccinamic acid  (C6H11NO3, CAS 2564-95-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nnDimethylsuccinamicAcid;
+formula     C6H11NO3;
+CAS         2564-95-6;
+InChIKey    WAIGPJMZARQZDX-UHFFFAOYSA-N;
+MW          145.158;      // g/mol [origin=calculated method=formula-sum]
+Tc          744.50;      // K   [origin=predictive method=joback]
+Pc          37.000;      // bar [origin=predictive method=joback]
+omega       0.9031;      // -   [origin=predictive method=lee-kesler]
+Tb          548.70;      // K   [origin=predictive method=joback]
+HvapTb      54903.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.298 0.72054 -0.0004691 1.1656e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group COOH; count 1; } { group CON_CH3_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CdO; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(dimethylamino)-4-oxidanylidene-butanoic acid" "4-(dimethylamino)-4-oxobutanoic acid" "butanoic acid, 4-(dimethylamino)-4-oxo-" "n,n-dimethylsuccinic acid monoamide" "n,n-dimethylsuccinamic acid" "succinamic acid,n-dimethyl-" "succinamic acid, n,n-dimethyl-" "3-(dimethylcarbamoyl)propanoic acid" "3-(n,n-dimethylcarbamoyl)propanoic acid" "n,n-dimethylsuccinamic acid, 98%" "4-(dimethylamino)-4-oxobutanoic acid;n,n-dimethylsuccinamidic acid;nn-dimethylsuccinamic acid;" );
+gibbsFormation
+{
+    dHf_298   -562490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     485.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-362410.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: naphtho[1,2,3,4-ghi]perylene  (C26H14, CAS 190-84-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        naphtho1234GhiPerylene;
+formula     C26H14;
+CAS         190-84-1;
+InChIKey    LGERRYPEGFPVAJ-UHFFFAOYSA-N;
+MW          326.398;      // g/mol [origin=calculated method=formula-sum]
+Tc          1213.51;      // K   [origin=predictive method=joback]
+Pc          21.433;      // bar [origin=predictive method=joback]
+omega       1.0536;      // -   [origin=predictive method=lee-kesler]
+Tb          944.54;      // K   [origin=predictive method=joback]
+HvapTb      87624.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-166.89 2.2256 -0.00211796 7.97e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 14; } { group AC; count 12; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 14; } { group dC_ring; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "naphtho(1,2,3,4-ghi)perylene" "1,12-phenyleneperylene" "1,12-phenyleneperylene;1,12-phenylenoperylene" );
+gibbsFormation
+{
+    dHf_298   654710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     373.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=860680.0
+    phase     gas;
+}

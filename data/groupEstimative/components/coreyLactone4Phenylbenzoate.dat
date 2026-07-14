@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: corey lactone 4-phenylbenzoate  (C21H20O5, CAS 31752-99-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        coreyLactone4Phenylbenzoate;
+formula     C21H20O5;
+CAS         31752-99-5;
+InChIKey    SZJVIFMPKWMGSX-AKHDSKFASA-N;
+MW          352.386;      // g/mol [origin=calculated method=formula-sum]
+Tc          1181.32;      // K   [origin=predictive method=joback]
+Pc          19.052;      // bar [origin=predictive method=joback]
+omega       1.3533;      // -   [origin=predictive method=lee-kesler]
+Tb          951.18;      // K   [origin=predictive method=joback]
+HvapTb      98255.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-102.209 1.9547 -0.00128476 3.026e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 4; } { group ACH; count 9; } { group AC; count 3; } { group OH; count 1; } { group CH2COO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 4; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(3ar,4s,5r,6as)-4-(hydroxymethyl)-2-oxidanylidene-3,3a,4,5,6,6a-hexahydrocyclopenta[b]furan-5-yl] 4-phenylbenzoate" "(-)-corey lactone 4-phenylbenzoate alcohol" "(-)-corey lactone, 4-phenylbenzoate alcohol" "(-)-corey lactone 5-(4-phenylbenzoate)" "(3ar,4s,5r,6as)-hexahydro-4-hydroxymethyl-5-(4-phenylbenzoyloxy)cyclopenta[b]furan-2-one" "(-)-corey lactone 5-(4-phenylbenzoate" "(3a" "a,4" "a,5" "a,6a" "a)-(-)-hexahydro-4-(hydroxymethyl)-2-oxo-2h-cyclopenta[b]furan-5-yl 1,1 inverted exclamation marka-biphenyl-4-carboxylate" "(3aalpha,4alpha,5beta,6aalpha)-(-)-hexahydro-4-(hydroxymethyl)-2-oxo-2h-cyclopenta[b]furan-5-yl 1,1'-biphenyl-4-carboxylate" "(3ar,4s,5r,6as)-[1,1'-biphenyl]-4-carboxylic acid, hexahydro-4-(methoxymethyl)-2-oxo-2h-cyclopentafuran-5-yl ester" "(3ar,4s,5r,6as)-4-(hydroxymethyl)-2-oxo-hexahydro-2h-cyclopenta[b]furan-5-yl 4-phenylbenzoate" "(3ar,4s,5r,6as)-hexahydro-4-(hydroxymethyl)-5-(4-phenylbenzoyloxy)cyclopenta[b]furan-2-one" "[(3ar,4s,5r,6as)-4-(hydroxymethyl)-2-oxo-3,3a,4,5,6,6a-hexahydrocyclopenta[b]furan-5-yl] 4-phenylbenzoate" );
+gibbsFormation
+{
+    dHf_298   -697050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     643.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-310350.0
+    phase     gas;
+}

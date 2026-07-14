@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-butenal, 2-bromo-  (C4H5BrO, CAS 24247-53-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Butenal2Bromo;
+formula     C4H5BrO;
+CAS         24247-53-8;
+InChIKey    DOZLVLCBCZGSSH-UHFFFAOYSA-N;
+MW          148.987;      // g/mol [origin=calculated method=formula-sum]
+Tc          618.68;      // K   [origin=predictive method=joback]
+Pc          50.875;      // bar [origin=predictive method=joback]
+omega       0.4182;      // -   [origin=predictive method=lee-kesler]
+Tb          409.98;      // K   [origin=predictive method=joback]
+HvapTb      37691.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.97 0.41642 -0.0003443 1.176e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH=C; count 1; } { group CHO; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH; count 1; } { group dC; count 1; } { group Br; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanylbut-2-enal" "(z)-2-bromobut-2-enal" "crotonaldehyde,2-bromo- (6ci,7ci,8ci); 2-bromo-2-butenal; 2-bromocrotonaldehyde; a-bromocrotonaldehyde" );
+gibbsFormation
+{
+    dHf_298   -77710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     370.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-30730.0
+    phase     gas;
+}

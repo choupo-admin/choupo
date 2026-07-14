@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: aqualose  (C29H50O2, CAS 30788-35-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        aqualose;
+formula     C29H50O2;
+CAS         30788-35-3;
+InChIKey    NPYXBHZQVNRAOF-UHFFFAOYSA-N;
+MW          430.717;      // g/mol [origin=calculated method=formula-sum]
+Tc          1244.31;      // K   [origin=predictive method=joback]
+Pc          9.444;      // bar [origin=predictive method=joback]
+omega       0.9097;      // -   [origin=predictive method=lee-kesler]
+Tb          1015.76;      // K   [origin=predictive method=joback]
+HvapTb      96698.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-282.705 3.6859 -0.00294764 1.0263e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 11; } { group CH; count 7; } { group C; count 2; } { group CH=C; count 1; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 5; } { group CH; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[[10,13-dimethyl-17-(6-methylheptan-2-yl)-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-yl]oxy]ethanol" "choleth 24" "choleth-10" "choleth-20" "choleth-24" "solulan c-24" "polyoxyethylene-24-cholesteryl ether" "peg-10 cholesteryl ether" "peg-20 cholesteryl ether" "peg-24 cholesteryl ether" "polyoxyethylene cholesteryl ether" "5-cholestene-3beta-polyethyleneoxide" );
+gibbsFormation
+{
+    dHf_298   -660730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1035.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=115320.0
+    phase     gas;
+}

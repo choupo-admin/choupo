@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isoamyl phenylacetate  (C13H18O2, CAS 102-19-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isoamylPhenylacetate;
+formula     C13H18O2;
+CAS         102-19-2;
+InChIKey    QWBQBUWZZBUFHN-UHFFFAOYSA-N;
+MW          206.285;      // g/mol [origin=calculated method=formula-sum]
+Tc          786.20;      // K   [origin=predictive method=joback]
+Pc          22.208;      // bar [origin=predictive method=joback]
+omega       0.6516;      // -   [origin=predictive method=lee-kesler]
+Tb          581.50;      // K   [origin=predictive method=joback]
+HvapTb      53827.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.107 1.11104 -0.0006232 1.114e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylbutyl 2-phenylethanoate" "benzeneacetic acid, 3-methylbutyl ester" "isopentyl phenylacetate" "3-methylbutyl phenylacetate" "isopentyl 2-phenylacetate" "3-methylbutyl 2-phenylacetate" "isopentylphenylacetate" "phenylacetic acid isoamyl ester" "isoamyl alpha-toluate" "phenylacetic acid, isopentyl ester" "3-methylbutyl benzeneacetate" );
+gibbsFormation
+{
+    dHf_298   -397680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     597.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-141820.0
+    phase     gas;
+}

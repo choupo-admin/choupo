@@ -61,7 +61,7 @@ int MultiStreamHX::solve(const DictPtr& dict,
     const scalar Tref = 298.15;
     auto hStream = [&](scalar T, scalar P, scalar vf, const sVector& z) -> scalar
     {
-        return useFormation ? thermo.H_stream(T, P, vf, z)
+        return useFormation ? thermo.H_stream_formation(T, P, vf, z)
                             : thermo.Hliquid(T, z, Tref);
     };
 

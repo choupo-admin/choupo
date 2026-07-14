@@ -28,8 +28,12 @@ License
 
 #include "PR.H"
 
+#include "core/Advisory.H"
+#include "thermo/ThermoAnnounce.H"
+
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 
 namespace Choupo {
@@ -154,7 +158,7 @@ void PR::buildMix(scalar T, const sVector& y,
     if (aij_out) *aij_out = std::move(aij);
 }
 
-scalar PR::cardano_vapourRoot(scalar A, scalar B) const
+scalar PR::cardano_root(scalar A, scalar B, bool liquid) const
 {
     // PR cubic:  Z³ − (1−B)Z² + (A − 2B − 3B²)Z − (AB − B² − B³) = 0
     const scalar p2 =  B - 1.0;
@@ -171,9 +175,13 @@ scalar PR::cardano_vapourRoot(scalar A, scalar B) const
 
     auto pickVapourRoot = [&](std::initializer_list<scalar> roots) -> scalar
     {
-        scalar best = -1.0e300;
+        // vapour: LARGEST physical root; liquid: SMALLEST (> co-volume B).
+        // One real root (supercritical / single-phase): both pick it -- the
+        // caller (stability test / flash) owns the trivial-root question.
+        scalar best = liquid ? 1.0e300 : -1.0e300;
         for (auto r : roots)
-            if (r > B + 1.0e-12 && r > best) best = r;
+            if (r > B + 1.0e-12 && (liquid ? r < best : r > best)) best = r;
+        if (liquid && best == 1.0e300) best = -1.0e300;   // fall through to the guard
         if (best == -1.0e300)
             for (auto r : roots)
                 if (r > best) best = r;
@@ -209,7 +217,7 @@ scalar PR::Z(scalar T, scalar P, const sVector& y) const
     const scalar RT = constant::R * T;
     const scalar A = a_mix * P / (RT * RT);
     const scalar B = b_mix * P / RT;
-    return cardano_vapourRoot(A, B);
+    return cardano_root(A, B, false);
 }
 
 scalar PR::molarVolume(scalar T, scalar P, const sVector& y) const
@@ -227,7 +235,40 @@ sVector PR::phi(scalar T, scalar P, const sVector& y) const
     const scalar RT = constant::R * T;
     const scalar A = a_mix * P / (RT * RT);
     const scalar B = b_mix * P / RT;
-    const scalar Zv = cardano_vapourRoot(A, B);
+    const scalar Zv = cardano_root(A, B, false);
+    const scalar ln_ZmB   = std::log(std::max(Zv - B, 1.0e-30));
+    const scalar ln_genB  = std::log((Zv + SIG * B) / (Zv + EPS * B));
+
+    sVector lnphi(n_, 0.0);
+    for (std::size_t i = 0; i < n_; ++i)
+    {
+        scalar sumA = 0.0;
+        for (std::size_t j = 0; j < n_; ++j)
+            sumA += y[j] * aij[i][j];
+
+        const scalar bi_over_b = pure_[i].b / b_mix;
+
+        lnphi[i] = bi_over_b * (Zv - 1.0)
+                  - ln_ZmB
+                  - (A / (SmE * B)) * (2.0 * sumA / a_mix - bi_over_b) * ln_genB;
+    }
+    sVector phi(n_, 0.0);
+    for (std::size_t i = 0; i < n_; ++i) phi[i] = std::exp(lnphi[i]);
+    return phi;
+}
+
+// phi of the LIQUID root -- the other half of the phi-phi K-value.
+sVector PR::phiLiquid(scalar T, scalar P, const sVector& y) const
+{
+    scalar a_mix, dadT_mix, b_mix;
+    std::vector<scalar> a_per;
+    std::vector<std::vector<scalar>> aij;
+    buildMix(T, y, a_mix, dadT_mix, b_mix, &a_per, &aij);
+
+    const scalar RT = constant::R * T;
+    const scalar A = a_mix * P / (RT * RT);
+    const scalar B = b_mix * P / RT;
+    const scalar Zv = cardano_root(A, B, true);
     const scalar ln_ZmB   = std::log(std::max(Zv - B, 1.0e-30));
     const scalar ln_genB  = std::log((Zv + SIG * B) / (Zv + EPS * B));
 
@@ -256,7 +297,7 @@ scalar PR::H_residual(scalar T, scalar P, const sVector& y) const
     const scalar RT = constant::R * T;
     const scalar A = a_mix * P / (RT * RT);
     const scalar B = b_mix * P / RT;
-    const scalar Zv = cardano_vapourRoot(A, B);
+    const scalar Zv = cardano_root(A, B, false);
     const scalar ln_genB = std::log((Zv + SIG * B) / (Zv + EPS * B));
 
     return RT * (Zv - 1.0)
@@ -270,7 +311,7 @@ scalar PR::S_residual(scalar T, scalar P, const sVector& y) const
     const scalar RT = constant::R * T;
     const scalar A = a_mix * P / (RT * RT);
     const scalar B = b_mix * P / RT;
-    const scalar Zv = cardano_vapourRoot(A, B);
+    const scalar Zv = cardano_root(A, B, false);
     const scalar ln_genB = std::log((Zv + SIG * B) / (Zv + EPS * B));
 
     return constant::R * std::log(std::max(Zv - B, 1.0e-30))
@@ -303,6 +344,19 @@ PR::fromDict(const DictPtr& eosDict, const std::vector<Component>& comps)
                     + (idx_i == n ? i_name : j_name) + "'");
             kij[idx_i][idx_j] = k;
             kij[idx_j][idx_i] = k;
+            // Announce the fitted constant WHERE IT IS CONSUMED, so BOTH entry
+            // paths -- a propertyPackage's parameters.kijPairs record (inlined
+            // by the builder) AND a legacy inline binaryInteractions list --
+            // pass through this one announcement point.  The builder's own
+            // line keeps only the citation (which record file).  Deduped via
+            // AdvisoryLog (the package constructs the cubic once per phase).
+            if (thermoAnnounce()
+                && AdvisoryLog::instance().add("thermo", "info",
+                       "kij(" + i_name + "," + j_name + ")",
+                       "PR kij(" + i_name + "," + j_name + ") = "
+                       + std::to_string(k)))
+                std::cout << "[eos] kij(" << i_name << "," << j_name
+                          << ") = " << k << "\n";
         }
     }
 

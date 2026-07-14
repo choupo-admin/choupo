@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9,9'-bianthracene  (C28H18, CAS 1055-23-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        99Bianthracene;
+formula     C28H18;
+CAS         1055-23-8;
+InChIKey    SXGIRTCIFPJUEQ-UHFFFAOYSA-N;
+MW          354.452;      // g/mol [origin=calculated method=formula-sum]
+Tc          1268.54;      // K   [origin=predictive method=joback]
+Pc          18.515;      // bar [origin=predictive method=joback]
+omega       0.9714;      // -   [origin=predictive method=lee-kesler]
+Tb          989.44;      // K   [origin=predictive method=joback]
+HvapTb      91682.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-158.95 2.2532 -0.00184052 5.978e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 18; } { group AC; count 10; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 18; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9-anthracen-9-ylanthracene" "9,9'-bianthryl" "9,9-bianthracene" "9,9'-bianthranyl" "9,9'-dianthracene" "9,9'-bianthracenyl" "9-(9-anthryl)anthracene" "9-(9-anthracenyl)anthracene" "r499" "9,9 inverted exclamation mark -bianthracene" );
+gibbsFormation
+{
+    dHf_298   570210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     573.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=797780.0
+    phase     gas;
+}

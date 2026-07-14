@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethyl trans-1,2-cyclopropanedicarboxylate  (C7H10O4, CAS 826-35-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethylTrans12Cyclopropanedicarboxylate;
+formula     C7H10O4;
+CAS         826-35-7;
+InChIKey    JBVOSZYUSFDYIN-RFZPGFLSSA-N;
+MW          158.153;      // g/mol [origin=calculated method=formula-sum]
+Tc          671.70;      // K   [origin=predictive method=joback]
+Pc          31.456;      // bar [origin=predictive method=joback]
+omega       0.5867;      // -   [origin=predictive method=lee-kesler]
+Tb          478.27;      // K   [origin=predictive method=joback]
+HvapTb      45594.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.04 0.68364 -0.0003326 2.9e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dimethyl (1r,2r)-cyclopropane-1,2-dicarboxylate" "cyclopropane-1,2-dicarboxylic acid dimethyl ester, e" "1,2-cyclopropanedicarboxylicacid, 1,2-dimethyl ester, (1r,2r)-rel-" "1,2-cyclopropanedicarboxylicacid, dimethyl ester, (1r,2r)-rel- (9ci); 1,2-cyclopropanedicarboxylic acid,dimethyl ester, trans- (8ci); (trans)-1,2-bis(methoxycarbonyl)cyclopropane;dimethyl (?a'a a'a currency)-trans-cyclopropane-1,2-dicarboxylate;dimethyl trans-1,2-cyclopropanedicarboxylate; dimethyltrans-cyclopropane-1,2-dicarboxylate" );
+gibbsFormation
+{
+    dHf_298   -769910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     398.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-559640.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: melevodopa  (C10H13NO4, CAS 7101-51-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        melevodopa;
+formula     C10H13NO4;
+CAS         7101-51-1;
+InChIKey    XBBDACCLCFWBSI-ZETCQYMHSA-N;
+MW          211.217;      // g/mol [origin=calculated method=formula-sum]
+Tc          986.71;      // K   [origin=predictive method=joback]
+Pc          45.716;      // bar [origin=predictive method=joback]
+omega       1.2609;      // -   [origin=predictive method=lee-kesler]
+Tb          746.63;      // K   [origin=predictive method=joback]
+HvapTb      83818.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.729 1.19712 -0.00101612 3.529e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 3; } { group ACCH2; count 1; } { group ACOH; count 2; } { group CHNH2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl (2s)-2-azanyl-3-[3,4-bis(oxidanyl)phenyl]propanoate" "levodopa methyl ester" "l-dopa methyl ester" "melevodopa [inn]" "3-hydroxy-l-tyrosine methyl ester" "melevodopa (inn)" "(s)-2-amino-3-(3,4-dihydroxy-phenyl" "l-3-(3,4-dihydroxyphenyl)alanine methyl ester" "(s)-methyl 2-amino-3-(3,4-dihydroxyphenyl)propanoate" "alanine, 3-(3,4-dihydroxyphenyl)-, methyl ester, l-" "methyl l-dopa" "dl-dopa methyl ester" );
+gibbsFormation
+{
+    dHf_298   -656590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     585.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-409870.0
+    phase     gas;
+}

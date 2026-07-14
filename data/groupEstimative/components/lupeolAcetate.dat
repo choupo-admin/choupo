@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lupeol acetate  (C32H52O2, CAS 1617-68-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lupeolAcetate;
+formula     C32H52O2;
+CAS         1617-68-1;
+InChIKey    ODSSDTBFHAYYMD-YOJQYFTNSA-N;
+MW          468.766;      // g/mol [origin=calculated method=formula-sum]
+Tc          1264.46;      // K   [origin=predictive method=joback]
+Pc          8.595;      // bar [origin=predictive method=joback]
+omega       0.6947;      // -   [origin=predictive method=lee-kesler]
+Tb          1019.04;      // K   [origin=predictive method=joback]
+HvapTb      86631.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-499.73 4.96646 -0.0048008 1.9696e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 7; } { group CH2; count 10; } { group CH; count 6; } { group C; count 5; } { group CH2=C; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 10; } { group CH_ring; count 6; } { group C_ring; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(1r,3ar,5ar,5br,7ar,9s,11ar,11br,13ar,13br)-3a,5a,5b,8,8,11a-hexamethyl-1-prop-1-en-2-yl-1,2,3,4,5,6,7,7a,9,10,11,11b,12,13,13a,13b-hexadecahydrocyclopenta[a]chrysen-9-yl] ethanoate" "lupeyl acetate" "3-acetyllupeol" "lupenyl acetate" "3-o-acetyllupeol" "(3beta)-lup-20(29)-en-3-yl acetate" "lup-20(29)-en-3beta-ol, acetate (8ci)" "lup-20(29)-en-3-ol, acetate, (3beta)-" "[(1r,3ar,5ar,5br,7ar,9s,11ar,11br,13ar,13br)-3a,5a,5b,8,8,11a-hexamethyl-1-prop-1-en-2-yl-1,2,3,4,5,6,7,7a,9,10,11,11b,12,13,13a,13b-hexadecahydrocyclopenta[a]chrysen-9-yl] acetate" "acetic acid (1r,3ar,4s,5ar,5br,7ar,9s,11ar,11br,13ar,13br)-1-isopropenyl-3a,5a,5b,8,8,11a-hexamethyl-eicosahydro-cyclopenta[a]chrysen-9-yl ester" );
+gibbsFormation
+{
+    dHf_298   -624250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1206.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=144920.0
+    phase     gas;
+}

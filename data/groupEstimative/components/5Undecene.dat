@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-undecene  (C11H22, CAS 764-96-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Undecene;
+formula     C11H22;
+CAS         764-96-5;
+InChIKey    NGCRXXLKJAAUQQ-UHFFFAOYSA-N;
+MW          154.297;      // g/mol [origin=calculated method=formula-sum]
+Tc          624.68;      // K   [origin=predictive method=joback]
+Pc          20.254;      // bar [origin=predictive method=joback]
+omega       0.5111;      // -   [origin=predictive method=lee-kesler]
+Tb          455.44;      // K   [origin=predictive method=joback]
+HvapTb      40038.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-21.293 1.06884 -0.0006584 1.671e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 7; } { group CH=CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 7; } { group dCH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "undec-5-ene" "(5e)-5-undecene" "5-undecene, (5e)-" "5-undecene,(e)- (8ci); (e)-5-undecene; trans-5-undecene; e-trans-undecene" );
+gibbsFormation
+{
+    dHf_298   -153150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     577.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=121960.0
+    phase     gas;
+}

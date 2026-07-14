@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: p,p'-dibromodiphenyl trichloroethane  (C14H9Br2Cl3, CAS 2990-17-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pPDibromodiphenylTrichloroethane;
+formula     C14H9Br2Cl3;
+CAS         2990-17-2;
+InChIKey    YPWDDFGPYBIPBG-UHFFFAOYSA-N;
+MW          443.384;      // g/mol [origin=calculated method=formula-sum]
+Tc          1114.90;      // K   [origin=predictive method=joback]
+Pc          28.414;      // bar [origin=predictive method=joback]
+omega       0.7829;      // -   [origin=predictive method=lee-kesler]
+Tb          824.18;      // K   [origin=predictive method=joback]
+HvapTb      76975.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.15 1.2855 -0.00104512 3.232e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 3; } { group ACCH; count 1; } { group CCl3; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group Cl; count 3; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-4-[1-(4-bromophenyl)-2,2,2-tris(chloranyl)ethyl]benzene" "1-bromo-4-[1-(4-bromophenyl)-2,2,2-trichloroethyl]benzene" "1,1,1-trichloro-2,2-bis(p-bromophenyl)ethane" "1,1-bis(p-bromophenyl)-2,2,2-trichloroethane" "2,2-bis(4-bromophenyl)-1,1,1-trichloroethane" "2,2-bis(p-bromophenyl)-1,1,1-trichloroethane" "ethane, 2,2-bis(4-bromophenyl)-1,1,1-trichloro-" "bromobromophenyltrichloroethylbenzene" "1,1-trichloro-2,2-bis(p-bromophenyl)ethane" "ethane,2-bis(p-bromophenyl)-1,1,1-trichloro-" "ethane,2-bis(4-bromophenyl)-1,1,1-trichloro-" "ethane, 2,2-bis(p-bromophenyl)-1,1,1-trichloro-" );
+gibbsFormation
+{
+    dHf_298   109240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     630.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=265810.0
+    phase     gas;
+}

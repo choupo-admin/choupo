@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-iodobutane  (C4H9I, CAS 542-69-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Iodobutane;
+formula     C4H9I;
+CAS         542-69-8;
+InChIKey    KMGBZBJJOKUPIA-UHFFFAOYSA-N;
+MW          184.016;      // g/mol [origin=calculated method=formula-sum]
+Tc          588.58;      // K   [origin=predictive method=joback]
+Pc          37.916;      // bar [origin=predictive method=joback]
+omega       0.2580;      // -   [origin=predictive method=lee-kesler]
+Tb          384.26;      // K   [origin=predictive method=joback]
+HvapTb      33871.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.943 0.42282 -0.0002752 7.63e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-iodanylbutane" "butyl iodide" "butane, 1-iodo-" "n-butyl iodide" "butane, iodo-" "iodobutane" "1-iodo-butane" "1-jodbutan" "sjphavijup@" "1-butyliodide" "iodobutane(1-)" );
+gibbsFormation
+{
+    dHf_298   -49020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     367.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=40920.0
+    phase     gas;
+}

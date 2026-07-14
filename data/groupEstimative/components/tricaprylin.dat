@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tricaprylin  (C27H50O6, CAS 538-23-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tricaprylin;
+formula     C27H50O6;
+CAS         538-23-8;
+InChIKey    VLPFTAMPNXLGLX-UHFFFAOYSA-N;
+MW          470.691;      // g/mol [origin=calculated method=formula-sum]
+Tc          1228.57;      // K   [origin=predictive method=joback]
+Pc          6.973;      // bar [origin=predictive method=joback]
+omega       0.5312;      // -   [origin=predictive method=lee-kesler]
+Tb          991.58;      // K   [origin=predictive method=joback]
+HvapTb      97529.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (52.89 2.41036 -0.0011644 1.383e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 17; } { group CH; count 1; } { group CH2COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 20; } { group CH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-di(octanoyloxy)propyl octanoate" "trioctanoin" "glycerol tricaprylate" "glycerol trioctanoate" "trioctanoylglycerol" "caprylin" "rato" "glyceryl trioctanoate" "octanoin, tri-" "maceight" "glyceryl tricaprylate" "tricaprylic glyceride" );
+gibbsFormation
+{
+    dHf_298   -1557730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1352.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-757090.0
+    phase     gas;
+}

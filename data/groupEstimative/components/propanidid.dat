@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propanidid  (C18H27NO5, CAS 1421-14-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        propanidid;
+formula     C18H27NO5;
+CAS         1421-14-3;
+InChIKey    KEJXLQUPYHWCNM-UHFFFAOYSA-N;
+MW          337.416;      // g/mol [origin=calculated method=formula-sum]
+Tc          1015.45;      // K   [origin=predictive method=joback]
+Pc          14.646;      // bar [origin=predictive method=joback]
+omega       1.1304;      // -   [origin=predictive method=lee-kesler]
+Tb          817.45;      // K   [origin=predictive method=joback]
+HvapTb      80278.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (54.296 1.43068 -0.00062982 4.036e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group ACH; count 3; } { group AC; count 3; } { group CH2COO; count 1; } { group CH3O; count 1; } { group CH2O; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 6; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group CdO; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propyl 2-[4-[2-(diethylamino)-2-oxidanylidene-ethoxy]-3-methoxy-phenyl]ethanoate" "epontol" "sombrevin" "propanidide" "fabantol" "fabontal" "propantan" "propanidide [inn-french]" "propanididum [inn-latin]" "benzeneacetic acid, 4-(2-(diethylamino)-2-oxoethoxy)-3-methoxy-, propyl ester" "benzeneacetic acid, 4-[2-(diethylamino)-2-oxoethoxy]-3-methoxy-, propyl ester" "propyl(4-((diethylcarbamoyl)methoxy)-3-methoxyphenyl)acetate" );
+gibbsFormation
+{
+    dHf_298   -828030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     854.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-344680.0
+    phase     gas;
+}

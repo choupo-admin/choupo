@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isosorbide  (C6H10O4, CAS 652-67-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isosorbide;
+formula     C6H10O4;
+CAS         652-67-5;
+InChIKey    KLDXJTOLSGUMSJ-JGWLITMVSA-N;
+MW          146.142;      // g/mol [origin=calculated method=formula-sum]
+Tc          777.19;      // K   [origin=predictive method=joback]
+Pc          52.207;      // bar [origin=predictive method=joback]
+omega       1.3370;      // -   [origin=predictive method=lee-kesler]
+Tb          587.82;      // K   [origin=predictive method=joback]
+HvapTb      70880.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-56.19 0.8654 -0.0005724 1.448e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 4; } { group OH; count 2; } { group FCH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group CH_ring; count 4; } { group OH; count 2; } { group O_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,3ar,6r,6ar)-2,3,3a,5,6,6a-hexahydrofuro[3,2-b]furan-3,6-diol" "devicoran" "hydronol" "ismotic" "isobide" "sorbid" "vascardin dinitrate" "(+)-d-isosorbide" "1,4-dianhydrosorbitol" "dianhydrosorbitol" "hydronol (van)" "1,4:3,6-dianhydrosorbitol" );
+gibbsFormation
+{
+    dHf_298   -643030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     163.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-364360.0
+    phase     gas;
+}

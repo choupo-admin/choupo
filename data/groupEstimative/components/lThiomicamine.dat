@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: l-thiomicamine  (C10H15NO2S, CAS 17167-98-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lThiomicamine;
+formula     C10H15NO2S;
+CAS         17167-98-5;
+InChIKey    IULJJGJXIGQINK-UHFFFAOYSA-N;
+MW          213.295;      // g/mol [origin=calculated method=formula-sum]
+Tc          996.51;      // K   [origin=predictive method=joback]
+Pc          39.655;      // bar [origin=predictive method=joback]
+omega       1.6362;      // -   [origin=predictive method=lee-kesler]
+Tb          784.85;      // K   [origin=predictive method=joback]
+HvapTb      90832.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.501 0.95151 -0.00055476 1.104e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH; count 1; } { group OH; count 2; } { group CHNH2; count 1; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 2; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-1-(4-methylsulfanylphenyl)propane-1,3-diol" "1,3-propanediol, 2-amino-1-[4-(methylthio)phenyl]-" "2-amino-1-(4-methylsulfanylphenyl)propane-1,3-diol" "(r(r*,r*))-2-amino-1-(p-(methylthio)phenyl)propane-1,3-diol" "(s(r*,r*))-2-amino-1-(p-(methylthio)phenyl)propane-1,3-diol" );
+gibbsFormation
+{
+    dHf_298   -264030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     628.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-42850.0
+    phase     gas;
+}

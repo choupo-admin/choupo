@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3-dimethylbicyclo[2.2.1]heptane-2-carboxylic acid  (C10H16O2, CAS 52557-98-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33Dimethylbicyclo221Heptane2CarboxylicAcid;
+formula     C10H16O2;
+CAS         52557-98-9;
+InChIKey    KJKODDSNIDHCKV-UHFFFAOYSA-N;
+MW          168.236;      // g/mol [origin=calculated method=formula-sum]
+Tc          804.48;      // K   [origin=predictive method=joback]
+Pc          30.024;      // bar [origin=predictive method=joback]
+omega       0.6686;      // -   [origin=predictive method=lee-kesler]
+Tb          582.56;      // K   [origin=predictive method=joback]
+HvapTb      53247.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-145.32 1.53574 -0.0014086 5.461e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 3; } { group C; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 3; } { group C_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bicyclo[2.2.1]heptane-2-carboxylic acid, 3,3-dimethyl-" "3,3-dimethylbicyclo(2.2.1)heptane-2-carboxylic acid" "bicyclo(2.2.1)heptane-2-carboxylic acid, 3,3-dimethyl-" "agn-pc-00a6mz" "bicyclo[2.2.1]heptane-2-carboxylicacid, 3,3-dimethyl-" "endo-3,3-dimethylbicyclo(2.2.1)heptane-2-carboxylic acid" "exo-3,3-dimethylbicyclo(2.2.1)heptane-2-carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -486000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     422.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-222100.0
+    phase     gas;
+}

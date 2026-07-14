@@ -55,6 +55,9 @@ Description
 
 namespace Choupo {
 
+class Component;
+class ElectrolyteModel;
+
 class ActivityModel
 {
 public:
@@ -106,11 +109,17 @@ public:
         return {};
     }
 
-    using Factory = std::function<std::unique_ptr<ActivityModel>(const DictPtr&, const std::vector<std::string>&)>;
+    // Composition-over-MI accessor (Workstream A2): an electrolyte activity model
+    // exposes its ElectrolyteModel engine (the molality+charge surface) here;
+    // molecular models return nullptr.  ThermoPackage reaches the engine through
+    // THIS -- never an RTTI dynamic_cast.
+    virtual const ElectrolyteModel* asElectrolyte() const { return nullptr; }
+
+    using Factory = std::function<std::unique_ptr<ActivityModel>(const DictPtr&, const std::vector<Component>&)>;
 
     static void registerModel(const std::string& name, Factory f);
     static std::unique_ptr<ActivityModel> New(const DictPtr& dict,
-        const std::vector<std::string>& componentNames);
+        const std::vector<Component>& components);
 
     static void registerBuiltins();
 

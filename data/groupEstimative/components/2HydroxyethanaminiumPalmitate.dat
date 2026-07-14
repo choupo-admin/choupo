@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-hydroxyethanaminium palmitate  (C18H39NO3, CAS 2210-62-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2HydroxyethanaminiumPalmitate;
+formula     C18H39NO3;
+CAS         2210-62-0;
+InChIKey    AXAURZWPEBQDNG-UHFFFAOYSA-N;
+MW          317.514;      // g/mol [origin=calculated method=formula-sum]
+Tc          1130.27;      // K   [origin=predictive method=joback]
+Pc          12.792;      // bar [origin=predictive method=joback]
+omega       1.1904;      // -   [origin=predictive method=lee-kesler]
+Tb          923.06;      // K   [origin=predictive method=joback]
+HvapTb      100440.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (43.726 1.65432 -0.000687 3.46e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 15; } { group OH; count 1; } { group CH2NH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 16; } { group OH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanylethanol;hexadecanoic acid" "palmitic acid, ethanolamine salt" "(2-hydroxyethyl)ammonium palmitate" "hexadecanoic acid, compd. with 2-aminoethanol (1:1)" "2-aminoethanol; hexadecanoic acid" "hexadecanoic acid - 2-aminoethanol (1:1)" );
+gibbsFormation
+{
+    dHf_298   -995180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1120.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-418360.0
+    phase     gas;
+}

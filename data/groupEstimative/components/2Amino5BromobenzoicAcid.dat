@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-amino-5-bromobenzoic acid  (C7H6BrNO2, CAS 5794-88-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Amino5BromobenzoicAcid;
+formula     C7H6BrNO2;
+CAS         5794-88-7;
+InChIKey    CUKXRHLWPSBCTI-UHFFFAOYSA-N;
+MW          216.034;      // g/mol [origin=calculated method=formula-sum]
+Tc          935.12;      // K   [origin=predictive method=joback]
+Pc          52.970;      // bar [origin=predictive method=joback]
+omega       0.9921;      // -   [origin=predictive method=lee-kesler]
+Tb          680.60;      // K   [origin=predictive method=joback]
+HvapTb      69016.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.5 0.6218 -0.00044152 1.209e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACNH2; count 1; } { group COOH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-5-bromanyl-benzoic acid" "5-bromoanthranilic acid" "anthranilic acid, 5-bromo-" "2-amino-5-bromo-benzoic acid" "benzoic acid, 2-amino-5-bromo-" "2-amino-5-bromobenzoicacid" "2-amino-6-bromobenzoicacid" "2-amino-5-bromo benzoic acid" "5-bromo anthranilic acid" "5-bromo-2-aminobenzoic acid" "5-bromoanthranilic acid;anthranilic acid, 5-bromo-;benzoic acid, 2-amino-5-bromo-;" "sx1" );
+gibbsFormation
+{
+    dHf_298   -264370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     465.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-161930.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propargyl propionate  (C6H8O2, CAS 1932-92-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        propargylPropionate;
+formula     C6H8O2;
+CAS         1932-92-9;
+InChIKey    BGRYSGVIVVUJHH-UHFFFAOYSA-N;
+MW          112.128;      // g/mol [origin=calculated method=formula-sum]
+Tc          571.48;      // K   [origin=predictive method=joback]
+Pc          37.135;      // bar [origin=predictive method=joback]
+omega       0.3782;      // -   [origin=predictive method=lee-kesler]
+Tb          385.22;      // K   [origin=predictive method=joback]
+HvapTb      36215.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (36.622 0.42512 -0.00020393 2.149e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2COO; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group tCH; count 1; } { group tC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "prop-2-ynyl propanoate" "2-propyn-1-ol, propanoate" "2-propynyl propionate" "2-propyn-1-ol, propionate" "2-propyn-1-ol, 1-propanoate" "propargyl proprionate" "2-propyn-1-ol,propanoate" "prop-2-yn-1-yl propanoate" "propionic acid propargyl ester" "propanoic acid, 2-propynyl ester" "propanoic acid 2-propyn-1-yl ester" "2-propyn-1-ol,propanoate (9ci);2-propyn-1-ol, propionate (7ci,8ci);propionic acid,2-propynyl ester (6ci);2-propynyl propanoate;propargyl propionate;" );
+gibbsFormation
+{
+    dHf_298   -192550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     410.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-87660.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-[2,2-bis(hydroxymethyl)butoxycarbonyl]benzene-1,3-dicarboxylic acid  (C15H18O8, CAS 95823-41-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        422BisHydroxymethylButoxycarbonylBenzene13DicarboxylicAcid;
+formula     C15H18O8;
+CAS         95823-41-9;
+InChIKey    KDIFDHMYISQIGQ-UHFFFAOYSA-N;
+MW          326.301;      // g/mol [origin=calculated method=formula-sum]
+Tc          1360.87;      // K   [origin=predictive method=joback]
+Pc          25.741;      // bar [origin=predictive method=joback]
+omega       1.8028;      // -   [origin=predictive method=lee-kesler]
+Tb          1109.81;      // K   [origin=predictive method=joback]
+HvapTb      126381.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.664 1.47152 -0.00097252 2.334e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group C; count 1; } { group ACH; count 3; } { group AC; count 3; } { group OH; count 2; } { group COOH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 2; } { group COOH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,4-benzenetricarboxylic acid, 1(or 2)-(2,2-bis(hydroxymethyl)butyl) 2,4(or 1,4)-bis(2-hydroxy-3-((1-oxoneodecyl)oxy)propyl) ester, mono(hydrogen 1,2-benzenedicarboxylate)" );
+gibbsFormation
+{
+    dHf_298   -1470370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     841.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1100420.0
+    phase     gas;
+}

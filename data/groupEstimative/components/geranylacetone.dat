@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: geranylacetone  (C13H22O, CAS 689-67-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        geranylacetone;
+formula     C13H22O;
+CAS         689-67-8;
+InChIKey    HNZUNIKWNYHEJJ-UHFFFAOYSA-N;
+MW          194.318;      // g/mol [origin=calculated method=formula-sum]
+Tc          747.83;      // K   [origin=predictive method=joback]
+Pc          19.086;      // bar [origin=predictive method=joback]
+omega       0.6394;      // -   [origin=predictive method=lee-kesler]
+Tb          558.99;      // K   [origin=predictive method=joback]
+HvapTb      51354.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.316 1.25068 -0.0008369 2.3286e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH=C; count 2; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 4; } { group dCH; count 2; } { group dC; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6,10-dimethylundeca-5,9-dien-2-one" "geranyl acetone" "5,9-undecadien-2-one, 6,10-dimethyl-" "6,10-dimethyl-undeca-5,9-dien-2-one" "undecadien-2-one, 6,10-dimethyl-" "6,10-dimethyl-5,9-undecadiene-2-one" "cis,trans-geranylacetone" "5,9-undecadien-2-one,6,10-dimethyl-, (5z)-" "(e)-6,10-dimethyl-5,9-undecadien-2-one;(e)-geranylacetone;6,10-dimethyl-(e)-5,9-undecadien-2-one;trans-6,10-dimethyl-5,9-undecadien-2-one;" "5,9-undecadien-2-one,6,10-dimethyl-, (z)- (8ci); 5,9-undecadien-2-one, 6,10-dimethyl-, cis- (6ci);(z)-geranylacetone; nerylacetone; cis-6,10-dimethyl-5,9-undecadien-2-one;cis-geranylacetone" );
+gibbsFormation
+{
+    dHf_298   -209370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     667.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=73000.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,2,3,4,4-hexabromobut-2-ene  (C4H2Br6, CAS 36678-45-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        112344Hexabromobut2Ene;
+formula     C4H2Br6;
+CAS         36678-45-2;
+InChIKey    VNDVTDGELDURCN-UHFFFAOYSA-N;
+MW          529.484;      // g/mol [origin=calculated method=formula-sum]
+Tc          991.93;      // K   [origin=predictive method=joback]
+Pc          81.162;      // bar [origin=predictive method=joback]
+omega       0.8720;      // -   [origin=predictive method=lee-kesler]
+Tb          691.12;      // K   [origin=predictive method=joback]
+HvapTb      62450.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (31.47 0.6446 -0.000717 2.91e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 2; } { group Br; count 6; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 2; } { group dC; count 2; } { group Br; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2,3,4,4-hexakis(bromanyl)but-2-ene" "2-butene, 1,1,2,3,4,4-hexabromo-" );
+gibbsFormation
+{
+    dHf_298   119170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     584.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=126960.0
+    phase     gas;
+}

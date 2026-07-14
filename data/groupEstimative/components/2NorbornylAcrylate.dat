@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-norbornyl acrylate  (C10H14O2, CAS 10027-06-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2NorbornylAcrylate;
+formula     C10H14O2;
+CAS         10027-06-2;
+InChIKey    IQYMRQZTDOLQHC-UHFFFAOYSA-N;
+MW          166.22;      // g/mol [origin=calculated method=formula-sum]
+Tc          703.57;      // K   [origin=predictive method=joback]
+Pc          28.323;      // bar [origin=predictive method=joback]
+omega       0.4873;      // -   [origin=predictive method=lee-kesler]
+Tb          496.38;      // K   [origin=predictive method=joback]
+HvapTb      44280.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-83.45 1.1447 -0.0007871 2.086e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 3; } { group CH2=CH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-bicyclo[2.2.1]heptanyl prop-2-enoate" "acrylic acid, 2-norbornyl ester" "bicyclo[2.2.1]hept-2-yl prop-2-enoate" "2-propenoic acid,bicyclo[2.2.1]hept-2-yl ester" "acrylicacid, 2-norbornyl ester (8ci); 2-norbornyl acrylate; acrylic acidnorbornan-2-yl ester" );
+gibbsFormation
+{
+    dHf_298   -322480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     389.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-87520.0
+    phase     gas;
+}

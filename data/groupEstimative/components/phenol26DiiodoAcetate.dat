@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenol, 2,6-diiodo-, acetate  (C8H6I2O2, CAS 28165-73-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenol26DiiodoAcetate;
+formula     C8H6I2O2;
+CAS         28165-73-3;
+InChIKey    JCSYMLVRRUYACV-UHFFFAOYSA-N;
+MW          387.934;      // g/mol [origin=calculated method=formula-sum]
+Tc          945.89;      // K   [origin=predictive method=joback]
+Pc          33.645;      // bar [origin=predictive method=joback]
+omega       0.5347;      // -   [origin=predictive method=lee-kesler]
+Tb          663.78;      // K   [origin=predictive method=joback]
+HvapTb      63155.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (39.1 0.58912 -0.00037672 8.24e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group CH3COO; count 1; } { group I; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group I; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2,6-bis(iodanyl)phenyl] ethanoate" "(2,6-diiodophenyl) acetate" "phenol,2,6-diiodo-,acetate" );
+gibbsFormation
+{
+    dHf_298   -158400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     511.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-84500.0
+    phase     gas;
+}

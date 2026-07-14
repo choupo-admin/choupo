@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,12-dodecanediol dimethacrylate  (C20H34O4, CAS 121150-60-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        112DodecanediolDimethacrylate;
+formula     C20H34O4;
+CAS         121150-60-5;
+InChIKey    HYQASEVIBPSPMK-UHFFFAOYSA-N;
+MW          338.488;      // g/mol [origin=calculated method=formula-sum]
+Tc          947.17;      // K   [origin=predictive method=joback]
+Pc          10.863;      // bar [origin=predictive method=joback]
+omega       0.9404;      // -   [origin=predictive method=lee-kesler]
+Tb          766.76;      // K   [origin=predictive method=joback]
+HvapTb      73748.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (30.162 1.75404 -0.0009254 1.51e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 12; } { group CH2=C; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 12; } { group dCH2; count 2; } { group dC; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "12-(2-methylprop-2-enoyloxy)dodecyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, 1,1'-(1,12-dodecanediyl) ester" "dddma resin" "dodecamethylene-dimethylacrylate" "1,12-dodecanediyl bismethacrylate" "1,12-dodecanediyl 2-methyl-2-propenoate homopolymer" "2-propenoic acid, 2-methyl-, 1,12-dodecanediyl ester" "2-propenoic acid, 2-methyl-, 1,12-dodecanediyl ester, homopolymer" );
+gibbsFormation
+{
+    dHf_298   -859410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1020.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-344640.0
+    phase     gas;
+}

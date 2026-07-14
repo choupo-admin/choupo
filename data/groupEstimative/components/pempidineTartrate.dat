@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pempidine tartrate  (C14H27NO6, CAS 546-48-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pempidineTartrate;
+formula     C14H27NO6;
+CAS         546-48-5;
+InChIKey    AAFNEINEQRQMTF-LREBCSMRSA-N;
+MW          305.371;      // g/mol [origin=calculated method=formula-sum]
+Tc          1248.44;      // K   [origin=predictive method=joback]
+Pc          24.100;      // bar [origin=predictive method=joback]
+omega       1.7629;      // -   [origin=predictive method=lee-kesler]
+Tb          1019.35;      // K   [origin=predictive method=joback]
+HvapTb      113651.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-117.82 2.122 -0.0017852 6.575e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 2; } { group C; count 2; } { group OH; count 2; } { group CH3N; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH; count 2; } { group CH2_ring; count 3; } { group C_ring; count 2; } { group OH; count 2; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r,3r)-2,3-bis(oxidanyl)butanedioic acid;1,2,2,6,6-pentamethylpiperidine" "sinapleg" "synapleg" "pempidine bitartrate" "pempidine hydrogen tartrate" "1,2,2,6,6-pentamethylpiperidine tartrate" "1,2,2,6,6-pentamethylpiperidine d-tartrate" "piperidine, 1,2,2,6,6-pentamethyl-, tartrate (1:1)" "pempidina tartrato" "c10h21n.c4h6o6" "(2r,3r)-2,3-dihydroxybutanedioic acid; 1,2,2,6,6-pentamethylpiperidine" "piperidine, 1,2,2,6,6-pentamethyl-, (r-(r*,r*))-2,3-dihydroxybutanedioate (1:1)" );
+gibbsFormation
+{
+    dHf_298   -1321320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1060.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-875460.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(1,1-di-2-butenyl-3-pentenyl)pyridine  (C18H25N, CAS 70776-89-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        411Di2Butenyl3PentenylPyridine;
+formula     C18H25N;
+CAS         70776-89-5;
+InChIKey    IZDCTQDGYOSQRY-UHFFFAOYSA-N;
+MW          255.405;      // g/mol [origin=calculated method=formula-sum]
+Tc          925.67;      // K   [origin=predictive method=joback]
+Pc          16.810;      // bar [origin=predictive method=joback]
+omega       0.6583;      // -   [origin=predictive method=lee-kesler]
+Tb          701.07;      // K   [origin=predictive method=joback]
+HvapTb      62726.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-104.337 1.85452 -0.00141906 4.444e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group CH=CH; count 3; } { group C5H4N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group dCH; count 6; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(5-but-2-enylnona-2,7-dien-5-yl)pyridine" "4-(1,1-dibut-2-enylpent-3-enyl)pyridine" "pyridine, 4-(1,1-di-2-buten-1-yl-3-penten-1-yl)-" );
+gibbsFormation
+{
+    dHf_298   197380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     704.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=533640.0
+    phase     gas;
+}

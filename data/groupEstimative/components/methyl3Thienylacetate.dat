@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 3-thienylacetate  (C7H8O2S, CAS 58414-52-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl3Thienylacetate;
+formula     C7H8O2S;
+CAS         58414-52-1;
+InChIKey    RZGRWVULDSXQSM-UHFFFAOYSA-N;
+MW          156.199;      // g/mol [origin=calculated method=formula-sum]
+Tc          712.11;      // K   [origin=predictive method=joback]
+Pc          38.057;      // bar [origin=predictive method=joback]
+omega       0.4745;      // -   [origin=predictive method=lee-kesler]
+Tb          489.06;      // K   [origin=predictive method=joback]
+HvapTb      46207.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.191 0.61513 -0.00037142 7.5e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2COO; count 1; } { group C4H3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COO; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-thiophen-3-ylethanoate" "methyl 2-(3-thienyl)acetate" "methyl thiophene-3-acetate" "3-thiopheneacetic acid, methyl ester" "methylthiophene-3-acetate" "methyl thiophen-3-acetate" "methyl 2-thiophen-3-ylacetate" "methyl 3-thiopheneacetate" "3-thiopheneacetic acid,methyl ester" "methyl 2-(thiophen-3-yl)acetate" "2-(3-thiophenyl)acetic acid methyl ester" "thiophene-3-acetic acid methyl ester" );
+gibbsFormation
+{
+    dHf_298   -274920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     441.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-167900.0
+    phase     gas;
+}

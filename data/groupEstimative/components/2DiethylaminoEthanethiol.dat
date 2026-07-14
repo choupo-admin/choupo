@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(diethylamino)ethanethiol  (C6H15NS, CAS 100-38-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2DiethylaminoEthanethiol;
+formula     C6H15NS;
+CAS         100-38-9;
+InChIKey    YBDSNEVSFQMCTL-UHFFFAOYSA-N;
+MW          133.253;      // g/mol [origin=calculated method=formula-sum]
+Tc          598.98;      // K   [origin=predictive method=joback]
+Pc          33.335;      // bar [origin=predictive method=joback]
+omega       0.4306;      // -   [origin=predictive method=lee-kesler]
+Tb          412.18;      // K   [origin=predictive method=joback]
+HvapTb      37730.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.634 0.72504 -0.0004376 1.032e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH2N; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group N; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "diethylcysteamine" "ethanethiol, 2-(diethylamino)-" "diethyl(2-mercaptoethyl)amine" "2-diethylaminoethanethiol" "diethylaminoethanethiol" "diethylcysteamin" "triethylamine, 2-mercapto-" "n-diaethyl cysteamin" "n-diethyl cysteamine" "2-(diethylamino)ethyl mercaptan" "n,n-diethyl-cysteamine" "2-(diethylamino)ethylmercaptan" );
+gibbsFormation
+{
+    dHf_298   -61160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     468.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=139810.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cis-3-hexenyl butyrate  (C10H18O2, CAS 16491-36-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cis3HexenylButyrate;
+formula     C10H18O2;
+CAS         16491-36-4;
+InChIKey    ZCHOPXVYTWUHDS-UHFFFAOYSA-N;
+MW          170.252;      // g/mol [origin=calculated method=formula-sum]
+Tc          667.67;      // K   [origin=predictive method=joback]
+Pc          22.229;      // bar [origin=predictive method=joback]
+omega       0.6108;      // -   [origin=predictive method=lee-kesler]
+Tb          490.78;      // K   [origin=predictive method=joback]
+HvapTb      45219.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.025 0.91904 -0.0005094 9.81e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH=CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hex-3-enyl butanoate" "(e)-3-hexenyl butyrate" "(e)-hex-3-enyl butyrate" "butanoic acid, (3e)-3-hexen-1-yl ester" "butanoic acid, (3z)-3-hexen-1-yl ester" "butanoic acid, 3-hexenyl ester" "butanoic acid,(3e)-3-hexen-1-yl ester" "butanoicacid, (3e)-3-hexenyl ester (9ci); butanoic acid, 3-hexenyl ester, (e)-;(e)-3-hexenyl butanoate; (e)-hex-3-en-1-yl butyrate; e-3-hexenyl butyrate;trans-3-hexenyl butanoate; trans-3-hexenyl butyrate" "butanoicacid, (3z)-3-hexenyl ester (9ci);butanoic acid, 3-hexenyl ester, (z)-;butyricacid, 3-hexenyl ester, (z)- (8ci);(z)-3-hexen-1-ol butanoate;(z)-3-hexen-1-ylbutyrate;(z)-3-hexenyl butanoate;(z)-3-hexenyl butyrate;cis-3-hexenylbutanoate;cis-3-hexenyl butyrate;cis-hex-3-en-1-yl butyrate;" );
+gibbsFormation
+{
+    dHf_298   -449790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     590.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-196830.0
+    phase     gas;
+}

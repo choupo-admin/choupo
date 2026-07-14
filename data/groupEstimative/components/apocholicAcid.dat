@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: apocholic acid  (C24H38O4, CAS 641-81-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        apocholicAcid;
+formula     C24H38O4;
+CAS         641-81-6;
+InChIKey    XWJTYEGVQBFZHI-IMPNNSMHSA-N;
+MW          390.564;      // g/mol [origin=calculated method=formula-sum]
+Tc          1374.33;      // K   [origin=predictive method=joback]
+Pc          14.804;      // bar [origin=predictive method=joback]
+omega       1.3192;      // -   [origin=predictive method=lee-kesler]
+Tb          1122.05;      // K   [origin=predictive method=joback]
+HvapTb      118051.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-277.788 3.29346 -0.0028194 1.035e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 10; } { group CH; count 6; } { group C; count 2; } { group OH; count 2; } { group COOH; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dC_ring; count 2; } { group OH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4r)-4-[(3r,5r,9r,10s,12s,13r,17r)-10,13-dimethyl-3,12-bis(oxidanyl)-2,3,4,5,6,7,9,11,12,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-17-yl]pentanoic acid" "a-apocholic acid" "3alpha,12alpha-dihydroxy-5beta-chol-8(14)-en-24-oic acid" "5beta,8(14)-cholen-24-oic acid-3alpha,12alpha-diol" "3alpha,12alpha-dihydroxy-5beta,8(14)-cholen-24-oic acid" "3alpha,12alpha-dihydroxy-5beta-chol-8(14)en-24-oic acid" "3-alpha,12-alpha-dihydroxy-5-beta-chol-8(14)-en-24-oic acid" "5-beta-chol-8(14)-en-24-oic acid, 3-alpha,12-alpha-dihydroxy-" "5.beta.-chol-8(14)-en-24-oic acid,12.alpha.-dihydroxy-" "3.alpha.,12.alpha.-dihydroxy-5.beta.-chol-8(14)-en-24-oic acid" "chol-8(14)-en-24-oic acid,12-dihydroxy-, (3.alpha.,5.beta.,12.alpha.)-" "e yene(r)micro ea" );
+gibbsFormation
+{
+    dHf_298   -934000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     937.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-309700.0
+    phase     gas;
+}

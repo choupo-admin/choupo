@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene, (octyloxy)-  (C14H22O, CAS 1818-07-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzeneOctyloxy;
+formula     C14H22O;
+CAS         1818-07-1;
+InChIKey    ZPIRTVJRHUMMOI-UHFFFAOYSA-N;
+MW          206.329;      // g/mol [origin=calculated method=formula-sum]
+Tc          761.63;      // K   [origin=predictive method=joback]
+Pc          19.788;      // bar [origin=predictive method=joback]
+omega       0.6567;      // -   [origin=predictive method=lee-kesler]
+Tb          569.02;      // K   [origin=predictive method=joback]
+HvapTb      51444.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.243 1.19172 -0.000658 1.261e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group ACH; count 5; } { group AC; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "octoxybenzene" "n-octyl phenyl ether" "(octyloxy)benzene" "octyl phenyl ether" "ether, octyl phenyl" "n-octyloxybenzene" "ether,octyl phenyl (6ci,8ci); (octyloxy)benzene; 1-(octyloxy)benzene; 1-octyl phenylether; 1-phenoxyoctane; octyl phenyl ether; phenyl octyl ether; n-octyl phenylether; n-octyloxybenzene" );
+gibbsFormation
+{
+    dHf_298   -227980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     606.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=74410.0
+    phase     gas;
+}

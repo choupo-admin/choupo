@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-aminobenzyl cyanide  (C8H8N2, CAS 3544-25-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4AminobenzylCyanide;
+formula     C8H8N2;
+CAS         3544-25-0;
+InChIKey    YCWRFIYBUQBHJI-UHFFFAOYSA-N;
+MW          132.166;      // g/mol [origin=calculated method=formula-sum]
+Tc          830.59;      // K   [origin=predictive method=joback]
+Pc          37.271;      // bar [origin=predictive method=joback]
+omega       0.6398;      // -   [origin=predictive method=lee-kesler]
+Tb          588.91;      // K   [origin=predictive method=joback]
+HvapTb      57459.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.499 0.6221 -0.00038796 8.93e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group ACNH2; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH2; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-aminophenyl)ethanenitrile" "4-aminophenylacetonitrile" "(4-aminophenyl)acetonitrile" "p-aminobenzyl cyanide" "2-(4-aminophenyl)acetonitrile" "4-aminobenzyl" "(p-aminophenyl)acetonitrile" "4-aminobenzyl cyanid" "benzeneacetonitrile, 4-amino-" "(4-amino-phenyl)-acetonitrile" "2-(4-aminophenyl)-acetonitrile" "l630" );
+gibbsFormation
+{
+    dHf_298   215280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     412.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=318890.0
+    phase     gas;
+}

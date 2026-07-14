@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,3,5-tetracarbomethoxy-5-chloro-4-methylcyclopentadiene  (C14H15ClO8, CAS 93251-34-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1235Tetracarbomethoxy5Chloro4Methylcyclopentadiene;
+formula     C14H15ClO8;
+CAS         93251-34-4;
+InChIKey    KOFUVUOBYYWHSF-UHFFFAOYSA-N;
+MW          346.716;      // g/mol [origin=calculated method=formula-sum]
+Tc          1036.48;      // K   [origin=predictive method=joback]
+Pc          18.232;      // bar [origin=predictive method=joback]
+omega       1.1614;      // -   [origin=predictive method=lee-kesler]
+Tb          823.99;      // K   [origin=predictive method=joback]
+HvapTb      83109.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (66.97 1.1951 -0.0007462 1.823e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group C=C; count 2; } { group COO; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:1
+    joback ( { group CH3; count 5; } { group C_ring; count 1; } { group dC_ring; count 4; } { group Cl; count 1; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetramethyl 1-chloranyl-5-methyl-cyclopenta-2,4-diene-1,2,3,4-tetracarboxylate" "tetramethyl 1-chloro-5-methylcyclopenta-2,4-diene-1,2,3,4-tetracarboxylate" );
+gibbsFormation
+{
+    dHf_298   -1471750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     859.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1133950.0
+    phase     gas;
+}

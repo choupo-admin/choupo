@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isooctyl hydrogen 2-butenedioate  (C12H20O4, CAS 30137-97-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isooctylHydrogen2Butenedioate;
+formula     C12H20O4;
+CAS         30137-97-4;
+InChIKey    FDNBQVCBHKEDOJ-UHFFFAOYSA-N;
+MW          228.288;      // g/mol [origin=calculated method=formula-sum]
+Tc          873.24;      // K   [origin=predictive method=joback]
+Pc          20.364;      // bar [origin=predictive method=joback]
+omega       1.0461;      // -   [origin=predictive method=lee-kesler]
+Tb          681.61;      // K   [origin=predictive method=joback]
+HvapTb      66447.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.125 1.16574 -0.000694 1.494e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group CH=CH; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 1; } { group dCH; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(6-methylheptoxy)-4-oxidanylidene-but-2-enoic acid" "2-butenedioic acid (2z)-, monoisooctyl ester" "2-butenedioic acid(2z)-, monoisooctyl ester" "4-(6-methylheptoxy)-4-oxobut-2-enoic acid" "2-butenedioicacid (z)-, monoisooctyl ester; maleic acid, isooctyl ester (7ci);(z)-2-butenedioic acid monoisooctyl ester; hydrogen isooctyl maleate; isooctylhydrogen maleate; monoisooctyl maleate" );
+gibbsFormation
+{
+    dHf_298   -846620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     711.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-526340.0
+    phase     gas;
+}

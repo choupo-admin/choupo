@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-hydroxy-4-methoxybenzyl alcohol  (C8H10O3, CAS 4383-06-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Hydroxy4MethoxybenzylAlcohol;
+formula     C8H10O3;
+CAS         4383-06-6;
+InChIKey    WHKRHBLAJFYZKF-UHFFFAOYSA-N;
+MW          154.165;      // g/mol [origin=calculated method=formula-sum]
+Tc          817.64;      // K   [origin=predictive method=joback]
+Pc          47.826;      // bar [origin=predictive method=joback]
+omega       1.1427;      // -   [origin=predictive method=lee-kesler]
+Tb          609.52;      // K   [origin=predictive method=joback]
+HvapTb      68443.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.119 0.75082 -0.00055132 1.727e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group OH; count 1; } { group ACOH; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-(hydroxymethyl)-2-methoxy-phenol" "5-(hydroxymethyl)-2-methoxyphenol" "isovanillyl alcohol" "4-methoxy-3-hydroxy benzyl alcohol" "3-hydroxy-4-methoxy benzyl alcohol" "2a9" );
+gibbsFormation
+{
+    dHf_298   -445150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     443.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-277180.0
+    phase     gas;
+}

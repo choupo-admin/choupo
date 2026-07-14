@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: anthranilic acid, 5-chloro-, heptyl ester  (C14H20ClNO2, CAS 18189-09-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        anthranilicAcid5ChloroHeptylEster;
+formula     C14H20ClNO2;
+CAS         18189-09-8;
+InChIKey    JBBXMSNYFQZXJW-UHFFFAOYSA-N;
+MW          269.769;      // g/mol [origin=calculated method=formula-sum]
+Tc          935.21;      // K   [origin=predictive method=joback]
+Pc          20.001;      // bar [origin=predictive method=joback]
+omega       0.9629;      // -   [origin=predictive method=lee-kesler]
+Tb          724.74;      // K   [origin=predictive method=joback]
+HvapTb      72791.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (29.646 1.14982 -0.00060412 9.4e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group ACH; count 3; } { group AC; count 1; } { group ACNH2; count 1; } { group ACCl; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 6; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "heptyl 2-azanyl-5-chloranyl-benzoate" "heptyl 2-amino-5-chlorobenzoate" "benzoic acid,2-amino-5-chloro-, heptyl ester" "anthranilicacid, 5-chloro-, heptyl ester (8ci)" );
+gibbsFormation
+{
+    dHf_298   -417930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     718.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-95700.0
+    phase     gas;
+}

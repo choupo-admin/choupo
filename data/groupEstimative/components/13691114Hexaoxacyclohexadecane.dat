@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3,6,9,11,14-hexaoxacyclohexadecane  (C10H20O6, CAS 74485-37-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13691114Hexaoxacyclohexadecane;
+formula     C10H20O6;
+CAS         74485-37-3;
+InChIKey    ZHVSEGINSVAYOE-UHFFFAOYSA-N;
+MW          236.264;      // g/mol [origin=calculated method=formula-sum]
+Tc          922.75;      // K   [origin=predictive method=joback]
+Pc          32.878;      // bar [origin=predictive method=joback]
+omega       0.6072;      // -   [origin=predictive method=lee-kesler]
+Tb          657.02;      // K   [origin=predictive method=joback]
+HvapTb      67372.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-25.03 0.9884 -0.0001092 -2.056e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group FCH2O; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 10; } { group O_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -1028670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     448.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-572240.0
+    phase     gas;
+}

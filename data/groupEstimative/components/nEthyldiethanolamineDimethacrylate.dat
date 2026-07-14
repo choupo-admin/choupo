@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-ethyldiethanolamine dimethacrylate  (C14H23NO4, CAS 13972-49-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nEthyldiethanolamineDimethacrylate;
+formula     C14H23NO4;
+CAS         13972-49-1;
+InChIKey    BHICZSRCJVGOGG-UHFFFAOYSA-N;
+MW          269.341;      // g/mol [origin=calculated method=formula-sum]
+Tc          820.88;      // K   [origin=predictive method=joback]
+Pc          16.525;      // bar [origin=predictive method=joback]
+omega       0.9153;      // -   [origin=predictive method=lee-kesler]
+Tb          641.92;      // K   [origin=predictive method=joback]
+HvapTb      62435.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.925 1.30796 -0.0007116 1.17e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH2=C; count 2; } { group CH2N; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group dCH2; count 2; } { group dC; count 2; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[ethyl-[2-(2-methylprop-2-enoyloxy)ethyl]amino]ethyl 2-methylprop-2-enoate" "(ethylimino)diethane-2,1-diylbis(2-methylprop-2-enoate)" "2-propenoic acid, 2-methyl-, 1,1'-((ethylimino)di-2,1-ethanediyl) ester" "2-propenoic acid, 2-methyl-, 1,1'-[(ethylimino)di-2,1-ethanediyl] ester" "2-propenoic acid, 2-methyl-, (ethylimino)diethylene ester" "(ethylimino)diethylene 2-methyl-2-propenoate" "(ethylimino)di-2,1-ethanediyl bismethacrylate" "2-methyl-2-propenoic acid, (ethylimino)diethylene ester" "(ethylimino)diethane-2,1-diyl bis(2-methylprop-2-enoate)" "2-propenoic acid, 2-methyl-, (ethylimino)di-2,1-ethanediyl ester" "2-propenoic acid,2-methyl-, 1,1'-[(ethylimino)di-2,1-ethanediyl] ester" "2-propenoicacid, 2-methyl-, (ethylimino)di-2,1-ethanediyl ester (9ci); methacrylic acid,(ethylimino)diethylene ester (8ci); ethanol, 2,2'-(ethylimino)di-,dimethacrylate (ester) (8ci); n-ethyldiethanolamine dimethacrylate" );
+gibbsFormation
+{
+    dHf_298   -668040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     802.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-284380.0
+    phase     gas;
+}

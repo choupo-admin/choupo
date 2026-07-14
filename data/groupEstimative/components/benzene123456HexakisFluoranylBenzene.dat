@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene;1,2,3,4,5,6-hexakis(fluoranyl)benzene  (C12H6F6, CAS 783-33-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzene123456HexakisFluoranylBenzene;
+formula     C12H6F6;
+CAS         783-33-5;
+InChIKey    NOJOEBYKHSSSBT-UHFFFAOYSA-N;
+MW          264.168;      // g/mol [origin=calculated method=formula-sum]
+Tc          737.85;      // K   [origin=predictive method=joback]
+Pc          22.125;      // bar [origin=predictive method=joback]
+omega       0.6337;      // -   [origin=predictive method=lee-kesler]
+Tb          544.46;      // K   [origin=predictive method=joback]
+HvapTb      44898.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (58.73 0.6126 -0.00010684 -1.006e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group ACF; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 6; } { group dC_ring; count 6; } { group F; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -1152110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     683.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1037160.0
+    phase     gas;
+}

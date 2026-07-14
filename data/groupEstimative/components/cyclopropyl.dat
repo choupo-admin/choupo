@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopropyl  (C3H5, CAS 2417-82-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        cyclopropyl;
+formula     C3H5;
+CAS         2417-82-5;
+InChIKey    XIPUIGPNIDKXJU-UHFFFAOYSA-N;
+role        radical;
+MW          41.073;      // g/mol [origin=calculated method=formula-sum]
+Tc          457.44;      // K   [origin=predictive method=joback]
+Pc          56.960;      // bar [origin=predictive method=joback]
+omega       0.1626;      // -   [origin=predictive method=lee-kesler]
+Tb          279.23;      // K   [origin=predictive method=joback]
+HvapTb      22640.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-52.13 0.4382 -0.00040864 1.541e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH2_ring; count 2; } { group dCH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclopropane" "cyclopropyl radical" "cyclopropan-1-yl" );
+gibbsFormation
+{
+    dHf_298   16780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     206.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=57820.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trans-decalone  (C10H16O, CAS 4832-16-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        transDecalone;
+formula     C10H16O;
+CAS         4832-16-0;
+InChIKey    AFEFRXAPJRCTOW-UHFFFAOYSA-N;
+MW          152.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          766.31;      // K   [origin=predictive method=joback]
+Pc          31.456;      // bar [origin=predictive method=joback]
+omega       0.4022;      // -   [origin=predictive method=lee-kesler]
+Tb          526.78;      // K   [origin=predictive method=joback]
+HvapTb      42615.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-90.74 1.0489 -0.000531 7.38e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 2; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 7; } { group CH_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4,4a,5,6,7,8,8a-octahydro-2h-naphthalen-1-one" "1-decalone (cis-trans)" "1(2h)-naphthalenone, octahydro-" "1-decalone" "bicyclo(4.4.0)decan-2-one" "decahydro-1-naphthalenone" "1-decalone,mixture of cis and trans" "1(2h)-naphthalenone, octahydro-, trans-" "bicyclo[4.4.0]decan-2-one" "octahydro-1(2h)-naphthalenone" "octahydronaphthalen-1(2h)-one" "bicyclo(4.4.0)decan-1-one" );
+gibbsFormation
+{
+    dHf_298   -266470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     365.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-16170.0
+    phase     gas;
+}

@@ -34,10 +34,12 @@ License
   (direct + outer), and the balances are computed from the boundary streams.
 \*---------------------------------------------------------------------------*/
 
-import { Box, Group, ScrollArea, SimpleGrid, Stack, Table, Text } from "@mantine/core";
+import { Box, Button, Group, ScrollArea, SimpleGrid, Stack, Table, Text } from "@mantine/core";
 
 import { useStore } from "../state/store.js";
-import { massBalance, energyBalance } from "../case/balances.js";
+import { massBalance, energyBalance, unitEnergy } from "../case/balances.js";
+import { heatExchangerDatasheetHtml } from "./HeatExchangerDatasheet.js";
+import type { UnitSpec } from "../case/types.js";
 
 export function ReportsWorkspace() {
   const runResult = useStore((s) => s.runResult);
@@ -52,6 +54,20 @@ export function ReportsWorkspace() {
   }
 
   const ua = runResult.utilityAllocation ?? [];
+  // Equipment datasheets: every heatExchanger unit whose run produced a U
+  // (geometry/design mode) gets a one-click datasheet, same as the unit panel.
+  const flowUnits = useStore.getState().caseFiles.flowsheet?.["units"] as UnitSpec[] | undefined;
+  const hxUnits = (flowUnits ?? []).filter(
+    (u) => u?.type === "heatExchanger" && runResult.kpis?.[u.name]?.["U"] !== undefined);
+  const openHxSheet = (u: UnitSpec) => {
+    const html = heatExchangerDatasheetHtml(u, runResult.kpis?.[u.name], runResult.streams);
+    if (!html) return;
+    const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    const a = document.createElement("a");
+    a.href = url; a.target = "_blank"; a.rel = "noopener";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  };
   // Aggregate the per-duty rows by utility name.
   const byUtil = new Map<string, { tier: string; kW: number; kgh: number; MW: number; eurh: number }>();
   for (const r of ua) {
@@ -63,7 +79,14 @@ export function ReportsWorkspace() {
   const totalEurh = utils.reduce((a, [, g]) => a + g.eurh, 0);
 
   const mb = massBalance(runResult.streams, runResult.componentMolarMass);
-  const eb = energyBalance(runResult.streams);
+  const { heatAddedKw, heatRemovedKw, workKw } = unitEnergy(
+    runResult.utilityAllocation,
+    runResult.kpis,
+  );
+  const eb = energyBalance(runResult.streams, {
+    heatKw: heatAddedKw - heatRemovedKw,
+    workKw,
+  });
   const kgh = (kgs: number) => (kgs * 3600);
 
   const econ = runResult.economics;
@@ -152,18 +175,61 @@ export function ReportsWorkspace() {
 
         {/* ---- Global energy balance ------------------------------------ */}
         <Section title="Global energy balance" subtitle="flow enthalpy at the boundary (kW)">
-          <Table withTableBorder fz="sm" ff="monospace" w="auto">
-            <Table.Tbody>
-              <Table.Tr><Table.Td>Enthalpy IN</Table.Td><Table.Td ta="right">{eb.inKw.toFixed(1)} kW</Table.Td></Table.Tr>
-              <Table.Tr><Table.Td>Enthalpy OUT</Table.Td><Table.Td ta="right">{eb.outKw.toFixed(1)} kW</Table.Td></Table.Tr>
-              <Table.Tr><Table.Td><strong>Δ (in − out)</strong></Table.Td><Table.Td ta="right"><strong>{eb.delta.toFixed(1)} kW</strong></Table.Td></Table.Tr>
-            </Table.Tbody>
-          </Table>
-          <Text size="xs" c="dimmed" mt={4}>
-            Δ is non-zero by design = net utility heat + heat of reaction (the duties above + the reactor).
-            {eb.skipped > 0 ? `  ${eb.skipped} boundary stream(s) had no enthalpy and were skipped.` : ""}
-          </Text>
+          {eb.skipped > 0 ? (
+            // No-silent-crutch: a boundary stream carries a component with no
+            // enthalpy datum, so the elements-datum balance cannot close.  We
+            // REFUSE to present a number (no misleading Δ / bar) and name the
+            // culprit -- the mass balance above is unaffected.
+            <Text size="sm" c="red.5" ff="monospace">
+              REFUSED — the energy balance cannot close: {eb.skipped} boundary
+              stream(s) have no enthalpy datum
+              {eb.missingComponents.length > 0
+                ? ` (${eb.missingComponents.join(", ")})`
+                : ""}
+              . Add a gibbsFormation{" "}block to the component .dat, or configure
+              it as an electrolyte. The mass balance is unaffected.
+            </Text>
+          ) : (
+            <>
+              <Table withTableBorder fz="sm" ff="monospace" w="auto">
+                <Table.Tbody>
+                  <Table.Tr><Table.Td>Stream enthalpy IN</Table.Td><Table.Td ta="right">{eb.inKw.toFixed(1)} kW</Table.Td></Table.Tr>
+                  {Math.abs(eb.heatKw) > 0.05 && <Table.Tr><Table.Td>Net heat into process</Table.Td><Table.Td ta="right">{eb.heatKw.toFixed(1)} kW</Table.Td></Table.Tr>}
+                  {Math.abs(eb.workKw) > 0.05 && <Table.Tr><Table.Td>Net shaft work into process</Table.Td><Table.Td ta="right">{eb.workKw.toFixed(1)} kW</Table.Td></Table.Tr>}
+                  <Table.Tr><Table.Td>Stream enthalpy OUT</Table.Td><Table.Td ta="right">{eb.outKw.toFixed(1)} kW</Table.Td></Table.Tr>
+                  <Table.Tr><Table.Td><strong>First-law residual</strong></Table.Td><Table.Td ta="right"><strong>{eb.delta.toFixed(3)} kW</strong></Table.Td></Table.Tr>
+                </Table.Tbody>
+              </Table>
+              <Text size="xs" c={eb.closureErr <= 1e-3 ? "teal.4" : "yellow.5"} mt={4}>
+                Closure |H in + Q + W − H out| / |H in + Q + W| = {(eb.closureErr * 100).toFixed(4)}%.
+              </Text>
+            </>
+          )}
         </Section>
+
+        {/* ---- Equipment datasheets (heat exchangers with a computed U) --- */}
+        {hxUnits.length > 0 && (
+          <Section title="Equipment datasheets" subtitle="rated / designed heat exchangers — the TEMA spec sheet + scheme">
+            <Stack gap={6}>
+              {hxUnits.map((u) => {
+                const k = runResult.kpis?.[u.name] ?? {};
+                return (
+                  <Group key={u.name} justify="space-between" wrap="nowrap"
+                    style={{ borderBottom: "1px solid #2a2a2a", paddingBottom: 4 }}>
+                    <Text size="sm" ff="monospace">
+                      {u.name} — U {k["U"]?.toFixed(0)} W/(m²·K), area {k["area"]?.toFixed(1)} m²
+                      {k["dP_shell_kPa"] !== undefined
+                        ? `, ΔP ${k["dP_tube_kPa"]?.toFixed(1)}/${k["dP_shell_kPa"]?.toFixed(1)} kPa` : ""}
+                    </Text>
+                    <Button size="compact-xs" variant="light" onClick={() => openHxSheet(u)}>
+                      Open datasheet
+                    </Button>
+                  </Group>
+                );
+              })}
+            </Stack>
+          </Section>
+        )}
 
         {/* ---- Economic appraisal (only when an economics postDict ran) -- */}
         {econ && (

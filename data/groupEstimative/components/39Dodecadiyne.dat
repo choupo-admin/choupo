@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,9-dodecadiyne  (C12H18, CAS 61827-89-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        39Dodecadiyne;
+formula     C12H18;
+CAS         61827-89-2;
+InChIKey    SLQXYOMUNKJHRV-UHFFFAOYSA-N;
+MW          162.276;      // g/mol [origin=calculated method=formula-sum]
+Tc          697.13;      // K   [origin=predictive method=joback]
+Pc          23.795;      // bar [origin=predictive method=joback]
+omega       0.4125;      // -   [origin=predictive method=lee-kesler]
+Tb          492.16;      // K   [origin=predictive method=joback]
+HvapTb      46610.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (27.096 0.84424 -0.00044472 8.956e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group C_C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group tC; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodeca-3,9-diyne" "dodecane-3,9-diyne" );
+gibbsFormation
+{
+    dHf_298   253590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     566.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=455760.0
+    phase     gas;
+}

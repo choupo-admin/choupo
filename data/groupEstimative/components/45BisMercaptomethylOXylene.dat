@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,5-bis(mercaptomethyl)-o-xylene  (C10H14S2, CAS 10230-61-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        45BisMercaptomethylOXylene;
+formula     C10H14S2;
+CAS         10230-61-2;
+InChIKey    NNGQXIUDFKIVKI-UHFFFAOYSA-N;
+MW          198.342;      // g/mol [origin=calculated method=formula-sum]
+Tc          846.90;      // K   [origin=predictive method=joback]
+Pc          32.137;      // bar [origin=predictive method=joback]
+omega       0.5277;      // -   [origin=predictive method=lee-kesler]
+Tb          595.74;      // K   [origin=predictive method=joback]
+HvapTb      55590.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (32.572 0.75104 -0.00039508 6.98e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 2; } { group ACCH3; count 2; } { group CH2SH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group SH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[4,5-dimethyl-2-(sulfanylmethyl)phenyl]methanethiol" "durene-a1,a2-dithiol" "1,2-benzenedimethanethiol, 4,5-dimethyl-" "durene-alpha1,alpha2-dithiol" "4,5-dimethyl-o-xylylenedithiol" "o-xylene-.alpha., 4,5-dimethyl-" "1,2-dimethyl-4,5-bis(mercaptomethyl)benzene" "1,2,4,5-tetramethylbenzene-alpha,alpha'-dithiol" "[2-(mercaptomethyl)-4,5-dimethylphenyl]methanethiol" "o-xylene-.alpha.,.alpha.'-dithiol, 4,5-dimethyl-" "o-xylene-alpha,alpha'-dithiol, 4,5-dimethyl- (8ci)" "[4,5-dimethyl-2-(sulfanylmethyl)phenyl]methane-1-thiol" );
+gibbsFormation
+{
+    dHf_298   29350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     545.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=175620.0
+    phase     gas;
+}

@@ -22,23 +22,7 @@
   alone could deliver.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    ethanolVapour
-    {
-        F            20.0 kmol/h;
-        T            330.0 K;             // ~57 C, slightly above ethanol Tb
-        P            1.5 bar;
-        state        superheatedVapour;
-        molarComposition { ethanol 1.0; }
-    }
-
-    brineSupply
-    {
-        utility      refrigerationPG;     // pulls components, state, P, T_in
-        F            1500 kmol/h;          // large flow on the cold side
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

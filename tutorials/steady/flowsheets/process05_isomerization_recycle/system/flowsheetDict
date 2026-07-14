@@ -53,26 +53,7 @@
   from:  streamTable.csv, massBalance.csv (+ _byUnit), energyBalance_byUnit.csv.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    freshFeed
-    {
-        F            1.0 kmol/h;
-        T          320.0 K;
-        P            5.0 bar;
-        molarComposition  { neoPentane 1.0;  nPentane 0.0; }
-    }
-
-    // Tear stream --- Wegstein iterates from this guess.  In SS it is
-    // ~1 kmol/h of nearly pure neoPentane (the column distillate).
-    recycle
-    {
-        F            0.31 kmol/h;
-        T          290.0 K;
-        P            5.0 bar;
-        molarComposition  { neoPentane 0.99;  nPentane 0.01; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 tearStreams           ( recycle );
 recycleSolver          Newton;        // Newton on the tear variables (default)

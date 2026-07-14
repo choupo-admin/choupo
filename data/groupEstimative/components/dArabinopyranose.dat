@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: d-arabinopyranose  (C5H10O5, CAS 28697-53-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dArabinopyranose;
+formula     C5H10O5;
+CAS         28697-53-2;
+InChIKey    SRBFZHDQGSBBOR-ZRMNMSDTSA-N;
+MW          150.13;      // g/mol [origin=calculated method=formula-sum]
+Tc          890.67;      // K   [origin=predictive method=joback]
+Pc          65.777;      // bar [origin=predictive method=joback]
+omega       2.3407;      // -   [origin=predictive method=lee-kesler]
+Tb          715.21;      // K   [origin=predictive method=joback]
+HvapTb      97452.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.96 0.6544 -0.0002707 3.8e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 4; } { group OH; count 4; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 4; } { group OH; count 4; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,4r,5r)-oxane-2,3,4,5-tetrol" "beta-d-(-)-arabinose" "(3s,4r,5r)-tetrahydro-2h-pyran-2,3,4,5-tetraol" "ara" "o_full_00000100000000_gs_790" "03cc4623-88d1-42c5-8561-3e19735c47d4" );
+gibbsFormation
+{
+    dHf_298   -894150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     345.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-640860.0
+    phase     gas;
+}

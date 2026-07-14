@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-methoxy-1-naphthaldehyde  (C12H10O2, CAS 15971-29-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C12H10O2 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        4Methoxy1Naphthaldehyde;
+formula     C12H10O2;
+CAS         15971-29-6;
+InChIKey    MVXMNHYVCLMLDD-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          186.21;      // g/mol [origin=calculated method=formula-sum]
+Tc          757.72;      // K   [origin=predictive method=joback]
+Pc          30.967;      // bar [origin=predictive method=joback]
+omega       0.4678;      // -   [origin=predictive method=lee-kesler]
+Tb          528.62;      // K   [origin=predictive method=joback]
+HvapTb      47583.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.77 0.88712 -0.00070484 2.303e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 4; } { group CHO; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-methoxynaphthalene-1-carbaldehyde" "1-naphthalenecarboxaldehyde, 4-methoxy-" "4-methoxynaphthalenecarbaldehyde" "4-methoxy-1-naphthalaldehyde" );
+gibbsFormation
+{
+    dHf_298   57880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     487.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=188920.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-chloro-2-iodotetrafluoroethane  (C2ClF4I, CAS 421-78-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Chloro2Iodotetrafluoroethane;
+formula     C2ClF4I;
+CAS         421-78-3;
+InChIKey    XNIBSTIKPHNKSO-UHFFFAOYSA-N;
+MW          262.364;      // g/mol [origin=calculated method=formula-sum]
+Tc          563.20;      // K   [origin=predictive method=joback]
+Pc          38.531;      // bar [origin=predictive method=joback]
+omega       0.2521;      // -   [origin=predictive method=lee-kesler]
+Tb          366.55;      // K   [origin=predictive method=joback]
+HvapTb      27944.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.07 0.5384 -0.000596 2.277e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group I; count 1; } { group CF2; count 1; } { group CClF2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group F; count 4; } { group Cl; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-1,1,2,2-tetrakis(fluoranyl)-2-iodanyl-ethane" "1-chloro-1,1,2,2-tetrafluoro-2-iodoethane" "2-chlorotetrafluoroethyl iodide" "1-iodo-2-chloro-1,1,2,2-tetrafluoroethane" "ethane,1-chloro-1,1,2,2-tetrafluoro-2-iodo-" "ethane,1-chlorotetrafluoro-2-iodo- (6ci,7ci,8ci);1-chloro-1,1,2,2-tetrafluoro-2-iodoethane;1-chlorotetrafluoro-2-iodoethane;" );
+gibbsFormation
+{
+    dHf_298   -825420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     372.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-761410.0
+    phase     gas;
+}

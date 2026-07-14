@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexadecyl methacrylate  (C20H38O2, CAS 2495-27-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexadecylMethacrylate;
+formula     C20H38O2;
+CAS         2495-27-4;
+InChIKey    ZNAOFAIBVOMLPV-UHFFFAOYSA-N;
+MW          310.522;      // g/mol [origin=calculated method=formula-sum]
+Tc          882.40;      // K   [origin=predictive method=joback]
+Pc          10.500;      // bar [origin=predictive method=joback]
+omega       0.8758;      // -   [origin=predictive method=lee-kesler]
+Tb          711.98;      // K   [origin=predictive method=joback]
+HvapTb      66931.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.435 1.82894 -0.0009948 1.889e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 15; } { group CH2=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 15; } { group dCH2; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexadecyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, hexadecyl ester" "cetyl methacrylate" "hexadecyl 2-methyl-2-propenoate" "methacrylic acid, hexadecyl ester" "poly(hexadecyl methacrylate) solution" "2-propenoic acid,2-methyl-, hexadecyl ester" "methacrylicacid, hexadecyl ester (6ci,7ci,8ci); 1-hexadecanol, methacrylate (8ci); blemmercma; cetyl methacrylate; hexadecyl 2-methyl-2-propenoate; hexadecylmethacrylate" );
+gibbsFormation
+{
+    dHf_298   -657770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     977.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-113560.0
+    phase     gas;
+}

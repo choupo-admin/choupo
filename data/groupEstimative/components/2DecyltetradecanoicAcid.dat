@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-decyltetradecanoic acid  (C24H48O2, CAS 127967-41-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2DecyltetradecanoicAcid;
+formula     C24H48O2;
+CAS         127967-41-3;
+InChIKey    OYXVDHZABMXCMX-UHFFFAOYSA-N;
+MW          368.646;      // g/mol [origin=calculated method=formula-sum]
+Tc          1094.74;      // K   [origin=predictive method=joback]
+Pc          8.525;      // bar [origin=predictive method=joback]
+omega       0.8182;      // -   [origin=predictive method=lee-kesler]
+Tb          893.79;      // K   [origin=predictive method=joback]
+HvapTb      85794.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.01 2.34054 -0.0013576 3.019e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 20; } { group CH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 20; } { group CH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetradecanoic acid, 2-decyl-" );
+gibbsFormation
+{
+    dHf_298   -894240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1134.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-195150.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2',6'-dichloroacetophenone  (C8H6Cl2O, CAS 2040-05-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        26Dichloroacetophenone;
+formula     C8H6Cl2O;
+CAS         2040-05-3;
+InChIKey    HYBDSXBLGCQKRE-UHFFFAOYSA-N;
+MW          189.035;      // g/mol [origin=calculated method=formula-sum]
+Tc          782.97;      // K   [origin=predictive method=joback]
+Pc          34.765;      // bar [origin=predictive method=joback]
+omega       0.5348;      // -   [origin=predictive method=lee-kesler]
+Tb          548.01;      // K   [origin=predictive method=joback]
+HvapTb      52518.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.45 0.55152 -0.00033062 6.866e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group CH3CO; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[2,6-bis(chloranyl)phenyl]ethanone" "1-(2,6-dichlorophenyl)ethanone" "2,6-dichloroacetophenone" "2,6-dichloro acetophenone" "ethanone, 1-(2,6-dichlorophenyl)-" "1-(2,6-dichlorophenyl)ethan-1-one" "1-acetyl-2,6-dichlorobenzene" "2,6-dichloro-acetophenone" "2',6'-dichloro acetophenone" "1-(2,6-dichloro-phenyl)-ethanone" "u475" "2',6'-dichloroacetophenone1-(2,6-dichlorophenyl)ethan-1-one" );
+gibbsFormation
+{
+    dHf_298   -138920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     442.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-43150.0
+    phase     gas;
+}

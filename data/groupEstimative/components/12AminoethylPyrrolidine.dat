@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(2-aminoethyl)pyrrolidine  (C6H14N2, CAS 7154-73-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12AminoethylPyrrolidine;
+formula     C6H14N2;
+CAS         7154-73-6;
+InChIKey    WRXNJTBODVGDRY-UHFFFAOYSA-N;
+MW          114.192;      // g/mol [origin=calculated method=formula-sum]
+Tc          639.03;      // K   [origin=predictive method=joback]
+Pc          41.570;      // bar [origin=predictive method=joback]
+omega       0.4947;      // -   [origin=predictive method=lee-kesler]
+Tb          437.53;      // K   [origin=predictive method=joback]
+HvapTb      42028.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-68.068 0.9274 -0.0006878 2.062e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2NH2; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH2_ring; count 4; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-pyrrolidin-1-ylethanamine" "1-pyrrolidineethanamine" "n-(2-aminoethyl)pyrrolidine" "pyrrolidinoethylamine" "2-pyrrolidinoethylamine" "2-(pyrrolidin-1-yl)ethanamine" "pyrrolidinoethanamine" "2-(1-pyrrolidinyl)ethanamine" "2-pyrrolidinoethyl amine" "n-(2-aminoethylpyrrolidine)" "2-pyrrolidin-1-yl-ethylamine" "2-(1-pyrrolidinyl)ethylamine" );
+gibbsFormation
+{
+    dHf_298   21130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     429.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=233230.0
+    phase     gas;
+}

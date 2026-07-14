@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: iodoquinol  (C9H5I2NO, CAS 83-73-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        iodoquinol;
+formula     C9H5I2NO;
+CAS         83-73-8;
+InChIKey    UXZFQZANDVDGMM-UHFFFAOYSA-N;
+MW          396.945;      // g/mol [origin=calculated method=formula-sum]
+Tc          1106.47;      // K   [origin=predictive method=joback]
+Pc          48.902;      // bar [origin=predictive method=joback]
+omega       0.7411;      // -   [origin=predictive method=lee-kesler]
+Tb          781.74;      // K   [origin=predictive method=joback]
+HvapTb      78838.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.52 0.92356 -0.00092806 3.674e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 1; } { group AC; count 2; } { group ACOH; count 1; } { group C5H3N; count 1; } { group I; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 4; } { group dC_ring; count 5; } { group I; count 2; } { group OH_phenol; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5,7-bis(iodanyl)quinolin-8-ol" "5,7-diiodo-8-hydroxyquinoline" "5,7-diiodo-8-quinolinol" "diiodoquin" "diiodohydroxyquinoline" "5,7-diiodoquinolin-8-ol" "diiodohydroxyquin" "diodoquin" "sebaquin" "yodoxin" "diodohydroxyquin" "dijodoxichinoline" );
+gibbsFormation
+{
+    dHf_298   184790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     429.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=263370.0
+    phase     gas;
+}

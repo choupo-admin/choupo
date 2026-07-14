@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  column04_multifeed_sidedraw -- the simultaneous MESH column with MULTIPLE
+  feeds and a liquid SIDE DRAW (the rigorous-column extension).
+
+  A benzene / toluene / o-xylene split: a benzene-rich feed enters high, a
+  heavier toluene/xylene feed enters low, and an intermediate (toluene-rich)
+  liquid cut is drawn off between them.  Distillate = benzene, bottoms = xylene,
+  side draw = toluene-rich.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Simultaneous MESH column: two feeds + a liquid side draw (rigorous MESH)";
+verbosity     3;

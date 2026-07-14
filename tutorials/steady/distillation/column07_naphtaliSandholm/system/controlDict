@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Full-MESH (Naphtali-Sandholm) validation vs AIChE J. 17 (1971) 148, Problem 2: nC4/iC5/nC5";
+verbosity     3;
+reports { streamTable { }  profiles { } }

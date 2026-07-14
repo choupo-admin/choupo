@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trans-13-docosenoic acid  (C22H42O2, CAS 506-33-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trans13DocosenoicAcid;
+formula     C22H42O2;
+CAS         506-33-2;
+InChIKey    DPUOLQHDNGRHBS-MDZDMXLPSA-N;
+MW          338.576;      // g/mol [origin=calculated method=formula-sum]
+Tc          1044.55;      // K   [origin=predictive method=joback]
+Pc          9.833;      // bar [origin=predictive method=joback]
+omega       0.9454;      // -   [origin=predictive method=lee-kesler]
+Tb          852.63;      // K   [origin=predictive method=joback]
+HvapTb      81688.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.692 2.16462 -0.0013294 3.26e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 18; } { group CH=CH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 18; } { group dCH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e)-docos-13-enoic acid" "(e)-13-docosenoic acid" "brassidic acid" "13-docosenoic acid" "13-docosenoic acid, (e)-" "trans-brassidic acid" "13e-docosenoic acid" "ambap506-33-2" "13-docosenoic acid, (e)- (8ci)(9ci)" );
+gibbsFormation
+{
+    dHf_298   -730460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1059.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-129330.0
+    phase     gas;
+}

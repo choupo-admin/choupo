@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sympatol{tartrate}  (C13H19NO8, CAS 67-04-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sympatolTartrate;
+formula     C13H19NO8;
+CAS         67-04-9;
+InChIKey    GOVGCYCBKCCFIR-UHFFFAOYSA-N;
+MW          317.294;      // g/mol [origin=calculated method=formula-sum]
+Tc          1513.01;      // K   [origin=predictive method=joback]
+Pc          39.906;      // bar [origin=predictive method=joback]
+omega       2.0268;      // -   [origin=predictive method=lee-kesler]
+Tb          1222.15;      // K   [origin=predictive method=joback]
+HvapTb      149753.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.881 1.40582 -0.00085076 1.793e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 2; } { group ACH; count 4; } { group ACCH; count 1; } { group OH; count 3; } { group ACOH; count 1; } { group CH3NH; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 3; } { group OH_phenol; count 1; } { group COOH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-bis(oxidanyl)butanedioic acid;4-[2-(methylamino)-1-oxidanyl-ethyl]phenol" "sympathomim" "1-(4-hydroxyphenyl)-2-(methylamino)ethanol tartrate" "o745" "1-(4-hydroxyphenyl)-2-(methylamino)-ethanol tartrate" "2,3-dihydroxybutanedioic acid; 4-[1-hydroxy-2-(methylamino)ethyl]phenol" "bis((beta,4-dihydroxyphenethyl)methylammonium) (r-(r*,r*))-tartrate" "benzenemethanol, 4-hydroxy-alpha-((methylamino)methyl)-, (2r,3r)-2,3-dihydroxybutanedioate (2:1) (salt)" "benzenemethanol, 4-hydroxy-alpha-((methylamino)methyl)-, (r-(r*,r*))-2,3-dihydroxybutanedioate (2:1) (salt)" );
+gibbsFormation
+{
+    dHf_298   -1483650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     961.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1104600.0
+    phase     gas;
+}

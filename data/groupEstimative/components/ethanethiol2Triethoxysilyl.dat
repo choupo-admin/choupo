@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethanethiol, 2-(triethoxysilyl)-  (C8H20O3SSi, CAS 18236-15-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H20O3SSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        ethanethiol2Triethoxysilyl;
+formula     C8H20O3SSi;
+CAS         18236-15-2;
+InChIKey    DVNPFNZTPMWRAX-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          224.39;      // g/mol [origin=calculated method=formula-sum]
+Tc          702.96;      // K   [origin=predictive method=joback]
+Pc          22.828;      // bar [origin=predictive method=joback]
+omega       0.5929;      // -   [origin=predictive method=lee-kesler]
+Tb          514.16;      // K   [origin=predictive method=joback]
+HvapTb      47663.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (127.825 0.39536 0.000314 -2.92e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH2O; count 3; } { group CH2SH; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group O; count 3; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-triethoxysilylethanethiol" "2-(triethoxysilyl)ethanethiol" "(2-mercaptoethyl)triethoxysilane" "2-(triethoxysilyl)ethyl mercaptan" "ethanethiol,2-(triethoxysilyl)-" ".beta.-mercaptoethyltriethoxysilane" "2-mercaptoethyltriethoxysilane" "(2-mercaptoethyl)triethoxysilane;2-(triethoxysilyl)-1-ethanethiol; 2-(triethoxysilyl)ethanethiol;2-(triethoxysilyl)ethyl mercaptan; a 1893; b-mercaptoethyltriethoxysilane" );
+gibbsFormation
+{
+    dHf_298   -678250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     690.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-373890.0
+    phase     gas;
+}

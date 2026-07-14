@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9-phenyl-9-fluorenol  (C19H14O, CAS 25603-67-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        9Phenyl9Fluorenol;
+formula     C19H14O;
+CAS         25603-67-2;
+InChIKey    UJPHBDAPVWFPTG-UHFFFAOYSA-N;
+MW          258.32;      // g/mol [origin=calculated method=formula-sum]
+Tc          1064.33;      // K   [origin=predictive method=joback]
+Pc          28.843;      // bar [origin=predictive method=joback]
+omega       1.0903;      // -   [origin=predictive method=lee-kesler]
+Tb          814.94;      // K   [origin=predictive method=joback]
+HvapTb      81137.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-172.2 1.9491 -0.00184532 7.085e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group ACH; count 13; } { group AC; count 5; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C_ring; count 1; } { group dCH_ring; count 13; } { group dC_ring; count 5; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9-phenylfluoren-9-ol" "9-phenyl-9h-fluoren-9-ol" "9-hydroxy-9-phenylfluorene" "9h-fluoren-9-ol, 9-phenyl-" "9-phenylfluorenol" );
+gibbsFormation
+{
+    dHf_298   199290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     554.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=369710.0
+    phase     gas;
+}

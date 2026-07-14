@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phytane  (C20H42, CAS 638-36-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phytane;
+formula     C20H42;
+CAS         638-36-8;
+InChIKey    GGYKPYDKXLHNTI-UHFFFAOYSA-N;
+MW          282.556;      // g/mol [origin=calculated method=formula-sum]
+Tc          823.14;      // K   [origin=predictive method=joback]
+Pc          10.366;      // bar [origin=predictive method=joback]
+omega       0.7351;      // -   [origin=predictive method=lee-kesler]
+Tb          655.44;      // K   [origin=predictive method=joback]
+HvapTb      58562.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.02 1.92752 -0.001077 2.248e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 10; } { group CH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 10; } { group CH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6,10,14-tetramethylhexadecane" "phytan" "hexadecane, 2,6,10,14-tetramethyl-" "2,6,10,14-tetramethylhexadecan" "2,6,10,14-tetramethyl-hexadecane" "hexadecane,2,6,10,14-tetramethyl-" );
+gibbsFormation
+{
+    dHf_298   -477250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     896.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=107760.0
+    phase     gas;
+}

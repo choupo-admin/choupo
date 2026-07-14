@@ -1,0 +1,19 @@
+/*---------------------------------------------------------------------------*\
+  flash08_co2_water_package -- the property-package convention, minimal.
+  ====================================================================
+  Soda water at 298 K: 1 bar flash of a CO2-rich feed.  The THERMO is not a
+  pile of flat keys -- the case's constant/propertyDict IS the full INLINE
+  manifest (name flash08_co2Water) and the ThermoPackageBuilder assembles everything from it: liquid =
+  solution.henryDilute (water on the Raoult rung, CO2 on the infinite-dilution
+  Henry rung -- ONE Gibbs surface, two conventions), vapour = ideal gas, the
+  CO2-water Henry pair declared and VERIFIED at assembly (delete the pair path
+  from the package and the run REFUSES, naming the file).  Expect K_CO2 =
+  H(298)/P ~ 1.6e3 (Sander): a huge K sets the vapour's PURITY, not the split
+  -- the vapour is nearly pure CO2 (y_CO2 ~ 0.97) but its AMOUNT is tiny
+  (V/F ~ 4e-4), so only ~40% of the fed CO2 leaves in it; the liquid keeps
+  x_CO2 ~ y_CO2/K ~ 6e-4.
+\*---------------------------------------------------------------------------*/
+type isothermalFlash;
+operation { T 298.15 K;  P 1.01325 bar; }
+boundary  { inlets ( sodaWater );  outlets ( flatWater  gasOff ); }
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

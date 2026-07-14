@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6a.alpha.-noraporphin-9-ol,2,10-trimethoxy-  (C19H21NO4, CAS 128-76-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6aAlphaNoraporphin9Ol210Trimethoxy;
+formula     C19H21NO4;
+CAS         128-76-7;
+InChIKey    GVVXPMORGFYVOO-UHFFFAOYSA-N;
+MW          327.38;      // g/mol [origin=calculated method=formula-sum]
+Tc          1171.46;      // K   [origin=predictive method=joback]
+Pc          23.136;      // bar [origin=predictive method=joback]
+omega       1.3022;      // -   [origin=predictive method=lee-kesler]
+Tb          927.87;      // K   [origin=predictive method=joback]
+HvapTb      93377.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.2 1.58356 -0.00107492 3.09e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 5; } { group ACCH2; count 2; } { group ACCH; count 1; } { group ACOH; count 1; } { group CH3O; count 3; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 9; } { group OH_phenol; count 1; } { group O; count 3; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,10-trimethoxy-5,6,6a,7-tetrahydro-4h-dibenzo[de,g]quinoline-9-ol" "1,2,10-trimethoxy-5,6,6a,7-tetrahydro-4h-dibenzo[de,g]quinolin-9-ol" "4h-dibenzo[de, 5,6,6a,7-tetrahydro-1,2,10-trimethoxy-, (s)-" "(6as)-1,2,10-trimethoxy-5,6,6a,7-tetrahydro-4h-dibenzo[de,g]quinolin-9-ol" "4h-dibenzo[de,g]quinolin-9-ol,5,6,6a,7-tetrahydro-1,2,10-trimethoxy-, (6as)-" );
+gibbsFormation
+{
+    dHf_298   -395310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     542.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=35540.0
+    phase     gas;
+}

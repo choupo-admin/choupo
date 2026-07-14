@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: allyl pentabromophenyl ether  (C9H5Br5O, CAS 3555-11-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        allylPentabromophenylEther;
+formula     C9H5Br5O;
+CAS         3555-11-1;
+InChIKey    VCNJVIWFSMCZPE-UHFFFAOYSA-N;
+MW          528.658;      // g/mol [origin=calculated method=formula-sum]
+Tc          1085.05;      // K   [origin=predictive method=joback]
+Pc          47.171;      // bar [origin=predictive method=joback]
+omega       1.1138;      // -   [origin=predictive method=lee-kesler]
+Tb          807.00;      // K   [origin=predictive method=joback]
+HvapTb      75129.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (95.761 0.5902 -0.0004307 1.3e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group AC; count 6; } { group CH2O; count 1; } { group Br; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dC_ring; count 6; } { group Br; count 5; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5-pentakis(bromanyl)-6-prop-2-enoxy-benzene" "flammex 5ae" "allyloxypentabromobenzene" "allylpentabromophenylether" "pentabromophenylallylether" "1-pentabromophenoxy-2-propene" "pentabromo(2-propenyloxy)benzene" "ether, allyl pentabromophenyl" "benzene, pentabromo(2-propenyloxy)-" "benzene, 1,2,3,4,5-pentabromo-6-(2-propen-1-yloxy)-" "1,2,3,4,5-pentabromo-6-prop-2-enoxybenzene" "1,2,3,4,5-pentabromo-6-(prop-2-en-1-yloxy)benzene" );
+gibbsFormation
+{
+    dHf_298   74950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     631.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=143600.0
+    phase     gas;
+}

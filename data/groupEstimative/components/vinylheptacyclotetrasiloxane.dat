@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: vinylheptacyclotetrasiloxane  (C2H3O28Si28, CAS 3763-39-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C2H3O28Si28 (delta Si+28; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        vinylheptacyclotetrasiloxane;
+formula     C2H3O28Si28;
+CAS         3763-39-1;
+InChIKey    WCSQUCVZIFJMGD-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+role        radical;
+MW          1261.398;      // g/mol [origin=calculated method=formula-sum]
+Tc          1424.67;      // K   [origin=predictive method=joback]
+Pc          31.847;      // bar [origin=predictive method=joback]
+omega       1.4004;      // -   [origin=predictive method=lee-kesler]
+Tb          1115.50;      // K   [origin=predictive method=joback]
+HvapTb      150325.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (319.27 -0.0759 0.0013731 -9.422e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group dCH2; count 1; } { group dCH; count 1; } { group O_ring; count 28; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethenyl-1,3,5,7,2$l^{3},4$l^{2},6$l^{2},8$l^{2}-tetraoxatetrasilocane;1,3,5,7,2$l^{2},4$l^{2},6$l^{2},8$l^{2}-tetraoxatetrasilocane" );
+gibbsFormation
+{
+    dHf_298   -3771850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     -176.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2643980.0
+    phase     gas;
+}

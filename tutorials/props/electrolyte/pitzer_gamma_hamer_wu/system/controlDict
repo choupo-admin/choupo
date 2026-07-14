@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "Pitzer gamma_pm/phi vs Hamer & Wu 1972 -- 6 salts, evaluated NBS data";
+verbosity     3;

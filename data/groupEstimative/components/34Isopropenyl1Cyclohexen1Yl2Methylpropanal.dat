@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(4-isopropenyl-1-cyclohexen-1-yl)-2-methylpropanal  (C13H20O, CAS 53510-40-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34Isopropenyl1Cyclohexen1Yl2Methylpropanal;
+formula     C13H20O;
+CAS         53510-40-0;
+InChIKey    OSGZAYGTABWPMB-UHFFFAOYSA-N;
+MW          192.302;      // g/mol [origin=calculated method=formula-sum]
+Tc          773.91;      // K   [origin=predictive method=joback]
+Pc          22.440;      // bar [origin=predictive method=joback]
+omega       0.5779;      // -   [origin=predictive method=lee-kesler]
+Tb          565.51;      // K   [origin=predictive method=joback]
+HvapTb      51657.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-45.419 1.20574 -0.00070604 1.49e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 2; } { group CH2=C; count 1; } { group CH=C; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-3-(4-prop-1-en-2-ylcyclohexen-1-yl)propanal" "alpha-methyl-4-(1-methylvinyl)cyclohexene-1-propan-1-al" "1-cyclohexene-1-propanal, .alpha.-methyl-4-(1-methylethenyl)-" "1-cyclohexene-1-propanal, alpha-methyl-4-(1-methylethenyl)-" );
+gibbsFormation
+{
+    dHf_298   -186240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     588.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=80690.0
+    phase     gas;
+}

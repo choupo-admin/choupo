@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: suloctidil  (C20H35NOS, CAS 54063-56-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        suloctidil;
+formula     C20H35NOS;
+CAS         54063-56-8;
+InChIKey    BFCDFTHTSVTWOG-UHFFFAOYSA-N;
+MW          337.566;      // g/mol [origin=calculated method=formula-sum]
+Tc          1106.43;      // K   [origin=predictive method=joback]
+Pc          13.965;      // bar [origin=predictive method=joback]
+omega       1.1989;      // -   [origin=predictive method=lee-kesler]
+Tb          898.67;      // K   [origin=predictive method=joback]
+HvapTb      91820.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.263 1.88777 -0.00107676 2.186e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 6; } { group CH; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group CH2NH; count 1; } { group CHS; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 7; } { group CH; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group NH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(octylamino)-1-(4-propan-2-ylsulfanylphenyl)propan-1-ol" "( inverted exclamation marka)-suloctidil" "suloctdil" "suloctidyl" "bemperil" "cerebro" "circleton" "eusedon" "euvasal" "farectil" "hemoantin" "octamet" );
+gibbsFormation
+{
+    dHf_298   -303800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     946.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=198670.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: vinyl heptafluorobutyrate  (C6H3F7O2, CAS 356-28-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        vinylHeptafluorobutyrate;
+formula     C6H3F7O2;
+CAS         356-28-5;
+InChIKey    CJABYGHRZGXUKQ-UHFFFAOYSA-N;
+MW          240.074;      // g/mol [origin=calculated method=formula-sum]
+Tc          524.16;      // K   [origin=predictive method=joback]
+Pc          24.875;      // bar [origin=predictive method=joback]
+omega       0.5338;      // -   [origin=predictive method=lee-kesler]
+Tb          376.98;      // K   [origin=predictive method=joback]
+HvapTb      26080.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.93 0.959 -0.0008611 2.754e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group CF3; count 1; } { group CF2; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 7; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethenyl 2,2,3,3,4,4,4-heptakis(fluoranyl)butanoate" "ethenyl 2,2,3,3,4,4,4-heptafluorobutanoate" "vinyl perfluoro butyrate" "vinyl 2,2,3,3,4,4,4-heptafluorobutanoate" "butanoic acid,2,2,3,3,4,4,4-heptafluoro-, ethenyl ester" "butanoicacid, heptafluoro-, ethenyl ester (9ci); butyric acid, heptafluoro-, vinylester (6ci,8ci); vinyl heptafluorobutanoate; vinyl heptafluorobutyrate" );
+gibbsFormation
+{
+    dHf_298   -1758040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     541.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1578040.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-dimethylformamide  (C3H7NO, CAS 68-12-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C3H7NO (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        nNDimethylformamide;
+formula     C3H7NO;
+CAS         68-12-2;
+InChIKey    ZMXDDKWLCZADIW-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          73.095;      // g/mol [origin=calculated method=formula-sum]
+Tc          411.04;      // K   [origin=predictive method=joback]
+Pc          46.657;      // bar [origin=predictive method=joback]
+omega       0.1795;      // -   [origin=predictive method=lee-kesler]
+Tb          257.10;      // K   [origin=predictive method=joback]
+HvapTb      21942.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.03 0.42084 -0.000405 1.586e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group DMF-1; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethylmethanamide" "dimethylformamide" "n-formyldimethylamine" "formamide, n,n-dimethyl-" "dimethyl formamide" "dmf" "dimethylformamid" "dimetilformamide" "dwumetyloformamid" "n,n-dimethyl formamide" "formyldimethylamine" "dmf (amide)" );
+gibbsFormation
+{
+    dHf_298   38730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     369.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=129120.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4,6-tribromophenyl acrylate  (C9H5Br3O2, CAS 3741-77-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        246TribromophenylAcrylate;
+formula     C9H5Br3O2;
+CAS         3741-77-3;
+InChIKey    CNLVUQQHXLTOTC-UHFFFAOYSA-N;
+MW          384.849;      // g/mol [origin=calculated method=formula-sum]
+Tc          961.23;      // K   [origin=predictive method=joback]
+Pc          42.056;      // bar [origin=predictive method=joback]
+omega       0.8841;      // -   [origin=predictive method=lee-kesler]
+Tb          700.52;      // K   [origin=predictive method=joback]
+HvapTb      65932.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (50.69 0.6412 -0.00043838 1.093e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group ACH; count 2; } { group AC; count 4; } { group Br; count 3; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Br; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2,4,6-tris(bromanyl)phenyl] prop-2-enoate" "2-propenoic acid, 2,4,6-tribromophenyl ester" "2,4,6-tribromophenyl acrylate, tribromophenyl acrylate" "(2,4,6-tribromophenyl) prop-2-enoate" "l047" "2-propenoic acid (2,4,6-tribromophenyl) ester" "acrylicacid, 2,4,6-tribromophenyl ester (7ci,8ci);phenol, 2,4,6-tribromo-, acrylate(8ci);fire lord a;newfrontier br 30;sr803;" );
+gibbsFormation
+{
+    dHf_298   -139830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     581.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-71150.0
+    phase     gas;
+}

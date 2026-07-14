@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-amino-4,5-dimethoxybenzoic acid  (C9H11NO4, CAS 5653-40-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Amino45DimethoxybenzoicAcid;
+formula     C9H11NO4;
+CAS         5653-40-7;
+InChIKey    HJVAVGOPTDJYOJ-UHFFFAOYSA-N;
+MW          197.19;      // g/mol [origin=calculated method=formula-sum]
+Tc          937.42;      // K   [origin=predictive method=joback]
+Pc          35.263;      // bar [origin=predictive method=joback]
+omega       1.1120;      // -   [origin=predictive method=lee-kesler]
+Tb          710.02;      // K   [origin=predictive method=joback]
+HvapTb      72515.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (65.79 0.58774 -0.00018988 -2.39e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 3; } { group CH3O; count 2; } { group ACNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group O; count 2; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-4,5-dimethoxy-benzoic acid" "4,5-dimethoxyanthranilic acid" "6-aminoveratric acid" "benzoic acid, 2-amino-4,5-dimethoxy-" "2-amino-4,5-dimethoxy benzoic acid" "agn-pc-0d1uj6" "benzoicacid, 2-amino-4,5-dimethoxy-" "2-amino-4,5-bis(methyloxy)benzoic acid" "6-aminoveratric acid;4,5-dimethoxyanthranilic acid" "2-amino-4,5-dimethoxybenzoic acid6-aminoveratric acid" "14f" "veratricacid, 6-amino- (8ci);2-amino-4,5-bis(methyloxy)benzoic acid;2-carboxy-4,5-dimethoxyaniline;4,5-dimethoxy-2-aminobenzoic acid;4,5-dimethoxyanthranilic acid;6-amino-3,4-dimethoxybenzoic acid;" );
+gibbsFormation
+{
+    dHf_298   -607890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     508.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-379040.0
+    phase     gas;
+}

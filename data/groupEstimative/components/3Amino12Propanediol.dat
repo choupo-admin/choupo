@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-amino-1,2-propanediol  (C3H9NO2, CAS 616-30-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Amino12Propanediol;
+formula     C3H9NO2;
+CAS         616-30-8;
+InChIKey    KQIGMPWTAHJUMN-UHFFFAOYSA-N;
+MW          91.11;      // g/mol [origin=calculated method=formula-sum]
+Tc          698.31;      // K   [origin=predictive method=joback]
+Pc          63.289;      // bar [origin=predictive method=joback]
+omega       1.3827;      // -   [origin=predictive method=lee-kesler]
+Tb          524.69;      // K   [origin=predictive method=joback]
+HvapTb      65883.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.552 0.4246 -0.0002468 5.46e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 1; } { group OH; count 2; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group OH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-azanylpropane-1,2-diol" "1-aminoglycerol" "3-aminopropane-1,2-diol" "1-amino-2,3-propanediol" "2,3-dihydroxypropylamine" "2,3-propandiol-1-amine" "1-aminopropanediol" "1,2-propanediol, 3-amino-" "(+/-)-3-amino-1,2-propanediol" "3-aminopropan-1,2-diol" "3-amino-1,2-proopanediol" "3-amino-1,2-propandiol" );
+gibbsFormation
+{
+    dHf_298   -381200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     416.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-235250.0
+    phase     gas;
+}

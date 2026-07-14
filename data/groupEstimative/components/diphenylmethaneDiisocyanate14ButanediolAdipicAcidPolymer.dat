@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diphenylmethane diisocyanate, 1,4-butanediol, adipic acid polymer  (C25H34N2O8, CAS 94772-44-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diphenylmethaneDiisocyanate14ButanediolAdipicAcidPolymer;
+formula     C25H34N2O8;
+CAS         94772-44-8;
+InChIKey    PGCLHDMZDYLVFH-UHFFFAOYSA-N;
+MW          490.553;      // g/mol [origin=calculated method=formula-sum]
+Tc          1803.60;      // K   [origin=predictive method=joback]
+Pc          14.348;      // bar [origin=predictive method=joback]
+omega       0.8728;      // -   [origin=predictive method=lee-kesler]
+Tb          1419.34;      // K   [origin=predictive method=joback]
+HvapTb      158306.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH2; count 11; } { group C; count 2; } { group CH=CH; count 4; } { group OH; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:2
+    joback ( { group CH2; count 9; } { group dCd; count 2; } { group CH2_ring; count 2; } { group C_ring; count 2; } { group dCH_ring; count 8; } { group OH; count 2; } { group COOH; count 2; } { group dO_oth; count 2; } { group Nd; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butane-1,4-diol;hexanedioic acid;5-isocyanato-5-[(1-isocyanatocyclohexa-2,4-dien-1-yl)methyl]cyclohexa-1,3-diene" "hexanedioic acid, polymer with 1,4-butanediol and 1,1'-methylenebis(isocyanatobenzene)" );
+// formation datum unavailable (element entropy missing): dHf_298=-1428150.0 dGf_298=None

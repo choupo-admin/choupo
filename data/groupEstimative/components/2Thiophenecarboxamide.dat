@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-thiophenecarboxamide  (C5H5NOS, CAS 5813-89-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Thiophenecarboxamide;
+formula     C5H5NOS;
+CAS         5813-89-8;
+InChIKey    DENPQNAWGQXKCU-UHFFFAOYSA-N;
+MW          127.161;      // g/mol [origin=calculated method=formula-sum]
+Tc          760.16;      // K   [origin=predictive method=joback]
+Pc          57.917;      // bar [origin=predictive method=joback]
+omega       0.5360;      // -   [origin=predictive method=lee-kesler]
+Tb          511.48;      // K   [origin=predictive method=joback]
+HvapTb      51735.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.55 0.51381 -0.00038192 1.1026e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CONH2; count 1; } { group C4H3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "thiophene-2-carboxamide" "2-thienylamide" "2-thenamide" "thiophenecarboxamide" "2-thienylamide [french]" "2-(aminocarbonyl)thiophene" "thiophen-2-carboxamide" "thiophene-2-carboxylic acid amide" );
+gibbsFormation
+{
+    dHf_298   4850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     390.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=63160.0
+    phase     gas;
+}

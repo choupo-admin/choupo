@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethylene glycol sebacate  (C12H24O6, CAS 25037-32-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyleneGlycolSebacate;
+formula     C12H24O6;
+CAS         25037-32-5;
+InChIKey    DDLKPTZZDDZLQN-UHFFFAOYSA-N;
+MW          264.318;      // g/mol [origin=calculated method=formula-sum]
+Tc          1164.45;      // K   [origin=predictive method=joback]
+Pc          22.762;      // bar [origin=predictive method=joback]
+omega       1.7138;      // -   [origin=predictive method=lee-kesler]
+Tb          950.94;      // K   [origin=predictive method=joback]
+HvapTb      110286.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (52.58 1.1072 -0.0004202 -1e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group COOH; count 2; } { group _CH2OH_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 10; } { group OH; count 2; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "decanedioic acid;ethane-1,2-diol" "decanedioic acid, polymer with 1,2-ethanediol" "decanedioic acid; ethane-1,2-diol" );
+gibbsFormation
+{
+    dHf_298   -1407630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     939.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1016060.0
+    phase     gas;
+}

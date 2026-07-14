@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (4as,7s,8ar)-7-isopropenyl-4a-methyl-1-methylenedecahydronaphthalene  (C15H24, CAS 17066-67-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4as7s8ar7Isopropenyl4aMethyl1Methylenedecahydronaphthalene;
+formula     C15H24;
+CAS         17066-67-0;
+InChIKey    YOVSPTNQHMDJAG-ZNMIVQPWSA-N;
+MW          204.357;      // g/mol [origin=calculated method=formula-sum]
+Tc          788.34;      // K   [origin=predictive method=joback]
+Pc          20.291;      // bar [origin=predictive method=joback]
+omega       0.4130;      // -   [origin=predictive method=lee-kesler]
+Tb          564.65;      // K   [origin=predictive method=joback]
+HvapTb      47607.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-156.16 1.82004 -0.001457 5.062e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 2; } { group C; count 1; } { group CH2=C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 2; } { group dC; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,4ar,8as)-8a-methyl-5-methylidene-3-prop-1-en-2-yl-1,2,3,4,4a,6,7,8-octahydronaphthalene" "(-)-beta-selinene" "(4as,7s,8ar)-4a-methyl-1-methylidene-7-(prop-1-en-2-yl)decahydronaphthalene" "(5beta,7alpha,10alpha)-eudesma-4(14),11-diene" "(4as,7s,8ar)-4a-methyl-1-methylidene-7-(prop-1-en-2-yl)decahydronaphthalene (5beta,7alpha,10alpha)-eudesma-4(14),11-diene" "naphthalene, decahydro-4a-methyl-1-methylene-7-(1-methylethenyl)-, (4ar-(4aalpha,7alpha,8abeta))-" );
+gibbsFormation
+{
+    dHf_298   -37190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     631.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=267690.0
+    phase     gas;
+}

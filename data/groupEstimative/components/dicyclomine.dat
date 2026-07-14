@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dicyclomine  (C19H35NO2, CAS 77-19-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dicyclomine;
+formula     C19H35NO2;
+CAS         77-19-0;
+InChIKey    CURUTKGFNZGFSE-UHFFFAOYSA-N;
+MW          309.494;      // g/mol [origin=calculated method=formula-sum]
+Tc          956.86;      // K   [origin=predictive method=joback]
+Pc          14.977;      // bar [origin=predictive method=joback]
+omega       0.7976;      // -   [origin=predictive method=lee-kesler]
+Tb          744.32;      // K   [origin=predictive method=joback]
+HvapTb      67045.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-180.866 2.41404 -0.0017224 5.124e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 13; } { group CH; count 1; } { group C; count 1; } { group CH2N; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group CH2_ring; count 10; } { group CH_ring; count 1; } { group C_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(diethylamino)ethyl 1-cyclohexylcyclohexane-1-carboxylate" "dicycloverin" "dicycloverine" "bentylol" "merbentyl" "dicicloverina" "di-syntramine" "dicycloverinum" "diocyl" "dyspas" "wyovin" "bentyl" );
+gibbsFormation
+{
+    dHf_298   -561360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     972.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-47080.0
+    phase     gas;
+}

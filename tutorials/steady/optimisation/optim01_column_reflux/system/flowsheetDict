@@ -4,16 +4,7 @@
   outer loop so the simplex can probe odd feedStages without blowing up.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            370.0 K;
-        P            1.01325 bar;
-        molarComposition  { benzene 0.50;  toluene 0.50; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

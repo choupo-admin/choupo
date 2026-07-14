@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: amino(2-thienyl)acetic acid  (C6H7NO2S, CAS 21124-40-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        amino2ThienylAceticAcid;
+formula     C6H7NO2S;
+CAS         21124-40-3;
+InChIKey    XLMSKXASROPJNG-UHFFFAOYSA-N;
+MW          157.187;      // g/mol [origin=calculated method=formula-sum]
+Tc          877.13;      // K   [origin=predictive method=joback]
+Pc          52.816;      // bar [origin=predictive method=joback]
+omega       0.8392;      // -   [origin=predictive method=lee-kesler]
+Tb          625.56;      // K   [origin=predictive method=joback]
+HvapTb      63991.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.9 0.69351 -0.00053082 1.587e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CHNH2; count 1; } { group COOH; count 1; } { group C4H3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-2-thiophen-2-yl-ethanoic acid" "dl-2-(2-thienyl)glycine" "amino-thiophen-2-yl-acetic acid" "2-amino-2-(2-thienyl)acetic acid" "dl-alpha-amino-2-thienylacetic acid" "dl-alpha-amino-2-thiopheneacetic acid" "dl-alpha-aminothiophene-2-acetic acid" "2-amino-2-(thiophen-2-yl)acetic acid" "amino(thiophen-2-yl)acetic acid" "(s)-2-thienylglycine" "d-2-(2-thienyl)-glycine" "(-)-2-thienylglycine" );
+gibbsFormation
+{
+    dHf_298   -258760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     446.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-145850.0
+    phase     gas;
+}

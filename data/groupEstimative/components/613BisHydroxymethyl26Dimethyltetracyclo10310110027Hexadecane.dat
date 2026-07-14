@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6,13-bis(hydroxymethyl)-2,6-dimethyltetracyclo[10.3.1.01,10.02,7]hexadecane-5,13-diol  (C20H34O4, CAS 38966-21-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        613BisHydroxymethyl26Dimethyltetracyclo10310110027Hexadecane;
+formula     C20H34O4;
+CAS         38966-21-1;
+InChIKey    NOFOAYPPHIUXJR-UHFFFAOYSA-N;
+MW          338.488;      // g/mol [origin=calculated method=formula-sum]
+Tc          1289.26;      // K   [origin=predictive method=joback]
+Pc          22.633;      // bar [origin=predictive method=joback]
+omega       1.6992;      // -   [origin=predictive method=lee-kesler]
+Tb          1052.24;      // K   [origin=predictive method=joback]
+HvapTb      121330.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-391.788 3.66664 -0.0037898 1.6228e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 10; } { group CH; count 4; } { group C; count 4; } { group OH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 4; } { group C_ring; count 4; } { group OH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "agn-pc-03e6zb" "(3-alpha,4-alpha,5-alpha,17-alpha)-3,17-dihydroxy-4-methyl-9,15-cyclo-c,18-dinor-14,15-secoandrostane-4,17-dimethanol" "4,9-bis(hydroxymethyl)-4,11b-dimethyltetradecahydro-8,11a-methanocyclohepta[a]naphthalene-3,9-diol" "8,11" "a-methano-11ah-cyclohepta[a]naphthalene-4,9-dimethanol,tetradecahydro-3,9-dihydroxy-4,11b-dimethyl-, (3r,4r,4ar,6as,8r,9r,11as,11bs)-" "8,9-dimethanol, tetradecahydro-3,9-dihydroxy-4,11b-dimethyl-, (3r-(3.alpha., 4.alpha.,4a.alpha.,6a.beta.,8.beta.,9.beta.,11a.beta.,11b.beta.))-" );
+gibbsFormation
+{
+    dHf_298   -818890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     965.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-287960.0
+    phase     gas;
+}

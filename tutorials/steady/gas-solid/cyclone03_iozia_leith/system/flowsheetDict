@@ -2,37 +2,29 @@
   cyclone03_iozia_leith
   =====================
 
-  The same dusty gas as cyclone01, but the grade efficiency uses the
-  Iozia-Leith data-fitted logistic curve, η(d) = 1/(1+(d50/d)^beta), with
-  a sharpness exponent beta = 3.5.  The cut diameter d50 ~ 2.71 um matches
-  Lapple, but the logistic is STEEPER --- a sharper size cut around d50.
+  The same dusty gas as cyclone01, now through the REAL Iozia-Leith (1989)
+  FLOW-PATTERN model: the cut diameter d50 is NOT the Lapple residence-time
+  surrogate but falls out of the gas flow pattern -- the critical particle
+  sits at the core radius where the tangential velocity peaks, and
+  d50 = sqrt(9 mu Q /(pi z_c rho_p Vt_max^2)) (their eq 4), with Vt_max, the
+  core diameter and its length regressed from the cyclone's OWN geometry
+  (eqs 5-7).  The grade curve stays logistic, eta(d) = 1/(1+(d50/d)^beta),
+  beta = 3.5.  (See the forum note: the 1989 eq-5 prefactor 6.1 is a decimal
+  typo for 0.61 -- 6.1 gives a supersonic Vt_max, against the paper's own
+  Figure 4; we use the Figure-4-consistent 0.61.)
 
-  Grade efficiency: ~3 % at 1 um (steeper roll-off below d50) but ~99 %
-  already at 10 um.  Overall collection ~ 85.3 % --- between Lapple (82 %)
-  and Leith-Licht (88 %); the sharp cut captures more mid-size dust while
-  letting more of the finest tail escape.
+  Flow-pattern d50 ~ 1.0 um -- FINER than Lapple's 2.71 um: a Stairmand-shaped
+  cyclone spins harder than the residence-time picture assumes, so it collects
+  smaller particles.  Overall collection RISES accordingly.  Geometry defaults
+  to the Stairmand high-efficiency ratios (add an operation.geometry {} block
+  to override a/b/De/S/h/H/B).
 
   Gas:    150 kmol/h N2, 300 K, 1 atm
   Dust:   50 kg/h silica, ρ_p = 2650 kg/m^3, PSD 1..50 um
   Cyclone: body diameter 0.5 m, 5 effective turns, beta = 3.5
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            150.0 kmol/h;
-        T            300.0 K;
-        P            1.01325 bar;
-        molarComposition { N2 1.0; }
-        solids
-        {
-            solidFlows   { silica 50.0 kg/h; }
-            diameters    ( 1e-6  2e-6  5e-6  10e-6  20e-6  50e-6 );   // m
-            massFractions( 0.05  0.10  0.20  0.30   0.25   0.10  );
-        }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

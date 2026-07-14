@@ -1,0 +1,27 @@
+/*---------------------------------------------------------------------------*\
+  recipe04_charge_enthalpy / system/controlDict
+
+  WHAT THIS CASE IS: the adversarial test of the H-EQUALITY charge
+  (energy phase (b), design forum #98.3-1/#101).  A hot ethanol charge
+  is transferred into a cold water tank; the mix temperature must solve
+
+      H(n_mix, T_mix) = H_hot + H_cold        (elements datum)
+
+  NOT the molar-T average.  With Cp_water ~ 75 and Cp_ethanol ~ 112
+  J/(mol K), the enthalpy-true T_mix lands ~4 K ABOVE the molar average
+  (~317 K vs 313.3 K) --- the golden pins it, and pins the campaign
+  energy balance AVAILABLE with closure at solver tolerance: the first
+  campaign where a transfer survives inside a CLOSED balance.
+
+  Narrative: system/flowsheetDict header.  Run log: log.choupoBatch.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "H-equality recipe charge: T_mix from the first law, not the molar average; balance CLOSES across a transfer";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         200;      // s
+deltaT          1.0;      // s
+writeInterval   10;       // s

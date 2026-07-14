@@ -1,13 +1,15 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
-stream  drySolid               F                0.00102252746804   1e-4
-stream  vapour                 F                0.00953302808751   1e-4
+stream  drySolid               F                5.80292648834e-05  1e-4
+stream  hotAir                 F                0.222222222222     1e-4
+stream  humidExhaust           F                0.232719748513     1e-4
 stream  wetSolid               F                0.0105555555556    1e-4
-kpi     solidDryer             X_equilibrium    0.0193733556565    1e-4
-kpi     solidDryer             X_final          0.0193733556565    1e-4
+kpi     solidDryer             T_out            347.5126791        1e-4
+kpi     solidDryer             X_equilibrium    0.00109945367945   1e-4
+kpi     solidDryer             X_final          0.00109945367945   1e-4
 kpi     solidDryer             X_initial        0.199991235758     1e-4
-kpi     solidDryer             drySolid_flow    0.96925416567      1e-4
-kpi     solidDryer             duty             399746.14239       1e-4
-kpi     solidDryer             moisture_pct_wb  1.90051618958      1e-4
-kpi     solidDryer             water_activity   0.1                1e-4
-kpi     solidDryer             water_removed    0.171737500997     1e-4
+kpi     solidDryer             air_in_kmol_h    800                1e-4
+kpi     solidDryer             drySolid_flow    0.95187873054      1e-4
+kpi     solidDryer             moisture_pct_wb  0.109824620861     1e-4
+kpi     solidDryer             water_activity   0.00431158404453   1e-4
+kpi     solidDryer             water_removed    0.189112936126     1e-4

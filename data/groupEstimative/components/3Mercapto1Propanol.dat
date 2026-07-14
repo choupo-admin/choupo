@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-mercapto-1-propanol  (C3H8OS, CAS 19721-22-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Mercapto1Propanol;
+formula     C3H8OS;
+CAS         19721-22-3;
+InChIKey    SHLSSLVZXJBVHE-UHFFFAOYSA-N;
+MW          92.156;      // g/mol [origin=calculated method=formula-sum]
+Tc          608.79;      // K   [origin=predictive method=joback]
+Pc          54.870;      // bar [origin=predictive method=joback]
+omega       0.6925;      // -   [origin=predictive method=lee-kesler]
+Tb          423.28;      // K   [origin=predictive method=joback]
+HvapTb      45688.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.343 0.3501 -0.0001922 3.99e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group OH; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group OH; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-sulfanylpropan-1-ol" "1-propanol, 3-mercapto-" "3-mercaptopropanol" "3-hydroxypropanethiol" "3-sulfanyl-1-propanol" "3-hydroxypropyl mercaptan" "mercaptopropanol" "shlsslvzxjbvhe-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -219000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     386.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-133050.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triptycene-9-carboxylic acid  (C21H14O2, CAS 4423-49-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triptycene9CarboxylicAcid;
+formula     C21H14O2;
+CAS         4423-49-8;
+InChIKey    JZZLUQJJPOYTRC-UHFFFAOYSA-N;
+MW          298.341;      // g/mol [origin=calculated method=formula-sum]
+Tc          1182.46;      // K   [origin=predictive method=joback]
+Pc          25.201;      // bar [origin=predictive method=joback]
+omega       1.1307;      // -   [origin=predictive method=lee-kesler]
+Tb          917.21;      // K   [origin=predictive method=joback]
+HvapTb      86305.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-200.41 2.2665 -0.00224228 8.847e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group ACH; count 12; } { group AC; count 5; } { group ACCH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9,10(1',2')-benzenoanthracene-9(10h)-carboxylic acid" "9,10[1',2']-benzenoanthracene-9(10h)-carboxylic acid" "pentacyclo[6.6.6.0^{2,7}.0^{9,14}.0^{15,20}]icosa-2(7),3,5,9(14),10,12,15(20),16,18-nonaene-1-carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   33620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     498.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=254780.0
+    phase     gas;
+}

@@ -48,7 +48,7 @@ Description
     without lying about one of them, so `ActivityModel` is left untouched and
     this sibling base is introduced for the aqueous per-ion currency.
 
-    THE INTERFACE SHAPE (forum-ratified) ---------------------------------------
+    THE INTERFACE SHAPE (settled design) ---------------------------------------
     `evaluate(IonState, T)` is handed the WHOLE frozen state of one
     gamma-fixed-point pass:
       * the full molality vector + matching charges of every aqueous species,
@@ -79,10 +79,14 @@ Description
     PitzerHMW (builtin "pitzer") fills `name`/`gammaNamed`; the solver prefers
     the named accessor whenever it is set.
 
-    The water activity (ln a_w from the phi = 1 dilute approximation) stays in
-    the SpeciationSolver for S1 -- it is solvent bookkeeping, not a per-ion
-    gamma, and moving it would not be byte-trivial; S2 revisits it when Pitzer
-    brings a real osmotic coefficient.
+    The water activity: ln a_w = -(M_w/1000) phi sum_i m_i.  The osmotic
+    coefficient phi is the solvent's non-ideality -- it is NOT 1 in a real brine
+    (a_w < x_w; this is the osmotic pressure).  A model that can supply phi fills
+    `ActivityResult::osmotic`; PitzerHMW returns the rigorous HMW osmotic sum on
+    the SAME virial parameters as its gammas, so a_w is Pitzer-consistent (the
+    gypsum a_w^2 leg, the boiling-point elevation, the osmotic pressure all use
+    it).  When `osmotic` is null (Davies), the solver keeps phi = 1 (the dilute
+    approximation, consistent with Davies being indicative beyond I ~ 0.5).
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -136,6 +140,13 @@ struct ActivityResult
     double A = 0.51;                        // Debye-Huckel slope at T (log10 base)
     std::function<double(double z)> gamma;  // gamma_i for an ion of charge z
     std::function<double(const std::string& name, double z)> gammaNamed; // optional (Pitzer)
+    // OPTIONAL osmotic coefficient phi for the frozen pass (the solvent's non-
+    // ideality).  When a model sets it, the solver computes the water activity
+    // as  a_w = exp(-M_w/1000 * phi * sum_i m_i)  instead of the phi = 1 dilute
+    // approximation.  PitzerHMW fills it (the rigorous HMW osmotic sum on the
+    // SAME parameters as the gammas); Davies leaves it null -> the solver keeps
+    // phi = 1 (consistent with Davies being a dilute/indicative model).
+    std::function<double()> osmotic;
 };
 
 class AqueousActivity

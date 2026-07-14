@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octafluoronaphthalene  (C10F8, CAS 313-72-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octafluoronaphthalene;
+formula     C10F8;
+CAS         313-72-4;
+InChIKey    JDCMOHAFGDQQJX-UHFFFAOYSA-N;
+MW          272.094;      // g/mol [origin=calculated method=formula-sum]
+Tc          673.86;      // K   [origin=predictive method=joback]
+Pc          23.070;      // bar [origin=predictive method=joback]
+omega       0.8152;      // -   [origin=predictive method=lee-kesler]
+Tb          508.06;      // K   [origin=predictive method=joback]
+HvapTb      40530.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (91.57 0.4896 -0.000283 6e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 2; } { group ACF; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 10; } { group F; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5,6,7,8-octakis(fluoranyl)naphthalene" "perfluoronaphthalene" "1,2,3,4,5,6,7,8-octafluoronaphthalene" "octafluoronapthalene" "naphthalene, octafluoro-" "naphthalene,octafluoro- (6ci,7ci,8ci,9ci);1,2,3,4,5,6,7,8-octafluoronaphthalene;1,2,3,4,5,6,7,8-octafluoronaphthlene;octafluoronaphthalene;perfluoronaphthalene;naphthalene, octafluoro-;" );
+gibbsFormation
+{
+    dHf_298   -1482770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     534.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1383140.0
+    phase     gas;
+}

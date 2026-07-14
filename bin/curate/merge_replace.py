@@ -4,7 +4,7 @@
 # must NEVER be promoted by overwrite: 21/21 standards carry gibbsFormation the
 # CoolProp file lacks (acetone also groups; methanol/benzene/ethanol/toluene
 # carry liquidViscosity/associationFactor/relativePermittivity/diffusionVolume).
-# So this builds the per-value MERGE upgrade INSIDE data/proposed/ ONLY:
+# So this builds the per-value MERGE upgrade INSIDE data/local/ ONLY:
 #   CoolProp constants/VP/Cp/triple + named-EOS provenance  (the LICENCE FIX:
 #   every REPLACE standard cites excluded NIST/Poling/CRC/EngineeringToolbox)
 #   + GRAFTED from the standard the blocks CoolProp cannot supply.
@@ -22,9 +22,9 @@ import re, importlib.util
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-PROP = ROOT / 'data/proposed/components'
+PROP = ROOT / 'data/local/components'
 STD  = ROOT / 'data/standards/components'
-OUT  = ROOT / 'data/proposed/COOLPROP-REPLACE-MERGE.md'
+OUT  = ROOT / 'data/local/COOLPROP-REPLACE-MERGE.md'
 
 ref = importlib.util.spec_from_file_location(
     'refresh', Path(__file__).with_name('refresh_coolprop_collisions.py'))

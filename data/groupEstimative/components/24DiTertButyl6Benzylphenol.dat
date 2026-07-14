@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-di-tert-butyl-6-benzylphenol  (C21H28O, CAS 3286-98-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24DiTertButyl6Benzylphenol;
+formula     C21H28O;
+CAS         3286-98-4;
+InChIKey    DALXAKMWLANGNT-UHFFFAOYSA-N;
+MW          296.454;      // g/mol [origin=calculated method=formula-sum]
+Tc          1059.61;      // K   [origin=predictive method=joback]
+Pc          17.146;      // bar [origin=predictive method=joback]
+omega       0.8191;      // -   [origin=predictive method=lee-kesler]
+Tb          817.56;      // K   [origin=predictive method=joback]
+HvapTb      78638.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-113.279 2.12832 -0.00164688 5.168e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group C; count 2; } { group ACH; count 7; } { group AC; count 3; } { group ACCH2; count 1; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 1; } { group C; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4-ditert-butyl-6-(phenylmethyl)phenol" "2,4-di-t-butyl-6-benzylphenol" "phenol, 2,4-bis(1,1-dimethylethyl)-6-(phenylmethyl)-" "4,6-di-tert-butyl-alpha-phenyl-o-cresol" "o-cresol, 4,6-di-tert-butyl-alpha-phenyl-" "2-benzyl-4,6-ditert-butylphenol" "phenol,4-bis(1,1-dimethylethyl)-6-(phenylmethyl)-" );
+gibbsFormation
+{
+    dHf_298   -221460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     697.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=182560.0
+    phase     gas;
+}

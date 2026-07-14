@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (-)-camphanic acid  (C10H14O4, CAS 134-55-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        camphanicAcid;
+formula     C10H14O4;
+CAS         134-55-4;
+InChIKey    KPWKPGFLZGMMFX-VHSXEESVSA-N;
+MW          198.218;      // g/mol [origin=calculated method=formula-sum]
+Tc          863.46;      // K   [origin=predictive method=joback]
+Pc          32.765;      // bar [origin=predictive method=joback]
+omega       0.8497;      // -   [origin=predictive method=lee-kesler]
+Tb          637.39;      // K   [origin=predictive method=joback]
+HvapTb      58317.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-215.59 2.11046 -0.0025274 1.173e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 3; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 2; } { group C_ring; count 3; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1r,4s)-1,7,7-trimethyl-2-oxidanylidene-3-oxabicyclo[2.2.1]heptane-4-carboxylic acid" "(1s)-(-)-camphanic acid" "camphanic acid" "(1s,4r)-4,7,7-trimethyl-3-oxo-2-oxabicyclo[2.2.1]heptane-1-carboxylic acid" "(1s)-3-oxo-4,7,7-trimethyl-2-oxabicyclo[2.2.1]heptane-1-carboxylic acid" "ambap13429-83-9" "am726" "k793" "2-oxabicyclo[2.2.1]heptane-1-carboxylic acid, 4,7,7-trimethyl-3-oxo-, (1s,4r)-" );
+gibbsFormation
+{
+    dHf_298   -740140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     615.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-511540.0
+    phase     gas;
+}

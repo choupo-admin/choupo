@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oleyl stearate  (C36H70O2, CAS 17673-50-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oleylStearate;
+formula     C36H70O2;
+CAS         17673-50-6;
+InChIKey    YYDZACXIVKPEAI-UHFFFAOYSA-N;
+MW          534.954;      // g/mol [origin=calculated method=formula-sum]
+Tc          1401.62;      // K   [origin=predictive method=joback]
+Pc          4.691;      // bar [origin=predictive method=joback]
+omega       -0.0309;      // -   [origin=predictive method=lee-kesler]
+Tb          1085.66;      // K   [origin=predictive method=joback]
+HvapTb      103095.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.609 3.38904 -0.0019238 4.075e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 30; } { group CH=CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 31; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "octadec-9-enyl octadecanoate" "octadecanoic acid, (9z)-9-octadecen-1-yl ester" "octadecanoic acid,(9z)-9-octadecen-1-yl ester" "octadecanoicacid, (9z)-9-octadecenyl ester (9ci); octadecanoic acid, 9-octadecenyl ester,(z)-; stearic acid, 9-octadecenyl ester, (z)- (8ci); stearic acid,cis-9-octadecenyl ester (6ci,7ci); 9-octadecen-1-ol, stearate, (z)- (7ci);oleyl stearate; cis-9-octadecenyl stearate" );
+gibbsFormation
+{
+    dHf_298   -986430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1602.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=22090.0
+    phase     gas;
+}

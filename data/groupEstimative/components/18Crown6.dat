@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 18-crown-6  (C12H24O6, CAS 17455-13-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        18Crown6;
+formula     C12H24O6;
+CAS         17455-13-9;
+InChIKey    XEZNGIUYQVAUSS-UHFFFAOYSA-N;
+MW          264.318;      // g/mol [origin=calculated method=formula-sum]
+Tc          981.71;      // K   [origin=predictive method=joback]
+Pc          28.114;      // bar [origin=predictive method=joback]
+omega       0.6394;      // -   [origin=predictive method=lee-kesler]
+Tb          711.32;      // K   [origin=predictive method=joback]
+HvapTb      72168.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.09 1.1592 -0.0001252 -2.416e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group FCH2O; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 12; } { group O_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4,7,10,13,16-hexaoxacyclooctadecane" "ethylene oxide cyclic hexamer" "18-crown-6 ether" "hexaoxacyclooctadecane" "1,4,7,10,13,16-hexanoxacyclooctadecane" "18-crown 6-ether" "wt603" "1,7,10,13,16-hexaoxacyclooctadecane" "1,7,10,13,16-hexanoxacyclooctadecane" "17455-13-9 18-crown-6" "3,6,9,12,15,18-hexaoxacyclooctadecan" "1,4,7,10,13,16-hexoxacyclooctadecane" );
+gibbsFormation
+{
+    dHf_298   -1082270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     566.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-579600.0
+    phase     gas;
+}

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/heatExchanger.schema.json",
   "title": "heatExchanger operation",
-  "description": "Two-stream heat exchanger solved by the effectiveness-NTU method. From the area, overall coefficient U and flow arrangement it computes the outlet temperatures, the duty Q and the LMTD.",
+  "description": "Two-stream heat exchanger. THREE modes via `model`: epsNTU (default) rates from a given U + area; geometry COMPUTES U + area + pressure drop from the tube bundle (Gnielinski/Kern); design SIZES the bundle from a duty target. In geometry/design the U and area below are RESULTS, not inputs.",
   "type": "object",
   "properties": {
     "area": {

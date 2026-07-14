@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-butanediol  (C4H10O2, CAS 110-63-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14Butanediol;
+formula     C4H10O2;
+CAS         110-63-4;
+InChIKey    WERYXYBDKMZEQL-UHFFFAOYSA-N;
+MW          90.122;      // g/mol [origin=calculated method=formula-sum]
+Tc          634.07;      // K   [origin=predictive method=joback]
+Pc          49.733;      // bar [origin=predictive method=joback]
+omega       1.2212;      // -   [origin=predictive method=lee-kesler]
+Tb          475.48;      // K   [origin=predictive method=joback]
+HvapTb      57856.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.834 0.4518 -0.0002546 5.6e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group OH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butane-1,4-diol" "1,4-butylene glycol" "tetramethylene glycol" "1,4-dihydroxybutane" "1,4-tetramethylene glycol" "tetramethylene 1,4-diol" "diol 14b" "sucol b" "agrisynth b1d" "1,4-bd" "poly(tetrahydrofuran)" "1,4-dihdyroxybutane" );
+gibbsFormation
+{
+    dHf_298   -430350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     413.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-290840.0
+    phase     gas;
+}

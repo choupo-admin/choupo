@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(pyridin-4-yl)propanoic acid  (C8H9NO2, CAS 6318-43-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Pyridin4YlPropanoicAcid;
+formula     C8H9NO2;
+CAS         6318-43-0;
+InChIKey    WSXGQYDHJZKQQB-UHFFFAOYSA-N;
+MW          151.165;      // g/mol [origin=calculated method=formula-sum]
+Tc          844.35;      // K   [origin=predictive method=joback]
+Pc          40.829;      // bar [origin=predictive method=joback]
+omega       0.7887;      // -   [origin=predictive method=lee-kesler]
+Tb          608.53;      // K   [origin=predictive method=joback]
+HvapTb      59052.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.628 0.76946 -0.00052446 1.393e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group C5H4N; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group COOH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-pyridin-4-ylpropanoic acid" "3-pyridin-4-yl-propionic acid" "4-pyridinepropanoic acid" "4-pyridinepropionic acid" "3-(4-pyridinyl)propanoic acid" "3-(4-pyridyl)propanoic acid" "4-(2-carboxyethyl)pyridine" "3-(pyridin-4-yl)propionic acid" "(e)-pyridin-4-yl-acrylic acid" "xiz" );
+gibbsFormation
+{
+    dHf_298   -289400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     427.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-137970.0
+    phase     gas;
+}

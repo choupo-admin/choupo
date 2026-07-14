@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dibenzo-24-crown-8  (C24H32O8, CAS 14174-09-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dibenzo24Crown8;
+formula     C24H32O8;
+CAS         14174-09-5;
+InChIKey    UNTITLLXXOKDTB-UHFFFAOYSA-N;
+MW          448.512;      // g/mol [origin=calculated method=formula-sum]
+Tc          1405.74;      // K   [origin=predictive method=joback]
+Pc          17.743;      // bar [origin=predictive method=joback]
+omega       1.0815;      // -   [origin=predictive method=lee-kesler]
+Tb          1111.64;      // K   [origin=predictive method=joback]
+HvapTb      114120.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-62.81 1.9972 -0.00058572 -1.748e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group ACH; count 8; } { group AC; count 4; } { group FCH2O; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 12; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group O_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "crown ether dibenzo-24-crown-8" "6,7,9,10,12,13,20,21,23,24,26,27-dodecahydrodibenz(b,n)(1,4,7,10,13,16,19,22)octaoxacyclotetracosin" "dibenzo-24-crown 8-ether" "dibenzo-24-crown-8-ether" "2,3,14,15-dibenzo-1,4,7,10,13,16,19,22-octaoxacyclotetracosa-2,14-diene" "2,5,8,11,18,21,24,27-octaoxatricyclo[26.4.0.0^{12,17}]dotriaconta-1(28),12(17),13,15,29,31-hexaene" "2,5,8,11,18,21,24,27-octaoxatricyclo[26.4.0.012,17]dotriaconta-1(28),12(17),13,15,29,31-hexaene" "5,6,7,8,9,10,11,12,13,14,19,20,21,22,23,24,25,26,27,28-icosahydrodibenzo[a,m][ 24]annulene" "6,7,9,10,12,13,20,21,23,24,26,27-dodecahydrodibenz[b,n]-1,4,7,10,13,16,19,22-octaoxacyclotetracosane" "6,7,9,10,12,13,20,21,23,24,26,27-dodecahydrodibenzo[b,n][1,4,7,10,13,16,19,22]octaoxacyclotetracosine" "dibenz[b,4,7,10,13,16,19,22]octaoxacyclotetracosin, 6,7,9,10,12,13,20,21,23,24,26,27-dodecahydro-" );
+gibbsFormation
+{
+    dHf_298   -1156150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     745.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-469440.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethyl 1-cyano-3,3,4-pentane-tricarboxylate  (C15H23NO6, CAS 3228-31-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethyl1Cyano334PentaneTricarboxylate;
+formula     C15H23NO6;
+CAS         3228-31-7;
+InChIKey    SIMLAXQBSRSEKJ-UHFFFAOYSA-N;
+MW          313.35;      // g/mol [origin=calculated method=formula-sum]
+Tc          1015.18;      // K   [origin=predictive method=joback]
+Pc          14.337;      // bar [origin=predictive method=joback]
+omega       1.0931;      // -   [origin=predictive method=lee-kesler]
+Tb          815.87;      // K   [origin=predictive method=joback]
+HvapTb      79999.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (56.325 1.33098 -0.0006524 6.11e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group CH2CN; count 1; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 1; } { group C; count 1; } { group COO; count 3; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "triethyl 4-cyano-1-methyl-butane-1,2,2-tricarboxylate" "triethyl 4-cyano-1-methylbutane-1,2,2-tricarboxylate" "5-cyano-2,3,3-pentanetricarboxylic acid, triethyl ester" "2,3,3-pentanetricarboxylicacid, 5-cyano-, 2,3,3-triethyl ester" "1,1,2-triethyl 1-(2-cyanoethyl)-2-methylethane-1,1,2-tricarboxylate" );
+gibbsFormation
+{
+    dHf_298   -1153920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     851.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-722110.0
+    phase     gas;
+}

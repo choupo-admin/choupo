@@ -28,9 +28,17 @@ License
 
 #include "Flowsheet.H"
 #include "core/Advisory.H"
+#include "thermo/ThermoAnnounce.H"
 #include "core/DisplayUnits.H"
 #include "core/ExprEval.H"
-#include "reporting/ModelBoundaryAudit.H"   // model-boundary audit (H conserved, T is the readout)
+#include "reporting/BalanceMath.H"          // missingEnthalpyData: name no-datum species
+#include "reporting/ModelBoundaryAudit.H"
+#include "thermo/ThermoPackageBuilder.H"
+#include "streams/StreamOverrides.H"
+#include "streams/StreamOwnership.H"
+#include "streams/StreamStateIO.H"
+#include <fstream>
+#include <functional>   // model-boundary audit (H conserved, T is the readout)
 
 #include <cstdio>   // snprintf for advisory message formatting (no ostringstream)
 #include "solver/NewtonRaphson.H"
@@ -39,6 +47,7 @@ License
 #include "streams/Composition.H"
 #include "streams/StreamMass.H"
 #include "thermo/utility/UtilityCatalogue.H"
+#include "thermo/PropertyContext.H"
 #include "unitOperations/flash/IsothermalFlash.H"   // solveCore: feed-flash for the true vf
 
 // The dispatcher for unit-op types lives in UnitOperation::New().
@@ -76,6 +85,69 @@ scalar invertPsat(const Component& c, scalar P_target_Pa)
     opt.monotoneIncreasing = true;
     auto r = solver::newton1D(f, df, std::max(c.Tb(), 273.15), opt);
     return r.x;
+}
+
+// Mixture-aware thermal-state completion: given the composition z and ONE of
+// {P, T} plus a target vapour fraction, find the MISSING variable so the
+// equilibrium flash returns that vf.  This is what makes `vaporFraction` a
+// COMPLETE stream spec for a MIXTURE -- the counterpart of invertPsat() for a
+// pure component -- because on the phase boundary T and P are NOT independent,
+// so a saturated/two-phase feed MUST pin vf (with P or T).  vf=0 is the bubble
+// point, vf=1 the dew point, in between a flash-at-vf.  Bisection on the flash
+// vf, which is monotone (increasing in T at fixed P, decreasing in P at fixed
+// T); robust to flash non-convergence at the extremes via a sign-change scan.
+scalar solveStateForVf(const ThermoPackage& thermo, sVector z,
+                       bool knownIsP, scalar known, scalar vfTarget,
+                       const std::string& name)
+{
+    scalar zsum = 0.0; for (scalar zi : z) zsum += zi;
+    if (zsum > 0.0) for (auto& zi : z) zi /= zsum;          // normalise
+    // Aim a hair inside (0,1): the bubble/dew edge is the vf=0/1 limit, and the
+    // clamped flash vf is flat there, so target vf-eps to land ON the edge.
+    const scalar vfEff = std::min(1.0 - 1.0e-6, std::max(1.0e-6, vfTarget));
+    auto vfAt = [&](scalar x) -> scalar
+    {
+        FlashInput fin; fin.F = 1.0; fin.z = z;
+        if (knownIsP) { fin.T = x; fin.P = known; }
+        else          { fin.T = known; fin.P = x; }
+        FlashOptions fo; fo.verbosity = 0;
+        const FlashSolution fs = IsothermalFlash::solveCore(fin, thermo, fo);
+        if (!fs.converged || !std::isfinite(fs.V_over_F)) return std::nan("");
+        return std::min(1.0, std::max(0.0, fs.V_over_F));
+    };
+    // Scan for a sign-change bracket of f(x) = vf(x) - vfEff.
+    scalar lo, hi;
+    if (knownIsP) { lo = 80.0;  hi = 1500.0; }             // T in K
+    else          { lo = 100.0; hi = 5.0e7;  }             // P in Pa (1 mbar..500 bar)
+    const int NS = 60;
+    scalar a = lo, b = hi, fa = std::nan(""); bool bracketed = false;
+    scalar xPrev = lo, fPrev = std::nan("");
+    for (int i = 0; i <= NS; ++i)
+    {
+        const scalar x = knownIsP ? lo + (hi - lo) * scalar(i) / NS
+                                  : lo * std::pow(hi / lo, scalar(i) / NS);
+        const scalar v = vfAt(x);
+        const scalar fx = std::isfinite(v) ? v - vfEff : std::nan("");
+        if (std::isfinite(fPrev) && std::isfinite(fx) && fPrev * fx <= 0.0)
+        { a = xPrev; b = x; fa = fPrev; bracketed = true; break; }
+        xPrev = x; fPrev = fx;
+    }
+    if (!bracketed)
+        throw std::runtime_error("Stream '" + name + "': could not find a "
+            + std::string(knownIsP ? "temperature" : "pressure")
+            + " giving vaporFraction = " + std::to_string(vfTarget)
+            + " -- the mixture is likely single-phase at the given "
+            + (knownIsP ? "pressure" : "temperature")
+            + ", or outside the thermo model's range.  Give T and P explicitly.");
+    for (int it = 0; it < 90 && std::abs(b - a) > (knownIsP ? 1.0e-4 : 1.0e-1); ++it)
+    {
+        const scalar m = 0.5 * (a + b);
+        const scalar v = vfAt(m);
+        if (!std::isfinite(v)) { b = m; continue; }        // pull in from the bad side
+        const scalar fm = v - vfEff;
+        if (fa * fm <= 0.0) b = m; else { a = m; fa = fm; }
+    }
+    return 0.5 * (a + b);
 }
 
 ProcessStream readSourceStream(const std::string& name,
@@ -220,6 +292,7 @@ ProcessStream readSourceStream(const std::string& name,
     const bool hasState = sd->found("state");
     const bool hasT     = sd->found("T");
     const bool hasP     = sd->found("P");
+    const bool hasVf    = sd->found("vaporFraction") || sd->found("vf");
     std::string state;
     if (hasState)
         state = sd->lookupWord("state");
@@ -230,11 +303,17 @@ ProcessStream readSourceStream(const std::string& name,
     const bool effHasT  = hasT     || (util != nullptr && util->T_in  > 0.0);
     const bool effHasP  = hasP     || (util != nullptr && util->P     > 0.0);
 
-    if (!effState && (!effHasT || !effHasP))
+    // A complete thermal state needs TWO independent specs: (T and P), OR a
+    // `state` keyword, OR a `vaporFraction` with ONE of {T, P} (the engine then
+    // solves the other -- bubble/dew/flash-at-vf).  vaporFraction is ESSENTIAL
+    // for a saturated/two-phase feed, where T and P are NOT independent.
+    if (!effState && !(effHasT && effHasP) && !(hasVf && (effHasT || effHasP)))
         throw std::runtime_error("Stream '" + name +
-            "': missing T or P --- declare both, or declare `state` so the"
-            " simulator can derive the missing one from the saturation curve,"
-            " or use `utility <name>;` to pull defaults from the catalogue");
+            "': under-specified thermal state.  Give TWO of {T, P, vaporFraction}"
+            " --- (T and P), or `vaporFraction` with one of {T, P} (the engine"
+            " solves the other; vaporFraction is essential for a saturated or"
+            " two-phase feed, where T and P are not independent on the phase"
+            " boundary), or a `state` keyword, or `utility <name>;`.");
 
     if (effState && state != "saturatedVapour" && state != "saturatedLiquid"
                  && state != "subcooledLiquid" && state != "superheatedVapour")
@@ -281,19 +360,65 @@ ProcessStream readSourceStream(const std::string& name,
     else if (effState && state == "subcooledLiquid")  s.vf = 0.0;
     else if (effState && state == "superheatedVapour") s.vf = 1.0;
 
-    // A raw `vf` key sets the vapour fraction directly (no silent crutch: this
-    // used to be ignored, so `vf 1;` looked accepted but did nothing -- the
-    // trap that made the HDA mixer pick a liquid energy basis for a gas mix).
-    // An explicit `state` already pins vf; otherwise honour the declared vf.
-    if (sd->found("vf") && !(effState &&
-        (state == "saturatedVapour" || state == "saturatedLiquid"
-         || state == "subcooledLiquid" || state == "superheatedVapour")))
+    // -----------------------------------------------------------------
+    // vaporFraction (alias vf) as a COMPLETE thermal-state spec, mixture-aware.
+    // With ONE of {T, P} the engine solves the OTHER so the flash returns the
+    // declared vf (the pure `state` path above does vf=0/1 via Psat; this is
+    // general -- any mixture, any vf).  T, P AND vf all given is OVER-specified:
+    // verify against the flash and REFUSE a contradiction (no silent crutch).
+    // An explicit `state` already pinned vf -> skip.
+    // -----------------------------------------------------------------
+    if (hasVf && !effState)
     {
-        const scalar vfIn = sd->lookupScalar("vf");
-        if (vfIn < 0.0 || vfIn > 1.0)
-            throw std::runtime_error("Stream '" + name + "': vf = "
-                + std::to_string(vfIn) + " is outside [0, 1].");
-        s.vf = vfIn;
+        const scalar vfDecl = sd->found("vaporFraction")
+            ? sd->lookupScalar("vaporFraction") : sd->lookupScalar("vf");
+        if (vfDecl < 0.0 || vfDecl > 1.0)
+            throw std::runtime_error("Stream '" + name + "': vaporFraction = "
+                + std::to_string(vfDecl) + " is outside [0, 1].");
+
+        if (effHasT && effHasP)
+        {
+            // OVER-specified (T, P AND vf): the flash at (T, P) already fixes vf.
+            sVector zf = s.z; scalar zs = 0.0; for (scalar zi : zf) zs += zi;
+            if (zs > 0.0) for (auto& zi : zf) zi /= zs;
+            FlashInput fin; fin.F = 1.0; fin.T = s.T; fin.P = s.P; fin.z = zf;
+            FlashOptions fo; fo.verbosity = 0;
+            const FlashSolution fs = IsothermalFlash::solveCore(fin, thermo, fo);
+            const scalar vfFl = (fs.converged && std::isfinite(fs.V_over_F))
+                ? std::min(1.0, std::max(0.0, fs.V_over_F)) : vfDecl;
+            if (std::abs(vfFl - vfDecl) > 0.02)
+                throw std::runtime_error("Stream '" + name + "': over-specified"
+                    " and inconsistent --- (T, P) flash to vaporFraction "
+                    + std::to_string(vfFl) + ", but vaporFraction "
+                    + std::to_string(vfDecl) + " was also declared.  Give only"
+                    " TWO of {T, P, vaporFraction}.");
+            s.vf = vfDecl;
+        }
+        else if (effHasP)   // P + vaporFraction -> solve T (bubble/dew/flash-at-vf)
+        {
+            s.T  = solveStateForVf(thermo, s.z, true, s.P, vfDecl, name);
+            s.vf = vfDecl;
+        }
+        else                // T + vaporFraction -> solve P
+        {
+            s.P  = solveStateForVf(thermo, s.z, false, s.T, vfDecl, name);
+            s.vf = vfDecl;
+        }
+
+        // LOUD: announce the resolved thermal state -- the spec the student reads.
+        const auto& du = DisplayUnits::instance();
+        const auto [Td, Tl] = du.convert(s.T, Dims::temperature);
+        const auto [Pd, Pl] = du.convert(s.P, Dims::pressure);
+        const char* ph = (s.vf <= 1.0e-6) ? "saturated liquid"
+                       : (s.vf >= 1.0 - 1.0e-6) ? "saturated vapour" : "two-phase (VL)";
+        char buf[160];
+        std::snprintf(buf, sizeof(buf),
+            "vaporFraction %.4g -> T = %.2f %s, P = %.4g %s  (%s)",
+            static_cast<double>(vfDecl), static_cast<double>(Td), Tl.c_str(),
+            static_cast<double>(Pd), Pl.c_str(), ph);
+        const std::string locus = "stream '" + name + "'";
+        if (AdvisoryLog::instance().add("phase", "info", locus, buf))
+            std::cout << "  [phase] " << locus << ": " << buf << "\n";
     }
 
     // -----------------------------------------------------------------
@@ -326,7 +451,7 @@ ProcessStream readSourceStream(const std::string& name,
     //   package (a decanter's two-liquid thermo, no vapour phase / EoS)
     //   has nothing to flash against, so the feed is liquid (vf = 0) by
     //   construction --- skip it (and avoid a VL flash with no EoS).
-    const bool phaseDeclared = effState || sd->found("vf");
+    const bool phaseDeclared = effState || hasVf;
     const bool canVLE        = !thermo.phasesOfType("vapor").empty();
     scalar zsum_phase = 0.0;
     for (const scalar zi : s.z) zsum_phase += zi;
@@ -351,6 +476,11 @@ ProcessStream readSourceStream(const std::string& name,
             }
         }
         const bool supercriticalFeed = z_supercrit > 0.5;   // majority cannot condense
+        // ALL components supercritical: the stream is unambiguously a GAS --
+        // above Tc there is no vapour/liquid distinction to warn about, and
+        // demanding a `state` declaration for pure N2 at 300 K is nonsense
+        // (round-4: the engine must know what it can know; no busywork).
+        const bool allSupercritical = z_supercrit > 1.0 - 1.0e-9;
 
         FlashInput fin;
         fin.F = 1.0;                       // intensive: vf is F-independent
@@ -373,7 +503,16 @@ ProcessStream readSourceStream(const std::string& name,
         const std::string Tstr  = std::string(tbuf) + " " + T_lbl;
         const std::string locus = "stream '" + name + "'";
 
-        if (supercriticalFeed && vfFlash < 0.5)
+        if (allSupercritical)
+        {
+            // Unambiguous: a wholly supercritical composition is a gas.
+            s.vf = 1.0;
+            if (thermoAnnounce(3))
+                std::cout << "  [phase] stream '" << s.name << "': every"
+                             " FLUID component is above its Tc -> gas"
+                             " (vf = 1; any solids ride their own channel).\n";
+        }
+        else if (supercriticalFeed && vfFlash < 0.5)
         {
             // The VL flash says liquid, but the stream is supercritical in its
             // dominant species -- a liquid here is a Psat-extrapolation ghost.
@@ -398,7 +537,11 @@ ProcessStream readSourceStream(const std::string& name,
             if (s.vf > 1.0e-6)
             {
                 char vbuf[16];
-                std::snprintf(vbuf, sizeof(vbuf), "%.3f",
+                // 3 significant digits below 0.01: "%.3f" would print a
+                // tiny-but-real vf = 4e-4 as "0.000" and contradict the
+                // two-phase verdict on the same line.
+                std::snprintf(vbuf, sizeof(vbuf),
+                              (s.vf < 0.01) ? "%.3g" : "%.3f",
                               static_cast<double>(s.vf));
                 const std::string phaseWord =
                     (s.vf > 1.0 - 1.0e-6) ? "VAPOUR" : "two-phase (VL)";
@@ -504,12 +647,20 @@ void printStream(const ProcessStream& s, const ThermoPackage& thermo)
     const int pP    = du.precisionFor(Dims::pressure);
     const int pComp = du.compositionPrecision();
 
+    // vf: fixed 3 decimals normally, but 3 significant digits (scientific
+    // below 1e-4) when 0 < vf < 0.01 -- a tiny-but-real vapour fraction must
+    // never display as 0.000 next to a two-phase verdict.
+    char vfbuf[16];
+    std::snprintf(vfbuf, sizeof(vfbuf),
+                  (s.vf > 0.0 && s.vf < 0.01) ? "%.3g" : "%.3f",
+                  static_cast<double>(s.vf));
+
     std::cout << "    " << std::left << std::setw(20) << s.name
               << " F = " << std::fixed << std::setprecision(pF)
               << std::setw(9) << F_disp << " " << F_lbl
               << "   T = " << std::setw(7) << std::setprecision(pT) << T_disp << " " << T_lbl
               << "   P = " << std::setw(7) << std::setprecision(pP) << P_disp << " " << P_lbl
-              << "   vf = " << std::setprecision(3) << s.vf;
+              << "   vf = " << vfbuf;
 
     // Solid phase: a powder / captured-solids stream carries its
     // mass in s[] (kmol/s of solid per species), NOT in the molar fluid
@@ -529,6 +680,14 @@ void printStream(const ProcessStream& s, const ThermoPackage& thermo)
     // w_i (mass fractions, derived as z_i * MW_i / Sigma_j z_j * MW_j)
     // when mass basis.  Labels switch too so the student sees `x_` or
     // `w_` and knows which set she is looking at.
+    // A solids-carrying stream with (near-)zero fluid flow: the mole-fraction
+    // line describes an EMPTY fluid phase -- label it so 'silica=0.0000' is
+    // never read as 'no silica here' beside 41 kg/h of solids (student pass-4).
+    if (solidMass > 0.0 && s.F < 1.0e-12)
+        std::cout << "      (fluid phase empty -- the solids above ARE the stream)\n";
+    else if (solidMass > 0.0)
+        std::cout << "      (mole fractions below are the FLUID phase only --"
+                     " the solids ride their own channel, listed above)\n";
     std::cout << "      " << std::setprecision(pComp);
     if (mass)
     {
@@ -599,27 +758,51 @@ struct CompositeTear
 {
     std::string   qualifiedName;       // e.g. "FERMENTATION.Recycle"
     ProcessStream initial;              // initial guess from this composite's streams{}
+    bool          hasInitial = true;    // false: resolve AFTER the manifest-based
+                                        // 0/ seeding (topology-first reader,
+                                        // forum #83 -- flatten no longer requires
+                                        // pre-seeded streams)
 };
 
 //  Recursively flatten a fractal NODE into leaf units (fractal step 2/3).
 //
-//  A node is COMPOSITE (`children` + `connections` + `boundary`) or LEAF
+//  A node is COMPOSITE (`members` + `connections` + `boundary`) or LEAF
 //  (`type`).  We walk the tree, emitting one synthesised unit dict per LEAF
 //  with a fully-qualified name (plant.sector.unit) and cabling each inlet to
 //  its source per the `connections` at each level.  Returns this node's
 //  boundary-outlet map { outlet -> global stream }, so its parent can resolve
-//  `<child>/<outlet>` references.
+//  `<member>/<outlet>` references.
 //    nsPrefix : namespace prefix for stream/unit names ("" at the root,
-//                 "concentration." inside the plant's first child,...).
-//    folderPath : filesystem prefix to locate child folders ("" at the root
+//                 "concentration." inside the plant's first member,...).
+//    folderPath : filesystem prefix to locate member folders ("" at the root
 //                 [cwd is the case dir], "concentration/" one level down).
 //    inletMap : this node's boundary-inlet name -> the global stream feeding it.
-//    outTears : OUT.  Each composite (root + recursive children) appends its
+//    outTears : OUT.  Each composite (root + recursive members) appends its
 //                 own `tearStreams` here with the initial guess read from its
 //                 `streams {}` block.  Internal recycle within a sector
 //                 becomes a flat-case-style tear after flattening.
 //    thermo   : needed by readSourceStream to interpret tear initial guesses.
 // ---------------------------------------------------------------------------
+// Resolve a flowsheet MEMBER's DIRECTORY (with trailing '/').  A member is a
+// UNIT operation or a SECTOR -- never a generic "member": a dignified unit lives
+// under `unitOperations/<name>/`, a real sector under `sectors/<name>/`; the
+// bare `<name>/` layout (member folder at the domain root) is still read for
+// cases not yet migrated to the grouped layout.  The first location that
+// actually carries a flowsheetDict wins, and the resolved base is used for the
+// member's dict AND every `constant/` lookup below, so a member is found in
+// exactly one place.
+static std::string resolveMemberBase(const std::string& folderPath,
+                                     const std::string& member)
+{
+    for (const std::string& cand : { folderPath + "unitOperations/" + member + "/",
+                                     folderPath + "sectors/"        + member + "/",
+                                     folderPath + member + "/" })
+        if (std::filesystem::exists(cand + "system/flowsheetDict")
+         || std::filesystem::exists(cand + "flowsheetDict"))
+            return cand;
+    return folderPath + member + "/";   // inline block / legacy fallback
+}
+
 std::map<std::string,std::string> flattenNode(const DictPtr&                                  dict,
     const std::string&                              nsPrefix,
     const std::string&                              folderPath,
@@ -629,9 +812,60 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
     const ThermoPackage&                            thermo,
     const std::map<std::string, ProcessStream>&     streamReg)
 {
-    auto children = dict->lookupWordList("children");
-    std::vector<DictPtr> conns;
-    if (dict->found("connections")) conns = dict->lookupDictList("connections");
+    // A composite lists its MEMBERS by folder name under `sectors` (UPPERCASE
+    // composite sub-flowsheets) and/or `units` (lowercase dignified unit ops --
+    // a leaf folder with a `type`).  Both are folder references flattened here;
+    // the keyword is the author's SEMANTIC label (a plant has sectors; a
+    // flowsheet has units), and a member's real kind is read from its own dict
+    // (has `sectors`/`units` -> composite; has `type` -> leaf unit).
+    std::vector<std::string> members;
+    if (dict->found("sectors"))
+        for (const auto& s : dict->lookupWordList("sectors")) members.push_back(s);
+    if (dict->found("units"))
+        for (const auto& u : dict->lookupWordList("units")) members.push_back(u);
+
+    // ---- Named-edge connection grammar (stream-state architecture) ---------
+    //  A physical stream is a NAMED graph edge with ONE stable identity: the
+    //  connection KEY is the stream ID (== its `0/` state filename); `from`/`to`
+    //  are producer/consumer PORTS, never identities.  Grammar (the ONLY one --
+    //  the anonymous list was retired with the corpus, forum #55 D3):
+    //      connections { liquor { from BRINE/liquor; to EXTRACTION/liquor; } }
+    struct Edge { std::string name, from, to; };
+    std::vector<Edge> edges;
+    if (dict->found("connections"))
+    {
+        const auto& cv = dict->entryValue("connections");
+        if (std::holds_alternative<DictPtr>(cv))          // named-edge dict
+        {
+            auto cd = std::get<DictPtr>(cv);
+            for (const auto& key : cd->keys())
+            {
+                auto e = cd->subDict(key);
+                edges.push_back({ key, e->lookupWordOrDefault("from",""),
+                                       e->lookupWordOrDefault("to","") });
+            }
+        }
+        else
+            throw std::runtime_error("Flowsheet: `connections ( { from; to; } )` "
+                "-- the ANONYMOUS list grammar -- was retired (constitution 2.2: "
+                "a stream is a NAMED edge whose key is its identity and its 0/ "
+                "filename).  Write\n"
+                "    connections\n"
+                "    {\n"
+                "        <streamName> { from <unit>/<port>; to <unit>/<port>; }\n"
+                "        <feedName>   { to <unit>/<port>; }     // inlet\n"
+                "        <outName>    { from <unit>/<port>; }   // outlet\n"
+                "    }\n"
+                "An edge that carries a member's output takes the producing "
+                "PORT's name; the root may rename a boundary outlet.");
+    }
+    // port (SECTOR/streamOrChild-port) -> the NAMED edge it belongs to.
+    std::map<std::string,std::string> edgeFrom, edgeTo;
+    for (const auto& e : edges)
+    {
+        if (!e.name.empty() && !e.from.empty()) edgeFrom[e.from] = e.name;
+        if (!e.name.empty() && !e.to.empty())   edgeTo[e.to]     = e.name;
+    }
 
     // Tear streams declared at THIS composite's level: bare name (as
     // used in connections within this node) -> qualified name (used in
@@ -640,39 +874,37 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
     if (dict->found("tearStreams"))
     {
         auto tearNames = dict->lookupWordList("tearStreams");
-        DictPtr streamsBlock;
-        if (dict->found("streams")) streamsBlock = dict->subDict("streams");
         for (const auto& bareName : tearNames)
         {
             const std::string qname = nsPrefix.empty()
                                     ? bareName
                                     : nsPrefix + bareName;
             tearMap[bareName] = qname;
-            if (!streamsBlock || !streamsBlock->found(bareName))
-                throw std::runtime_error("Flowsheet: tear stream '" + bareName
-                    + "' in composite node '"
-                    + (nsPrefix.empty() ? std::string("root") : nsPrefix)
-                    + "' has no initial guess in `streams { " + bareName + " { ... } }`");
-            outTears.push_back({
-                qname,
-                readSourceStream(qname, streamsBlock->subDict(bareName), thermo)
-            });
+            if (streamReg.count(qname))
+                // the tear's initial state was seeded from 0/ (the new model)
+                outTears.push_back({ qname, streamReg.at(qname) });
+            else
+                // Not resolvable at flatten time.  In a 0/ case the manifest-
+                // based seeding runs AFTER flattening (topology-first reader,
+                // forum #83), so defer: solve() resolves it post-seed and
+                // throws the honest "no initial guess" there if still missing.
+                outTears.push_back({ qname, ProcessStream{}, false });
         }
     }
 
     auto sourceFor = [&](const std::string& target) -> std::string {
-        for (const auto& c : conns)
-            if (c->lookupWordOrDefault("to", "") == target)
-                return c->lookupWordOrDefault("from", "");
+        for (const auto& e : edges)
+            if (e.to == target)
+                return e.from;
         return "";
     };
 
-    // childOutletMaps[child][outlet] = the global stream the child produces.
-    std::map<std::string, std::map<std::string,std::string>> childOutletMaps;
+    // memberOutletMaps[member][outlet] = the global stream the member produces.
+    std::map<std::string, std::map<std::string,std::string>> memberOutletMaps;
 
     // Resolve a connection endpoint to a GLOBAL stream name.  A bare name is a
-    // boundary inlet of THIS node (fed by the parent via inletMap); `child/port`
-    // is a child output (the child must already have been processed --- children
+    // boundary inlet of THIS node (fed by the parent via inletMap); `member/port`
+    // is a member output (the member must already have been processed --- members
     // are listed in flow order).
     auto resolveGlobal = [&](const std::string& ep) -> std::string {
         auto p = ep.find('/');
@@ -691,56 +923,111 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                 + "' of node '" + nsPrefix + "' is not fed by the parent");
         }
         const std::string ch = ep.substr(0, p), port = ep.substr(p + 1);
-        auto cit = childOutletMaps.find(ch);
-        if (cit == childOutletMaps.end() || !cit->second.count(port))
+        auto cit = memberOutletMaps.find(ch);
+        if (cit == memberOutletMaps.end() || !cit->second.count(port))
             throw std::runtime_error("Flowsheet: connection source '" + ep
-                + "' is an unknown child output (wrong order or name?)");
+                + "' is an unknown member output (wrong order or name?)");
         return cit->second.at(port);
     };
 
-    for (const auto& child : children)
+    for (const auto& member : members)
     {
+        const std::string memberBase = resolveMemberBase(folderPath, member);
+        // GUARD (forum 2026-07-03, reproducibility): a purely-NUMERIC sector
+        // name collides with the OpenFOAM-style instant directories (0/ 1/ 2/)
+        // the SolutionWriter puts at the case root -- and .gitignore excludes
+        // purely-numeric dirs, so a sector named e.g. `2024` would have its
+        // system/ + constant/ SILENTLY IGNORED on commit (data loss).  Refuse
+        // it loudly; sector names must carry at least one non-digit.
+        if (!member.empty()
+            && member.find_first_not_of("0123456789") == std::string::npos)
+            throw std::runtime_error("Flowsheet: sector/member name '" + member
+                + "' is purely numeric -- it would collide with the "
+                  "OpenFOAM-style instant directories (0/ 1/ 2/) and be "
+                  "gitignored.  Rename it with at least one letter.");
         DictPtr cd;
-        // DUAL-READER (fractal folder discipline).  A child node carries its
+        // DUAL-READER (fractal folder discipline).  A member node carries its
         // flowsheetDict in one of two places, tried in this order:
-        //   (1) <child>/flowsheetDict        -- the LEAN layout: the dict rises
+        //   (1) <member>/flowsheetDict        -- the LEAN layout: the dict rises
         //       to the node root, no sparse per-node system/ wrapper, so each
         //       branch is still an independently-runnable case (its dict + the
         //       inherited constant/ + controlDict via the cascade).  This is the
         //       ChemicalPlantTutorial pilot's layout.
-        //   (2) <child>/system/flowsheetDict -- the original layout, KEPT for
+        //   (2) <member>/system/flowsheetDict -- the original layout, KEPT for
         //       backwards-compat: the other fractal cases (esterification2sector,
         //       twoSectorDemo) load UNCHANGED via this fallback.
         // The two are never both present for a given node; if neither exists the
-        // child must be an inline block in the parent dict.
-        const std::string leanDict   = folderPath + child + "/flowsheetDict";
-        const std::string systemDict = folderPath + child + "/system/flowsheetDict";
+        // member must be an inline block in the parent dict.
+        const std::string leanDict   = memberBase + "flowsheetDict";
+        const std::string systemDict = memberBase + "system/flowsheetDict";
         if      (std::filesystem::exists(leanDict))   cd = Dictionary::fromFile(leanDict);
         else if (std::filesystem::exists(systemDict)) cd = Dictionary::fromFile(systemDict);
-        else if (dict->found(child))                  cd = dict->subDict(child);
-        else throw std::runtime_error("Flowsheet: child '" + child
+        else if (dict->found(member))                  cd = dict->subDict(member);
+        else throw std::runtime_error("Flowsheet: member '" + member
             + "' has neither a folder (" + leanDict + " or " + systemDict
             + ") nor an inline block");
 
-        auto cb = cd->subDict("boundary");
-        auto inlets = cb->lookupWordList("inlets");
+        // The member's INTERFACE PORTS.  With named edges there is NO boundary{}:
+        // a port `member/p` referenced as a connection `to` is an inlet, as a
+        // `from` an outlet -- topology is the truth.  A legacy boundary{} block
+        // is still honoured during migration.
+        std::vector<std::string> inlets;
+        if (cd->found("boundary") && cd->subDict("boundary")->found("inlets"))
+            inlets = cd->subDict("boundary")->lookupWordList("inlets");
+        else
+            for (const auto& e : edges)
+            {
+                const std::string pre = member + "/";
+                if (e.to.rfind(pre, 0) == 0) inlets.push_back(e.to.substr(pre.size()));
+            }
 
-        std::map<std::string,std::string> childInletMap;
+        std::map<std::string,std::string> memberInletMap;
         std::vector<std::string> qins;
         for (const auto& inl : inlets)
         {
-            const std::string src = sourceFor(child + "/" + inl);
-            if (src.empty())
-                throw std::runtime_error("Flowsheet: child inlet '" + child
-                    + "/" + inl + "' is not cabled by any connection");
-            const std::string g = resolveGlobal(src);
-            childInletMap[inl] = g;
+            const std::string inletPort = member + "/" + inl;
+            std::string g;
+            auto et = edgeTo.find(inletPort);
+            if (et != edgeTo.end())
+            {
+                // NAMED edge feeds this port.  The physical STREAM is the edge
+                // name (namespaced by this domain).  A to-only edge (no `from`)
+                // is an EXTERNAL feed -> the edge name IS the global source
+                // stream (seeded from 0/); a from+to edge is internal -> resolve
+                // the producer (whose edge-named output equals this same name).
+                const Edge* ne = nullptr;
+                for (const auto& e : edges) if (e.name == et->second) { ne = &e; break; }
+                auto teIt = tearMap.find(ne->name);
+                if (teIt != tearMap.end())
+                    // TEAR edge: the producer is DOWNSTREAM (a recycle back-edge),
+                    // not yet flattened -- read the tear's recycle slot instead.
+                    g = teIt->second;
+                else if (!ne->from.empty())
+                    g = resolveGlobal(ne->from);            // internal: the producer
+                else
+                {
+                    // to-only edge = this domain's INLET.  Fed by the PARENT
+                    // (inletMap) when nested; an EXTERNAL feed (the edge name)
+                    // only at the root, where no parent feeds it.
+                    auto im = inletMap.find(ne->name);
+                    g = (im != inletMap.end()) ? im->second : (nsPrefix + ne->name);
+                }
+            }
+            else
+            {
+                const std::string src = sourceFor(inletPort);
+                if (src.empty())
+                    throw std::runtime_error("Flowsheet: member inlet '" + inletPort
+                        + "' is not cabled by any connection");
+                g = resolveGlobal(src);
+            }
+            memberInletMap[inl] = g;
             qins.push_back(g);
         }
 
         if (cd->found("type"))            // LEAF
         {
-            const std::string qname = nsPrefix + child;
+            const std::string qname = nsPrefix + member;
 
             // -----------------------------------------------------------
             //  Utility-port wiring validation.  Instantiate a throwaway
@@ -773,21 +1060,21 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                         // utility tapped off the plant header).  Suppress the
                         // "expects a UTILITY stream" warning exactly for that
                         // case: this unit is an evaporator and the source
-                        // endpoint is another evaporator child's outlet.
+                        // endpoint is another evaporator member's outlet.
                         bool multiEffectVapour = false;
                         if (portIsUtility && !srcIsUtility
                             && thisType == "evaporator")
                         {
                             const std::string ep =
-                                sourceFor(child + "/" + inlets[i]);
+                                sourceFor(member + "/" + inlets[i]);
                             const auto slash = ep.find('/');
                             if (slash != std::string::npos)
                             {
-                                const std::string srcChild = ep.substr(0, slash);
-                                const std::string sysPath =
-                                    folderPath + srcChild + "/system/flowsheetDict";
-                                const std::string leanP =
-                                    folderPath + srcChild + "/flowsheetDict";
+                                const std::string srcMember = ep.substr(0, slash);
+                                const std::string srcBase =
+                                    resolveMemberBase(folderPath, srcMember);
+                                const std::string sysPath = srcBase + "system/flowsheetDict";
+                                const std::string leanP   = srcBase + "flowsheetDict";
                                 std::string srcType;
                                 if      (std::filesystem::exists(leanP))
                                     srcType = Dictionary::fromFile(leanP)
@@ -795,8 +1082,8 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                                 else if (std::filesystem::exists(sysPath))
                                     srcType = Dictionary::fromFile(sysPath)
                                               ->lookupWordOrDefault("type", "");
-                                else if (dict->found(srcChild))
-                                    srcType = dict->subDict(srcChild)
+                                else if (dict->found(srcMember))
+                                    srcType = dict->subDict(srcMember)
                                               ->lookupWordOrDefault("type", "");
                                 multiEffectVapour = (srcType == "evaporator");
                             }
@@ -824,22 +1111,41 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                 // diagnostic context, so swallow here.
             }
 
-            auto outlets = cb->lookupWordList("outlets");
+            std::vector<std::string> outlets;
+            if (cd->found("boundary") && cd->subDict("boundary")->found("outlets"))
+                outlets = cd->subDict("boundary")->lookupWordList("outlets");
+            else
+                for (const auto& e : edges)
+                {
+                    const std::string pre = member + "/";
+                    if (e.from.rfind(pre, 0) == 0) outlets.push_back(e.from.substr(pre.size()));
+                }
             std::vector<std::string> qouts;
             std::map<std::string,std::string> omap;
             for (const auto& o : outlets)
             {
-                // Default qualified name: <prefix>.<unit>.<port>.
-                // OVERRIDE when a connection routes this output to a
-                // tear stream of THIS composite: write directly into
-                // the tear's qualified slot so the outer loop reads
-                // the latest value from streams_[tearQ] each pass.
+                // STREAM IDENTITY = the NAMED EDGE this output port feeds.
+                // A named connection `stream { from member/port; ... }` makes the
+                // physical stream `stream` (namespaced by this domain); the port
+                // is only an endpoint.  Absent a named edge (legacy anonymous
+                // list) fall back to the port-qualified name <prefix>.<unit>.<port>.
+                const std::string srcEp = member + "/" + o;
                 std::string finalQ = qname + "." + o;
-                const std::string srcEp = child + "/" + o;
-                for (const auto& c : conns)
+                auto ef = edgeFrom.find(srcEp);
+                if (ef != edgeFrom.end())
                 {
-                    if (c->lookupWordOrDefault("from", "") != srcEp) continue;
-                    const std::string toEp = c->lookupWordOrDefault("to", "");
+                    finalQ = nsPrefix + ef->second;
+                    // A named edge that IS a tear: the producer writes into the
+                    // recycle slot so the next pass reads the updated value.
+                    auto tit = tearMap.find(ef->second);
+                    if (tit != tearMap.end()) finalQ = tit->second;
+                }
+                // OVERRIDE when a connection routes this output to a tear stream
+                // of THIS composite: write directly into the tear's slot.
+                for (const auto& e : edges)
+                {
+                    if (e.from != srcEp) continue;
+                    const std::string toEp = e.to;
                     if (toEp.find('/') != std::string::npos) continue;
                     auto tit = tearMap.find(toEp);
                     if (tit != tearMap.end()) { finalQ = tit->second; break; }
@@ -847,7 +1153,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                 qouts.push_back(finalQ);
                 omap[o] = finalQ;
             }
-            childOutletMaps[child] = omap;
+            memberOutletMaps[member] = omap;
 
             auto u = std::make_shared<Dictionary>(qname);
             u->insert("name", std::string(qname));
@@ -857,7 +1163,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
             // reaction: PER-NODE resolution (Item 0 of the props foundation).
             // A sector/unit's kinetics live WITH it (its own constant/reactions),
             // not only the plant root.  Resolve the named reference HERE from
-            // the child's folder (same pattern as dryingCurve/crystallisation)
+            // the member's folder (same pattern as dryingCurve/crystallisation)
             // and carry the resolved sub-dict; the CSTR/PFR read an inline
             // `reaction {}` sub-dict, and buildAugmentedDict only does the global
             // lookup when `reaction` is still a string -- so a sub-dict here wins
@@ -878,7 +1184,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                     // is found by the leaf unit below it during a whole-plant
                     // run -- not only when it sits in the unit's own folder.
                     std::filesystem::path node =
-                        std::filesystem::path(folderPath + child);
+                        std::filesystem::path(memberBase);
                     for (int up = 0; up < 6 && !resolved; ++up)
                     {
                         const std::filesystem::path rp = node / "constant" / "reactions";
@@ -898,9 +1204,44 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                 }
                 if (!resolved) u->insert("reaction", rv);  // bare name -> global library
             }
+            // reactions ( r1 r2 ... ): the SAME per-node walk-up as the single
+            // `reaction` above.  Without this a whole-plant run resolves the list
+            // only against the ROOT constant/reactions -- so a sector that owns its
+            // own kinetics (the whole point of the fractal constant/) is invisible
+            // from the root, and the reactor falls through to "missing sub-dictionary
+            // 'reaction'".  Resolve here, from the member's folder upward; leave an
+            // unresolved list alone for the global library (buildAugmentedDict 3a).
+            if (cd->found("reactions") && !cd->hasDictList("reactions"))
+            {
+                const auto names = cd->lookupWordList("reactions");
+                std::vector<DictPtr> resolvedList;
+                resolvedList.reserve(names.size());
+                std::filesystem::path node = std::filesystem::path(memberBase);
+                DictPtr rlib;
+                for (int up = 0; up < 6; ++up)
+                {
+                    const std::filesystem::path rp = node / "constant" / "reactions";
+                    if (std::filesystem::exists(rp)) { rlib = Dictionary::fromFile(rp.string()); break; }
+                    if (!node.has_parent_path() || node.parent_path() == node) break;
+                    node = node.parent_path();
+                }
+                if (rlib)
+                {
+                    bool all = true;
+                    for (const auto& rn : names)
+                    {
+                        if (!rlib->found(rn)) { all = false; break; }
+                        auto rd = rlib->subDict(rn);
+                        if (!rd->found("name")) rd->insert("name", EntryValue(rn));
+                        resolvedList.push_back(rd);
+                    }
+                    if (all && !resolvedList.empty())
+                        u->insert("reactions", EntryValue(resolvedList));
+                }
+            }
             // dryingCurve: the kinetics live WITH the unit (its own
             // constant/dryingKinetics), not the sector --- so resolve the
-            // named reference HERE, from the child's folder, and carry the
+            // named reference HERE, from the member's folder, and carry the
             // resolved sub-dict (buildAugmentedDict leaves a sub-dict alone).
             if (cd->found("dryingCurve"))
             {
@@ -908,7 +1249,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                 bool resolved = false;
                 if (std::holds_alternative<std::string>(dv))
                 {
-                    const std::string dk = folderPath + child + "/constant/dryingKinetics";
+                    const std::string dk = memberBase + "constant/dryingKinetics";
                     if (std::filesystem::exists(dk))
                     {
                         auto dlib = Dictionary::fromFile(dk);
@@ -921,7 +1262,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
             // crystallisation: same pattern as dryingCurve --- the
             // nucleation / growth kinetics live with the unit in its
             // own constant/crystallisation library.  Resolve from the
-            // child's folder when running a parent composite (the
+            // member's folder when running a parent composite (the
             // plant root doesn't carry per-unit kinetics) so the
             // Crystalliser(MSMPR) finds its sucroseKinetics block.
             if (cd->found("crystallisation"))
@@ -930,7 +1271,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                 bool resolved = false;
                 if (std::holds_alternative<std::string>(kv))
                 {
-                    const std::string kp = folderPath + child + "/constant/crystallisation";
+                    const std::string kp = memberBase + "constant/crystallisation";
                     if (std::filesystem::exists(kp))
                     {
                         auto klib = Dictionary::fromFile(kp);
@@ -947,14 +1288,45 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
             // Carried via the per-unit `thermo {}` override (thermoFor), so it
             // only affects units that actually own local pairs.
             {
-                const std::string nodeBase = folderPath + child;
-                if (std::filesystem::exists(nodeBase + "/constant/binaryPairs"))
+                // WALK UP, like the reaction libraries above.  A PARTICULAR pair is
+                // usually owned by the SECTOR that needs it, not by the leaf unit --
+                // that is what "the data lives with the sector that owns it" means.
+                // Looking only at the unit's own folder made the sector's pair
+                // invisible from a whole-plant run, and the standard library won
+                // silently.  Nearest owner wins; the standard library is the floor.
+                std::filesystem::path node =
+                    std::filesystem::path(memberBase.substr(0, memberBase.size() - 1));
+                for (int up = 0; up < 6; ++up)
                 {
-                    DictPtr th = u->found("thermo")
-                        ? u->subDict("thermo")
-                        : std::make_shared<Dictionary>("thermo");
-                    th->insert("binaryPairsBase", std::string(nodeBase));
-                    if (!u->found("thermo")) u->insert("thermo", EntryValue(th));
+                    if (std::filesystem::exists(node / "constant" / "binaryPairs"))
+                    {
+                        DictPtr th = u->found("thermo")
+                            ? u->subDict("thermo")
+                            : std::make_shared<Dictionary>("thermo");
+                        th->insert("binaryPairsBase", node.string());
+                        if (!u->found("thermo")) u->insert("thermo", EntryValue(th));
+                        break;
+                    }
+                    if (!node.has_parent_path() || node.parent_path() == node) break;
+                    node = node.parent_path();
+                }
+            }
+            // PER-UNIT PROPERTY CONTEXT (F2): hand the unit the `constant/` base of
+            // the NEAREST ancestor that owns a constant/propertyDict -- its own
+            // local override, else its SECTOR's world (sectors/<S>/constant, which
+            // `inherits` the plant), else the plant's.  thermoFor resolves the
+            // inherits chain; this is the F2 replacement for an inline thermo{} and
+            // is what gives a nested unit (sectors/BRINE/unitOperations/crystNaCl)
+            // its sector's thermo world without repeating it on the unit.
+            {
+                std::string base = memberBase.substr(0, memberBase.size() - 1);
+                for (int up = 0; up < 8 && !base.empty(); ++up)
+                {
+                    if (std::filesystem::exists(base + "/constant/propertyDict"))
+                    { u->insert("propertyContextBase", std::string(base + "/constant")); break; }
+                    const auto slash = base.rfind('/');
+                    if (slash == std::string::npos) break;
+                    base = base.substr(0, slash);
                 }
             }
             if (qins.size() == 1) u->insert("in", std::string(qins[0]));
@@ -962,14 +1334,17 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
             u->insert("outputs", EntryValue(qouts));
             units.push_back(u);
         }
-        else if (cd->found("children"))   // COMPOSITE child -> recurse
+        else if (cd->found("sectors") || cd->found("units"))   // COMPOSITE member -> recurse
         {
-            childOutletMaps[child] = flattenNode(cd, nsPrefix + child + ".", folderPath + child + "/",
-                childInletMap, units, outTears, thermo, streamReg);
+            // A composite member lists its own members by `sectors` (sub-domains)
+            // AND/OR `units` (unit ops) -- a sector with a SINGLE unit (BRINE ->
+            // unitOperations/crystNaCl) is `units ( crystNaCl )`, still composite.
+            memberOutletMaps[member] = flattenNode(cd, nsPrefix + member + ".", memberBase,
+                memberInletMap, units, outTears, thermo, streamReg);
         }
         else
-            throw std::runtime_error("Flowsheet: child '" + child
-                + "' is neither a leaf (`type`) nor a composite (`children`)");
+            throw std::runtime_error("Flowsheet: member '" + member
+                + "' is neither a leaf (`type`) nor a composite (`sectors`/`units`)");
     }
 
     // This node's boundary-outlet map: connections whose `to` is a bare name.
@@ -977,14 +1352,22 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
     // is NOT a boundary outlet -- it's internal -- so we skip it; the parent
     // never sees it.
     std::map<std::string,std::string> myOutletMap;
-    for (const auto& c : conns)
+    for (const auto& e : edges)
     {
-        const std::string to   = c->lookupWordOrDefault("to", "");
-        const std::string from = c->lookupWordOrDefault("from", "");
-        if (to.find('/') == std::string::npos && from.find('/') != std::string::npos)
+        // NAMED outlet edge: from-only (`from member/port;` no `to`) -- the edge
+        // NAME is the domain-outlet stream, aliased to the producer's resolved
+        // output.  (A from+to edge is internal; a to-only edge is a feed.)
+        if (!e.name.empty() && !e.from.empty() && e.to.empty())
         {
-            if (tearMap.count(to)) continue;       // tear, not a boundary outlet
-            myOutletMap[to] = resolveGlobal(from);
+            if (tearMap.count(e.name)) continue;
+            myOutletMap[e.name] = resolveGlobal(e.from);
+        }
+        // Legacy anonymous: `to` is a bare boundary-outlet name, `from` a port.
+        else if (e.to.find('/') == std::string::npos && !e.to.empty()
+                 && e.from.find('/') != std::string::npos)
+        {
+            if (tearMap.count(e.to)) continue;
+            myOutletMap[e.to] = resolveGlobal(e.from);
         }
     }
     return myOutletMap;
@@ -1044,6 +1427,29 @@ DictPtr buildAugmentedDict(const DictPtr&                          udict,
                     + rxnName + "' not in constant/reactions");
             out->insert("reaction", reactionsDict->entryValue(rxnName));
         }
+    }
+
+    // 3a. Resolve a named-reaction LIST --- `reactions ( r1 r2 ... );` --- the ONE
+    //     multi-reaction grammar across the engine (the batch/dynamic reactors
+    //     already take it).  Each name is looked up in constant/reactions and the
+    //     resolved sub-dict is carried in a dict LIST, tagged with its own name so
+    //     a reactor can label per-reaction KPIs.  Stoichiometry lives in the
+    //     reactions library, never repeated inside each unit.
+    if (out->found("reactions") && !out->hasDictList("reactions"))
+    {
+        const auto names = out->lookupWordList("reactions");
+        std::vector<DictPtr> resolved;
+        resolved.reserve(names.size());
+        for (const auto& rn : names)
+        {
+            if (!reactionsDict || !reactionsDict->found(rn))
+                throw std::runtime_error("Flowsheet: reaction '" + rn
+                    + "' (in a `reactions ( ... )` list) not in constant/reactions");
+            auto rd = reactionsDict->subDict(rn);
+            if (!rd->found("name")) rd->insert("name", EntryValue(rn));   // for KPI labels
+            resolved.push_back(rd);
+        }
+        out->insert("reactions", EntryValue(resolved));
     }
 
     // 3b. Resolve named drying-curve reference (drying KINETICS --- the
@@ -1817,7 +2223,7 @@ scalar normL2(const sVector& a, const sVector& b)
 //   normalised:
 //     massResidual   = Sigma_tears |Fmass_computed - Fmass_assumed| / Mfeed
 //     energyResidual = Sigma_tears |Hdot_computed   - Hdot_assumed| / Efeed
-//   where Hdot = F * H_stream(T,P,vf,z) is the stream enthalpy FLOW
+//   where Hdot = F * H_blendPerNaturalPhase(T,P,vf,z) is the stream enthalpy FLOW
 //   (kmol/s * J/mol).  The per-stream `.H` field is NOT maintained during the
 //   recycle sweeps (Flowsheet fills it only AFTER convergence), so the enthalpy
 //   is recomputed HERE from (T,P,vf,z) via the SAME per-natural-phase formation-
@@ -1867,9 +2273,9 @@ FeedScales computeFeedScales(const std::map<std::string, ProcessStream>& streams
         mFeed     += F_mass(s, thermo);
         // Feed enthalpy flow from (T,P,vf,z) -- the stream `.H` is not yet
         // populated when this runs (pre-recycle), so recompute it here.  Use the
-        // per-natural-phase H_stream (handles solutes; see computeTearImbalance).
+        // per-natural-phase blend (handles solutes; see computeTearImbalance).
         scalar h = 0.0;
-        try { h = thermo.H_stream(s.T, s.P, s.vf, s.z); }
+        try { h = thermo.H_blendPerNaturalPhase(s.T, s.P, s.vf, s.z); }   // AUTHORIZED-BLEND: tear-residual feed scale
         catch (const std::exception&) { h = 0.0; }
         eFeedAbs  += s.F * h;                          // kmol/s * J/mol
         molarFeed += s.F;
@@ -1902,12 +2308,12 @@ TearImbalance computeTearImbalance(
     // the per-natural-phase H_stream (the SAME call Flowsheet uses to fill the
     // converged stream H), NOT the strict ideal-gas H_stream_formation: the
     // latter THROWS for a solute like sucrose that carries no idealGasHeatCapacity
-    // block (it has no gas phase).  H_stream lets each species contribute from
+    // block (it has no gas phase).  The blend lets each species contribute from
     // its own tabulated phase, so a sucrose-bearing recycle yields a real number.
     // A thermo failure (rare, ill-posed probe) contributes 0 to that tear's
     // energy term rather than aborting the residual.
     auto hDot = [&](const ProcessStream& s) -> scalar {
-        try { return s.F * thermo.H_stream(s.T, s.P, s.vf, s.z); }
+        try { return s.F * thermo.H_blendPerNaturalPhase(s.T, s.P, s.vf, s.z); }   // AUTHORIZED-BLEND: tear-residual energy norm
         catch (const std::exception&) { return 0.0; }
     };
     scalar dMass = 0.0, dEnergy = 0.0;
@@ -1940,24 +2346,154 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
                                           const DictPtr&       udict,
                                           const ThermoPackage& global)
 {
-    if (!udict->found("thermo") || !db_ || !thermoDict_)
+    const bool hasThermo  = udict->found("thermo");
+    const bool hasContext = udict->found("propertyContextBase");
+    if ((!hasThermo && !hasContext) || !db_)
         return global;
 
     auto it = unitThermo_.find(uname);
     if (it != unitThermo_.end()) return *it->second;
 
-    // Merge: copy the global thermoPackage, then let the unit's override
-    // block REPLACE the model sub-dicts it names (activityModel /
-    // equationOfState / transport).  Components stay global.
+    // Merge: the unit's `thermo {}` override REPLACES the model sub-dicts it names
+    // (activityModel / equationOfState / transport); the COMPONENTS stay global.
+    // Two routes for "the global components":
+    //   - legacy thermoPackage: copy the global thermoDict_ (it carries `components`);
+    //   - propertyPackage (thermoDict_ null): synthesize `components ( ... )` from
+    //     the built global package, so a per-unit override (e.g. an NRTL recovery
+    //     column over an electrolyte global) builds on the SAME component set --
+    //     readFromDict re-loads them (case-local, full) exactly as the legacy merge.
     auto merged = std::make_shared<Dictionary>("thermoPackage");
-    for (const auto& k : thermoDict_->keys())
-        merged->insert(k, thermoDict_->entryValue(k));
-    auto over = udict->subDict("thermo");
+    if (thermoDict_)
+    {
+        for (const auto& k : thermoDict_->keys())
+            merged->insert(k, thermoDict_->entryValue(k));
+    }
+    else
+    {
+        std::string clist = "components ( ";
+        for (std::size_t i = 0; i < global.n(); ++i)
+            clist += global.comp(i).name() + " ";
+        clist += ");\nequationOfState { model idealGas; }\n";   // package EoS default;
+        // the unit override REPLACES it below if it declares its own.
+        auto cdict = Dictionary::fromString(clist, "thermoFor.components");
+        for (const auto& k : cdict->keys())
+            merged->insert(k, cdict->entryValue(k));
+    }
+    // The override sub-dicts come EITHER from an inline `thermo {}` (F1) OR from the
+    // unit's resolved property context (F2: constant/propertyDict + `inherits`),
+    // translated to the same override shape.  The SELECTED liquid method defines the
+    // ACTIVE world: `activity.*` -> a molecular activityModel (inherited electrolyte
+    // chemistry stays available but INACTIVE); `electrolyte.*` -> a manifest world.
+    DictPtr over;
+    if (hasThermo)
+        over = udict->subDict("thermo");
+    else
+    {
+        std::set<std::string> visited;
+        DictPtr ctx = resolvePropertyContext(udict->lookupWord("propertyContextBase"),
+                                             visited);
+        over = std::make_shared<Dictionary>("thermo");
+        std::string liq;
+        if (ctx->found("propertyMethods")
+            && ctx->subDict("propertyMethods")->found("liquid"))
+            liq = ctx->subDict("propertyMethods")->lookupWord("liquid");
+        if (liq.rfind("activity.", 0) == 0)
+        {
+            const std::string model = liq.substr(std::string("activity.").size());
+            // MULTI-PHASE LLE: the property context may declare 2+ LIQUID phases
+            // (an NRTL gamma-gamma settler).  Translate the F2 `phases { <name> {
+            // type liquid; activityModel <M>; } }` into the internal phases list so
+            // readFromDict builds >= 2 liquid phases; else a single implicit liquid
+            // via activityModel.
+            if (ctx->found("phases"))
+            {
+                std::string pt = "phases (\n";
+                auto ph = ctx->subDict("phases");
+                for (const auto& pn : ph->keys())
+                {
+                    auto pd = ph->subDict(pn);
+                    const std::string ptype = pd->lookupWordOrDefault("type", "liquid");
+                    std::string pm = model;
+                    if (pd->found("activityModel")) pm = pd->lookupWord("activityModel");
+                    else if (pd->found("activity") && pd->subDict("activity")->found("model"))
+                        pm = pd->subDict("activity")->lookupWord("model");
+                    pt += "    { name " + pn + "; type " + ptype
+                        + "; activity { model " + pm + "; } }\n";
+                }
+                pt += "    { name vapour; type vapor; eos { model idealGas; } }\n);\n";
+                auto pdict = Dictionary::fromString(pt, "thermoFor.phases");
+                over->insert("phases", pdict->entryValue("phases"));
+            }
+            else
+            {
+                auto am = std::make_shared<Dictionary>("activityModel");
+                am->insert("model", std::string(model));
+                over->insert("activityModel", EntryValue(am));
+            }
+            // Point the F2 model-parameter resolver at THIS context's propertyData:
+            // an NRTL pair lives under <context>/constant/propertyData/parameters/,
+            // NOT the plant root that fs::current_path() resolves to.  Without this
+            // a nested unit's NRTL falls back to ideal (no pairs) -> a kerosene/water
+            // settler finds NO liquid-liquid split (the loaded organic comes out
+            // empty).  NRTL's per-node snapshot reads binaryPairsBase/constant/...
+            {
+                const std::string pcb = udict->lookupWord("propertyContextBase");
+                const auto s = pcb.rfind("/constant");
+                if (s != std::string::npos && s + 9 == pcb.size())
+                    over->insert("binaryPairsBase", pcb.substr(0, s));
+            }
+            if (ctx->found("chemistry"))
+                std::cout << "  [context] " << uname << ": liquid method " << liq
+                          << " -> molecular world; inherited chemistry INACTIVE"
+                             " (not required by " << liq << ")\n";
+        }
+        else if (liq.rfind("electrolyte.", 0) == 0)
+        {
+            auto pm = std::make_shared<Dictionary>("propertyMethods");
+            pm->insert("liquid", std::string(liq));
+            over->insert("propertyMethods", EntryValue(pm));
+        }
+        else
+            return global;   // context does not change the liquid world -> global
+    }
     for (const auto& k : over->keys())
         merged->insert(k, over->entryValue(k));
 
-    auto tp = std::make_unique<ThermoPackage>();
-    tp->readFromDict(merged, *db_);
+    // MANIFEST-WORLD override (general solver): a per-unit `thermo {}` may select
+    // a manifest world -- electrolyte.* etc. -- not only a flat activity/eos
+    // model.  Those are ASSEMBLED by the ThermoPackageBuilder (subset-aware on
+    // the global components), not readFromDict.  Detect an electrolyte liquid
+    // method and route through the builder; every other override stays on the
+    // flat readFromDict path exactly as before.
+    bool manifestWorld = false;
+    if (over->found("propertyMethods")
+        && over->subDict("propertyMethods")->found("liquid"))
+    {
+        const std::string liq = over->subDict("propertyMethods")->lookupWord("liquid");
+        if (liq.rfind("electrolyte.", 0) == 0) manifestWorld = true;
+    }
+
+    std::unique_ptr<ThermoPackage> tp;
+    if (manifestWorld)
+    {
+        // Build a propertyPackage dict: the GLOBAL components + the override's
+        // manifest fields (propertyMethods / chemistry / parameters).
+        auto pkg = std::make_shared<Dictionary>("propertyPackage");
+        std::string clist = "components ( ";
+        for (std::size_t i = 0; i < global.n(); ++i)
+            clist += global.comp(i).name() + " ";
+        clist += ");";
+        auto cd = Dictionary::fromString(clist, "thermoFor.pkgComponents");
+        pkg->insert("components", cd->entryValue("components"));
+        for (const auto& k : over->keys())
+            if (k != "binaryPairsBase") pkg->insert(k, over->entryValue(k));
+        tp = std::make_unique<ThermoPackage>(ThermoPackageBuilder::build(pkg, *db_));
+    }
+    else
+    {
+        tp = std::make_unique<ThermoPackage>();
+        tp->readFromDict(merged, *db_);
+    }
     const ThermoPackage& ref = *tp;
     unitThermo_[uname] = std::move(tp);
     return ref;
@@ -1986,17 +2522,48 @@ int Flowsheet::solve(const DictPtr& dict,
     //  `streams`; a node cabled by a parent may have none (the parent
     //  overrides them) --- so `streams` is optional.
     std::map<std::string,StreamBounds> streamBounds;   // optional author cages
-    if (dict->found("streams"))
+
+    // ---- Stream-state precedence (R2 dual reader, 2026-07-06) -----------
+    //  If a `0/` directory exists, the COMPLETE initial state lives there --
+    //  one file per stream in canonical componentFlows grammar
+    //  (docs/architecture/stream-state-architecture.md).  Read it and IGNORE
+    //  any legacy streams{} block: never a mixed source of truth.  This is the
+    //  disk truth a topological drill-in materialises a member 0/ from.
+    // Topology-first reader (forum #83): read the raw 0/ tree ONCE, keyed by
+    // its dotted RELATIVE PATH (the file's identity) -- no basename step, no
+    // seeding yet.  The actual seeding happens AFTER flattening, when the
+    // canonical manifest (streamId -> path) exists: each graph stream is read
+    // from its EXACT manifest path, and the manifest is compared against the
+    // file set BEFORE the solve (missing/orphan is fatal pre-solve, so an
+    // invalid 0/ can never contaminate the seeds it is rejected for).
+    bool seededFrom0 = false;
+    std::map<std::string, ProcessStream> rawState;   // dotted path -> state
+    if (std::filesystem::exists("0") && std::filesystem::is_directory("0"))
     {
-        auto sblock = dict->subDict("streams");
-        for (const auto& sname : sblock->keys())
-        {
-            auto sd = sblock->subDict(sname);
-            streams_[sname] = readSourceStream(sname, sd, thermo);
-            StreamBounds b = parseStreamBounds(sd);
-            if (b.any) streamBounds[sname] = b;
-        }
+        rawState    = StreamStateIO::readStateDir("0", thermo);
+        seededFrom0 = !rawState.empty();
     }
+
+    // The legacy `streams {}` reader is REMOVED (forum #91-3 / #97-2: the
+    // corpus debt reached zero, the doctrine gate blocks regression, and the
+    // reader's continued existence was itself the shadow risk).  A steady
+    // flowsheetDict carrying stream STATE refuses loudly -- never a silent
+    // fallback, never a second source of truth beside 0/.
+    if (dict->found("streams"))
+        throw std::runtime_error(std::string("Flowsheet: this flowsheetDict "
+            "carries a `streams {}` block -- the legacy steady stream-state "
+            "reader is RETIRED.  Stream state lives in per-stream 0/ files ")
+            + (seededFrom0
+                ? "(this case HAS a 0/ tree; the block would silently shadow "
+                  "it -- delete the block)."
+                : "(author the domain inlets as 0/ files and run "
+                  "bin/choupo-init0 to materialise the rest; then delete the "
+                  "block).  See docs/architecture/stream-state-architecture.md."));
+    // (Stream bounds{} rode only the retired reader; the cage returns, if
+    //  ever, through the 0/ grammar -- streamBounds stays empty until then.)
+
+    // (The phase-resolution Tc screen runs AFTER the manifest-based seeding
+    //  below -- the streams to screen do not exist in the registry yet.)
 
     // ---- Read execution sequence & tear-stream declaration -------------
     //  A flowsheetDict is a fractal NODE: a LEAF if it carries
@@ -2006,12 +2573,27 @@ int Flowsheet::solve(const DictPtr& dict,
     //  unchanged; single- vs multi-input is decided by the boundary size
     //  (1 inlet -> the `in` feed/composition path; >1 -> `inputs`/
     //  inputStreams), matching what buildAugmentedDict expects.
-    std::vector<std::pair<std::string,std::string>> outletAliases;  // child output -> parent boundary outlet
+    std::vector<std::pair<std::string,std::string>> outletAliases;  // member output -> parent boundary outlet
     std::vector<DictPtr> units;
     // Tears collected from composite-level `tearStreams` declarations.
     // Empty for flat / leaf cases; populated by flattenNode for composites.
     std::vector<CompositeTear> compositeTears;
-    if (dict->found("units"))
+    // FLAT case: `units ( { ... } { ... } )` -- INLINE unit blocks (a dict list).
+    // If `units` is instead a WORD list (bare folder names -- dignified units),
+    // it falls through to the composite path below, exactly like `sectors`.
+    // Mixed root REFUSES (forum #91): `units` + `sectors` on the same root
+    // used to let the inline-units branch short-circuit the composite path
+    // and silently DROP the sectors (found live: a case ran green with a
+    // whole sector discarded).  Joining the two lists is not a fix -- order,
+    // ownership and boundary semantics would be lost; a future heterogeneous
+    // root will be ONE ordered `members (...)` list, decided at the forum.
+    if (dict->found("units") && dict->found("sectors"))
+        throw std::runtime_error("Flowsheet: this root declares BOTH `units` "
+            "and `sectors` -- the two lists cannot coexist (the inline-units "
+            "path silently discarded the sectors).  Put every member in ONE "
+            "list: `units ( m1 m2 ... );` of folder names resolves each "
+            "member's real kind (leaf or composite) from its own dict.");
+    if (dict->hasDictList("units"))
     {
         units = dict->lookupDictList("units");
     }
@@ -2023,18 +2605,37 @@ int Flowsheet::solve(const DictPtr& dict,
         u->insert("type", dict->entryValue("type"));
         for (const char* k : { "operation", "model", "dryingCurve", "crystallisation", "thermo", "reaction" })
             if (dict->found(k)) u->insert(k, dict->entryValue(k));
-        auto b = dict->subDict("boundary");
-        auto inlets = b->lookupWordList("inlets");
+        // A standalone unit MENTIONS its streams directly (sequential-modular:
+        // a unit is defined by the streams it consumes and produces).  Preferred
+        // grammar: `inputs ( ... ); outputs ( ... );` on the leaf itself; a
+        // legacy `boundary { inlets; outlets; }` block is still accepted.
+        std::vector<std::string> inlets, outlets;
+        if (dict->found("boundary"))
+        {
+            auto b = dict->subDict("boundary");
+            if (b->found("inlets"))  inlets  = b->lookupWordList("inlets");
+            if (b->found("outlets")) outlets = b->lookupWordList("outlets");
+        }
+        else
+        {
+            if (dict->found("inputs"))     inlets = dict->lookupWordList("inputs");
+            else if (dict->found("in"))    inlets = { dict->lookupWord("in") };
+            if (dict->found("outputs"))    outlets = dict->lookupWordList("outputs");
+        }
+        if (inlets.empty() && outlets.empty())
+            throw std::runtime_error("Flowsheet: standalone unit '" + nodeName
+                + "' must MENTION its streams -- `inputs ( ... ); outputs ( ... );`"
+                " (a sequential-modular unit is defined by its streams)");
         if (inlets.size() == 1) u->insert("in", std::string(inlets[0]));
-        else                    u->insert("inputs",  b->entryValue("inlets"));
-        u->insert("outputs", b->entryValue("outlets"));
+        else                    u->insert("inputs",  EntryValue(inlets));
+        u->insert("outputs", EntryValue(outlets));
         units = { u };
     }
-    else if (dict->found("children"))
+    else if (dict->found("sectors") || dict->found("units"))
     {
-        // COMPOSITE node (fractal step 2/3): flatten the children TREE
+        // COMPOSITE node (fractal step 2/3): flatten the members TREE
         // recursively into namespaced leaf units, cabling per `connections` at
-        // each level.  A child may itself be composite --- flattenNode recurses
+        // each level.  A member may itself be composite --- flattenNode recurses
         // (plant -> sector -> unit), so the same code lights up a sector run
         // alone OR the whole plant.  The root's boundary inlets ARE the source
         // streams already seeded above.
@@ -2046,15 +2647,27 @@ int Flowsheet::solve(const DictPtr& dict,
                 for (const auto& inl : b->lookupWordList("inlets"))
                     rootInletMap[inl] = inl;
         }
+        // Tear designation may live in solverDict (the clean home); flattenNode
+        // reads tearStreams off the flowsheetDict, so surface the solverDict list
+        // onto the in-memory root dict before flattening (root only -- nested
+        // composites keep their own tearStreams in their own dict).
+        if (solverDict_ && solverDict_->found("tearStreams") && !dict->found("tearStreams"))
+            dict->insert("tearStreams", solverDict_->entryValue("tearStreams"));
+        // In a 0/ case the registry is still empty here (topology-first
+        // reader): hand flattenNode the raw path-keyed state instead.  It
+        // only uses the registry for tear lookups by qualified name (which
+        // EQUALS the dotted path for a sector-owned tear) and for the
+        // utility-port cabling ADVISORY -- never for stream identity.
         auto outMap = flattenNode(dict, "", "", rootInletMap, units,
-                                  compositeTears, thermo, streams_);
+                                  compositeTears, thermo,
+                                  seededFrom0 ? rawState : streams_);
         for (const auto& [outlet, src] : outMap)
             outletAliases.emplace_back(src, outlet);
     }
     else
     {
         throw std::runtime_error("Flowsheet: node has neither a `units (...)`"
-            " list, a `children (...)` list, nor a `type` (leaf node)");
+            " list, a `members (...)` list, nor a `type` (leaf node)");
     }
     // Record the flattened unit interface (name / type / resolved in+out
     // stream names) so the per-unit reports can iterate the real equipment
@@ -2071,8 +2684,111 @@ int Flowsheet::solve(const DictPtr& dict,
         topology_.push_back(std::move(fu));
     }
 
+    // ---- Manifest-based 0/ seeding (topology-first reader, forum #83) ---
+    //  The flat topology now exists, so the canonical manifest
+    //  (streamId -> relative path) is constructible -- the SAME
+    //  StreamOwnership::canonicalManifest the converged/ writer and the
+    //  post-run validator use, so the three can never disagree.  Each graph
+    //  stream is seeded from its EXACT manifest path; a basename never
+    //  participates in identity (A/feed and B/feed are two streams).
+    //  COMPLETENESS is enforced HERE, before the solve: a graph stream with
+    //  no state file (MISSING) or a state file no graph stream owns (ORPHAN)
+    //  is fatal -- except under choupo-init0, whose whole purpose is to
+    //  materialise the missing files (it keeps its own accounting).
+    if (seededFrom0)
+    {
+        std::set<std::string> names;
+        for (const auto& u : topology_)
+        {
+            for (const auto& i : u.ins)  names.insert(i);
+            for (const auto& o : u.outs) names.insert(o);
+        }
+        // Pre-solve mirror of the post-solve boundaryAliases_: a parent's
+        // RENAME of a member outlet (src != alias) is a label, not a file.
+        std::set<std::string> aliases;
+        for (const auto& [src, alias] : outletAliases)
+            if (src != alias) aliases.insert(alias);
+
+        const auto manifest =
+            StreamOwnership::canonicalManifest(topology_, names, aliases);
+
+        std::vector<std::string> missing, orphan;
+        std::set<std::string> claimed;
+        for (const auto& [id, p] : manifest)
+        {
+            std::string key;                      // dotted spelling of the path
+            for (const auto& seg : p)
+                key += (key.empty() ? "" : ".") + seg.string();
+            auto it = rawState.find(key);
+            if (it == rawState.end()) { missing.push_back(p.generic_string()); continue; }
+            claimed.insert(key);
+            ProcessStream s = it->second;
+            s.name = id;
+            streams_[id] = std::move(s);
+        }
+        for (const auto& [key, s] : rawState)
+        { (void) s; if (!claimed.count(key)) orphan.push_back(key); }
+
+        if ((!missing.empty() || !orphan.empty()) && !init0_)
+        {
+            std::string msg = "Flowsheet: 0/ COMPLETENESS violated BEFORE the "
+                "solve (graph stream IDs != 0/ state files):\n";
+            for (const auto& m : missing)
+                msg += "  MISSING  0/" + m + "  (graph stream, no state file)\n";
+            for (auto o : orphan)
+            {
+                for (auto& c : o) if (c == '.') c = '/';
+                msg += "  ORPHAN   0/" + o + "  (state file, no graph stream)\n";
+            }
+            msg += "An invalid 0/ must never contaminate the seeds -- fix the "
+                   "state tree (bin/choupo-init0 materialises missing files).";
+            throw std::runtime_error(msg);
+        }
+        if (verbosity >= 2)
+            std::cout << "[state] seeded " << claimed.size()
+                      << " stream(s) from 0/ via the canonical manifest; "
+                         "legacy streams{} ignored\n";
+    }
+
+    // ---- Phase resolution, layer 1: the Tc screen -----------------------
+    //  (Vítor's rule + the ChatGPT design forum, ClaudeChat s.48/51.)  A
+    //  stream whose spec does NOT pin the phase and whose T exceeds every
+    //  present component's critical temperature cannot form a liquid: it is a
+    //  permanent gas / supercritical SINGLE phase, so vf = 1.  This screen is
+    //  cheap and thermo-context-INDEPENDENT (Tc is a global constant), so it
+    //  belongs HERE in the resolver -- never in the file reader (the reader
+    //  stays thermo-free; it reads only pins).  Sub-critical resolution by a
+    //  flash, in the consuming unit's effective context, is layer 2 (a later
+    //  increment); until then a non-pinned sub-critical stream keeps vf = 0.
+    for (auto& [nm, s] : streams_)
+    {
+        (void) nm;
+        if (s.vf > 1.0e-6 || s.T <= 0.0) continue;   // pinned/computed vapour, or no T
+        scalar maxTc = 0.0; bool allHaveTc = true, anyPresent = false;
+        for (std::size_t i = 0; i < thermo.n() && i < s.z.size(); ++i)
+        {
+            if (s.z[i] <= 0.0) continue;
+            anyPresent = true;
+            const scalar tci = thermo.comp(i).Tc();
+            if (tci > 0.0) { if (tci > maxTc) maxTc = tci; }
+            else { allHaveTc = false; break; }       // missing Tc -> do not screen
+        }
+        if (anyPresent && allHaveTc && s.T > maxTc)
+            s.vf = 1.0;                               // above every Tc: no liquid possible
+    }
+
+    // Snapshot the AUTHORED state names (whatever 0/ or the legacy streams{}
+    // supplied) BEFORE any tear auto-seeding -- choupo-init0 must distinguish
+    // what the author wrote from what the engine estimated.
+    std::set<std::string> authoredStates;
+    for (const auto& [nm0, s0] : streams_) { (void) s0; authoredStates.insert(nm0); }
+
+    // Tear designation is a NUMERICAL property: read it from solverDict (the
+    // clean home) with a fallback to the flowsheetDict for un-migrated cases.
     std::vector<std::string> tears;
-    if (dict->found("tearStreams"))
+    if (solverDict_ && solverDict_->found("tearStreams"))
+        tears = solverDict_->lookupWordList("tearStreams");
+    else if (dict->found("tearStreams"))
         tears = dict->lookupWordList("tearStreams");
     // Composite tears (from any composite level inside the fractal
     // expansion): seed streams_ with the initial guess and add the
@@ -2080,9 +2796,24 @@ int Flowsheet::solve(const DictPtr& dict,
     // recycle in a sector iterates exactly like flat-case recycle.
     for (auto& ct : compositeTears)
     {
-        if (!streams_.count(ct.qualifiedName))
+        // Deferred tear (topology-first reader): flattenNode found neither a
+        // legacy streams{} guess nor a pre-seeded state.  The manifest-based
+        // seeding above has run by now -- if the tear is STILL absent from
+        // the registry, the case genuinely lacks an initial guess.
+        if (!ct.hasInitial && !streams_.count(ct.qualifiedName))
+            throw std::runtime_error("Flowsheet: tear stream '"
+                + ct.qualifiedName + "' has no initial guess -- neither in "
+                "`streams { " + ct.qualifiedName + " { ... } }` nor as a 0/ "
+                "state file");
+        if (ct.hasInitial && !streams_.count(ct.qualifiedName))
             streams_[ct.qualifiedName] = std::move(ct.initial);
-        tears.push_back(ct.qualifiedName);
+        // Dedupe: a recycle the author ALSO named in `tearStreams` (a named-edge
+        // root recycle detected here as a composite tear) must be torn ONCE.
+        // Double-adding it made the outer Newton carry two identical tear slots
+        // for one stream -- the phantom copy started unseeded and drove a fixed-D
+        // column below B=0.
+        if (std::find(tears.begin(), tears.end(), ct.qualifiedName) == tears.end())
+            tears.push_back(ct.qualifiedName);
     }
 
     // ---- Auto-seed unguessed tears (honest feed propagation) -----------
@@ -2127,6 +2858,88 @@ int Flowsheet::solve(const DictPtr& dict,
             std::cout << "  [init] tear '" << t << "': " << imsg << "\n";
             AdvisoryLog::instance().add("init", "info", "tear '" + t + "'", imsg);
         }
+    }
+
+    // ---- Outer-driver stream overrides (forum #52/#53) -------------------
+    //  The driver's declared hand on stream state, applied to the SEEDED
+    //  registry -- never a dict, so it works identically over 0/ and legacy.
+    //  Only a BOUNDARY stream (a domain inlet) or an explicitly declared tear
+    //  seed may be manipulated: an internal stream's state is a guess the
+    //  solver overwrites, so steering it means nothing and is refused.
+    if (!streamOverrides_.empty())
+    {
+        // Who produces what, from the flat unit list (the role rule).
+        std::set<std::string> producedSet;
+        for (const auto& u : units)
+            if (u->found("outputs"))
+                for (const auto& o : u->lookupWordList("outputs"))
+                    producedSet.insert(o);
+        const std::set<std::string> tearSet(tears.begin(), tears.end());
+
+        for (const auto& [path, val] : streamOverrides_.all())
+        {
+            const auto dot = path.find('.');
+            const std::string snm   = path.substr(0, dot);
+            const std::string field = (dot == std::string::npos)
+                                      ? std::string() : path.substr(dot + 1);
+            auto it = streams_.find(snm);
+            if (it == streams_.end())
+                throw std::runtime_error("stream override '" + path
+                    + "': no stream named '" + snm + "' in this domain");
+            if (producedSet.count(snm) && !tearSet.count(snm))
+                throw std::runtime_error("stream override '" + path + "': '"
+                    + snm + "' is an INTERNAL/OUTLET stream -- its state is a "
+                    "guess the solver overwrites, so steering it means nothing."
+                    "  Manipulable: a domain inlet, or a tear declared in "
+                    "solverDict `tearStreams`.");
+            ProcessStream& st = it->second;
+            const bool isTear = tearSet.count(snm) > 0;
+            scalar base = 0.0;
+            if      (field == "F") base = st.F;
+            else if (field == "T") base = st.T;
+            else if (field == "P") base = st.P;
+            if      (field == "F") st.F = val;
+            else if (field == "T") st.T = val;
+            else if (field == "P") st.P = val;
+            else if (field.rfind("moleFraction.", 0) == 0)
+            {
+                const std::string comp = field.substr(13);
+                const std::size_t ci = thermo.indexOf(comp);
+                if (val < 0.0 || val > 1.0)
+                    throw std::runtime_error("stream override '" + path
+                        + "': a mole fraction must lie in [0,1]");
+                // Set this component's fraction; rescale the OTHERS to 1-val.
+                const scalar rest = 1.0 - st.z[ci];
+                for (std::size_t i = 0; i < st.z.size(); ++i)
+                    st.z[i] = (i == ci) ? val
+                            : (rest > 0.0 ? st.z[i] * (1.0 - val) / rest : 0.0);
+            }
+            else
+                throw std::runtime_error("stream override '" + path
+                    + "': unknown field '" + field + "' (F | T | P | "
+                    "moleFraction.<component>)");
+            // Observability (forum #53 pitfall 6): base -> applied, and the
+            // target's ROLE.  A tear-seed manipulation is INITIALISATION-ONLY
+            // -- announced as such; after this the recycle solver owns the
+            // stream, so the knob steers where the iteration STARTS, never a
+            // physical plant condition.
+            if (verbosity >= 2)
+            {
+                std::cout << "  [driver] stream override ("
+                          << (isTear ? "TEAR SEED, initialisation-only" : "inlet")
+                          << "): " << snm << "." << field;
+                if (field.rfind("moleFraction.", 0) == 0)
+                    std::cout << " = " << val << "\n";
+                else
+                    std::cout << ": " << base << " -> " << val << " (SI)\n";
+            }
+        }
+    }
+
+    // ---- choupo-init0: materialise 0/ instead of solving -----------------
+    if (init0_)
+    {
+        return runInit0(units, thermo, verbosity, authoredStates, tears);
     }
 
     // ---- Resolve RELATIVE bounds against the now-frozen feeds (Slice 3) -
@@ -2244,13 +3057,22 @@ int Flowsheet::solve(const DictPtr& dict,
     // ===================  Recycle outer loop  ===========================
     else
     {
-        const int    maxOuter = static_cast<int>(dict->lookupScalarOrDefault("recycleMaxIter", 100));
-        const scalar tearTol  = dict->lookupScalarOrDefault("recycleTol", 1.0e-5);
+        // Recycle numerics live in solverDict (clean home), flowsheetDict as a
+        // fallback for un-migrated cases.
+        auto recScalar = [&](const char* k, scalar def) {
+            if (solverDict_ && solverDict_->found(k)) return solverDict_->lookupScalar(k);
+            return dict->lookupScalarOrDefault(k, def);
+        };
+        auto recWord = [&](const char* k, const std::string& def) {
+            if (solverDict_ && solverDict_->found(k)) return solverDict_->lookupWord(k);
+            return dict->lookupWordOrDefault(k, def);
+        };
+        const int    maxOuter = static_cast<int>(recScalar("recycleMaxIter", 100));
+        const scalar tearTol  = recScalar("recycleTol", 1.0e-5);
         // Default to Newton-on-tears; `recycleSolver Wegstein;` keeps
         // the fixed-point accelerator.  Both converge to the same tear
         // solution (the recycle fixed point is unique).
-        std::string recSolver =
-            dict->lookupWordOrDefault("recycleSolver", "Newton");
+        std::string recSolver = recWord("recycleSolver", "Newton");
         // An energy heat-link feedback is a scalar fixed-point -> converge it
         // by Wegstein successive substitution (the Newton-on-tears step is for
         // material recycle Jacobians).  Wegstein handles any material tears too.
@@ -2613,10 +3435,70 @@ int Flowsheet::solve(const DictPtr& dict,
     }
 
     // ---- Composite boundary outlets (fractal step 2): alias the chosen
-    //      child outputs under the parent's boundary-outlet names, so a
+    //      member outputs under the parent's boundary-outlet names, so a
     //      parent (the plant) can cable `<sector>/<outlet>` next. ---------
     for (const auto& [src, alias] : outletAliases)
-        if (streams_.count(src)) streams_[alias] = streams_.at(src);
+        // A named-edge outlet's producer output IS the edge name (src == alias):
+        // that is the stream IDENTITY, not a boundary rename -- don't mark it as
+        // an alias (else the state writer would skip its file).  Only a genuine
+        // rename (legacy anonymous: BRINE.halite -> halite) is a boundary alias.
+        if (streams_.count(src) && src != alias)
+        { streams_[alias] = streams_.at(src); boundaryAliases_.insert(alias); }
+
+    // ---- Reconcile named-edge LABELS with the streams that carry them ----
+    //  The 0/ reader seeds every state file under its BARE name (`liquor`), but a
+    //  stream PRODUCED inside a sector is written back under its QUALIFIED name
+    //  (`BRINE.liquor`) -- the label and the identity part company.  The bare copy
+    //  then survives as a fossil of the initial GUESS: harmless to the solve, which
+    //  never reads it, and poisonous to the report, which prints it as though it
+    //  were the answer.  It stayed invisible only because a plant's 0/ is usually
+    //  materialised FROM a converged run, so the fossil happened to equal the
+    //  solution.  Perturb the seed and the fossil shows.
+    //
+    //  Point each label at the stream it names.  Only when the match is
+    //  UNAMBIGUOUS (exactly one `<sector>.<label>`); a domain inlet has no producer
+    //  and therefore no qualified counterpart, so it is untouched.
+    {
+        // Candidate bare labels: every base that exactly ONE qualified stream
+        // carries.  Two kinds are (re)pointed at the stream they name:
+        //   * an EXISTING bare entry (a legacy fossil of the old byBase
+        //     seeding, or a legacy streams{} seed) -- refreshed in place;
+        //   * an ABSENT one -- CREATED, because the author's connection KEY is
+        //     the bare edge name (`reactorOut`, not `REACTION.reactorOut`) and
+        //     the report + goldens speak the author's vocabulary.  The
+        //     topology-first reader seeds by manifest ID only, so without this
+        //     the label would exist solely as an accident of the old reader.
+        // Either way it is a LABEL (boundaryAliases_), never a second state
+        // file -- the canonical manifest skips aliases.
+        // A bare name that IS a real graph stream (someone produces or
+        // consumes it AS SPELLED) is NEVER a label slot: a top-level `feed`
+        // next to a sector-internal `A.feed` is two different streams
+        // (forum #87-P0) -- hijacking the real one with a label copy of the
+        // qualified twin corrupted the registry.
+        std::set<std::string> topoNames;
+        for (const auto& fu : topology_)
+        {
+            for (const auto& i : fu.ins)  topoNames.insert(i);
+            for (const auto& o : fu.outs) topoNames.insert(o);
+        }
+        std::map<std::string, std::pair<std::string,int>> byBase;  // base -> (qualified, hits)
+        for (const auto& [other, os] : streams_)
+        {
+            (void) os;
+            const auto dot = other.rfind('.');
+            if (dot == std::string::npos) continue;
+            auto& e = byBase[other.substr(dot + 1)];
+            e.first = other; ++e.second;
+        }
+        for (const auto& [bare, m] : byBase)
+        {
+            if (m.second != 1) continue;                      // ambiguous: no label
+            if (topoNames.count(bare)) continue;              // a REAL stream, not a label slot
+            streams_[bare] = streams_.at(m.first);
+            streams_[bare].name = bare;
+            boundaryAliases_.insert(bare);       // a label, not a second state file
+        }
+    }
 
     // ---- Summary -------------------------------------------------------
     std::cout << "\n================  Flowsheet summary  ================\n";
@@ -2697,10 +3579,31 @@ int Flowsheet::solve(const DictPtr& dict,
                 s.H = thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
             s.H_valid = std::isfinite(s.H);
         }
-        catch (const std::exception&)
+        catch (const std::exception& e)
         {
-            s.H_valid = false;
+            // LOUD fallback (forum 2026-06-28; no silent crutch): a species could
+            // not be placed on the formation datum.  Announce it ONCE per distinct
+            // cause (the kernel names the species), then fall back to the SENSIBLE
+            // datum so the stream enthalpy is VALID and the boundary balance CLOSES
+            // -- the missing formation reference cancels in h_out - h_in for a
+            // conserved species; only a reacting / crystallising one would be
+            // mis-counted, and THAT is exactly what the announcement flags.  Never
+            // silent: the user sees the downgrade, never a hidden one.
+            if (AdvisoryLog::instance().add("thermo", "warning", "enthalpy-gap", e.what()))
+                std::cerr << "[thermo] enthalpy GAP (formation datum): " << e.what()
+                          << "\n          -> using the per-natural-phase BLEND for"
+                             " this stream (a degraded datum: it drifts from the"
+                             " canonical surface and never enters a closed"
+                             " balance; fix the species data to close it).\n";
+            try { s.H = thermo.H_blendPerNaturalPhase(s.T, s.P, s.vf, s.z); s.H_valid = std::isfinite(s.H); }   // AUTHORIZED-BLEND: announced degraded .H fallback
+            catch (const std::exception&) { s.H_valid = false; }
         }
+        // Record WHICH present species (if any) have no elements-datum enthalpy
+        // -- so a downstream consumer (the energy-balance report, the GUI
+        // energy plot) can tell a missing-DATA skip (refuse + name it) from a
+        // composition skip (z_i = 0, legitimately silent), instead of seeing a
+        // bare H_valid = false and quietly dropping the stream.
+        s.H_missing = reporting::missingEnthalpyData(s, thermo);
         // Total FLOW enthalpy [kW]: the fluid (F*H) PLUS the crystalline phase
         // (s[] on the solid datum, Σ s[i]*h°(solid,T) -- the SAME leg the energy
         // report's solidH_elements uses).  A solid product (sucrose Powder) keeps
@@ -2733,5 +3636,223 @@ int Flowsheet::solve(const DictPtr& dict,
 
     return 0;
 }
+
+// ===========================================================================
+//  choupo-init0 -- materialise 0/ by explicit propagation (arch step 2).
+//
+//  The author supplies the DOMAIN INLETS (and any cycle-breaking seeds); this
+//  pass walks the flat unit list in flow order and writes an initial-state
+//  file for every stream the author did not.  The estimates are deliberately
+//  naive -- a unit's outputs get its MIXED inlet state with the flow split
+//  evenly -- because they are GUESSES the solver will overwrite; what matters
+//  is that they exist ON DISK, announced and inspectable, instead of being
+//  invented silently in memory.  A stream trapped inside an unseeded recycle
+//  cannot be propagated from the feeds (that is only honest on an acyclic
+//  graph), so it is a FATAL asking for a seed, never a magic constant.
+// ===========================================================================
+int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
+                        const ThermoPackage&            thermo,
+                        int                             verbosity,
+                        const std::set<std::string>&    authored,
+                        const std::vector<std::string>& tears)
+{
+    namespace fs = std::filesystem;
+
+    // ---- The flat graph: who consumes / produces each stream --------------
+    auto inputsOf = [](const DictPtr& u) {
+        std::vector<std::string> in;
+        if (u->found("in"))          in.push_back(u->lookupWord("in"));
+        else if (u->found("inputs")) in = u->lookupWordList("inputs");
+        return in;
+    };
+    auto outputsOf = [](const DictPtr& u) {
+        return u->found("outputs") ? u->lookupWordList("outputs")
+                                   : std::vector<std::string>{};
+    };
+
+    std::map<std::string, std::string> producerOf, firstConsumerOf;
+    std::set<std::string> graphStreams;
+    for (const auto& u : units)
+    {
+        const std::string uname = u->lookupWordOrDefault("name", "unit");
+        for (const auto& si : inputsOf(u))
+        {
+            graphStreams.insert(si);
+            if (!firstConsumerOf.count(si)) firstConsumerOf[si] = uname;
+        }
+        for (const auto& so : outputsOf(u))
+        {
+            graphStreams.insert(so);
+            producerOf[so] = uname;
+        }
+    }
+
+    // ---- Where each stream's 0/ file lives: THE ownership rule, in its ONE
+    //  home (StreamOwnership::ownershipPath -- D1, forum #55).  This replica
+    //  used to re-derive it and got it wrong on its first outing.
+    auto pathOf = [&](const std::string& nm) -> fs::path {
+        return fs::path("0")
+             / StreamOwnership::ownershipPath(nm, producerOf, firstConsumerOf);
+    };
+
+    // ---- Every INLET must be authored: it is a boundary spec, not a guess --
+    std::vector<std::string> missingInlets;
+    for (const auto& nm : graphStreams)
+        if (!producerOf.count(nm) && !authored.count(nm))
+            missingInlets.push_back(nm);
+    if (!missingInlets.empty())
+    {
+        std::cerr << "\nERROR: choupo-init0: a domain INLET is a boundary "
+                     "specification the author must write -- it cannot be "
+                     "estimated from nothing:\n";
+        for (const auto& m : missingInlets)
+            std::cerr << "  MISSING INLET  " << pathOf(m).generic_string()
+                      << "  (stream '" << m << "')\n";
+        return 1;
+    }
+
+    // ---- Propagate: a unit whose inputs are all known estimates its outputs.
+    std::set<std::string> known;
+    for (const auto& nm : graphStreams)
+        if (streams_.count(nm)) known.insert(nm);      // authored + tear seeds
+
+    std::set<std::string> generated;
+    bool progress = true;
+    while (progress)
+    {
+        progress = false;
+        for (const auto& u : units)
+        {
+            const auto ins  = inputsOf(u);
+            const auto outs = outputsOf(u);
+            if (outs.empty()) continue;
+            bool ready = true;
+            for (const auto& si : ins) if (!known.count(si)) { ready = false; break; }
+            if (!ready) continue;
+            bool anyUnknown = false;
+            for (const auto& so : outs) if (!known.count(so)) { anyUnknown = true; break; }
+            if (!anyUnknown) continue;
+
+            // Mixed inlet state: flows add, T flow-weighted, P the lowest inlet.
+            ProcessStream mix;
+            mix.z.assign(thermo.n(), 0.0);
+            scalar Tw = 0.0, Pmin = 0.0;
+            for (const auto& si : ins)
+            {
+                const auto& st = streams_.at(si);
+                for (std::size_t i = 0; i < st.z.size() && i < mix.z.size(); ++i)
+                    mix.z[i] += st.F * st.z[i];
+                Tw    += st.F * st.T;
+                mix.F += st.F;
+                mix.vf += st.F * st.vf;
+                Pmin = (Pmin <= 0.0) ? st.P : std::min(Pmin, st.P);
+            }
+            if (mix.F > 0.0)
+            {
+                for (auto& zi : mix.z) zi /= mix.F;
+                mix.T  = Tw / mix.F;
+                mix.vf = std::min(1.0, std::max(0.0, mix.vf / mix.F));
+            }
+            mix.P = (Pmin > 0.0) ? Pmin : 101325.0;
+
+            const scalar Fout = (outs.empty() ? 0.0 : mix.F / scalar(outs.size()));
+            for (const auto& so : outs)
+            {
+                if (known.count(so)) continue;
+                ProcessStream est = mix;
+                est.name = so;
+                est.F    = Fout;
+                streams_[so] = est;
+                known.insert(so);
+                generated.insert(so);
+                progress = true;
+            }
+        }
+    }
+
+    // ---- Anything still unknown sits inside an unseeded recycle ------------
+    std::vector<std::string> stuck;
+    for (const auto& nm : graphStreams) if (!known.count(nm)) stuck.push_back(nm);
+    if (!stuck.empty())
+    {
+        std::cerr << "\nERROR: choupo-init0: these streams sit inside a RECYCLE "
+                     "the feeds cannot reach (propagation is only honest on an "
+                     "acyclic graph).  Break the cycle: declare a tear in "
+                     "solverDict `tearStreams ( ... );` (its seed is then "
+                     "derived and persisted), or author the file yourself:\n";
+        for (const auto& m : stuck)
+            std::cerr << "  UNREACHED  " << pathOf(m).generic_string()
+                      << "  (stream '" << m << "')\n";
+        return 1;
+    }
+
+    // ---- Persist: every non-authored state becomes a 0/ file ---------------
+    //  A tear the engine auto-seeded is persisted too (arch 2.5: "a tear
+    //  carries its seed here").  An authored file is NEVER rewritten; --force
+    //  regenerates existing INTERNAL/OUTLET files, never an inlet.
+    std::size_t nWritten = 0, nKept = 0;
+    for (const auto& nm : graphStreams)
+    {
+        const bool isInlet = !producerOf.count(nm);
+        const fs::path f = pathOf(nm);
+        if (authored.count(nm) && !generated.count(nm))
+        {
+            const bool isTearSeed =
+                std::find(tears.begin(), tears.end(), nm) != tears.end();
+            if (fs::exists(f)) { ++nKept; continue; }        // authored on disk
+            if (!isTearSeed && isInlet) continue;              // legacy inlet: written below
+        }
+        if (fs::exists(f) && !init0Force_)
+        {
+            if (verbosity >= 2)
+                std::cout << "  [init0] kept      " << f.generic_string()
+                          << "  (exists; --force regenerates)\n";
+            ++nKept;
+            continue;
+        }
+        if (fs::exists(f) && isInlet) { ++nKept; continue; }  // never touch an inlet
+        if (!streams_.count(nm)) continue;
+
+        fs::create_directories(f.parent_path());
+        StreamStateIO::writeStreamState(streams_.at(nm), thermo, f);
+        {
+            std::ofstream app(f, std::ios::app);
+            app << "\n// generated by choupo-init0 -- an initial ESTIMATE "
+                   "propagated from the authored inlets;\n"
+                   "// the solver overwrites it.  Edit freely; "
+                   "choupo-init0 never overwrites without --force.\n";
+        }
+        if (verbosity >= 1)
+            std::cout << "  [init0] wrote     " << f.generic_string()
+                      << "  (" << (isInlet ? "inlet, from legacy streams{}"
+                                 : producerOf.count(nm) && !firstConsumerOf.count(nm)
+                                   ? "outlet estimate" : "internal estimate")
+                      << ")\n";
+        ++nWritten;
+    }
+
+    // Legacy-migration path: an authored LEGACY inlet (streams{} block, no 0/
+    // yet) must be materialised too, or 0/ stays incomplete.
+    for (const auto& nm : graphStreams)
+    {
+        const fs::path f = pathOf(nm);
+        if (fs::exists(f) || !streams_.count(nm)) continue;
+        fs::create_directories(f.parent_path());
+        StreamStateIO::writeStreamState(streams_.at(nm), thermo, f);
+        if (verbosity >= 1)
+            std::cout << "  [init0] wrote     " << f.generic_string()
+                      << "  (migrated from legacy streams{})\n";
+        ++nWritten;
+    }
+
+    std::cout << "\n[init0] 0/ materialised: " << graphStreams.size()
+              << " graph streams == " << (nWritten + nKept)
+              << " state files  (" << nWritten << " written, "
+              << nKept << " kept)\n"
+              << "[init0] no simulation was run -- `choupoSolve` solves from "
+                 "this state.\n";
+    return 0;
+}
+
 
 } // namespace Choupo

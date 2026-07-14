@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (8,8'-bi-1h-naphtho(2,3-c)pyran)-3,3'-diacetic acid, 3,3',4,4'-tetrahydro- 9,9',10,10'-tetrahydroxy-7,7'-dimethoxy-1,1'-dioxo-, dimethyl ester  (C34H30O14, CAS 35483-50-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        88Bi1hNaphtho23CPyran33DiaceticAcid3344Tetrahydro991010Tetra;
+formula     C34H30O14;
+CAS         35483-50-2;
+InChIKey    KPSSJZWNGXQOMD-UHFFFAOYSA-N;
+MW          662.6;      // g/mol [origin=calculated method=formula-sum]
+Tc          2256.96;      // K   [origin=predictive method=joback]
+Pc          14.154;      // bar [origin=predictive method=joback]
+omega       0.5713;      // -   [origin=predictive method=lee-kesler]
+Tb          1713.82;      // K   [origin=predictive method=joback]
+HvapTb      190392.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.608 3.18648 -0.00258356 8.602e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 2; } { group ACH; count 4; } { group AC; count 10; } { group ACCH2; count 2; } { group ACOH; count 4; } { group CH2COO; count 2; } { group CH3O; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 16; } { group OH_phenol; count 4; } { group O; count 2; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-[7-methoxy-8-[7-methoxy-3-(2-methoxy-2-oxidanylidene-ethyl)-9,10-bis(oxidanyl)-1-oxidanylidene-3,4-dihydrobenzo[g]isochromen-8-yl]-9,10-bis(oxidanyl)-1-oxidanylidene-3,4-dihydrobenzo[g]isochromen-3-yl]ethanoate" "3,3',4,4'-tetrahydro-9,9',10,10'-tetrahydroxy-7,7'-dimethoxy-1,1'-dioxo(8,8'-bi-1h-naphtho(2,3-c)pyran)-3,3'-diacetic acid, dimethyl ester" "methyl 2-[8-[9,10-dihydroxy-7-methoxy-3-(2-methoxy-2-oxoethyl)-1-oxo-3,4-dihydrobenzo[g]isochromen-8-yl]-9,10-dihydroxy-7-methoxy-1-oxo-3,4-dihydrobenzo[g]isochromen-3-yl]acetate" );
+gibbsFormation
+{
+    dHf_298   -2066530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1113.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1327780.0
+    phase     gas;
+}

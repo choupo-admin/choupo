@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lindane  (C6H6Cl6, CAS 58-89-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lindane;
+formula     C6H6Cl6;
+CAS         58-89-9;
+InChIKey    JLYXXMFPNIAWKQ-UHFFFAOYSA-N;
+MW          290.814;      // g/mol [origin=calculated method=formula-sum]
+Tc          800.22;      // K   [origin=predictive method=joback]
+Pc          25.611;      // bar [origin=predictive method=joback]
+omega       0.3812;      // -   [origin=predictive method=lee-kesler]
+Tb          557.66;      // K   [origin=predictive method=joback]
+HvapTb      54144.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (38.87 0.6042 -0.000229 -1.72e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CHCl; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 6; } { group Cl; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5,6-hexakis(chloranyl)cyclohexane" "gamma-bhc" "beta-hch" "alpha-hch" "gamma-hch" "kwell" "beta-bhc" "hexachlorane" "aalindan" "beta-lindane" "gamma-hexachlorocyclohexane" "1,2,3,4,5,6-hexachlorocyclohexane" );
+gibbsFormation
+{
+    dHf_298   -308990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     347.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-86040.0
+    phase     gas;
+}

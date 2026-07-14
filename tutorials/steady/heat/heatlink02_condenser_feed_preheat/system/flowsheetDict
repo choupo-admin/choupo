@@ -12,16 +12,7 @@
   1000 kmol/h feed by a modest ~25 K (stays liquid).
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    coldFeed
-    {
-        F                1000.0 kmol/h;
-        T                320.0 K;
-        P                1.01325 bar;
-        molarComposition { benzene 0.50;  toluene 0.50; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 tearStreams      ( );
 recycleTol       1e-5;

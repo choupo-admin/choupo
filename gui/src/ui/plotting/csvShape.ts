@@ -51,7 +51,8 @@ export interface CategoricalCsv {
  *  malformed row -- that keeps the line-plot path), and at least one other
  *  column with a finite value to plot.  Returns the parsed table or null. */
 export function detectCategoricalCsv(csv: string): CategoricalCsv | null {
-  const lines = csv.trim().split(/\r?\n/).filter((l) => l.length > 0);
+  const lines = csv.trim().split(/\r?\n/)
+    .filter((l) => l.length > 0 && !l.trimStart().startsWith("#"));
   if (lines.length < 2) return null;
   const header = lines[0]!.split(",").map((s) => s.trim());
   if (header.length < 2) return null;

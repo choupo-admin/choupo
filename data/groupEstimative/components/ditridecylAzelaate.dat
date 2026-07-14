@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ditridecyl azelaate  (C35H68O4, CAS 26719-40-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ditridecylAzelaate;
+formula     C35H68O4;
+CAS         26719-40-4;
+InChIKey    ZOCXJFXOLXCHIM-UHFFFAOYSA-N;
+MW          552.925;      // g/mol [origin=calculated method=formula-sum]
+Tc          1460.09;      // K   [origin=predictive method=joback]
+Pc          4.792;      // bar [origin=predictive method=joback]
+omega       -0.0705;      // -   [origin=predictive method=lee-kesler]
+Tb          1116.84;      // K   [origin=predictive method=joback]
+HvapTb      108318.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.891 3.21924 -0.001691 2.911e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 29; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 31; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ditridecyl nonanedioate" "nonanedioic acid, ditridecyl ester" "nonanedioic acid, 1,9-ditridecyl ester" "ditridecyl azelate" "nonanedioic acid,1,9-ditridecyl ester" "azelaicacid, ditridecyl ester (6ci,8ci); nonanedioic acid, ditridecyl ester (9ci);1-tridecanol, azelaate (2:1) (8ci)" );
+gibbsFormation
+{
+    dHf_298   -1400290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1621.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-376920.0
+    phase     gas;
+}

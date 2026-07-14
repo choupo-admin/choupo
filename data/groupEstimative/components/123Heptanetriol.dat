@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,3-heptanetriol  (C7H16O3, CAS 103404-57-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        123Heptanetriol;
+formula     C7H16O3;
+CAS         103404-57-5;
+InChIKey    HXYCHJFUBNTKQR-UHFFFAOYSA-N;
+MW          148.202;      // g/mol [origin=calculated method=formula-sum]
+Tc          796.42;      // K   [origin=predictive method=joback]
+Pc          39.160;      // bar [origin=predictive method=joback]
+omega       1.8120;      // -   [origin=predictive method=lee-kesler]
+Tb          635.42;      // K   [origin=predictive method=joback]
+HvapTb      80437.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.034 0.78262 -0.0004546 1.005e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 2; } { group OH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 2; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "heptane-1,2,3-triol" "1,2,3-trihydroxyheptane" "1,2,3-heptanetriol solution" "1,2,3-heptanetriol isomer t 1 m solution" "1,2,3-heptanetriol isomer h 0.5 solution" "1-butylglycerol" "1-n-butylglycerol" "1,2,3-heptanetriol isomer t 1 m  solution" );
+gibbsFormation
+{
+    dHf_298   -655060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     562.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-407280.0
+    phase     gas;
+}

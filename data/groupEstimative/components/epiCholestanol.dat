@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: epi-cholestanol  (C27H48O, CAS 516-95-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        epiCholestanol;
+formula     C27H48O;
+CAS         516-95-0;
+InChIKey    QYIXCDOBOSTCEI-FBVYSKEZSA-N;
+MW          388.68;      // g/mol [origin=calculated method=formula-sum]
+Tc          1157.68;      // K   [origin=predictive method=joback]
+Pc          10.413;      // bar [origin=predictive method=joback]
+omega       0.9224;      // -   [origin=predictive method=lee-kesler]
+Tb          938.77;      // K   [origin=predictive method=joback]
+HvapTb      88573.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-322.527 3.6481 -0.0029742 1.0498e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 12; } { group CH; count 8; } { group C; count 2; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 2; } { group CH2_ring; count 9; } { group CH_ring; count 6; } { group C_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3r,5s,8r,9s,10s,13r,14s,17r)-10,13-dimethyl-17-[(2r)-6-methylheptan-2-yl]-2,3,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthren-3-ol" "epidihydrocholesterin" "presteron" "epidehydrocholesterin" "5alpha-cholestan-3alpha-ol" "epicholestanol" "cholestan-3alpha-ol" "cholestan-3-alpha-ol" "3alpha-hydroxy-5alpha-cholestane" "(3-alpha,5-alpha)-cholestan-3-ol" "5-alpha-cholestan-3-alpha-ol" "cholestan-3-ol, (3alpha,5alpha)-" );
+gibbsFormation
+{
+    dHf_298   -553880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     947.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=175440.0
+    phase     gas;
+}

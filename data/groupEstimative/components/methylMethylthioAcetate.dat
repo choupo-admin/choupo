@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl (methylthio)acetate  (C4H8O2S, CAS 16630-66-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylMethylthioAcetate;
+formula     C4H8O2S;
+CAS         16630-66-3;
+InChIKey    HZYCAKGEXXKCDM-UHFFFAOYSA-N;
+MW          120.166;      // g/mol [origin=calculated method=formula-sum]
+Tc          618.63;      // K   [origin=predictive method=joback]
+Pc          40.058;      // bar [origin=predictive method=joback]
+omega       0.4187;      // -   [origin=predictive method=lee-kesler]
+Tb          418.12;      // K   [origin=predictive method=joback]
+HvapTb      38722.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (44.261 0.32343 -5.9e-05 -4.83e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2COO; count 1; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group COO; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-methylsulfanylethanoate" "methyl 2-(methylthio)acetate" "methyl 2-(methylsulfanyl)acetate" "methyl (methylithio)acetate" "methyl s-methylthioglycolate" "acetic acid, (methylthio)-, methyl ester" "methyl (methylmercapto)acetate" "agn-pc-0d9odt" "methyl (methylthio) acetate" "methyl 3-methylthio acetate" "methyl 2-methylsulfanylacetate" "(methylthio)acetic acid methyl ester" );
+gibbsFormation
+{
+    dHf_298   -401300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     424.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-294450.0
+    phase     gas;
+}

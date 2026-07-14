@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3,5-trimethylcyclohexanone  (C9H16O, CAS 873-94-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        335Trimethylcyclohexanone;
+formula     C9H16O;
+CAS         873-94-9;
+InChIKey    POSWICCRDBKBMH-UHFFFAOYSA-N;
+MW          140.226;      // g/mol [origin=calculated method=formula-sum]
+Tc          714.87;      // K   [origin=predictive method=joback]
+Pc          29.861;      // bar [origin=predictive method=joback]
+omega       0.3540;      // -   [origin=predictive method=lee-kesler]
+Tb          488.46;      // K   [origin=predictive method=joback]
+HvapTb      38844.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-78.52 1.07806 -0.00078 2.623e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group C_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3,5-trimethylcyclohexan-1-one" "dihydroisophorone" "cyclohexanone, 3,3,5-trimethyl-" "dihydro-isophorone" "3,5,5-trimethylcyclohexanone" "3,3,5-trimethyl cyclohexanone" "3,3,5-trimethyl-cyclohexan-1-one" "(?a'a a'a currency)-3,3,5-trimethylcyclohexanone;(?a'a a'a currency)-dihydroisophorone;3,3,5-trimethyl-1-cyclohexanone;3,3,5-trimethylcyclohexanone;dihydroisophorone;" );
+gibbsFormation
+{
+    dHf_298   -317570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     424.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-86440.0
+    phase     gas;
+}

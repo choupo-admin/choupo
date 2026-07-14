@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dihexadecylamine  (C32H67N, CAS 16724-63-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dihexadecylamine;
+formula     C32H67N;
+CAS         16724-63-3;
+InChIKey    NQYKSVOHDVVDOR-UHFFFAOYSA-N;
+MW          465.895;      // g/mol [origin=calculated method=formula-sum]
+Tc          1232.67;      // K   [origin=predictive method=joback]
+Pc          5.467;      // bar [origin=predictive method=joback]
+omega       0.2335;      // -   [origin=predictive method=lee-kesler]
+Tb          981.93;      // K   [origin=predictive method=joback]
+HvapTb      93262.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.41 3.12004 -0.0017656 3.801e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 29; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 30; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-hexadecylhexadecan-1-amine" "amines, di-c14-18-alkyl" "amines, di-c16-22-alkyl" "(c14-c18)dialkylamine" "(c14-c18) dialkylamine" "(c16-c22) dialkylamine" "1-hexadecanamine,n-hexadecyl-" "n-hexadecylhexadecan-1-aminato" "dicetylamine(4ci); dihexadecylamine (6ci,8ci); armeen 2-16; di-n-hexadecylamine;dipalmitylamine; n,n-dihexadecylamine" );
+gibbsFormation
+{
+    dHf_298   -650340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1443.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=307950.0
+    phase     gas;
+}

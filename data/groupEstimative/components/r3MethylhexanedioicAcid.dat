@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (r)-3-methylhexanedioic acid  (C7H12O4, CAS 623-82-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        r3MethylhexanedioicAcid;
+formula     C7H12O4;
+CAS         623-82-5;
+InChIKey    SYEOWUNSTUDKGM-RXMQYKEDSA-N;
+MW          160.169;      // g/mol [origin=calculated method=formula-sum]
+Tc          855.05;      // K   [origin=predictive method=joback]
+Pc          34.440;      // bar [origin=predictive method=joback]
+omega       1.1377;      // -   [origin=predictive method=lee-kesler]
+Tb          650.34;      // K   [origin=predictive method=joback]
+HvapTb      65116.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.043 0.77632 -0.0005054 1.276e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3r)-3-methylhexanedioic acid" "(+)-3-methylhexanedioic acid" "(r)-(+)-3-methyladipic acid" "(r)-3-methyl-1,6-hexanedioic acid" "hexanedioic acid,3-methyl-, (3r)-" "hexanedioicacid, 3-methyl-, (r)-;hexanedioic acid, 3-methyl-, (r)-(+)- (8ci);(+)-3-methyladipic acid;(r)-(+)-3-methyladipic acid;(r)-3-methyl-1,6-hexanedioic acid;(r)-3-methyladipic acid;r-(+)-3-methyladipic acid;" );
+gibbsFormation
+{
+    dHf_298   -893630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     525.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-682200.0
+    phase     gas;
+}

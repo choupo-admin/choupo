@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethylidenecyclopropane  (C5H8, CAS 18631-83-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylidenecyclopropane;
+formula     C5H8;
+CAS         18631-83-9;
+InChIKey    ZIFNDRXSSPCNID-UHFFFAOYSA-N;
+MW          68.119;      // g/mol [origin=calculated method=formula-sum]
+Tc          519.32;      // K   [origin=predictive method=joback]
+Pc          44.091;      // bar [origin=predictive method=joback]
+omega       0.2334;      // -   [origin=predictive method=lee-kesler]
+Tb          332.05;      // K   [origin=predictive method=joback]
+HvapTb      27733.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-46.74 0.57872 -0.0004923 1.767e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH; count 1; } { group CH2_ring; count 2; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclopropane, ethylidene-" );
+gibbsFormation
+{
+    dHf_298   22640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     274.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=105140.0
+    phase     gas;
+}

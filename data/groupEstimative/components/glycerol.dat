@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: glycerol  (C3H8O3, CAS 56-81-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        glycerol;
+formula     C3H8O3;
+CAS         56-81-5;
+InChIKey    PEDCQBHIVMGVHV-UHFFFAOYSA-N;
+MW          92.094;      // g/mol [origin=calculated method=formula-sum]
+Tc          702.95;      // K   [origin=predictive method=joback]
+Pc          66.966;      // bar [origin=predictive method=joback]
+omega       1.7792;      // -   [origin=predictive method=lee-kesler]
+Tb          544.34;      // K   [origin=predictive method=joback]
+HvapTb      71921.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.352 0.3967 -0.0002338 5.34e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group OH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propane-1,2,3-triol" "glycerin" "1,2,3-propanetriol" "glycerine" "glyceritol" "glycyl alcohol" "trihydroxypropane" "propanetriol" "osmoglyn" "1,2,3-trihydroxypropane" "glysanin" "grocolene" );
+gibbsFormation
+{
+    dHf_298   -567220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     415.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-438520.0
+    phase     gas;
+}

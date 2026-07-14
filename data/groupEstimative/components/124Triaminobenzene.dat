@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,4-triaminobenzene  (C6H9N3, CAS 615-71-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        124Triaminobenzene;
+formula     C6H9N3;
+CAS         615-71-4;
+InChIKey    JSYBAZQQYCNZJE-UHFFFAOYSA-N;
+MW          123.159;      // g/mol [origin=calculated method=formula-sum]
+Tc          844.72;      // K   [origin=predictive method=joback]
+Pc          57.219;      // bar [origin=predictive method=joback]
+omega       0.7498;      // -   [origin=predictive method=lee-kesler]
+Tb          591.11;      // K   [origin=predictive method=joback]
+HvapTb      64473.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.6 0.5616 -0.00032992 6.89e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACNH2; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH2; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzene-1,2,4-triamine" "1,2,4-benzenetriamine" "1,3,4-benzenetriamine" "1,3,4-triaminobenzene" "benzene-1,2,4-triyltriamine" "1,4-benzenetriamine" "615-47-4 (di-hydrochloride)" );
+gibbsFormation
+{
+    dHf_298   147790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     425.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=292140.0
+    phase     gas;
+}

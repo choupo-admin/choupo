@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentane, 2,4-dichloro-2,4-dimethyl-  (C7H14Cl2, CAS 33553-93-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentane24Dichloro24Dimethyl;
+formula     C7H14Cl2;
+CAS         33553-93-4;
+InChIKey    LHJHUCCRNCKRQN-UHFFFAOYSA-N;
+MW          169.089;      // g/mol [origin=calculated method=formula-sum]
+Tc          631.67;      // K   [origin=predictive method=joback]
+Pc          26.958;      // bar [origin=predictive method=joback]
+omega       0.2802;      // -   [origin=predictive method=lee-kesler]
+Tb          428.16;      // K   [origin=predictive method=joback]
+HvapTb      37354.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.639 0.93408 -0.0007414 2.339e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:2
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 2; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4-bis(chloranyl)-2,4-dimethyl-pentane" "2,4-dichloro-2,4-dimethylpentane" );
+gibbsFormation
+{
+    dHf_298   -236790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     417.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-10120.0
+    phase     gas;
+}

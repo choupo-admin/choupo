@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ag-g-81215  (C21H40O3, CAS 71685-99-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        agG81215;
+formula     C21H40O3;
+CAS         71685-99-9;
+InChIKey    SDYPTODXHIAHDF-HXUWFJFHSA-N;
+MW          340.548;      // g/mol [origin=calculated method=formula-sum]
+Tc          1020.99;      // K   [origin=predictive method=joback]
+Pc          10.617;      // bar [origin=predictive method=joback]
+omega       1.0201;      // -   [origin=predictive method=lee-kesler]
+Tb          833.76;      // K   [origin=predictive method=joback]
+HvapTb      85608.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.047 2.00986 -0.0011446 2.378e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 12; } { group CH; count 2; } { group CH=CH; count 1; } { group OH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 13; } { group CH; count 2; } { group dCH; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propan-2-yl (12r)-12-oxidanyloctadec-9-enoate" "9-octadecenoic acid,12-hydroxy-, 1-methylethyl ester, (9z,12r)-" "9-octadecenoicacid, 12-hydroxy-, 1-methylethyl ester, [r-(z)]-; ricinoleic acid, isopropylester (6ci); isopropyl ricinolate; isopropyl ricinoleate" );
+gibbsFormation
+{
+    dHf_298   -839620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1050.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-245910.0
+    phase     gas;
+}

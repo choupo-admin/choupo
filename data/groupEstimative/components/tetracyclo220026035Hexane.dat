@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetracyclo[2.2.0.02,6.03,5]hexane  (C6H6, CAS 650-42-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetracyclo220026035Hexane;
+formula     C6H6;
+CAS         650-42-0;
+InChIKey    RCJOMOPNGOSMJU-UHFFFAOYSA-N;
+MW          78.114;      // g/mol [origin=calculated method=formula-sum]
+Tc          506.53;      // K   [origin=predictive method=joback]
+Pc          45.043;      // bar [origin=predictive method=joback]
+omega       0.2947;      // -   [origin=predictive method=lee-kesler]
+Tb          328.88;      // K   [origin=predictive method=joback]
+HvapTb      26952.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-160.93 1.182 -0.001351 5.804e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "prismane" "ladenburgbenzene; prisman; prismane; tetracyclo[3.1.0.02,4.03,6]hexane; triprismane;[3]prismane" );
+gibbsFormation
+{
+    dHf_298   120310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     -175.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=299820.0
+    phase     gas;
+}

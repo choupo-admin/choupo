@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzo-15-crown-5  (C14H20O5, CAS 14098-44-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzo15Crown5;
+formula     C14H20O5;
+CAS         14098-44-3;
+InChIKey    FNEPSTUXZLEUCK-UHFFFAOYSA-N;
+MW          268.309;      // g/mol [origin=calculated method=formula-sum]
+Tc          1012.24;      // K   [origin=predictive method=joback]
+Pc          28.354;      // bar [origin=predictive method=joback]
+omega       0.7066;      // -   [origin=predictive method=lee-kesler]
+Tb          740.44;      // K   [origin=predictive method=joback]
+HvapTb      74188.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-50.23 1.2618 -0.00044406 -5.9e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group ACH; count 4; } { group AC; count 2; } { group FCH2O; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 8; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,5,8,11,14-pentaoxabicyclo[13.4.0]nonadeca-1(19),15,17-triene" "benzyl 15-crown-5" "2,3,5,6,8,9,11,12-octahydro-1,4,7,10,13-benzopentaoxacyclopentadecine" "benzo-15-crown 5-ether" "monobenzo-15-crown-5" "benzo[6]1,4,7,10,13-pentaoxacyclopentadecane" "1,4,7,10,13-benzopentaoxacyclopentadecin, 2,3,5,6,8,9,11,12-octahydro-" "2,3,5,6,8,9,11,12-octahydro-1,4,7,10,13-benzopentaoxacyclopentadecin" "benzo-15-crown" "benzo-15-crown-5-ether" "crown ether/benzo-15-crown-5" "m022" );
+gibbsFormation
+{
+    dHf_298   -735690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     483.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-313360.0
+    phase     gas;
+}

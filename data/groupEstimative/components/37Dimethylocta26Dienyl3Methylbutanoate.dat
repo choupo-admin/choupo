@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,7-dimethylocta-2,6-dienyl 3-methylbutanoate  (C15H26O2, CAS 109-20-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        37Dimethylocta26Dienyl3Methylbutanoate;
+formula     C15H26O2;
+CAS         109-20-6;
+InChIKey    SOUKTGNMIRUIQN-UHFFFAOYSA-N;
+MW          238.371;      // g/mol [origin=calculated method=formula-sum]
+Tc          793.34;      // K   [origin=predictive method=joback]
+Pc          15.610;      // bar [origin=predictive method=joback]
+omega       0.7104;      // -   [origin=predictive method=lee-kesler]
+Tb          608.66;      // K   [origin=predictive method=joback]
+HvapTb      56079.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.766 1.4198 -0.000873 2.081e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 1; } { group CH=C; count 2; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 4; } { group CH; count 1; } { group dCH; count 2; } { group dC; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "geranyl isovalerate" "neryl isovalerate" "butanoic acid, 3-methyl-, 3,7-dimethyl-2,6-octadienyl ester" "butanoic acid, 3-methyl-, (2z)-3,7-dimethyl-2,6-octadien-1-yl ester" "butanoic acid, 3-methyl-, 3,7-dimethyl-2,6-octadienyl ester, (e)-" "butanoic acid,3-methyl-, (2e)-3,7-dimethyl-2,6-octadien-1-yl ester" "geraniol isovalerate;geranyl3-methylbutanoate;isovaleric acid geranyl ester;3,7-dimethyl-2,6-octadien-1-yl 3-methylbutanoate, trans-;butanoicacid, 3-methyl-, (2e)-3,7-dimethyl-2,6-octadienyl ester (9ci);butanoic acid,3-methyl-, 3,7-dimethyl-2,6-octadienyl ester, (e)-;isovaleric acid,3,7-dimethyl-2,6-octadienyl ester, (e)- (8ci);" );
+gibbsFormation
+{
+    dHf_298   -460630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     760.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-94050.0
+    phase     gas;
+}

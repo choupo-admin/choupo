@@ -1,0 +1,49 @@
+/*---------------------------------------------------------------------------*\
+  sensitivity02_feasibility_map / system/outerDict
+
+  WHAT THIS CASE IS: the sweep's FEASIBILITY MAP (design forum
+  #102.6/#103 -- Front 4b).  The same reflux sweep as sensitivity01, now
+  with declared CONSTRAINTS: every row of the CSV is EVALUATED and
+  MARKED -- per constraint the value, the bound, the SIGNED normalised
+  residual and a satisfied flag, plus a final `feasible` verdict.  No
+  point is ever filtered or hidden: the infeasible rows ARE the lesson
+  (where the purity spec fails and where the reboiler budget binds).
+
+      x_D_LK  atLeast 0.985  -- the distillate purity spec: R < ~2.3 fails it;
+      V_strip atMost  0.065  -- the boilup budget: R > ~3.5 violates it.
+
+  Between the two boundaries lies the feasible window the student READS
+  off the map -- the same constraints the SQP optimizer would enforce
+  (optim04), parsed by the SAME shared grammar, but here as a MAP, not a
+  single optimum.  The golden pins the feasible/infeasible split.
+\*---------------------------------------------------------------------------*/
+
+type    sweep;
+
+parameter
+{
+    target    units[0].operation.refluxRatio;
+    range     ( 1.5  5.0 );
+    nPoints   10;
+}
+
+responses
+(
+    column01.T_top
+    column01.T_bottom
+    column01.x_D_LK
+    column01.x_B_HK
+    column01.V_strip
+);
+
+constraints
+(
+    { kpi column01.x_D_LK;   atLeast 0.985;  }
+    { kpi column01.V_strip;  atMost  0.065;  }
+);
+
+report
+{
+    format   csv;
+    file     sweep_results.csv;
+}

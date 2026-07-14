@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclohexano-18-crown-6  (C16H30O6, CAS 17454-53-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclohexano18Crown6;
+formula     C16H30O6;
+CAS         17454-53-4;
+InChIKey    OOTXYRWENZEKDS-UHFFFAOYSA-N;
+MW          318.41;      // g/mol [origin=calculated method=formula-sum]
+Tc          1079.53;      // K   [origin=predictive method=joback]
+Pc          21.674;      // bar [origin=predictive method=joback]
+omega       0.7332;      // -   [origin=predictive method=lee-kesler]
+Tb          809.18;      // K   [origin=predictive method=joback]
+HvapTb      80848.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-90.15 1.654 -0.0004612 -1.528e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH; count 2; } { group FCH2O; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 14; } { group CH_ring; count 2; } { group O_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,5,8,11,14,17-hexaoxabicyclo[16.4.0]docosane" );
+gibbsFormation
+{
+    dHf_298   -1118530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     609.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-504980.0
+    phase     gas;
+}

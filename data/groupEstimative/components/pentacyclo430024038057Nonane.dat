@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentacyclo[4.3.0.02,4.03,8.05,7]nonane  (C9H10, CAS 13084-56-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentacyclo430024038057Nonane;
+formula     C9H10;
+CAS         13084-56-5;
+InChIKey    WEDSMIBYBDZOFA-UHFFFAOYSA-N;
+MW          118.179;      // g/mol [origin=calculated method=formula-sum]
+Tc          590.89;      // K   [origin=predictive method=joback]
+Pc          35.389;      // bar [origin=predictive method=joback]
+omega       0.3742;      // -   [origin=predictive method=lee-kesler]
+Tb          399.59;      // K   [origin=predictive method=joback]
+HvapTb      33234.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-207.96 1.5914 -0.001679 6.872e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-methanodicyclopropa(cd,gh)pentalene, octahydro-" "1,2-methanodicyclopropa[cd,gh]pentalene,octahydro-" );
+gibbsFormation
+{
+    dHf_298   110850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     -191.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=378120.0
+    phase     gas;
+}

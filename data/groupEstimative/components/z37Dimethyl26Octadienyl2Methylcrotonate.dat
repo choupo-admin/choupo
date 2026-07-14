@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (z)-3,7-dimethyl-2,6-octadienyl 2-methylcrotonate  (C15H24O2, CAS 7785-33-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        z37Dimethyl26Octadienyl2Methylcrotonate;
+formula     C15H24O2;
+CAS         7785-33-3;
+InChIKey    OGHBUHJLMHQMHS-UHFFFAOYSA-N;
+MW          236.355;      // g/mol [origin=calculated method=formula-sum]
+Tc          804.30;      // K   [origin=predictive method=joback]
+Pc          16.233;      // bar [origin=predictive method=joback]
+omega       0.6857;      // -   [origin=predictive method=lee-kesler]
+Tb          613.14;      // K   [origin=predictive method=joback]
+HvapTb      56505.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.957 1.4338 -0.0009559 2.578e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 3; } { group CH=C; count 3; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 3; } { group dCH; count 3; } { group dC; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7-dimethylocta-2,6-dienyl 2-methylbut-2-enoate" "(e)-3,7-dimethyl-2,6-octadienyl 2-methylisocrotonate" "2-butenoic acid, 2(or 3)-methyl-, (2e)-3,7-dimethyl-2,6-octadien-1-yl ester" "2-butenoic acid, 2(or 3)-methyl-, (2e)-3,7-dimethyl-2,6-octadienyl ester" "2-butenoic acid, 2-methyl-, (2e)-3,7-dimethyl-2,6-octadien-1-yl ester, (2e)-" "2-butenoic acid, 2-methyl-, (2e)-3,7-dimethyl-2,6-octadienyl ester, (2e)-" "2-butenoicacid, 2-methyl-, (2e)-3,7-dimethyl-2,6-octadienyl ester, (2e)- (9ci); 2-butenoicacid, 2-methyl-, 3,7-dimethyl-2,6-octadienyl ester, (e,e)-; tiglic acid,geranyl ester (6ci); tiglic acid, trans-3,7-dimethyl-2,6-octadienyl ester(7ci); geranyl tiglate" );
+gibbsFormation
+{
+    dHf_298   -347920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     759.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-19940.0
+    phase     gas;
+}

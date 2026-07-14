@@ -1,0 +1,25 @@
+/*---------------------------------------------------------------------------*\
+  constant/propertyPackage -- THE CASE'S OWN THERMO MANIFEST (inline form).
+  Components, methods, and parameter sources all HERE, in the case, readable:
+  the self-contained form.  (The alternative `package <name>;` selects a
+  shared catalogue record -- for fleets of cases using identical thermo.)
+  Run the case and the log announces the assembly: the VLE world and every
+  kij with its source.
+\*---------------------------------------------------------------------------*/
+components ( N2 CH4 );
+propertyMethods
+{
+    liquid eos.SRK;     // the phi-phi world: K = phi_L/phi_V, one cubic,
+    vapour eos.SRK;     //   its two roots -- one Gibbs surface per phase
+}
+parameters
+{
+    // Parameter HOMES: EoS kij live under data/standards/parameters/eos/kij/;
+    // Henry pairs in data/standards/henrysLaw/ (a top-level catalogue)
+    // -- different KINDS, different homes, both declared+verified here.
+    kijPairs
+    {
+        // Knapp et al., DECHEMA Chemistry Data Series VI (1982)
+        N2-CH4 "data/standards/parameters/eos/kij/N2-CH4.dat";
+    }
+}

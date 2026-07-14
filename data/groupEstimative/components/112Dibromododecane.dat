@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,12-dibromododecane  (C12H24Br2, CAS 3344-70-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        112Dibromododecane;
+formula     C12H24Br2;
+CAS         3344-70-5;
+InChIKey    ZJJATABWMGVVRZ-UHFFFAOYSA-N;
+MW          328.132;      // g/mol [origin=calculated method=formula-sum]
+Tc          793.49;      // K   [origin=predictive method=joback]
+Pc          20.073;      // bar [origin=predictive method=joback]
+omega       0.8415;      // -   [origin=predictive method=lee-kesler]
+Tb          606.48;      // K   [origin=predictive method=joback]
+HvapTb      55176.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.362 1.2202 -0.0007718 1.998e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 12; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 12; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,12-bis(bromanyl)dodecane" "dodecamethylene dibromide" "dodecane, 1,12-dibromo-" "alpha,omega-dibromododecane" "a,w-dibromododecane;" "agn-pc-04uhfj" );
+gibbsFormation
+{
+    dHf_298   -238350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     725.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=78800.0
+    phase     gas;
+}

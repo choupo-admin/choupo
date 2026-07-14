@@ -1,0 +1,20 @@
+/*---------------------------------------------------------------------------*\
+  batch10_adsorber_co2_n2 / system/controlDict
+
+  Time control for the COMPETITIVE CO2/N2 uptake vessel.  The stiffest
+  local mode is still the CO2 Langmuir origin (k_eff,max = 5.63 1/s ->
+  RK4 bound deltaT < 0.495 s, printed by the unit); the N2 mode is slow
+  (k_eff ~ 0.26 1/s).  endTime 600 s over-converges both, so the golden
+  pins the exact competitive inventory equilibrium.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Closed isothermal competitive CO2/N2 uptake on zeolite 13X: extended-Langmuir site competition drives the equilibrium selectivity S = 71.43";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         600;      // s
+deltaT          0.1;      // s   (RK4; inside the printed stability bound)
+writeInterval   10;       // s

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclochem ineo  (C23H46O2, CAS 238758-29-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclochemIneo;
+formula     C23H46O2;
+CAS         238758-29-7;
+InChIKey    JSOVGYMVTPPEND-UHFFFAOYSA-N;
+MW          354.619;      // g/mol [origin=calculated method=formula-sum]
+Tc          959.27;      // K   [origin=predictive method=joback]
+Pc          8.681;      // bar [origin=predictive method=joback]
+omega       0.7967;      // -   [origin=predictive method=lee-kesler]
+Tb          780.39;      // K   [origin=predictive method=joback]
+HvapTb      72515.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.765 2.2658 -0.0013078 2.768e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 15; } { group CH; count 1; } { group C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 15; } { group CH; count 1; } { group C; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "16-methylheptadecyl 2,2-dimethylpropanoate" "schercemol 85" "isostearyl pivalate" "16-methylheptadecyl pivalate" "isooctadecyl pivalate" "isostearyl neopentanoate" "2,2-dimethylpropanoic acid, isooctadecyl ester" "propanoic acid, 2,2-dimethyl-, isooctadecyl ester" "2,2-dimethylpropanoic acid isooctadecyl ester" "propanoic acid,2,2-dimethyl-, 16-methylheptadecyl ester" );
+gibbsFormation
+{
+    dHf_298   -849360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1054.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-167190.0
+    phase     gas;
+}

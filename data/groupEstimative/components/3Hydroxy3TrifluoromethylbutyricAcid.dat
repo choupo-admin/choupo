@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-hydroxy-3-trifluoromethylbutyric acid  (C5H7F3O3, CAS 338-03-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Hydroxy3TrifluoromethylbutyricAcid;
+formula     C5H7F3O3;
+CAS         338-03-4;
+InChIKey    JCJGOWYCFRASTM-UHFFFAOYSA-N;
+MW          172.102;      // g/mol [origin=calculated method=formula-sum]
+Tc          719.73;      // K   [origin=predictive method=joback]
+Pc          38.388;      // bar [origin=predictive method=joback]
+omega       1.1269;      // -   [origin=predictive method=lee-kesler]
+Tb          543.04;      // K   [origin=predictive method=joback]
+HvapTb      55524.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.439 0.85062 -0.000744 2.467e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group OH; count 1; } { group COOH; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 2; } { group F; count 3; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,4,4-tris(fluoranyl)-3-methyl-3-oxidanyl-butanoic acid" "4,4,4-trifluoro-3-hydroxy-3-methylbutyric acid" "3-(trifluoromethyl)-3-hydroxybutyric acid" "3-hydroxy-3-methyl-4,4,4-trifluorobutyric acid" "4,4,4-trifluoro-3-hydroxy-3-methylbutanoic acid" "3-hydroxy-3-(trifluoromethyl)butyric acid" "4,4,4-trifluoro-3-hydroxy-3-methyl-butyric acid" "butyricacid, 4,4,4-trifluoro-3-hydroxy-3-methyl- (6ci,7ci,8ci);4,4,4-trifluoro-3-hydroxy-3-methylbutanoic acid;4,4,4-trifluoro-3-hydroxy-3-methylbutyric acid;3-(trifluoromethyl)-3-hydroxybutyric acid;" );
+gibbsFormation
+{
+    dHf_298   -1254860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     472.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1068260.0
+    phase     gas;
+}

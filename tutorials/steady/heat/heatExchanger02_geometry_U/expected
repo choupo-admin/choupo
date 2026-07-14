@@ -1,4 +1,5 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 stream  coldOut                F                2.22027777778      1e-4
 stream  coldTube               F                2.22027777778      1e-4
@@ -7,27 +8,32 @@ stream  hotShell               F                1.66527777778      1e-4
 kpi     hx                     C_cold           167630.972222      1e-4
 kpi     hx                     C_hot            125728.472222      1e-4
 kpi     hx                     C_r              0.750031277368     1e-4
-kpi     hx                     LMTD             16.6145972965      1e-4
-kpi     hx                     NTU              0.915730495847     1e-4
-kpi     hx                     Nu_shell         201.971345539      1e-4
-kpi     hx                     Nu_tube          158.031052582      1e-4
+kpi     hx                     LMTD             15.5339177262      1e-4
+kpi     hx                     NTU              1.26058061182      1e-4
+kpi     hx                     Nu_shell         171.621364606      1e-4
+kpi     hx                     Nu_tube          287.732215939      1e-4
 kpi     hx                     Pr_shell         3.16405821902      1e-4
 kpi     hx                     Pr_tube          5.87094963164      1e-4
-kpi     hx                     Q                1912895.01341      1e-4
-kpi     hx                     Q_kW             1912.89501341      1e-4
-kpi     hx                     R_inner          0.000197276593016  1e-4
-kpi     hx                     R_outer          0.000174873217883  1e-4
+kpi     hx                     Q                2065604.42087      1e-4
+kpi     hx                     Q_kW             2065.60442087      1e-4
+kpi     hx                     R_inner          0.000108350146133  1e-4
+kpi     hx                     R_outer          0.000153060379604  1e-4
 kpi     hx                     R_wall           3.26515488161e-05  1e-4
-kpi     hx                     Re_shell         49542.7587976      1e-4
-kpi     hx                     Re_tube          23301.3162111      1e-4
+kpi     hx                     Re_shell         36846.9260866      1e-4
+kpi     hx                     Re_tube          46602.6324222      1e-4
 kpi     hx                     T_cold_in        300                1e-4
-kpi     hx                     T_cold_out       311.411345935      1e-4
+kpi     hx                     T_cold_out       312.322331568      1e-4
 kpi     hx                     T_hot_in         330                1e-4
-kpi     hx                     T_hot_out        314.785506579      1e-4
-kpi     hx                     U                2470.34743337      1e-4
-kpi     hx                     UA               115133.39621       1e-4
+kpi     hx                     T_hot_out        313.57090972       1e-4
+kpi     hx                     U                3400.64253957      1e-4
+kpi     hx                     UA               158490.874436      1e-4
 kpi     hx                     area             46.6061553345      1e-4
-kpi     hx                     controllingResistance 0                  1e-4
-kpi     hx                     effectiveness    0.507149780687     1e-4
-kpi     hx                     h_inner          6019.46729637      1e-4
-kpi     hx                     h_outer          5718.42853985      1e-4
+kpi     hx                     controllingResistanceCode 1                  1e-4
+kpi     hx                     dP_shell_kPa     49.9824736332      1e-4
+kpi     hx                     dP_tube_kPa      65.5169820962      1e-4
+kpi     hx                     effectiveness    0.547636342657     1e-4
+kpi     hx                     f_shell          0.241288921129     1e-4
+kpi     hx                     f_tube           0.00537680738626   1e-4
+kpi     hx                     h_inner          10959.8375488      1e-4
+kpi     hx                     h_outer          6533.369397        1e-4
+kpi     hx                     nBaffles         15                 1e-4

@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetradecyl isocyanate  (C15H29NO, CAS 4877-14-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetradecylIsocyanate;
+formula     C15H29NO;
+CAS         4877-14-9;
+InChIKey    CSMJMAQKBKGDQX-UHFFFAOYSA-N;
+MW          239.403;      // g/mol [origin=calculated method=formula-sum]
+Tc          777.09;      // K   [origin=predictive method=joback]
+Pc          14.977;      // bar [origin=predictive method=joback]
+omega       0.8723;      // -   [origin=predictive method=lee-kesler]
+Tb          609.47;      // K   [origin=predictive method=joback]
+HvapTb      58516.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 13; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH3; count 1; } { group CH2; count 13; } { group dCd; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-isocyanatotetradecane" "1-tetradecyl isocyanate" "tetradecane,1-isocyanato-" "isocyanicacid, tetradecyl ester (6ci,7ci,8ci); myristyl isocyanate; tetradecylisocyanate; n-tetradecyl isocyanate" );
+// formation datum unavailable (element entropy missing): dHf_298=-358340.0 dGf_298=None

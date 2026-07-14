@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis[2-(2-methoxyethoxy)ethyl] (z)-but-2-enedioate;hexadec-1-ene;tetradec-1-ene  (C44H84O8, CAS 135397-33-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis22MethoxyethoxyEthylZBut2EnedioateHexadec1EneTetradec1Ene;
+formula     C44H84O8;
+CAS         135397-33-0;
+InChIKey    SOOKDDAKMROITD-LWFKIUJUSA-N;
+MW          741.148;      // g/mol [origin=calculated method=formula-sum]
+Tc          2195.43;      // K   [origin=predictive method=joback]
+Pc          3.258;      // bar [origin=predictive method=joback]
+omega       -0.5698;      // -   [origin=predictive method=lee-kesler]
+Tb          1412.76;      // K   [origin=predictive method=joback]
+HvapTb      137198.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (177.182 3.38908 -0.0010366 -1.732e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 30; } { group CH2=CH; count 2; } { group CH=CH; count 1; } { group CH3O; count 2; } { group CH2O; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 32; } { group dCH2; count 2; } { group dCH; count 4; } { group O; count 4; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-butenedioic acid (2z)-, 1,4-bis(2-(2-methoxyethoxy)ethyl) ester, polymer with 1-hexadecene and 1-tetradecene" "2-butenedioic acid (2z)-, bis(2-(2-methoxyethoxy)ethyl) ester, polymer with 1-hexadecene and 1-tetradecene" );
+gibbsFormation
+{
+    dHf_298   -1970090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     2217.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-674760.0
+    phase     gas;
+}

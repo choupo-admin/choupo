@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (r)-di-2-naphthylprolinol  (C25H23NO, CAS 130798-48-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        rDi2Naphthylprolinol;
+formula     C25H23NO;
+CAS         130798-48-0;
+InChIKey    LNUDNNFEXRHHGY-XMMPIXPASA-N;
+MW          353.465;      // g/mol [origin=calculated method=formula-sum]
+Tc          1289.30;      // K   [origin=predictive method=joback]
+Pc          21.042;      // bar [origin=predictive method=joback]
+omega       1.2814;      // -   [origin=predictive method=lee-kesler]
+Tb          1025.66;      // K   [origin=predictive method=joback]
+HvapTb      102798.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-184.68 2.3727 -0.00180696 5.38e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group ACH; count 14; } { group AC; count 6; } { group OH; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 14; } { group dC_ring; count 6; } { group OH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dinaphthalen-2-yl-[(2r)-pyrrolidin-2-yl]methanol" "(r)-(+)-" "a," "a-di(2-naphthyl)-2-pyrrolidinemethanol" "(r)-(+)-lmdi(2-naphthyl)-2-pyrrolidinemethanol" "bis(naphthalen-2-yl)(2r)-pyrrolidin-2-ylmethanol" "(r)-(+)-di-(2-naphthyl)-2-pyrrolidinemethanol" "(r)-(+)-alpha,alpha-di-(2-naphthyl)-2-pyrrolidinemethanol" "2-pyrrolidinemethanol, alpha,alpha-di-2-naphthalenyl-, (2r)-" );
+gibbsFormation
+{
+    dHf_298   210240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     642.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=568760.0
+    phase     gas;
+}

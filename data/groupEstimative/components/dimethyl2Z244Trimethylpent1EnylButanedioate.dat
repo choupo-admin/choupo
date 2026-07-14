@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethyl 2-[(z)-2,4,4-trimethylpent-1-enyl]butanedioate  (C14H24O4, CAS 69929-08-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethyl2Z244Trimethylpent1EnylButanedioate;
+formula     C14H24O4;
+CAS         69929-08-4;
+InChIKey    QYUHOAGZCHWQNR-YFHOEESVSA-N;
+MW          256.342;      // g/mol [origin=calculated method=formula-sum]
+Tc          826.85;      // K   [origin=predictive method=joback]
+Pc          16.418;      // bar [origin=predictive method=joback]
+omega       0.7737;      // -   [origin=predictive method=lee-kesler]
+Tb          636.73;      // K   [origin=predictive method=joback]
+HvapTb      59926.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.952 1.37592 -0.0008097 1.618e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group CH=C; count 1; } { group CH2COO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group dCH; count 1; } { group dC; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butanedioic acid, (2,4,4-trimethylpentyl)-, dimethyl ester, didehydro deriv." "butanedioic acid, 2-(2,4,4-trimethylpentyl)-, 1,4-dimethyl ester, didehydro deriv." );
+gibbsFormation
+{
+    dHf_298   -873450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     744.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-481670.0
+    phase     gas;
+}

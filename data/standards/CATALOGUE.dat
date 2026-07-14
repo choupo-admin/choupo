@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  data/standards/CATALOGUE.dat -- the identity of THIS curated catalogue release.
+
+  `standard` on any record means "curated and distributed in the release named
+  here" -- origin, not universal truth.  choupo-import stamps every copied
+  record with this release-set id; a case's snapshot then records exactly which
+  Choupo catalogue it was frozen from.  Bump this when cutting a new release.
+\*---------------------------------------------------------------------------*/
+
+catalogue
+{
+    release     Choupo-2607;
+    curatedAt   "2026-07";
+}

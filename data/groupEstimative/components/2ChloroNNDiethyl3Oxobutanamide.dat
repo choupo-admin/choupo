@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloro-n,n-diethyl-3-oxobutanamide  (C8H14ClNO2, CAS 15844-87-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2ChloroNNDiethyl3Oxobutanamide;
+formula     C8H14ClNO2;
+CAS         15844-87-8;
+InChIKey    SEWWCLPPLUYJOT-UHFFFAOYSA-N;
+MW          191.655;      // g/mol [origin=calculated method=formula-sum]
+Tc          732.50;      // K   [origin=predictive method=joback]
+Pc          27.965;      // bar [origin=predictive method=joback]
+omega       0.7515;      // -   [origin=predictive method=lee-kesler]
+Tb          539.81;      // K   [origin=predictive method=joback]
+HvapTb      52934.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.852 0.84446 -0.0005102 1.1182e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH3CO; count 1; } { group CHCl; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group Cl; count 1; } { group CdO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-n,n-diethyl-3-oxidanylidene-butanamide" "2-chloro-nn-diethylacetoacetamide" "2-chloro-n,n-diethylacetoacetamide" "butanamide, 2-chloro-n,n-diethyl-3-oxo-" "2-chloro-n,n-diethyl-3-oxobutyramide" "acetoacetamide, 2-chloro-n,n-diethyl-" "alpha-chloroacetoacetic acid diethylamide" "alpha-chloracetessigsaeurediaethylamid [german]" "alpha-chloracetessigsaeurediaethylamid" "butanamide,2-chloro-n,n-diethyl-3-oxo-" "butanamide, 2-chloro-n,n-diethyl-3-oxo- (9ci)" "acetoacetamide,2-chloro-n,n-diethyl- (7ci,8ci); n,n-diethyl-2-chloroacetoacetamide; a-chloro-n,n-diethylacetoacetamide" );
+gibbsFormation
+{
+    dHf_298   -387100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     560.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-144950.0
+    phase     gas;
+}

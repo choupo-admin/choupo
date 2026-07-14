@@ -1,0 +1,58 @@
+# Methyl acetate synthesis by reactive distillation -- VALIDATION PROFILE
+#
+# SOURCE PAPER:
+#   Tim Poepken, Sven Steinigeweg, Juergen Gmehling,
+#   "Synthesis and Hydrolysis of Methyl Acetate by Reactive Distillation
+#    Using Structured Catalytic Packings: Experiments and Simulation",
+#   Industrial & Engineering Chemistry Research, Vol. 40, No. 6 (2001), pp. 1566-1574.
+#   DOI: 10.1021/ie0007419   (Manuscript ID IE0007419; received 2000-08-10, accepted 2001-01-07)
+#   Carl von Ossietzky Universitaet Oldenburg, Technische Chemie, D-26111 Oldenburg, Germany.
+#
+# REACTION:  MeOH (methanol) + HOAc (acetic acid)  <=>  MeOAc (methyl acetate) + water
+# CATALYST:  Amberlyst-15 acidic ion-exchange resin, immobilised in Katapak-S structured packing (Sulzer Chemtech).
+#
+# RUN:  S-1 (two-feed synthesis setup, Figure 1 middle), data from TABLE 2 (p.1572).
+#       Liquid-phase composition PROFILE for this run is plotted in FIGURE 6 (p.1571);
+#       per-stage interior mole fractions exist ONLY in that figure (read approximately, flagged source=Fig6_approx).
+#       Column: 50 mm i.d. glass column. N = 25 theoretical stages, stage 1 = condenser, stage 25 = reboiler.
+#       Sections top->bottom: 1 m Sulzer BX (MeOAc enrichment) | 1 m Sulzer BX (extractive distillation) |
+#                             2 m Katapak-S (REACTIVE ZONE = stages 11-19) | 1 m Sulzer BX (MeOH stripping).
+#       BX = 5 theoretical stages/m; Katapak-S = 4 theoretical stages/m.
+#       FEEDS: HOAc (glacial, 99.5%) above reactive zone near stage 11; MeOH (99.5%) below reactive zone near stage 19.
+#
+# RUN S-1 CONDITIONS (Table 2):
+#   reflux ratio = 2.1 ; P_top(stage1) = 1017 mbar ; dP = 2.98 mbar ; Q_reb = 1105 W ;
+#   F_HOAc = 30.8 mol/h ; F_MeOH = 32.2 mol/h ; molar ratio HOAc:MeOH = 0.96 ;
+#   Distillate D = 30.1 mol/h ; methanol conversion X = 87.6 % ;
+#   liquid load above reactive zone wL,11 = 3.5 m/h ; below wL,19 = 2.1 m/h.
+#
+# TEMPERATURE axis (Table 2): only stages 1(liquid reflux), 2(vapour to condenser),
+#   11(liquid above reactive zone), 15(liquid mid reactive zone), 25(reboiler liquid & vapour) are reported.
+# COMPOSITION axis (Table 2): only DISTILLATE (x_D, top product) and BOTTOMS (x_B, reboiler) are tabulated exactly.
+#
+# height_m = approximate cumulative packed height from top of packing (DERIVED from section lengths; not in paper).
+# T_K = temperature converted from Celsius (Table 2 reports Celsius). x_* = liquid mole fractions.
+# Empty cell = not reported at that location.
+#
+position_or_stage,height_m,T_K,x_MeOH,x_HOAc,x_MeOAc,x_water,source
+distillate_stage1_top,0.0,328.05,0.107,0.000,0.877,0.016,Table2_xD_and_theta1L
+stage2_vapour,,328.85,,,,,Table2_theta2V
+HOAc_feed_~stage11,2.0,294.25,0.000,0.997,0.000,0.003,Table2_feedT(glacial_acetic_99.5pct_~0.3wt%water)
+stage11_above_reactive,2.0,338.75,,,,,Table2_theta11L
+stage15_mid_reactive,3.0,338.55,,,,,Table2_theta15L
+MeOH_feed_~stage19,4.0,293.25,0.995,0.000,0.000,0.005,Table2_feedT(methanol_99.5pct)
+bottoms_stage25_reboiler_liquid,5.0,356.25,0.070,0.104,0.002,0.824,Table2_xB_and_theta25L
+stage25_reboiler_vapour,5.0,364.85,,,,,Table2_theta25V
+#
+# --- Interior liquid-phase composition PROFILE, FIGURE 6 (read from plot, APPROXIMATE, +/-0.05) ---
+# Legend Fig 6: triangle=MeOAc, square=MeOH, diamond=H2O, circle=HOAc. x-axis 0..1, y-axis stage 1(top)..25(bottom).
+stage1_fig,0.0,,0.11,0.00,0.87,0.02,Fig6_approx
+stage5_fig,1.0,,0.20,0.00,0.78,0.02,Fig6_approx
+stage9_fig,1.8,,0.30,0.00,0.65,0.05,Fig6_approx
+stage11_fig_topReactive,2.0,,0.30,0.05,0.45,0.20,Fig6_approx
+stage13_fig,2.5,,0.25,0.10,0.30,0.35,Fig6_approx
+stage15_fig_midReactive,3.0,,0.20,0.12,0.18,0.50,Fig6_approx
+stage17_fig,3.5,,0.15,0.12,0.08,0.65,Fig6_approx
+stage19_fig_botReactive,4.0,,0.12,0.12,0.03,0.73,Fig6_approx
+stage22_fig,4.5,,0.09,0.11,0.01,0.79,Fig6_approx
+stage25_fig,5.0,,0.07,0.10,0.00,0.83,Fig6_approx

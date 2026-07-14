@@ -73,4 +73,14 @@ namespace Choupo {
 
 void emitResultJson(std::ostream& os, const SimulationResult& r);
 
+// THE JSON string escaper (forum #75-2): one implementation, used by every
+// result emitter in every binary.  A human justification with quotes or a
+// newline must never corrupt the machine stream.
+std::string jsonEscape(const std::string& s);
+
+// ONE emitter of the advisories JSON array (forum #77-6) -- both binaries'
+// result streams consume this; two copies of a schema is how they diverge.
+struct Advisory;   // fwd (core/Advisory.H)
+std::string advisoriesJson(const std::vector<Advisory>& advs);
+
 } // namespace Choupo

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-butene, 2-bromo-  (C4H7Br, CAS 3017-71-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Butene2Bromo;
+formula     C4H7Br;
+CAS         3017-71-8;
+InChIKey    UILZQFGKPHAAOU-ONEGZZNKSA-N;
+MW          135.004;      // g/mol [origin=calculated method=formula-sum]
+Tc          561.56;      // K   [origin=predictive method=joback]
+Pc          45.902;      // bar [origin=predictive method=joback]
+omega       0.2677;      // -   [origin=predictive method=lee-kesler]
+Tb          361.32;      // K   [origin=predictive method=joback]
+HvapTb      30971.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.43 0.44194 -0.0003513 1.197e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH=C; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH; count 1; } { group dC; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e)-2-bromanylbut-2-ene" "trans-2-bromo-2-butene" "2-bromo-2-butene" "(z)-2-bromo-2-butene" "2-bromobut-2-ene" "1-methyl-1-propenyl bromide" "(e)-2-bromobut-2-ene" "(e)-2-bromo-but-2-ene" "2-butene, 2-bromo-, (z)-" "2-bromo-2-butene (cis)" "(2e)-2-bromobut-2-ene" "cis,trans-2-bromo-2-butene" );
+gibbsFormation
+{
+    dHf_298   7870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     352.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=68790.0
+    phase     gas;
+}

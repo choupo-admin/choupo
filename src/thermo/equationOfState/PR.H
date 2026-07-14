@@ -100,6 +100,7 @@ public:
     std::size_t n() const override { return n_; }
 
     sVector phi(scalar T_K, scalar P_Pa, const sVector& y) const override;
+    sVector phiLiquid(scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  molarVolume(scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  Z(scalar T_K, scalar P_Pa, const sVector& y) const override;
 
@@ -136,7 +137,7 @@ private:
                   std::vector<std::vector<scalar>>* aij_out = nullptr) const;
 
     // Real vapour root of the PR cubic; Cardano with branch selection.
-    scalar cardano_vapourRoot(scalar A, scalar B) const;
+    scalar cardano_root(scalar A, scalar B, bool liquid) const;
 
     std::size_t                            n_;
     std::vector<PureParams>                pure_;

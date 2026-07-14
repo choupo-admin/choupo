@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perhydrophenalene  (C13H22, CAS 2935-07-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perhydrophenalene;
+formula     C13H22;
+CAS         2935-07-1;
+InChIKey    QGUYWRASKKWRQG-UHFFFAOYSA-N;
+MW          178.319;      // g/mol [origin=calculated method=formula-sum]
+Tc          758.10;      // K   [origin=predictive method=joback]
+Pc          24.777;      // bar [origin=predictive method=joback]
+omega       0.3793;      // -   [origin=predictive method=lee-kesler]
+Tb          529.67;      // K   [origin=predictive method=joback]
+HvapTb      44650.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-174.2 1.6266 -0.001103 2.936e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group CH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 9; } { group CH_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,3a,4,5,6,6a,7,8,9,9a,9b-dodecahydro-1h-phenalene" "dodecahydro-1h-phenalene" "1h-phenalene,dodecahydro-" "1h-phenalene, dodecahydro-" "perhydrophenalene, (3a.alpha., 6a.alpha., 9a.alpha., 9b.beta.)-" );
+gibbsFormation
+{
+    dHf_298   -138230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     428.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=184720.0
+    phase     gas;
+}

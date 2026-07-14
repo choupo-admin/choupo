@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-methoxy-12a-methyl-3,4,4a,4b,5,6,10b,11,12,12a-decahydrochrysen-2(1h)-one  (C20H26O2, CAS 1232-88-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8Methoxy12aMethyl344a4b5610b111212aDecahydrochrysen21hOne;
+formula     C20H26O2;
+CAS         1232-88-8;
+InChIKey    TUNMWZWFKFYHNV-UHFFFAOYSA-N;
+MW          298.426;      // g/mol [origin=calculated method=formula-sum]
+Tc          1064.36;      // K   [origin=predictive method=joback]
+Pc          18.232;      // bar [origin=predictive method=joback]
+omega       0.7717;      // -   [origin=predictive method=lee-kesler]
+Tb          812.68;      // K   [origin=predictive method=joback]
+HvapTb      69166.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-168.81 2.16374 -0.00160492 5.127e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 2; } { group C; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group ACCH; count 1; } { group CH2CO; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-methoxy-12a-methyl-1,3,4,4a,4b,5,6,10b,11,12-decahydrochrysen-2-one" "d-homoestrone methyl ether" "d-homoestra-1,3,5(10)-trien-17a-one, 3-methoxy-" "d-homoestra-1,3,5(10)-trien-17a-one,3-methoxy-" "d-homoestra-1,3,5(10)-trien-17a-one, 3-methoxy-, (8alpha)-" "d-homoestra-1,3,5(10)-trien-17a-one,3-methoxy-,(8.alpha.)-" );
+gibbsFormation
+{
+    dHf_298   -317640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     564.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=115830.0
+    phase     gas;
+}

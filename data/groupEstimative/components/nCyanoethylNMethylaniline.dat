@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-cyanoethyl-n-methylaniline  (C10H12N2, CAS 94-34-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nCyanoethylNMethylaniline;
+formula     C10H12N2;
+CAS         94-34-8;
+InChIKey    IXXLKTZOCSRXEM-UHFFFAOYSA-N;
+MW          160.22;      // g/mol [origin=calculated method=formula-sum]
+Tc          789.52;      // K   [origin=predictive method=joback]
+Pc          28.475;      // bar [origin=predictive method=joback]
+omega       0.6185;      // -   [origin=predictive method=lee-kesler]
+Tb          569.60;      // K   [origin=predictive method=joback]
+HvapTb      52651.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-33.798 0.93362 -0.000633 1.644e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH3N; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group N; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[methyl(phenyl)amino]propanenitrile" "n-(2-cyanoethyl)-n-methylaniline" "n-methyl-n-(2-cyanoethyl)aniline" "propanenitrile, 3-(methylphenylamino)-" "3-(methyl(phenyl)amino)propanenitrile" "3-(n-methyl-n-phenylamino)propionitrile" "3-(n-methylanilino)propionitrile" "3-(n-methylanilino)propanenitrile" ".beta.-n-methylanilinopropionitrile" "3-(methylphenylamino)propanenitrile" "3-(n-methylanilino)propiononitrile" "beta-(n-methylanilino)propionitrile" );
+gibbsFormation
+{
+    dHf_298   219210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     461.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=389690.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetraphene-7,12-dicarbaldehyde  (C20H12O2, CAS 19926-22-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C20H12O2 (delta C+2H+2O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        tetraphene712Dicarbaldehyde;
+formula     C20H12O2;
+CAS         19926-22-8;
+InChIKey    VUJRBHIBORKESK-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          284.314;      // g/mol [origin=calculated method=formula-sum]
+Tc          970.92;      // K   [origin=predictive method=joback]
+Pc          23.935;      // bar [origin=predictive method=joback]
+omega       0.6492;      // -   [origin=predictive method=lee-kesler]
+Tb          713.58;      // K   [origin=predictive method=joback]
+HvapTb      65212.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-125.33 1.592 -0.0015434 5.894e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 8; } { group CHO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 10; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzo[a]anthracene-7,12-dicarbaldehyde" "7,12-diformylbenz(a)anthracene" "benz(a)anthracene-7,12-dicarboxaldehyde" "benz[a]anthracene-7,12-dicarboxaldehyde" "7,12-diformylbenz[a]anthracene" );
+gibbsFormation
+{
+    dHf_298   460630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     638.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=599280.0
+    phase     gas;
+}

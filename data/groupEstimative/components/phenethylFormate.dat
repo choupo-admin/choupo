@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenethyl formate  (C9H10O2, CAS 104-62-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H10O2 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        phenethylFormate;
+formula     C9H10O2;
+CAS         104-62-1;
+InChIKey    IKDIJXDZEYHZSD-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          150.177;      // g/mol [origin=calculated method=formula-sum]
+Tc          614.31;      // K   [origin=predictive method=joback]
+Pc          33.067;      // bar [origin=predictive method=joback]
+omega       0.2810;      // -   [origin=predictive method=lee-kesler]
+Tb          408.62;      // K   [origin=predictive method=joback]
+HvapTb      35531.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-58.698 0.788 -0.00065 2.181e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group HCOO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenylethyl methanoate" "2-phenylethyl formate" "phenethyl alcohol, formate" "formic acid, 2-phenylethyl ester" "phenylethyl formate" "2-phenethyl formate" "benzylcarbinyl formate" "benzeneethanol, formate" "2-phenethyl methanoate" "benzylcarbinyl methanoate" "formic acid, phenethyl ester" "phenethyl formate (natural)" );
+gibbsFormation
+{
+    dHf_298   83890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     583.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=181270.0
+    phase     gas;
+}

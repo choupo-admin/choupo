@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-Methyldecalin  (C11H20, CAS 2958-76-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methyldecalin;
+formula     C11H20;
+CAS         2958-76-1;
+InChIKey    GREARFRXIFVLGB-UHFFFAOYSA-N;
+MW          152.281;      // g/mol [origin=calculated method=formula-sum]
+Tc          695.68;      // K   [origin=predictive method=joback]
+Pc          26.380;      // bar [origin=predictive method=joback]
+omega       0.3214;      // -   [origin=predictive method=lee-kesler]
+Tb          477.17;      // K   [origin=predictive method=joback]
+HvapTb      40285.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-122.14 1.28572 -0.000774 1.705e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group CH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-1,2,3,4,4a,5,6,7,8,8a-decahydronaphthalene" "2-methyldecahydronaphthalene" "decahydro-2-methylnaphthalene" "naphthalene, decahydro-2-methyl-" "naphthalene,decahydro-2-methyl-" "trans-decalin, 2-methyl-" "2-methyldecahydronaphthalene #" "3-methylbicyclo[4.4.0]decane" "Naphthalene, decahydro-2-methyl-, (2alpha,4aalpha,8abeta)-" "2-methyl-decahydronaphthalene" "AS-76698" "NS00096217" );
+gibbsFormation
+{
+    dHf_298   -169750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     441.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=107130.0
+    phase     gas;
+}

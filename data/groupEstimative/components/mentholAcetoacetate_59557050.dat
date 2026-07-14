@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: menthol acetoacetate  (C14H24O3, CAS 59557-05-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        mentholAcetoacetate;
+formula     C14H24O3;
+CAS         59557-05-0;
+InChIKey    QSVQIPXQOCAWHP-UHTWSYAYSA-N;
+MW          240.343;      // g/mol [origin=calculated method=formula-sum]
+Tc          844.32;      // K   [origin=predictive method=joback]
+Pc          18.154;      // bar [origin=predictive method=joback]
+omega       0.7332;      // -   [origin=predictive method=lee-kesler]
+Tb          641.78;      // K   [origin=predictive method=joback]
+HvapTb      60334.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.479 1.32608 -0.0005979 4.196e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 4; } { group CH3CO; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 3; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(1s,2r,5s)-5-methyl-2-propan-2-yl-cyclohexyl] 3-oxidanylidenebutanoate" "menthyl acetoacetate" "butanoic acid, 3-oxo-, 5-methyl-2-(1-methylethyl)cyclohexyl ester, (1r-(1-alpha,2-beta,5-alpha))-" "butanoic acid, 3-oxo-, 5-methyl-2-(1-methylethyl)cyclohexyl ester, (1theta-(1alpha,2beta,5alpha))-" "[(1s,2r,5s)-5-methyl-2-propan-2-ylcyclohexyl] 3-oxobutanoate" );
+gibbsFormation
+{
+    dHf_298   -753790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     654.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-365700.0
+    phase     gas;
+}

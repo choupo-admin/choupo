@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,2,2-tetrachloroethane  (C2H2Cl4, CAS 79-34-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1122Tetrachloroethane;
+formula     C2H2Cl4;
+CAS         79-34-5;
+InChIKey    QPFMBZIOSGYJDE-UHFFFAOYSA-N;
+MW          167.838;      // g/mol [origin=calculated method=formula-sum]
+Tc          605.91;      // K   [origin=predictive method=joback]
+Pc          42.056;      // bar [origin=predictive method=joback]
+omega       0.2796;      // -   [origin=predictive method=lee-kesler]
+Tb          394.20;      // K   [origin=predictive method=joback]
+HvapTb      36810.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (49.27 0.2328 -0.000173 4.76e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CHCl2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 2; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2,2-tetrakis(chloranyl)ethane" "s-tetrachloroethane" "acetylene tetrachloride" "ethane, 1,1,2,2-tetrachloro-" "bonoform" "cellon" "tetrachlorethane" "westron" "1,1,2,2-tetrachlorethan" "tce (ambiguous)" "sym-tetrachloroethane" "1,1-dichloro-2,2-dichloroethane" );
+gibbsFormation
+{
+    dHf_298   -158130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     348.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-86640.0
+    phase     gas;
+}

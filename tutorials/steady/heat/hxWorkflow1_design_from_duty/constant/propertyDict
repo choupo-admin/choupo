@@ -1,0 +1,7 @@
+// Water on both sides; the IF97 pure-fluid override supplies rho, mu and
+// lambda for the geometry-mode convective correlations on its own datum.
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }
+pureFluids { water { method IF97; } }

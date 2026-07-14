@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bistratene a  (C40H68N2O8, CAS 115566-02-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bistrateneA;
+formula     C40H68N2O8;
+CAS         115566-02-4;
+InChIKey    HXZRMADPDYFMEB-MLTUFRGDSA-N;
+MW          704.99;      // g/mol [origin=calculated method=formula-sum]
+Tc          2508.92;      // K   [origin=predictive method=joback]
+Pc          6.121;      // bar [origin=predictive method=joback]
+omega       -0.3052;      // -   [origin=predictive method=lee-kesler]
+Tb          1684.34;      // K   [origin=predictive method=joback]
+HvapTb      181804.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-203.982 4.55664 -0.0029955 7.9068e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 7; } { group CH2; count 12; } { group CH; count 7; } { group C; count 1; } { group CH=CH; count 1; } { group CH=C; count 1; } { group OH; count 2; } { group CH2CO; count 1; } { group CH-O; count 3; } { group CONHCH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 7; } { group CH2; count 8; } { group CH; count 4; } { group dCH; count 3; } { group dC; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 6; } { group C_ring; count 1; } { group OH; count 2; } { group O_ring; count 3; } { group CdO; count 3; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-[3-[8-[(e)-3,5-dimethyl-6-oxidanyl-hept-4-enyl]-3-methyl-1,7-dioxaspiro[5.5]undecan-2-yl]propyl]-2-methyl-4-[2-[3-methyl-6-[(z)-2-oxidanylidenepent-3-enyl]oxan-2-yl]ethanoylamino]-3-oxidanyl-butanamide" "bistramide a" "2,17,28-trioxa-13,26-diazatricyclo(14.7.4.16,9)octacosane-14,25-dione, 6-hydroxy-18-(6-hydroxy-3,5-dimethyl-4-heptenyl)-8,15,23-trimethyl-3-(2-oxo-3-pentenyl)-" "2h-pyran-2-acetamide, tetrahydro-n-(2-hydroxy-4-((3-(8-(6-hydroxy-3,5-dimethyl-4-heptenyl)-3-methyl-1,7-dioxaspiro(5.5)undec-2-yl)propyl)amino)-3-methyl-4-oxobutyl)-3-methyl-6-(2-oxo-3-pentenyl)-" "3-hydroxy-n-[3-[4-[(e)-6-hydroxy-3,5-dimethylhept-4-enyl]-9-methyl-5,11-dioxaspiro[5.5]undecan-10-yl]propyl]-2-methyl-4-[[2-[3-methyl-6-[(z)-2-oxopent-3-enyl]oxan-2-yl]acetyl]amino]butanamide" );
+gibbsFormation
+{
+    dHf_298   -1493660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1556.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-262810.0
+    phase     gas;
+}

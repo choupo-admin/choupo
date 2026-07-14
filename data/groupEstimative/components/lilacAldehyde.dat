@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lilac aldehyde  (C10H16O2, CAS 81967-88-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lilacAldehyde;
+formula     C10H16O2;
+CAS         81967-88-6;
+InChIKey    YPZQHCLBLRWNMJ-LPEHRKFASA-N;
+MW          168.236;      // g/mol [origin=calculated method=formula-sum]
+Tc          721.72;      // K   [origin=predictive method=joback]
+Pc          28.566;      // bar [origin=predictive method=joback]
+omega       0.5115;      // -   [origin=predictive method=lee-kesler]
+Tb          511.10;      // K   [origin=predictive method=joback]
+HvapTb      46823.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-86.69 1.30834 -0.00113 4.232e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group CH2=CH; count 1; } { group CHO; count 1; } { group CH-O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group O_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r)-2-[(2s,5s)-5-ethenyl-5-methyl-oxolan-2-yl]propanal" "(2r)-2-[(2s,5s)-5-vinyl-5-methyl-oxolan-2-yl]propanal" "(2r,2's,5's)-lilac aldehyde" "lilac aldehyde, (2r,2's,5's)-" "(2r)-2-[(2s,5s)-5-ethenyl-5-methyloxolan-2-yl]propanal" "(2r)-2-[(2s,5s)-5-ethenyl-5-methyltetrahydrofuran-2-yl]propanal" "(2r)-2-[(2s,5s)-5-methyl-5-vinyltetrahydrofuran-2-yl]propanal" "2-furanacetaldehyde, 5-ethenyltetrahydro-alpha,5-dimethyl-, (2s-(2alpha(s*),5beta))-" "2-furanacetaldehyde, 5-ethenyltetrahydro-alpha,5-dimethyl-, (alphar,2s,5s)-" );
+gibbsFormation
+{
+    dHf_298   -291780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     475.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-43570.0
+    phase     gas;
+}

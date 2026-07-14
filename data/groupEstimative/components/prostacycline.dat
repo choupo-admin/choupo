@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: prostacycline  (C20H32O5, CAS 61849-14-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        prostacycline;
+formula     C20H32O5;
+CAS         61849-14-7;
+InChIKey    KAQKFAOMNZTLHT-UHFFFAOYSA-N;
+MW          352.471;      // g/mol [origin=calculated method=formula-sum]
+Tc          1272.05;      // K   [origin=predictive method=joback]
+Pc          15.488;      // bar [origin=predictive method=joback]
+omega       1.3405;      // -   [origin=predictive method=lee-kesler]
+Tb          1037.06;      // K   [origin=predictive method=joback]
+HvapTb      115055.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-86.403 2.19762 -0.001476 3.959e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 9; } { group CH; count 4; } { group CH=CH; count 1; } { group CH=C; count 1; } { group OH; count 2; } { group CH-O; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group CH; count 1; } { group dCH; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 4; } { group dC_ring; count 1; } { group OH; count 2; } { group O_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-[5-oxidanyl-4-(3-oxidanyloct-1-enyl)-3,3a,4,5,6,6a-hexahydrocyclopenta[b]furan-2-ylidene]pentanoic acid" "prostaglandin i2" "pg-i2" "prostacyclin sodium salt" "agn-pc-00iyp4" "5-[5-hydroxy-4-(3-hydroxyoct-1-enyl)-3,3a,4,5,6,6a-hexahydrocyclopenta[b]furan-2-ylidene]pentanoic acid" "(5z)-5-[(3ar,4r)-5-hydroxy-4-(3-hydroxyoct-1-enyl)-3,3a,4,5,6,6a-hexahydrocyclopenta[b]furan-2-ylidene]pentanoic acid" );
+gibbsFormation
+{
+    dHf_298   -962290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     768.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-381030.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chloromethyl 4-chlorononanoate  (C10H18Cl2O2, CAS 80418-73-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chloromethyl4Chlorononanoate;
+formula     C10H18Cl2O2;
+CAS         80418-73-1;
+InChIKey    COADCZUXYCMGLU-UHFFFAOYSA-N;
+MW          241.152;      // g/mol [origin=calculated method=formula-sum]
+Tc          744.08;      // K   [origin=predictive method=joback]
+Pc          19.948;      // bar [origin=predictive method=joback]
+omega       0.7286;      // -   [origin=predictive method=lee-kesler]
+Tb          561.04;      // K   [origin=predictive method=joback]
+HvapTb      53643.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (43.307 0.91852 -0.0004696 6.82e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH2COO; count 1; } { group CH2Cl; count 1; } { group CHCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group CH; count 1; } { group Cl; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "chloromethyl 4-chloranylnonanoate" "4-chlorononanoic acid, chloromethyl ester" "nonanoic acid, 4-chloro-, chloromethyl ester" );
+gibbsFormation
+{
+    dHf_298   -603770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     654.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-303350.0
+    phase     gas;
+}

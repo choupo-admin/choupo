@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------*\
+  process02_with_design / constant/thermoPackage
+
+  The esterification quartet: ethanol + aceticAcid (the 50/50 feed the CSTR
+  converts) -> ethylAcetate + water; heater then flash split the volatiles
+  overhead.  Same flowsheet as process02_reactor_hx_flash — this variant
+  adds the full report chain (balances + sizing + Guthrie costing).  Ideal
+  Raoult + idealGas: the lesson is the post-processing chain, not VLE
+  accuracy — a 4-component NRTL would need all 6 binary pairs.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water  aceticAcid  ethylAcetate );
+
+// Ideal liquid (Raoult): reactor + separation KINETICS demo, not a VLE-
+// accuracy demo; a 4-component NRTL would need all 6 binary pairs.
+activityModel    { model  ideal; }
+
+equationOfState  { model  idealGas; }

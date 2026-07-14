@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-acetylmorphine  (C19H21NO4, CAS 2784-73-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Acetylmorphine;
+formula     C19H21NO4;
+CAS         2784-73-8;
+InChIKey    JJGYGPZNTOPXGV-SSTWWWIQSA-N;
+MW          327.38;      // g/mol [origin=calculated method=formula-sum]
+Tc          1106.08;      // K   [origin=predictive method=joback]
+Pc          23.680;      // bar [origin=predictive method=joback]
+omega       1.1941;      // -   [origin=predictive method=lee-kesler]
+Tb          866.61;      // K   [origin=predictive method=joback]
+HvapTb      86774.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-228.69 2.65424 -0.00255906 9.964e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 3; } { group C; count 1; } { group CH=CH; count 1; } { group ACH; count 2; } { group AC; count 2; } { group ACCH2; count 1; } { group ACOH; count 1; } { group CH3COO; count 1; } { group CH-O; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group O_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(4r,4ar,7s,7ar,12bs)-3-methyl-9-oxidanyl-2,4,4a,7,7a,13-hexahydro-1h-4,12-methanobenzofuro[3,2-e]isoquinoline-7-yl] ethanoate" "6-o-monoacetylmorphine" "monoacetylmorphine" "morphine 6-acetate" "6-o-acetylmorphine" "o(sup 6)-monoacetylmorphine" "6-mam" "6-monoacetylmorphine" "7,8-didehydro-4,5alpha-epoxy-17-methylmorphinan-3,6alpha-diol 6-acetate" "morphinan-3,6-alpha-diol, 7,8-didehydro-4,5-alpha-epoxy-17-methyl-, 6-acetate" "morphinan-3,6-diol, 7,8-didehydro-4,5-epoxy-17-methyl-, (5alpha,6alpha)-, 6-acetate" "morphine 6-acetate hydrochloride" );
+gibbsFormation
+{
+    dHf_298   -430920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     428.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=33780.0
+    phase     gas;
+}

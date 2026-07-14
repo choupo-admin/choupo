@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 1-bromocyclohexanecarboxylate  (C8H13BrO2, CAS 3196-23-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl1Bromocyclohexanecarboxylate;
+formula     C8H13BrO2;
+CAS         3196-23-4;
+InChIKey    RNWRVPVPLQMTAP-UHFFFAOYSA-N;
+MW          221.094;      // g/mol [origin=calculated method=formula-sum]
+Tc          760.91;      // K   [origin=predictive method=joback]
+Pc          36.202;      // bar [origin=predictive method=joback]
+omega       0.4947;      // -   [origin=predictive method=lee-kesler]
+Tb          526.81;      // K   [origin=predictive method=joback]
+HvapTb      46522.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-86.38 1.16122 -0.0010018 3.686e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group C; count 1; } { group Br; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group C_ring; count 1; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 1-bromanylcyclohexane-1-carboxylate" "methyl 1-bromocyclohexane-1-carboxylate" "cyclohexanecarboxylicacid, 1-bromo-, methyl ester" "1-bromocyclohexanecarboxylicacid methyl ester;methyl 1-bromocyclohexanecarboxylate;" );
+gibbsFormation
+{
+    dHf_298   -429840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     608.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-260610.0
+    phase     gas;
+}

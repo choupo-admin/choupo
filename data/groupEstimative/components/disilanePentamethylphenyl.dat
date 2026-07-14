@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: disilane,pentamethylphenyl-  (C11H20Si2, CAS 1130-17-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C11H20Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        disilanePentamethylphenyl;
+formula     C11H20Si2;
+CAS         1130-17-2;
+InChIKey    IVLANTKDSMBTNH-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          208.451;      // g/mol [origin=calculated method=formula-sum]
+Tc          697.19;      // K   [origin=predictive method=joback]
+Pc          20.984;      // bar [origin=predictive method=joback]
+omega       0.2512;      // -   [origin=predictive method=lee-kesler]
+Tb          480.76;      // K   [origin=predictive method=joback]
+HvapTb      42944.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (40.62 0.5576 0.0002238 -2.892e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group ACH; count 5; } { group AC; count 1; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dimethyl-phenyl-trimethylsilyl-silane" "disilane, pentamethylphenyl-" "dimethyl-phenyl-trimethylsilylsilane" "1,1,1,2,2-pentamethyl-2-phenyldisilane" );
+gibbsFormation
+{
+    dHf_298   -257080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     731.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-55370.0
+    phase     gas;
+}

@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------*\
+  membrane04_spacer_schock_miquel / constant/thermoPackage
+
+  Water + NaCl seawater (35 g/L) again; here k_film is COMPUTED from the
+  spacer-channel hydraulics (Schock-Miquel Sherwood) instead of fixed.
+  The case is about hydrodynamics -> polarisation, not thermo: osmotic
+  pressure is the membrane op's van't Hoff term, and the ideal activity /
+  ideal-gas entries below are loader stubs the unit never consults.
+\*---------------------------------------------------------------------------*/
+
+components       ( water  NaCl );
+
+// Activity model is irrelevant for dilute aqueous NF/RO at v0.26:
+// the membrane unit op does not consult γ_i.  We set `ideal` to keep
+// the loader happy; v0.28+ adds a proper electrolyte activity model
+// for high-concentration brines.
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

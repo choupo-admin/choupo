@@ -1,0 +1,17 @@
+/*---------------------------------------------------------------------------*\
+  economics01_esterification_dcf / constant/thermoPackage
+
+  aceticAcid + ethanol react in the CSTR to ethylAcetate (the product the
+  DCF sells) + water; the flash then splits the crude ester.  Thermo is kept
+  at Raoult + ideal gas on purpose: the case's subject is the sizing ->
+  costing -> economics chain (CAPEX/COM_d/NPV/IRR), and an ideal split is
+  accurate enough to give the appraisal a physically sensible basis.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water  aceticAcid  ethylAcetate );
+
+// Ideal liquid (Raoult): reactor + separation KINETICS demo, not a VLE-
+// accuracy demo; a 4-component NRTL would need all 6 binary pairs.
+activityModel    { model  ideal; }
+
+equationOfState  { model  idealGas; }

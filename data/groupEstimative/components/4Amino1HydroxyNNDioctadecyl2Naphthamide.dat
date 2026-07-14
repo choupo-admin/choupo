@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-amino-1-hydroxy-n,n-dioctadecyl-2-naphthamide  (C47H82N2O2, CAS 65208-33-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Amino1HydroxyNNDioctadecyl2Naphthamide;
+formula     C47H82N2O2;
+CAS         65208-33-5;
+InChIKey    MNTWOZWDLYSWPQ-UHFFFAOYSA-N;
+MW          707.185;      // g/mol [origin=calculated method=formula-sum]
+Tc          2371.58;      // K   [origin=predictive method=joback]
+Pc          4.136;      // bar [origin=predictive method=joback]
+omega       -0.4797;      // -   [origin=predictive method=lee-kesler]
+Tb          1550.04;      // K   [origin=predictive method=joback]
+HvapTb      157900.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-82.346 4.57964 -0.0029605 7.7736e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 32; } { group ACH; count 5; } { group AC; count 3; } { group ACOH; count 1; } { group ACNH2; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 34; } { group dCH_ring; count 5; } { group dC_ring; count 5; } { group OH_phenol; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-azanyl-n,n-dioctadecyl-1-oxidanyl-naphthalene-2-carboxamide" "4-amino-1-hydroxy-n,n-dioctadecylnaphthalene-2-carboxamide" "2-naphthalenecarboxamide, 4-amino-1-hydroxy-n,n-dioctadecyl-" );
+gibbsFormation
+{
+    dHf_298   -797320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1879.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=438350.0
+    phase     gas;
+}

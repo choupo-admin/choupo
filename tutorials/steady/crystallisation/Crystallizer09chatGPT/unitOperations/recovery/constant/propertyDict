@@ -1,0 +1,16 @@
+/* recovery / constant/propertyDict -- F2 property context.
+
+   Inherits the plant context (components, eNRTL config, and the NRTL ethanol-water
+   parameter in propertyData/parameters/) and overrides ONLY the liquid method: NRTL
+   for the ethanol/water azeotrope, overriding the plant eNRTL.
+
+   The SELECTED liquid method defines the ACTIVE world.  `activity.NRTL` is molecular,
+   so the inherited salt chemistry (sylvite / ion speciation) stays AVAILABLE but
+   INACTIVE for this liquid -- it is not required by NRTL and never contaminates it.
+   Inheritance is explicit (`inherits`, a directory), never `#include`, never a symlink. */
+inherits "../../../constant";
+
+propertyMethods
+{
+    liquid activity.NRTL;
+}

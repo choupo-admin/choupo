@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methyl-3-oxetanemethanol  (C5H10O2, CAS 3143-02-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Methyl3Oxetanemethanol;
+formula     C5H10O2;
+CAS         3143-02-0;
+InChIKey    NLQMSBJFLQPLIJ-UHFFFAOYSA-N;
+MW          102.133;      // g/mol [origin=calculated method=formula-sum]
+Tc          634.60;      // K   [origin=predictive method=joback]
+Pc          49.944;      // bar [origin=predictive method=joback]
+omega       0.6950;      // -   [origin=predictive method=lee-kesler]
+Tb          444.38;      // K   [origin=predictive method=joback]
+HvapTb      46847.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-84.399 0.94302 -0.0009711 4.168e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 1; } { group OH; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group OH; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3-methyloxetan-3-yl)methanol" "3-hydroxymethyl-3-methyloxetane" "(3-methyl-3-oxetanyl)methanol" "3-methyl-3-oxethanemethanol" "2-(hydroxymethyl)-2-methyl-1,3-epoxypropane" "(3-methyloxetan-3-yl)methan-1-ol" "nlqmsbjflqplij-uhfffaoysa-" "3-hydroxymethyl-3-methyl-oxetane" "(3-methyl-oxetan-3-yl)-methanol" "bh781" "ht161" "3-(hydroxymethyl)-3-methyloxetane" );
+gibbsFormation
+{
+    dHf_298   -348880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     349.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-188560.0
+    phase     gas;
+}

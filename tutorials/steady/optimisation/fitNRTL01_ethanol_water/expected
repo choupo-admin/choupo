@@ -1,0 +1,21 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    fit_NRTL_ethanol_water chi2             1.04279            1e-4
+diag    fit_NRTL_ethanol_water chi2_reduced     0.14897            1e-4
+diag    fit_NRTL_ethanol_water cond_JtJ         3.55369e+11        1e-4
+diag    fit_NRTL_ethanol_water converged        1                  1e-4
+diag    fit_NRTL_ethanol_water corr_computed    1                  1e-4
+diag    fit_NRTL_ethanol_water dof              7                  1e-4
+diag    fit_NRTL_ethanol_water identifiable     0                  1e-4
+diag    fit_NRTL_ethanol_water invertible       1                  1e-4
+diag    fit_NRTL_ethanol_water iter             24                 1e-4
+diag    fit_NRTL_ethanol_water max_abs_corr     0.999967           1e-4
+diag    fit_NRTL_ethanol_water max_abs_resid    0.625729           1e-4
+diag    fit_NRTL_ethanol_water n_data           11                 1e-4
+diag    fit_NRTL_ethanol_water n_params         4                  1e-4
+diag    fit_NRTL_ethanol_water params_at_bound  0                  1e-4
+diag    fit_NRTL_ethanol_water penalised_points 0                  1e-4
+diag    fit_NRTL_ethanol_water rms              0.307894           1e-4
+diag    fit_NRTL_ethanol_water t_crit95         2.365              1e-4
+diag    fit_NRTL_ethanol_water well_conditioned 0                  1e-4

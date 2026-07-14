@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: anthracene photodimer  (C28H20, CAS 1627-06-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        anthracenePhotodimer;
+formula     C28H20;
+CAS         1627-06-1;
+InChIKey    JUTIJVADGQDBGY-UHFFFAOYSA-N;
+MW          356.468;      // g/mol [origin=calculated method=formula-sum]
+Tc          1229.91;      // K   [origin=predictive method=joback]
+Pc          17.217;      // bar [origin=predictive method=joback]
+omega       0.9377;      // -   [origin=predictive method=lee-kesler]
+Tb          961.08;      // K   [origin=predictive method=joback]
+HvapTb      88244.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-220.17 2.5844 -0.00219324 7.436e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 16; } { group AC; count 4; } { group ACCH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 4; } { group dCH_ring; count 16; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "anthracene, dimer" "dianthracene" "5,11-di-o-benzenodibenzo[a,e]cyclooctene, 5,6,11,12-tetrahydro-" "5,2']:6,11[1'',2'']-dibenzenodibenzo[a,e]cyclooctene, 5,6,11,12-tetrahydro-" "heptacyclo[8.6.6.6~2,9~.0~3,8~.0~11,16~.0~17,22~.0~23,28~]octacosa-3,5,7,11,13,15,17,19,21,23,25,27-dodecaene (non-preferred name)" );
+gibbsFormation
+{
+    dHf_298   507850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     383.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=831040.0
+    phase     gas;
+}

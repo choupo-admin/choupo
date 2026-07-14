@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------*\
+  Solid phase: zabuyelite -- crystalline Li2CO3.
+  Case-local phase record extracted from the former component solid block.
+\*---------------------------------------------------------------------------*/
+
+recordType    solidPhase;
+schemaVersion 1;
+
+name      zabuyelite;
+formula   "Li2CO3";
+component Li2CO3;
+
+rho_p
+{
+    value 2110.0;
+    unit  kg/m3;
+    provenance asserted;
+}
+
+shape
+{
+    habit unspecified;
+
+    k_v
+    {
+        value 1.0;
+        basis "case-local volume-shape closure";
+        provenance asserted;
+    }
+}

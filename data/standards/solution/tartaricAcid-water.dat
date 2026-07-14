@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Solution thermo: TARTARIC ACID dissolved in liquid WATER (arity-2, the
+  aqueous-solution tier -- the molecular-solute sibling of the ionic
+  electrolyte/ions.dat reference; same rung the sugar plant uses).
+
+  This is PAIR data: a heat of solution is defined as `crystal -> species
+  dissolved in WATER`, so it names a second species and lives HERE, keyed by
+  the (solute, solvent) pair -- never copied into tartaricAcid.dat, which
+  references it BY NAME.  (Data-governance Golden Rule, arity-2.)
+
+  The engine reads dHsoln for the dissolved-vs-crystalline enthalpy rung:
+
+      h_aq(T) = Hf_crystal + dHsoln + INT_298^T cp_aq dT'
+
+  while the crystalline pool keeps the solid rung
+      h_solid(T) = Hf_crystal + INT_298^T cp_solid dT'    (from tartaricAcid.dat)
+
+  so a NEUTRAL molecular H2Tart can close an aqueous energy balance WITHOUT an
+  ideal-gas/Watson vapour leg (which a decomposing solid cannot supply).  The
+  dissociated route is separate: HTart-/Tart2- live in electrolyte/ions.dat.
+\*---------------------------------------------------------------------------*/
+
+solute      tartaricAcid;
+solvent     water;
+
+// Standard enthalpy of solution: crystalline H2Tart -> aqueous (hypothetical
+// non-dissociated, high dilution), 298.15 K.  ENDOTHERMIC (positive):
+// dissolving tartaric acid cools the solution.  Derived from ONE study on ONE
+// material -- the SAME Kochergina source as tartaricAcid.dat's dHf_298:
+//   dHsoln = Hf(H2Tart, aq, nondis) - Hf(H2Tart, cr)
+//          = -1295.9 - (-1311.2)  =  +15.3 kJ/mol.
+// So the heat of crystallisation emerges as h_solid - h_aq ~ -dHsoln from this
+// one sourced number (no second hand-entered dHcryst constant).
+dHsoln      15300 J/mol;
+dHsoln_provenance
+{
+    origin   literature;
+    method   "Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys. Chem. 80 (2006) 899-903, Table 5: Hf(H2Tart, sln, H2O, hyp. nondis., 298.15 K) = -(1295.9) kJ/mol and Hf(H2Tart, cr) = -(1311.2) kJ/mol (mean of two calorimetric methods) -> dHsoln = +15.3 kJ/mol.  Same study cited in tartaricAcid.dat for dHf_298, so crystal datum and heat of solution come from one material in one work.";
+}
+
+// Aqueous (dissolved-solute) molar heat capacity is OMITTED here on purpose:
+// with no `Cp` key the engine integrates the cp_aq rung with tartaricAcid.dat's
+// liquidHeatCapacity (the dissolved-solute Cp it already carries -- Satoh 1939
+// solid Cp as a FLAGGED proxy).  Apelblat & Manzurola, J. Chem. Thermodyn. 2001
+// carry the true aqueous apparent molar Cp; add a `Cp` key here from it before
+// any Cp-sensitive (wide-T) aqueous duty.

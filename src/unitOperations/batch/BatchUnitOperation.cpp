@@ -28,11 +28,14 @@ License
 
 #include "BatchUnitOperation.H"
 #include "BatchAccumulator.H"
+#include "BatchAdsorber.H"
 #include "BatchCrystalliser.H"
 #include "BatchReactor.H"
 #include "BatchStill.H"
+#include "FixedBedAdsorber.H"
 
 #include <algorithm>
+#include <iostream>
 #include <stdexcept>
 
 namespace Choupo {
@@ -86,6 +89,14 @@ void BatchUnitOperation::registerBuiltins()
     registerType("batchCrystalliser",
         []() -> std::unique_ptr<BatchUnitOperation>
         { return std::make_unique<BatchCrystalliser>(); });
+
+    registerType("batchAdsorber",
+        []() -> std::unique_ptr<BatchUnitOperation>
+        { return std::make_unique<BatchAdsorber>(); });
+
+    registerType("fixedBedAdsorber",
+        []() -> std::unique_ptr<BatchUnitOperation>
+        { return std::make_unique<FixedBedAdsorber>(); });
 }
 
 // -----------------------------------------------------------------------
@@ -94,6 +105,40 @@ void BatchUnitOperation::registerBuiltins()
 //  is identical across reactor and still --- both vessels just hold
 //  mole numbers and a temperature.
 // -----------------------------------------------------------------------
+scalar BatchUnitOperation::packageEnthalpy_(const BatchState& pkg, bool& ok,
+                                            std::string& why) const
+{
+    ok = true;
+    why.clear();
+    const scalar nTot = pkg.totalMoles();
+    if (nTot <= 0.0) return 0.0;
+    if (!thermoPkg_) { ok = false; why = "no thermo package attached"; return 0.0; }
+    sVector z(thermoPkg_->n(), 0.0);
+    for (std::size_t i = 0; i < thermoPkg_->n() && i < pkg.n.size(); ++i)
+    {
+        z[i] = pkg.n[i] / nTot;
+        if (z[i] > 0.0 && !thermoPkg_->hasEnthalpyDatum(i))
+        {
+            ok  = false;
+            why = "no enthalpy datum for '"
+                + thermoPkg_->comp(i).name() + "'";
+            return 0.0;
+        }
+    }
+    try
+    {
+        return thermoPkg_->H_stream_formation(pkg.T,
+                   pkg.P > 0.0 ? pkg.P * 1.0e5 : 1.0e5, 0.0, z)
+               * nTot;   // J/mol * kmol = kJ
+    }
+    catch (const std::exception& ex)
+    {
+        ok  = false;
+        why = std::string("enthalpy evaluation failed: ") + ex.what();
+        return 0.0;
+    }
+}
+
 void BatchUnitOperation::chargeFrom(const BatchState& src)
 {
     BatchState& s = mutableState();
@@ -110,21 +155,87 @@ void BatchUnitOperation::chargeFrom(const BatchState& src)
             + std::to_string(src.n.size()) + " in source); both vessels"
             " must share the same thermo package");
     }
+
+    // Enthalpies BEFORE the merge (each package at its own T) -- the mix
+    // temperature must satisfy H(n1+n2, T_mix) = H1 + H2 on the elements
+    // datum: charging is a material act, never a thermal one (phase (b),
+    // forum #98.3-1).
+    bool okSelf = true, okSrc = true;
+    std::string whySelf, whySrc;
+    const scalar Hself = packageEnthalpy_(s,   okSelf, whySelf);
+    const scalar Hsrc  = packageEnthalpy_(src, okSrc,  whySrc);
+
     for (std::size_t i = 0; i < src.n.size(); ++i) s.n[i] += src.n[i];
 
-    if (nNew > 0.0)
+    if (nThis <= 0.0)
     {
-        // Molar-weighted temperature mix.  Approximation: assumes
-        // equal Cp across species.  Adequate for pedagogy ---
-        // the typical use case is charging an empty vessel, in which
-        // case this reduces to "receiver inherits source's T" exactly.
-        s.T = (nThis * s.T + nSrc * src.T) / nNew;
-    }
-    if (nThis == 0.0)
-    {
-        // Empty receiver inherits geometric properties from the source.
+        // Empty receiver inherits the source's state EXACTLY (T carries
+        // the package's enthalpy by construction; P/V are geometric).
+        if (nSrc > 0.0) s.T = src.T;
         if (src.P > 0.0) s.P = src.P;
         if (src.V > 0.0) s.V = src.V;
+        notifyStateChanged();
+        return;
+    }
+    if (nSrc <= 0.0) { notifyStateChanged(); return; }
+
+    // Non-trivial mix.  H-EQUALITY when both sides price; otherwise fall
+    // back to the molar-T average, ANNOUNCED and recorded -- the campaign
+    // energy balance goes unavailable naming this exact occasion, so the
+    // approximation never hides inside a closed balance.
+    const scalar Tavg = (nThis * s.T + nSrc * src.T) / nNew;
+    bool solved = false;
+    if (okSelf && okSrc)
+    {
+        const scalar Htarget = Hself + Hsrc;
+        scalar T = Tavg;                       // warm start
+        for (int it = 0; it < 50; ++it)
+        {
+            BatchState mix;                    // the merged inventory at T
+            mix.n = s.n; mix.T = T; mix.P = s.P;
+            bool okMix = true; std::string whyMix;
+            const scalar H = packageEnthalpy_(mix, okMix, whyMix);
+            if (!okMix) { whySelf = whyMix; break; }
+            const scalar res = H - Htarget;    // kJ
+            // Convergence: enthalpy residual below round-off of the
+            // target, or a sub-microkelvin update.
+            if (std::abs(res) <= 1.0e-9 * std::max(std::abs(Htarget), 1.0))
+            {
+                s.T = T; solved = true; break;
+            }
+            const scalar dT = std::max(1.0e-4, 1.0e-7 * T);
+            mix.T = T + dT;
+            const scalar Hp = packageEnthalpy_(mix, okMix, whyMix);
+            if (!okMix || Hp == H) { whySelf = whyMix.empty()
+                ? "flat dH/dT in the mix-T solve" : whyMix; break; }
+            const scalar step = -res * dT / (Hp - H);
+            T += step;
+            if (std::abs(step) < 1.0e-7)
+            {
+                s.T = T; solved = true; break;
+            }
+        }
+        if (!solved && whySelf.empty() && whySrc.empty())
+            whySelf = "mix-T Newton did not converge in 50 iterations";
+    }
+    if (!solved)
+    {
+        s.T = Tavg;
+        const std::string why = !whySelf.empty() ? whySelf : whySrc;
+        const std::string rec = "unit '" + name_ + "': chargeFrom fell"
+            " back to the molar-T average (" + why + ")";
+        // Announce + record ONCE per (unit, reason): a continuous
+        // dischargeTo charges every step and the same missing datum would
+        // otherwise print hundreds of identical lines.
+        if (std::find(chargeFallbacks_.begin(), chargeFallbacks_.end(), rec)
+            == chargeFallbacks_.end())
+        {
+            std::cout << "  [chargeFrom] '" << name_ << "': H-equality"
+                         " unavailable (" << why << ") -- molar-T average"
+                         " approximation (announced once; applies to every"
+                         " such charge)\n";
+            chargeFallbacks_.push_back(rec);
+        }
     }
 
     notifyStateChanged();

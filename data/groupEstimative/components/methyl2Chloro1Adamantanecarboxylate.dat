@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl2-chloro-1-adamantanecarboxylate  (C12H17ClO2, CAS 103549-34-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl2Chloro1Adamantanecarboxylate;
+formula     C12H17ClO2;
+CAS         103549-34-4;
+InChIKey    YBOYZNLGOLWXPZ-UHFFFAOYSA-N;
+MW          228.716;      // g/mol [origin=calculated method=formula-sum]
+Tc          809.76;      // K   [origin=predictive method=joback]
+Pc          24.801;      // bar [origin=predictive method=joback]
+omega       0.5608;      // -   [origin=predictive method=lee-kesler]
+Tb          585.20;      // K   [origin=predictive method=joback]
+HvapTb      52240.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-163.68 1.77782 -0.0015908 5.931e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 3; } { group C; count 1; } { group CHCl; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 4; } { group C_ring; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-chloranyladamantane-1-carboxylate" "methyl 2-chloroadamantane-1-carboxylate" "2-chlorotricyclo[3.3.1.13,7decane-1-carboxylic acid, methyl ester" "tricyclo[3.3.1.13,7]decane-1-carboxylicacid, 2-chloro-, methyl ester" "2-chlorotricyclo(3.3.1.13,7decane-1-carboxylic acid, methyl ester" );
+gibbsFormation
+{
+    dHf_298   -437230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     442.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-122900.0
+    phase     gas;
+}

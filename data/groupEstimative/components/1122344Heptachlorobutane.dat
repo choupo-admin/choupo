@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,2,2,3,4,4-heptachlorobutane  (C4H3Cl7, CAS 34973-41-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1122344Heptachlorobutane;
+formula     C4H3Cl7;
+CAS         34973-41-6;
+InChIKey    BBYBIYKXQDROIM-UHFFFAOYSA-N;
+MW          299.218;      // g/mol [origin=calculated method=formula-sum]
+Tc          792.60;      // K   [origin=predictive method=joback]
+Pc          30.256;      // bar [origin=predictive method=joback]
+omega       0.4186;      // -   [origin=predictive method=lee-kesler]
+Tb          548.58;      // K   [origin=predictive method=joback]
+HvapTb      52733.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (59.97 0.5749 -0.000518 1.698e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CHCl; count 1; } { group CHCl2; count 2; } { group CCl2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 3; } { group C; count 1; } { group Cl; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2,2,3,4,4-heptakis(chloranyl)butane" );
+gibbsFormation
+{
+    dHf_298   -260660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     478.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-105190.0
+    phase     gas;
+}

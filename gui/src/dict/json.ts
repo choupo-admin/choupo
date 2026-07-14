@@ -89,6 +89,19 @@ export function parseScalarString(
   return null;
 }
 
+function parseDimensionedScalarString(
+  s: string,
+): { value: number; dimensions: [number, number, number, number, number] } | null {
+  const match = /^\s*\[\s*([+-]?\d+)\s+([+-]?\d+)\s+([+-]?\d+)\s+([+-]?\d+)\s+([+-]?\d+)\s*\]\s+(-?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)\s*$/.exec(s);
+  if (!match) return null;
+  const value = Number(match[6]);
+  if (!Number.isFinite(value)) return null;
+  return {
+    value,
+    dimensions: match.slice(1, 6).map(Number) as [number, number, number, number, number],
+  };
+}
+
 export function toJson(dict: Dict): JsonDict {
   const out: JsonDict = {};
   for (const { key, value } of dict.entries) {
@@ -106,7 +119,9 @@ export function valueToJson(v: DictValue): JsonValue {
     // readers rightly refuse (and which silently changed magnitude for
     // non-1-factor units like mol/kg).  Plain scalars stay numbers.
     case "scalar":
-      return v.unit !== undefined && v.originalValue !== undefined
+      return v.dimensions !== undefined
+        ? `[${v.dimensions.join(" ")}] ${v.value}`
+        : v.unit !== undefined && v.originalValue !== undefined
         ? `${v.originalValue} ${v.unit}`
         : v.value;
     case "word":       return v.value;
@@ -137,6 +152,10 @@ export function valueFromJson(j: JsonValue, hint = ""): DictValue {
     // AST round-trips preserve the reference flavour.
     if (j.length > 1 && j.startsWith("$") && /^\$[A-Za-z_][A-Za-z0-9_]*$/.test(j)) {
       return { kind: "reference", name: j.slice(1) };
+    }
+    const dimensioned = parseDimensionedScalarString(j);
+    if (dimensioned) {
+      return { kind: "scalar", ...dimensioned };
     }
     // "<number> <known-unit>" strings carry a unit suffix across the
     // JSON bridge (e.g. exploreSynth's `totals { Ca 0.0021 mol/kg; }`):

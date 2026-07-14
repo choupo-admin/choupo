@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propenoic acid, 2-methyl-, thiiranylmethyl ester  (C7H10O2S, CAS 3139-91-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropenoicAcid2MethylThiiranylmethylEster;
+formula     C7H10O2S;
+CAS         3139-91-1;
+InChIKey    OXUABORVCCLQJI-UHFFFAOYSA-N;
+MW          158.215;      // g/mol [origin=calculated method=formula-sum]
+Tc          678.61;      // K   [origin=predictive method=joback]
+Pc          34.039;      // bar [origin=predictive method=joback]
+omega       0.4614;      // -   [origin=predictive method=lee-kesler]
+Tb          469.11;      // K   [origin=predictive method=joback]
+HvapTb      43718.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.169 0.75923 -0.0005265 1.423e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group CH2=C; count 1; } { group COO; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group COO; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "thiiran-2-ylmethyl 2-methylprop-2-enoate" "thiiran-2-ylmethyl methacrylate" "2-propenoic acid, 2-methyl-, 2-thiiranylmethyl ester" "2-methyl-acrylic acid thiiran-2-yl-methyl ester" );
+gibbsFormation
+{
+    dHf_298   -271390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     431.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-122410.0
+    phase     gas;
+}

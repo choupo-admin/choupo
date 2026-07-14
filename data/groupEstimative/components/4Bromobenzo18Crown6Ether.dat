@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4'-bromobenzo-18-crown 6-ether  (C16H23BrO6, CAS 75460-28-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Bromobenzo18Crown6Ether;
+formula     C16H23BrO6;
+CAS         75460-28-5;
+InChIKey    XHHZIFBFFGIFNI-UHFFFAOYSA-N;
+MW          391.258;      // g/mol [origin=calculated method=formula-sum]
+Tc          1183.81;      // K   [origin=predictive method=joback]
+Pc          26.298;      // bar [origin=predictive method=joback]
+omega       0.9370;      // -   [origin=predictive method=lee-kesler]
+Tb          897.10;      // K   [origin=predictive method=joback]
+HvapTb      90763.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.6 1.3987 -0.00040412 -1.244e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group ACH; count 3; } { group AC; count 3; } { group FCH2O; count 6; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 10; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group O_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "20-bromanyl-2,5,8,11,14,17-hexaoxabicyclo[16.4.0]docosa-1(18),19,21-triene" "20-bromo-2,5,8,11,14,17-hexaoxabicyclo[16.4.0]docosa-1(18),19,21-triene" "4-bromobenzo-18-crown-6" "2,3-(4-bromobenzo)-1,4,7,10,13,16-hexaoxacyclooctadec-2-ene" "21-bromo-2,5,8,11,14,17-hexaoxabicyclo[16.4.0]docosa-1(18),19,21-triene" "18-bromo-2,3,5,6,8,9,11,12,14,15-decahydro-1,4,7,10,13,16-benzohexaoxacyclooctadecine" );
+gibbsFormation
+{
+    dHf_298   -912590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     614.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-414250.0
+    phase     gas;
+}

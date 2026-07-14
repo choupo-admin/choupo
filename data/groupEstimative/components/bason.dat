@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bason  (C6H9BrO, CAS 2028-52-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bason;
+formula     C6H9BrO;
+CAS         2028-52-6;
+InChIKey    KGKSTPKEAQNJJD-UHFFFAOYSA-N;
+MW          177.041;      // g/mol [origin=calculated method=formula-sum]
+Tc          712.61;      // K   [origin=predictive method=joback]
+Pc          47.301;      // bar [origin=predictive method=joback]
+omega       0.6953;      // -   [origin=predictive method=lee-kesler]
+Tb          500.99;      // K   [origin=predictive method=joback]
+HvapTb      52920.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.001 0.62204 -0.00048406 1.5498e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group OH; count 1; } { group Br; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group tC; count 2; } { group Br; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-3-methyl-pent-1-yn-3-ol" "1-bromo-3-methyl-1-pentyn-3-ol" "2-bromoethynyl-2-butanol" "bromoethynylethylmethylcarbinol" "1-bromo-3-methylpentin-3-ol" "bromoacetylenylethylmethylcarbinol" "1-bromo-3-ethyl-1-butyn-3-ol" "1-bromo-3-methylpent-1-yn-3-ol" "1-pentyn-3-ol, 1-bromo-3-methyl-" );
+gibbsFormation
+{
+    dHf_298   -29520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     424.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=82780.0
+    phase     gas;
+}

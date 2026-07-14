@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5|a-pregnane-3,20-dione, 11|a-hydroxy-  (C21H32O3, CAS 565-96-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5APregnane320Dione11AHydroxy;
+formula     C21H32O3;
+CAS         565-96-8;
+InChIKey    XHCCPSKYYJBSAA-ZOVJPLRPSA-N;
+MW          332.484;      // g/mol [origin=calculated method=formula-sum]
+Tc          1158.36;      // K   [origin=predictive method=joback]
+Pc          16.783;      // bar [origin=predictive method=joback]
+omega       1.1356;      // -   [origin=predictive method=lee-kesler]
+Tb          924.06;      // K   [origin=predictive method=joback]
+HvapTb      86986.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-269.92 2.86996 -0.0023787 8.5736e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 7; } { group CH; count 6; } { group C; count 2; } { group OH; count 1; } { group CH3CO; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 8; } { group CH_ring; count 6; } { group C_ring; count 2; } { group OH; count 1; } { group CdO; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5s,8s,9s,10s,11r,13s,14s,17s)-17-ethanoyl-10,13-dimethyl-11-oxidanyl-1,2,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydrocyclopenta[a]phenanthren-3-one" "11.alpha.-hydroxyallopregnane-3,20-dione" "5.alpha.-pregnane-3, 11.alpha.-hydroxy-" "pregnane-3, 11-hydroxy-, (5.alpha.,11.alpha.)-" "(5s,8s,9s,10s,11r,13s,14s,17s)-17-acetyl-11-hydroxy-10,13-dimethyl-1,2,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydrocyclopenta[a]phenanthren-3-one" );
+gibbsFormation
+{
+    dHf_298   -669760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     680.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-121710.0
+    phase     gas;
+}

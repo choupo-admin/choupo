@@ -53,6 +53,7 @@ Description
 #include "unitOperations/UnitOperation.H"
 
 #include <map>
+#include <set>
 #include <optional>
 #include <string>
 #include <vector>
@@ -221,6 +222,11 @@ struct EconomicsSummary
 struct SimulationResult
 {
     std::map<std::string, ProcessStream>                          streams;
+    // Plant-boundary OUTLET aliases: a sector output (BRINE.halite) is COPIED
+    // onto the domain boundary name (halite) for reporting/GUI, so `streams`
+    // holds both.  The stream-state writer skips these -- the state model stores
+    // each stream ONCE, owned by its producing sector (arch doc 8.4).
+    std::set<std::string>                                         boundaryAliases;
     std::map<std::string, std::map<std::string, scalar>>           kpis;
     std::vector<FlatUnit>                                          topology;
     std::map<std::string, std::vector<scalar>>                     convergence;
@@ -259,6 +265,84 @@ struct SimulationResult
     // level (steam grade / cooling water / ...), incl. carried duties.
     // Populated before the result is emitted so the GUI sees it.
     std::vector<UtilityAllocation>                                 utilityAllocation;
+    // Batch SEQUENCE timeline (choupoBatch): every recipe action that FIRED
+    // (with its trigger -- a time or the `when` condition that tripped) plus
+    // unit-reported status events (a rectifier hitting refluxMax).  The
+    // machine-readable feed of the recipe sequence/Gantt view; empty for
+    // steady runs and recipe-less batch runs.
+    struct TimelineEvent
+    {
+        scalar      t = 0.0;
+        std::string kind;      // "recipe" | "status"
+        std::string action;    // transfer | setParameter | <status name>
+        std::string detail;    // human-readable, pre-formatted
+        std::string trigger;   // "time" | "when: <unit.q op v>" | "" (status)
+        std::string from;      // acting unit (transfer source; setParameter/
+                               //   status unit) -- the Gantt lane
+        std::string to;        // transfer destination; empty otherwise
+    };
+    std::vector<TimelineEvent>                                     timeline;
+
+    // The MATERIAL LEDGER (forum #88): one structured record per material
+    // edge of the campaign -- a discrete recipe `transfer` or one step of a
+    // continuous `dischargeTo` -- with the per-component amount moved.  The
+    // timeline and the Gantt are PROJECTIONS of this; balances read THIS,
+    // never reconstructed from strings.
+    //  kind is a STABLE ENUM STRING: "discrete" | "continuous" | "external".
+    //  tStart/tEnd bound the interval material actually moved (equal for a
+    //  discrete event).  The thermodynamic history is preserved EXACTLY where
+    //  it matters for energy: H_kJ integrates each package's enthalpy AT ITS
+    //  OWN instant and temperature (Sum over packages of n_pkg*h(T_pkg)) --
+    //  a single end-temperature stamped on an accumulated dn destroys the
+    //  transported enthalpy (forum #99-P0).  When any package's enthalpy is
+    //  unavailable, H_valid goes false and H_missing names the species: the
+    //  record never carries a decorative number.
+    struct TransferRecord
+    {
+        scalar      tStart = 0.0, tEnd = 0.0;   // s
+        std::string from, to;                    // vessels; to may be an
+                                                 // "(unrouted outlet)" role
+        std::string kind;                        // discrete|continuous|external
+        std::map<std::string, scalar> dn;        // kmol moved, per component
+        scalar      H_kJ    = 0.0;               // integrated transported enthalpy
+        bool        H_valid = false;
+        std::vector<std::string> H_missing;      // species lacking h(T) data
+    };
+    std::vector<TransferRecord>                                    transfers;
+
+    // The ENERGY LEDGER (forum #98.3/#99/#101): one structured record per
+    // SEGMENT of constant physics on one vessel -- a recipe setParameter
+    // closes the running segment and opens a new one, so a record's E_kJ is
+    // always the EXACT integral over an interval the stated basis actually
+    // covers (#99-1: no representative rate ever substitutes the history --
+    // a mean rate is E/(tEnd-tStart), derivable, never stored).  kind is the
+    // full canon reserved up front (#99-2) so the campaign balance reads
+    // canonical records, never side calculations:
+    //     reaction | sensible | latent | mixing | impulse
+    //   | externalH | shaftWork | heatLoss
+    // Validity carries the SAME monotonic discipline as the material ledger:
+    // an unpriceable contribution poisons the segment forever, E_missing
+    // names why, and a partial integral is never emitted.  `basis` is the
+    // glass-box statement of the physics used (e.g. "isothermal closed
+    // vessel at constant P: Q = dH = sum dn_i*h_i(T), elements datum").
+    struct EnergyRecord
+    {
+        scalar      tStart = 0.0, tEnd = 0.0;   // s
+        std::string unit;                        // the vessel
+        std::string kind;                        // stable enum string (above)
+        scalar      E_kJ    = 0.0;               // exact integral, sign: heat
+                                                 //   ADDED to the vessel > 0
+        bool        E_valid = false;
+        std::vector<std::string> E_missing;      // named reasons / species
+        std::string basis;                       // physics statement
+        // The process temperature a UTILITY must beat to serve this duty
+        // -- the segment's WORST-case end (max T for heating, min T for
+        // cooling), so the tier pick is always feasible over the whole
+        // record.  -1 = unknown (the utility pass skips it, NAMED).
+        scalar      T_service_K = -1.0;
+    };
+    std::vector<EnergyRecord>                                      energyLedger;
+
     // Solver "speak-up" advisories (bound active at the solution, rating
     // exceeded, auto-init) -- the same events printed to the log, carried here
     // so the GUI surfaces them.  Drained from AdvisoryLog after each pass.

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: maleic acid, mono(hydroxyethoxyethyl) ester  (C8H12O6, CAS 10099-72-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        maleicAcidMonoHydroxyethoxyethylEster;
+formula     C8H12O6;
+CAS         10099-72-6;
+InChIKey    JHJLPMDWCPTBLD-UPHRSURJSA-N;
+MW          204.178;      // g/mol [origin=calculated method=formula-sum]
+Tc          892.30;      // K   [origin=predictive method=joback]
+Pc          32.100;      // bar [origin=predictive method=joback]
+omega       1.5224;      // -   [origin=predictive method=lee-kesler]
+Tb          705.13;      // K   [origin=predictive method=joback]
+HvapTb      77020.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (42.234 0.7506 -0.0003926 5.73e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH=CH; count 1; } { group COOH; count 1; } { group COO; count 1; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group dCH; count 2; } { group OH; count 1; } { group O; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z)-4-[2-(2-hydroxyethyloxy)ethoxy]-4-oxidanylidene-but-2-enoic acid" "diethylene glycol, mono(hydrogen maleate)" "2-butenedioic acid, mono(2-(2-hydroxyethoxy)ethyl) ester" "maleic acid, mono(2-(2-hydroxyethoxy)ethyl) ester" "mono-2-(2-hydroxyethoxy)ethylester kyseliny maleinove" "(z)-4-[2-(2-hydroxyethoxy)ethoxy]-4-oxobut-2-enoic acid" );
+gibbsFormation
+{
+    dHf_298   -1043230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     627.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-799400.0
+    phase     gas;
+}

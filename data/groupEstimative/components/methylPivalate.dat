@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl pivalate  (C6H12O2, CAS 598-98-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylPivalate;
+formula     C6H12O2;
+CAS         598-98-1;
+InChIKey    CNMFHDIDIMZHKY-UHFFFAOYSA-N;
+MW          116.16;      // g/mol [origin=calculated method=formula-sum]
+Tc          577.18;      // K   [origin=predictive method=joback]
+Pc          31.919;      // bar [origin=predictive method=joback]
+omega       0.3520;      // -   [origin=predictive method=lee-kesler]
+Tb          391.87;      // K   [origin=predictive method=joback]
+HvapTb      35061.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.63 0.64488 -0.0003798 7.5e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group C; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2,2-dimethylpropanoate" "methyl trimethylacetate" "pivalic acid, methyl ester" "propanoic acid, 2,2-dimethyl-, methyl ester" "1x1&1&vo1" "pivalic acid methyl ester" "methyl 2,2-dimethylpropionate" "trimethylacetic acid methyl ester" "2,2-dimethylpropionic acid methyl ester" "2,2-dimethyl-propionic acid methyl ester" "pivalicacid, methyl ester (6ci,7ci,8ci);methyl 2,2-dimethylpropanoate;methyl2,2-dimethylpropionate;methyl pivalate;methyl trimethylacetate;" );
+gibbsFormation
+{
+    dHf_298   -493200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     402.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-307890.0
+    phase     gas;
+}

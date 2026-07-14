@@ -1,0 +1,51 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Solid phase: anhydrous NaOH -- rho_p + default shape factor for the
+  PBE crystalliser.
+
+  Provenance
+    In-tree origin: data/standards/components/NaOH.dat solid block
+    (kept as the origin pointers below).
+    rho_p 2130 kg/m3 matches the public compound-summary value
+    2.13 g/cm3 for anhydrous NaOH (PubChem CID 14798); the in-record
+    VERIFY note (mirrored from components/NaOH.dat) stays until the
+    underlying primary measurement is pinned -- primary re-citation
+    pending (IST review).
+    k_v: sphere default (pi/6) -- a declared placeholder, no source
+    claimed; replace when PSD shape data lands.
+    Caveat (from components/NaOH.dat): at 25 C the solid in contact
+    with saturated solution is the MONOHYDRATE NaOH.H2O; anhydrous
+    NaOH is the stable form only above ~65 C.
+\*---------------------------------------------------------------------------*/
+
+recordType solidPhase;
+schemaVersion 1;
+
+name    sodiumHydroxide;
+formula "NaOH";
+
+component NaOH;
+
+rho_p
+{
+    value 2130;
+    unit  kg/m3;
+    origin "data/standards/components/NaOH.dat solid block";
+    note   "VERIFY against the primary (public compound summary 2.13 g/cm3).";
+}
+
+shape
+{
+    habit sphere;
+
+    k_v
+    {
+        value 0.5235987756;
+        basis "sphere default (no PSD shape data yet); set when shape data lands";
+        origin "data/standards/components/NaOH.dat solid block";
+    }
+}
+
+notes
+{
+    purpose "Solid crystal phase for NaOH.";
+}

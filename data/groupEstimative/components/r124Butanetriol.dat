@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (r)-(+)-1,2,4-butanetriol  (C4H10O3, CAS 70005-88-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        r124Butanetriol;
+formula     C4H10O3;
+CAS         70005-88-8;
+InChIKey    ARXKVVRQIIOZGF-SCSAIBSYSA-N;
+MW          106.121;      // g/mol [origin=calculated method=formula-sum]
+Tc          725.53;      // K   [origin=predictive method=joback]
+Pc          57.566;      // bar [origin=predictive method=joback]
+omega       1.8056;      // -   [origin=predictive method=lee-kesler]
+Tb          567.22;      // K   [origin=predictive method=joback]
+HvapTb      74147.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (13.443 0.4917 -0.0002882 6.53e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group OH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group CH; count 1; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r)-butane-1,2,4-triol" "(r)-butane-1,2,4-triol" "(r)-1,2,4-butanetriol" "(r)-(+)-1,2,4-triydroxybutane" "r-(-)-1,2,4-butanetriol" "(r)-(+)-1,2,4-trihydroxybutane" "(2r)-(+)-1,2,4-trihydroxybutane" );
+gibbsFormation
+{
+    dHf_298   -587860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     454.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-430100.0
+    phase     gas;
+}

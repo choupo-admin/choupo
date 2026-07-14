@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-carbamoylbenzoic acid  (C8H7NO3, CAS 6051-43-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4CarbamoylbenzoicAcid;
+formula     C8H7NO3;
+CAS         6051-43-0;
+InChIKey    JMHSCWJIDIKGNZ-UHFFFAOYSA-N;
+MW          165.148;      // g/mol [origin=calculated method=formula-sum]
+Tc          929.10;      // K   [origin=predictive method=joback]
+Pc          46.849;      // bar [origin=predictive method=joback]
+omega       1.0486;      // -   [origin=predictive method=lee-kesler]
+Tb          686.21;      // K   [origin=predictive method=joback]
+HvapTb      70891.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.54 0.7101 -0.00047286 1.1456e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group COOH; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group CdO; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-aminocarbonylbenzoic acid" "terephthalamic acid" "terephthalic acid monoamide" "terephthalamidic acid" "4-(aminocarbonyl)benzoic acid" "p-carboxylic acid benzamide" "benzoic acid, 4-(aminocarbonyl)-" "4-carboxybenzamide" "4-carboxamidobenzoic acid" "terephthalamicacid (6ci,7ci,8ci);4-(aminocarbonyl)benzoic acid;4-carbamoylbenzoic acid;p-carbamoylbenzoic acid;p-carboxybenzamide;" );
+gibbsFormation
+{
+    dHf_298   -412450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     486.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-287120.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: elemol  (C15H26O, CAS 639-99-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        elemol;
+formula     C15H26O;
+CAS         639-99-6;
+InChIKey    GFJIQNADMLPFOW-VNHYZAJKSA-N;
+MW          222.372;      // g/mol [origin=calculated method=formula-sum]
+Tc          836.72;      // K   [origin=predictive method=joback]
+Pc          19.338;      // bar [origin=predictive method=joback]
+omega       0.7655;      // -   [origin=predictive method=lee-kesler]
+Tb          635.44;      // K   [origin=predictive method=joback]
+HvapTb      61767.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-139.32 1.90958 -0.0015453 5.368e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 2; } { group C; count 2; } { group CH2=CH; count 1; } { group CH2=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group C; count 1; } { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[(1r,3s,4s)-4-ethenyl-4-methyl-3-prop-1-en-2-yl-cyclohexyl]propan-2-ol" "2-[(1r,3s,4s)-4-ethenyl-4-methyl-3-(prop-1-en-2-yl)cyclohexyl]propan-2-ol" "(1s,2s,4r)-(-)-alpha,alpha-dimethyl-1-vinyl-o-menth-8-ene-4-methanol" "2-[(1r,3s,4s)-4-ethenyl-4-methyl-3-prop-1-en-2-ylcyclohexyl]propan-2-ol" "cyclohexanemethanol, 4-ethenyl-alpha,alpha,4-trimethyl-3-(1-methylethenyl)-, (1r,3s,4s)-" "cyclohexanemethanol, 4-ethenyl-alpha,alpha,4-trimethyl-3-(1-methylethenyl)-, (1r-(1alpha,3alpha,4beta))-" "cyclohexanemethanol, 4-ethenyl-alpha,alpha,4-trimethyl-3-(1-methylethenyl)-, (1theta-(1alpha,3alpha,4beta))-" );
+gibbsFormation
+{
+    dHf_298   -243960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     693.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=112110.0
+    phase     gas;
+}

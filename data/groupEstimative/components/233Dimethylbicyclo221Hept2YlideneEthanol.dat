@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(3,3-dimethylbicyclo[2.2.1]hept-2-ylidene)ethanol  (C11H18O, CAS 58437-71-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        233Dimethylbicyclo221Hept2YlideneEthanol;
+formula     C11H18O;
+CAS         58437-71-1;
+InChIKey    JGDHOHFQJJATNG-UHFFFAOYSA-N;
+MW          166.264;      // g/mol [origin=calculated method=formula-sum]
+Tc          760.45;      // K   [origin=predictive method=joback]
+Pc          29.030;      // bar [origin=predictive method=joback]
+omega       0.8115;      // -   [origin=predictive method=lee-kesler]
+Tb          563.42;      // K   [origin=predictive method=joback]
+HvapTb      56084.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-140.379 1.56294 -0.0014447 5.689e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 2; } { group C; count 1; } { group CH=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(3,3-dimethyl-2-bicyclo[2.2.1]heptanylidene)ethanol" "ethanol, 2-(3,3-dimethylbicyclo(2.2.1)hept-2-ylidene)-, (2e)-" "ethanol, 2-(3,3-dimethylbicyclo[2.2.1]hept-2-ylidene)-, (2e)-" "ethanol, 2-(3,3-dimethylbicyclo[2.2.1]hept-2-ylidene)-" "ethanol, 2-(3,3-dimethylbicyclo[2.2.1]hept-2-ylidene)-, (2z)-" );
+gibbsFormation
+{
+    dHf_298   -212230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     473.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=46580.0
+    phase     gas;
+}

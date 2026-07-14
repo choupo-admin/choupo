@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-chlorohex-1-yne  (C6H9Cl, CAS 10297-06-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Chlorohex1Yne;
+formula     C6H9Cl;
+CAS         10297-06-0;
+InChIKey    ZUKOCGMVJUXIJA-UHFFFAOYSA-N;
+MW          116.588;      // g/mol [origin=calculated method=formula-sum]
+Tc          549.36;      // K   [origin=predictive method=joback]
+Pc          35.305;      // bar [origin=predictive method=joback]
+omega       0.2937;      // -   [origin=predictive method=lee-kesler]
+Tb          364.43;      // K   [origin=predictive method=joback]
+HvapTb      33193.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.104 0.4867 -0.00031893 8.759e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2Cl; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group tCH; count 1; } { group tC; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-chloranylhex-1-yne" "6-chloro-1-hexyne" "5-hexynyl chloride" "6-chloro-hex-1-yne" "1-hexyne,6-chloro-" "zukocgmvjuxija-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   108990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     392.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=210780.0
+    phase     gas;
+}

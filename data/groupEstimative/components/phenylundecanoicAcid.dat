@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenylundecanoic acid  (C17H26O2, CAS 3343-24-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenylundecanoicAcid;
+formula     C17H26O2;
+CAS         3343-24-6;
+InChIKey    AUQIXRHHSITZFM-UHFFFAOYSA-N;
+MW          262.393;      // g/mol [origin=calculated method=formula-sum]
+Tc          961.16;      // K   [origin=predictive method=joback]
+Pc          16.935;      // bar [origin=predictive method=joback]
+omega       1.0556;      // -   [origin=predictive method=lee-kesler]
+Tb          760.75;      // K   [origin=predictive method=joback]
+HvapTb      72876.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-41.87 1.5907 -0.0010048 2.446e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group ACH; count 5; } { group ACCH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 10; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "11-phenylundecanoic acid" "benzeneundecanoic acid" );
+gibbsFormation
+{
+    dHf_298   -507950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     764.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-139240.0
+    phase     gas;
+}

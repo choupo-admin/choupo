@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-chlorodecane  (C10H21Cl, CAS 1002-11-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Chlorodecane;
+formula     C10H21Cl;
+CAS         1002-11-5;
+InChIKey    SMVZPOXWOUHGQI-UHFFFAOYSA-N;
+MW          176.728;      // g/mol [origin=calculated method=formula-sum]
+Tc          637.76;      // K   [origin=predictive method=joback]
+Pc          20.530;      // bar [origin=predictive method=joback]
+omega       0.5234;      // -   [origin=predictive method=lee-kesler]
+Tb          465.39;      // K   [origin=predictive method=joback]
+HvapTb      41851.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.007 0.96654 -0.0005438 1.163e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 7; } { group CHCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 7; } { group CH; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-chloranyldecane" "decane, 3-chloro-" );
+gibbsFormation
+{
+    dHf_298   -270750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     569.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=18950.0
+    phase     gas;
+}

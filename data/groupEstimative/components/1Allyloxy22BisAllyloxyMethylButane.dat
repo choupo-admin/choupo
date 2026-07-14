@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(allyloxy)-2,2-bis((allyloxy)methyl)butane  (C15H26O3, CAS 682-08-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Allyloxy22BisAllyloxyMethylButane;
+formula     C15H26O3;
+CAS         682-08-6;
+InChIKey    JPTSCQGFFOSLQE-UHFFFAOYSA-N;
+MW          254.37;      // g/mol [origin=calculated method=formula-sum]
+Tc          770.95;      // K   [origin=predictive method=joback]
+Pc          15.211;      // bar [origin=predictive method=joback]
+omega       0.7675;      // -   [origin=predictive method=lee-kesler]
+Tb          596.87;      // K   [origin=predictive method=joback]
+HvapTb      52908.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (32.307 1.30502 -0.0006997 1.27e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group C; count 1; } { group CH2=CH; count 3; } { group CH2O; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group C; count 1; } { group dCH2; count 3; } { group dCH; count 3; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-prop-2-enoxy-2,2-bis(prop-2-enoxymethyl)butane" "1-(allyloxy)-2,2-bis[(allyloxy)methyl]butane" "butane, 1-(2-propenyloxy)-2,2-bis((2-propenyloxy)methyl)-" "butane, 1-(2-propenyloxy)-2,2-bis[(2-propenyloxy)methyl]-" "butane, 1-(2-propen-1-yloxy)-2,2-bis((2-propen-1-yloxy)methyl)-" "butane, 1-(2-propen-1-yloxy)-2,2-bis[(2-propen-1-yloxy)methyl]-" "butane, 2,2-di((2-propenyloxy)methyl)-1-(2-propenyloxy)-" "1,1,1-trimethylolpropane triallyl ether" "butane,1-(2-propen-1-yloxy)-2,2-bis[(2-propen-1-yloxy)methyl]-" "butane,1-(2-propenyloxy)-2,2-bis[(2-propenyloxy)methyl]- (9ci); butane,1-(allyloxy)-2,2-bis[(allyloxy)methyl]- (7ci,8ci);1,1,1-tris(allyloxymethyl)propane; trimethylolpropane triallyl ether" );
+gibbsFormation
+{
+    dHf_298   -382050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     721.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=26780.0
+    phase     gas;
+}

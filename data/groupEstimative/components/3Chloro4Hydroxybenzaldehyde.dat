@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-chloro-4-hydroxybenzaldehyde  (C7H5ClO2, CAS 2420-16-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H5ClO2 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        3Chloro4Hydroxybenzaldehyde;
+formula     C7H5ClO2;
+CAS         2420-16-8;
+InChIKey    VGSOCYWCRMXQAB-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          156.565;      // g/mol [origin=calculated method=formula-sum]
+Tc          723.02;      // K   [origin=predictive method=joback]
+Pc          49.733;      // bar [origin=predictive method=joback]
+omega       0.4733;      // -   [origin=predictive method=lee-kesler]
+Tb          485.89;      // K   [origin=predictive method=joback]
+HvapTb      49140.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.61 0.6999 -0.00075092 3.115e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACOH; count 1; } { group CHO; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-chloranyl-4-oxidanyl-benzaldehyde" "benzaldehyde, 3-chloro-4-hydroxy-" "vgsocywcrmxqab-uhfffaoysa-" "q285" "benzaldehyde, 3-chloro-4-hydroxy- (8ci)(9ci)" );
+gibbsFormation
+{
+    dHf_298   -79350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     456.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11750.0
+    phase     gas;
+}

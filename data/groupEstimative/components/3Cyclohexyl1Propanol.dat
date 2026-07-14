@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-cyclohexyl-1-propanol  (C9H18O, CAS 1124-63-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Cyclohexyl1Propanol;
+formula     C9H18O;
+CAS         1124-63-6;
+InChIKey    CLYAQFSQLQTVNO-UHFFFAOYSA-N;
+MW          142.242;      // g/mol [origin=calculated method=formula-sum]
+Tc          705.67;      // K   [origin=predictive method=joback]
+Pc          31.385;      // bar [origin=predictive method=joback]
+omega       0.7744;      // -   [origin=predictive method=lee-kesler]
+Tb          517.25;      // K   [origin=predictive method=joback]
+HvapTb      52736.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-65.607 1.0149 -0.0005772 1.153e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-cyclohexylpropan-1-ol" "cyclohexanepropanol" "cyclohexanepropanol-" "cyclohexylpropanol" "3-hydroxypropylcyclohexane" "clyaqfsqlqtvno-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -327000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     526.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-87470.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5,12-bis(phenylethynyl)naphthacene  (C34H20, CAS 18826-29-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        512BisPhenylethynylNaphthacene;
+formula     C34H20;
+CAS         18826-29-4;
+InChIKey    OUHYGBCAEPBUNA-UHFFFAOYSA-N;
+MW          428.534;      // g/mol [origin=calculated method=formula-sum]
+Tc          1461.07;      // K   [origin=predictive method=joback]
+Pc          16.077;      // bar [origin=predictive method=joback]
+omega       0.9800;      // -   [origin=predictive method=lee-kesler]
+Tb          1152.42;      // K   [origin=predictive method=joback]
+HvapTb      109978.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-131.75 2.4484 -0.00187712 5.7156e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 20; } { group AC; count 10; } { group C_C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tC; count 4; } { group dCH_ring; count 20; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5,12-bis(2-phenylethynyl)tetracene" "bpen" "5,12-bisnaphthacene" "naphthacene, 5,12-bis(phenylethynyl)-" "naphthacene, 5,12-bis(2-phenylethynyl)-" "5,12-bis(phenylethynyl)tetracene" "naphthacene,5,12-bis(2-phenylethynyl)-" "naphthacene,5,12-bis(phenylethynyl)- (8ci,9ci); 5,12-bis(phenethynyl)naphthacene;5,12-bis(phenylethynyl)naphthacene; 5,12-bis(phenylethynyl)tetracene" );
+gibbsFormation
+{
+    dHf_298   1036430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     753.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1259660.0
+    phase     gas;
+}

@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+#------------------------------------------------------------------------------
+#  bin/estimate -- estimate a component's constants from its OWN groups{}.
+#
+#  The molecular structure is IDENTITY: a component .dat that declares
+#      groups ( { group CH3; count 2; } { group ketone; count 1; } );
+#  is estimable with NO case ceremony.  This is the one-command curation act:
+#
+#      bin/estimate acetone                # resolves case-local, then standards
+#      bin/estimate path/to/myThing.dat    # explicit file
+#      bin/estimate acetone vanKrevelen    # optional method (default joback)
+#
+#  Runs the estimateComponent engine in a throwaway case, prints the glass-box
+#  table (each group's contribution + deviations vs any reference{}), and
+#  drops ONE stable proposal NEXT TO THE SOURCE:  <name>.estimated.dat
+#  -- review it, then promote by hand.  The engine NEVER estimates at runtime;
+#  this is curation (docs/property-architecture.md).
+#------------------------------------------------------------------------------
+set -euo pipefail
+here="$(cd "$(dirname "$0")/.." && pwd)"
+[ $# -ge 1 ] || { echo "usage: bin/estimate <component|path/to.dat> [method]" >&2; exit 2; }
+arg="$1"; method="${2:-joback}"
+
+# ---- resolve the source .dat ------------------------------------------------
+if [ -f "$arg" ]; then
+    src="$(readlink -f "$arg")"
+    name="$(basename "$src" .dat)"
+else
+    name="$arg"
+    if   [ -f "constant/components/$name.dat" ]; then src="$(readlink -f "constant/components/$name.dat")"
+    elif [ -f "$here/data/standards/components/$name.dat" ]; then src="$here/data/standards/components/$name.dat"
+    else echo "estimate: no '$name.dat' in ./constant/components/ or data/standards/components/" >&2; exit 1; fi
+fi
+grep -qE "joback \\(|^groups" "$src" || {
+    echo "estimate: '$src' declares no groups { joback (...) } -- add the molecular structure (the ONE home)" >&2
+    echo "  (it is identity, like the formula):  groups ( { group CH3; count 2; } ... );" >&2
+    exit 1; }
+
+# ---- throwaway case ----------------------------------------------------------
+tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+mkdir -p "$tmp/system" "$tmp/constant/components"
+cp "$src" "$tmp/constant/components/$name.dat"
+cat > "$tmp/system/controlDict" <<EOF
+application   choupoProps;
+description   "bin/estimate $name ($method) -- curation, from the component's own groups{}";
+verbosity     3;
+EOF
+cat > "$tmp/system/propsDict" <<EOF
+operations
+(
+    { name estimate_$name; type estimateComponent; method $method;
+      component $name; output { proposal auto; } }
+);
+EOF
+cat > "$tmp/constant/propertyDict" <<EOF
+components ( $name );
+activityModel { model ideal; }
+equationOfState { model idealGas; }
+EOF
+
+# ---- run + collect ------------------------------------------------------------
+bin_solver="$here/choupoProps"
+[ -x "$bin_solver" ] || bin_solver="$(ls "$here"/build/*/choupoProps 2>/dev/null | head -1)"
+( cd "$tmp" && "$bin_solver" "$tmp" ) | sed '/<<<Choupo:result-begin>>>/,$d' | grep -vE "^\s*$" | tail -40
+
+dest="$(dirname "$src")/$name.estimated.dat"
+if [ -f "$tmp/constant/components/$name.estimated.dat" ]; then
+    # never write into the frozen standards tree -- drop next to the CWD instead
+    case "$dest" in
+        */data/standards/*) dest="./$name.estimated.dat" ;;
+    esac
+    cp "$tmp/constant/components/$name.estimated.dat" "$dest"
+    echo ""
+    echo "  proposal: $dest   (review it, then promote by hand)"
+else
+    echo "estimate: the engine produced no proposal -- see above for why" >&2; exit 1
+fi

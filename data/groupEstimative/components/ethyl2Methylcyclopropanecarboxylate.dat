@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 2-methylcyclopropanecarboxylate  (C7H12O2, CAS 20913-25-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl2Methylcyclopropanecarboxylate;
+formula     C7H12O2;
+CAS         20913-25-1;
+InChIKey    JWYSLVLBKXDZCW-UHFFFAOYSA-N;
+MW          128.171;      // g/mol [origin=calculated method=formula-sum]
+Tc          606.77;      // K   [origin=predictive method=joback]
+Pc          31.280;      // bar [origin=predictive method=joback]
+omega       0.4334;      // -   [origin=predictive method=lee-kesler]
+Tb          420.05;      // K   [origin=predictive method=joback]
+HvapTb      38187.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.369 0.73844 -0.0004272 8.61e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-methylcyclopropane-1-carboxylate" "cyclopropanecarboxylic acid, 2-methyl-, ethyl ester" "jwyslvlbkxdzcw-uhfffaoysa-" "ethyl 2-methylcyclopropanecarboxylate;" "thyl2-methyl cyclopropane-1-carboxylate" "cyclopropanecarboxylicacid, 2-methyl-, ethyl ester" "2-methyl-cyclopropane-1-carboxylic acid ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -452630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     347.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-249270.0
+    phase     gas;
+}

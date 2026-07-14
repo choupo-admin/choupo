@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diisopropenyldiacetylene  (C10H10, CAS 5187-81-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diisopropenyldiacetylene;
+formula     C10H10;
+CAS         5187-81-5;
+InChIKey    FQFCHEWSAJOUPA-UHFFFAOYSA-N;
+MW          130.19;      // g/mol [origin=calculated method=formula-sum]
+Tc          669.42;      // K   [origin=predictive method=joback]
+Pc          32.137;      // bar [origin=predictive method=joback]
+omega       0.2227;      // -   [origin=predictive method=lee-kesler]
+Tb          439.52;      // K   [origin=predictive method=joback]
+HvapTb      40978.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.55 0.61404 -0.00038632 1.0416e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2=C; count 2; } { group C_C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 2; } { group dC; count 2; } { group tC; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,7-dimethylocta-1,7-dien-3,5-diyne" );
+gibbsFormation
+{
+    dHf_298   526150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     471.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=597500.0
+    phase     gas;
+}

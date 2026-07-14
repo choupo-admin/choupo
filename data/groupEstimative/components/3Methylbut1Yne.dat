@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methylbut-1-yne  (C5H8, CAS 598-23-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Methylbut1Yne;
+formula     C5H8;
+CAS         598-23-2;
+InChIKey    USCSRAJGJYMJFZ-UHFFFAOYSA-N;
+MW          68.119;      // g/mol [origin=calculated method=formula-sum]
+Tc          482.69;      // K   [origin=predictive method=joback]
+Pc          42.056;      // bar [origin=predictive method=joback]
+omega       0.1672;      // -   [origin=predictive method=lee-kesler]
+Tb          303.68;      // K   [origin=predictive method=joback]
+HvapTb      26194.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.44 0.39084 -0.00024733 6.619e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methyl-1-butyne" "isopentyne" "1-butyne, 3-methyl-" "isopropylacetylene" "3-methyl,1-butyne" "1-butyne,3-methyl- (6ci,7ci,8ci,9ci)" );
+gibbsFormation
+{
+    dHf_298   140090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     310.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=211850.0
+    phase     gas;
+}

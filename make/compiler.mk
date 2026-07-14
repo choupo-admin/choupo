@@ -41,5 +41,5 @@ CXXSTD   := -std=c++17
 WARN     := -Wall -Wextra -Wpedantic
 INCLUDES := -Isrc
 
-CXXFLAGS := $(CXXSTD) $(OPT) $(WARN) $(INCLUDES)
-LDFLAGS  := $(LDFLAGS_PLATFORM)
+CXXFLAGS := $(CXXSTD) $(OPT) $(WARN) $(INCLUDES) -pthread
+LDFLAGS  := $(LDFLAGS_PLATFORM) -pthread

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-di-tert-pentylphenol  (C16H26O, CAS 120-95-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24DiTertPentylphenol;
+formula     C16H26O;
+CAS         120-95-6;
+InChIKey    WMVJWKURWRGJCI-UHFFFAOYSA-N;
+MW          234.383;      // g/mol [origin=calculated method=formula-sum]
+Tc          893.33;      // K   [origin=predictive method=joback]
+Pc          19.736;      // bar [origin=predictive method=joback]
+omega       0.6991;      // -   [origin=predictive method=lee-kesler]
+Tb          671.50;      // K   [origin=predictive method=joback]
+HvapTb      64570.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-89.128 1.79172 -0.00141072 4.567e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 2; } { group C; count 2; } { group ACH; count 3; } { group AC; count 2; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 2; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4-bis(2-methylbutan-2-yl)phenol" "2,4-di-tert-amylphenol" "phenol, 2,4-bis(1,1-dimethylpropyl)-" "2,4-bis(1,1-dimethylpropyl)phenol" "2,4-di-t-pentylphenol" "phenol, 2,4-di-tert-pentyl-" "di-tert-amylphenol" "phenol,4-di-tert-pentyl-" "wmvjwkurwrgjci-uhfffaoysa-" "phenol,4-bis(1,1-dimethylpropyl)-" "l083" );
+gibbsFormation
+{
+    dHf_298   -343320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     615.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37680.0
+    phase     gas;
+}

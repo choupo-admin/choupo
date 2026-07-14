@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-bromo-2,2-bis(bromomethyl)butane  (C6H11Br3, CAS 6974-30-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Bromo22BisBromomethylButane;
+formula     C6H11Br3;
+CAS         6974-30-7;
+InChIKey    HUUMSZPUWMAIHD-UHFFFAOYSA-N;
+MW          322.866;      // g/mol [origin=calculated method=formula-sum]
+Tc          763.51;      // K   [origin=predictive method=joback]
+Pc          40.673;      // bar [origin=predictive method=joback]
+omega       0.5791;      // -   [origin=predictive method=lee-kesler]
+Tb          532.13;      // K   [origin=predictive method=joback]
+HvapTb      46959.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.466 0.81422 -0.0006886 2.344e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group C; count 1; } { group Br; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group C; count 1; } { group Br; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-2,2-bis(bromomethyl)butane" "butane,1-bromo-2,2-bis(bromomethyl)-" );
+gibbsFormation
+{
+    dHf_298   -96930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     503.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=45440.0
+    phase     gas;
+}

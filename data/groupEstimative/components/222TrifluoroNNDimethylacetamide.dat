@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,2-trifluoro-n,n-dimethylacetamide  (C4H6F3NO, CAS 1547-87-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        222TrifluoroNNDimethylacetamide;
+formula     C4H6F3NO;
+CAS         1547-87-1;
+InChIKey    WXBWKMLIVXELSF-UHFFFAOYSA-N;
+MW          141.092;      // g/mol [origin=calculated method=formula-sum]
+Tc          511.91;      // K   [origin=predictive method=joback]
+Pc          36.421;      // bar [origin=predictive method=joback]
+omega       0.4630;      // -   [origin=predictive method=lee-kesler]
+Tb          352.01;      // K   [origin=predictive method=joback]
+HvapTb      29540.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.28 0.64094 -0.0005087 1.5346e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CF3; count 1; } { group CON_CH3_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group C; count 1; } { group F; count 3; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,2-tris(fluoranyl)-n,n-dimethyl-ethanamide" "n,n-dimethyltrifluoroacetamide" "acetamide, 2,2,2-trifluoro-n,n-dimethyl-" "n,ndimethyltrifluoroacetamide" "nn-dimethyltrifluoroacetamide" "n,n-dimethyl-trifluoroacetamide" "2,2,2-trifluoro-nn-dimethylacetamide" "acetamide,2,2,2-trifluoro-n,n-dimethyl-" "2,2,2-trifluoro-n,n-dimethylacetamide;dimethyltrifluoroacetamide;n,n-dimethyltrifluoroacetamide;trifluoro-n,n-dimethylacetamide;" );
+gibbsFormation
+{
+    dHf_298   -768020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     410.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-616930.0
+    phase     gas;
+}

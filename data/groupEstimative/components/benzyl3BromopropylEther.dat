@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzyl 3-bromopropyl ether  (C10H13BrO, CAS 54314-84-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzyl3BromopropylEther;
+formula     C10H13BrO;
+CAS         54314-84-0;
+InChIKey    PSUXTZLDBVEZTD-UHFFFAOYSA-N;
+MW          229.117;      // g/mol [origin=calculated method=formula-sum]
+Tc          762.02;      // K   [origin=predictive method=joback]
+Pc          31.036;      // bar [origin=predictive method=joback]
+omega       0.5921;      // -   [origin=predictive method=lee-kesler]
+Tb          543.66;      // K   [origin=predictive method=joback]
+HvapTb      48975.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.416 0.8499 -0.0005118 1.126e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 5; } { group ACCH2; count 1; } { group CH2O; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-bromanylpropoxymethylbenzene" "[(3-bromopropoxy)methyl]benzene" "((3-bromopropoxy)methyl)benzene" "benzyl3-bromopropylether" "1-((3-bromopropoxy)methyl)benzene" "1-[(3-bromopropoxy)methyl]benzene" "3-bromopropoxymethylbenzene" "3-(benzyloxy)propyl bromide" "(3-bromopropoxymethyl)benzene" "3-bromo-1-(phenylmethoxy)propane" "benzyl (3-bromoprop-1-yl) ether" "ether,benzyl 3-bromopropyl (6ci); (3-bromopropoxymethyl) benzene;1-benzyloxy-3-bromopropane; 3-(benzyloxy)-1-bromopropane; 3-benzyloxypropylbromide; 3-bromo-1-benzyloxypropane; 3-bromopropanol benzylic ether;3-bromopropyl benzyl ether; 3-bromopropyl phenylmethyl ether; benzyl3-bromopropyl ether" );
+gibbsFormation
+{
+    dHf_298   -119090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     501.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=55050.0
+    phase     gas;
+}

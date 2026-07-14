@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,4-difluorobenzoic acid  (C7H4F2O2, CAS 455-86-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34DifluorobenzoicAcid;
+formula     C7H4F2O2;
+CAS         455-86-7;
+InChIKey    FPENCTDAQQQKNY-UHFFFAOYSA-N;
+MW          158.103;      // g/mol [origin=calculated method=formula-sum]
+Tc          752.30;      // K   [origin=predictive method=joback]
+Pc          39.555;      // bar [origin=predictive method=joback]
+omega       0.7514;      // -   [origin=predictive method=lee-kesler]
+Tb          540.45;      // K   [origin=predictive method=joback]
+HvapTb      50306.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.0 0.5453 -0.00035952 8.7e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group COOH; count 1; } { group ACF; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4-bis(fluoranyl)benzoic acid" "benzoic acid, 3,4-difluoro-" "qvr cf df" "3,4-difluorobenzoate;" "3,4-fifluorobenzoic acid" "3,4-difluoro benzoic acid" "3,4-difluoro-benzoic acid" );
+gibbsFormation
+{
+    dHf_298   -716710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     426.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-632320.0
+    phase     gas;
+}

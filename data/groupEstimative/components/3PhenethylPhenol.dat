@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-phenethyl-phenol  (C14H14O, CAS 33675-75-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3PhenethylPhenol;
+formula     C14H14O;
+CAS         33675-75-1;
+InChIKey    AIHZDRMFOVBNAV-UHFFFAOYSA-N;
+MW          198.265;      // g/mol [origin=calculated method=formula-sum]
+Tc          902.69;      // K   [origin=predictive method=joback]
+Pc          32.616;      // bar [origin=predictive method=joback]
+omega       0.7122;      // -   [origin=predictive method=lee-kesler]
+Tb          653.90;      // K   [origin=predictive method=joback]
+HvapTb      64324.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-86.568 1.3306 -0.00105656 3.395e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group ACCH2; count 2; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(2-phenylethyl)phenol" "3-phenethylphenol" "phenol, m-phenethyl-" "phenol, 3-(2-phenylethyl)-" "phenol,3-(2-phenylethyl)-" "1-(3-hydroxyphenyl)-2-phenylethane" "phenol,m-phenethyl- (8ci);1-m-hydroxyphenyl-2-phenylethane;3-phenethylphenol;3-(2-phenylethyl)phenol;1-(3-hydroxyphenyl)-2-phenylethane;" );
+gibbsFormation
+{
+    dHf_298   -36540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     514.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=137200.0
+    phase     gas;
+}

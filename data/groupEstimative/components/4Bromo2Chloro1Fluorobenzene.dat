@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-bromo-2-chloro-1-fluorobenzene  (C6H3BrClF, CAS 60811-21-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Bromo2Chloro1Fluorobenzene;
+formula     C6H3BrClF;
+CAS         60811-21-4;
+InChIKey    CJTIWGBQCVYTQE-UHFFFAOYSA-N;
+MW          209.442;      // g/mol [origin=calculated method=formula-sum]
+Tc          708.55;      // K   [origin=predictive method=joback]
+Pc          44.091;      // bar [origin=predictive method=joback]
+omega       0.4307;      // -   [origin=predictive method=lee-kesler]
+Tb          476.38;      // K   [origin=predictive method=joback]
+HvapTb      42553.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.3 0.4327 -0.00030792 8.46e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACCl; count 1; } { group Br; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-bromanyl-2-chloranyl-1-fluoranyl-benzene" "3-chloro-4-fluorobromobenzene" "1-bromo-3-chloro-4-fluorobenzene" "3-chloro-4-fluorobenzene bromide" "4-bromo-2-chlorofluorobenzene" "4-bromo-2-chloro-fluorobenzene" "3-chloro-4-fluorobromobenzene 98%" "o933" "1-bromo-3-chloro-4-fluorobenzene;3-chloro-4-fluorobromobenzene;5-bromo-2-fluorochlorobenzene;4-bromo-2-chlorofluorobenzene;" );
+gibbsFormation
+{
+    dHf_298   -139100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     387.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-99630.0
+    phase     gas;
+}

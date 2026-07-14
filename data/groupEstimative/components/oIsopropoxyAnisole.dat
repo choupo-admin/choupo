@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: o-(isopropoxy)anisole  (C10H14O2, CAS 2539-21-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oIsopropoxyAnisole;
+formula     C10H14O2;
+CAS         2539-21-1;
+InChIKey    HZXKDBNTDXFOIG-UHFFFAOYSA-N;
+MW          166.22;      // g/mol [origin=calculated method=formula-sum]
+Tc          711.81;      // K   [origin=predictive method=joback]
+Pc          28.054;      // bar [origin=predictive method=joback]
+omega       0.5073;      // -   [origin=predictive method=lee-kesler]
+Tb          504.46;      // K   [origin=predictive method=joback]
+HvapTb      45224.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.51 0.69496 -0.00026556 -1.7e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group ACH; count 4; } { group AC; count 2; } { group CH3O; count 1; } { group CH-O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methoxy-2-propan-2-yloxy-benzene" "1-isopropoxy-2-methoxybenzene" "benzene, 1-methoxy-2-(1-methylethoxy)-" "o-(1-methylethoxy)anisole" "hzxkdbntdxfoig-uhfffaoysa-" "1-methoxy-2-propan-2-yloxybenzene" "1-methoxy-2-(1-methylethoxy)benzene" "1-methoxy-2-(propan-2-yloxy)benzene" "benzene,1-methoxy-2-(1-methylethoxy)-" "benzene,1-isopropoxy-2-methoxy- (7ci,8ci); 1-methoxy-2-(1-methylethoxy)benzene;1-methoxy-2-isopropoxybenzene; isopropyl o-methoxyphenyl ether" );
+gibbsFormation
+{
+    dHf_298   -294390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     445.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76340.0
+    phase     gas;
+}

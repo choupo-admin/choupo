@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-azulenemethanol, decahydro-8-methyl-2-(1-methylethenyl)-, acetate  (C17H28O2, CAS 68891-91-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4AzulenemethanolDecahydro8Methyl21MethylethenylAcetate;
+formula     C17H28O2;
+CAS         68891-91-8;
+InChIKey    BMQJGVKRKKKNKS-UHFFFAOYSA-N;
+MW          264.409;      // g/mol [origin=calculated method=formula-sum]
+Tc          868.75;      // K   [origin=predictive method=joback]
+Pc          15.537;      // bar [origin=predictive method=joback]
+omega       0.6313;      // -   [origin=predictive method=lee-kesler]
+Tb          659.89;      // K   [origin=predictive method=joback]
+HvapTb      59840.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-92.989 1.72786 -0.0009202 1.476e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 5; } { group CH2=C; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(8-methyl-2-prop-1-en-2-yl-1,2,3,3a,4,5,6,7,8,8a-decahydroazulen-4-yl)methyl ethanoate" "4-azulenemethanol, decahydro-8-methyl-2-(1-methylethenyl)-, 4-acetate" "decahydro-2-isopropenyl-8-methylazulene-4-methyl acetate" "(9-methylvinyl-6-methylbicyclo(5.3.0)decan-2-yl)methanol acetate (ester)" "(8-methyl-2-prop-1-en-2-yl-1,2,3,3a,4,5,6,7,8,8a-decahydroazulen-4-yl)methyl acetate" );
+gibbsFormation
+{
+    dHf_298   -535910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     632.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-88850.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methyldiethanolamine  (C5H13NO2, CAS 105-59-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethyldiethanolamine;
+formula     C5H13NO2;
+CAS         105-59-9;
+InChIKey    CRVGTESFCCXCTH-UHFFFAOYSA-N;
+MW          119.164;      // g/mol [origin=calculated method=formula-sum]
+Tc          667.75;      // K   [origin=predictive method=joback]
+Pc          43.511;      // bar [origin=predictive method=joback]
+omega       1.3449;      // -   [origin=predictive method=lee-kesler]
+Tb          510.80;      // K   [origin=predictive method=joback]
+HvapTb      62125.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.766 0.67072 -0.0004216 1.053e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group OH; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-hydroxyethyl(methyl)amino]ethanol" "methyldiethanolamine" "2,2'-(methylimino)diethanol" "ethanol, 2,2'-(methylimino)bis-" "n-methyliminodiethanol" "2,2'-methyliminodiethanol" "n,n-bis(2-hydroxyethyl)methylamine" "usaf do-52" "methyl diethanolamine" "bis(2-hydroxyethyl)methylamine" "methylbis(2-hydroxyethyl)amine" "n-methyl-2,2'-iminodiethanol" );
+gibbsFormation
+{
+    dHf_298   -383460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     468.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-171640.0
+    phase     gas;
+}

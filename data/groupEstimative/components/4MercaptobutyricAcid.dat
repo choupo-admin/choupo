@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-mercaptobutyric acid  (C4H8O2S, CAS 13095-73-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4MercaptobutyricAcid;
+formula     C4H8O2S;
+CAS         13095-73-3;
+InChIKey    DTRIDVOOPAQEEL-UHFFFAOYSA-N;
+MW          120.166;      // g/mol [origin=calculated method=formula-sum]
+Tc          714.84;      // K   [origin=predictive method=joback]
+Pc          47.628;      // bar [origin=predictive method=joback]
+omega       0.6615;      // -   [origin=predictive method=lee-kesler]
+Tb          499.49;      // K   [origin=predictive method=joback]
+HvapTb      48399.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.743 0.4619 -0.0002888 7e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group COOH; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group COOH; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-sulfanylbutanoic acid" "gmba" "butanoic acid, 4-mercapto-" "gamma-mercaptobutyric acid" "butyric acid, 4-mercapto-" "4-mercaptobutanoic acid" "4-thiobutyric acid" "delta-mercaptobutyricacid" "butanoic acid,4-mercapto-" "13095-66-4 (parent)" "4-mercaptobutyric acid, technical grade" "butyricacid, 4-mercapto- (7ci,8ci); 4-mercaptobutanoic acid; 4-mercaptobutyric acid; g-mercaptobutyric acid" );
+gibbsFormation
+{
+    dHf_298   -437680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     427.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-331720.0
+    phase     gas;
+}

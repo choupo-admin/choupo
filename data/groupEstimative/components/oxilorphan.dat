@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxilorphan  (C20H27NO2, CAS 42281-59-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oxilorphan;
+formula     C20H27NO2;
+CAS         42281-59-4;
+InChIKey    STBZIDOIKQNFCQ-HSALFYBXSA-N;
+MW          313.441;      // g/mol [origin=calculated method=formula-sum]
+Tc          1144.06;      // K   [origin=predictive method=joback]
+Pc          26.353;      // bar [origin=predictive method=joback]
+omega       1.3969;      // -   [origin=predictive method=lee-kesler]
+Tb          905.81;      // K   [origin=predictive method=joback]
+HvapTb      92310.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-355.289 3.2557 -0.00332732 1.371e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH; count 2; } { group C; count 2; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group OH; count 1; } { group ACOH; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 2; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oxilorphane [inn-french]" "oxilorphanum [inn-latin]" "(-)-17-cyclopropylmethylmorphinan-3,4-diol" "l-n-cyclopropylmethyl-3,14-dihydroxymorphinan" "morphinan-3,14-diol, 17-(cyclopropylmethyl)-" "(-)-3,14-dihydroxy-n-(cyclobutylmethyl)morphinan" "oxilorfano" "oxilorphane" "oxilorphanum" "oxilorphan (usan/inn)" "oxilorphan [usan:inn]" "(-)-17-(cyclopropylmethyl)morphinan-3,14-diol" );
+gibbsFormation
+{
+    dHf_298   -177560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     713.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=259560.0
+    phase     gas;
+}

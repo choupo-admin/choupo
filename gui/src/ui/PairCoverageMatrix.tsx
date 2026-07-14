@@ -74,6 +74,9 @@ function nodeOf(r: PairResolution): string {
 }
 
 /** Map a pair's resolution to a coloured cell. */
+/** Exported for the focused audit tests (forum #79-5). */
+export function badgeForTest(r: PairResolution): CellInfo { return classify(r); }
+
 function classify(r: PairResolution | undefined): CellInfo {
   if (!r) return { label: "?", color: "gray", title: "not resolved", flag: "soft", node: "" };
   const src = r.source;
@@ -82,17 +85,44 @@ function classify(r: PairResolution | undefined): CellInfo {
     case "inline":
       return { label: "inline", color: "teal", title: `inline in thermoPackage`, flag: "ok", node };
     case "standard":
-      return { label: prov(r) ?? "library", color: "teal",
-        title: `standard library — ${src}${provNote(r)}`, flag: "ok", node };
+      {
+        // origin is ORTHOGONAL to tier (forum #79-4): status says WHERE it
+        // resolved; origin says WHAT CLASS of confidence it carries.  A
+        // standard `assumed`/`predictive` pair must not masquerade as green.
+        const cls = r.origin && r.origin !== "unattributed" ? r.origin : r.provSource;
+        if (cls === "predictive")
+          return { label: "predictive", color: "orange",
+            title: `standard, but MODEL-DERIVED surrogate — ${src}${provNote(r)}`, flag: "danger", node };
+        if (cls === "assumed")
+          return { label: "assumed", color: "yellow",
+            title: `standard, but an engineering ASSUMPTION — ${src}${provNote(r)}`, flag: "soft", node };
+        if (cls === "estimated")
+          return { label: "estimated", color: "yellow",
+            title: `standard, but group-contribution ESTIMATE — ${src}${provNote(r)}`, flag: "soft", node };
+        if (cls === "placeholder")
+          return { label: "placeholder", color: "red",
+            title: `standard PLACEHOLDER — ${src}`, flag: "danger", node };
+        return { label: (cls && cls !== "inline" ? cls : undefined) ?? "library", color: "teal",
+          title: `standard library — ${src}${provNote(r)}`, flag: r.promotedDespite ? "soft" : "ok", node };
+      }
     case "perNode":
     case "caseRoot": {
-      const p = r.provSource;
-      if (p === "placeholder")
+      // POLICY by the typed origin (forum #77-2); provSource is legacy fallback
+      // for results emitted before the origin field existed.
+      const cls = r.origin && r.origin !== "unattributed" ? r.origin : r.provSource;
+      if (cls === "placeholder")
         return { label: "placeholder", color: "red",
           title: `LOCAL PLACEHOLDER (not fitted) — ${src}`, flag: "danger", node };
-      if (p === "fitted")
-        return { label: "fitted", color: "green", title: `fitted + promoted — ${src}`, flag: "ok", node };
-      return { label: p && p.length > 0 ? p : "local", color: "yellow",
+      if (cls === "regressed" || cls === "fitted")
+        return { label: "fitted", color: "green", title: `fitted + promoted — ${src}`,
+          flag: r.promotedDespite ? "soft" : "ok", node };
+      if (cls === "predictive")
+        return { label: "predictive", color: "orange",
+          title: `MODEL-DERIVED surrogate, not data — ${src}${provNote(r)}`, flag: "danger", node };
+      if (cls === "assumed")
+        return { label: "assumed", color: "yellow",
+          title: `engineering assumption — ${src}${provNote(r)}`, flag: "soft", node };
+      return { label: cls && cls.length > 0 ? cls : "local", color: "yellow",
         title: `local file — ${src}${provNote(r)}`, flag: "soft", node };
     }
     case "idealDefault":
@@ -103,10 +133,6 @@ function classify(r: PairResolution | undefined): CellInfo {
   }
 }
 
-function prov(r: PairResolution): string | undefined {
-  return r.provSource && r.provSource.length > 0 && r.provSource !== "inline"
-    ? r.provSource : undefined;
-}
 function provNote(r: PairResolution): string {
   return r.provSource && r.provSource.length > 0 ? ` (${r.provSource})` : "";
 }

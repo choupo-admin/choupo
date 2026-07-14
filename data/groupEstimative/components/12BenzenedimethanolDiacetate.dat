@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-benzenedimethanol, diacetate  (C12H14O4, CAS 14019-65-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12BenzenedimethanolDiacetate;
+formula     C12H14O4;
+CAS         14019-65-9;
+InChIKey    YNKVLCZAXFESIR-UHFFFAOYSA-N;
+MW          222.24;      // g/mol [origin=calculated method=formula-sum]
+Tc          829.93;      // K   [origin=predictive method=joback]
+Pc          23.935;      // bar [origin=predictive method=joback]
+omega       0.7932;      // -   [origin=predictive method=lee-kesler]
+Tb          622.26;      // K   [origin=predictive method=joback]
+HvapTb      60058.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.192 0.89584 -0.00040396 1.8e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group ACCH2; count 2; } { group CH3COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2-(acetyloxymethyl)phenyl]methyl ethanoate" "1,2-benzenedimethanol, 1,2-diacetate" "[2-(acetyloxymethyl)phenyl]methyl acetate" );
+gibbsFormation
+{
+    dHf_298   -700510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     613.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-467800.0
+    phase     gas;
+}

@@ -121,6 +121,19 @@ public:
     }
 
 private:
+    // MULTI-REACTION path (`reactions ( r1 r2 ... );`): R coupled CSTR design
+    // equations  xi_j = r_j(xi) V_R  solved together by the multivariate Newton.
+    // The single-reaction path (`reaction <name>;`) stays a bracketed Newton-1D.
+    int solveMultiReaction(const DictPtr&       dict,
+                           const ThermoPackage& thermo,
+                           int                  verbosity,
+                           scalar               F_in_kmols,
+                           scalar               T,
+                           scalar               P,
+                           scalar               V_R,
+                           scalar               vf_in,
+                           const sVector&       z_in);
+
     inline static const std::string type_ = "cstr";
     std::vector<ProcessStream>     produced_;
     std::map<std::string, scalar>  kpis_;

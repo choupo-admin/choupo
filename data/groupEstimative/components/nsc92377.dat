@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nsc 92377  (C9H13NO, CAS 51757-86-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nsc92377;
+formula     C9H13NO;
+CAS         51757-86-9;
+InChIKey    LUARJZGXWCWEEU-UHFFFAOYSA-N;
+MW          151.209;      // g/mol [origin=calculated method=formula-sum]
+Tc          777.21;      // K   [origin=predictive method=joback]
+Pc          37.684;      // bar [origin=predictive method=joback]
+omega       0.5741;      // -   [origin=predictive method=lee-kesler]
+Tb          544.40;      // K   [origin=predictive method=joback]
+HvapTb      51845.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-133.32 1.39432 -0.00134898 5.4056e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 2; } { group C; count 1; } { group CH=CH; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 2; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-methylbicyclo[2.2.1]hept-2-ene-5-carboxamide" "2-methylbicyclo[2.2.1]hept-5-ene-2-carboxamide" "5-endo-methyl-2-norbornene-5-exo-carboxamide" "5-exo-methyl-2-norbornene-5-endo-carboxamide" "2-norbornene-5-exo-carboxamide, 5-endo-methyl-" "(1r,4r,5s)-5-methylbicyclo[2.2.1]hept-2-ene-5-carboxamide" "bicyclo(2.2.1)hept-5-ene-2-carboxamide, 2-methyl-, endo-" "bicyclo(2.2.1)hept-5-ene-2-carboxamide, 2-methyl-, endo- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -115760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     414.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=88590.0
+    phase     gas;
+}

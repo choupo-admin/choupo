@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrabenzo[a,e,klm,s]picene  (C36H20, CAS 72382-90-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrabenzoAEKlmSPicene;
+formula     C36H20;
+CAS         72382-90-2;
+InChIKey    GJUKITWGXUBGCV-UHFFFAOYSA-N;
+MW          452.556;      // g/mol [origin=calculated method=formula-sum]
+Tc          1519.56;      // K   [origin=predictive method=joback]
+Pc          15.093;      // bar [origin=predictive method=joback]
+omega       1.2125;      // -   [origin=predictive method=lee-kesler]
+Tb          1228.96;      // K   [origin=predictive method=joback]
+HvapTb      115124.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-212.73 2.974 -0.0026958 9.728e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 20; } { group AC; count 16; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 20; } { group dC_ring; count 16; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetrabenzo(a,e,klm,s)picene" "dibenzo[a,o]naphtho[1,2,3,4-rst]pentaphene" "dibenzo[a,o]naphtho[1,2,3,4-rst]pentaphene(9ci)" );
+gibbsFormation
+{
+    dHf_298   852970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     535.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1144680.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hellebrigenin 3-acetate  (C26H34O7, CAS 4064-09-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hellebrigenin3Acetate;
+formula     C26H34O7;
+CAS         4064-09-9;
+InChIKey    VIOBLZMEZRNYRR-PTGWYJJLSA-N;
+MW          458.551;      // g/mol [origin=calculated method=formula-sum]
+Tc          1462.10;      // K   [origin=predictive method=joback]
+Pc          15.898;      // bar [origin=predictive method=joback]
+omega       1.3816;      // -   [origin=predictive method=lee-kesler]
+Tb          1193.51;      // K   [origin=predictive method=joback]
+HvapTb      124674.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-382.17 4.02024 -0.00394952 1.6095e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 9; } { group CH; count 4; } { group C; count 4; } { group CH=CH; count 1; } { group CH=C; count 1; } { group OH; count 2; } { group CHO; count 1; } { group CH3COO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 9; } { group CH_ring; count 4; } { group C_ring; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group OH; count 2; } { group OdCH_al; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(3s,5s,10s,13r,14s,17r)-10-methanoyl-13-methyl-5,14-bis(oxidanyl)-17-(6-oxidanylidenepyran-3-yl)-2,3,4,6,7,8,9,11,12,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-yl] ethanoate" "hellebrigenin-3-acetate" "19-oxo-3-beta,5,14-trihydroxy-5-beta-bufa-20,22-dienolide-3-acetate" "5-beta-bufa-20,22-dienolide, 3-beta,5,14-trihydroxy-19-oxo-, 3-acetate" "5beta-bufa-20,22-dienolide, 3beta,5,14-trihydroxy-19-oxo-, 3-acetate" "5beta-bufa-20,22-dienolide, 3beta,5,14-trihydroxy-19-oxo-, 3-acetate (8ci)" "bufa-20,22-dienolide, 3-(acetyloxy)-5,14-dihydroxy-19-oxo-, (3-beta,5-beta)-" "bufa-20,22-dienolide, 3-(acetyloxy)-5,14-dihydroxy-19-oxo-, (3-beta,5-beta)- (9ci)" "[(3s,5s,10s,13r,14s,17r)-10-formyl-5,14-dihydroxy-13-methyl-17-(6-oxopyran-3-yl)-2,3,4,6,7,8,9,11,12,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-yl] acetate" );
+gibbsFormation
+{
+    dHf_298   -1173500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1130.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-589510.0
+    phase     gas;
+}

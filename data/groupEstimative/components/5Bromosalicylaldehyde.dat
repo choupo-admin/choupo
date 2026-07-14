@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-bromosalicylaldehyde  (C7H5BrO2, CAS 1761-61-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H5BrO2 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        5Bromosalicylaldehyde;
+formula     C7H5BrO2;
+CAS         1761-61-1;
+InChIKey    MKKSTJKBKNCMRV-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          201.019;      // g/mol [origin=calculated method=formula-sum]
+Tc          763.36;      // K   [origin=predictive method=joback]
+Pc          58.094;      // bar [origin=predictive method=joback]
+omega       0.5466;      // -   [origin=predictive method=lee-kesler]
+Tb          514.62;      // K   [origin=predictive method=joback]
+HvapTb      51190.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-43.31 0.7313 -0.00080192 3.366e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACOH; count 1; } { group CHO; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-bromanyl-2-oxidanyl-benzaldehyde" "5-bromo-2-hydroxybenzaldehyde" "benzaldehyde, 5-bromo-2-hydroxy-" "2-hydroxy-5-bromobenzaldehyde" "5-bromo-salicyclaldehyde" "salicylaldehyde, 5-bromo-" "agn-pc-0cri51" "salicylaldehyde, 5-bromo-;5-bromo-2-hydroxybenzaldehyde;2-hydroxy-5-bromobenzaldehyde;2-bromo-5-hydroxy-benzaldehyde;benzaldehyde, 5-bromo-2-hydroxy-;5-bromo-salicyclaldehyde;" );
+gibbsFormation
+{
+    dHf_298   -37280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     474.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=14500.0
+    phase     gas;
+}

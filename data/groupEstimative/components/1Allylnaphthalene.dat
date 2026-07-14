@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-allylnaphthalene  (C13H12, CAS 2489-86-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Allylnaphthalene;
+formula     C13H12;
+CAS         2489-86-3;
+InChIKey    RJFCFNWLPJRCLR-UHFFFAOYSA-N;
+MW          168.239;      // g/mol [origin=calculated method=formula-sum]
+Tc          775.64;      // K   [origin=predictive method=joback]
+Pc          28.812;      // bar [origin=predictive method=joback]
+omega       0.4672;      // -   [origin=predictive method=lee-kesler]
+Tb          544.36;      // K   [origin=predictive method=joback]
+HvapTb      48440.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-62.969 1.0767 -0.00080718 2.426e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group ACH; count 7; } { group AC; count 2; } { group ACCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-prop-2-enylnaphthalene" "naphthalene, 1-allyl-" "3-(1-naphthyl)-1-propene" "alpha-allylnaphthalene" "naphthalene, 1-(2-propenyl)-" "1-(2-propenyl)naphthalene" "1-(2-propen-1-yl)-naphthalene" "prop-2-enylnaphthalene" "1-(prop-2-en-1-yl)naphthalene" "naphthalene, 1-(2-propenyl)- (9ci)" "k920" "naphthalene,1-(2-propenyl)- (9ci);naphthalene, 1-allyl- (7ci,8ci);3-(1-naphthyl)-1-propene;a-allylnaphthalene;" );
+gibbsFormation
+{
+    dHf_298   229910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     436.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=355850.0
+    phase     gas;
+}

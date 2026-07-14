@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tartaric acid  (C4H6O6, CAS 133-37-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tartaricAcid;
+formula     C4H6O6;
+CAS         133-37-9;
+InChIKey    FEWJPZIEWOKRBE-UHFFFAOYSA-N;
+MW          150.086;      // g/mol [origin=calculated method=formula-sum]
+Tc          961.51;      // K   [origin=predictive method=joback]
+Pc          66.748;      // bar [origin=predictive method=joback]
+omega       2.2025;      // -   [origin=predictive method=lee-kesler]
+Tb          765.62;      // K   [origin=predictive method=joback]
+HvapTb      91408.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.67 0.5652 -0.0004062 1.11e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 2; } { group OH; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 2; } { group OH; count 2; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-bis(oxidanyl)butanedioic acid" "2,3-dihydroxysuccinic acid" "dl-tartaric acid" "racemic acid" "uvic acid" "d-tartaric acid" "traubensaure" "dl-tartrate" "paratartaric aicd" "l-(+)-tartaric acid" "tartaric acid d,l" "racemic tartaric acid" );
+gibbsFormation
+{
+    dHf_298   -1141450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     500.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-983540.0
+    phase     gas;
+}

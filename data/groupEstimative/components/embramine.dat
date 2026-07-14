@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: embramine  (C18H22BrNO, CAS 3565-72-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        embramine;
+formula     C18H22BrNO;
+CAS         3565-72-8;
+InChIKey    URSRSKSNFPUKGH-UHFFFAOYSA-N;
+MW          348.284;      // g/mol [origin=calculated method=formula-sum]
+Tc          1006.01;      // K   [origin=predictive method=joback]
+Pc          20.109;      // bar [origin=predictive method=joback]
+omega       0.8279;      // -   [origin=predictive method=lee-kesler]
+Tb          767.57;      // K   [origin=predictive method=joback]
+HvapTb      70468.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-68.458 1.72126 -0.00119556 3.177e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group ACH; count 9; } { group AC; count 3; } { group CH2O; count 1; } { group CH3N; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group Br; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[1-(4-bromophenyl)-1-phenyl-ethoxy]-n,n-dimethyl-ethanamine" "embramine [inn:ban]" "embraminum [inn-latin]" "bromadryl" "mebrophenhydramine" "embramine hydrochloride" "2-(1-(4-bromophenyl)-1-phenylethoxy)-n,n-dimethylethanamine" "2-(p-bromo-alpha-methyl-alpha-phenylbenzyloxy)-n,n-dimethylethyl amine" "2-((p-bromo-.alpha.-methyl-.alpha.-phenylbenzyl)oxy)-n,n-dimethylethylamine" "2-((p-bromo-alpha-methyl-alpha-phenylbenzyl)oxy)-n,n-dimethylethylamine" "ethylamine, 2-((p-bromo-.alpha.-methyl-.alpha.-phenylbenzyl)oxy)-n,n-dimethyl-" "ethylamine, 2-((p-bromo-alpha-methyl-alpha-phenylbenzyl)oxy)-n,n-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     677.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=338810.0
+    phase     gas;
+}

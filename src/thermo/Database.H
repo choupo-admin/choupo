@@ -42,6 +42,7 @@ Description
 
 #include "Component.H"
 
+#include <map>
 #include <string>
 
 namespace Choupo {
@@ -52,6 +53,13 @@ public:
     explicit Database(const std::string& explicitRoot = "");
 
     Component loadComponent(const std::string& name) const;
+
+    // Resolve a token to its CANONICAL component stem.  Exact-name ALWAYS wins
+    // (returns the token unchanged if components/<token>.dat exists -- O(1) path
+    // concat, the index untouched); only on a miss is the generated ALIASES index
+    // consulted (loaded ONCE, never a directory walk); an unknown token is
+    // returned unchanged so the existing not-found error still fires downstream.
+    std::string canonicalName(const std::string& token) const;
 
     const std::string& root() const { return root_; }
 
@@ -66,6 +74,11 @@ private:
     std::string resolveRoot(const std::string& explicitRoot) const;
 
     inline static std::string current_;
+
+    // Alias index (alias -> canonical stem), loaded ONCE from
+    // data/standards/components/ALIASES on the first canonicalName miss.
+    mutable std::map<std::string, std::string> aliasIndex_;
+    mutable bool aliasLoaded_ = false;
 };
 
 } // namespace Choupo

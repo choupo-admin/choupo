@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3,3-trifluoropropylmethyldimethoxysilane  (C6H13F3O2Si, CAS 358-67-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C6H13F3O2Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        333Trifluoropropylmethyldimethoxysilane;
+formula     C6H13F3O2Si;
+CAS         358-67-8;
+InChIKey    DIJRHOZMLZRNLM-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          202.247;      // g/mol [origin=calculated method=formula-sum]
+Tc          532.95;      // K   [origin=predictive method=joback]
+Pc          23.474;      // bar [origin=predictive method=joback]
+omega       0.4259;      // -   [origin=predictive method=lee-kesler]
+Tb          377.70;      // K   [origin=predictive method=joback]
+HvapTb      30317.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (83.052 0.40246 0.0001132 -1.779e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH3O; count 2; } { group CF3; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group F; count 3; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dimethoxy-methyl-[3,3,3-tris(fluoranyl)propyl]silane" "dimethoxy(methyl)(3,3,3-trifluoropropyl)silane" "(3,3,3-trifluoropropyl)methyldimethoxysilane" "silane, dimethoxymethyl(3,3,3-trifluoropropyl)-" "methyl(3,3,3-trifluoropropyl)dimethoxysilane" "dimethoxy-methyl(3,3,3-trifluoropropyl)silane" "dimethoxymethyl(3,3,3-trifluoropropyl)silane" "dimethoxy-methyl-(3,3,3-trifluoropropyl)silane" "silane,dimethoxymethyl(3,3,3-trifluoropropyl)-" "4,4,4-trifluoro-1,1-dimethoxy-1-methyl-1-silabutane" );
+gibbsFormation
+{
+    dHf_298   -1140310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     594.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-896710.0
+    phase     gas;
+}

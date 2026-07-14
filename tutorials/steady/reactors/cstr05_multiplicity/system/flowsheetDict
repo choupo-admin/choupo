@@ -1,0 +1,41 @@
+/*---------------------------------------------------------------------------*\
+  cstr05_multiplicity  --  an ADIABATIC CSTR with THREE steady states.
+
+  Eliminate the extents (at a fixed T the design equations are monotone) and
+  what remains is ONE equation in the temperature:
+
+      phi(T) = H_out(T) - H_in - Q_ext(T) = 0
+
+  the textbook "heat generated equals heat removed".  The generation curve G(T)
+  is a sigmoid (the rate saturates once the reactant is gone); the removal line
+  R(T) = F cp (T - T_in) is straight (adiabatic: the only sink is the sensible
+  heat that leaves with the product).  A straight line can cut a sigmoid THREE
+  times: the extinguished state, an unstable middle state, and the ignited state.
+
+  The feed enters COLD (300 K), where the rate is negligible.  Nothing forces
+  this reactor to ignite -- and nothing forces it to stay cold either.
+
+  Choupo scans, finds them all, prints them, and reports the one nearest
+  `T_guess`.  Change T_guess and the reactor moves to another branch -- the same
+  equipment, the same feed, a different answer.  That is not a numerical defect;
+  it is the physics, and it is why real reactors need a start-up procedure.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        cstr;
+        in          feed;
+        outputs     ( reactorOut );
+        operation
+        {
+            V_R          0.005;         // m^3
+            thermalMode  adiabatic;     // the removal line is pure sensible heat
+            T_guess      380;            // start hot -> the IGNITED branch
+                                         //   set T_guess 300 and the SAME reactor
+                                         //   reports the extinguished one instead
+        }
+        reactions   ( esterification_etac );
+    }
+);

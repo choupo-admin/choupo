@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4'-carboxybenzo-15-crown-5  (C15H20O7, CAS 56683-55-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Carboxybenzo15Crown5;
+formula     C15H20O7;
+CAS         56683-55-7;
+InChIKey    FBNLTQGIRRAGRY-UHFFFAOYSA-N;
+MW          312.318;      // g/mol [origin=calculated method=formula-sum]
+Tc          1180.64;      // K   [origin=predictive method=joback]
+Pc          27.701;      // bar [origin=predictive method=joback]
+omega       1.1727;      // -   [origin=predictive method=lee-kesler]
+Tb          913.81;      // K   [origin=predictive method=joback]
+HvapTb      94240.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.24 1.3481 -0.00050402 -4.4e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group ACH; count 3; } { group AC; count 3; } { group FCH2O; count 5; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 8; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O_ring; count 5; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,5,8,11,14-pentaoxabicyclo[13.4.0]nonadeca-1(15),16,18-triene-17-carboxylic acid" "(benzo-15-crown-5)-4'-carboxylic acid" "4'-carboxybenzo-15-crown 5-ether" "6,7,9,10,12,13,15,16-octahydro-5,8,11,14,17-pentaoxa-benzocyclopentadecene-2-carboxylic acid" "(benzo-15-crown 5-ether)-4'-carboxylic acid" "4 inverted exclamation marka-carboxybenzo-15-crown-5" "(benzo-15-crown-5)-4 inverted exclamation marka-carboxylic acid" "2,3-(4-carboxybenzo)-1,4,7,10,13-pentaoxacyclopentadec-2-ene" "1,2,3,4,5,6,7,8,9,10,11,12,13-tridecahydrobenzo[a][15]annulene-15-carboxylic a cid" "2,3,5,6,8,9,11,12-octahydro-1,4,7,10,13-benzopentaoxacyclopentadecine-15-carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -1118070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     569.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-658480.0
+    phase     gas;
+}

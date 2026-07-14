@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-propyne, 3-iodo-  (C3H3I, CAS 659-86-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Propyne3Iodo;
+formula     C3H3I;
+CAS         659-86-9;
+InChIKey    WGCICQJXVYFFCA-UHFFFAOYSA-N;
+MW          165.957;      // g/mol [origin=calculated method=formula-sum]
+Tc          573.96;      // K   [origin=predictive method=joback]
+Pc          52.510;      // bar [origin=predictive method=joback]
+omega       0.1502;      // -   [origin=predictive method=lee-kesler]
+Tb          351.50;      // K   [origin=predictive method=joback]
+HvapTb      31503.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.631 0.2339 -0.00021673 8.279e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group I; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-iodanylprop-1-yne" "propargyl iodide" "3-iodopropyne" "3-iodo-1-propyne" "propyne, 3-iodo-" "agn-pc-0cqajc" "1-propyne, 3-iodo-(9ci)" );
+gibbsFormation
+{
+    dHf_298   263520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     297.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=255570.0
+    phase     gas;
+}

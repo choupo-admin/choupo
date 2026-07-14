@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trans-Cinnamaldehyde  (C9H8O, CAS 14371-10-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        transCinnamaldehyde;
+formula     C9H8O;
+CAS         14371-10-9;
+InChIKey    KJPRLNWUNMBNBZ-QPJJXVBHSA-N;
+MW          132.162;      // g/mol [origin=calculated method=formula-sum]
+Tc          708.40;      // K   [origin=predictive method=joback]
+Pc          37.870;      // bar [origin=predictive method=joback]
+omega       0.4576;      // -   [origin=predictive method=lee-kesler]
+Tb          485.02;      // K   [origin=predictive method=joback]
+HvapTb      44582.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-41.98 0.7744 -0.0005738 1.667e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(E)-3-phenylprop-2-enal" "(2E)-3-Phenyl-2-propenal" "(e)-3-Phenylacrolein" "(e)-3-Phenylprop-2-en-1-al" "(e)-3-Phenylprop-2-enone" "(E)-3-Phenylpropenal" "(E)-Cinnamaldehyde" "2-propenal, 3-phenyl-, (2E)-" "2-Propenal, 3-phenyl-, (E)-" "Cinnamaldehyde, (E)-" "e-cinnamyl aldehyde" "trans-3-phenyl-2-propenal" );
+gibbsFormation
+{
+    dHf_298   39080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     412.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=118010.0
+    phase     gas;
+}

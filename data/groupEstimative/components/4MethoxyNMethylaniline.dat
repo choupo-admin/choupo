@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-methoxy-n-methylaniline  (C8H11NO, CAS 5961-59-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4MethoxyNMethylaniline;
+formula     C8H11NO;
+CAS         5961-59-1;
+InChIKey    JFXDIXYFXDOZIT-UHFFFAOYSA-N;
+MW          137.182;      // g/mol [origin=calculated method=formula-sum]
+Tc          698.88;      // K   [origin=predictive method=joback]
+Pc          35.685;      // bar [origin=predictive method=joback]
+omega       0.5211;      // -   [origin=predictive method=lee-kesler]
+Tb          486.89;      // K   [origin=predictive method=joback]
+HvapTb      45186.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.3 0.63844 -0.00031316 4.03e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group CH3O; count 1; } { group CH3NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-methoxy-n-methyl-aniline" "n-methyl-p-anisidine" "n-methyl-4-anisidine" "p-anisidine, n-methyl-" "benzenamine, 4-methoxy-n-methyl-" "n-methyl-p-ansidine" "n-methyl-4-methoxyaniline" "4-methoxy-n-methylbenzenamine" "1-methylamino-4-methoxybenzene" "p-methoxy-n-methylaniline" "p-anisidine, n-methyl- (8ci)" "benzenamine, 4-methoxy-n-methyl- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -62140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     406.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=103650.0
+    phase     gas;
+}

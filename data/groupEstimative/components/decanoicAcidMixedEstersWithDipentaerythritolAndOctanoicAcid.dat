@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: decanoic acid, mixed esters with dipentaerythritol and octanoic acid  (C28H54O9, CAS 71662-47-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        decanoicAcidMixedEstersWithDipentaerythritolAndOctanoicAcid;
+formula     C28H54O9;
+CAS         71662-47-0;
+InChIKey    LSYWHBAFFAALPI-UHFFFAOYSA-N;
+MW          534.731;      // g/mol [origin=calculated method=formula-sum]
+Tc          2004.66;      // K   [origin=predictive method=joback]
+Pc          8.131;      // bar [origin=predictive method=joback]
+omega       -0.2074;      // -   [origin=predictive method=lee-kesler]
+Tb          1341.36;      // K   [origin=predictive method=joback]
+HvapTb      159270.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.972 2.87864 -0.0016644 3.36e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 19; } { group C; count 2; } { group OH; count 4; } { group CH2COO; count 2; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 22; } { group C; count 2; } { group OH; count 4; } { group O; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2-[[2,2-bis(hydroxymethyl)-3-oxidanyl-propoxy]methyl]-2-(hydroxymethyl)-3-octanoyloxy-propyl] decanoate" "dipentaerythritol ester of octanoic and decanoic acids" "decanoic acid mixed esters with dipentaerythritol and octanoic acid" "[2-[[3-hydroxy-2,2-bis(hydroxymethyl)propoxy]methyl]-2-(hydroxymethyl)-3-octanoyloxy-propyl] decanoate" "[2-[[3-hydroxy-2,2-bis(hydroxymethyl)propoxy]methyl]-2-(hydroxymethyl)-3-octanoyloxypropyl] decanoate" );
+gibbsFormation
+{
+    dHf_298   -2014450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1486.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1082460.0
+    phase     gas;
+}

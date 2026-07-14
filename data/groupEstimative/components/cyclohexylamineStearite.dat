@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclohexylamine stearite  (C24H49NO2, CAS 15860-21-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclohexylamineStearite;
+formula     C24H49NO2;
+CAS         15860-21-6;
+InChIKey    DBKKYJPKNUNYFA-UHFFFAOYSA-N;
+MW          383.661;      // g/mol [origin=calculated method=formula-sum]
+Tc          1209.23;      // K   [origin=predictive method=joback]
+Pc          9.415;      // bar [origin=predictive method=joback]
+omega       0.9135;      // -   [origin=predictive method=lee-kesler]
+Tb          987.71;      // K   [origin=predictive method=joback]
+HvapTb      97546.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.624 2.31242 -0.001064 1.058e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 21; } { group CHNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 16; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclohexanamine;octadecanoic acid" "cyclohexylammonium stearate" "stearic acid, compd. with cyclohexylamine (1:1)" "cyclohexanamine; octadecanoic acid" "stearic acid, cyclohexylamine salt" "stearic acid, compd. with cyclohexylamine" "stearic acid, cyclohexylamine salt (6ci)" "octadecanoic acid - cyclohexanamine (1:1)" "stearic acid, compd. with cyclohexylamine (7ci)" "octadecanoic acid, compd. with cyclohexanamine (1:1)" "octadecanoic acid, compd. with cyclohexanamine (1:1) (9ci)" );
+gibbsFormation
+{
+    dHf_298   -912470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1272.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-206570.0
+    phase     gas;
+}

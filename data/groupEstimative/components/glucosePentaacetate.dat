@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: glucose pentaacetate  (C16H22O11, CAS 604-68-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        glucosePentaacetate;
+formula     C16H22O11;
+CAS         604-68-2;
+InChIKey    LPTITAGPBXDDGR-LJIZCISZSA-N;
+MW          390.341;      // g/mol [origin=calculated method=formula-sum]
+Tc          1091.94;      // K   [origin=predictive method=joback]
+Pc          14.080;      // bar [origin=predictive method=joback]
+omega       1.1734;      // -   [origin=predictive method=lee-kesler]
+Tb          884.60;      // K   [origin=predictive method=joback]
+HvapTb      91948.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (90.861 1.263 -0.0002191 -2.182e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 4; } { group CH3COO; count 5; } { group CH-O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 1; } { group CH_ring; count 5; } { group O_ring; count 1; } { group COO; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(2r,3r,4s,5r,6r)-3,4,5,6-tetraacetyloxyoxan-2-yl]methyl ethanoate" "penta-o-acetyl-alpha-d-glucopyranose" "alpha-d(+)-glucose pentaacetate" "1,2,3,4,6-penta-o-acetyl-alpha-d-glucopyranose" "pentaacetyl-alpha-d-glucose" "alpha-d-glucopyranose pentaacetate" "a-d-glucopyranose pentaacetate" "alpha-d-(+)-glucose pentaacetate" "1,2,3,4,6-ia-o-ooo pound>>u-" "a-d-ssaa<<aeiinic" "[(2r,3r,4s,5r,6r)-3,4,5,6-tetraacetyloxyoxan-2-yl]methyl acetate" "[(2r,3r,4s,5r,6r)-3,4,5,6-tetrakis(acetyloxy)oxan-2-yl]methyl acetate" "acetic acid [(2r,3r,4s,5r,6r)-3,4,5,6-tetraacetyloxy-2-oxanyl]methyl ester" );
+gibbsFormation
+{
+    dHf_298   -2119010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     784.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1560520.0
+    phase     gas;
+}

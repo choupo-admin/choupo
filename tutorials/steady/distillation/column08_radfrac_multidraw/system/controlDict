@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "rigorous column: multi-feed + multi-side-draw distillation (C3/C4/C5/C6), full-MESH";
+verbosity     3;
+reports { streamTable { }  profiles { }  massBalance { } }

@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethyl amidogen  (C2H6N, CAS 15337-44-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        dimethylAmidogen;
+formula     C2H6N;
+CAS         15337-44-7;
+InChIKey    MAUMSNABMVEOGP-UHFFFAOYSA-N;
+role        radical;
+MW          44.077;      // g/mol [origin=calculated method=formula-sum]
+Tc          505.52;      // K   [origin=predictive method=joback]
+Pc          42.111;      // bar [origin=predictive method=joback]
+omega       0.1862;      // -   [origin=predictive method=lee-kesler]
+Tb          319.96;      // K   [origin=predictive method=joback]
+HvapTb      23381.0;      // J/mol [origin=predictive method=joback]
+
+groups
+{
+    joback ( { group CH3; count 2; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(methyl-$l^{2}-azanyl)methane" "dimethylamino" "(ch3)2n" "n,n-dimethylamino" );
+// formation datum unavailable (element entropy missing): dHf_298=-61000.0 dGf_298=None

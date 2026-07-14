@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lanthionine  (C6H12N2O4S, CAS 3183-08-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lanthionine;
+formula     C6H12N2O4S;
+CAS         3183-08-2;
+InChIKey    DWPCPZJAHOETAG-IMJSIDKUSA-N;
+MW          208.232;      // g/mol [origin=calculated method=formula-sum]
+Tc          1078.74;      // K   [origin=predictive method=joback]
+Pc          46.340;      // bar [origin=predictive method=joback]
+omega       1.6114;      // -   [origin=predictive method=lee-kesler]
+Tb          840.86;      // K   [origin=predictive method=joback]
+HvapTb      90601.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (35.852 0.80539 -0.0005008 1.096e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CHNH2; count 2; } { group COOH; count 2; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 2; } { group COOH; count 2; } { group NH2; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r)-2-azanyl-3-[(2r)-2-azanyl-3-oxidanyl-3-oxidanylidene-propyl]sulfanyl-propanoic acid" "l-lanthionine" "3,3'-thiobis-l-alanine" "beta,beta'-thiodi-l-alanine" "alanine, 3,3'-thiodi-, l-" "lanthionine l-" "alanine, 3,3'-thiobis-, l-" "alanine, 3,3'-thiodi-, dl-" "alanine, 3,3'-thiodi-, l- (8ci)" "cysteine, s-(2-amino-2-carboxyethyl)-" "s-(2-amino-2-carboxyethyl)-dl-cysteine" "(r,r)-bis(2-amino-2-carboxyethyl)sulfide" );
+gibbsFormation
+{
+    dHf_298   -768820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     641.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-527040.0
+    phase     gas;
+}

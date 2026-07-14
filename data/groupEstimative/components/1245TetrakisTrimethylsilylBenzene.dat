@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,4,5-tetrakis(trimethylsilyl)benzene  (C18H38Si4, CAS 17156-61-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C18H38Si4 (delta Si+4; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        1245TetrakisTrimethylsilylBenzene;
+formula     C18H38Si4;
+CAS         17156-61-5;
+InChIKey    IKBMPVFDRAQKNI-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          366.842;      // g/mol [origin=calculated method=formula-sum]
+Tc          867.40;      // K   [origin=predictive method=joback]
+Pc          10.142;      // bar [origin=predictive method=joback]
+omega       0.3649;      // -   [origin=predictive method=lee-kesler]
+Tb          658.66;      // K   [origin=predictive method=joback]
+HvapTb      61100.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (158.79 0.63184 0.00087372 -7.15e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 12; } { group ACH; count 2; } { group AC; count 4; } { group Si; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 12; } { group dCH_ring; count 2; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl-[2,4,5-tris(trimethylsilyl)phenyl]silane" "silane,1,2,4,5-benzenetetrayltetrakis[trimethyl-" "benzene,1,2,4,5-tetrakis(trimethylsilyl)-" "silane,1,2,4,5-benzenetetrayltetrakis[trimethyl- (8ci,9ci);1,2,4,5-tetrakis(trimethylsilyl)benzene" );
+gibbsFormation
+{
+    dHf_298   -659210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1238.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-234840.0
+    phase     gas;
+}

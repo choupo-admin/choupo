@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-acetyl-2-norbornene  (C9H12O, CAS 5063-03-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Acetyl2Norbornene;
+formula     C9H12O;
+CAS         5063-03-6;
+InChIKey    NIMLCWCLVJRPFY-UHFFFAOYSA-N;
+MW          136.194;      // g/mol [origin=calculated method=formula-sum]
+Tc          684.44;      // K   [origin=predictive method=joback]
+Pc          33.374;      // bar [origin=predictive method=joback]
+omega       0.4376;      // -   [origin=predictive method=lee-kesler]
+Tb          471.63;      // K   [origin=predictive method=joback]
+HvapTb      42355.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-89.82 1.04052 -0.00077298 2.3156e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 3; } { group CH=CH; count 1; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group dCH_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(5-bicyclo[2.2.1]hept-2-enyl)ethanone" "2-acetyl-5-norbornene" "methyl 5-norbornen-2-yl ketone" "1-(bicyclo[2.2.1]hept-5-en-2-yl)ethanone" "2-acetyl-5-norbornene, mixture of endo and exo" "5-norbornene-2-acetyl" "nimlcwclvjrpfy-uhfffaoysa-" "2-acetylbicyclo[2.2.1]hept-5-ene" "1-(6-bicyclo[2.2.1]hept-2-enyl)ethanone" "(bicyclo[2.2.1]hept-2-en-2-yl)-1-ethanone" "ethanone, 1-bicyclo[2.2.1]hept-2-en-2-yl-" "ethanone, 1-bicyclo[2.2.1]hept-5-en-2-yl-" );
+gibbsFormation
+{
+    dHf_298   -164790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     292.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=27630.0
+    phase     gas;
+}

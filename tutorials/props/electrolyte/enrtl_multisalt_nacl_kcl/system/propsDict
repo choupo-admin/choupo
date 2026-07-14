@@ -1,0 +1,120 @@
+/*---------------------------------------------------------------------------*\
+  enrtl_multisalt_nacl_kcl
+  ========================
+
+  THE MULTI-SALT eNRTL ARRIVES: the multicomponent symmetric electrolyte NRTL
+  of Song & Chen 2009 (Ind. Eng. Chem. Res. 48, 7788, DOI 10.1021/ie9004578)
+  on the classic Harned experiment -- NaCl + KCl sharing water at a CONSTANT
+  4 mol/kg total molality, gamma_pm of BOTH salts as KCl replaces NaCl.
+  This is the paper's own demonstration system (its Figures 1-2).
+
+  What the run shows (all golden-locked):
+  * gamma_pm(NaCl) slides from its pure-solution value to its TRACE value in
+    4 m KCl, and vice versa -- both ln gamma curves are NEARLY LINEAR in the
+    salt fraction: Harned's rule, EMERGING from the model rather than being
+    assumed (R^2 > 0.99 with zero electrolyte-electrolyte parameters).
+  * The PURE endpoints reproduce the validated single-salt eNRTL kernel
+    exactly (the reduction pin ~1e-16): the multicomponent formulation
+    collapses correctly.
+  * The pair parameters are the EXACT Chen & Evans 1986 Table 1 values the
+    paper uses (case-local constant/electrolyte/enrtl.dat, cited).  The
+    standards K-Cl.dat carries an INDEPENDENT refit to Hamer & Wu 1972 that
+    lands within 0.2 % of the 1986 values -- two roads, one answer.  The
+    1986 paper itself (Table 2) validates tauEE = 0 for NaCl-KCl: sigma =
+    0.019 % on the Covington 1968 mixture osmotic data with the salt-salt
+    energies set to zero -- this case's default is the canonical choice.
+  * HONESTY, printed by the op: the published multi-electrolyte eNRTL
+    activity-coefficient expressions are NOT exactly Gibbs-Duhem consistent
+    (the composition-dependent mixing rules are differentiated as constants).
+    The op's FD oracle quantifies that inconsistency at the mid-sweep state
+    (gibbsDuhem_dev_mid) next to the pure-salt state where the same oracle
+    sits at ~1e-9.
+  * THE REFINED FORMULATION SHIPS TOO (second op below): gamma as the EXACT
+    derivative of the same Gex -- the chain rule kept through the
+    composition-dependent mixing rules (the Bollas, Chen & Barton 2008 idea
+    on the symmetric form).  Its oracle closes (~1e-9) at every composition;
+    both reduce EXACTLY to the same single-salt kernel at the endpoints.
+    Mid-sweep they differ by |dln gamma_pm| ~ 0.037 (~4 % in gamma), and the
+    trace limits differ visibly (NaCl trace 0.608 published vs 0.667
+    consistent).  WHICH is closer to nature is a question for MIXTURE data
+    (Covington 1968 / Robinson 1961) -- this case states the facts and locks
+    both; it does not pick a winner without measurements.
+
+  tauEE (the same-anion electrolyte-electrolyte parameter tau_NaCl,KCl of the
+  paper's Figures 1-2) defaults to 0; set it to +-1 to reproduce the paper's
+  sensitivity fan.
+
+  THE EXPERIMENTAL VERDICT (Robinson 1961, J. Phys. Chem. 65, 662, DOI
+  10.1021/j100822a016 -- isopiestic NaCl-KCl mixtures, Harned coefficients
+  at M ~ 4.4 mol/kg: alpha_NaCl = +0.0243, alpha_KCl = -0.0091; the op now
+  emits harned_alpha_1/2 on the same convention, golden-locked):
+      alpha_NaCl:  published +0.0276 (+14 %)   consistent +0.0173 (-29 %)
+      alpha_KCl:   published -0.0242 (2.7x)    consistent -0.0193 (2.1x)
+  With tauEE = 0, PUBLISHED wins on the dominant NaCl coefficient; BOTH
+  formulations overstate the (small) effect on KCl.
+
+  CROSS-CHECK vs THE REFINED-eNRTL PAPER (Bollas, Chen & Barton 2008, AIChE
+  J 54, 1608, DOI 10.1002/aic.11485 -- their Figure 1 is THIS system, 4 m,
+  same 1986 parameters, Robinson's points overlaid):
+    * their Fig 1a (original eNRTL) matches our `published` to the pixel
+      (NaCl solids at x=1 for tau = 0/0.25/0.50: ours -0.216/-0.186/-0.157
+      vs read -0.215/-0.185/-0.15; KCl dashed at x=0: -0.144/-0.183 vs
+      -0.145/-0.185);
+    * their Fig 1b (refined) shows the SIGNATURE our `consistent` shows:
+      the tau fan nearly COLLAPSES (exact derivatives are almost insensitive
+      to tau_EE: ours moves only -0.176 -> -0.184 for tau 0 -> 0.5, where
+      published moves -0.216 -> -0.157), and the KCl trace lands at ~-0.16
+      (ours -0.163).  Their refinement differentiates the 1986 UNSYMMETRIC
+      Gex; ours differentiates the 2009 SYMMETRIC one -- same idea, sibling
+      surfaces, same qualitative physics, near-identical aqueous numbers.  A single fitted tauEE
+  cannot close both (best compromise tau ~ 0.29 trades the NaCl error up to
+  -23 % to halve the KCl one) -- the residual is structural, not a missing
+  parameter.  Note the consistency of the record: Chen & Evans 1986 validated
+  tauEE = 0 against mixture OSMOTIC data (sigma 0.019 %) -- the solvent sees
+  the mixture mean, where the individual-gamma asymmetries largely cancel;
+  Robinson's per-salt gammas are where they show.
+
+  FIGURE-1 REPRODUCTION -- TO THE PIXEL (checked 2026-07-02, figure read at
+  200 dpi): the paper's y-axis says "ln gamma" but the numbers are LOG10
+  (log10 of the pure-NaCl-4m gamma is -0.106 = the figure's -0.105; ln would
+  be -0.24, off the plotted range).  With the 1986 parameters this kernel
+  reproduces the full tau fan to <= 0.001 in log10:
+      x_KCl=0 (all curves):  -0.106   (figure ~ -0.105)
+      x_KCl=1:  tau=0  -> -0.216      (figure ~ -0.215)
+                tau=+1 -> flat, dip to -0.101, back to -0.106   (the figure's
+                          circle-marked curve shows the same shallow dip)
+                tau=-1 -> -0.364      (figure ~ -0.365)
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      harned_nacl_kcl;
+        type      enrtlMultiSalt;
+        salts     ( { cation Na; anion Cl; } { cation K; anion Cl; } );
+        totalMolality 4.0;
+        sweepPoints   21;
+        tauEE         0.0;
+        // the industrial expressions, exactly as published (default)
+        formulation published;
+        output    { file harned_nacl_kcl.csv; }
+    }
+    {
+        // THE REFINED FORMULATION, side by side: gamma as the EXACT
+        // Gibbs-Duhem-consistent derivative of the same excess Gibbs energy
+        // (the chain rule kept through the composition-dependent mixing
+        // rules) -- the refined-eNRTL idea of Bollas, Chen & Barton 2008
+        // (AIChE J 54, 1608) applied to the 2009 symmetric formulation.
+        // Its FD oracle closes (~1e-9) at EVERY composition -- compare
+        // gibbsDuhem_dev_mid across the two pills; formulation_gap_mid is
+        // how far the exact derivative moves ln gamma_pm at mid-sweep.
+        name      harned_nacl_kcl_refined;
+        type      enrtlMultiSalt;
+        salts     ( { cation Na; anion Cl; } { cation K; anion Cl; } );
+        totalMolality 4.0;
+        sweepPoints   21;
+        tauEE         0.0;
+        formulation consistent;
+        output    { file harned_nacl_kcl_refined.csv; }
+    }
+);

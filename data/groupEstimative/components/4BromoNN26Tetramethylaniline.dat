@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-bromo-n,n,2,6-tetramethylaniline  (C10H14BrN, CAS 50638-54-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4BromoNN26Tetramethylaniline;
+formula     C10H14BrN;
+CAS         50638-54-5;
+InChIKey    NDDKEDQKCHIHMI-UHFFFAOYSA-N;
+MW          228.133;      // g/mol [origin=calculated method=formula-sum]
+Tc          769.53;      // K   [origin=predictive method=joback]
+Pc          30.024;      // bar [origin=predictive method=joback]
+omega       0.5724;      // -   [origin=predictive method=lee-kesler]
+Tb          548.62;      // K   [origin=predictive method=joback]
+HvapTb      50594.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.29 0.85858 -0.00053428 1.301e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 2; } { group AC; count 2; } { group ACCH3; count 2; } { group CH3N; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Br; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-bromanyl-n,n,2,6-tetramethyl-aniline" "n1,n1,2,6-tetramethyl-4-bromoaniline" "n-(4-bromo-2,6-dimethylphenyl)-n,n-dimethylamine" "(4-bromo-2,6-dimethylphenyl)dimethylamine" "n,n,2,6-tetramethylaniline,4-bromo-" "n,n,2,6-tetramethylaniline, 4-bromo-" "benzenamine,4-bromo-n,n,2,6-tetramethyl-" "2,6-xylidine,4-bromo-n,n-dimethyl- (6ci);n,n-dimethyl-4-bromo-2,6-dimethylaniline;n,n-dimethyl-4-bromo-2,6-xylidine;" );
+gibbsFormation
+{
+    dHf_298   46250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     487.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=241940.0
+    phase     gas;
+}

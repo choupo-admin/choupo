@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14-nonacosafluoro-16-iodohexadecane  (C16H4F29I, CAS 65510-55-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111223344556677889910101111121213131414Nonacosafluoro16Iodoh;
+formula     C16H4F29I;
+CAS         65510-55-6;
+InChIKey    KHGHLOYBMLYJPS-UHFFFAOYSA-N;
+MW          874.05;      // g/mol [origin=calculated method=formula-sum]
+Tc          725.74;      // K   [origin=predictive method=joback]
+Pc          6.871;      // bar [origin=predictive method=joback]
+omega       0.6210;      // -   [origin=predictive method=lee-kesler]
+Tb          592.43;      // K   [origin=predictive method=joback]
+HvapTb      18746.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-165.948 3.6662 -0.0038088 1.3881e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group I; count 1; } { group CF3; count 1; } { group CF2; count 13; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group C; count 14; } { group F; count 29; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14-nonacosakis(fluoranyl)-16-iodanyl-hexadecane" "hexadecane, 1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14-nonacosafluoro-16-iodo-" "1,1,2,2-tetrahydroperfluorohexadecyl iodide" );
+gibbsFormation
+{
+    dHf_298   -6106390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1209.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-5467770.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-heptanethiol  (C7H16S, CAS 1639-09-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Heptanethiol;
+formula     C7H16S;
+CAS         1639-09-4;
+InChIKey    VPIAKHNXCOTPAY-UHFFFAOYSA-N;
+MW          132.265;      // g/mol [origin=calculated method=formula-sum]
+Tc          609.87;      // K   [origin=predictive method=joback]
+Pc          29.992;      // bar [origin=predictive method=joback]
+omega       0.4208;      // -   [origin=predictive method=lee-kesler]
+Tb          422.62;      // K   [origin=predictive method=joback]
+HvapTb      37913.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.416 0.69612 -0.0003794 7.77e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 6; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "heptane-1-thiol" "n-heptylmercaptan" "heptylthiol" "heptyl thiol" "n-heptanthiol" "mercaptan c7" "hemolymph plasma powder from limulus polyphemus" );
+gibbsFormation
+{
+    dHf_298   -149330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     491.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37450.0
+    phase     gas;
+}

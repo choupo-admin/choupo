@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7-methoxycycloheptatriene  (C8H10O, CAS 1714-38-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        7Methoxycycloheptatriene;
+formula     C8H10O;
+CAS         1714-38-1;
+InChIKey    RUJLQZXBIZHGNF-UHFFFAOYSA-N;
+MW          122.167;      // g/mol [origin=calculated method=formula-sum]
+Tc          641.58;      // K   [origin=predictive method=joback]
+Pc          36.072;      // bar [origin=predictive method=joback]
+omega       0.3083;      // -   [origin=predictive method=lee-kesler]
+Tb          426.36;      // K   [origin=predictive method=joback]
+HvapTb      37289.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.27 0.64512 -0.00029684 2.15e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group CH=CH; count 3; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 6; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-methoxycyclohepta-1,3,5-triene" "1,3,5-cycloheptatriene, 7-methoxy-" "ether, 2,4,6-cycloheptatrien-1-yl methyl" "7-methoxy-1,5-cycloheptatriene" "1,5-cycloheptatriene, 7-methoxy-" "7-methoxy-cyclohepta-1,3,5-triene" "ether,4,6-cycloheptatrien-1-yl methyl" );
+gibbsFormation
+{
+    dHf_298   -119170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     356.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13710.0
+    phase     gas;
+}

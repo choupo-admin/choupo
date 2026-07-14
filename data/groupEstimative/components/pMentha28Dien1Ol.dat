@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: p-mentha-2,8-dien-1-ol  (C10H16O, CAS 22771-44-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pMentha28Dien1Ol;
+formula     C10H16O;
+CAS         22771-44-4;
+InChIKey    MKPMHJQMNACGDI-UHFFFAOYSA-N;
+MW          152.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          733.86;      // K   [origin=predictive method=joback]
+Pc          31.350;      // bar [origin=predictive method=joback]
+omega       0.6902;      // -   [origin=predictive method=lee-kesler]
+Tb          531.42;      // K   [origin=predictive method=joback]
+HvapTb      53204.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-105.47 1.29924 -0.00112128 4.204e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group CH=CH; count 1; } { group CH2=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methyl-4-prop-1-en-2-yl-cyclohex-2-en-1-ol" "cis-p-menth-2,8-dienol" "cis-p-mentha-2,8-dien-1-ol" "4-isopropenyl-1-methyl-2-cyclohexen-1-ol" "2-cyclohexen-1-ol, 1-methyl-4-(1-methylethenyl)-, trans-" "(+)-(1s,4r)-p-mentha-2,8-dien-1-ol" "agn-pc-00axxg" "2-cyclohexen-1-ol, 1-methyl-4-(1-methylethenyl)-, (1r,4r)-rel-" "trans-p-2,8-menthadien-1-ol" "(e)-p-menth-2,8-dien-1-ol" "p-mentha-2,8-dien-1-ol(7ci,8ci)" "1-methyl-4-prop-1-en-2-ylcyclohex-2-en-1-ol" );
+gibbsFormation
+{
+    dHf_298   -179320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     546.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=17000.0
+    phase     gas;
+}

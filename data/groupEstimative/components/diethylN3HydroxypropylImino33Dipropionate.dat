@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethyl n-(3-hydroxypropyl)imino-3,3'-dipropionate  (C13H25NO5, CAS 53935-66-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diethylN3HydroxypropylImino33Dipropionate;
+formula     C13H25NO5;
+CAS         53935-66-3;
+InChIKey    BHZAMQABWGMKDQ-UHFFFAOYSA-N;
+MW          275.345;      // g/mol [origin=calculated method=formula-sum]
+Tc          889.40;      // K   [origin=predictive method=joback]
+Pc          17.864;      // bar [origin=predictive method=joback]
+omega       1.3350;      // -   [origin=predictive method=lee-kesler]
+Tb          718.10;      // K   [origin=predictive method=joback]
+HvapTb      78068.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (36.489 1.28714 -0.0006372 7.65e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group OH; count 1; } { group CH2COO; count 2; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 9; } { group OH; count 1; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 3-[(3-ethoxy-3-oxidanylidene-propyl)-(3-oxidanylpropyl)amino]propanoate" "diethyl 3,3'-[(3-hydroxypropyl)imino]dipropanoate(non-preferred name)" "beta-alanine, n-(3-ethoxy-3-oxopropyl)-n-(3-hydroxypropyl)-, ethyl ester" "ethyl 3-[(3-ethoxy-3-oxopropyl)-(3-hydroxypropyl)amino]propanoate" "diethyl 3,3'-[(3-hydroxypropyl)imino]dipropanoate (non-preferred name)" ".beta.-alanine, n-(3-ethoxy-3-oxopropyl)-n-(3-hydroxypropyl)-, ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -1030910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     831.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-588200.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimethyl(2,3,4,5-tetramethyl-2,4-cyclopentadien-1-yl)silane  (C12H22Si, CAS 134695-74-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C12H22Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        trimethyl2345Tetramethyl24Cyclopentadien1YlSilane;
+formula     C12H22Si;
+CAS         134695-74-2;
+InChIKey    VEUUNIUMKJTBJB-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          194.393;      // g/mol [origin=calculated method=formula-sum]
+Tc          709.07;      // K   [origin=predictive method=joback]
+Pc          18.937;      // bar [origin=predictive method=joback]
+omega       0.3923;      // -   [origin=predictive method=lee-kesler]
+Tb          509.08;      // K   [origin=predictive method=joback]
+HvapTb      46089.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (45.07 0.71944 -4.8e-05 -1.373e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 7; } { group CH; count 1; } { group C=C; count 2; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 7; } { group CH_ring; count 1; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl-(2,3,4,5-tetramethylcyclopenta-2,4-dien-1-yl)silane" "(2,3,4,5-tetramethyl-2,4-cyclopentadiene-1-yl)-trimethylsilane" "trimethyl(2,3,4,5-tetramethylcyclopenta-2,4-dien-1-yl)silane" "trimethyl-(2,3,4,5-tetramethyl-1-cyclopenta-2,4-dienyl)silane" );
+gibbsFormation
+{
+    dHf_298   -272470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     600.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=3350.0
+    phase     gas;
+}

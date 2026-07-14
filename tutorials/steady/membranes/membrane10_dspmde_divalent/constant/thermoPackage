@@ -1,4 +1,0 @@
-components       ( water  NaCl  CaCl2  MgSO4 );
-
-activityModel    { model  ideal; }
-equationOfState  { model  idealGas; }

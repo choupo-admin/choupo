@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: geranyl acetate  (C12H20O2, CAS 105-87-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        geranylAcetate;
+formula     C12H20O2;
+CAS         105-87-3;
+InChIKey    HIGQPQRQIQDZMP-DHZHZOJOSA-N;
+MW          196.29;      // g/mol [origin=calculated method=formula-sum]
+Tc          727.63;      // K   [origin=predictive method=joback]
+Pc          19.736;      // bar [origin=predictive method=joback]
+omega       0.6150;      // -   [origin=predictive method=lee-kesler]
+Tb          540.46;      // K   [origin=predictive method=joback]
+HvapTb      49789.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.357 1.12888 -0.0007066 1.729e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH=C; count 2; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group dCH; count 2; } { group dC; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(2e)-3,7-dimethylocta-2,6-dienyl] ethanoate" "geraniol acetate" "acetic acid, geraniol ester" "geranyl acetate, cis-" "bay pine (oyster) oil" "acetic acid, geranyl ester" "3,7-dimethylocta-2,6-dien-1-yl acetate" "neryl acetate" "2,6-octadien-1-ol, 3,7-dimethyl-, acetate" "trans-3,7-dimethyl-2,6-octadien-1-yl acetate" "2,6-octadien-1-ol, 3,7-dimethyl-, acetate, (e)-" "[(2e)-3,7-dimethylocta-2,6-dienyl] acetate" );
+gibbsFormation
+{
+    dHf_298   -393430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     653.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-116870.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloro-6-fluorophenylacetonitrile  (C8H5ClFN, CAS 75279-55-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chloro6Fluorophenylacetonitrile;
+formula     C8H5ClFN;
+CAS         75279-55-9;
+InChIKey    ZGSAFMIRVLOISC-UHFFFAOYSA-N;
+MW          169.583;      // g/mol [origin=calculated method=formula-sum]
+Tc          784.62;      // K   [origin=predictive method=joback]
+Pc          31.140;      // bar [origin=predictive method=joback]
+omega       0.5756;      // -   [origin=predictive method=lee-kesler]
+Tb          558.06;      // K   [origin=predictive method=joback]
+HvapTb      51048.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (26.291 0.5193 -0.00031432 6.8e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group CH2CN; count 1; } { group ACCl; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-chloranyl-6-fluoranyl-phenyl)ethanenitrile" "2-chloro-6-fluorobenzyl cyanide" "2-(2-chloro-6-fluorophenyl)acetonitrile" "2-chloro-6-fluorobenzeneacetonitrile" "2-chloro-6-fluorophenyl acetonitrile" "2-(6-chloro-2-fluorophenyl)ethanenitrile" "2-chloro-6-fluoro phenylacetonitrile" "l242" "2-(2-chloro-6-fluorophenyl)acetonitrle" "2-chloro-6-fluorobenzylcyanide;2-chloro-6-fluorophenylacetonitrile;" );
+gibbsFormation
+{
+    dHf_298   -41830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     420.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=36070.0
+    phase     gas;
+}

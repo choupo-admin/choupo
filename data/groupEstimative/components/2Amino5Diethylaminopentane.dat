@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-amino-5-diethylaminopentane  (C9H22N2, CAS 140-80-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Amino5Diethylaminopentane;
+formula     C9H22N2;
+CAS         140-80-7;
+InChIKey    CAPCBAYULRXQAN-UHFFFAOYSA-N;
+MW          158.289;      // g/mol [origin=calculated method=formula-sum]
+Tc          667.82;      // K   [origin=predictive method=joback]
+Pc          24.532;      // bar [origin=predictive method=joback]
+omega       0.6519;      // -   [origin=predictive method=lee-kesler]
+Tb          490.05;      // K   [origin=predictive method=joback]
+HvapTb      47924.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.175 1.05056 -0.000625 1.438e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CHNH2; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n1,n1-diethylpentane-1,4-diamine" "novoldiamine" "4-amino-1-diethylaminopentane" "1-diethylamino-4-aminopentane" "1,4-pentanediamine, n1,n1-diethyl-" "n1,n1-diethyl-1,4-pentanediamine" "1-methyl-4-dietylaminobutylamine" "4-diethylamino-1'-methylbutylamine" "4-aminopentyldiethylamine" "d-diethylaminoisopentylamine" "(4-aminopentyl)diethylamine" "n,n-diethyl-4-methyltetramethylenediamine" );
+gibbsFormation
+{
+    dHf_298   -133050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     564.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=199690.0
+    phase     gas;
+}

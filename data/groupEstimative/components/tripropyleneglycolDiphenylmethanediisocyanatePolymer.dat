@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tripropyleneglycol, diphenylmethanediisocyanate polymer  (C24H34N2O6, CAS 103837-35-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tripropyleneglycolDiphenylmethanediisocyanatePolymer;
+formula     C24H34N2O6;
+CAS         103837-35-0;
+InChIKey    BLZIAFVFJXHFQF-UHFFFAOYSA-N;
+MW          446.544;      // g/mol [origin=calculated method=formula-sum]
+Tc          1412.20;      // K   [origin=predictive method=joback]
+Pc          14.133;      // bar [origin=predictive method=joback]
+omega       1.2253;      // -   [origin=predictive method=lee-kesler]
+Tb          1148.44;      // K   [origin=predictive method=joback]
+HvapTb      125890.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CH; count 1; } { group C; count 2; } { group CH=CH; count 4; } { group OH; count 2; } { group CH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:2
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group CH; count 1; } { group dCd; count 2; } { group CH2_ring; count 2; } { group C_ring; count 2; } { group dCH_ring; count 8; } { group OH; count 2; } { group O; count 2; } { group dO_oth; count 2; } { group Nd; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-isocyanato-5-[(1-isocyanatocyclohexa-2,4-dien-1-yl)methyl]cyclohexa-1,3-diene;3-[2-(3-oxidanylpropoxy)propoxy]propan-1-ol" "propanol, ((1-methyl-1,2-ethanediyl)bis(oxy))bis-, polymer with 1,1'-methylenebis(isocyanatobenzene)" );
+// formation datum unavailable (element entropy missing): dHf_298=-865070.0 dGf_298=None

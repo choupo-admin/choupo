@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(3-(triethoxysilyl)propyl)amine  (C18H43NO6Si2, CAS 13497-18-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C18H43NO6Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        bis3TriethoxysilylPropylAmine;
+formula     C18H43NO6Si2;
+CAS         13497-18-2;
+InChIKey    RWLDCNACDPTRMY-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          425.713;      // g/mol [origin=calculated method=formula-sum]
+Tc          980.11;      // K   [origin=predictive method=joback]
+Pc          9.323;      // bar [origin=predictive method=joback]
+omega       0.8819;      // -   [origin=predictive method=lee-kesler]
+Tb          798.93;      // K   [origin=predictive method=joback]
+HvapTb      77146.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (219.952 0.99852 0.0004916 -5.497e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 5; } { group CH2O; count 6; } { group CH2NH; count 1; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 12; } { group O; count 6; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-triethoxysilyl-n-(3-triethoxysilylpropyl)propan-1-amine" "bis[3-(triethoxysilyl)propyl]amine" "1-propanamine, 3-(triethoxysilyl)-n-[3-(triethoxysilyl)propyl]-" "bis(triethoxysilylpropyl)amine" "1-propanamine, 3-(triethoxysilyl)-n-(3-(triethoxysilyl)propyl)-" "bis(3-triethoxysilylpropyl)amine" "3-triethoxysilyl-n-(3-triethoxysilylpropyl)-1-propanamine" "1-propanamine,3-(triethoxysilyl)-n-[3-(triethoxysilyl)propyl]-" "3,13-dioxa-8-aza-4,12-disilapentadecane,4,4,12,12-tetraethoxy- (6ci,8ci);silane, [iminobis(trimethylene)]bis[triethoxy-(8ci);3,3'-bis(triethoxysilyl)propylamine;bis(3-methoxysilylpropyl)amine;bis(triethoxysilylpropyl)amine;dynasylan1122;g 402;g 402 (coupling agent);si 252;" );
+gibbsFormation
+{
+    dHf_298   -1377940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1218.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-649450.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl glutamate  (C7H13NO4, CAS 1119-33-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylGlutamate;
+formula     C7H13NO4;
+CAS         1119-33-1;
+InChIKey    XMQUEQJCYRFIQS-UHFFFAOYSA-N;
+MW          175.184;      // g/mol [origin=calculated method=formula-sum]
+Tc          839.20;      // K   [origin=predictive method=joback]
+Pc          33.374;      // bar [origin=predictive method=joback]
+omega       1.0777;      // -   [origin=predictive method=lee-kesler]
+Tb          635.58;      // K   [origin=predictive method=joback]
+HvapTb      66000.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (31.343 0.73262 -0.0003816 5.35e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH2COO; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group COOH; count 1; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-5-ethoxy-5-oxidanylidene-pentanoic acid" ".gamma.-ethylglutamate" ".gamma.-ethyl l-glutamate" "l-glutamic acid 5-ethyl ester" "l-glutamate-.gamma.-ethyl ester" "l-glutamic acid gamma-ethyl ester" "glutamic acid .gamma.-ethyl ester" "l-glutamic acid .gamma.-ethyl ester" "l-glutamic acid, 5-ethyl ester" "gamma-ethylglutamate" "5-ethyl-l-glutamate" "gamma-ethyl l-glutamate" );
+gibbsFormation
+{
+    dHf_298   -826850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     575.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-582210.0
+    phase     gas;
+}

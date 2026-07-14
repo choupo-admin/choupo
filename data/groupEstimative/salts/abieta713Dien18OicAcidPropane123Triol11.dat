@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): abieta-7,13-dien-18-oic acid- propane-1,2,3-triol(1:1)  (C23H38O5, CAS 1337-89-9)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           abieta713Dien18OicAcidPropane123Triol11;
+formula        C23H38O5;
+CAS            1337-89-9;
+InChIKey       PICABBUEHGURLB-XTICBAGASA-N;
+MW             394.552;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: abieta-7,13-dien-18-oic acid- propane-1,2,3-triol(1:1)

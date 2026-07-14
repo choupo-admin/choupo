@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Multi-feed, multi-side-draw rigorous column (the most-used rigorous column features at once).
+  A C3/C4/C5/C6 mix split FOUR ways: distillate ~ propane, an upper liquid side
+  draw ~ n-butane, a lower liquid side draw ~ n-pentane, bottoms ~ n-hexane.
+  TWO feeds enter at different heights (a light cut high, a heavy cut low) -- so
+  the column sees the realistic case of feeds of different composition.
+  Feeds are flowsheet STREAMS (`inputs (...)`) so the plant-boundary mass+energy
+  balance sees them (information follows the streams).
+  Validation reference (propose): Hofeling & Seader, AIChE J. 24(6) (1978),
+  DOI 10.1002/aic.690240631 -- the Naphtali-Sandholm extension for general
+  multi-feed / multi-draw / interlinked separators.
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+units
+(
+    {
+        name        radfrac;
+        type        distillationColumn;
+        model       fullMESH;
+        inputs      ( feed1  feed2 );
+        outputs     ( distillate  bottoms  drawC4  drawC5 );
+        operation
+        {
+            nStages         30;
+            refluxRatio     4.0;
+            distillateRate  45.0 kmol/h;       // ~ propane (40 + 5)
+            P               16 bar;
+            feeds
+            (
+                { stream feed1;  stage 10; }   // state from the stream   // light cut, upper
+                { stream feed2;  stage 20; }   // heavy cut, lower
+            );
+            sideDraws
+            (
+                { stage 13;  phase liquid;  rate 55.0 kmol/h; }   // ~ n-butane
+                { stage 23;  phase liquid;  rate 55.0 kmol/h; }   // ~ n-pentane
+            );
+        }
+    }
+);

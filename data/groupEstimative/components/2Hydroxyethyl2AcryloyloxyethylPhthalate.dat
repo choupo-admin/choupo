@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-hydroxyethyl 2-acryloyloxyethyl phthalate  (C15H16O7, CAS 38056-88-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Hydroxyethyl2AcryloyloxyethylPhthalate;
+formula     C15H16O7;
+CAS         38056-88-1;
+InChIKey    OEURXIFGOPBMJF-UHFFFAOYSA-N;
+MW          308.286;      // g/mol [origin=calculated method=formula-sum]
+Tc          1039.40;      // K   [origin=predictive method=joback]
+Pc          20.793;      // bar [origin=predictive method=joback]
+omega       1.4440;      // -   [origin=predictive method=lee-kesler]
+Tb          837.98;      // K   [origin=predictive method=joback]
+HvapTb      90152.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (48.174 1.14 -0.00052586 2.38e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2=CH; count 1; } { group ACH; count 4; } { group AC; count 2; } { group OH; count 1; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "o1-(2-hydroxyethyl) o2-(2-prop-2-enoyloxyethyl) benzene-1,2-dicarboxylate" "1,2-benzenedicarboxylic acid, 1-(2-hydroxyethyl) 2-(2-((1-oxo-2-propen-1-yl)oxy)ethyl) ester" "1,2-benzenedicarboxylic acid, 1-(2-hydroxyethyl) 2-[2-[(1-oxo-2-propen-1-yl)oxy]ethyl] ester" "2-acryloyloxyethyl 2-hydroxyethyl phthalate" "2-(acryloyloxy)ethyl 2-hydroxyethyl phthalate" "phthalic acid, 2-hydroxyethyl 2-(2-propenoyloxy)ethyl ester" "1,2-benzenedicarboxylic acid, 2-hydroxyethyl 2-((1-oxo-2-propenyl)oxy)ethyl ester" "1-o-(2-hydroxyethyl) 2-o-(2-prop-2-enoyloxyethyl) benzene-1,2-dicarboxylate" );
+gibbsFormation
+{
+    dHf_298   -1106510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     827.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-801890.0
+    phase     gas;
+}

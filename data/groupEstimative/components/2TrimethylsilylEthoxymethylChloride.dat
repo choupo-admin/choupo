@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(trimethylsilyl)ethoxymethyl chloride  (C6H15ClOSi, CAS 76513-69-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C6H15ClOSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2TrimethylsilylEthoxymethylChloride;
+formula     C6H15ClOSi;
+CAS         76513-69-4;
+InChIKey    BPXKZEMBEZGUAH-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          166.72;      // g/mol [origin=calculated method=formula-sum]
+Tc          577.06;      // K   [origin=predictive method=joback]
+Pc          25.820;      // bar [origin=predictive method=joback]
+omega       0.3384;      // -   [origin=predictive method=lee-kesler]
+Tb          398.13;      // K   [origin=predictive method=joback]
+HvapTb      36039.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (76.643 0.31126 0.0002028 -2.028e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH2O; count 1; } { group CH2Cl; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group Cl; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(chloromethyloxy)ethyl-trimethyl-silane" "sem-chloride" "sem-cl" "(2-(chloromethoxy)ethyl)trimethylsilane" "(2-chloromethoxyethyl)trimethylsilane" "chloromethyl 2-trimethylsilylethyl ether" "2-(chloromethoxy)ethyl-trimethylsilane" "2-(trimethsilyl)-ethoxymethyl chloride" "2-(trimethysilyl)-ethoxymethyl chloride" "[2-(chloromethoxy)ethyl](trimethyl)silane" "2-chloromethyl 2-(trimethylsilyl)ethyl ether" "2-(chloromethoxy)ethyltrimethylsilane" );
+gibbsFormation
+{
+    dHf_298   -426750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     560.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-222050.0
+    phase     gas;
+}

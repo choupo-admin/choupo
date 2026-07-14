@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: o-anisic acid  (C8H8O3, CAS 579-75-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oAnisicAcid;
+formula     C8H8O3;
+CAS         579-75-9;
+InChIKey    ILUJQPXNXACGAN-UHFFFAOYSA-N;
+MW          152.149;      // g/mol [origin=calculated method=formula-sum]
+Tc          808.63;      // K   [origin=predictive method=joback]
+Pc          39.160;      // bar [origin=predictive method=joback]
+omega       0.7618;      // -   [origin=predictive method=lee-kesler]
+Tb          582.23;      // K   [origin=predictive method=joback]
+HvapTb      55914.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.11 0.61302 -0.00033716 5.78e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group CH3O; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methoxybenzoic acid" "o-methoxybenzoic acid" "benzoic acid, 2-methoxy-" "o-methylsalicylic acid" "2-anisic acid" "salicylic acid methyl ether" "2-methoxy-benzoic acid" "2-methoxybenzoicacid" "ortho-methoxybenzoic acid" "o-methoxy benzoic acid" "2-carboxyanisole" "2-methoxy benzoic acid" );
+gibbsFormation
+{
+    dHf_298   -465880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     419.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-329650.0
+    phase     gas;
+}

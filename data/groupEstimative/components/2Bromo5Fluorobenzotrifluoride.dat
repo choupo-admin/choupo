@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-bromo-5-fluorobenzotrifluoride  (C7H3BrF4, CAS 40161-55-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Bromo5Fluorobenzotrifluoride;
+formula     C7H3BrF4;
+CAS         40161-55-5;
+InChIKey    AIDVAZGOACECLJ-UHFFFAOYSA-N;
+MW          242.997;      // g/mol [origin=calculated method=formula-sum]
+Tc          657.76;      // K   [origin=predictive method=joback]
+Pc          35.389;      // bar [origin=predictive method=joback]
+omega       0.4966;      // -   [origin=predictive method=lee-kesler]
+Tb          456.41;      // K   [origin=predictive method=joback]
+HvapTb      36647.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.7 0.6821 -0.00056292 1.762e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group Br; count 1; } { group ACF; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 4; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-4-fluoranyl-2-(trifluoromethyl)benzene" "1-bromo-4-fluoro-2-(trifluoromethyl)benzene" "1-bromo-2-(trifluoromethyl)-4-fluorobenzene" "4-fluoro-2-(trifluoromethyl)bromobenzene" "2-bromo-alpha,alpha,alpha,5-tetrafluorotoluene" "40161-55-5 2-bromo-5-fluorobenzotrifluoride" "2-bromo-5-fluoro benzotrifluoride" "wt189" "benzene, 1-bromo-4-fluoro-2-(trifluoromethyl)-" );
+gibbsFormation
+{
+    dHf_298   -741080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     448.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-660870.0
+    phase     gas;
+}

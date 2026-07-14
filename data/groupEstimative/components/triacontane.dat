@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triacontane  (C30H62, CAS 638-68-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triacontane;
+formula     C30H62;
+CAS         638-68-6;
+InChIKey    JXTPJDDICSTXJX-UHFFFAOYSA-N;
+MW          422.826;      // g/mol [origin=calculated method=formula-sum]
+Tc          1092.21;      // K   [origin=predictive method=joback]
+Pc          5.955;      // bar [origin=predictive method=joback]
+omega       0.4377;      // -   [origin=predictive method=lee-kesler]
+Tb          886.00;      // K   [origin=predictive method=joback]
+HvapTb      82374.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-24.382 2.85384 -0.0016082 3.458e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 28; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 28; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-triacontane" "triacontane, analytical standard" "CH3-(CH2)28-CH3" "CH3-[CH2]28-ch3" "triacontane; nsc 158661; n-triacontane" "triacontane, 98%" "CHEMBL1482375" "N-c-30" "NSC158661" "STL564700" "HY-W142855" "NCGC00165977-01" );
+gibbsFormation
+{
+    dHf_298   -662530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1324.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=201720.0
+    phase     gas;
+}

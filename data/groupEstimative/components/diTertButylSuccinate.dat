@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: di-tert-butyl succinate  (C12H22O4, CAS 926-26-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diTertButylSuccinate;
+formula     C12H22O4;
+CAS         926-26-1;
+InChIKey    GOORECODRBZTKF-UHFFFAOYSA-N;
+MW          230.304;      // g/mol [origin=calculated method=formula-sum]
+Tc          774.66;      // K   [origin=predictive method=joback]
+Pc          18.547;      // bar [origin=predictive method=joback]
+omega       0.6855;      // -   [origin=predictive method=lee-kesler]
+Tb          584.14;      // K   [origin=predictive method=joback]
+HvapTb      54528.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.148 1.28592 -0.0007834 1.612e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group C; count 2; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 2; } { group C; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ditert-butyl butanedioate" "di(tert-butyl) succinate" "di-tert-butyl succinate [mi]" "bis(1,1-dimethylethyl) succinate" "butanedioic acid ditert-butyl ester" "butanedioic acid, bis(1,1-dimethylethyl) ester" "butanedioic acid, 1,4-bis(1,1-dimethylethyl) ester" );
+gibbsFormation
+{
+    dHf_298   -943070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     648.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-564900.0
+    phase     gas;
+}

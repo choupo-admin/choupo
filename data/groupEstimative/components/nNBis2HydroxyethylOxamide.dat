@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n'-bis(2-hydroxyethyl)oxamide  (C6H12N2O4, CAS 1871-89-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNBis2HydroxyethylOxamide;
+formula     C6H12N2O4;
+CAS         1871-89-2;
+InChIKey    FPQJEXTVQZHURJ-UHFFFAOYSA-N;
+MW          176.172;      // g/mol [origin=calculated method=formula-sum]
+Tc          909.94;      // K   [origin=predictive method=joback]
+Pc          47.042;      // bar [origin=predictive method=joback]
+omega       2.0327;      // -   [origin=predictive method=lee-kesler]
+Tb          729.32;      // K   [origin=predictive method=joback]
+HvapTb      88672.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.314 0.7382 -0.0004232 8.272e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group OH; count 2; } { group CONHCH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group OH; count 2; } { group CdO; count 2; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n'-bis(2-hydroxyethyl)ethanediamide" "nn'-bis(2-hydroxyethyl)oxamide" "n,n-bis(2-hydroxyethyl)oxamide" "n,n'-bis-(2-hydroxyethyl)-oxamide" "n-(2-hydroxyethyl)-n'-(2-hydroxyethyl)ethane-1,2-diamide" "g00039-watson-int" "n,n'-oxalylbis(ethanolamine)" "fpqjextvqzhurj-uhfffaoysa-" "oxamide,n'-bis(2-hydroxyethyl)-" "n1,n2-bis(2-hydroxyethyl)oxalamide" "ethanediamide,n'-bis(2-hydroxyethyl)-" "ethanediamide, n,n'-bis(2-hydroxyethyl)-" );
+gibbsFormation
+{
+    dHf_298   -589850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     626.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-353060.0
+    phase     gas;
+}

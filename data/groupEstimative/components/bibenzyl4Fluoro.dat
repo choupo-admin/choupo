@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bibenzyl, 4-fluoro-  (C14H13F, CAS 370-76-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bibenzyl4Fluoro;
+formula     C14H13F;
+CAS         370-76-3;
+InChIKey    LGAWAQNSZFCGMP-UHFFFAOYSA-N;
+MW          200.256;      // g/mol [origin=calculated method=formula-sum]
+Tc          806.18;      // K   [origin=predictive method=joback]
+Pc          26.031;      // bar [origin=predictive method=joback]
+omega       0.5329;      // -   [origin=predictive method=lee-kesler]
+Tb          577.53;      // K   [origin=predictive method=joback]
+HvapTb      51155.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-57.258 1.1283 -0.00074956 1.871e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group ACCH2; count 2; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-fluoranyl-4-(2-phenylethyl)benzene" "benzene, 1-fluoro-4-(2-phenylethyl)-" "1-fluoro-4-phenethylbenzene" "l-(4-fluorophenyl)-2-phenylethane" "1-fluoro-4-(2-phenylethyl)benzene" );
+gibbsFormation
+{
+    dHf_298   -66810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     514.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=87380.0
+    phase     gas;
+}

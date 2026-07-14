@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 3,3,3-trifluoropropionate  (C5H7F3O2, CAS 352-23-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl333Trifluoropropionate;
+formula     C5H7F3O2;
+CAS         352-23-8;
+InChIKey    FMDMKDPUFQNVSH-UHFFFAOYSA-N;
+MW          156.103;      // g/mol [origin=calculated method=formula-sum]
+Tc          524.37;      // K   [origin=predictive method=joback]
+Pc          30.558;      // bar [origin=predictive method=joback]
+omega       0.4757;      // -   [origin=predictive method=lee-kesler]
+Tb          366.80;      // K   [origin=predictive method=joback]
+HvapTb      30384.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.552 0.58522 -0.0003746 7.99e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2COO; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 1; } { group F; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 3,3,3-tris(fluoranyl)propanoate" "ethyl 3,3,3-trifluoropropanoate" "ethyl3,3,3-trifluoropropionate" "ethyl 3,3,3-trifluoropropionate 97%" "3,3,3-trifluoro-propionic acid ethyl ester" "propanoic acid,3,3,3-trifluoro-, ethyl ester" "ethyl 3,3,3-trifluoropropanoate;ethyl 3,3,3-trifluoropropionate;ethyl trifluoromethylacetate;propionicacid, 3,3,3-trifluoro-, ethyl ester (8ci);" );
+gibbsFormation
+{
+    dHf_298   -1060890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     458.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-900740.0
+    phase     gas;
+}

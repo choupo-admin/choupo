@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-aminohexanamide  (C6H14N2O, CAS 373-04-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Aminohexanamide;
+formula     C6H14N2O;
+CAS         373-04-6;
+InChIKey    ZLHYDRXTDZFRDZ-UHFFFAOYSA-N;
+MW          130.191;      // g/mol [origin=calculated method=formula-sum]
+Tc          738.07;      // K   [origin=predictive method=joback]
+Pc          38.245;      // bar [origin=predictive method=joback]
+omega       0.8073;      // -   [origin=predictive method=lee-kesler]
+Tb          535.81;      // K   [origin=predictive method=joback]
+HvapTb      56978.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.775 0.6696 -0.0003707 7.316e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2NH2; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 5; } { group CdO; count 1; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-azanylhexanamide" "hexanamide, 6-amino-" "6-aminocaproamide" "caproamide,e-amino- (4ci); 6-aminocaproamide;6-aminocaproic amide; 6-aminohexanamide; e-aminocaproamide" );
+gibbsFormation
+{
+    dHf_298   -212170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     519.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=3620.0
+    phase     gas;
+}

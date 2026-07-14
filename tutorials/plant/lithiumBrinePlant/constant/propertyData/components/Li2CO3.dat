@@ -1,0 +1,52 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Lithium carbonate (Li2CO3, CAS 554-13-2)  --  CASE-LOCAL (Route 2)
+
+  The PRODUCT of the lithiumBrinePlant: battery-precursor Li2CO3 powder.
+  Not yet in the curated catalogue, so defined here (promotion after review).
+  Only the fields the FINISHING dryer needs: identity + solid crystal data +
+  a solid heat capacity to close the drying energy balance.  Nonvolatile.
+
+  Sources: MW from atomic weights (IUPAC); rho_p 2110 kg/m^3 (zabuyelite
+  crystallographic density, public domain); solid Cp ~ 98 J/(mol.K) at 298 K
+  (an ASSERTED energy-closure proxy; NOT the Dulong-Petit limit,
+  the powder is minor vs the drying air; primary re-citation pending).
+\*---------------------------------------------------------------------------*/
+
+name           Li2CO3;
+formula        Li2CO3;
+CAS            554-13-2;
+
+MW             73.891;         // g/mol
+nonvolatile    true;
+solidPhase    zabuyelite;
+
+solid
+{
+    rho_p   2110.0;     // crystalline Li2CO3 (zabuyelite) density [kg/m^3]
+    k_v     1.0;        // volume shape factor (cube)
+}
+
+solidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (98.0);      // J/(mol.K), constant
+    Trange        (270  600);
+    origin        asserted;
+    why           "energy-closure proxy ~98 J/(mol.K); NOT the classical Dulong-Petit limit (3nR = 18R ~ 150 for the 6-atom unit); a plausible near-298 K value pending a cited solid-Cp source";
+}
+
+// SOLID-LIQUID EQUILIBRIUM: c_sat(T) in kg Li2CO3 / kg water, polynomial in
+// T[degC].  Li2CO3 has RETROGRADE solubility -- it precipitates on HEATING
+// (~0.0133 kg/kg at 20 C down to ~0.0072 at 100 C), the industrial basis for
+// hot-precipitation carbonation.  Public-domain solubility data (CRC-order,
+// primary re-citation pending); linear fit reproduces 20/60/100 C to <2%.
+solubility
+{
+    model         polynomial;
+    temperatureUnit degC;                 // the polynomial's T is in degC
+    coefficients  ( 0.0148  -7.6e-5 );   // c_sat = 0.0148 - 7.6e-5*T[degC]
+    Trange        ( 20  100 );            // fitted band; outside -> announced extrapolation
+    // dHcryst INTENTIONALLY disabled (asserted 0, not measured): the real value
+    // is exothermic ~18 kJ/mol; the retrograde behaviour is carried by the
+    // solubility CURVE, not by dHcryst.  The crystalliser announces zero duty.
+}

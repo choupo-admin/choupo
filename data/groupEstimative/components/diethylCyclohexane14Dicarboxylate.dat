@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethyl cyclohexane-1,4-dicarboxylate  (C12H20O4, CAS 19145-96-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diethylCyclohexane14Dicarboxylate;
+formula     C12H20O4;
+CAS         19145-96-1;
+InChIKey    KRJHRNUTLDTSKY-UHFFFAOYSA-N;
+MW          228.288;      // g/mol [origin=calculated method=formula-sum]
+Tc          805.89;      // K   [origin=predictive method=joback]
+Pc          20.888;      // bar [origin=predictive method=joback]
+omega       0.7291;      // -   [origin=predictive method=lee-kesler]
+Tb          605.48;      // K   [origin=predictive method=joback]
+HvapTb      57240.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.868 1.12984 -0.0004654 -1.2e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1r,4r)-diethyl cyclohexane-1,4-dicarboxylate" "diethyl trans-1,4-cyclohexanedicarboxylate" "trans-1,4-cyclohexanedicarboxylic acid diethyl ester" "diethyl 1,4-cyclohexanedicarboxylate" "1,4-cyclohexanedicarboxylic acid, 1,4-diethyl ester" "1,4-cyclohexanedicarboxylic acid, diethyl ester" "1,4-cyclohexanedicarboxylicacid, 1,4-diethyl ester" "1,4-cyclohexanedicarboxylicacid, 1,4-diethyl ester, trans-" "1,4-cyclohexanedicarboxylicacid, diethyl ester, trans- (8ci,9ci); trans-cyclohexane-1,4-dicarboxylic aciddiethyl ester" );
+gibbsFormation
+{
+    dHf_298   -891590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     653.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-553840.0
+    phase     gas;
+}

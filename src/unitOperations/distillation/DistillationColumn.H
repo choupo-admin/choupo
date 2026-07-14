@@ -111,6 +111,20 @@ private:
                           const ThermoPackage& thermo,
                           int verbosity);
 
+    // Sieve-tray hydraulics: an optional RATING pass over the converged
+    // profile.  A column that floods separates nothing, and the MESH
+    // equations never notice.  Absent an `operation { hydraulics {} }`
+    // block this does nothing at all.
+    void hydraulicsPass(const DictPtr&              operDict,
+                        const ThermoPackage&        thermo,
+                        scalar                      P,
+                        const std::vector<scalar>&  T,
+                        const std::vector<sVector>& x,
+                        const std::vector<sVector>& y,
+                        const std::vector<scalar>&  V,
+                        const std::vector<scalar>&  L,
+                        int                         verbosity);
+
     inline static const std::string type_ = "distillationColumn";
     std::vector<ProcessStream>     produced_;
     std::map<std::string, scalar>  kpis_;

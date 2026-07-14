@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): formic acid, compd. with n,n-dimethyl-1,3-propanediamine (1:1)  (C6H16N2O2, CAS 86578-21-4)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           formicAcidCompdWithNNDimethyl13Propanediamine11;
+formula        C6H16N2O2;
+CAS            86578-21-4;
+InChIKey       XBAWJBONODPDGA-UHFFFAOYSA-N;
+MW             148.206;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: formic acid, compd. with n,n-dimethyl-1,3-propanediamine (1:1)

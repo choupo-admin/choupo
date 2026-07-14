@@ -17,11 +17,11 @@
 
       steam (saturated vapour, 1 bar, vf = 1)
         -> condenser (model geometry: NusseltFilm + cooling-water film)
-        -> condensate (two-phase, vf ~ 0.53)   + Q (RESULT)
+        -> condensate (two-phase, vf ~ 0.55)   + Q (RESULT)
 
-  PARTIAL CONDENSATION: with this tube area the duty Q ~ -528 kW removes
+  PARTIAL CONDENSATION: with this tube area the duty Q ~ -507 kW removes
   only part of the latent heat, so the outlet is NOT fully condensed --- it
-  leaves at the dome as a wet two-phase stream, vf ~ 0.53 (about 47 % of the
+  leaves at the dome as a wet two-phase stream, vf ~ 0.55 (about 45 % of the
   vapour condensed) at Tsat.  Fully condensing it would need more area; here
   the area is fixed and the outlet quality is the result.
 
@@ -37,26 +37,20 @@
 
   All film/saturation properties are IAPWS-IF97 water.  The case is
   SELF-CONTAINED (its own constant/components/water.dat).
+  ASSUMPTION stated plainly: the coolant is treated as ISOTHERMAL at its inlet
+  T (its ~10 K heat-up is neglected, so dT = Tsat - T_in slightly OVERSTATES
+  the true LMTD -- the computed area errs a few % small).  The utility
+  allocation still reports the real cooling-water flow and duty.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    steam
-    {
-        F            100.0 kmol/h;             // ~0.5 kg/s steam
-        T            372.76 K;                 // saturated vapour at 1 bar (IF97 Tsat)
-        P              1.0 bar;
-        state         saturatedVapour;
-        molarComposition { water 1.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (
     {
         name        condenser;
         type        condenser;            // alias of phaseChanger
-        model       geometry;             // the seventh resolution
+        model       geometry;             // resolution mode: geometry -> U (the others: spec-T, spec-vf, spec-Q, spec-area, spec-UA, utility-balance)
         in          steam;
         outputs     ( condensate );
 
@@ -68,8 +62,8 @@ units
                 tubeOD        0.025 m;          // 25 mm OD tubes
                 tubeID        0.021 m;          // 2 mm wall
                 tubeL         2.0   m;
-                nTubes        24;               // sized so the bundle nearly
-                                                //  fully condenses the steam
+                nTubes        24;               // deliberately UNDERSIZED: ~45% condenses
+                                              // (vf_out ~ 0.53) -- the partial-condensation lesson
                 wall          carbonSteel;      // -> k = 50 W/(m.K)
             }
 

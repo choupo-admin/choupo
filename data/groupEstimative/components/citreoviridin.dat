@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: citreoviridin  (C23H30O6, CAS 25425-12-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        citreoviridin;
+formula     C23H30O6;
+CAS         25425-12-1;
+InChIKey    JLSVDPQAIKFBTO-OMCRQDLASA-N;
+MW          402.487;      // g/mol [origin=calculated method=formula-sum]
+Tc          1304.05;      // K   [origin=predictive method=joback]
+Pc          14.091;      // bar [origin=predictive method=joback]
+omega       1.2786;      // -   [origin=predictive method=lee-kesler]
+Tb          1065.00;      // K   [origin=predictive method=joback]
+HvapTb      114381.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-141.12 2.72912 -0.00243524 9.351e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH; count 1; } { group C; count 2; } { group CH=CH; count 3; } { group CH=C; count 2; } { group OH; count 2; } { group CH3O; count 1; } { group CH-O; count 1; } { group C=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group dCH; count 7; } { group dC; count 1; } { group CH_ring; count 2; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 3; } { group OH; count 2; } { group O; count 1; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-methoxy-5-methyl-6-[(1e,3e,5e,7e)-7-methyl-8-[(2s,3r,4r,5r)-2,4,5-trimethyl-3,4-bis(oxidanyl)oxolan-2-yl]octa-1,3,5,7-tetraenyl]pyran-2-one" "citreoviridine" "citreoviridin a" "citreoviridine a" "2h-pyran-2-one, 4-methoxy-5-methyl-6-(7-methyl-8-(tetrahydro-3,4-dihydroxy-2,4,5-trimethyl-2-furanyl)-1,3,5,7-octatetraenyl)-" "2h-pyran-2-one, 4-methoxy-5-methyl-6-(7-methyl-8-(tetrahydro-3,4-dihydroxy-2,4,5-trimethyl-2-furyl)-1,3,5,7-octatetraenyl)-" "4-methoxy-5-methyl-6-(7-methyl-8-(tetrahydro-3,4-dihydroxy-2,4,5-trimethyl-2-furyl)-1,3,5,7-octatetraenyl)-2h-pyran-2-one" "ambotz25425-12-1" "6-[(1e,3e,5e,7e)-8-[(2s,3r,4r,5r)-3,4-dihydroxy-2,4,5-trimethyloxolan-2-yl]-7-methylocta-1,3,5,7-tetraenyl]-4-methoxy-5-methylpyran-2-one" );
+gibbsFormation
+{
+    dHf_298   -746850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     974.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-230190.0
+    phase     gas;
+}

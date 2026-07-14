@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: luciculine  (C22H33NO3, CAS 5008-52-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        luciculine;
+formula     C22H33NO3;
+CAS         5008-52-6;
+InChIKey    AZAZKLKDEOMJBJ-OLOAVZRQSA-N;
+MW          359.51;      // g/mol [origin=calculated method=formula-sum]
+Tc          1235.19;      // K   [origin=predictive method=joback]
+Pc          19.119;      // bar [origin=predictive method=joback]
+omega       1.5583;      // -   [origin=predictive method=lee-kesler]
+Tb          1008.91;      // K   [origin=predictive method=joback]
+HvapTb      111285.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-411.369 3.85084 -0.0039264 1.6371e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 8; } { group C; count 3; } { group CH2=C; count 1; } { group OH; count 3; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 8; } { group C_ring; count 3; } { group dC_ring; count 1; } { group OH; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "napelline" "(2r,4s,5r,7r,13r,16s,17r)-11-ethyl-13-methyl-6-methylidene-11-azahexacyclo[7.7.2.15,8.01,10.02,8.013,17]nonadecane-4,7,16-triol(non-preferred name)" "7,20-cycloveatchane-1,12,15-triol, 21-ethyl-4-methyl-16-methylene-, (1-alpha,12-alpha, 15-beta)-" );
+gibbsFormation
+{
+    dHf_298   -421510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     610.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=197240.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: silane, pentyl-  (C5H14Si, CAS 10177-98-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C5H14Si (delta H+3Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        silanePentyl;
+formula     C5H14Si;
+CAS         10177-98-7;
+InChIKey    LXQCYGJKOIEWBN-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          102.252;      // g/mol [origin=calculated method=formula-sum]
+Tc          472.90;      // K   [origin=predictive method=joback]
+Pc          31.491;      // bar [origin=predictive method=joback]
+omega       0.2485;      // -   [origin=predictive method=lee-kesler]
+Tb          313.30;      // K   [origin=predictive method=joback]
+HvapTb      26577.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.066 0.58192 -0.0004556 1.569e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group SiH3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentylsilane" "amylsilane;pentylsilane;" );
+gibbsFormation
+{
+    dHf_298   -90720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     511.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=43600.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(benzoyloxy)benzoic acid  (C14H10O4, CAS 28547-23-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4BenzoyloxyBenzoicAcid;
+formula     C14H10O4;
+CAS         28547-23-1;
+InChIKey    OUANAAHOQVMJCH-UHFFFAOYSA-N;
+MW          242.23;      // g/mol [origin=calculated method=formula-sum]
+Tc          1029.10;      // K   [origin=predictive method=joback]
+Pc          30.156;      // bar [origin=predictive method=joback]
+omega       1.0461;      // -   [origin=predictive method=lee-kesler]
+Tb          781.99;      // K   [origin=predictive method=joback]
+HvapTb      76543.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-33.34 1.1125 -0.00071116 1.524e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 3; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 9; } { group dC_ring; count 3; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(phenylcarbonyloxy)benzoic acid" "4-benzoyloxybenzoic acid" "benzoic acid, 4-(benzoyloxy)-" );
+gibbsFormation
+{
+    dHf_298   -538250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     586.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-372090.0
+    phase     gas;
+}

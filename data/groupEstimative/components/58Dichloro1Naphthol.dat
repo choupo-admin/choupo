@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5,8-dichloro-1-naphthol  (C10H6Cl2O, CAS 1574-18-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        58Dichloro1Naphthol;
+formula     C10H6Cl2O;
+CAS         1574-18-1;
+InChIKey    KEGNUIZNBCHWLZ-UHFFFAOYSA-N;
+MW          213.057;      // g/mol [origin=calculated method=formula-sum]
+Tc          899.21;      // K   [origin=predictive method=joback]
+Pc          41.250;      // bar [origin=predictive method=joback]
+omega       0.7053;      // -   [origin=predictive method=lee-kesler]
+Tb          639.50;      // K   [origin=predictive method=joback]
+HvapTb      64878.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.09 0.9204 -0.0008512 3.157e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 2; } { group ACOH; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 5; } { group dC_ring; count 5; } { group Cl; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5,8-bis(chloranyl)naphthalen-1-ol" "5,8-dichloronaphthalen-1-ol" "1-naphthalenol, 5,8-dichloro-" "1-naphthalenol,5,8-dichloro-" "1-naphthol,5,8-dichloro- (6ci,7ci,8ci); 5,8-dichloro-1-naphthol; 5,8-dichloro-a-naphthol" );
+gibbsFormation
+{
+    dHf_298   -53860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     411.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=54640.0
+    phase     gas;
+}

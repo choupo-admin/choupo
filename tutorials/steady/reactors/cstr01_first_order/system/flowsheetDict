@@ -3,16 +3,7 @@
   constant/reactions; here the unit references it by name.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            1.0 kmol/h;
-        T            350.0 K;
-        P            1.01325 bar;
-        molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

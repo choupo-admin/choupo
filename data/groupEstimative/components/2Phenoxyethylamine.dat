@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-phenoxyethylamine  (C8H11NO, CAS 1758-46-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Phenoxyethylamine;
+formula     C8H11NO;
+CAS         1758-46-9;
+InChIKey    IMLAIXAZMVDRGA-UHFFFAOYSA-N;
+MW          137.182;      // g/mol [origin=calculated method=formula-sum]
+Tc          725.05;      // K   [origin=predictive method=joback]
+Pc          38.340;      // bar [origin=predictive method=joback]
+omega       0.5426;      // -   [origin=predictive method=lee-kesler]
+Tb          504.27;      // K   [origin=predictive method=joback]
+HvapTb      48729.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.298 0.6836 -0.000375 6.57e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 1; } { group CH2O; count 1; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenoxyethanamine" "ethanamine, 2-phenoxy-" "phenoxyethylamine" "2-phenoxy-ethylamine" "ethylamine, 2-phenoxy-" "(2-aminoethoxy)benzene" "1-amino-2-phenoxyethane" "alpha-phenoxy-beta-aminoethane" "beta-aminophenetole" "2-phenoxylethylamine" "o347" "ethylamine,2-phenoxy- (6ci,7ci,8ci);2-phenoxyethylamine;phenetole, b-amino-;phenoxyethylamine;" );
+gibbsFormation
+{
+    dHf_298   -70350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     424.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=90340.0
+    phase     gas;
+}

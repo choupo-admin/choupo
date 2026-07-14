@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-isopropyl-3-methylcyclohex-1-en-1-yl acetate  (C12H20O2, CAS 68298-49-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Isopropyl3Methylcyclohex1En1YlAcetate;
+formula     C12H20O2;
+CAS         68298-49-7;
+InChIKey    FJUUBJPVVOEJMG-UHFFFAOYSA-N;
+MW          196.29;      // g/mol [origin=calculated method=formula-sum]
+Tc          754.78;      // K   [origin=predictive method=joback]
+Pc          21.354;      // bar [origin=predictive method=joback]
+omega       0.5457;      // -   [origin=predictive method=lee-kesler]
+Tb          550.96;      // K   [origin=predictive method=joback]
+HvapTb      50399.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-21.88 1.07508 -0.00048344 3.47e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 3; } { group CH=C; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3-methyl-6-propan-2-yl-cyclohexen-1-yl) ethanoate" "1-cyclohexen-1-ol, 3-methyl-6-(1-methylethyl)-, acetate" "1-cyclohexen-1-ol, 3-methyl-6-(1-methylethyl)-, 1-acetate" "6-isopropyl-3-methylcyclohexen-1-yl acetate" "(3-methyl-6-propan-2-ylcyclohexen-1-yl) acetate" "3-methyl-6-isopropyl-1-cyclohexene-1-ol, acetate" );
+gibbsFormation
+{
+    dHf_298   -533280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     548.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-225580.0
+    phase     gas;
+}

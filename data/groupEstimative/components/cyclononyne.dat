@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclononyne  (C9H14, CAS 6573-52-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclononyne;
+formula     C9H14;
+CAS         6573-52-0;
+InChIKey    WXUICIMSUQBFMI-UHFFFAOYSA-N;
+MW          122.211;      // g/mol [origin=calculated method=formula-sum]
+Tc          681.62;      // K   [origin=predictive method=joback]
+Pc          36.334;      // bar [origin=predictive method=joback]
+omega       0.2279;      // -   [origin=predictive method=lee-kesler]
+Tb          443.01;      // K   [origin=predictive method=joback]
+HvapTb      38690.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-64.4 0.848 -0.00046366 8.278e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tC; count 2; } { group CH2_ring; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclononenyl" );
+gibbsFormation
+{
+    dHf_298   111710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     510.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=247760.0
+    phase     gas;
+}

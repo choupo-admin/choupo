@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ccris 2856  (C18H27NO2, CAS 121010-10-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ccris2856;
+formula     C18H27NO2;
+CAS         121010-10-4;
+InChIKey    MTNSVLMCFGOYDM-UHFFFAOYSA-N;
+MW          289.419;      // g/mol [origin=calculated method=formula-sum]
+Tc          1040.85;      // K   [origin=predictive method=joback]
+Pc          19.220;      // bar [origin=predictive method=joback]
+omega       1.2143;      // -   [origin=predictive method=lee-kesler]
+Tb          828.29;      // K   [origin=predictive method=joback]
+HvapTb      83961.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-73.998 1.79686 -0.0011656 2.875e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group CH=C; count 1; } { group ACH; count 4; } { group AC; count 2; } { group CH2NH; count 1; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(tert-butylamino)-3-[2-(cyclopenten-1-yl)phenoxy]propan-2-ol" "(+-)-1-(2-(1-cyclopenten-1-yl)phenoxy)-3-((1,1-dimethylethyl)amino)-2-propanol" "2-propanol, 1-(2-(1-cyclopenten-1-yl)phenoxy)-3-((1,1-dimethylethyl)amino)-, (+-)-" );
+gibbsFormation
+{
+    dHf_298   -307670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     747.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=116020.0
+    phase     gas;
+}

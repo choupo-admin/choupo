@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-methoxyphenylacetaldehyde  (C9H10O2, CAS 5703-26-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Methoxyphenylacetaldehyde;
+formula     C9H10O2;
+CAS         5703-26-4;
+InChIKey    NRIVMXXOUOBRAG-UHFFFAOYSA-N;
+MW          150.177;      // g/mol [origin=calculated method=formula-sum]
+Tc          720.27;      // K   [origin=predictive method=joback]
+Pc          34.239;      // bar [origin=predictive method=joback]
+omega       0.5734;      // -   [origin=predictive method=lee-kesler]
+Tb          508.26;      // K   [origin=predictive method=joback]
+HvapTb      47696.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.001 0.63172 -0.00031196 3.96e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group CHO; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-methoxyphenyl)ethanal" "2-(4-methoxyphenyl)acetaldehyde" "(4-methoxyphenyl)acetaldehyde" "benzeneacetaldehyde,4-methoxy-" "2-(4-methoxyphenyl)-acetaldehyde" "4-methoxy-benzeneacetaldehyde" "2-(4-methoxyphenyl) ethanal" "benzeneacetaldehyde, 4-methoxy-" "acetaldehyde,(p-methoxyphenyl)- (7ci,8ci);(p-methoxyphenyl)acetaldehyde;2-(4-methoxyphenyl)acetaldehyde;2-(4-methoxyphenyl)ethanal;2-(p-anisyl)ethanal;4-methoxybenzeneacetaldehyde;4-methoxyphenylacetaldehyde;homoanisaldehyde;p-anisylacetaldehyde;" );
+gibbsFormation
+{
+    dHf_298   -221830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     423.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76840.0
+    phase     gas;
+}

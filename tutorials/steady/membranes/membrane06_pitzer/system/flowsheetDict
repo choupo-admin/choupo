@@ -36,16 +36,7 @@
       feed ΔP              =  2 bar (set linearly via dP_feed_total)
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            575.0 kmol/h;             // kmol/h  (~10 m³/h of seawater)
-        T            298.15 K;            // K
-        P            55.0 bar;              // bar
-        molarComposition  { water 0.98960;  NaCl 0.01040; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

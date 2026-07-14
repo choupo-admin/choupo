@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,4-dihydro-2h-phenanthren-1-one  (C14H12O, CAS 573-22-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34Dihydro2hPhenanthren1One;
+formula     C14H12O;
+CAS         573-22-8;
+InChIKey    KBARGPSSEIXDQU-UHFFFAOYSA-N;
+MW          196.249;      // g/mol [origin=calculated method=formula-sum]
+Tc          920.61;      // K   [origin=predictive method=joback]
+Pc          31.106;      // bar [origin=predictive method=joback]
+omega       0.6136;      // -   [origin=predictive method=lee-kesler]
+Tb          659.04;      // K   [origin=predictive method=joback]
+HvapTb      56639.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-71.46 1.1317 -0.00075684 1.968e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 6; } { group AC; count 3; } { group ACCH2; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4-dihydrophenanthren-1(2h)-one" "1,2,3,4-tetrahydrophenanthren-1-one" "1(2h)-phenanthrone,4-dihydro-" "1(2h)-phenanthrenone,4-dihydro-" "1,3,4-tetrahydrophenanthren-1-one" "1,3,4-tetrahydro-1-oxophenanthrene" "1-oxo-1,3,4-tetrahydrophenanthrene" "1-keto-1,2,3,4-tetra-hydrophenanthrene" "1,2,3,4-tetrahydro-1-phenanthrenone" );
+gibbsFormation
+{
+    dHf_298   21650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     366.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=200570.0
+    phase     gas;
+}

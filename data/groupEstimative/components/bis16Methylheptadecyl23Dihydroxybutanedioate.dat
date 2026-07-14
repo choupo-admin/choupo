@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(16-methylheptadecyl) 2,3-dihydroxybutanedioate  (C40H78O6, CAS 67763-17-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis16Methylheptadecyl23Dihydroxybutanedioate;
+formula     C40H78O6;
+CAS         67763-17-1;
+InChIKey    ICNJXCXEKIMXOE-UHFFFAOYSA-N;
+MW          655.058;      // g/mol [origin=calculated method=formula-sum]
+Tc          2304.56;      // K   [origin=predictive method=joback]
+Pc          4.283;      // bar [origin=predictive method=joback]
+omega       -0.5197;      // -   [origin=predictive method=lee-kesler]
+Tb          1413.84;      // K   [origin=predictive method=joback]
+HvapTb      151254.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.2 3.78588 -0.0020366 3.682e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 30; } { group CH; count 4; } { group OH; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 30; } { group CH; count 4; } { group OH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(16-methylheptadecyl) 2,3-bis(oxidanyl)butanedioate" "butanedioic acid, 2,3-dihydroxy- (2r,3r)-, bis(16-methylheptadecyl) ester" "butanedioic acid, 2,3-dihydroxy- (2r,3r)-, 1,4-bis(16-methylheptadecyl) ester" "diisostearyl tartrate" "bis(16-methylheptadecyl) (r(r*,r*))-tartrate" );
+gibbsFormation
+{
+    dHf_298   -1829070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1880.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-618220.0
+    phase     gas;
+}

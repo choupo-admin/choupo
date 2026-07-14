@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenol, 2-(1-phenylethyl)-  (C14H14O, CAS 4237-44-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenol21Phenylethyl;
+formula     C14H14O;
+CAS         4237-44-9;
+InChIKey    WYZIVNCBUWDCOZ-UHFFFAOYSA-N;
+MW          198.265;      // g/mol [origin=calculated method=formula-sum]
+Tc          907.71;      // K   [origin=predictive method=joback]
+Pc          32.916;      // bar [origin=predictive method=joback]
+omega       0.6759;      // -   [origin=predictive method=lee-kesler]
+Tb          653.46;      // K   [origin=predictive method=joback]
+HvapTb      63936.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-88.25 1.33652 -0.00105976 3.39e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 9; } { group AC; count 1; } { group ACCH; count 1; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(1-phenylethyl)phenol" "o-(1-phenylethyl)phenol" "o-(.alpha.-methylbenzyl)phenol" "(1-phenylethyl)phenol" "1-(2-hydroxyphenyl)-1-phenylethane" "o-(alpha-methylbenzyl)phenol" "2-(alpha-methylbenzyl)phenol" "phenol, o-(alpha-methylbenzyl)-" "2-(1-phenylethyl)-phenol" "phenol, (1-phenylethyl)-" "2-(.alpha.-methylbenzyl)phenol" "phenol, o-(.alpha.-methylbenzyl)-" );
+gibbsFormation
+{
+    dHf_298   -41820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     505.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=134760.0
+    phase     gas;
+}

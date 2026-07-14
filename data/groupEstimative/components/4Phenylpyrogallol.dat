@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-phenylpyrogallol  (C12H10O3, CAS 3934-76-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Phenylpyrogallol;
+formula     C12H10O3;
+CAS         3934-76-7;
+InChIKey    XRBNDLYHPCVYGC-UHFFFAOYSA-N;
+MW          202.209;      // g/mol [origin=calculated method=formula-sum]
+Tc          1043.22;      // K   [origin=predictive method=joback]
+Pc          62.888;      // bar [origin=predictive method=joback]
+omega       1.1957;      // -   [origin=predictive method=lee-kesler]
+Tb          769.38;      // K   [origin=predictive method=joback]
+HvapTb      85900.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-102.59 1.4498 -0.00146048 5.819e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 7; } { group AC; count 2; } { group ACOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 7; } { group dC_ring; count 5; } { group OH_phenol; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-phenylbenzene-1,2,3-triol" "biphenyl-2,3,4-triol" "(1,1'-biphenyl)-2,3,4-triol" "[1,1'-biphenyl]-2,3,4-triol" "2,3,4-trihydroxybiphenyl" "pyrogallol,4-phenyl- (7ci,8ci)" );
+gibbsFormation
+{
+    dHf_298   -349880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     489.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-188880.0
+    phase     gas;
+}

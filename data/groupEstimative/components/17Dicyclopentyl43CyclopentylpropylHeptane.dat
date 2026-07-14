@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,7-dicyclopentyl-4-(3-cyclopentylpropyl)heptane  (C25H46, CAS 55429-35-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        17Dicyclopentyl43CyclopentylpropylHeptane;
+formula     C25H46;
+CAS         55429-35-1;
+InChIKey    GGMFQOVCHUDPGX-UHFFFAOYSA-N;
+MW          346.643;      // g/mol [origin=calculated method=formula-sum]
+Tc          1024.61;      // K   [origin=predictive method=joback]
+Pc          10.610;      // bar [origin=predictive method=joback]
+omega       0.7664;      // -   [origin=predictive method=lee-kesler]
+Tb          817.00;      // K   [origin=predictive method=joback]
+HvapTb      71627.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-202.971 2.7798 -0.0017216 4.043e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 21; } { group CH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 9; } { group CH; count 1; } { group CH2_ring; count 12; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[7-cyclopentyl-4-(3-cyclopentylpropyl)heptyl]cyclopentane" "cyclopentane, 1,1'-[4-(3-cyclopentylpropyl)-1,7-heptanediyl]bis-" "cyclopentane,1'-[4-(3-cyclopentylpropyl)-1,7-heptanediyl]bis-" );
+gibbsFormation
+{
+    dHf_298   -383170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     969.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=266830.0
+    phase     gas;
+}

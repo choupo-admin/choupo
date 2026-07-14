@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclochloroacetate  (C10H13ClO2, CAS 28693-00-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclochloroacetate;
+formula     C10H13ClO2;
+CAS         28693-00-7;
+InChIKey    YEQPPBCBKNMCKW-UHFFFAOYSA-N;
+MW          200.662;      // g/mol [origin=calculated method=formula-sum]
+Tc          746.12;      // K   [origin=predictive method=joback]
+Pc          27.070;      // bar [origin=predictive method=joback]
+omega       0.5712;      // -   [origin=predictive method=lee-kesler]
+Tb          536.29;      // K   [origin=predictive method=joback]
+HvapTb      49627.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-59.788 1.1155 -0.00077188 2.044e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 3; } { group CH=CH; count 1; } { group CH2Cl; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group dCH_ring; count 2; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-bicyclo[2.2.1]hept-2-enylmethyl 2-chloranylethanoate" "sipomer cca" "5-[(chloroacetoxy)methyl]-2-norbornene" "5-((chloroacetoxy)methyl)-2-norbornene" "bicyclo(2.2.1)hept-5-en-2ylmethyl chloroacetate" "bicyclo(2.2.1)hept-5-en-2-ylmethyl chloroacetate" "acetic acid, chloro-, 5-norbornen-2-ylmethyl ester" "bicyclo(2.2.1)hept-5-en-2-ylmethyl monochloroacetate" "acetic acid, chloro-, bicyclo(2.2.1)hept-5-en-2-ylmethyl ester" "acetic acid, chloro-, bicyclo(2.2.1)hept-5-en-2ylmethyl ester" "acetic acid, 2-chloro-, bicyclo(2.2.1)hept-5-en-2-ylmethyl ester" "acetic acid, 2-chloro-, bicyclo[2.2.1]hept-5-en-2-ylmethyl ester" );
+gibbsFormation
+{
+    dHf_298   -405870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     389.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-157330.0
+    phase     gas;
+}

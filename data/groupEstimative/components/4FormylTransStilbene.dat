@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-formyl-trans-stilbene  (C15H12O, CAS 40200-69-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C15H12O (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        4FormylTransStilbene;
+formula     C15H12O;
+CAS         40200-69-9;
+InChIKey    CLXSBHRRZNBTRT-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          208.26;      // g/mol [origin=calculated method=formula-sum]
+Tc          829.60;      // K   [origin=predictive method=joback]
+Pc          27.269;      // bar [origin=predictive method=joback]
+omega       0.4386;      // -   [origin=predictive method=lee-kesler]
+Tb          581.72;      // K   [origin=predictive method=joback]
+HvapTb      51783.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-97.94 1.2396 -0.00102436 3.375e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group ACH; count 9; } { group AC; count 3; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(2-phenylethenyl)benzaldehyde" "benzaldehyde, 4-[(1e)-2-phenylethenyl]-" "4-stilbenecarboxaldehyde(6ci,8ci); 4-(2-phenylethenyl)benzaldehyde; 4-formylstilbene;4-styrylbenzaldehyde; p-formylstilbene; p-styrylbenzaldehyde" );
+gibbsFormation
+{
+    dHf_298   302330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     595.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=414790.0
+    phase     gas;
+}

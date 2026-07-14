@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis[tert-butyl(dimethyl)silyl] azelaate  (C21H44O4Si2, CAS 104255-97-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C21H44O4Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        bisTertButylDimethylSilylAzelaate;
+formula     C21H44O4Si2;
+CAS         104255-97-2;
+InChIKey    VVOJIMXLEIRYGX-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          416.749;      // g/mol [origin=calculated method=formula-sum]
+Tc          982.62;      // K   [origin=predictive method=joback]
+Pc          8.520;      // bar [origin=predictive method=joback]
+omega       0.6988;      // -   [origin=predictive method=lee-kesler]
+Tb          792.86;      // K   [origin=predictive method=joback]
+HvapTb      75150.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (67.307 1.7286 -0.0004434 -1.661e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 10; } { group CH2; count 5; } { group C; count 2; } { group CH2COO; count 2; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 10; } { group CH2; count 7; } { group C; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis[tert-butyl(dimethyl)silyl] nonanedioate" "nonanedioic acid, bis(tert-butyldimethylsilyl) ester" "nonanedioic acid,1,9-bis[(1,1-dimethylethyl)dimethylsilyl] ester" "nonanedioicacid, bis[(1,1-dimethylethyl)dimethylsilyl] ester (9ci)" );
+gibbsFormation
+{
+    dHf_298   -1352070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1251.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-698640.0
+    phase     gas;
+}

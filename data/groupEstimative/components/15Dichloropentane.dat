@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,5-dichloropentane  (C5H10Cl2, CAS 628-76-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        15Dichloropentane;
+formula     C5H10Cl2;
+CAS         628-76-2;
+InChIKey    LBKDGROORAKTLC-UHFFFAOYSA-N;
+MW          141.035;      // g/mol [origin=calculated method=formula-sum]
+Tc          570.08;      // K   [origin=predictive method=joback]
+Pc          31.847;      // bar [origin=predictive method=joback]
+omega       0.3717;      // -   [origin=predictive method=lee-kesler]
+Tb          388.86;      // K   [origin=predictive method=joback]
+HvapTb      35494.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.125 0.4924 -0.000289 6.63e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2Cl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 5; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,5-bis(chloranyl)pentane" "pentamethylene dichloride" "pentamethylene chloride" "pentane, 1,5-dichloro-" "amylene chloride" "pentane,5-dichloro-" );
+gibbsFormation
+{
+    dHf_298   -178010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     417.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-32640.0
+    phase     gas;
+}

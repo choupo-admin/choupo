@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl, 1-methoxy-  (C3H7O, CAS 17030-76-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        ethyl1Methoxy;
+formula     C3H7O;
+CAS         17030-76-1;
+InChIKey    JQCSUVJDBHJKNG-UHFFFAOYSA-N;
+role        radical;
+MW          59.088;      // g/mol [origin=calculated method=formula-sum]
+Tc          459.91;      // K   [origin=predictive method=joback]
+Pc          44.623;      // bar [origin=predictive method=joback]
+omega       0.2220;      // -   [origin=predictive method=lee-kesler]
+Tb          292.74;      // K   [origin=predictive method=joback]
+HvapTb      24661.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.57 0.23564 -7.03e-05 -6.6e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 2; } { group dCH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methoxyethane" "methoxy-ethyl" "1-methoxyethyl" "1-methoxy ethyl radical" );
+gibbsFormation
+{
+    dHf_298   -178860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     280.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-90510.0
+    phase     gas;
+}

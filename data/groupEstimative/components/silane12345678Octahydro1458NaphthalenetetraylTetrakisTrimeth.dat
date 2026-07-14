@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: silane, (1,2,3,4,5,6,7,8-octahydro-1,4,5,8-naphthalenetetrayl)tetrakis(trimethyl-  (C22H48Si4, CAS 75272-68-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C22H48Si4 (delta Si+4; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        silane12345678Octahydro1458NaphthalenetetraylTetrakisTrimeth;
+formula     C22H48Si4;
+CAS         75272-68-3;
+InChIKey    IWTJXSORSODMLQ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          424.966;      // g/mol [origin=calculated method=formula-sum]
+Tc          949.22;      // K   [origin=predictive method=joback]
+Pc          8.117;      // bar [origin=predictive method=joback]
+omega       0.3754;      // -   [origin=predictive method=lee-kesler]
+Tb          738.90;      // K   [origin=predictive method=joback]
+HvapTb      67254.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (73.45 1.30464 0.000489 -6.412e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 12; } { group CH2; count 4; } { group CH; count 4; } { group C=C; count 1; } { group Si; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 12; } { group CH2_ring; count 4; } { group CH_ring; count 4; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl-[4,5,8-tris(trimethylsilyl)-1,2,3,4,5,6,7,8-octahydronaphthalen-1-yl]silane" );
+gibbsFormation
+{
+    dHf_298   -828770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1283.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-216300.0
+    phase     gas;
+}

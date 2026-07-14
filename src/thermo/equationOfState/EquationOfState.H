@@ -48,6 +48,7 @@ Description
 #include <functional>
 #include <map>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -64,6 +65,20 @@ public:
 
     // Fugacity coefficients φ_i for all components in the vapour phase.
     virtual sVector phi(scalar T_K, scalar P_Pa, const sVector& y) const = 0;
+
+    // Liquid-root fugacity coefficients φ_i^L (the phi-phi / EOS-EOS world:
+    // K_i = φ_i^L/φ_i^V).  Only a cubic (SRK/PR) has a liquid root; the base
+    // REFUSES so an ideal-gas package can never silently fake a liquid.
+    virtual sVector phiLiquid(scalar, scalar, const sVector&) const
+    {
+        throw std::runtime_error("EquationOfState '" + modelName() + "': no"
+            " liquid root -- phi-phi VLE needs a cubic EoS (SRK/PengRobinson).");
+    }
+
+    // True for the ideal-gas law (φ ≡ 1).  Lets callers (e.g. the Gibbs
+    // reactor's equilibrium) skip the fugacity correction when it is a no-op,
+    // keeping the ideal path byte-identical.  Real EoS keep the base `false`.
+    virtual bool isIdeal() const { return false; }
 
     // Molar volume of the mixture [m³/mol]
     virtual scalar molarVolume(scalar T_K, scalar P_Pa, const sVector& y) const = 0;

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,3,3,4,4-hexafluoro-1,5-pentanediol  (C5H6F6O2, CAS 376-90-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        223344Hexafluoro15Pentanediol;
+formula     C5H6F6O2;
+CAS         376-90-9;
+InChIKey    IELVMUPSWDZWSD-UHFFFAOYSA-N;
+MW          212.089;      // g/mol [origin=calculated method=formula-sum]
+Tc          626.68;      // K   [origin=predictive method=joback]
+Pc          33.529;      // bar [origin=predictive method=joback]
+omega       1.2852;      // -   [origin=predictive method=lee-kesler]
+Tb          484.29;      // K   [origin=predictive method=joback]
+HvapTb      51292.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.948 0.995 -0.0009228 3.172e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group OH; count 2; } { group CF2; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group C; count 3; } { group F; count 6; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4-hexakis(fluoranyl)pentane-1,5-diol" "2,2,3,3,4,4-hexafluoropentane-1,5-diol" "hexafluoroamylene glycol" "hexafluoro-1,5-pentanediol" "2,2,3,3,4,4-hexafluoropentan-1,5-diol" "1,5-pentanediol, 2,2,3,3,4,4-hexafluoro-" "1,5-dihydroxy-2,2,3,3,4,4-hexafluoropentane" "2,2,3,3,4,4-hexafluoropentanediol" "ielvmupswdzwsd-uhfffaoysa-" "2,3,3,4,4-hexafluoropentanediol" "1, 2,2,3,3,4,4-hexafluoro-" "2,3,3,4,4-hexafluoro-1,5-pentanediol" );
+gibbsFormation
+{
+    dHf_298   -1653900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     526.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1442760.0
+    phase     gas;
+}

@@ -21,16 +21,7 @@
   in the algorithm, not in any real-system NRTL parameter set.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            350.0 K;
-        P            1.0 bar;
-        molarComposition  { compA 0.3333;  compB 0.3334;  compC 0.3333; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,13-tridecanediol  (C13H28O2, CAS 13362-52-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        113Tridecanediol;
+formula     C13H28O2;
+CAS         13362-52-2;
+InChIKey    HCEPYODGJFPWOI-UHFFFAOYSA-N;
+MW          216.365;      // g/mol [origin=calculated method=formula-sum]
+Tc          842.32;      // K   [origin=predictive method=joback]
+Pc          19.203;      // bar [origin=predictive method=joback]
+omega       1.4228;      // -   [origin=predictive method=lee-kesler]
+Tb          681.40;      // K   [origin=predictive method=joback]
+HvapTb      77890.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.653 1.3068 -0.0007442 1.631e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 13; } { group OH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 13; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tridecane-1,13-diol" "tridecane-1,13-diol;" );
+gibbsFormation
+{
+    dHf_298   -616110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     764.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-215060.0
+    phase     gas;
+}

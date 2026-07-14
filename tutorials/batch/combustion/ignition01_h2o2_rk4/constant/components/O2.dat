@@ -1,0 +1,55 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Oxygen  (O2, CAS 7782-44-7)
+  Element in its standard state -- dHf_298 = 0 by definition; the
+  third-law absolute entropy is the only thermodynamic anchor.
+  Permanent gas at all process temperatures (Tc = 154.58 K).
+  Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
+  reference EOS; gibbsFormation cross-checked vs NASA TM-4513
+  (McBride-Gordon-Reno 1993); idealGasHeatCapacity -- individual
+  literature value, primary re-citation pending (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        O2;
+formula     O2;
+noncondensable true;     // permanent carrier gas (psychrometric carrier)
+CAS         7782-44-7;
+
+MW          31.999;       // kg/kmol
+Tc          154.58;       // K
+Pc          50.43;        // bar
+omega       0.022;        // [-]
+Tb          90.17;        // K
+HvapTb      6820;         // J/mol
+Vliq        2.80e-5;      // m^3/mol  (28.0 cm^3/mol at Tb)
+diffusionVolume  16.3;          // Fuller diffusion volume [-]
+
+gibbsFormation
+{
+    dHf_298   0.0;                // J/mol  -- element in standard state
+    s_298     205.150;            // J/(mol·K)  -- third-law absolute
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.9523   340.024   -4.144);
+    Trange        (54  154);
+}
+
+idealGasHeatCapacity
+{
+    // CASE-LOCAL OVERRIDE for flame temperatures: the catalogue poly3 is a
+    // 250-1500 K process fit and EXTRAPOLATES WRONG at 2600 K (N2's turns
+    // NEGATIVE).  NASA-7 two-range form, GRI-Mech 3.0 thermo (7/30/99),
+    // valid 200-3500 K.
+    model    NASA7;
+    low      ( 3.78245636e+00 -2.99673416e-03 9.84730201e-06 -9.68129509e-09 3.24372837e-12 -1.06394356e+03 3.65767573e+00 );
+    high     ( 3.28253784e+00 1.48308754e-03 -7.57966669e-07 2.09470555e-10 -2.16717794e-14 -1.08845772e+03 5.45323129e+00 );
+    Tlow     200.0;
+    Tcommon  1000.0;
+    Thigh    3500.0;
+}
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( oxygen );

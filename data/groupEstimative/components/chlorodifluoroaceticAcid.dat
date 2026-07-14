@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chlorodifluoroacetic acid  (C2HClF2O2, CAS 76-04-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chlorodifluoroaceticAcid;
+formula     C2HClF2O2;
+CAS         76-04-0;
+InChIKey    OAWAZQITIZDJRB-UHFFFAOYSA-N;
+MW          130.474;      // g/mol [origin=calculated method=formula-sum]
+Tc          619.03;      // K   [origin=predictive method=joback]
+Pc          48.971;      // bar [origin=predictive method=joback]
+omega       0.5571;      // -   [origin=predictive method=lee-kesler]
+Tb          423.61;      // K   [origin=predictive method=joback]
+HvapTb      38665.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.27 0.4008 -0.0003826 1.327e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 1; } { group CClF2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group F; count 2; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-2,2-bis(fluoranyl)ethanoic acid" "acetic acid, chlorodifluoro-" "acetic acid, 2-chloro-2,2-difluoro-" "2-chloro-2,2-difluoroacetic acid" "snpljqdjptadtaetp@" "difluorochloroacetic acid" "chloro(difluoro)acetic acid" "2923-14-0 (silver salt)" "1895-39-2 (hydrochloride salt)" "aceticacid, 2-chloro-2,2-difluoro-" "c102" "s096" );
+gibbsFormation
+{
+    dHf_298   -851590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     344.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-776660.0
+    phase     gas;
+}

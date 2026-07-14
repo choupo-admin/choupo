@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-dimethylformamide dibenzylacetal  (C17H21NO2, CAS 2016-04-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDimethylformamideDibenzylacetal;
+formula     C17H21NO2;
+CAS         2016-04-8;
+InChIKey    JFIKHFNGAURIIB-UHFFFAOYSA-N;
+MW          271.36;      // g/mol [origin=calculated method=formula-sum]
+Tc          919.80;      // K   [origin=predictive method=joback]
+Pc          20.364;      // bar [origin=predictive method=joback]
+omega       0.8001;      // -   [origin=predictive method=lee-kesler]
+Tb          698.76;      // K   [origin=predictive method=joback]
+HvapTb      64463.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-41.748 1.46444 -0.0008572 1.694e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group ACH; count 10; } { group AC; count 2; } { group CH2O; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group O; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethyl-1,1-bis(phenylmethoxy)methanamine" "n,n-dimethylformamide dibenzyl acetal" "methanamine, n,n-dimethyl-1,1-bis(phenylmethoxy)-" "1,1-dibenzyloxytrimethylamine" "1,1-bis(benzyloxy)trimethylamine" "1,1-bis(benzyloxy)trimethylamine;" "[bis(phenylmethoxy)methyl]dimethylamine" "1,1-dibenzyloxy-n,n-dimethylmethylamine" "m715" "1,1-bis(benzyloxy)-n,n-dimethylmethanamine" "methanamine,n,n-dimethyl-1,1-bis(phenylmethoxy)-" );
+gibbsFormation
+{
+    dHf_298   -123340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     634.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=215420.0
+    phase     gas;
+}

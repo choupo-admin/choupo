@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(p-(1,2-bis(p-methoxyphenyl)-1-butenyl)phenoxy)triethylamine citrate  (C36H45NO10, CAS 42920-39-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2P12BisPMethoxyphenyl1ButenylPhenoxyTriethylamineCitrate;
+formula     C36H45NO10;
+CAS         42920-39-8;
+InChIKey    LZVDVWMPTVAVGX-DHKWPOFJSA-N;
+MW          651.753;      // g/mol [origin=calculated method=formula-sum]
+Tc          2405.57;      // K   [origin=predictive method=joback]
+Pc          8.515;      // bar [origin=predictive method=joback]
+omega       0.0105;      // -   [origin=predictive method=lee-kesler]
+Tb          1728.76;      // K   [origin=predictive method=joback]
+HvapTb      181104.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.973 3.0688 -0.00170028 2.915e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group C; count 1; } { group ACH; count 12; } { group AC; count 6; } { group OH; count 1; } { group CH3O; count 2; } { group CH2O; count 1; } { group CH2N; count 1; } { group COOH; count 3; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 7; } { group C; count 1; } { group dC; count 2; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group OH; count 1; } { group O; count 3; } { group COOH; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[4-[(z)-1,2-bis(4-methoxyphenyl)but-1-enyl]phenoxy]-n,n-diethyl-ethanamine;2-oxidanylpropane-1,2,3-tricarboxylic acid" "triethylamine, 2-(p-(1,2-bis(p-methoxyphenyl)-1-butenyl)phenoxy)-, citrate" "33406-36-9 (parent)" "2-[4-[(z)-1,2-bis(4-methoxyphenyl)but-1-enyl]phenoxy]-n,n-diethylethanamine; 2-hydroxypropane-1,2,3-tricarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -1666090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1534.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-850990.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyltris(tri-sec-butoxysilyloxy)silane  (C37H84O12Si4, CAS 60711-47-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C37H84O12Si4 (delta Si+4; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        methyltrisTriSecButoxysilyloxySilane;
+formula     C37H84O12Si4;
+CAS         60711-47-9;
+InChIKey    JTMGSJWZRADOSX-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          833.407;      // g/mol [origin=calculated method=formula-sum]
+Tc          1818.93;      // K   [origin=predictive method=joback]
+Pc          3.452;      // bar [origin=predictive method=joback]
+omega       -0.4131;      // -   [origin=predictive method=lee-kesler]
+Tb          1316.84;      // K   [origin=predictive method=joback]
+HvapTb      124560.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (423.389 1.98908 0.0009734 -1.1018e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 19; } { group CH2; count 9; } { group CH-O; count 9; } { group Si; count 1; } { group SiO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 19; } { group CH2; count 9; } { group CH; count 9; } { group O; count 12; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tributan-2-yl [methyl-bis[tri(butan-2-yloxy)silyloxy]silyl] silicate" "tri-sec-butyl 1,1,1,5,5,5-hexa-sec-butoxy-3-methyltrisiloxan-3-yl orthosilicate" "trisiloxane, 3-methyl-1,1,1,5,5,5-hexakis(1-methylpropoxy)-3-((tris(1-methylpropoxy)silyl)oxy)-" "trisiloxane, 3-methyl-1,1,1,5,5,5-hexakis(1-methylpropoxy)-3-[[tris(1-methylpropoxy)silyl]oxy]-" );
+gibbsFormation
+{
+    dHf_298   -2887650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     2152.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1440340.0
+    phase     gas;
+}

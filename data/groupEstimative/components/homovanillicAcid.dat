@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: homovanillic acid  (C9H10O4, CAS 306-08-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        homovanillicAcid;
+formula     C9H10O4;
+CAS         306-08-1;
+InChIKey    QRMZSPFSDQBLIX-UHFFFAOYSA-N;
+MW          182.175;      // g/mol [origin=calculated method=formula-sum]
+Tc          916.62;      // K   [origin=predictive method=joback]
+Pc          41.893;      // bar [origin=predictive method=joback]
+omega       1.0993;      // -   [origin=predictive method=lee-kesler]
+Tb          685.73;      // K   [origin=predictive method=joback]
+HvapTb      71154.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.719 0.86262 -0.00064792 2.028e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group ACOH; count 1; } { group CH3O; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(3-methoxy-4-oxidanyl-phenyl)ethanoic acid" "4-hydroxy-3-methoxyphenylacetic acid" "vanillacetic acid" "homovanillate" "homovaniuic acid" "benzeneacetic acid, 4-hydroxy-3-methoxy-" "3-methoxy-4-hydroxyphenylacetic acid" "4-hydroxy-3-methoxybenzeneacetic acid" "(4-hydroxy-3-methoxyphenyl)acetic acid" "hva" "2-(4-hydroxy-3-methoxyphenyl)acetic acid" "acetic acid, (4-hydroxy-3-methoxyphenyl)-" );
+gibbsFormation
+{
+    dHf_298   -663830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     484.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-475850.0
+    phase     gas;
+}

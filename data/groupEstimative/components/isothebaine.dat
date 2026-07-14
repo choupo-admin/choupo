@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isothebaine  (C19H21NO3, CAS 568-21-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isothebaine;
+formula     C19H21NO3;
+CAS         568-21-8;
+InChIKey    RQCOQZNIQLKGTN-ZDUSSCGKSA-N;
+MW          311.381;      // g/mol [origin=calculated method=formula-sum]
+Tc          1094.65;      // K   [origin=predictive method=joback]
+Pc          22.697;      // bar [origin=predictive method=joback]
+omega       1.1947;      // -   [origin=predictive method=lee-kesler]
+Tb          860.09;      // K   [origin=predictive method=joback]
+HvapTb      85418.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-75.49 1.85316 -0.00147256 4.889e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 4; } { group AC; count 4; } { group ACCH2; count 2; } { group ACCH; count 1; } { group ACOH; count 1; } { group CH3O; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 8; } { group OH_phenol; count 1; } { group O; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(6as)-2,11-dimethoxy-6-methyl-5,6,6a,7-tetrahydro-4h-dibenzo[de,g]quinoline-1-ol" "1-hydroxy-2,11-dimethoxyaporphine" "2,11-dimethoxy-1-hydroxyaporphine" "6a-alpha-aporphin-1-ol, 2,11-dimethoxy-" "4h-dibenzo(de,g)quinolin-1-ol, 5,6,6a,7-tetrahydro-2,11-dimethoxy-6-methyl-, (s)-" "ambap568-21-8" "6aalpha-aporphin-1-ol, 2,11-dimethoxy-" "6aalpha-aporphin-1-ol, 2,11-dimethoxy- (8ci)" "(6as)-2,11-dimethoxy-6-methyl-5,6,6a,7-tetrahydro-4h-dibenzo[de,g]quinolin-1-ol" "4h-dibenzo(de,g)quinolin-1-ol, 5,6,6a,7-tetrahydro-2,11-dimethoxy-6-methyl-, (s)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -215740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     539.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=185340.0
+    phase     gas;
+}

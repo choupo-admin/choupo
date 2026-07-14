@@ -36,26 +36,7 @@
   has; the recovery is what comes out.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    gasFeed
-    {
-        T            298.15 K;
-        P            1.01325 bar;
-        molarFlows
-        {
-            NH3      10.0 kmol/h;     // 10 % ammonia
-            N2       90.0 kmol/h;     // inert carrier (air ~ N2)
-        }
-    }
-
-    solvent
-    {
-        T            298.15 K;
-        P            1.01325 bar;
-        molarFlows   { water  150.0 kmol/h; }   // lean wash water, L/V = 1.5
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

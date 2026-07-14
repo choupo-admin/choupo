@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-[(pyridin-2-ylmethyl)-amino]-ethanol  (C8H12N2O, CAS 6636-71-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Pyridin2YlmethylAminoEthanol;
+formula     C8H12N2O;
+CAS         6636-71-1;
+InChIKey    VLMNYMSCQPXJDR-UHFFFAOYSA-N;
+MW          152.197;      // g/mol [origin=calculated method=formula-sum]
+Tc          811.78;      // K   [origin=predictive method=joback]
+Pc          41.677;      // bar [origin=predictive method=joback]
+omega       1.0677;      // -   [origin=predictive method=lee-kesler]
+Tb          605.37;      // K   [origin=predictive method=joback]
+HvapTb      65003.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-24.147 0.82886 -0.00053086 1.316e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group OH; count 1; } { group CH2NH; count 1; } { group C5H4N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group OH; count 1; } { group NH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(pyridin-2-ylmethylamino)ethanol" "n-(2-hydroxyethyl)-2-picolylamine" "2-((pyridin-2-ylmethyl)amino)ethanol" "ethanol, 2-[(2-pyridinylmethyl)amino]-" "2-[(pyridin-2-ylmethyl)amino]ethanol" "ethanol, 2-((2-pyridylmethyl)amino)-" "ethanol, 2-[(2-pyridylmethyl)amino]-" "ethanol, 2-((2-pyridinylmethyl)amino)-" "2-[(2-pyridylmethyl)amino]ethan-1-ol" "2-[(pyridin-2-ylmethyl)amino]ethan-1-ol" );
+gibbsFormation
+{
+    dHf_298   -37890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     465.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=158510.0
+    phase     gas;
+}

@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: endrin aldehyde  (C12H8Cl6O, CAS 7421-93-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        endrinAldehyde;
+formula     C12H8Cl6O;
+CAS         7421-93-4;
+InChIKey    HCTWZIFNBBCVGM-UHFFFAOYSA-N;
+MW          380.895;      // g/mol [origin=calculated method=formula-sum]
+Tc          1012.19;      // K   [origin=predictive method=joback]
+Pc          27.469;      // bar [origin=predictive method=joback]
+omega       0.7036;      // -   [origin=predictive method=lee-kesler]
+Tb          741.87;      // K   [origin=predictive method=joback]
+HvapTb      66913.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-370.26 3.279 -0.004417 2.1486e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 5; } { group CHO; count 1; } { group CCl2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:4
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 5; } { group C_ring; count 5; } { group Cl; count 6; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,4-methenocyclopenta[cd]pentalene-5-carboxaldehyde, 2,2a,3,3,4,7-hexachlorodecahydro-, (1.alpha.,2.beta.,2a.beta.,4.beta.,4a.beta.,5.beta.,6a.beta.,6b.beta.,7r*)-" "agn-pc-03m6pc" "1,2,4-methenocyclopenta(cd)pentalene-5-carboxaldehyde, 2,2a,3,3,4,7-hexachlorodecahydro-, (1alpha,2beta,2abeta,4beta,4abeta,5beta,6abeta,6bbeta,7r*)-" );
+gibbsFormation
+{
+    dHf_298   -107890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     447.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=165210.0
+    phase     gas;
+}

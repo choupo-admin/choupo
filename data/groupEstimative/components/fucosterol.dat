@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: fucosterol  (C29H48O, CAS 17605-67-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        fucosterol;
+formula     C29H48O;
+CAS         17605-67-3;
+InChIKey    OSELKOCHBMDKEJ-UHFFFAOYSA-N;
+MW          412.702;      // g/mol [origin=calculated method=formula-sum]
+Tc          1225.90;      // K   [origin=predictive method=joback]
+Pc          9.889;      // bar [origin=predictive method=joback]
+omega       0.9135;      // -   [origin=predictive method=lee-kesler]
+Tb          997.38;      // K   [origin=predictive method=joback]
+HvapTb      94326.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-322.078 3.76902 -0.00314474 1.1303e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 10; } { group CH; count 7; } { group C; count 2; } { group CH=C; count 2; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 2; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "10,13-dimethyl-17-(5-propan-2-ylhept-5-en-2-yl)-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-ol" "(3s,8s,9s,10r,13r,14s,17r)-10,13-dimethyl-17-[(z,2r)-5-propan-2-ylhept-5-en-2-yl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-ol" "5,24[28]-stigmastadien-3 beta-ol" "3 beta-hydroxy-5,24[28]-stigmastadiene" "(3s,10r,13r,17r)-10,13-dimethyl-17-[(z)-5-propan-2-ylhept-5-en-2-yl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-ol" "fucosterol(6ci);stigmasta-5,24(28)-dien-3b-ol, (e)- (8ci);(28e)-24-ethylcholesta-5,24(28)-dien-3-ol;(e)-stigmasta-5,24-(28)-dien-3b-ol;24-ethylcholesta-5,24(28)e-dien-3b-ol;24e-ethylidenecholest-5-en-3b-ol;fucosterin;stigmasta-5,trans-24(28)-dien-3b-ol;trans-24-ethylidenecholesterol;trans-stigmasta-5,24(28)-dien-3b-ol;" );
+gibbsFormation
+{
+    dHf_298   -421080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1013.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=291990.0
+    phase     gas;
+}

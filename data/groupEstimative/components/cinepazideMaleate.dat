@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cinepazide maleate  (C26H35N3O9, CAS 26328-04-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cinepazideMaleate;
+formula     C26H35N3O9;
+CAS         26328-04-1;
+InChIKey    XSTJTOKYCAJVMJ-GVTSEVKNSA-N;
+MW          533.578;      // g/mol [origin=calculated method=formula-sum]
+Tc          1720.06;      // K   [origin=predictive method=joback]
+Pc          12.856;      // bar [origin=predictive method=joback]
+omega       0.9880;      // -   [origin=predictive method=lee-kesler]
+Tb          1380.52;      // K   [origin=predictive method=joback]
+HvapTb      139909.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-53.559 2.61356 -0.00154448 3.0752e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH=CH; count 2; } { group ACH; count 2; } { group AC; count 4; } { group CH3O; count 3; } { group CH2N; count 1; } { group COOH; count 2; } { group CON_CH2_2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH; count 4; } { group CH2_ring; count 8; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group O; count 3; } { group CdO; count 2; } { group COOH; count 2; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z)-but-2-enedioic acid;(e)-1-[4-(2-oxidanylidene-2-pyrrolidin-1-yl-ethyl)piperazin-1-yl]-3-(3,4,5-trimethoxyphenyl)prop-2-en-1-one" "cinepazide maleate (jan)" "piperazine,4,5-trimethoxycinnamoyl)-, maleate" "piperazine,4,5-trimethoxyphenyl)-2-propenyl]-, (z)-2-butenedioate (1:1)" "(z)-but-2-enedioic acid; (e)-1-[4-(2-oxo-2-pyrrolidin-1-ylethyl)piperazin-1-yl]-3-(3,4,5-trimethoxyphenyl)prop-2-en-1-one" "1-(1-pyrrolidinylcarbonyl)methyl)-4-(3 inverted exclamation mark ,4 inverted exclamation mark ,5 inverted exclamation mark -trimethoxycinnamoyl); 1-[(1-pyrrolidinylcarbonyl)methyl]-4-(3,4,5-trimethoxycinnamoyl)piperazine maleate" );
+gibbsFormation
+{
+    dHf_298   -1200840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1324.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-508360.0
+    phase     gas;
+}

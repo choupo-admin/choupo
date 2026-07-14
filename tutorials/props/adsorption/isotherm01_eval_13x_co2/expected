@@ -1,0 +1,25 @@
+# Reference KPIs (golden master; recorded via runTests --record, then curated:
+# the ulp-level deviations (gate_twin_maxdev ~2e-16) are NOT pinned relative --
+# the gate FLAGS carry the verdict; the physical KPIs carry the numbers).
+# kind   name      key         expected        reltol
+diag    eval_13x_co2           T0               2.931e+02          1e-4
+diag    eval_13x_co2           T1               3.131e+02          1e-4
+diag    eval_13x_co2           T2               3.331e+02          1e-4
+diag    eval_13x_co2           b_T0             1.227e+01          1e-4
+diag    eval_13x_co2           b_T1             3.772e+00          1e-4
+diag    eval_13x_co2           b_T2             1.337e+00          1e-4
+diag    eval_13x_co2           henry_T0         6.133e-04          1e-4
+diag    eval_13x_co2           henry_T1         1.886e-04          1e-4
+diag    eval_13x_co2           henry_T2         6.683e-05          1e-4
+diag    eval_13x_co2           qsat             5.000e+00          1e-6
+diag    eval_13x_co2           tRef             2.981e+02          1e-4
+diag    eval_13x_co2           gate_henry       1.000e+00          1e-6
+diag    eval_13x_co2           gate_henry_maxdev 1.227e-07          1e-3
+diag    eval_13x_co2           gate_saturation  1.000e+00          1e-6
+diag    eval_13x_co2           gate_saturation_maxgap 9.999e-05          1e-3
+diag    eval_13x_co2           gate_monotonic   1.000e+00          1e-6
+diag    eval_13x_co2           gate_pin         1.000e+00          1e-6
+diag    eval_13x_co2           gate_twin        1.000e+00          1e-6
+diag    eval_13x_co2           gates_pass       1.000e+00          1e-6
+diag    eval_13x_co2           n_T              3.000e+00          1e-6
+diag    eval_13x_co2           n_p              4.000e+00          1e-6

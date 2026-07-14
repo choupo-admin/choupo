@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-bromo-4-chlorobenzotrifluoride  (C7H3BrClF3, CAS 454-78-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Bromo4Chlorobenzotrifluoride;
+formula     C7H3BrClF3;
+CAS         454-78-4;
+InChIKey    APSISOSWYXCEQX-UHFFFAOYSA-N;
+MW          259.449;      // g/mol [origin=calculated method=formula-sum]
+Tc          713.19;      // K   [origin=predictive method=joback]
+Pc          35.728;      // bar [origin=predictive method=joback]
+omega       0.4975;      // -   [origin=predictive method=lee-kesler]
+Tb          494.57;      // K   [origin=predictive method=joback]
+HvapTb      41849.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.1 0.6771 -0.00056692 1.796e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACCl; count 1; } { group Br; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 3; } { group Cl; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanyl-1-chloranyl-4-(trifluoromethyl)benzene" "2-bromo-1-chloro-4-(trifluoromethyl)benzene" "benzene, 2-bromo-1-chloro-4-(trifluoromethyl)-" "3-bromo-4-chloro-alpha,alpha,alpha-trifluorotoluene" "apsisoswyxceqx-uhfffaoysa-" "4-chloro-3-bromobenzotrifluoride" "2-bromo-1-chloro-4-(trifluoromethyl)-benzene" "2-chloro-5-(trifluoromethyl)bromobenzene" "3-bromo-4-chloro-a,a,a-trifluorotoluene" );
+gibbsFormation
+{
+    dHf_298   -560710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     450.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-477990.0
+    phase     gas;
+}

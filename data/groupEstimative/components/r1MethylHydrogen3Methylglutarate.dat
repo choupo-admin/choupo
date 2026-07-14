@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (r)-1-methyl hydrogen 3-methylglutarate  (C7H12O4, CAS 63473-60-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        r1MethylHydrogen3Methylglutarate;
+formula     C7H12O4;
+CAS         63473-60-9;
+InChIKey    BYBMHSADRRMVHY-RXMQYKEDSA-N;
+MW          160.169;      // g/mol [origin=calculated method=formula-sum]
+Tc          758.49;      // K   [origin=predictive method=joback]
+Pc          31.280;      // bar [origin=predictive method=joback]
+omega       0.8677;      // -   [origin=predictive method=lee-kesler]
+Tb          563.05;      // K   [origin=predictive method=joback]
+HvapTb      55359.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.852 0.67074 -0.0003382 4.25e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group CH2COO; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3r)-5-methoxy-3-methyl-5-oxidanylidene-pentanoic acid" "(r)-monomethyl 3-methylglutarate" "(r)-mono-methyl 3-methylglutarate" "methyl (r)-(+)-3-methylglutarate" "(r)-methyl mono-(3-methylglutarate)" "(r)-1-methyl hydrogen 3-methyl glutarate" "(3r)-5-methoxy-3-methyl-5-oxopentanoic acid" "pentanedioic acid,3-methyl-, 1-methyl ester, (3r)-" "(3r)-5-methoxy-3-methyl-5-oxopentanoic acid;pentanedioic acid, 3-methyl-, monomethyl ester,(3r)-;(r)-3-methylglutaric acid monomethyl ester;(r)-3-methylpentanedioic acid monomethyl ester;(r)-5-methoxy-3-methyl-5-oxopentanoic acid;" );
+gibbsFormation
+{
+    dHf_298   -860640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     523.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-648660.0
+    phase     gas;
+}

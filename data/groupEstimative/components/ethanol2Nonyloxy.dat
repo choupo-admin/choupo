@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethanol, 2-(nonyloxy)-  (C11H24O2, CAS 41366-03-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethanol2Nonyloxy;
+formula     C11H24O2;
+CAS         41366-03-4;
+InChIKey    IVVIWWSNOHDUFQ-UHFFFAOYSA-N;
+MW          188.311;      // g/mol [origin=calculated method=formula-sum]
+Tc          724.30;      // K   [origin=predictive method=joback]
+Pc          20.680;      // bar [origin=predictive method=joback]
+omega       1.0665;      // -   [origin=predictive method=lee-kesler]
+Tb          565.88;      // K   [origin=predictive method=joback]
+HvapTb      59169.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.68 1.01962 -0.000494 7.47e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 10; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-nonoxyethanol" "ethylene glycol mono-n-nonyl ether" "nonyl alcohol, ethoxylated" "ethyleneglycol mono-n-nonyl ether" "poly(oxy-1,2-ethanediyl), alpha-nonyl-omega-hydroxy-" );
+gibbsFormation
+{
+    dHf_298   -554820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     646.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-200080.0
+    phase     gas;
+}

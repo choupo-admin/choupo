@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: flurothyl  (C4H4F6O, CAS 333-36-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        flurothyl;
+formula     C4H4F6O;
+CAS         333-36-8;
+InChIKey    KGPPDNUWZNWPSI-UHFFFAOYSA-N;
+MW          182.063;      // g/mol [origin=calculated method=formula-sum]
+Tc          435.06;      // K   [origin=predictive method=joback]
+Pc          29.187;      // bar [origin=predictive method=joback]
+omega       0.4291;      // -   [origin=predictive method=lee-kesler]
+Tb          302.70;      // K   [origin=predictive method=joback]
+HvapTb      19414.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.352 0.643 -0.0005248 1.59e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2O; count 1; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group C; count 2; } { group F; count 6; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1-tris(fluoranyl)-2-[2,2,2-tris(fluoranyl)ethoxy]ethane" "flurotyl" "indoklon" "bis(2,2,2-trifluoroethyl) ether" "2,2,2-trifluoroethyl ether" "hexafluorodiethyl ether" "bis(trifluoroethyl) ether" "bis(2,2,2-trifluoroethyl)ether" "bis(trifluoroethyl)ether" "flurotylum [inn-latin]" "1,1,1-trifluoro-2-(2,2,2-trifluoroethoxy)ethane" "ethane, 1,1'-oxybis(2,2,2-trifluoro-" );
+gibbsFormation
+{
+    dHf_298   -1452270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     435.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1285380.0
+    phase     gas;
+}

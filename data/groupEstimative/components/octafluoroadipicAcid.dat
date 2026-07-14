@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octafluoroadipic acid  (C6H2F8O4, CAS 336-08-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octafluoroadipicAcid;
+formula     C6H2F8O4;
+CAS         336-08-3;
+InChIKey    AXRSOGFYDSXLQX-UHFFFAOYSA-N;
+MW          290.062;      // g/mol [origin=calculated method=formula-sum]
+Tc          787.77;      // K   [origin=predictive method=joback]
+Pc          27.701;      // bar [origin=predictive method=joback]
+omega       1.1626;      // -   [origin=predictive method=lee-kesler]
+Tb          609.14;      // K   [origin=predictive method=joback]
+HvapTb      51558.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-42.53 1.273 -0.0012662 4.486e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 2; } { group CF2; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 4; } { group F; count 8; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,5,5-octakis(fluoranyl)hexanedioic acid" "octafluorohexanedioic acid" "perfluoroadipic acid" "2,2,3,3,4,4,5,5-octafluorohexanedioic acid" "hexanedioic acid, octafluoro-" "hexanedioic acid, 2,2,3,3,4,4,5,5-octafluoro-" "perfluorohexanedioic acid" "hexanedioic acid,2,2,3,3,4,4,5,5-octafluoro-" "octafluorohexanedioic acid; perfluoroadipic acid; perfluorohexanedioic acid" "hexanedioicacid, octafluoro- (6ci,7ci,8ci,9ci);octafluoroadipic acid;octafluorohexanedioic acid;perfluoroadipic acid;" );
+gibbsFormation
+{
+    dHf_298   -2471590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     594.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2235300.0
+    phase     gas;
+}

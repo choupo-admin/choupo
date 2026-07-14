@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 3-hydroxy-2-methylenebutyrate  (C6H10O3, CAS 18020-65-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl3Hydroxy2Methylenebutyrate;
+formula     C6H10O3;
+CAS         18020-65-0;
+InChIKey    VLCAYQIMSMPEBW-UHFFFAOYSA-N;
+MW          130.143;      // g/mol [origin=calculated method=formula-sum]
+Tc          661.17;      // K   [origin=predictive method=joback]
+Pc          37.090;      // bar [origin=predictive method=joback]
+omega       0.8433;      // -   [origin=predictive method=lee-kesler]
+Tb          483.40;      // K   [origin=predictive method=joback]
+HvapTb      52058.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.77 0.53884 -0.0002668 3.16e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group CH2=C; count 1; } { group OH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-methylidene-3-oxidanyl-butanoate" "butanoic acid, 3-hydroxy-2-methylene-, methyl ester, (r)-" "methyl 2-(1-hydroxyethyl)acrylate" "methyl 3-hydroxy-2-methylidenebutanoate" "butanoic acid,3-hydroxy-2-methylene-, methyl ester" "3-hydroxy-2-methylene-butanoic acid methyl ester" "butyricacid, 3-hydroxy-2-methylene-, methyl ester (8ci); acrylic acid,2-(1-hydroxyethyl)-, methyl ester (8ci); methyl (?a'a a'a currency)-3-hydroxy-2-methylenebutanoate; methyl2-(1-hydroxyethyl)propenoate; methyl 3-hydroxy-2-methylenebutanoate; methyl3-hydroxy-2-methylenebutyrate" );
+gibbsFormation
+{
+    dHf_298   -526320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     473.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-370700.0
+    phase     gas;
+}

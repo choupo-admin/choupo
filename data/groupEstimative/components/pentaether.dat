@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentaether  (C16H34O5, CAS 112-98-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentaether;
+formula     C16H34O5;
+CAS         112-98-1;
+InChIKey    MQGIBEAIDUOVOH-UHFFFAOYSA-N;
+MW          306.443;      // g/mol [origin=calculated method=formula-sum]
+Tc          841.30;      // K   [origin=predictive method=joback]
+Pc          12.407;      // bar [origin=predictive method=joback]
+omega       1.0001;      // -   [origin=predictive method=lee-kesler]
+Tb          677.78;      // K   [origin=predictive method=joback]
+HvapTb      63260.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (115.844 1.20784 -0.0002916 -9.48e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 9; } { group CH2O; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 14; } { group O; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[2-[2-[2-(2-butoxyethoxy)ethoxy]ethoxy]ethoxy]butane" "dibutoxy tetraglycol" "5,8,11,14,17-pentaoxaheneicosane" "tetraethylene glycol dibutyl ether" "dibutylether tetraethylenglykolu" "ether,bis[2-(2-butoxyethoxy)ethyl]; pentaether; tetraethylene glycol dibutyl ether" );
+gibbsFormation
+{
+    dHf_298   -1034670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     835.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-441160.0
+    phase     gas;
+}

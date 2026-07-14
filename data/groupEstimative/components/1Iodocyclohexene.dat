@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-iodocyclohexene  (C6H9I, CAS 17497-53-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Iodocyclohexene;
+formula     C6H9I;
+CAS         17497-53-9;
+InChIKey    CAROGICRCNKEOD-UHFFFAOYSA-N;
+MW          208.038;      // g/mol [origin=calculated method=formula-sum]
+Tc          709.49;      // K   [origin=predictive method=joback]
+Pc          41.250;      // bar [origin=predictive method=joback]
+omega       0.2482;      // -   [origin=predictive method=lee-kesler]
+Tb          458.38;      // K   [origin=predictive method=joback]
+HvapTb      40015.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-40.34 0.6459 -0.00044064 1.172e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH=C; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-iodanylcyclohexene" "cyclohexene, 1-iodo-" "1-iodo-cyclohexene" "1-iodo-1-cyclohexene" );
+gibbsFormation
+{
+    dHf_298   30670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     413.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=110250.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dodecyl methyl sulfide  (C13H28S, CAS 3698-89-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dodecylMethylSulfide;
+formula     C13H28S;
+CAS         3698-89-3;
+InChIKey    KJWHJDGMOQJLGF-UHFFFAOYSA-N;
+MW          216.427;      // g/mol [origin=calculated method=formula-sum]
+Tc          742.73;      // K   [origin=predictive method=joback]
+Pc          16.673;      // bar [origin=predictive method=joback]
+omega       0.6973;      // -   [origin=predictive method=lee-kesler]
+Tb          565.82;      // K   [origin=predictive method=joback]
+HvapTb      51349.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.671 1.23323 -0.0006432 1.159e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 11; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methylsulfanyldodecane" "2-thiatetradecane" "methylthiododecane" "dodecane, 1-(methylthio)-" "methyl lauryl sulfide" "n-dodecylmethyl sulfide" "methyl n-dodecyl sulfide" "1-(methylsulfanyl)dodecane" "n-dodecyl methyl sulfide" "dodecyl methyl sulphide" "sulfide, dodecyl methyl" "sulfide, dodecyl methyl (8ci)" );
+gibbsFormation
+{
+    dHf_298   -269780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     723.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=91700.0
+    phase     gas;
+}

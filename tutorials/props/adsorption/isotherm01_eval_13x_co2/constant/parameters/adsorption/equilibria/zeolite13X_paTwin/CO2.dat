@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  UNIT-INVARIANCE TWIN of the standards record
+  data/standards/parameters/adsorption/equilibria/zeolite13X/CO2.dat:
+  the SAME langmuir surface, declared in partialPressurePa instead of
+  partialPressureBar -- b_298 = 9.0 [1/bar] = 9.0e-5 [1/Pa] exactly.
+  isothermEval's gate (d) demands the two evaluate identically to 1e-12 at
+  every grid point: the declared-basis conversion happens INSIDE the model,
+  once, at load -- a unit choice can never move a number.  Bench fixture,
+  not curated data.
+\*-----------------------------------------------------------------------------*/
+
+recordType      adsorptionIsotherm;
+schemaVersion   1;
+
+adsorbent       zeolite13X_paTwin;
+adsorbate       CO2;
+
+model           langmuir;
+
+parameters
+{
+    q_max   5.0;      // saturation loading [mol/kg]     (same as standards)
+    b_298   9.0e-5;   // affinity at tRef [1/Pa]         (= 9.0 [1/bar])
+    dH_ads  -45000;   // isosteric heat of adsorption [J/mol]  (same)
+}
+
+tRef            298.15;               // van't Hoff anchor [K]
+loadingBasis    molPerKgAdsorbent;
+pressureBasis   partialPressurePa;    // <-- the ONLY physical difference: none
+
+provenance
+{
+    origin    literature;
+    method    "unit-invariance twin of data/standards/parameters/adsorption/equilibria/zeolite13X/CO2.dat (b_298 9.0 1/bar rewritten as 9.0e-5 1/Pa); bench fixture for isothermEval gate (d)";
+    curation  "case-local test fixture 2026-07-12; never promote";
+}

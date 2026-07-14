@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-fluorophenylacetic acid  (C8H7FO2, CAS 405-50-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4FluorophenylaceticAcid;
+formula     C8H7FO2;
+CAS         405-50-5;
+InChIKey    MGKPFALCNDRSQD-UHFFFAOYSA-N;
+MW          154.14;      // g/mol [origin=calculated method=formula-sum]
+Tc          777.08;      // K   [origin=predictive method=joback]
+Pc          37.823;      // bar [origin=predictive method=joback]
+omega       0.7396;      // -   [origin=predictive method=lee-kesler]
+Tb          559.08;      // K   [origin=predictive method=joback]
+HvapTb      52687.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.299 0.688 -0.00046456 1.182e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group ACCH2; count 1; } { group COOH; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-fluorophenyl)ethanoic acid" "2-(4-fluorophenyl)acetic acid" "p-fluorophenylacetic acid" "(4-fluorophenyl)acetic acid" "benzeneacetic acid, 4-fluoro-" "acetic acid, (p-fluorophenyl)-" "4-flurophenylaceticacid" "4-fluoro-benzeneacetic acid" "(p-fluorophenyl)acetic acid" "4-fluorophenyl acetic acid" "benzeneaceticacid, 4-fluoro-" "(4-fluoro-phenyl)-acetic acid" );
+gibbsFormation
+{
+    dHf_298   -529770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     439.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-419460.0
+    phase     gas;
+}

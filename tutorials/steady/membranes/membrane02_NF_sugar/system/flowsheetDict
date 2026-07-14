@@ -31,16 +31,7 @@
   fractionation rather than just total rejection.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            200.0 kmol/h;             // kmol/h
-        T            298.15 K;
-        P            10.0 bar;              // bar (typical NF)
-        molarComposition  { water 0.999003;  glucose 0.000997; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

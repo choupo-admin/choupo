@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-chloroadamantane  (C10H15Cl, CAS 935-56-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Chloroadamantane;
+formula     C10H15Cl;
+CAS         935-56-8;
+InChIKey    OZNXTQSXSHODFR-UHFFFAOYSA-N;
+MW          170.68;      // g/mol [origin=calculated method=formula-sum]
+Tc          715.58;      // K   [origin=predictive method=joback]
+Pc          31.280;      // bar [origin=predictive method=joback]
+omega       0.3447;      // -   [origin=predictive method=lee-kesler]
+Tb          485.89;      // K   [origin=predictive method=joback]
+HvapTb      40690.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-193.21 1.6691 -0.001632 6.546e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:1
+    joback ( { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyladamantane" "1-adamantyl chloride" "adamantyl chloride" "adamantane, 1-chloro-" "3-chloroadamantane" "tricyclo[3.3.1.13,7]decane, 1-chloro-" "tricyclo(3.3.1.13,7)decane, 1-chloro-" "chloroadamantane" "1-chloro-adamantane" "adamantane,1-chloro" "ambap935-56-8" "adamantane, 1-chloro- (8ci)" );
+gibbsFormation
+{
+    dHf_298   -58330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     355.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=178340.0
+    phase     gas;
+}

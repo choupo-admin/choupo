@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-iodo-3,3-dimethylbutane  (C6H13I, CAS 15672-88-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Iodo33Dimethylbutane;
+formula     C6H13I;
+CAS         15672-88-5;
+InChIKey    KNKFLSQIGYRZAQ-UHFFFAOYSA-N;
+MW          212.07;      // g/mol [origin=calculated method=formula-sum]
+Tc          641.25;      // K   [origin=predictive method=joback]
+Pc          30.967;      // bar [origin=predictive method=joback]
+omega       0.2598;      // -   [origin=predictive method=lee-kesler]
+Tb          426.79;      // K   [origin=predictive method=joback]
+HvapTb      37027.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.348 0.73866 -0.0005558 1.72e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-iodanyl-3,3-dimethyl-butane" "butane,1-iodo-3,3-dimethyl-" "butane, 1-iodo-3,3-dimethyl-" "3,3-dimethylbutyl iodide;3,3-dimethyl-1-iodobutane;1-iodo-3,3-dimethylbutane;" );
+gibbsFormation
+{
+    dHf_298   -99050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     406.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=60600.0
+    phase     gas;
+}

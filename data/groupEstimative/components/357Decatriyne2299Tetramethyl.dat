@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5,7-decatriyne, 2,2,9,9-tetramethyl-  (C14H18, CAS 20264-60-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        357Decatriyne2299Tetramethyl;
+formula     C14H18;
+CAS         20264-60-2;
+InChIKey    GTEKTEXIODZAJZ-UHFFFAOYSA-N;
+MW          186.298;      // g/mol [origin=calculated method=formula-sum]
+Tc          797.08;      // K   [origin=predictive method=joback]
+Pc          23.935;      // bar [origin=predictive method=joback]
+omega       0.2359;      // -   [origin=predictive method=lee-kesler]
+Tb          540.46;      // K   [origin=predictive method=joback]
+HvapTb      50622.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.11 1.13612 -0.00080498 2.3614e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group C; count 2; } { group C_C; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group C; count 2; } { group tC; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,9,9-tetramethyldeca-3,5,7-triyne" );
+gibbsFormation
+{
+    dHf_298   467110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     538.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=681080.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(2-ethylhexyl) 3,3'-thiodipropionate  (C22H42O4S, CAS 10526-15-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis2Ethylhexyl33Thiodipropionate;
+formula     C22H42O4S;
+CAS         10526-15-5;
+InChIKey    NKNLSBYMGKTWDT-UHFFFAOYSA-N;
+MW          402.634;      // g/mol [origin=calculated method=formula-sum]
+Tc          1086.87;      // K   [origin=predictive method=joback]
+Pc          9.256;      // bar [origin=predictive method=joback]
+omega       0.8921;      // -   [origin=predictive method=lee-kesler]
+Tb          887.30;      // K   [origin=predictive method=joback]
+HvapTb      85421.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (49.944 1.99047 -0.00095 1.078e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 11; } { group CH; count 2; } { group CH2COO; count 2; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 14; } { group CH; count 2; } { group COO; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethylhexyl 3-[3-(2-ethylhexoxy)-3-oxidanylidene-propyl]sulfanylpropanoate" "bis(2-ethylhexyl)thiodipropionate" "bis(2-ethylhexyl) 3,3'-sulfanediyldipropanoate" "propanoic acid, 3,3'-thiobis-, bis(2-ethylhexyl) ester" "propionic acid, 3,3'-thiodi-, bis(2-ethylhexyl) ester" "propanoic acid, 3,3'-thiobis-, 1,1'-bis(2-ethylhexyl) ester" "3,3'-thiodipropionic acid bis(2-ethylhexyl) ester" "2-ethylhexyl 3-[3-(2-ethylhexoxy)-3-oxopropyl]sulfanylpropanoate" );
+gibbsFormation
+{
+    dHf_298   -1100660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1157.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-458140.0
+    phase     gas;
+}

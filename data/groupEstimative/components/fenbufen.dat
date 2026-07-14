@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: fenbufen  (C16H14O3, CAS 36330-85-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        fenbufen;
+formula     C16H14O3;
+CAS         36330-85-5;
+InChIKey    ZPAKPRAICRBAOD-UHFFFAOYSA-N;
+MW          254.285;      // g/mol [origin=calculated method=formula-sum]
+Tc          1066.13;      // K   [origin=predictive method=joback]
+Pc          26.164;      // bar [origin=predictive method=joback]
+omega       1.1119;      // -   [origin=predictive method=lee-kesler]
+Tb          823.40;      // K   [origin=predictive method=joback]
+HvapTb      80334.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-53.208 1.3293 -0.00089586 2.2426e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 9; } { group AC; count 3; } { group CH2CO; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group CdO; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-oxidanylidene-4-(4-phenylphenyl)butanoic acid" "cinopal" "lederfen" "bufemid" "napanol" "3-(4-phenylbenzoyl)propionic acid" "gamma-oxo(1,1'-biphenyl)-4-butanoic acid" "fenbufene [inn-french]" "fenbufenum [inn-latin]" "3-(4-biphenylcarbonyl)propionic acid" "4-(4-biphenylyl)-4-oxobutyric acid" "3-(4-biphenylylcarbonyl)propionic acid" );
+gibbsFormation
+{
+    dHf_298   -374830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     640.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-173800.0
+    phase     gas;
+}

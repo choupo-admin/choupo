@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # import_coolprop.py -- deterministic importer of the CoolProp pure-fluid
-# library into the data/proposed/ proposal tier.  Style precedent:
+# library into the data/local/ proposal tier.  Style precedent:
 # parse_speciation.py / audit_proposed.py (deterministic, spot-checked, emits a
 # markdown report, NEVER guesses a number).
 #
@@ -21,13 +21,13 @@
 #
 # WHERE it lands (STAGE-ONLY, never data/standards/, never committed):
 #   * a NEW fluid (no existing proposed/ or standards/ file under any alias)
-#     -> data/proposed/components/<name>.dat
+#     -> data/local/components/<name>.dat
 #   * a COLLISION with an existing proposed/ or standards/ file
-#     -> data/proposed/_coolprop_review/<name>.dat  (NON-DESTRUCTIVE: the
+#     -> data/local/_coolprop_review/<name>.dat  (NON-DESTRUCTIVE: the
 #        existing curated/scrubbed file is left untouched; the human decides at
 #        review time whether the CoolProp-anchored data should replace it).
 #
-# Report: data/proposed/COOLPROP-IMPORT.md (counts + per-fluid table + the full
+# Report: data/local/COOLPROP-IMPORT.md (counts + per-fluid table + the full
 # EOS citation, incl. any author-token sanitised out of the .dat to keep the
 # deterministic audit clean).
 
@@ -39,10 +39,10 @@ import CoolProp.CoolProp as CP
 from CoolProp.CoolProp import PropsSI, get_fluid_param_string, get_global_param_string
 
 ROOT      = Path(__file__).resolve().parents[2]
-COMP      = ROOT / 'data/proposed/components'
-REVIEW    = ROOT / 'data/proposed/_coolprop_review'
+COMP      = ROOT / 'data/local/components'
+REVIEW    = ROOT / 'data/local/_coolprop_review'
 STD       = ROOT / 'data/standards/components'
-OUT       = ROOT / 'data/proposed/COOLPROP-IMPORT.md'
+OUT       = ROOT / 'data/local/COOLPROP-IMPORT.md'
 
 # Excluded-source token matcher (mirrors audit_proposed.py) -- used ONLY to
 # sanitise an EOS-reference author word that collides with an excluded token
@@ -323,8 +323,8 @@ def write_report(rows, skipped, n_new, n_coll, n_total):
     L.append('# CoolProp 7.2.0 import -- proposal tier (STAGE-ONLY)')
     L.append('')
     L.append(f'- Source: CoolProp 7.2.0 (MIT); pure-fluid properties from the published reference EOS per fluid.')
-    L.append(f'- Fluids processed: **{n_total}**  ->  **{n_new} NEW** (`data/proposed/components/`), '
-             f'**{n_coll} COLLISION** (`data/proposed/_coolprop_review/`, non-destructive), '
+    L.append(f'- Fluids processed: **{n_total}**  ->  **{n_new} NEW** (`data/local/components/`), '
+             f'**{n_coll} COLLISION** (`data/local/_coolprop_review/`, non-destructive), '
              f'**{len(skipped)} skipped**.')
     L.append('- Formation properties (dHf, s_298) and group decompositions are NOT in CoolProp -> omitted (documented gap).')
     L.append('- Vapour pressure: 3-param Antoine FITTED to the EOS saturation curve (AAD per row). '
@@ -332,7 +332,7 @@ def write_report(rows, skipped, n_new, n_coll, n_total):
     L.append('- Triple-point T,P stored in a `sublimation{}` block (anchors only; no Hsub -> no curve drawn).')
     L.append('- NOTHING committed; NOTHING promoted to `data/standards/`.')
     L.append('')
-    L.append('## NEW fluids (data/proposed/components/)')
+    L.append('## NEW fluids (data/local/components/)')
     L.append('')
     L.append('| name | CoolProp | MW | Tc/K | Pc/bar | omega | Tb/K | VP AAD% | EOS |')
     L.append('|---|---|---|---|---|---|---|---|---|')
@@ -344,9 +344,9 @@ def write_report(rows, skipped, n_new, n_coll, n_total):
         L.append(f'| {name} | {fluid} | {p["MW"]:.2f} | {p["Tc"]:.2f} | {p["Pc"]:.3f} | '
                  f'{p["omega"]:.4f} | {tb} | {p["antoine"][3]:.2f} | {eos} |')
     L.append('')
-    L.append('## COLLISIONS (data/proposed/_coolprop_review/ -- existing file preserved)')
+    L.append('## COLLISIONS (data/local/_coolprop_review/ -- existing file preserved)')
     L.append('')
-    L.append('These names already exist in `data/standards/` or `data/proposed/components/`. '
+    L.append('These names already exist in `data/standards/` or `data/local/components/`. '
              'The CoolProp-anchored version is staged in `_coolprop_review/` for human comparison; '
              'the existing curated/scrubbed file was left untouched. Review and decide per file.')
     L.append('')

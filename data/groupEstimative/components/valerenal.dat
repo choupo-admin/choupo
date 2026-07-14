@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: valerenal  (C15H22O, CAS 4176-16-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        valerenal;
+formula     C15H22O;
+CAS         4176-16-3;
+InChIKey    RJZWGDPBGWGJNU-MTXIQXFFSA-N;
+MW          218.34;      // g/mol [origin=calculated method=formula-sum]
+Tc          843.36;      // K   [origin=predictive method=joback]
+Pc          20.309;      // bar [origin=predictive method=joback]
+omega       0.6290;      // -   [origin=predictive method=lee-kesler]
+Tb          626.24;      // K   [origin=predictive method=joback]
+HvapTb      57391.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-86.75 1.49476 -0.0009703 2.495e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 3; } { group CH=C; count 1; } { group CHO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group dC_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e)-3-[(4s,7r,7ar)-3,7-dimethyl-2,4,5,6,7,7a-hexahydro-1h-inden-4-yl]-2-methyl-prop-2-enal" "2-propenal, 3-(2,4,5,6,7,7a-hexahydro-3,7-dimethyl-1h-inden-4-yl)-2-methyl-, (4s-(4alpha(e),7beta,7aalpha))-" "ambap4176-16-3" "(e)-3-[(4s,7r,7ar)-3,7-dimethyl-2,4,5,6,7,7a-hexahydro-1h-inden-4-yl]-2-methylprop-2-enal" );
+gibbsFormation
+{
+    dHf_298   -189460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     535.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=135760.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(2,4,6-trichlorophenyl) oxalate  (C14H4Cl6O4, CAS 1165-91-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis246TrichlorophenylOxalate;
+formula     C14H4Cl6O4;
+CAS         1165-91-9;
+InChIKey    GEVPIWPYWJZSPR-UHFFFAOYSA-N;
+MW          448.882;      // g/mol [origin=calculated method=formula-sum]
+Tc          1201.56;      // K   [origin=predictive method=joback]
+Pc          20.624;      // bar [origin=predictive method=joback]
+omega       1.1253;      // -   [origin=predictive method=lee-kesler]
+Tb          944.18;      // K   [origin=predictive method=joback]
+HvapTb      96406.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (136.31 0.7502 -0.00033116 -3.2e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group ACCl; count 6; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 4; } { group dC_ring; count 8; } { group Cl; count 6; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis[2,4,6-tris(chloranyl)phenyl] ethanedioate" "tcpo" "oxalic acid bis(2,4,6-trichlorophenyl) ester" "bis(2,4,6-trichlorophenyl)oxalate" "bis(2,4,6-trichlorophenyl)ethanedioate" "2,4,6-trichlorophenyl oxalate" "bis[2,4,6-trichlorophenyl]oxalate" "bis-tcpo" "gevpiwpywjzspr-uhfffaoysa-" "bis(2,4,6-trichlorophenyl) ethanedioate" "o485" "oxalic acid, bis(2,4,6-trichlorophenyl) ester" );
+gibbsFormation
+{
+    dHf_298   -657050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     754.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-458280.0
+    phase     gas;
+}

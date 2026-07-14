@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-hexylthiophene  (C10H16S, CAS 1693-86-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Hexylthiophene;
+formula     C10H16S;
+CAS         1693-86-3;
+InChIKey    JEDHEMYZURJGRQ-UHFFFAOYSA-N;
+MW          168.298;      // g/mol [origin=calculated method=formula-sum]
+Tc          707.63;      // K   [origin=predictive method=joback]
+Pc          27.297;      // bar [origin=predictive method=joback]
+omega       0.4732;      // -   [origin=predictive method=lee-kesler]
+Tb          499.48;      // K   [origin=predictive method=joback]
+HvapTb      45478.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.945 0.95493 -0.00062922 1.678e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group C4H3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-n-hexylthiophene" );
+gibbsFormation
+{
+    dHf_298   -19560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     506.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=167730.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lactic acid  (C3H6O3, CAS 50-21-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lacticAcid;
+formula     C3H6O3;
+CAS         50-21-5;
+InChIKey    JVTAAEKCZFNVCJ-UHFFFAOYSA-N;
+MW          90.078;      // g/mol [origin=calculated method=formula-sum]
+Tc          694.81;      // K   [origin=predictive method=joback]
+Pc          57.654;      // bar [origin=predictive method=joback]
+omega       1.0321;      // -   [origin=predictive method=lee-kesler]
+Tb          505.49;      // K   [origin=predictive method=joback]
+HvapTb      55727.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.37 0.37952 -0.0002456 6.18e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-oxidanylpropanoic acid" "dl-lactic acid" "2-hydroxypropanoic acid" "2-hydroxypropionic acid" "milk acid" "lactate" "propanoic acid, 2-hydroxy-" "lactovagan" "milchsaeure" "ethylidenelactic acid" "acidum lacticum" "racemic lactic acid" );
+gibbsFormation
+{
+    dHf_298   -613030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     367.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-508790.0
+    phase     gas;
+}

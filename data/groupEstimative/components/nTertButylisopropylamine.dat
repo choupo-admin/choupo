@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-tert-butylisopropylamine  (C7H17N, CAS 7515-80-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nTertButylisopropylamine;
+formula     C7H17N;
+CAS         7515-80-2;
+InChIKey    ZWXQPERWRDHCMZ-UHFFFAOYSA-N;
+MW          115.22;      // g/mol [origin=calculated method=formula-sum]
+Tc          590.81;      // K   [origin=predictive method=joback]
+Pc          29.218;      // bar [origin=predictive method=joback]
+omega       0.3738;      // -   [origin=predictive method=lee-kesler]
+Tb          406.26;      // K   [origin=predictive method=joback]
+HvapTb      35928.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.84 0.8768 -0.0005806 1.54e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group C; count 1; } { group CHNH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH; count 1; } { group C; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-n-propan-2-yl-propan-2-amine" "n-isopropyl-2-methylpropan-2-amine" "2-propanamine, 2-methyl-n-(1-methylethyl)-" "ethanamine, 1,1-dimethyl, n-(1-methylethyl)" "n-isopropyl-tert-butylamine" "(tert-butyl)(methylethyl)amine" "2-methyl-n-propan-2-ylpropan-2-amine" "diethylamine,1,1,1'-trimethyl- (7ci,8ci); 2-methyl-n-(1-methylethyl)-2-propanamine;isopropyl-tert-butylamine; n-isopropyl-n-tert-butylamine;n-tert-butyl-n-isopropylamine; n-tert-butylisopropylamine;tert-butylisopropylamine" );
+gibbsFormation
+{
+    dHf_298   -148370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     420.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97850.0
+    phase     gas;
+}

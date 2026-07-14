@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n'-bis(3-(trimethoxysilyl)propyl)ethylenediamine  (C14H36N2O6Si2, CAS 68845-16-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C14H36N2O6Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        nNBis3TrimethoxysilylPropylEthylenediamine;
+formula     C14H36N2O6Si2;
+CAS         68845-16-9;
+InChIKey    HZGIOLNCNORPKR-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          384.62;      // g/mol [origin=calculated method=formula-sum]
+Tc          936.15;      // K   [origin=predictive method=joback]
+Pc          12.073;      // bar [origin=predictive method=joback]
+omega       1.0277;      // -   [origin=predictive method=lee-kesler]
+Tb          757.58;      // K   [origin=predictive method=joback]
+HvapTb      74678.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (222.378 0.69472 0.0006606 -5.868e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH3O; count 6; } { group CH2NH; count 2; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 8; } { group O; count 6; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n'-bis(3-trimethoxysilylpropyl)ethane-1,2-diamine" "n,n'-bis[3-(trimethoxysilyl)propyl]ethylenediamine" "1,2-ethanediamine, n,n'-bis(3-(trimethoxysilyl)propyl)-" "1,2-ethanediamine, n,n'-bis[3-(trimethoxysilyl)propyl]-" "1,2-ethanediamine, n1,n2-bis(3-(trimethoxysilyl)propyl)-" "1,2-ethanediamine, n1,n2-bis[3-(trimethoxysilyl)propyl]-" "n,n'bis(3-trimethoxysilyl)propyl)ethylenediamine" "1,2-ethanediamine,n,n'-bis[3-(trimethoxysilyl)propyl]- (9ci);b 2492;b 2493;bis(trimethoxysilylpropyl)ethylenediamine;bis[3-(trimethoxysilyl)propyl]ethylenediamine;1,2-ethanediamine,n1,n2-bis[3-(trimethoxysilyl)propyl]-;x 12-5283;n,n'-bis[3-(trimethoxysilyl)propyl]ethane-1,2-diamine;" );
+gibbsFormation
+{
+    dHf_298   -1241910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1103.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-593740.0
+    phase     gas;
+}

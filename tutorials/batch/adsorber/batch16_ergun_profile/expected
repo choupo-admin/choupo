@@ -1,0 +1,9 @@
+# Closed-form P(z)^2 Ergun anchor at the three finite-volume cell centres.
+# kind   name   key                         expected          reltol
+kpi     bed    P_first_cell_Pa             99999.4670134     2e-8
+kpi     bed    P_mid_cell_Pa               99946.1540012     2e-8
+kpi     bed    P_last_cell_Pa              99893.8796441     2e-8
+kpi     bed    P_out_boundary_Pa            99893.3459257     1e-10
+kpi     bed    carrier_fabricated_mol       0                 1e-12
+kpi     bed    physical_mass_closure_rel    0                 1e-12
+kpi     campaign mass_closure_rel           0                 1e-10

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pyrenoline  (C19H11N, CAS 189-92-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pyrenoline;
+formula     C19H11N;
+CAS         189-92-4;
+InChIKey    BYFIUFNRSNKODH-UHFFFAOYSA-N;
+MW          253.304;      // g/mol [origin=calculated method=formula-sum]
+Tc          1072.06;      // K   [origin=predictive method=joback]
+Pc          28.874;      // bar [origin=predictive method=joback]
+omega       0.8429;      // -   [origin=predictive method=lee-kesler]
+Tb          797.86;      // K   [origin=predictive method=joback]
+HvapTb      74284.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-118.64 1.64556 -0.00150154 5.475e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 6; } { group C5H3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 11; } { group dC_ring; count 8; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pyreno[1,2-b]pyridine" "3-azabenzo(d)pyrene" "10-azabenzo(a)pyrene" "pyreno(1,2-b)pyridine" "pyrido(2',3':4)pyrene" "phenaleno(1,9-gh)quinoline" "10-azabenzo[a]pyrene" "phenaleno[1,9-gh]quinoline" "10-azabenzo[a]pyrene;3-azabenzo[d]pyrene; pyreno[1,2-b]pyridine; pyrenoline" );
+gibbsFormation
+{
+    dHf_298   518240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     345.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=690510.0
+    phase     gas;
+}

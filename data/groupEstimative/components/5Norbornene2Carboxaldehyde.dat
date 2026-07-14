@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-norbornene-2-carboxaldehyde  (C8H10O, CAS 5453-80-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Norbornene2Carboxaldehyde;
+formula     C8H10O;
+CAS         5453-80-5;
+InChIKey    AJIBZRIAUXVGQJ-UHFFFAOYSA-N;
+MW          122.167;      // g/mol [origin=calculated method=formula-sum]
+Tc          653.50;      // K   [origin=predictive method=joback]
+Pc          37.916;      // bar [origin=predictive method=joback]
+omega       0.4169;      // -   [origin=predictive method=lee-kesler]
+Tb          443.54;      // K   [origin=predictive method=joback]
+HvapTb      40103.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-84.87 0.948 -0.00073028 2.266e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 3; } { group CH=CH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group CH_ring; count 3; } { group dCH_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bicyclo[2.2.1]hept-2-ene-5-carbaldehyde" "bicyclo[2.2.1]hept-5-ene-2-carboxaldehyde" "5-formylbicyclohept-2-ene" "5-norbornane-2-carboxaldehyde" "bicyclo[2.2.1]hept-5-en-2-carbaldehyd" "bicyclo[2.2.1]hept-5-ene-2-carbaldehyde" "bicyclo(2.2.1)hept-5-ene-2-carbaldehyde" "bicyclo(2.2.1)hept-5-ene-2-carboxaldehyde" "5-norbornene-2-carbaldehyde" "5-norbornene-2-carboxaldehyde, endo + exo" "5-norbornene-2-carboxaldehyde,endo and exo" );
+gibbsFormation
+{
+    dHf_298   -117150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     245.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=48610.0
+    phase     gas;
+}

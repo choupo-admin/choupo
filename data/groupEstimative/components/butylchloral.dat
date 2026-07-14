@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butylchloral  (C4H5Cl3O, CAS 76-36-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butylchloral;
+formula     C4H5Cl3O;
+CAS         76-36-8;
+InChIKey    OXVISHZELPRKFQ-UHFFFAOYSA-N;
+MW          175.433;      // g/mol [origin=calculated method=formula-sum]
+Tc          663.80;      // K   [origin=predictive method=joback]
+Pc          38.483;      // bar [origin=predictive method=joback]
+omega       0.4010;      // -   [origin=predictive method=lee-kesler]
+Tb          448.40;      // K   [origin=predictive method=joback]
+HvapTb      42689.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.17 0.51042 -0.000423 1.327e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CHO; count 1; } { group CHCl; count 1; } { group CCl2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group C; count 1; } { group Cl; count 3; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3-tris(chloranyl)butanal" "2,2,3-trichlorobutanal" "butyrchloral" "crotonchloral" "anhydrous butylchloral" "2,2,3-trichlorobutyraldehyde" "butanal, 2,2,3-trichloro-" "butyraldehyde, 2,2,3-trichloro-" "alpha,alpha,beta-trichlorobutyraldehyde" "alpha,alpha,beta-trichloro-n-butyraldehyde" "n-butyraldehyde, alpha,alpha,beta-trichloro-" "2,3-trichlorobutanal" );
+gibbsFormation
+{
+    dHf_298   -272720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     382.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-152110.0
+    phase     gas;
+}

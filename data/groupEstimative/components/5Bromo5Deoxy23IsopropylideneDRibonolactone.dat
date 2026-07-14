@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-bromo-5-deoxy-2,3-isopropylidene-d-ribonolactone  (C8H11BrO4, CAS 94324-23-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Bromo5Deoxy23IsopropylideneDRibonolactone;
+formula     C8H11BrO4;
+CAS         94324-23-9;
+InChIKey    ZSWDFLIWNDCXNU-UHFFFAOYSA-N;
+MW          251.076;      // g/mol [origin=calculated method=formula-sum]
+Tc          786.82;      // K   [origin=predictive method=joback]
+Pc          34.971;      // bar [origin=predictive method=joback]
+omega       0.6924;      // -   [origin=predictive method=lee-kesler]
+Tb          565.30;      // K   [origin=predictive method=joback]
+HvapTb      54321.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-74.739 1.28194 -0.0012226 4.838e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group CH-O; count 2; } { group Br; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH_ring; count 3; } { group C_ring; count 1; } { group Br; count 1; } { group O_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-(bromomethyl)-2,2-dimethyl-6,6a-dihydro-3ah-furo[3,4-d][1,3]dioxol-4-one" "agn-pc-00n0q9" "6-bromomethyl-2,2-dimethyldihydrofuro[3,4-d][1,3]dioxol-4-one" "5-bromo-5-deoxy-2,3-o-(1-methylethylidene)-d-ribonic acid " "a-lactone" "(3ar,6s,6ar)-6-(bromomethyl)-2,2-dimethyl-6,6a-dihydro-3ah-furo[3,4-d][1,3]dioxol-4-one" );
+gibbsFormation
+{
+    dHf_298   -643240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     271.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-351220.0
+    phase     gas;
+}

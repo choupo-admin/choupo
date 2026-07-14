@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 2215361  (C6Cl8, CAS 3424-05-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn2215361;
+formula     C6Cl8;
+CAS         3424-05-3;
+InChIKey    HSNOZNMQZFGXDR-UHFFFAOYSA-N;
+MW          355.666;      // g/mol [origin=calculated method=formula-sum]
+Tc          941.50;      // K   [origin=predictive method=joback]
+Pc          30.423;      // bar [origin=predictive method=joback]
+omega       0.5095;      // -   [origin=predictive method=lee-kesler]
+Tb          663.05;      // K   [origin=predictive method=joback]
+HvapTb      64159.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.18 1.0646 -0.001427 6.966e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CCl2; count 2; } { group Cl_C=C_; count 4; } { group C=C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC; count 1; } { group C_ring; count 2; } { group dC_ring; count 3; } { group Cl; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[bis(chloranyl)methylidene]-1,2,3,3,5,5-hexakis(chloranyl)cyclopentene" "perchloromethylene-3-cyclopentene" "cyclopentene, 4-(dichloromethylene)-1,2,3,3,5,5-hexachloro-" "hexachloro-4-(dichloromethylene)cyclopentene" "perchloromethylene-delta(sup 3)-cyclopentene" "cyclopentene, hexachloro-4-(dichloromethylene)-" "4-(dichloromethylene)-1,2,3,3,5,5-hexachlorocyclopentene" "cyclopentene, 1,2,3,3,5,5-hexachloro-4-(dichloromethylene)-" "cyclopentene, hexachloro-4-(dichloromethylene)- (8ci)" "1,2,3,3,5,5-hexachloro-4-(dichloromethylidene)cyclopentene" );
+gibbsFormation
+{
+    dHf_298   -121390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     621.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-30330.0
+    phase     gas;
+}

@@ -1,0 +1,9 @@
+application   choupoBatch;
+description   "batch rectification, constant-composition policy: R(t) holds x_D until refluxMax, then D=0";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         1800;     // s -- long enough to HIT refluxMax mid-campaign
+deltaT          1.0;      // s
+writeInterval   20;       // s

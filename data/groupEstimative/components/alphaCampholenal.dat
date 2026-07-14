@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: .alpha.-campholenal  (C10H16O, CAS 91819-58-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        alphaCampholenal;
+formula     C10H16O;
+CAS         91819-58-8;
+InChIKey    OGCGGWYLHSJRFY-UHFFFAOYSA-N;
+MW          152.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          698.03;      // K   [origin=predictive method=joback]
+Pc          27.965;      // bar [origin=predictive method=joback]
+omega       0.4771;      // -   [origin=predictive method=lee-kesler]
+Tb          492.05;      // K   [origin=predictive method=joback]
+HvapTb      44325.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-77.259 1.20996 -0.00103804 3.943e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group CH=C; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2,2,3-trimethylcyclopent-3-en-1-yl)ethanal" ".alpha.-campholene aldehyde" "camphonealdehyde" ".alpha.-campholenaldehyde" ".gamma.-campholene aldehyde" "2,2,3-trimethyl-3-cyclopenten-1-acetaldehyde" "campholenic aldehyde" "(2,2,3-trimethylcyclopent-3-en-1-yl)acetaldehyde" ".alpha.-campholenic aldehyde" "2-(2,2,3-trimethyl-1-cyclopent-3-enyl)acetaldehyde" "2-(2,2,3-trimethylcyclopent-3-en-1-yl)acetaldehyde" "3-cyclopentene-1-acetaldehyde, 2,2,3-trimethyl-" );
+gibbsFormation
+{
+    dHf_298   -233620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     497.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-22520.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-octadecanone  (C18H36O, CAS 18276-99-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Octadecanone;
+formula     C18H36O;
+CAS         18276-99-8;
+InChIKey    RLQCXKKPOOBJFD-UHFFFAOYSA-N;
+MW          268.485;      // g/mol [origin=calculated method=formula-sum]
+Tc          832.50;      // K   [origin=predictive method=joback]
+Pc          12.031;      // bar [origin=predictive method=joback]
+omega       0.8889;      // -   [origin=predictive method=lee-kesler]
+Tb          665.31;      // K   [origin=predictive method=joback]
+HvapTb      62408.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.115 1.68584 -0.0009367 1.9396e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 14; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 15; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "octadecan-5-one" );
+gibbsFormation
+{
+    dHf_298   -527430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     883.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-28240.0
+    phase     gas;
+}

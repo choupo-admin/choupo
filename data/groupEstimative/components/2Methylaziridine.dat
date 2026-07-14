@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methylaziridine  (C3H7N, CAS 75-55-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methylaziridine;
+formula     C3H7N;
+CAS         75-55-8;
+InChIKey    OZDGMOYKSFPLSE-UHFFFAOYSA-N;
+MW          57.096;      // g/mol [origin=calculated method=formula-sum]
+Tc          514.24;      // K   [origin=predictive method=joback]
+Pc          54.788;      // bar [origin=predictive method=joback]
+omega       0.2447;      // -   [origin=predictive method=lee-kesler]
+Tb          323.53;      // K   [origin=predictive method=joback]
+HvapTb      28943.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-33.16 0.42632 -0.000299 9.09e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propyleneimine" "aziridine, 2-methyl-" "methylaziridine" "propylenimine" "1,2-propylenimine" "2-methylethylenimine" "propylene imine" "methylethylenimine" "1,2-propyleneimine" "2-methylazacyclopropane" "2-methyl aziridine" "propyleneimine, inhibited" );
+gibbsFormation
+{
+    dHf_298   5360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     176.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=122840.0
+    phase     gas;
+}

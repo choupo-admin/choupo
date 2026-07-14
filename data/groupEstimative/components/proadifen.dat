@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: proadifen  (C23H31NO2, CAS 302-33-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        proadifen;
+formula     C23H31NO2;
+CAS         302-33-0;
+InChIKey    SNTQPLDRUZOSDP-UHFFFAOYSA-N;
+MW          353.506;      // g/mol [origin=calculated method=formula-sum]
+Tc          1063.70;      // K   [origin=predictive method=joback]
+Pc          13.300;      // bar [origin=predictive method=joback]
+omega       0.9270;      // -   [origin=predictive method=lee-kesler]
+Tb          846.63;      // K   [origin=predictive method=joback]
+HvapTb      79498.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-95.584 2.22596 -0.0014796 3.657e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group C; count 1; } { group ACH; count 10; } { group AC; count 2; } { group CH2N; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group C; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(diethylamino)ethyl 2,2-diphenylpentanoate" "bctb" "ethyl aprofen" "proadifen [inn]" "proadifene [inn-french]" "proadifenum [inn-latin]" "2-diethylaminoethyl propyldiphenylacetate" "2-diethylaminoethyl-2,2-diphenylvalerate" "benzeneacetic acid, alpha-phenyl-alpha-propyl-, 2-(diethylamino)ethyl ester" "2,2-diphenylpentansaeure-2-diethylaminoethylester" "proadifene" "proadifeno" );
+gibbsFormation
+{
+    dHf_298   -303490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     867.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=170850.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 3-benzoylpropionate  (C11H12O3, CAS 25333-24-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl3Benzoylpropionate;
+formula     C11H12O3;
+CAS         25333-24-8;
+InChIKey    XVRCVKWYKYJEIG-UHFFFAOYSA-N;
+MW          192.214;      // g/mol [origin=calculated method=formula-sum]
+Tc          804.79;      // K   [origin=predictive method=joback]
+Pc          28.444;      // bar [origin=predictive method=joback]
+omega       0.7242;      // -   [origin=predictive method=lee-kesler]
+Tb          590.05;      // K   [origin=predictive method=joback]
+HvapTb      56509.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.248 0.88712 -0.0004925 7.906e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH2CO; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 4-oxidanylidene-4-phenyl-butanoate" "methyl 4-oxo-4-phenylbutanoate" "3-benzoylpropionic acid methyl ester" "propionic acid, 3-benzoyl-, methyl ester" "benzenebutanoic acid, .gamma.-oxo-, methyl ester" "methyl 4-oxo-4-phenylbutyrate" "xvrcvkwykyjeig-uhfffaoysa-" "4-oxo-4-phenylbutanoic acid methyl ester" "4-oxo-4-phenylbutyric acid methyl ester" "benzenebutanoic acid, gamma-oxo-, methyl ester" );
+gibbsFormation
+{
+    dHf_298   -463700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     556.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-285140.0
+    phase     gas;
+}

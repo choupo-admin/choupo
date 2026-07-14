@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-hydroxy-4-methylbenzaldehyde  (C8H8O2, CAS 698-27-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H8O2 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2Hydroxy4Methylbenzaldehyde;
+formula     C8H8O2;
+CAS         698-27-1;
+InChIKey    JODRRPJMQDFCBJ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          136.15;      // g/mol [origin=calculated method=formula-sum]
+Tc          698.54;      // K   [origin=predictive method=joback]
+Pc          45.839;      // bar [origin=predictive method=joback]
+omega       0.4619;      // -   [origin=predictive method=lee-kesler]
+Tb          471.34;      // K   [origin=predictive method=joback]
+HvapTb      46981.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-52.41 0.78812 -0.00078492 3.144e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACCH3; count 1; } { group ACOH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-methyl-2-oxidanyl-benzaldehyde" "4-methylsalicylaldehyde" "benzaldehyde, 2-hydroxy-4-methyl-" "2,4-cresotaldehyde" "homosalicylaldehyde, m-" "2-formyl-5-methylphenol" "4-methylsalicyclic aldehyde" "4-methyl-2-hydroxybenzaldehyde" "4-methyl-2-hydroxy benzaldehyde" "2-hydroxy-4-methyl-benzaldehyde" "2,4-cresotaldehyde(6ci,7ci,8ci);2-formyl-5-methylphenol;2-hydroxy-4-methylbenzaldehyde;4-methyl-2-hydroxybenzaldehyde;4-methylsalicylaldehyde;m-homosalicylaldehyde;" );
+gibbsFormation
+{
+    dHf_298   -84250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     462.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=8600.0
+    phase     gas;
+}

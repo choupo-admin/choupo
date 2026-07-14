@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: silicon tetraacetate  (C8H12O8Si, CAS 16201-97-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H12O8Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        siliconTetraacetate;
+formula     C8H12O8Si;
+CAS         16201-97-1;
+InChIKey    YZVRVDPMGYFCGL-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          264.261;      // g/mol [origin=calculated method=formula-sum]
+Tc          809.40;      // K   [origin=predictive method=joback]
+Pc          22.981;      // bar [origin=predictive method=joback]
+omega       0.9034;      // -   [origin=predictive method=lee-kesler]
+Tb          616.92;      // K   [origin=predictive method=joback]
+HvapTb      63324.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (138.07 0.33848 0.0003818 -3.616e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3COO; count 4; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "triacetyloxysilyl ethanoate" "tetraacetyl orthosilicate" "tetraacetoxysilane" "triacetyloxysilyl acetate" "silanetetrol, tetraacetate" "silicon tetra acetate" "acetic acid, tetraanhydride with silicic acid (h4sio4)" "acetic acid, 1,1',1'',1'''-tetraanhydride with silicic acid (h4sio4)" );
+gibbsFormation
+{
+    dHf_298   -1589190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     799.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1329760.0
+    phase     gas;
+}

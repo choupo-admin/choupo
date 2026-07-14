@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-dimethyl-3-(trimethoxysilyl)propan-1-amine  (C8H21NO3Si, CAS 2530-86-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H21NO3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        nNDimethyl3TrimethoxysilylPropan1Amine;
+formula     C8H21NO3Si;
+CAS         2530-86-1;
+InChIKey    QIOYHIUHPGORLS-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          207.345;      // g/mol [origin=calculated method=formula-sum]
+Tc          631.92;      // K   [origin=predictive method=joback]
+Pc          21.453;      // bar [origin=predictive method=joback]
+omega       0.5814;      // -   [origin=predictive method=lee-kesler]
+Tb          463.74;      // K   [origin=predictive method=joback]
+HvapTb      42969.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (102.243 0.492 0.0002238 -2.602e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH3O; count 3; } { group CH3N; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 3; } { group O; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethyl-3-trimethoxysilyl-propan-1-amine" "(n,n-dimethylaminopropyl)trimethoxysilane" "1-propanamine, n,n-dimethyl-3-(trimethoxysilyl)-" "n,n-dimethyl-3-(trimethoxysilyl)propylamine" "n,n-dimethyl-3-trimethoxysilylpropan-1-amine" );
+gibbsFormation
+{
+    dHf_298   -649200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     644.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-292500.0
+    phase     gas;
+}

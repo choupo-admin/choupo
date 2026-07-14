@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: silane, tribromomethyl-  (CH3Br3Si, CAS 4095-09-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula CH3Br3Si (delta H+3Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        silaneTribromomethyl;
+formula     CH3Br3Si;
+CAS         4095-09-4;
+InChIKey    AYEIDEXJQVEFRP-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          282.832;      // g/mol [origin=calculated method=formula-sum]
+Tc          665.33;      // K   [origin=predictive method=joback]
+Pc          72.802;      // bar [origin=predictive method=joback]
+omega       0.3146;      // -   [origin=predictive method=lee-kesler]
+Tb          417.03;      // K   [origin=predictive method=joback]
+HvapTb      35682.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.33 0.4423 -0.000624 2.835e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group Br; count 3; } { group SiH3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group Br; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tris(bromanyl)methylsilane" );
+gibbsFormation
+{
+    dHf_298   62080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     470.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=55720.0
+    phase     gas;
+}

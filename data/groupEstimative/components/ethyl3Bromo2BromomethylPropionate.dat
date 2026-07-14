@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 3-bromo-2-(bromomethyl)propionate  (C6H10Br2O2, CAS 58539-11-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl3Bromo2BromomethylPropionate;
+formula     C6H10Br2O2;
+CAS         58539-11-0;
+InChIKey    GKSCTYSHDIGNGC-UHFFFAOYSA-N;
+MW          273.952;      // g/mol [origin=calculated method=formula-sum]
+Tc          738.04;      // K   [origin=predictive method=joback]
+Pc          37.045;      // bar [origin=predictive method=joback]
+omega       0.6803;      // -   [origin=predictive method=lee-kesler]
+Tb          526.98;      // K   [origin=predictive method=joback]
+HvapTb      48839.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (37.543 0.60132 -0.000354 7.08e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group Br; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group Br; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 3-bromanyl-2-(bromomethyl)propanoate" "ethyl 3-bromo-2-(bromomethyl)propanoate" "ethyl3-bromo-2-(bromomethyl)propionate" "ethyl .beta.,.beta.-dibromoisobutyrate" "3-bromo-2-bromomethylpropionic acid, ethyl ester" "3-bromo-2-(bromomethyl)propionic acid ethyl ester" "propanoic acid,3-bromo-2-(bromomethyl)-, ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -437070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     533.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-284530.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: thiophene-2,5-dicarbaldehyde  (C6H4O2S, CAS 932-95-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C6H4O2S (delta C+2H+2O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        thiophene25Dicarbaldehyde;
+formula     C6H4O2S;
+CAS         932-95-6;
+InChIKey    OTMRXENQDSQACG-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          140.156;      // g/mol [origin=calculated method=formula-sum]
+Tc          583.33;      // K   [origin=predictive method=joback]
+Pc          47.107;      // bar [origin=predictive method=joback]
+omega       0.1900;      // -   [origin=predictive method=lee-kesler]
+Tb          365.78;      // K   [origin=predictive method=joback]
+HvapTb      32490.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-42.01 0.53161 -0.00065058 2.887e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CHO; count 2; } { group C4H2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 2; } { group dC_ring; count 2; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,5-thiophenedicarboxaldehyde" "thiophene-2,5-dicarboxaldehyde" "2,5-diformylthiophene" );
+gibbsFormation
+{
+    dHf_298   204430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     506.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=212340.0
+    phase     gas;
+}

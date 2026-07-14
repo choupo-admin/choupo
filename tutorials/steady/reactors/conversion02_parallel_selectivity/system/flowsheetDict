@@ -1,0 +1,35 @@
+/*---------------------------------------------------------------------------*\
+  conversion02_parallel_selectivity  --  a stoichiometric (conversion) reactor
+                                         with a PARALLEL network, A -> B / A -> C.
+
+  Multi-reaction grammar `reactions ( a_to_b a_to_c );`.  Each reaction's extent
+  is a SPEC, not a result: `conversions ( { reaction ...; conversion ...; } ... )`
+  gives the fraction of the FEED A that each leg consumes.  60 % of A goes the
+  wanted way and 20 % the side way, so:
+
+      total A conversion  = 80 %
+      selectivity B/(B+C) = 0.36 / 0.48 = 75 %
+
+  This is the honest reactor when you have neither rate data (cstr/pfr) nor an
+  equilibrium (equilibriumReactor) -- just a catalyst whose split you measured.
+  A single-reaction conversionReactor cannot express a selectivity at all.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        conversionReactor;
+        in          feed;
+        outputs     ( product );
+        operation
+        {
+            conversions
+            (
+                { reaction a_to_b;  conversion 0.60; }   // of the FEED A, via this leg
+                { reaction a_to_c;  conversion 0.20; }
+            );
+        }
+        reactions   ( a_to_b a_to_c );      // names from constant/reactions
+    }
+);

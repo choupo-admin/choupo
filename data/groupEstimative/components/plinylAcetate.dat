@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: plinyl acetate  (C12H20O2, CAS 94346-09-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        plinylAcetate;
+formula     C12H20O2;
+CAS         94346-09-5;
+InChIKey    NKWCOKZUKIEZAR-USWWRNFRSA-N;
+MW          196.29;      // g/mol [origin=calculated method=formula-sum]
+Tc          740.21;      // K   [origin=predictive method=joback]
+Pc          21.453;      // bar [origin=predictive method=joback]
+omega       0.4908;      // -   [origin=predictive method=lee-kesler]
+Tb          535.12;      // K   [origin=predictive method=joback]
+HvapTb      47611.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-83.89 1.43958 -0.0011088 3.748e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 2; } { group C; count 1; } { group CH2=C; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(1s,2r,3r)-1,2-dimethyl-3-prop-1-en-2-yl-cyclopentyl] ethanoate" "cyclopentanol, 1,2-dimethyl-3-(1-methylethenyl)-, acetate" "cyclopentanol, 1,2-dimethyl-3-(1-methylethenyl)-, 1-acetate" "1,2-dimethyl-3-(1-methylethenyl)cyclopentyl acetate" "[(1s,2r,3r)-1,2-dimethyl-3-prop-1-en-2-ylcyclopentyl] acetate" );
+gibbsFormation
+{
+    dHf_298   -457610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     600.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-165280.0
+    phase     gas;
+}

@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(4-bromophenyl)-2-(dipentylamino)ethanol  (C18H30BrNO, CAS 5456-08-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14Bromophenyl2DipentylaminoEthanol;
+formula     C18H30BrNO;
+CAS         5456-08-6;
+InChIKey    SSSOAFNQEUBGGA-UHFFFAOYSA-N;
+MW          356.348;      // g/mol [origin=calculated method=formula-sum]
+Tc          1008.75;      // K   [origin=predictive method=joback]
+Pc          16.484;      // bar [origin=predictive method=joback]
+omega       1.2506;      // -   [origin=predictive method=lee-kesler]
+Tb          813.44;      // K   [origin=predictive method=joback]
+HvapTb      83369.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.971 1.77744 -0.00113716 2.844e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group ACH; count 4; } { group AC; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group CH2N; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 9; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -253440.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     853.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=189300.0
+    phase     gas;
+}

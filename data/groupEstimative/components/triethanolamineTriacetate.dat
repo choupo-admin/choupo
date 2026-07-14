@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethanolamine triacetate  (C12H21NO6, CAS 3002-18-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethanolamineTriacetate;
+formula     C12H21NO6;
+CAS         3002-18-4;
+InChIKey    DJYQGDNOPVHONN-UHFFFAOYSA-N;
+MW          275.301;      // g/mol [origin=calculated method=formula-sum]
+Tc          837.69;      // K   [origin=predictive method=joback]
+Pc          18.000;      // bar [origin=predictive method=joback]
+omega       1.0732;      // -   [origin=predictive method=lee-kesler]
+Tb          661.26;      // K   [origin=predictive method=joback]
+HvapTb      66570.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (57.516 1.10336 -0.0004578 -2.3e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH3COO; count 3; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group COO; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[bis(2-acetyloxyethyl)amino]ethyl ethanoate" "nitrilotriethane-2,1-diyl triacetate" "ethanol, 2,2',2''-nitrilotris-, 1,1',1''-triacetate" "2,2',2''-nitrilotrisethyl triacetate" "2-[bis(2-acetyloxyethyl)amino]ethyl acetate" "ethanol,2',2''-nitrilotri-, triacetate (ester)" "ethanol,2',2''-nitrilotris-, triacetate (ester)" "ethanol, 2,2',2''-nitrilotri-, triacetate (ester)" "ethanol, 2,2',2''-nitrilotris-, triacetate (ester)" "ethanol,2,2',2''-nitrilotris-, 1,1',1''-triacetate" );
+gibbsFormation
+{
+    dHf_298   -1175320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     793.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-770170.0
+    phase     gas;
+}

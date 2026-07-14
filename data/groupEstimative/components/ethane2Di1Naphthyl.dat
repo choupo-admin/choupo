@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethane,2-di-1-naphthyl-  (C22H18, CAS 15374-45-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethane2Di1Naphthyl;
+formula     C22H18;
+CAS         15374-45-5;
+InChIKey    OJGSITVFPMSVGU-UHFFFAOYSA-N;
+MW          282.386;      // g/mol [origin=calculated method=formula-sum]
+Tc          1062.09;      // K   [origin=predictive method=joback]
+Pc          20.512;      // bar [origin=predictive method=joback]
+omega       0.7785;      // -   [origin=predictive method=lee-kesler]
+Tb          804.24;      // K   [origin=predictive method=joback]
+HvapTb      73722.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-119.208 1.8096 -0.00137476 4.14e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 14; } { group AC; count 4; } { group ACCH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 14; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2-naphthalen-1-ylethyl)naphthalene" "1,2-di(1-naphthyl)ethane" "ethane, 1,2-di-1-naphthyl-" "1,2-bis(1-naphthyl)ethane" "naphthalene, 1,1'-(1,2-ethanediyl)bis-" "(2-naphthylethyl)naphthalene" "1,2-di(alpha-naphthyl)ethane" "1,2-di-.alpha.-naphthylethane" "1-[2-(1-naphthyl)ethyl]naphthalene" "naphthalene,1'-(1,2-ethanediyl)bis-" "naphthalene,1,1'-(1,2-ethanediyl)bis-" );
+gibbsFormation
+{
+    dHf_298   334850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     569.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=553220.0
+    phase     gas;
+}

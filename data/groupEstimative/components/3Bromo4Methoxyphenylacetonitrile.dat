@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-bromo-4-methoxyphenylacetonitrile  (C9H8BrNO, CAS 772-59-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Bromo4Methoxyphenylacetonitrile;
+formula     C9H8BrNO;
+CAS         772-59-8;
+InChIKey    OBJKHHRZMIIEOK-UHFFFAOYSA-N;
+MW          226.073;      // g/mol [origin=calculated method=formula-sum]
+Tc          872.35;      // K   [origin=predictive method=joback]
+Pc          32.504;      // bar [origin=predictive method=joback]
+omega       0.7200;      // -   [origin=predictive method=lee-kesler]
+Tb          632.82;      // K   [origin=predictive method=joback]
+HvapTb      58551.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (40.091 0.57072 -0.00029232 4.46e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group CH3O; count 1; } { group CH2CN; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group O; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(3-bromanyl-4-methoxy-phenyl)ethanenitrile" "3-bromo-4-methoxybenzyl cyanide" "2-(3-bromo-4-methoxyphenyl)acetonitrile" "2-(3-bromo-4-methoxyphenyl)ethanenitrile" "3-bromo-4-methoxybenzyl cyanide;3-bromo-4-methoxyphenylacetonitrile;acetonitrile,(3-bromo-4-methoxyphenyl)- (7ci,8ci);" );
+gibbsFormation
+{
+    dHf_298   43490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     456.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=160550.0
+    phase     gas;
+}

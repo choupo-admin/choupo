@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): 9,12-octadecadienoic acid (9z,12z)-, dimer, compd. with n-cyclohexylcyclohexanamine (1:2)  (C60H110N2O4, CAS 68938-71-6)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           912OctadecadienoicAcid9z12zDimerCompdWithNCyclohexylcyclohex;
+formula        C60H110N2O4;
+CAS            68938-71-6;
+InChIKey       QGBOSBJZMYIXFF-CGKDLMRESA-N;
+MW             923.55;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   3;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: 9,12-octadecadienoic acid (9z,12z)-, dimer, compd. with n-cyclohexylcyclohexanamine (1:2)

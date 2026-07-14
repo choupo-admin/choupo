@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: distearyl thiodipropionate  (C42H82O4S, CAS 693-36-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        distearylThiodipropionate;
+formula     C42H82O4S;
+CAS         693-36-7;
+InChIKey    PWWSSIYVTQUJQQ-UHFFFAOYSA-N;
+MW          683.174;      // g/mol [origin=calculated method=formula-sum]
+Tc          1983.69;      // K   [origin=predictive method=joback]
+Pc          3.666;      // bar [origin=predictive method=joback]
+omega       -0.4830;      // -   [origin=predictive method=lee-kesler]
+Tb          1345.78;      // K   [origin=predictive method=joback]
+HvapTb      130717.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (35.128 3.87863 -0.0020316 3.468e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 35; } { group CH2COO; count 2; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 38; } { group COO; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "octadecyl 3-(3-octadecoxy-3-oxidanylidene-propyl)sulfanylpropanoate" "dioctadecyl 3,3'-thiodipropionate" "plastanox stdp" "antioxidant stdp" "cyanox-stdp" "distearyl 3,3'-thiodipropionate" "sumilizer tps" "antiok s" "dioctadecyl thiodipropionate" "arbestab dstdp" "lusmit ss" "plastanox stdp antioxidant" );
+gibbsFormation
+{
+    dHf_298   -1502900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1955.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-284860.0
+    phase     gas;
+}

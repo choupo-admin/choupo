@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-(4-methoxybenzyl)pyridin-2-amine  (C13H14N2O, CAS 52818-63-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        n4MethoxybenzylPyridin2Amine;
+formula     C13H14N2O;
+CAS         52818-63-0;
+InChIKey    SMJGJENXFSWIMQ-UHFFFAOYSA-N;
+MW          214.268;      // g/mol [origin=calculated method=formula-sum]
+Tc          927.57;      // K   [origin=predictive method=joback]
+Pc          30.123;      // bar [origin=predictive method=joback]
+omega       0.7713;      // -   [origin=predictive method=lee-kesler]
+Tb          681.67;      // K   [origin=predictive method=joback]
+HvapTb      64802.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.089 1.06828 -0.00062562 1.271e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group CH3O; count 1; } { group CH2NH; count 1; } { group C5H4N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 3; } { group O; count 1; } { group NH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-[(4-methoxyphenyl)methyl]pyridin-2-amine" "[(4-methoxyphenyl)methyl]-2-pyridylamine" "p-anisyl(2-pyridyl)amine" "2-(4-methoxybenzylamino)pyridine" "n2-(4-methoxybenzyl)pyridin-2-amine" "(4-methoxy-benzyl)-pyridin-2-yl-amine" "2-(p-methoxybenzyl)aminopyridine" "2-pyridinamine,n-[(4-methoxyphenyl)methyl]-" "(4-methoxy-benzyl)-pyridin-2-yl-amine 2hcl salt" );
+gibbsFormation
+{
+    dHf_298   103980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     508.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=335210.0
+    phase     gas;
+}

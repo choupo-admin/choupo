@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,5-bis(trimethylsilyl)thiophene  (C10H20SSi2, CAS 17906-71-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C10H20SSi2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        25BisTrimethylsilylThiophene;
+formula     C10H20SSi2;
+CAS         17906-71-7;
+InChIKey    FPUOKUOVIWJMDC-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          228.5;      // g/mol [origin=calculated method=formula-sum]
+Tc          731.34;      // K   [origin=predictive method=joback]
+Pc          21.256;      // bar [origin=predictive method=joback]
+omega       0.2811;      // -   [origin=predictive method=lee-kesler]
+Tb          507.26;      // K   [origin=predictive method=joback]
+HvapTb      46728.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (74.99 0.48313 0.00026742 -2.915e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group Si; count 2; } { group C4H2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl-(5-trimethylsilylthiophen-2-yl)silane" "trimethyl[5-(trimethylsilyl)-2-thienyl]silane" );
+gibbsFormation
+{
+    dHf_298   -254270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     753.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-51420.0
+    phase     gas;
+}

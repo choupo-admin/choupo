@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrahydro-2h-pyran-2-methanol acetate  (C8H14O3, CAS 5440-83-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrahydro2hPyran2MethanolAcetate;
+formula     C8H14O3;
+CAS         5440-83-5;
+InChIKey    PQIWIDSTJDBALT-UHFFFAOYSA-N;
+MW          158.197;      // g/mol [origin=calculated method=formula-sum]
+Tc          694.63;      // K   [origin=predictive method=joback]
+Pc          31.385;      // bar [origin=predictive method=joback]
+omega       0.5032;      // -   [origin=predictive method=lee-kesler]
+Tb          487.36;      // K   [origin=predictive method=joback]
+HvapTb      45748.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.259 0.82812 -0.0003839 2.78e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 1; } { group CH3COO; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oxan-2-ylmethyl ethanoate" "oxan-2-ylmethyl acetate" "2h-pyran-2-methanol, tetrahydro-, acetate" "2h-pyran-2-methanol, tetrahydro-, 2-acetate" "tetrahydro-2h-pyran-2-methyl acetate" );
+gibbsFormation
+{
+    dHf_298   -603410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     437.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-355560.0
+    phase     gas;
+}

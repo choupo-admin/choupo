@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (e)-hept-3-enal  (C7H12O, CAS 89896-73-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        eHept3Enal;
+formula     C7H12O;
+CAS         89896-73-1;
+InChIKey    ORAQCSKNITWHDW-UHFFFAOYSA-N;
+MW          112.172;      // g/mol [origin=calculated method=formula-sum]
+Tc          593.04;      // K   [origin=predictive method=joback]
+Pc          32.137;      // bar [origin=predictive method=joback]
+omega       0.4694;      // -   [origin=predictive method=lee-kesler]
+Tb          412.58;      // K   [origin=predictive method=joback]
+HvapTb      37854.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.257 0.66332 -0.0004338 1.174e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH=CH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hept-3-enal" "3-heptenal, (3e)-" );
+gibbsFormation
+{
+    dHf_298   -156170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     440.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11240.0
+    phase     gas;
+}

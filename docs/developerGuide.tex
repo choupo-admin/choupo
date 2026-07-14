@@ -944,6 +944,147 @@ optionally \code{diagnostics()}), then one \code{reg("myOp", ...)} line in
 WASM (\code{make wasm-gui}) or the browser will not see the new op.
 
 % =====================================================================
+\section{The thermophysical property architecture}\label{sec:property-architecture}
+
+Property data in Choupo is \emph{declarative packages with OpenFOAM-like
+explicit files}.  A case does not hand the solver a bag of numbers; it
+\emph{selects} a \code{propertyPackage} --- a curated record that names the
+components, the models, and the parameter banks the run needs.  The
+one-sentence contract:
+
+\begin{quote}\itshape
+\code{propertyPackage} declares, \code{ThermoPackageBuilder} assembles,
+\code{ThermoPackage} computes; curation produces \code{.dat}, runtime does not
+estimate.
+\end{quote}
+
+\subsection{The flow}
+
+\begin{lstlisting}
+propertyPackage.dat       a case SELECTS this (declarative)
+     |
+ThermoPackageBuilder      runtime ASSEMBLY: loads + assembles, never estimates
+     |                    (src/thermo/ThermoPackageBuilder.cpp)
+ThermoPackage             the mounted runtime COMPUTE object (unchanged)
+     |
+unit operations           consume the ThermoPackage, as before
+\end{lstlisting}
+
+\emph{Terminology (load-bearing).}  The runtime assembly step is the
+\code{ThermoPackageBuilder} --- it \textbf{loads}.  It is \emph{never} a
+``resolver'': \emph{resolver} is reserved for \textbf{curation-time} estimation
+(the Props Guide).  Builder ${}={}$ runtime, loads; resolver ${}={}$ curation,
+may estimate; the two never mix.
+
+\subsection{The two axes}
+
+A substance never \emph{is} molecular or electrolyte --- the same NaCl plays
+different roles, and the role is chosen by the package a case selects, never
+stored on the substance.  Two orthogonal choices define the role:
+
+\begin{description}
+\item[Representation] (the \emph{package} activates it): lumped $\to$ complete
+  dissociation $\to$ partial / ion-pair $\to$ multi-ion.  The complete,
+  $K$-free split is the \code{dissociatesTo} ion stoichiometry on the
+  component --- a formula-like \emph{identity}; the moment a split carries an
+  equilibrium constant (an ion pair, a hydrate) it is \emph{chemistry} and
+  lives under \code{chemistry/}.
+\item[Reference] (the \emph{method} declares it): which datum the species
+  anchor to --- solid, pure-liquid Raoult, aqueous infinite-dilution, or
+  fused-salt.  \code{species/} records are medium-agnostic (one Na$^{+}$ file);
+  the thermo data inside are medium-tagged blocks (\code{aqueousThermo}).
+\end{description}
+
+\subsection{The seven data homes}
+
+\begin{lstlisting}
+data/standards/
+  components/<name>.dat        identity (name, MW, nonvolatile)
+                               + dissociatesTo { Na 1; Cl 1; }  [salts]
+  species/aqueous/<sp>.dat     model species: charge + medium-tagged thermo
+                               (never fed to a flowsheet)
+  phases/solid/<phase>.dat     crystalline phase (rho_p, k_v)
+  chemistry/                   REAL equilibria (stoichiometry + K + dH):
+    salts/                       calorimetric dissolution anchors
+    mineralSolubility/           PHREEQC mineral logK/dH (speciation engine)
+    aqueousSpeciation/  gasLiquid/  ionExchange/
+  parameters/
+    electrolyte/pitzer/pairs/<c>-<a>.dat      Pitzer binary pairs
+    electrolyte/pitzer/mixing/<kind>/...      Pitzer ternary theta/psi/...
+    electrolyte/eNRTL/<c>-<a>.dat             eNRTL tau pairs
+    binary/NRTL/<i>-<j>.dat                   molecular binary parameters
+  propertyMethods/electrolyte/{pitzer,eNRTL}.dat   .../activity/NRTL.dat
+  propertyPackages/<name>.dat  THE CENTRE: a case selects one
+\end{lstlisting}
+
+\code{components/} stays \emph{flat} (the loader resolves \code{<name>.dat} by
+exact name, O(1)).  There is deliberately \textbf{no} second component record
+per salt (no \code{apparent/} twin --- one component, one file), no
+user-facing ``true species'' vocabulary (an ion is not \emph{more real} than
+the salt; it is the speciation a model postulates --- so: \emph{model
+species}), and no \code{propertySets/} kind (it had zero readers and was
+removed rather than kept as ceremony).  A minimal package:
+
+\begin{lstlisting}
+recordType propertyPackage;   name aqueousNaCl_pitzer;
+components        ( water NaCl );
+chemistry         { salts ( halite );
+                    activeSaltEquilibriumData { halite measuredSolubilityAnchor; } }
+propertyMethods   { liquid electrolyte.pitzer; vapour builtin.idealGas;
+                    solid  builtin.saltEquilibrium; }
+parameters        { pitzerPairs { Na-Cl ".../pitzer/pairs/Na-Cl.dat"; } }
+\end{lstlisting}
+
+\subsection{The builder contract}
+
+\code{ThermoPackageBuilder::build} dispatches on the package's
+\code{propertyMethods.liquid}.  For an electrolyte method it (1)~reads the
+component list; (2)~identifies the ONE salt as the component whose standards
+record carries \code{dissociatesTo}, and takes its identity (MW, role) from
+\code{components/<salt>.dat}; (3)~classifies the ions by charge sign from
+\code{species/aqueous/}; (4)~loads the crystal (\(\rho_p, k_v\)) from
+\code{phases/solid/} and the saturation anchor from \code{chemistry/salts/},
+both by the phase name the package's \code{chemistry.salts} declares;
+(5)~assembles the Pitzer/eNRTL kernel through the same
+\file{SaltFromCatalogue} helpers the legacy path used --- byte-identical by
+construction; (6)~mounts the \code{ThermoPackage}.  \textbf{It loads and
+assembles; it does not estimate} --- a missing record fails clear:
+
+\begin{lstlisting}
+FATAL: propertyPackage aqueousNaCl_pitzer selected propertyMethod pitzer,
+       but required parameter pair Na-Cl was not found.
+\end{lstlisting}
+
+For a molecular method (\code{activity.NRTL}) the same entry point reads the
+binary pair from \code{parameters/binary/} and mounts the classical NRTL
+package --- one stack, electrolyte and molecular alike.
+
+\emph{Declared vs.\ load-bearing --- stated honestly.}  The
+\code{propertyMethods/*.dat} records are today \emph{declarations}: the
+builder loads them, asserts their \code{requires} block, and echoes the
+declared per-phase \code{referenceBasis}; the dispatch itself keys on the
+package's method \emph{name}, and the reference rung is not yet mechanically
+consumed by the $\gamma$/enthalpy math.  Making the rung load-bearing is
+roadmap; the declaration documents intent without pretending mechanism.
+
+\subsection{Status}
+
+The legacy salt-level electrolyte front-end is fully retired: the
+\code{electrolyte\{\}} component block is gone from every salt \code{.dat}
+(ion identity now derives from \code{dissociatesTo}; dissolution data live in
+\code{chemistry/salts/}), \code{ElectrolyteActivity::configure()} and the
+\code{model pitzer;}/\code{model eNRTL;} factory registrations are deleted,
+and the twelve electrolyte tutorials select property packages.  The classic
+\code{thermoPackage} dict remains the \emph{legitimate degenerate} package for
+molecular cases ($\sim$195 tutorials) --- lightweight is not legacy.  Two
+electrolyte front-ends remain deliberately separate: \emph{multi-ion
+speciation} (\code{pitzerHMW}/\code{davies} via a \code{propsDict}
+\code{speciate} op) and the flat membrane/DSPM-DE data path.  The
+mixed-solvent, segment-based eNRTL of Chen \& Song (2004) ships as
+\code{ENRTLMixedSolvent} with a primary-data validation tutorial
+(\file{tutorials/props/electrolyte/enrtl\_mixed\_nacl\_ethanol\_esteso}).
+
+% =====================================================================
 \section{Adding components, materials, reactions}\label{sec:add-data}
 
 These are \emph{data-driven} --- no \cpp{} changes needed.  WHERE each number

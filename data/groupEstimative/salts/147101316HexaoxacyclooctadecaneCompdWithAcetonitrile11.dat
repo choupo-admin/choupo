@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): 1,4,7,10,13,16-hexaoxacyclooctadecane, compd. with acetonitrile (1:1)  (C14H27NO6, CAS 60336-83-6)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           147101316HexaoxacyclooctadecaneCompdWithAcetonitrile11;
+formula        C14H27NO6;
+CAS            60336-83-6;
+InChIKey       NDINSWFIKBMLNU-UHFFFAOYSA-N;
+MW             305.371;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: 1,4,7,10,13,16-hexaoxacyclooctadecane, compd. with acetonitrile (1:1)

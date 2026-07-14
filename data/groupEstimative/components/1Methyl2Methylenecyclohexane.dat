@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-methyl-2-methylenecyclohexane  (C8H14, CAS 2808-75-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Methyl2Methylenecyclohexane;
+formula     C8H14;
+CAS         2808-75-5;
+InChIKey    QJXCDRBHYIAFTH-UHFFFAOYSA-N;
+MW          110.2;      // g/mol [origin=calculated method=formula-sum]
+Tc          604.23;      // K   [origin=predictive method=joback]
+Pc          32.210;      // bar [origin=predictive method=joback]
+omega       0.2662;      // -   [origin=predictive method=lee-kesler]
+Tb          401.35;      // K   [origin=predictive method=joback]
+HvapTb      33990.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.7 0.76842 -0.0004 6.45e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 1; } { group CH2=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methyl-2-methylidene-cyclohexane" "2-methyl-methylenecyclohexane" "1-methyl-2-methylidenecyclohexane" "cyclohexane,1-methyl-2-methylene-" "1-methyl-2-methenylcyclohexane;1-methyl-2-methylenecyclohexane; 1-methylene-2-methylcyclohexane;2-methyl-1-methylenecyclohexane; 2-methylmethylenecyclohexane" );
+gibbsFormation
+{
+    dHf_298   -69890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     410.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=94010.0
+    phase     gas;
+}

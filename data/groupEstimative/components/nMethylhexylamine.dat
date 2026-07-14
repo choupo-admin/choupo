@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methylhexylamine  (C7H17N, CAS 35161-70-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethylhexylamine;
+formula     C7H17N;
+CAS         35161-70-7;
+InChIKey    XJINZNWPEQMMBV-UHFFFAOYSA-N;
+MW          115.22;      // g/mol [origin=calculated method=formula-sum]
+Tc          579.24;      // K   [origin=predictive method=joback]
+Pc          28.384;      // bar [origin=predictive method=joback]
+omega       0.5050;      // -   [origin=predictive method=lee-kesler]
+Tb          409.93;      // K   [origin=predictive method=joback]
+HvapTb      37612.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.685 0.74504 -0.0004056 8.26e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH3NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-methylhexan-1-amine" "n-hexylmethylamine" "hexylmethylamine" "hexylamine, n-methyl-" "n-n-hexylmethylamine" "hexanamine, n-methyl-" "hexyl-methyl-amine" "n-methyl hexylamine" "1-hexanamine, n-methyl-" "hexylamine,n-methyl- (6ci,7ci); hexylmethylamine; methylhexylamine; n-hexyl-n-methylamine;n-methyl-1-aminohexane; n-methyl-1-hexanamine; n-methyl-1-hexylamine;n-methyl-n-hexylamine; n-methylhexanamine; n-methylhexylamine" );
+gibbsFormation
+{
+    dHf_298   -134340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     469.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97450.0
+    phase     gas;
+}

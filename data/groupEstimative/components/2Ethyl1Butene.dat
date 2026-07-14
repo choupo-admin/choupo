@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-ethyl-1-butene  (C6H12, CAS 760-21-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Ethyl1Butene;
+formula     C6H12;
+CAS         760-21-4;
+InChIKey    RYKZRKKEYSRDNF-UHFFFAOYSA-N;
+MW          84.162;      // g/mol [origin=calculated method=formula-sum]
+Tc          503.71;      // K   [origin=predictive method=joback]
+Pc          32.765;      // bar [origin=predictive method=joback]
+omega       0.2593;      // -   [origin=predictive method=lee-kesler]
+Tb          333.44;      // K   [origin=predictive method=joback]
+HvapTb      28360.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.248 0.55374 -0.0003278 7.94e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH2=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH2; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylidenepentane" "pentane, 3-methylene-" "3-methylenepentane" "1-butene, 2-ethyl-" "2-ethylbut-1-ene" "1-butene, 2-ethyl- (8ci)" );
+gibbsFormation
+{
+    dHf_298   -51530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     380.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=78930.0
+    phase     gas;
+}

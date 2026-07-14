@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methoxybenzyl bromide  (C8H9BrO, CAS 874-98-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3MethoxybenzylBromide;
+formula     C8H9BrO;
+CAS         874-98-6;
+InChIKey    ZKSOJQDNSNJIQW-UHFFFAOYSA-N;
+MW          201.063;      // g/mol [origin=calculated method=formula-sum]
+Tc          730.25;      // K   [origin=predictive method=joback]
+Pc          38.198;      // bar [origin=predictive method=joback]
+omega       0.4896;      // -   [origin=predictive method=lee-kesler]
+Tb          502.88;      // K   [origin=predictive method=joback]
+HvapTb      45185.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.701 0.60042 -0.00033596 6.39e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group CH3O; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(bromomethyl)-3-methoxy-benzene" "1-(bromomethyl)-3-methoxybenzene" "1-bromomethyl-3-methoxybenzene" "3-methoxybenzylbromide" "m-methoxybenzyl bromide" "agn-pc-00eov1" "3-(bromomethyl)-1-methoxybenzene" "benzene, 1-(bromomethyl)-3-methoxy-" "m-methoxybenzylbromide;3-(bromomethyl)anisole" "3-(bromomethyl)anisole,1-(bromomethyl)-3-methoxybenzene" "anisole,m-(bromomethyl)- (6ci,7ci,8ci);(3-methoxyphenyl)methyl bromide;1-(bromomethyl)-3-methoxybenzene;3-(bromomethyl)-1-methoxyphenyl;3-(bromomethyl)anisole;3-(bromomethyl)phenylmethyl ether;3-methoxy-1-(bromomethyl)benzene;3-methoxylbenzyl bromide;m-methoxybenzyl bromide;" );
+gibbsFormation
+{
+    dHf_298   -89280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     417.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=28580.0
+    phase     gas;
+}

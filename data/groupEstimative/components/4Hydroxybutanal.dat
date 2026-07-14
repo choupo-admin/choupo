@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-hydroxybutanal  (C4H8O2, CAS 25714-71-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Hydroxybutanal;
+formula     C4H8O2;
+CAS         25714-71-0;
+InChIKey    PIAOXUVIBAKVSP-UHFFFAOYSA-N;
+MW          88.106;      // g/mol [origin=calculated method=formula-sum]
+Tc          601.33;      // K   [origin=predictive method=joback]
+Pc          48.494;      // bar [origin=predictive method=joback]
+omega       0.8492;      // -   [origin=predictive method=lee-kesler]
+Tb          431.96;      // K   [origin=predictive method=joback]
+HvapTb      47897.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.943 0.3923 -0.0002172 4.41e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group OH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group OH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-oxidanylbutanal" "butanal, 4-hydroxy-" "4-hydroxybutyraldehyde" "butyraldehyde,4-hydroxy- (6ci,7ci,8ci); 4-hydroxybutanal; 4-hydroxybutyraldehyde; g-hydroxybutyraldehyde" );
+gibbsFormation
+{
+    dHf_298   -363700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     381.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-253540.0
+    phase     gas;
+}

@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tert-butyl radical  (C4H9, CAS 1605-73-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        tertButylRadical;
+formula     C4H9;
+CAS         1605-73-8;
+InChIKey    IIVWHGMLFGNMOW-UHFFFAOYSA-N;
+role        radical;
+MW          57.116;      // g/mol [origin=calculated method=formula-sum]
+Tc          462.86;      // K   [origin=predictive method=joback]
+Pc          40.518;      // bar [origin=predictive method=joback]
+omega       0.1759;      // -   [origin=predictive method=lee-kesler]
+Tb          293.08;      // K   [origin=predictive method=joback]
+HvapTb      24557.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.53 0.39376 -0.000238 6.19e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 3; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylpropane" "tert.-butyl" "2-methyl-propan-2-yl" "tert-butyl" "tert-c4h9" "triisobutylene (mixture of branched chain isomer)" );
+gibbsFormation
+{
+    dHf_298   -77070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     304.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=14360.0
+    phase     gas;
+}

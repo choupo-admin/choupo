@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(3-butynyloxy)tetrahydro-2h-pyran  (C9H14O2, CAS 40365-61-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23ButynyloxyTetrahydro2hPyran;
+formula     C9H14O2;
+CAS         40365-61-5;
+InChIKey    ZQZSNKJFOFAJQX-UHFFFAOYSA-N;
+MW          154.209;      // g/mol [origin=calculated method=formula-sum]
+Tc          676.86;      // K   [origin=predictive method=joback]
+Pc          32.467;      // bar [origin=predictive method=joback]
+omega       0.4076;      // -   [origin=predictive method=lee-kesler]
+Tb          464.56;      // K   [origin=predictive method=joback]
+HvapTb      42835.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.298 0.8208 -0.00041783 6.039e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 1; } { group CH2O; count 1; } { group FCH2O; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-but-3-ynoxyoxane" "2h-pyran, 2-(3-butynyloxy)tetrahydro-" "3-butynyl tetrahydro-2h-pyran-2-yl ether" "2-(but-3-yn-1-yloxy)tetrahydro-2h-pyran" "agn-pc-03eacf" "2-(3-butynyl-oxy)tetrahydro-2 h-pyran" "4-[(tetrahydro-2h-pyran-2-yl)oxy]-1-butyne;2h-pyran, 2-(3-butynyloxy)tetrahydro-;2-(3-butynyloxy)tetrahydropyran" );
+gibbsFormation
+{
+    dHf_298   -147090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     405.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=81300.0
+    phase     gas;
+}

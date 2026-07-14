@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: japonilure  (C14H24O2, CAS 64726-91-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        japonilure;
+formula     C14H24O2;
+CAS         64726-91-6;
+InChIKey    QTGIYXFCSKXKMO-XPSMFNQNSA-N;
+MW          224.344;      // g/mol [origin=calculated method=formula-sum]
+Tc          771.09;      // K   [origin=predictive method=joback]
+Pc          17.729;      // bar [origin=predictive method=joback]
+omega       0.7578;      // -   [origin=predictive method=lee-kesler]
+Tb          589.04;      // K   [origin=predictive method=joback]
+HvapTb      54036.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-48.853 1.44992 -0.0009472 2.45e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CH; count 1; } { group CH=CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group dCH; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5r)-5-[(z)-dec-1-enyl]oxolan-2-one" "nuranone" "bag-a-bug" "(r,z)-5-(1-decenyl)dihydrofuran-2(3h)-one" "(r-(z))-5-(1-decenyl)dihydro-2(3h)-furanone" "2(3h)-furanone, 5-(1-decenyl)dihydro-, (r-(z))-" "2(3h)-furanone, 5-(1z)-1-decenyldihydro-, (5r)-" "2(3h)-furanone, 5-(1-decenyl)dihydro-, (z)-(r)-(-)-" "2(3h)-furanone, 5-(1z)-1-decen-1-yldihydro-, (5r)-" );
+gibbsFormation
+{
+    dHf_298   -459550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     655.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-102400.0
+    phase     gas;
+}

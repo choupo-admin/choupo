@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4'-chlorovalerophenone  (C11H13ClO, CAS 25017-08-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Chlorovalerophenone;
+formula     C11H13ClO;
+CAS         25017-08-7;
+InChIKey    XMUGWCSIQUJOFA-UHFFFAOYSA-N;
+MW          196.674;      // g/mol [origin=calculated method=formula-sum]
+Tc          791.27;      // K   [origin=predictive method=joback]
+Pc          26.791;      // bar [origin=predictive method=joback]
+omega       0.6253;      // -   [origin=predictive method=lee-kesler]
+Tb          574.24;      // K   [origin=predictive method=joback]
+HvapTb      54149.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.467 0.88922 -0.00054046 1.2026e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group ACH; count 4; } { group AC; count 1; } { group CH2CO; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-chlorophenyl)pentan-1-one" "p-chloro valerophenone" "4'-chloropentanophenone" "p-chlorovalerophenone" "4-chlorophenyl-1-pentanone" "st035" "25017-08-7 4'-chlorovalerophenone" );
+gibbsFormation
+{
+    dHf_298   -173630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     532.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=3670.0
+    phase     gas;
+}

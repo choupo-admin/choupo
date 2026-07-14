@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(trifluoromethyl)mandelic acid  (C9H7F3O3, CAS 395-35-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4TrifluoromethylMandelicAcid;
+formula     C9H7F3O3;
+CAS         395-35-7;
+InChIKey    SDGXYUQKJPFLDG-UHFFFAOYSA-N;
+MW          220.146;      // g/mol [origin=calculated method=formula-sum]
+Tc          866.51;      // K   [origin=predictive method=joback]
+Pc          34.889;      // bar [origin=predictive method=joback]
+omega       1.3017;      // -   [origin=predictive method=lee-kesler]
+Tb          669.01;      // K   [origin=predictive method=joback]
+HvapTb      68274.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.89 0.9723 -0.00075716 2.225e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group COOH; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-oxidanyl-2-[4-(trifluoromethyl)phenyl]ethanoic acid" "2-(4-(trifluoromethyl)phenyl)-2-hydroxyacetic acid" "2-hydroxy-2-[4-(trifluoromethyl)phenyl]acetic acid" "395-35-7[rn]" "2-hydroxy-2-(4-(trifluoromethyl)phenyl)acetic acid" "4-trifluoromethylmandelic acid" "p-trifluoromethylmandelic acid" "4-(trifluoromethyl)phenylglycolic acid" "hydroxy[4-(trifluoromethyl)phenyl]acetic acid" "mandelicacid, 4-(trifluoromethyl)- (8ci);4-(trifluoromethyl)mandelic acid;p-(trifluoromethyl)mandelic acid;" );
+gibbsFormation
+{
+    dHf_298   -1108890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     544.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-937080.0
+    phase     gas;
+}

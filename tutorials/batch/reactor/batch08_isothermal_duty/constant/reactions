@@ -1,0 +1,36 @@
+/*---------------------------------------------------------------------------*\
+  batch08_isothermal_duty / constant/reactions
+
+  One first-order exothermic isomerisation A -> B with a DECLARED heat of
+  reaction.  compA/compB carry no formation data, so the dH_rxn key here is
+  the announced OVERRIDE branch of the one-enthalpy-base doctrine (the
+  engine says "dict OVERRIDE -- no formation datum" aloud) --- and the
+  energy ledger prices the jacket duty from it via the reaction EXTENT:
+
+      E  =  dH_rxn * dXi,     dXi = -dn_A   (exact, no quadrature)
+
+  With k = 0.01 s^-1, 600 s converts 1 - exp(-6) = 99.75 % of the charge:
+  dXi = 0.9975e-3 kmol and E = -50 kJ/mol * 0.9975 mol = -49.88 kJ ---
+  the golden pins this to the digit against the analytic decay.
+\*---------------------------------------------------------------------------*/
+
+A_to_B
+{
+    limitingReactant   compA;
+
+    stoichiometry
+    (
+        { component compA;  nu -1;  order 1; }
+        { component compB;  nu  1;  order 0; }
+    );
+
+    kinetics
+    {
+        type   Arrhenius;
+        A      1.0e-2;         // 1/s (Ea = 0: k = A, T-independent)
+        Ea     0.0;
+    }
+
+    dH_rxn    -50000;          // J/mol extent -- the DECLARED override
+                               // (no formation data on compA/compB)
+}

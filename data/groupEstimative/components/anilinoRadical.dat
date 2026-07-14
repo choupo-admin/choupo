@@ -1,0 +1,35 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: anilino radical  (C6H6N, CAS 2348-49-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        anilinoRadical;
+formula     C6H6N;
+CAS         2348-49-4;
+InChIKey    HSMPSHPWCOOUJH-UHFFFAOYSA-N;
+role        radical;
+MW          92.121;      // g/mol [origin=calculated method=formula-sum]
+Tb          445.94;      // K   [origin=predictive method=joback]
+HvapTb      43248.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-51.19 0.59388 -0.0004132 1.055e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group dCH_ring; count 5; } { group dC_ring; count 1; } { group dNH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "$l^{2}-azanylbenzene" "phenylamino" "anilino" "anilinyl" "benzenaminyl" );
+gibbsFormation
+{
+    dHf_298   218870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     303.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=284090.0
+    phase     gas;
+}

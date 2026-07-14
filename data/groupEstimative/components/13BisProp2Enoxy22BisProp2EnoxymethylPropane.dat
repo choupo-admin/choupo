@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-bis(prop-2-enoxy)-2,2-bis(prop-2-enoxymethyl)propane  (C17H28O4, CAS 1471-18-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13BisProp2Enoxy22BisProp2EnoxymethylPropane;
+formula     C17H28O4;
+CAS         1471-18-7;
+InChIKey    TYMYJUHDFROXOO-UHFFFAOYSA-N;
+MW          296.407;      // g/mol [origin=calculated method=formula-sum]
+Tc          836.56;      // K   [origin=predictive method=joback]
+Pc          13.408;      // bar [origin=predictive method=joback]
+omega       0.8715;      // -   [origin=predictive method=lee-kesler]
+Tb          661.73;      // K   [origin=predictive method=joback]
+HvapTb      59100.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (52.998 1.4118 -0.0007204 1.134e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group C; count 1; } { group CH2=CH; count 4; } { group CH2O; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 8; } { group C; count 1; } { group dCH2; count 4; } { group dCH; count 4; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-{3-(allyloxy)-2,2-bis[(allyloxy)methyl]propoxy}prop-1-ene" "3,3'-((2,2-bis((allyloxy)methyl)-1,3-propanediyl)bis(oxy))dipropene" "3,3'-[[2,2-bis[(allyloxy)methyl]-1,3-propanediyl]bis(oxy)]dipropene" "1-propene, 3,3'-((2,2-bis((2-propenyloxy)methyl)-1,3-propanediyl)bis(oxy))bis-" "1-propene,3,3'-[[2,2-bis[(2-propen-1-yloxy)methyl]-1,3-propanediyl]bis(oxy)]bis-" "1-propene,3,3'-[[2,2-bis[(2-propenyloxy)methyl]-1,3-propanediyl]bis(oxy)]bis- (9ci);propane, 1,3-bis(allyloxy)-2,2-bis[(allyloxy)methyl]- (7ci,8ci);1,1,1,1-tetra(allyloxymethyl)methane; pentaerythritol tetraallyl ether;tetrakisallyloxymethylmethane" );
+gibbsFormation
+{
+    dHf_298   -430120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     806.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=26460.0
+    phase     gas;
+}

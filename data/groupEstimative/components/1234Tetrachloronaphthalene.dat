@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,3,4-tetrachloronaphthalene  (C10H4Cl4, CAS 20020-02-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1234Tetrachloronaphthalene;
+formula     C10H4Cl4;
+CAS         20020-02-4;
+InChIKey    NAQWICRLNQSPPW-UHFFFAOYSA-N;
+MW          265.942;      // g/mol [origin=calculated method=formula-sum]
+Tc          902.57;      // K   [origin=predictive method=joback]
+Pc          30.524;      // bar [origin=predictive method=joback]
+omega       0.5822;      // -   [origin=predictive method=lee-kesler]
+Tb          643.70;      // K   [origin=predictive method=joback]
+HvapTb      61958.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (37.21 0.6604 -0.00050156 1.508e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group ACCl; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 4; } { group dC_ring; count 6; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4-tetrakis(chloranyl)naphthalene" "nibren wax" "naphthalene, 1,2,3,4-tetrachloro-" "seekay wax" "napthalene, 1,2,3,4-tetrachloro-" "naphthalene,tetrachloro-" "1,2,3,4-tetrachloronaphthalene solution" );
+gibbsFormation
+{
+    dHf_298   69030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     439.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=166140.0
+    phase     gas;
+}

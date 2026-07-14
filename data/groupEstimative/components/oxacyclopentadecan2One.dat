@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxacyclopentadecan-2-one  (C14H26O2, CAS 3537-83-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oxacyclopentadecan2One;
+formula     C14H26O2;
+CAS         3537-83-5;
+InChIKey    LFSYLMRHJKGLDV-UHFFFAOYSA-N;
+MW          226.36;      // g/mol [origin=calculated method=formula-sum]
+Tc          873.10;      // K   [origin=predictive method=joback]
+Pc          21.755;      // bar [origin=predictive method=joback]
+omega       0.5075;      // -   [origin=predictive method=lee-kesler]
+Tb          632.25;      // K   [origin=predictive method=joback]
+HvapTb      56107.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-91.82 1.3604 -0.0004548 -7.32e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 12; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 13; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-oxacyclopentadecan-2-one" "cyclotetradecanolide" "exaltolide" "muskalactone" "muskolactone" "thibetolide" "pentalide" "2-pentadecalone" "pentadecanolactone" "omega-pentadecalactone" "pentadecalactone" "1,15-pentadecanolide" );
+gibbsFormation
+{
+    dHf_298   -618030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     903.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-295910.0
+    phase     gas;
+}

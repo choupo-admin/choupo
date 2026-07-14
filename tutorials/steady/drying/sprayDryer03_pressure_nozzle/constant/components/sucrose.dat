@@ -1,0 +1,29 @@
+/*---------------------------------------------------------------------------*\
+  Case-local SAMPLE data for sucrose: the SORPTION ISOTHERM only.
+
+  This file carries ONLY the THERMODYNAMIC EQUILIBRIUM sorption isotherm,
+  merged over data/standards/components/sucrose.dat (which supplies the
+  universal pure-component data: MW, Cp, rho_p, ...).  The case wins
+  field-by-field, so we write just the sorption block here.
+
+  Why here and not in the standard catalogue: a sorption isotherm is NOT a
+  universal property of "sucrose".  It depends on the amorphous/crystalline
+  state, the formulation, the thermal history --- i.e. on the SAMPLE.
+  Solids are like that: a real powder is a sample, not a tabulated pure
+  compound.  Measure your own and put them here.
+
+  GAB isotherm (equilibrium moisture vs water activity):
+      Xe = Xm·C·K·a_w / [(1-K·a_w)(1-K·a_w+C·K·a_w)]   (kg water / kg dry)
+
+  KINETICS (the critical moisture Xc and the drying-rate curve) are NOT
+  here --- they are not equilibrium.  They live in constant/dryingKinetics,
+  exactly the way the sorption isotherm is kept separate from the drying
+  curve, and the way reaction kinetics live in constant/reactions.
+\*---------------------------------------------------------------------------*/
+
+sorption
+{
+    Xm   0.045;     // GAB monolayer moisture
+    C    6.0;       // GAB energy constant
+    K    0.96;      // GAB multilayer factor
+}

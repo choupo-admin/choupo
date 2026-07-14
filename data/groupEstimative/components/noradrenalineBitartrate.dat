@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: noradrenaline bitartrate  (C12H17NO9, CAS 51-40-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        noradrenalineBitartrate;
+formula     C12H17NO9;
+CAS         51-40-1;
+InChIKey    WNPNNLQNNJQYFA-UHFFFAOYSA-N;
+MW          319.266;      // g/mol [origin=calculated method=formula-sum]
+Tc          1616.51;      // K   [origin=predictive method=joback]
+Pc          59.722;      // bar [origin=predictive method=joback]
+omega       2.3201;      // -   [origin=predictive method=lee-kesler]
+Tb          1302.25;      // K   [origin=predictive method=joback]
+HvapTb      164746.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.571 1.4511 -0.00104752 3.01e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 2; } { group ACH; count 3; } { group ACCH; count 1; } { group OH; count 3; } { group ACOH; count 2; } { group CH2NH2; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 3; } { group OH_phenol; count 2; } { group COOH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(2-azanyl-1-oxidanyl-ethyl)benzene-1,2-diol;2,3-bis(oxidanyl)butanedioic acid" "levophed bitartrate" "l-noradrenaline bitartrate" "arterenol bitartrate" "noradrenaline tartrate" "norartrinal bitartrate" "l-arterenol bitartrate" "levarterenol bitartrate" "norepinephrine tartrate" "l-noradrenaline tartrate" "l-norepinephrine bitartrate" "noradrenaline acid tartrate" );
+gibbsFormation
+{
+    dHf_298   -1660000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     959.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1290580.0
+    phase     gas;
+}

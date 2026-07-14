@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexaphenyldisiloxane  (C36H30OSi2, CAS 1829-40-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C36H30OSi2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        hexaphenyldisiloxane;
+formula     C36H30OSi2;
+CAS         1829-40-9;
+InChIKey    IVZTVZJLMIHPEY-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          534.805;      // g/mol [origin=calculated method=formula-sum]
+Tc          1512.85;      // K   [origin=predictive method=joback]
+Pc          11.530;      // bar [origin=predictive method=joback]
+omega       0.8510;      // -   [origin=predictive method=lee-kesler]
+Tb          1208.58;      // K   [origin=predictive method=joback]
+HvapTb      112384.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-126.13 2.4748 -0.0011812 8.1e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 30; } { group AC; count 6; } { group Si; count 1; } { group SiO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 30; } { group dC_ring; count 6; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "triphenyl(triphenylsilyloxy)silane" "disiloxane, hexaphenyl-" "bis(triphenylsilyl)ether" "disiloxane, 1,1,1,3,3,3-hexaphenyl-" "ivztvzjlmihpey-uhfffaoysa-" "tri(phenyl)-tri(phenyl)silyloxysilane" );
+gibbsFormation
+{
+    dHf_298   277350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1184.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=612180.0
+    phase     gas;
+}

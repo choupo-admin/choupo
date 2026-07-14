@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 11-beta-ethyl-17-alpha-ethinylestradiol  (C22H28O2, CAS 42039-84-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11BetaEthyl17AlphaEthinylestradiol;
+formula     C22H28O2;
+CAS         42039-84-9;
+InChIKey    XDNAXLLZXDEEDC-UQNKQVHQSA-N;
+MW          324.464;      // g/mol [origin=calculated method=formula-sum]
+Tc          1152.67;      // K   [origin=predictive method=joback]
+Pc          20.774;      // bar [origin=predictive method=joback]
+omega       1.2170;      // -   [origin=predictive method=lee-kesler]
+Tb          912.77;      // K   [origin=predictive method=joback]
+HvapTb      93909.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-269.699 2.98794 -0.00288665 1.16199e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 3; } { group C; count 2; } { group ACH; count 3; } { group ACCH2; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group ACOH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(8s,9s,11s,13s,14s,17r)-11-ethyl-17-ethynyl-13-methyl-7,8,9,11,12,14,15,16-octahydro-6h-cyclopenta[a]phenanthrene-3,17-diol" "(11" "a,17" "a)-11-ethyl-17-ethynylestra-1,3,5(10)-triene-3,17-diol" "11-beta-ethyl-19-nor-17-alpha-pregna-1,3,5(10)-trien-20-yne-3,17-diol" "19-nor-17-alpha-pregna-1,3,5(10)-trien-20-yne-3,17-diol, 11-beta-ethyl-" );
+gibbsFormation
+{
+    dHf_298   -134450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     728.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=292710.0
+    phase     gas;
+}

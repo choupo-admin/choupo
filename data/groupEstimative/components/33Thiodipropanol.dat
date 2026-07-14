@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3'-thiodipropanol  (C6H14O2S, CAS 10595-09-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33Thiodipropanol;
+formula     C6H14O2S;
+CAS         10595-09-2;
+InChIKey    QRQVZZMTKYXEKC-UHFFFAOYSA-N;
+MW          150.236;      // g/mol [origin=calculated method=formula-sum]
+Tc          763.16;      // K   [origin=predictive method=joback]
+Pc          39.407;      // bar [origin=predictive method=joback]
+omega       1.3991;      // -   [origin=predictive method=lee-kesler]
+Tb          590.02;      // K   [origin=predictive method=joback]
+HvapTb      69125.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (27.616 0.63619 -0.0003232 5.22e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group OH; count 2; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group OH; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(3-oxidanylpropylsulfanyl)propan-1-ol" "1-propanol, 3,3'-thiobis-" "thiodipropanol" "3,3'-thiodipropan-1-ol" "1-propanol,3,3'-thiobis-" "3-(3-hydroxypropylthio)propan-1-ol" "3-(3-hydroxypropylsulfanyl)propan-1-ol" "3,3 inverted exclamation marka-thiodipropanol" );
+gibbsFormation
+{
+    dHf_298   -429760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     552.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-240880.0
+    phase     gas;
+}

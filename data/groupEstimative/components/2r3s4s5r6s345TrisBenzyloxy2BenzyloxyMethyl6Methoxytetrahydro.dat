@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2r,3s,4s,5r,6s)-3,4,5-tris(benzyloxy)-2-((benzyloxy)methyl)-6-methoxytetrahydro-2h-pyran  (C35H38O6, CAS 53008-63-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2r3s4s5r6s345TrisBenzyloxy2BenzyloxyMethyl6Methoxytetrahydro;
+formula     C35H38O6;
+CAS         53008-63-2;
+InChIKey    IXEBJCKOMVGYKP-NVCPMKERSA-N;
+MW          554.683;      // g/mol [origin=calculated method=formula-sum]
+Tc          1526.74;      // K   [origin=predictive method=joback]
+Pc          9.323;      // bar [origin=predictive method=joback]
+omega       0.9045;      // -   [origin=predictive method=lee-kesler]
+Tb          1247.04;      // K   [origin=predictive method=joback]
+HvapTb      118361.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-61.575 2.71032 -0.0012955 1.214e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 4; } { group ACH; count 20; } { group AC; count 3; } { group ACCH2; count 1; } { group CH3O; count 1; } { group CH2O; count 4; } { group CH-O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group CH_ring; count 5; } { group dCH_ring; count 20; } { group dC_ring; count 4; } { group O; count 5; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s,3r,4s,5s,6r)-2-methoxy-3,4,5-tris(phenylmethoxy)-6-(phenylmethoxymethyl)oxane" "methyl 2,3,4,6-tetra-o-benzyl-a-d-galactopyranoside" "methyl 2,3,4,6-tetra-o-benzyl-" "a-d-galactopyranoside" "methyl-2,3,4,6-tetra-o-benzyl-alpha-d-galactopyranoside" "methyl 2,3,4,6-tetrakis-o-(phenylmethyl)-" "a-d-galactopyranoside" );
+gibbsFormation
+{
+    dHf_298   -639750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     898.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=75950.0
+    phase     gas;
+}

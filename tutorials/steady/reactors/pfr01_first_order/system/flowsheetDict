@@ -4,16 +4,7 @@
         X_PFR  = 1 - exp(-1.10) = 0.667    (vs CSTR X = 0.524)
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            1.0 kmol/h;          // kmol/h
-        T            350.0 K;        // K
-        P            1.01325 bar;      // bar
-        molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

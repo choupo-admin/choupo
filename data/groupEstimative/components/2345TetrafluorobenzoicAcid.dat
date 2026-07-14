@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,4,5-tetrafluorobenzoic acid  (C7H2F4O2, CAS 1201-31-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2345TetrafluorobenzoicAcid;
+formula     C7H2F4O2;
+CAS         1201-31-6;
+InChIKey    SFKRXQKJTIYUAG-UHFFFAOYSA-N;
+MW          194.083;      // g/mol [origin=calculated method=formula-sum]
+Tc          743.03;      // K   [origin=predictive method=joback]
+Pc          34.199;      // bar [origin=predictive method=joback]
+omega       0.8795;      // -   [origin=predictive method=lee-kesler]
+Tb          548.95;      // K   [origin=predictive method=joback]
+HvapTb      49996.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (48.78 0.4499 -0.00025824 4.84e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 1; } { group AC; count 1; } { group COOH; count 1; } { group ACF; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 1; } { group dC_ring; count 5; } { group F; count 4; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,4,5-tetrakis(fluoranyl)benzoic acid" "2,3,4,5-tetrafluoro benzoic acid" "tetrafluorobenzoic acid" "sfkrxqkjtiyuag-uhfffaoysa-" "2,3,4,5-tetrafluorobezoic acid" "2,3,4,5-tetrafluoro-benzoic acid" "tetrafluoro(2,3,4,5-)benzoic acid" "benzoicacid, 2,3,4,5-tetrafluoro-" "2,3,4,5-tetrafluorobenzoic;2,3,4,5-tetrafluorobenzoicacid" );
+gibbsFormation
+{
+    dHf_298   -1131870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     477.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1041200.0
+    phase     gas;
+}

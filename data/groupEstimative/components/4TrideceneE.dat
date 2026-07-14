@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-tridecene, (e)  (C13H26, CAS 41446-55-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4TrideceneE;
+formula     C13H26;
+CAS         41446-55-3;
+InChIKey    UJZLNVCZGZKIHR-VQHVLOKHSA-N;
+MW          182.351;      // g/mol [origin=calculated method=formula-sum]
+Tc          668.23;      // K   [origin=predictive method=joback]
+Pc          17.160;      // bar [origin=predictive method=joback]
+omega       0.6014;      // -   [origin=predictive method=lee-kesler]
+Tb          501.20;      // K   [origin=predictive method=joback]
+HvapTb      44490.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.111 1.25884 -0.0007672 1.909e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 9; } { group CH=CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 9; } { group dCH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e)-tridec-4-ene" "trans-4-tridecene" "4-tridecene" "delta-trans-tridecene" "4-tridecene, (e)-" "4-tridecene, (4e)-" );
+gibbsFormation
+{
+    dHf_298   -194430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     655.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=138800.0
+    phase     gas;
+}

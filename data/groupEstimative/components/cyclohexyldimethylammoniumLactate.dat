@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclohexyldimethylammonium lactate  (C11H23NO3, CAS 61121-67-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclohexyldimethylammoniumLactate;
+formula     C11H23NO3;
+CAS         61121-67-3;
+InChIKey    XIBLPLQIVXGRBZ-UHFFFAOYSA-N;
+MW          217.309;      // g/mol [origin=calculated method=formula-sum]
+Tc          925.38;      // K   [origin=predictive method=joback]
+Pc          25.767;      // bar [origin=predictive method=joback]
+omega       1.2071;      // -   [origin=predictive method=lee-kesler]
+Tb          721.92;      // K   [origin=predictive method=joback]
+HvapTb      76301.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-34.38 1.17936 -0.0004596 -1.32e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 2; } { group OH; count 1; } { group CH3N; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group OH; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethylcyclohexanamine;2-oxidanylpropanoic acid" "n,n-dimethylcyclohexanaminium2-hydroxypropanoate" "n,n-dimethylcyclohexanamine; 2-hydroxypropanoic acid" "n,n-dimethylcyclohexylamine, lactate salt" "2-hydroxypropanoic acid - n,n-dimethylcyclohexanamine (1:1)" );
+gibbsFormation
+{
+    dHf_298   -767920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     772.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-410960.0
+    phase     gas;
+}

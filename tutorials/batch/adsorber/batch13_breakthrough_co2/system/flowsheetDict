@@ -1,0 +1,79 @@
+/*---------------------------------------------------------------------------*\
+  batch13_breakthrough_co2  --  CO2/He breakthrough on a zeolite-13X bed.
+
+  THE A3 anchor case (spec 2026-07-12): a 0.5 m isothermal fixed bed of
+  zeolite 13X, fed 15% CO2 in helium at u = 0.05 m/s superficial, 1 bar,
+  298 K.  Helium carries NO isotherm record on 13X -> announced inert
+  CARRIER, transported but never adsorbed, closed by difference from the
+  constant c_tot = P/(RT).  At 15% CO2 this is NOT a dilute approximation:
+  the constant-(u, P, T) closure fabricates He at the net uptake rate and
+  the campaign material balance SHOWS that residual (KPIs
+  carrier_fabricated_mol, physical_mass_closure_rel) -- the named error
+  bites, by design (forum #119); the genuinely clean transport anchor is
+  batch14.  The engine announces, BEFORE integrating, where the front must
+  arrive:
+
+      q*(c_in) = 5*9*0.15/(1 + 9*0.15) = 2.872340426 mol/kg
+      R_f  = eps + rho_b q* / c_in     = 304.0512509
+      t_st = (L/u) R_f                 = 3040.512509 s
+      u_sh = u/R_f                     = 1.644459605e-4 m/s
+
+  Independent gates this run must reproduce (anchors_a3.py, FV N = 100):
+
+      t_b(5%) = 2890.669098 s    t_50 = 3036.448293 s    t_b(95%) = 3204.166058 s
+      INT(1 - c_out/c_in)dt = t_st to 2.2e-10  (telescopic FV conservation)
+      ledger mass closure <= 1e-10 (IN/OUT integrated as rows of the SAME ODE)
+
+  Numerics: conservative FV, nCells = 100 DECLARED (do the 25/50/100/200
+  mesh study -- batch15 publishes it: first-order upwind, observed order
+  ~1.03-1.05), Danckwerts inlet as the imposed face flux u*c_in, outlet
+  dc/dz = 0.  u, P, T are DECLARED constants of this phase, and the price
+  is said OUT LOUD: the real velocity drops ~15% across the uptake zone,
+  so the constant-u closure FABRICATES carrier (He) at exactly the net
+  uptake rate (9.19 mol here) -- announced in the run header, pinned as
+  the KPI carrier_fabricated_mol, discounted in the campaign inventory;
+  Ergun and the energy balance land in A4 (the energy gap is NAMED).
+
+  Log: run header prints the hypotheses, the derived rho_p, Pe = 250, the
+  Gershgorin step bound term by term and the stiffness verdict; profiles
+  land in <t>/bed.profile every 100 s; trajectory.csv carries c_out, y_out,
+  qbar and the per-species ledger closure.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        bed;
+        type        fixedBedAdsorber;
+
+        operation
+        {
+            adsorbent   zeolite13X;    // by NAME -- vendored under constant/
+                                       // (self-contained case; tRef = 298 K
+                                       // anchor copy, see the record header)
+            L           0.5   m;       // bed length
+            area        0.01  m2;      // cross-section
+            eps         0.4;           // interparticle void fraction
+            u           0.05  m/s;     // superficial, CONSTANT DECLARED (A4: Ergun)
+            T           298   K;       // isothermal DECLARED (A4: energy)
+            P           1     bar;     // CONSTANT DECLARED
+            Dax  [0 2 -1 0 0]  1e-4;   // m2/s -- axial dispersion DECLARED
+                                       // (Pe = 250; correlation = A4)
+            nCells      100;           // axial mesh DECLARED -- absent = FATAL
+
+            feed    { molarComposition { CO2 0.15; He 0.85; } }
+            initial { molarComposition { He  1.0; } }   // clean bed: q = 0
+
+            kLDF                       // EQUIPMENT/SAMPLE data: lives in the
+            {                          // case, never in a standards .dat
+                basis    solidFilm;    // dq/dt = k*(q* - q)
+                scope    "2 mm 13X beads, teaching bed RUN-A3-ANCHOR";
+                source   "declared spec value (A3 anchor); Glueckauf k = 15 De/rp^2 gives the order";
+                k
+                {
+                    CO2  [0 0 -1 0 0]  0.05;   // 1/s
+                }
+            }
+        }
+    }
+);

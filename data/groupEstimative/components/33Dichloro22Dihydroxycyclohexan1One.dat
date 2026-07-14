@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3-dichloro-2,2-dihydroxycyclohexan-1-one  (C6H8Cl2O3, CAS 83878-01-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33Dichloro22Dihydroxycyclohexan1One;
+formula     C6H8Cl2O3;
+CAS         83878-01-7;
+InChIKey    CMFHEHLGXLKUKA-UHFFFAOYSA-N;
+MW          199.027;      // g/mol [origin=calculated method=formula-sum]
+Tc          898.47;      // K   [origin=predictive method=joback]
+Pc          51.981;      // bar [origin=predictive method=joback]
+omega       1.3302;      // -   [origin=predictive method=lee-kesler]
+Tb          679.28;      // K   [origin=predictive method=joback]
+HvapTb      73143.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-89.42 1.1665 -0.001251 5.622e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group C; count 1; } { group OH; count 2; } { group CH2CO; count 1; } { group CCl2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group C_ring; count 2; } { group Cl; count 2; } { group OH; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3-bis(chloranyl)-2,2-bis(oxidanyl)cyclohexan-1-one" "3,3-dichloro-2,2-dihydroxycyclohexanone" "cyclohexanone,3,3-dichloro-2,2-dihydroxy-" "3,3-dichloro-2,2-dihydroxycyclohexanone;3,3-dichloro-2,2-dihydroxycyclohexan-1-one;3,3-dichloro-2,2-dihydroxycyclohexanone 95+%" );
+gibbsFormation
+{
+    dHf_298   -576350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     545.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-414690.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diisobutyl sulfone  (C8H18O2S, CAS 10495-45-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H18O2S (delta S+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        diisobutylSulfone;
+formula     C8H18O2S;
+CAS         10495-45-1;
+InChIKey    ULSLZZKKTPQNNJ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          178.29;      // g/mol [origin=calculated method=formula-sum]
+Tc          508.15;      // K   [origin=predictive method=joback]
+Pc          28.781;      // bar [origin=predictive method=joback]
+omega       0.5287;      // -   [origin=predictive method=lee-kesler]
+Tb          360.76;      // K   [origin=predictive method=joback]
+HvapTb      44444.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.892 0.81488 -0.0003924 4.74e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH; count 2; } { group CH2SuCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group dO_oth; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-1-(2-methylpropylsulfonyl)propane" "propane, 1,1'-sulfonylbis[2-methyl-" "isobutyl sulfone" "propane,1'-sulfonylbis[2-methyl-" "2-methyl-1-(2-methylpropanesulfonyl)propane" "propane,1,1'-sulfonylbis[2-methyl- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -714230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     707.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-490060.0
+    phase     gas;
+}

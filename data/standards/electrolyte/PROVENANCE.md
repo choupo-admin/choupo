@@ -1,5 +1,14 @@
 # Electrolyte catalogue — provenance & licence manifest
 
+> **DATA MIGRATED 2026-06-30 — Aspen-like layout.** The electrolyte catalogue this
+> document covers was consolidated kind-by-kind into the ratified layout: Pitzer
+> pairs -> `parameters/electrolyte/pitzer/pairs/`, mixing -> `.../pitzer/mixing/`,
+> eNRTL -> `parameters/electrolyte/eNRTL/`, ions -> `components/true/aqueous/`, and
+> minerals/speciation/gasLiquid/ionExchange -> `data/standards/chemistry/`
+> (resins -> `assets/resins/`). The monolith names (`pairs.dat`, `ions.dat`, ...)
+> referenced below describe the HISTORICAL files; **no value changed**, and the
+> per-value provenance now also lives in each per-file record's `source`/`origin`.
+
 This folder holds the Pitzer ion-interaction parameters used by Choupo's
 electrolyte activity model.  Per Choupo's data-licensing policy (CODE vs DATA):
 the data is an **aggregate** carrying its own open licence; it does **not** infect
@@ -314,3 +323,60 @@ status (USGS, no copyright) was re-confirmed by re-fetching each DB.
 | `minerals.dat` | +12 minerals | phreeqc.dat | per-row db `lit:` note (Hemingway & Robie 1994; Bénézeth 2018; Appelo 2015), else "primary not stated" |
 | `gases.dat` (NEW) | +8 gases | phreeqc.dat | db inline (Zhu 2022 / Jiang 2020 / …), else "primary not stated in db" |
 | `pairs.dat` | 0 (already complete) | pitzer.dat | (unchanged — Appelo 2014/2015/2017) |
+
+---
+
+## Migration scope — what IS and IS NOT migrated (2026-06-30)
+
+The electrolyte work is **complete for the scope it undertook**; what was not
+migrated is **by design, not omission** (a reader must be able to tell the
+difference — hence this section):
+
+- **Salt-level front-end + data tier — FULLY MIGRATED.** The 8 standards
+  monoliths (`ions / pairs / mixing / enrtl / minerals / speciation / gases /
+  exchange.dat`) are **DELETED**, split into per-file records under
+  `components/true/aqueous/`, `parameters/electrolyte/{pitzer/pairs, pitzer/mixing,
+  eNRTL}/`, `chemistry/{aqueousSpeciation, mineralSolubility, gasLiquid,
+  ionExchange}/`, `assets/resins/`. The engine reads the per-file tree via
+  **dual-leg** readers (case-local `constant/electrolyte/` OLD-flat overlay
+  FIRST, else standards per-file). The 12 salt-level electrolyte tutorial cases
+  SELECT a `propertyPackage`; the legacy `ElectrolyteActivity::configure()` and
+  the `model pitzer` / `model eNRTL` ActivityModel factory registrations are
+  **DELETED** (a `model pitzer;` thermoPackage now fails loudly at `New`).
+
+- **Multi-ion speciation — DELIBERATELY SEPARATE, not migrated.** The cases
+  `pitzer_seawater_verify`, `pitzer_vs_davies_ro_concentrate`,
+  `pitzer_calcite_brine`, `farelo_nacl_nh4cl` run the `pitzerHMW` / `davies`
+  per-ion engine via a `propsDict` speciate op — a DISTINCT front-end (CLAUDE.md
+  §5 ratifies `pitzer` ≠ `pitzerHMW` as two factory keys). They are **not**
+  package-selectable by design; routing them through the salt-level builder
+  would be re-architecture.
+
+- **Divalent / membrane electrolytes — flat by design.** `CaCl2`,
+  `calciumTartrate`, `potassiumBitartrate` (and `MgSO4`) stay flat components
+  with `electrolyte{}` blocks, read by membrane DSPM-DE + propsDict + the
+  solubility-curve crystalliser (cation/anion by name; **zero** `propertyPackage`
+  logic needed). An apparent/true split for them would be machinery with no
+  consumer.
+
+The `origin "data/standards/{species,parameters,chemistry}/ (migrated from the old electrolyte/ monoliths)"` strings in the migrated records
+are **import breadcrumbs** (the historical monolith), not a live path — the
+runtime never reads them, and the primary scientific citation lives in the
+separate `source` field per value.
+
+### Roadmap (demand-driven, not blocking)
+
+- **Multi-ion → package-selectable (long-term).** Today `pitzerHMW` / `davies` are
+  the tested front-end via the `propsDict` speciate op. The clean future form is
+  `propertyMethods/electrolyte/{pitzerHMW,davies}.dat` + a package
+  `propertyMethods { aqueousSpeciation electrolyte.pitzerHMW; }` key — so "a
+  package selects everything" becomes true for multi-ion too. NOT forced now
+  (the propsDict engine is functional + tested; routing it through the builder
+  is deferred, not abandoned).
+
+- **CaCl2 / calciumTartrate / potassiumBitartrate — demand-driven candidates.**
+  Migrate to the apparent/true split ONLY when a salt-level `propertyPackage` /
+  tutorial needs them (CaCl2 → a divalent-electrolyte package; the tartrates → a
+  wine/tartrate crystallisation package). NOT by symmetry with NaCl/KCl/NaOH —
+  today nothing consumes them through the builder (only membrane DSPM-DE +
+  propsDict + the solubility-curve crystalliser, by cation/anion name).

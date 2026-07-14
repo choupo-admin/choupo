@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,6-diaminopimelic acid  (C7H14N2O4, CAS 583-93-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        26DiaminopimelicAcid;
+formula     C7H14N2O4;
+CAS         583-93-7;
+InChIKey    GMKMEZVLHJARHF-UHFFFAOYSA-N;
+MW          190.199;      // g/mol [origin=calculated method=formula-sum]
+Tc          1016.40;      // K   [origin=predictive method=joback]
+Pc          39.956;      // bar [origin=predictive method=joback]
+omega       1.5499;      // -   [origin=predictive method=lee-kesler]
+Tb          794.96;      // K   [origin=predictive method=joback]
+HvapTb      86010.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.343 0.906 -0.0005954 1.491e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CHNH2; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group CH; count 2; } { group COOH; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6-bis(azanyl)heptanedioic acid" "2,6-diaminoheptanedioic acid" "diaminopimelic acid" "dl-2,6-diaminoheptanedioic acid" "heptanedioic acid, 2,6-diamino-" "dl-alpha,epsilon-diaminopimelic acid" "(2r,6r)-2,6-diaminoheptanedioic acid" "d,l-diaminopimelate" "ll-a2pm" "d,l-meso-diaminoheptanedioate" "m-dap" "l,l-a2pm" );
+gibbsFormation
+{
+    dHf_298   -831330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     619.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-551740.0
+    phase     gas;
+}

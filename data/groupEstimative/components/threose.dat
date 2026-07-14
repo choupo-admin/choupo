@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: threose  (C4H8O4, CAS 95-43-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        threose;
+formula     C4H8O4;
+CAS         95-43-2;
+InChIKey    YTBSYETUWUMLBZ-QWWZWVQMSA-N;
+MW          120.104;      // g/mol [origin=calculated method=formula-sum]
+Tc          781.31;      // K   [origin=predictive method=joback]
+Pc          65.458;      // bar [origin=predictive method=joback]
+omega       2.0107;      // -   [origin=predictive method=lee-kesler]
+Tb          615.44;      // K   [origin=predictive method=joback]
+HvapTb      80479.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.161 0.4721 -0.0002844 6.27e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 2; } { group OH; count 3; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 2; } { group OH; count 3; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s,3r)-2,3,4-tris(oxidanyl)butanal" "d-(-)-threose" "d-threose" "(2s,3r)-2,3,4-trihydroxybutanal" "threotetrose" "dl-threose" "threose, dl-" "(+/-)-threose" "threose, (+/-)-" "butanal, 2,3,4-trihydroxy-, (2r,3s)-rel-" "9b9d25d1-bacd-403a-8bfd-5f1befd8b9b3" );
+gibbsFormation
+{
+    dHf_298   -678720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     464.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-532060.0
+    phase     gas;
+}

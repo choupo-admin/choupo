@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: spirohexane  (C6H10, CAS 157-45-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        spirohexane;
+formula     C6H10;
+CAS         157-45-9;
+InChIKey    FYGUBWKMMCWIKB-UHFFFAOYSA-N;
+MW          82.146;      // g/mol [origin=calculated method=formula-sum]
+Tc          560.92;      // K   [origin=predictive method=joback]
+Pc          47.171;      // bar [origin=predictive method=joback]
+omega       0.2223;      // -   [origin=predictive method=lee-kesler]
+Tb          355.27;      // K   [origin=predictive method=joback]
+HvapTb      27934.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-158.98 1.194 -0.001331 5.85e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 5; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "spiro[2.3]hexane" "spirohexane(6ci,7ci,8ci)" );
+gibbsFormation
+{
+    dHf_298   14010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     321.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=123360.0
+    phase     gas;
+}

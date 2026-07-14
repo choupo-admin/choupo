@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: alpha-bromo-alpha-methyl-gamma-butyrolactone  (C5H7BrO2, CAS 33693-67-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        alphaBromoAlphaMethylGammaButyrolactone;
+formula     C5H7BrO2;
+CAS         33693-67-3;
+InChIKey    MXEVTHILFFSWOG-UHFFFAOYSA-N;
+MW          179.013;      // g/mol [origin=calculated method=formula-sum]
+Tc          664.45;      // K   [origin=predictive method=joback]
+Pc          47.628;      // bar [origin=predictive method=joback]
+omega       0.4453;      // -   [origin=predictive method=lee-kesler]
+Tb          445.36;      // K   [origin=predictive method=joback]
+HvapTb      39328.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-68.29 0.90502 -0.0009778 4.226e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 1; } { group Br; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-bromanyl-3-methyl-oxolan-2-one" "3-bromo-3-methyldihydrofuran-2(3h)-one" "3-bromo-3-methyl-3,4,5-trihydrofuran-2-one" "agn-pc-00q42r" "3-bromo-3-methyloxolan-2-one" "a-bromo-" "a-methyl-" "a-butyrolactone" "3-bromodihydro-3-methylfuran-2(3h)-one" "2(3h)-furanone, 3-bromodihydro-3-methyl-" );
+gibbsFormation
+{
+    dHf_298   -349440.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     432.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-249570.0
+    phase     gas;
+}

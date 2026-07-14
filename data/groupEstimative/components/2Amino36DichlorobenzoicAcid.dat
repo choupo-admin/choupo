@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-amino-3,6-dichlorobenzoic acid  (C7H5Cl2NO2, CAS 3032-32-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Amino36DichlorobenzoicAcid;
+formula     C7H5Cl2NO2;
+CAS         3032-32-4;
+InChIKey    MMIREQFMYZQWLU-UHFFFAOYSA-N;
+MW          206.022;      // g/mol [origin=calculated method=formula-sum]
+Tc          943.49;      // K   [origin=predictive method=joback]
+Pc          42.607;      // bar [origin=predictive method=joback]
+omega       0.9667;      // -   [origin=predictive method=lee-kesler]
+Tb          694.28;      // K   [origin=predictive method=joback]
+HvapTb      72013.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (42.39 0.5377 -0.00034388 7.99e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 1; } { group ACNH2; count 1; } { group COOH; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 2; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-3,6-bis(chloranyl)benzoic acid" "benzoic acid, 2-amino-3,6-dichloro-" "benzoic acid,2-amino-3,6-dichloro-" "anthranilicacid, 3,6-dichloro- (6ci,7ci,8ci); 2-amino-3,6-dichlorobenzoic acid;3,6-dichloroanthranilic acid" );
+gibbsFormation
+{
+    dHf_298   -333650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     475.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-209740.0
+    phase     gas;
+}

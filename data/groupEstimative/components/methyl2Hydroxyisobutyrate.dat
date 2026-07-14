@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 2-hydroxyisobutyrate  (C5H10O3, CAS 2110-78-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl2Hydroxyisobutyrate;
+formula     C5H10O3;
+CAS         2110-78-3;
+InChIKey    XYVQFUJDGOBPQI-UHFFFAOYSA-N;
+MW          118.132;      // g/mol [origin=calculated method=formula-sum]
+Tc          640.60;      // K   [origin=predictive method=joback]
+Pc          39.956;      // bar [origin=predictive method=joback]
+omega       0.7704;      // -   [origin=predictive method=lee-kesler]
+Tb          461.17;      // K   [origin=predictive method=joback]
+HvapTb      49514.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.57 0.58386 -0.0003558 7.29e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group OH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-methyl-2-oxidanyl-propanoate" "methyl 2-methyllactate" "methyl 2-hydroxy-2-methylpropanoate" "methyl alpha-hydroxyisobutyrate" "methyl .alpha.-hydroxyisobutyrate" "propanoic acid, 2-hydroxy-2-methyl-, methyl ester" "methyl " "a-hydroxyisobutyrate" "methyl 2-hydroxy-2-methylpropionate" "2-hydroxyisobutyric acid methyl ester" "xyvqfujdgobpqi-uhfffaoysa-" "alpha-hydroxy-isobutyric acid, methyl ester" "lactic acid, 2-methyl-, methyl ester (8ci)" );
+gibbsFormation
+{
+    dHf_298   -624790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     414.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-453130.0
+    phase     gas;
+}

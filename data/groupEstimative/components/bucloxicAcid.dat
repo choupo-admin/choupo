@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bucloxic acid  (C16H19ClO3, CAS 32808-51-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bucloxicAcid;
+formula     C16H19ClO3;
+CAS         32808-51-8;
+InChIKey    IJTPQQVCKPZIMV-UHFFFAOYSA-N;
+MW          294.775;      // g/mol [origin=calculated method=formula-sum]
+Tc          1098.50;      // K   [origin=predictive method=joback]
+Pc          21.980;      // bar [origin=predictive method=joback]
+omega       1.1155;      // -   [origin=predictive method=lee-kesler]
+Tb          858.68;      // K   [origin=predictive method=joback]
+HvapTb      83534.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-57.718 1.4776 -0.00089902 1.9246e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group ACH; count 3; } { group AC; count 1; } { group ACCH; count 1; } { group CH2CO; count 1; } { group COOH; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group CdO; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(3-chloranyl-4-cyclohexyl-phenyl)-4-oxidanylidene-butanoic acid" "esfar" "bucloxonic acid" "bucloxinsaeure [german]" "l'acide bucloxique [french]" "acide bucloxique [inn-french]" "acidum bucloxicum [inn-latin]" "4-(3-chloro-4-cyclohexylphenyl)-4-oxobutanoic acid" "3-(3-chloro-4-cyclohexylbenzoyl)propionic acid" "3-chloro-4-cyclohexyl-alpha-oxobenzenebutanoic acid" "4-(3-chloro-4-cyclohexylphenyl)-4-oxo-butyric acid" "4-(4-cyclohexyl-3-chlorophenyl)-4-oxobutyric acid" );
+gibbsFormation
+{
+    dHf_298   -584250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     743.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-283320.0
+    phase     gas;
+}

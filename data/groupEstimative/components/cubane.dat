@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cubane  (C8H8, CAS 277-10-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cubane;
+formula     C8H8;
+CAS         277-10-1;
+InChIKey    TXWRERCHRDBNLG-UHFFFAOYSA-N;
+MW          104.152;      // g/mol [origin=calculated method=formula-sum]
+Tc          557.00;      // K   [origin=predictive method=joback]
+Pc          38.579;      // bar [origin=predictive method=joback]
+omega       0.3577;      // -   [origin=predictive method=lee-kesler]
+Tb          372.44;      // K   [origin=predictive method=joback]
+HvapTb      30836.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-201.93 1.506 -0.001671 7.052e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentacyclo[4.2.0.02,5.03,8.04,7]octane" "cuban" "cubane;quadriprismane; [4]prismane" "pentacyclo[4.2.0.0(2,5).0(3,8).0(4,7)]octane" "pentacyclo[4.2.0.0~2,5~.0~3,8~.0~4,7~]octane" );
+gibbsFormation
+{
+    dHf_298   137650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     -250.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=381800.0
+    phase     gas;
+}

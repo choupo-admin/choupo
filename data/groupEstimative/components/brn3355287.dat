@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 3355287  (C22H15N, CAS 63041-30-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn3355287;
+formula     C22H15N;
+CAS         63041-30-5;
+InChIKey    DQTIYWLVGKMTPL-UHFFFAOYSA-N;
+MW          293.369;      // g/mol [origin=calculated method=formula-sum]
+Tc          1170.62;      // K   [origin=predictive method=joback]
+Pc          24.459;      // bar [origin=predictive method=joback]
+omega       1.0015;      // -   [origin=predictive method=lee-kesler]
+Tb          898.01;      // K   [origin=predictive method=joback]
+HvapTb      86691.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-113.1 1.824 -0.00152632 5.119e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 13; } { group AC; count 8; } { group ACNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 13; } { group dC_ring; count 9; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "naphtho[1,2-b]phenanthren-14-amine" "dibenz(a,h)anthracene, 7-amino-" );
+gibbsFormation
+{
+    dHf_298   491310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     497.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=701300.0
+    phase     gas;
+}

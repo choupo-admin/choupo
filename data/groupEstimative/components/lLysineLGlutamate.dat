@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: l-lysine l-glutamate  (C11H23N3O6, CAS 5408-52-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lLysineLGlutamate;
+formula     C11H23N3O6;
+CAS         5408-52-6;
+InChIKey    HOMROMWVNDUGRI-RVZXSAGBSA-N;
+MW          293.32;      // g/mol [origin=calculated method=formula-sum]
+Tc          1355.09;      // K   [origin=predictive method=joback]
+Pc          27.469;      // bar [origin=predictive method=joback]
+omega       1.8740;      // -   [origin=predictive method=lee-kesler]
+Tb          1105.92;      // K   [origin=predictive method=joback]
+HvapTb      123013.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (63.616 1.1925 -0.0005142 1.85e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH2NH2; count 1; } { group CHNH2; count 2; } { group COOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group CH; count 2; } { group COOH; count 3; } { group NH2; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-2-azanylpentanedioic acid;(2s)-2,6-bis(azanyl)hexanoic acid" "lysine glutamate" "(s)-2,6-diaminohexanoic acid compound with (s)-2-aminopentanedioic acid (1:1)" "poly(glu-lys)" "poly-gl" "pgal" "l-lysine l-glutamate salt" "l-glutamic acid; l-lysine" "poly(glutamic acid-lysine)" "l-glutamic acid- l-lysine(1:1)" "copolymer l-glutamic acid-l-lysine" "l-glutamic acid, polymer with l-lysine" );
+gibbsFormation
+{
+    dHf_298   -1341990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     987.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-900280.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentane, 1,5-bis[(trimethylsilyl)oxy]-  (C11H28O2Si2, CAS 54494-06-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C11H28O2Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        pentane15BisTrimethylsilylOxy;
+formula     C11H28O2Si2;
+CAS         54494-06-3;
+InChIKey    DZEKMCMJHKVBAS-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          248.513;      // g/mol [origin=calculated method=formula-sum]
+Tc          670.58;      // K   [origin=predictive method=joback]
+Pc          15.403;      // bar [origin=predictive method=joback]
+omega       0.4867;      // -   [origin=predictive method=lee-kesler]
+Tb          498.92;      // K   [origin=predictive method=joback]
+HvapTb      45488.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (125.525 0.51012 0.000477 -4.243e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 3; } { group CH2O; count 2; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 5; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl(5-trimethylsilyloxypentoxy)silane" "3,9-dioxa-2,10-disilaundecane, 2,2,10,10-tetramethyl-" "2,2,10,10-tetramethyl-3,9-dioxa-2,10-disilaundecane" );
+gibbsFormation
+{
+    dHf_298   -758050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     859.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-377780.0
+    phase     gas;
+}

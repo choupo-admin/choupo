@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-pentadecene, 15-chloro-, (5z)-  (C15H29Cl, CAS 71317-66-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Pentadecene15Chloro5z;
+formula     C15H29Cl;
+CAS         71317-66-3;
+InChIKey    WMHCASOPQWLUIM-UHFFFAOYSA-N;
+MW          244.847;      // g/mol [origin=calculated method=formula-sum]
+Tc          754.38;      // K   [origin=predictive method=joback]
+Pc          14.315;      // bar [origin=predictive method=joback]
+omega       0.7311;      // -   [origin=predictive method=lee-kesler]
+Tb          584.39;      // K   [origin=predictive method=joback]
+HvapTb      53327.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.038 1.45562 -0.0008964 2.237e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group CH=CH; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 12; } { group dCH; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "15-chloranylpentadec-5-ene" );
+gibbsFormation
+{
+    dHf_298   -251450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     767.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=143710.0
+    phase     gas;
+}

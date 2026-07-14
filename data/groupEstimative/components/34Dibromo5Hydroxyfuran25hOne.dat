@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,4-dibromo-5-hydroxyfuran-2(5h)-one  (C4H2Br2O3, CAS 766-38-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34Dibromo5Hydroxyfuran25hOne;
+formula     C4H2Br2O3;
+CAS         766-38-1;
+InChIKey    PKDBSOOYVOEUQR-UHFFFAOYSA-N;
+MW          257.865;      // g/mol [origin=calculated method=formula-sum]
+Tc          806.69;      // K   [origin=predictive method=joback]
+Pc          65.991;      // bar [origin=predictive method=joback]
+omega       1.1421;      // -   [origin=predictive method=lee-kesler]
+Tb          589.70;      // K   [origin=predictive method=joback]
+HvapTb      62983.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (32.47 0.4153 -0.0003458 1.11e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group OH; count 1; } { group Br; count 2; } { group C=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 1; } { group dC_ring; count 2; } { group Br; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4-bis(bromanyl)-2-oxidanyl-2h-furan-5-one" "mucobromic acid lactone" "3,4-dibromo-5-hydroxy-2(5h)-furanone" "3,4-dibromo-2-hydroxy-2h-furan-5-one" "3,4-dibromo-5-hydroxy-5h-furan-2-one" "2(5h)-furanone, 3,4-dibromo-5-hydroxy-" "crotonic acid, 2,3-dibromo-4,4-dihydroxy-, gamma-lactone" );
+gibbsFormation
+{
+    dHf_298   -435100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     376.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-364300.0
+    phase     gas;
+}

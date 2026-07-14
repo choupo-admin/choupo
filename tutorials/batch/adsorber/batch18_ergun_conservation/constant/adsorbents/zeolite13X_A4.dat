@@ -1,0 +1,9 @@
+adsorbent
+{
+    name zeolite13X_A4;
+    type "synthetic 13X A4 numerical anchor";
+    rho_bulk 640;
+    dParticle 2.0 mm;
+    sphericity 1.0;
+}
+provenance { identity { origin assumed; method "case-local A4 anchor; not design data"; } }

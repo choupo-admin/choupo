@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cycloundecyne  (C11H18, CAS 702-32-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cycloundecyne;
+formula     C11H18;
+CAS         702-32-9;
+InChIKey    PJIYBBSKJDMKBC-UHFFFAOYSA-N;
+MW          150.265;      // g/mol [origin=calculated method=formula-sum]
+Tc          746.85;      // K   [origin=predictive method=joback]
+Pc          30.830;      // bar [origin=predictive method=joback]
+omega       0.2600;      // -   [origin=predictive method=lee-kesler]
+Tb          497.31;      // K   [origin=predictive method=joback]
+HvapTb      43486.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-76.46 1.0188 -0.00047966 4.678e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tC; count 2; } { group CH2_ring; count 9; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   58110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     627.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=240400.0
+    phase     gas;
+}

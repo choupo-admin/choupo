@@ -1,9 +1,9 @@
 /* SECTOR A (composite of one flash) */
-children    ( fa );
-boundary    { inlets ( feed );  outlets ( vapor  liquid ); }
+sectors    ( fa );
+
 connections
-(
-    { from feed;        to fa/feed;    }
-    { from fa/vapor;    to vapor;      }
-    { from fa/liquid;   to liquid;     }
-);
+{
+    feed           { to fa/feed; }
+    liquid         { from fa/liquid; }
+    vapor          { from fa/vapor; }
+}

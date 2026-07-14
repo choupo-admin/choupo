@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1-tribromoethane  (C2H3Br3, CAS 2311-14-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111Tribromoethane;
+formula     C2H3Br3;
+CAS         2311-14-0;
+InChIKey    ZDUOUNIIAGIPSD-UHFFFAOYSA-N;
+MW          266.758;      // g/mol [origin=calculated method=formula-sum]
+Tc          689.65;      // K   [origin=predictive method=joback]
+Pc          71.334;      // bar [origin=predictive method=joback]
+omega       0.3793;      // -   [origin=predictive method=lee-kesler]
+Tb          440.61;      // K   [origin=predictive method=joback]
+HvapTb      38055.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.17 0.43422 -0.000471 1.868e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group C; count 1; } { group Br; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 1; } { group Br; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1-tris(bromanyl)ethane" );
+gibbsFormation
+{
+    dHf_298   -14370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     348.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=11760.0
+    phase     gas;
+}

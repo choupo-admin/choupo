@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentafluoropropionic acid  (C3HF5O2, CAS 422-64-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentafluoropropionicAcid;
+formula     C3HF5O2;
+CAS         422-64-0;
+InChIKey    LRMSQVBRUNSOJL-UHFFFAOYSA-N;
+MW          164.029;      // g/mol [origin=calculated method=formula-sum]
+Tc          572.61;      // K   [origin=predictive method=joback]
+Pc          38.868;      // bar [origin=predictive method=joback]
+omega       0.6241;      // -   [origin=predictive method=lee-kesler]
+Tb          403.64;      // K   [origin=predictive method=joback]
+HvapTb      32759.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.73 0.6502 -0.0006376 2.243e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 1; } { group CF3; count 1; } { group CF2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group F; count 5; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,3-pentakis(fluoranyl)propanoic acid" "perfluoropropionic acid" "pentafluoropropanoic acid" "propanoic acid, pentafluoro-" "2,2,3,3,3-pentafluoropropionic acid" "ipc-pffa-3" "2,2,3,3,3-pentafluoropropanoic acid" "propionic acid, pentafluoro-" "propanoic acid, 2,2,3,3,3-pentafluoro-" "pentafluoro-propionic acid" "perfluoropropanoic acid" "378-76-7 (potassium salt)" );
+gibbsFormation
+{
+    dHf_298   -1453570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     406.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1337900.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: grayanotoxin ii  (C20H32O5, CAS 4678-44-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        grayanotoxinIi;
+formula     C20H32O5;
+CAS         4678-44-8;
+InChIKey    KEOQZUCOGXIEQR-BBLSUVPKSA-N;
+MW          352.471;      // g/mol [origin=calculated method=formula-sum]
+Tc          1404.44;      // K   [origin=predictive method=joback]
+Pc          23.634;      // bar [origin=predictive method=joback]
+omega       1.5770;      // -   [origin=predictive method=lee-kesler]
+Tb          1134.24;      // K   [origin=predictive method=joback]
+HvapTb      137550.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-352.33 3.53016 -0.003617 1.5471e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 6; } { group C; count 4; } { group CH2=C; count 1; } { group OH; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 6; } { group C_ring; count 4; } { group dC_ring; count 1; } { group OH; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "deacetylanhydroandromedotoxin" "delta(sup 10 (18))-andromedenol" "(3b,6b,14r)-grayanotox-10(20)-ene-3,5,6,14,16-pentol" "(3beta,6beta,14r)-grayanotox-10(20)-ene-3,5,6,14,16-pentol" "grayanotox-10(20)-ene-3,5,6,14,16-pentol, (3-beta,6-beta,14r)-" "7,9a-methano-9ah-cyclopenta(b)heptalene-2,8,11,11a,12(1h)-pentol, dodecahydro-1,1,8-trimethyl-4-methylene-, (2s,3as,4as,7r,8r,9as,11r,11ar,12r)-" );
+gibbsFormation
+{
+    dHf_298   -927560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     905.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-387120.0
+    phase     gas;
+}

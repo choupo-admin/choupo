@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-methoxy-3-methylphenylacetonitrile  (C10H11NO, CAS 75391-57-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Methoxy3Methylphenylacetonitrile;
+formula     C10H11NO;
+CAS         75391-57-0;
+InChIKey    QOMACJMHUFTRJI-UHFFFAOYSA-N;
+MW          161.204;      // g/mol [origin=calculated method=formula-sum]
+Tc          812.15;      // K   [origin=predictive method=joback]
+Pc          27.155;      // bar [origin=predictive method=joback]
+omega       0.6337;      // -   [origin=predictive method=lee-kesler]
+Tb          589.54;      // K   [origin=predictive method=joback]
+HvapTb      54342.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (30.991 0.62754 -0.00027532 2.24e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACCH3; count 1; } { group CH3O; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-methoxy-3-methyl-phenyl)ethanenitrile" "2-(4-methoxy-3-methylphenyl)acetonitrile" "benzeneacetonitrile,4-methoxy-3-methyl-" );
+gibbsFormation
+{
+    dHf_298   -3480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     444.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=154650.0
+    phase     gas;
+}

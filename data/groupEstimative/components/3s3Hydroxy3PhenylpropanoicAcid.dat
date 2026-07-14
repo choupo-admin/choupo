@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (3s)-3-hydroxy-3-phenylpropanoic acid  (C9H10O3, CAS 36567-72-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3s3Hydroxy3PhenylpropanoicAcid;
+formula     C9H10O3;
+CAS         36567-72-3;
+InChIKey    AYOLELPCNDVZKZ-QMMMGPOBSA-N;
+MW          166.176;      // g/mol [origin=calculated method=formula-sum]
+Tc          881.05;      // K   [origin=predictive method=joback]
+Pc          40.986;      // bar [origin=predictive method=joback]
+omega       1.2360;      // -   [origin=predictive method=lee-kesler]
+Tb          669.45;      // K   [origin=predictive method=joback]
+HvapTb      71359.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.989 0.8706 -0.0006032 1.587e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 5; } { group ACCH; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s)-3-oxidanyl-3-phenyl-propanoic acid" "(s)-3-hydroxy-3-phenylpropionic acid" "benzenepropanoic acid, " "a-hydroxy-, (" "as)-" "benzenepropanoicacid, a'a" "afas-hydroxy-, (s)-;(3s)-3-hydroxy-3-phenylpropanoic acid;(s)-3-hydroxy-3-phenylpropanoic acid;(a'a" "afass)-b-hydroxy-benzenepropanoic acid;" );
+gibbsFormation
+{
+    dHf_298   -500340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     494.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-345860.0
+    phase     gas;
+}

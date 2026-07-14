@@ -1,3 +1,0 @@
-/*--- SEPARATION SECTOR (a thermo region) -- a CONTAINER holding ONE unit op
-  (the flash).  CURATION: no streams yet. */
-children    ( flash );

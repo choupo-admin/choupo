@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trans-2-hexenyl acetate  (C8H14O2, CAS 2497-18-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trans2HexenylAcetate;
+formula     C8H14O2;
+CAS         2497-18-9;
+InChIKey    HRHOWZHRCRZVCU-UHFFFAOYSA-N;
+MW          142.198;      // g/mol [origin=calculated method=formula-sum]
+Tc          625.01;      // K   [origin=predictive method=joback]
+Pc          26.874;      // bar [origin=predictive method=joback]
+omega       0.5134;      // -   [origin=predictive method=lee-kesler]
+Tb          445.02;      // K   [origin=predictive method=joback]
+HvapTb      40767.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.843 0.72904 -0.0004006 7.43e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH=CH; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hex-2-enyl ethanoate" "hex-2-enyl acetate" "(z)-hex-2-enyl acetate" "2-hexen-1-ol, 1-acetate" "2-hexen-1-ol, acetate, (e)-" "2-hexen-1-ol, 1-acetate, (2e)-" "2-hexen-1-ol,1-acetate, (2z)-" "2-hexen-1-ol,acetate, (2z)- (9ci); 2-hexen-1-ol, acetate, (z)-; (2z)-hexenyl acetate;(z)-1-acetoxy-2-hexene; (z)-2-hexen-1-yl acetate; cis-2-hexenyl acetate" );
+gibbsFormation
+{
+    dHf_298   -408510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     512.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-213670.0
+    phase     gas;
+}

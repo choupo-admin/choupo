@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cis-2-amino-1-indanol  (C9H11NO, CAS 126456-43-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cis2Amino1Indanol;
+formula     C9H11NO;
+CAS         126456-43-7;
+InChIKey    LOPKSXMQWBYUOI-BDAKNGLRSA-N;
+MW          149.193;      // g/mol [origin=calculated method=formula-sum]
+Tc          823.18;      // K   [origin=predictive method=joback]
+Pc          43.283;      // bar [origin=predictive method=joback]
+omega       0.9512;      // -   [origin=predictive method=lee-kesler]
+Tb          603.96;      // K   [origin=predictive method=joback]
+HvapTb      65490.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-57.42 0.9407 -0.00066856 1.884e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group OH; count 1; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1s,2r)-1-azanyl-2,3-dihydro-1h-inden-2-ol" "(1s,2r)-(-)-cis-1-amino-2-indanol" "(1s,2r)-1-amino-2,3-dihydro-1h-inden-2-ol" "(1s,2r)-(-)-1-amino-2-indanol" "(1s,2r)-1-amino-2-indanol" "(1s,2r)-(-)-cis-1-aminoindan-2-ol" "(1s,2r)-1-amino-indan-2-ol" "(1s,2r)-(-)-1-amino-2-hydroxyindan" "(1s,2r)-cis-1-amino-2-indanol" "cis-(1s,2r)-1-amino-2-indanol" "(1s,2r)-(-)-1-aminoindan-2-ol" "(1s,2r)-(+)-cis-1-aminoindan-2-ol" );
+gibbsFormation
+{
+    dHf_298   -70010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     363.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=110350.0
+    phase     gas;
+}

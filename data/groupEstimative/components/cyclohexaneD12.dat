@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclohexane-d12  (C6D12, CAS 1735-17-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C6D12 (delta D+12H-12; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        cyclohexaneD12;
+formula     C6D12;
+CAS         1735-17-7;
+InChIKey    XDTMQSROBMDMFD-LBTWDOQPSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          96.234;      // g/mol [origin=calculated method=formula-sum]
+Tc          565.72;      // K   [origin=predictive method=joback]
+Pc          41.303;      // bar [origin=predictive method=joback]
+omega       0.2075;      // -   [origin=predictive method=lee-kesler]
+Tb          361.10;      // K   [origin=predictive method=joback]
+HvapTb      29688.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-74.11 0.7224 -0.000439 9.8e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2,2,3,3,4,4,5,5,6,6-dodecadeuteriocyclohexane" "(2h12)cyclohexane" "cyclohexane, d12" "de45" "cyclohexane-d12 >99.50 atom % d" );
+gibbsFormation
+{
+    dHf_298   -92510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     401.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=31800.0
+    phase     gas;
+}

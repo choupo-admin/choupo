@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: silane,triisocyanatomethyl-  (C4H3N3O3Si, CAS 5587-61-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C4H3N3O3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        silaneTriisocyanatomethyl;
+formula     C4H3N3O3Si;
+CAS         5587-61-1;
+InChIKey    DFJSZWHUOKADCX-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          169.171;      // g/mol [origin=calculated method=formula-sum]
+Tc          703.22;      // K   [origin=predictive method=joback]
+Pc          44.444;      // bar [origin=predictive method=joback]
+omega       0.6454;      // -   [origin=predictive method=lee-kesler]
+Tb          492.53;      // K   [origin=predictive method=joback]
+HvapTb      53388.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:3
+    joback ( { group CH3; count 1; } { group dCd; count 3; } { group dO_oth; count 3; } { group Nd; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "triisocyanato(methyl)silane" "silane, triisocyanotomethyl-" "triisocyanato-methyl-silane" "methylsilyltriisocyanate; methyltriisocyanatosilane; monomethyltriisocyanatosilane;triisocyanato(methyl)silane" );
+// formation datum unavailable (element entropy missing): dHf_298=-253740.0 dGf_298=None

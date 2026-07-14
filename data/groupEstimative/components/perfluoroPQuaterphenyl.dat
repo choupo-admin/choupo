@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluoro-p-quaterphenyl  (C24F18, CAS 3008-32-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluoroPQuaterphenyl;
+formula     C24F18;
+CAS         3008-32-0;
+InChIKey    VYDAGSVBURVFDQ-UHFFFAOYSA-N;
+MW          630.228;      // g/mol [origin=calculated method=formula-sum]
+Tc          1158.34;      // K   [origin=predictive method=joback]
+Pc          9.138;      // bar [origin=predictive method=joback]
+omega       0.8374;      // -   [origin=predictive method=lee-kesler]
+Tb          941.90;      // K   [origin=predictive method=joback]
+HvapTb      76656.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (241.07 0.9906 -0.000361 -2.08e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 6; } { group ACF; count 18; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 24; } { group F; count 18; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5-pentakis(fluoranyl)-6-[2,3,5,6-tetrakis(fluoranyl)-4-[2,3,5,6-tetrakis(fluoranyl)-4-[2,3,4,5,6-pentakis(fluoranyl)phenyl]phenyl]phenyl]benzene" "p-quaterphenyl, octadecafluoro-" "1,1'':4'',1'''-quaterphenyl, 2,2',2'',2''',3,3',3'',3''',4,4''',5,5',5'',5''',6,6',6'',6'''-octadecafluoro-" "1,2,3,4,5-pentafluoro-6-[2,3,5,6-tetrafluoro-4-[2,3,5,6-tetrafluoro-4-(2,3,4,5,6-pentafluorophenyl)phenyl]phenyl]benzene" "2,2',2'',2''',3,3',3'',3''',4,4''',5,5',5'',5''',6,6',6'',6'''-octadecafluoro-1,1':4',1'':4'',1'''-quaterphenyl" "p-quaterphenyl,2',2'',2''',3,3',3'',3''',4,4''',5,5',5'',5''',6,6',6'',6'''-octadecafluoro-" );
+gibbsFormation
+{
+    dHf_298   -3351950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1112.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3098340.0
+    phase     gas;
+}

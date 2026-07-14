@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: aniline hydrogen phthalate  (C14H13NO4, CAS 50930-79-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        anilineHydrogenPhthalate;
+formula     C14H13NO4;
+CAS         50930-79-5;
+InChIKey    QGPZXNSBZMHHSR-UHFFFAOYSA-N;
+MW          259.261;      // g/mol [origin=calculated method=formula-sum]
+Tc          1204.29;      // K   [origin=predictive method=joback]
+Pc          31.992;      // bar [origin=predictive method=joback]
+omega       1.4071;      // -   [origin=predictive method=lee-kesler]
+Tb          943.21;      // K   [origin=predictive method=joback]
+HvapTb      97235.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.84 1.0738 -0.00050696 3.13e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 2; } { group ACNH2; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 9; } { group dC_ring; count 3; } { group COOH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "aniline;phthalic acid" "aniline phthalate solution" "phthalic acid aniline salt" "1,2-benzenedicarboxylic acid, compd. with benzenamine (1:1)" "aniline phthalate" "aniline; phthalic acid" "phthalic acid, compound with aniline (1:1)" "phthalic acid monoaniline salt" );
+gibbsFormation
+{
+    dHf_298   -649070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     747.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-443940.0
+    phase     gas;
+}

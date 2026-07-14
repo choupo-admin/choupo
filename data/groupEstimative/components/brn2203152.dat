@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 2203152  (C7H19NOSi, CAS 16654-64-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H19NOSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        brn2203152;
+formula     C7H19NOSi;
+CAS         16654-64-1;
+InChIKey    HSFUOEGYCLVWCE-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          161.32;      // g/mol [origin=calculated method=formula-sum]
+Tc          565.04;      // K   [origin=predictive method=joback]
+Pc          24.290;      // bar [origin=predictive method=joback]
+omega       0.3857;      // -   [origin=predictive method=lee-kesler]
+Tb          396.02;      // K   [origin=predictive method=joback]
+HvapTb      35923.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (52.152 0.5234 5.62e-05 -1.625e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 1; } { group CH2O; count 1; } { group CH3N; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 2; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethyl-2-trimethylsilyloxy-ethanamine" "(2-dimethylaminoethoxy)trimethylsilane" "silane, (2-dimethylaminoethoxy)trimethyl-" "ethanamine, n,n-dimethyl-2-[(trimethylsilyl)oxy]-" "n,n-dimethyl-2-trimethylsilyloxyethanamine" "n,n-dimethyl-2-[(trimethylsilyl)oxy]ethanamine" );
+gibbsFormation
+{
+    dHf_298   -364120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     582.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-90920.0
+    phase     gas;
+}

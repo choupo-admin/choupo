@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: rjr-2403  (C10H14N2, CAS 538-79-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        rjr2403;
+formula     C10H14N2;
+CAS         538-79-4;
+InChIKey    JUOSGGQXEBBCJB-UHFFFAOYSA-N;
+MW          162.236;      // g/mol [origin=calculated method=formula-sum]
+Tc          788.01;      // K   [origin=predictive method=joback]
+Pc          31.526;      // bar [origin=predictive method=joback]
+omega       0.6092;      // -   [origin=predictive method=lee-kesler]
+Tb          563.11;      // K   [origin=predictive method=joback]
+HvapTb      52734.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-45.438 1.00488 -0.00069306 1.93e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH=CH; count 1; } { group CH3NH; count 1; } { group C5H4N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group NH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-methyl-4-pyridin-3-yl-but-3-en-1-amine" "n-methyl-4-pyridin-3-ylbut-3-en-1-amine" "n-methyl-4-(pyridin-3-yl)but-3-en-1-amine" "methyl[4-(pyridin-3-yl)but-3-en-1-yl]amine" "(e)-n-methyl-4-(3-pyridinyl)-3-butene-1-amine" "3-buten-1-amine, n-methyl-4-(3-pyridinyl)-, (3z)-" "3-buten-1-amine,n-methyl-4-(3-pyridinyl)-, (e)-; pyridine, 3-[4-(methylamino)-1-butenyl]-, (e)-(8ci); (3e)-n-methyl-4-(3-pyridinyl)-3-buten-1-amine; (e)-metanicotine; rjr2403; rivanicline; trans-metanicotine" );
+gibbsFormation
+{
+    dHf_298   190280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     485.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=392390.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-oxo-4-{[3-(triethoxysilyl)propyl]amino}but-2-enoic acid  (C13H25NO6Si, CAS 33525-68-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C13H25NO6Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        4Oxo43TriethoxysilylPropylAminoBut2EnoicAcid;
+formula     C13H25NO6Si;
+CAS         33525-68-7;
+InChIKey    YSIBYEBNVMDAPN-CMDGGOBGSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          319.429;      // g/mol [origin=calculated method=formula-sum]
+Tc          1016.65;      // K   [origin=predictive method=joback]
+Pc          17.075;      // bar [origin=predictive method=joback]
+omega       1.2742;      // -   [origin=predictive method=lee-kesler]
+Tb          819.41;      // K   [origin=predictive method=joback]
+HvapTb      82360.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (104.956 0.96206 -0.0001219 -1.6124e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH=CH; count 1; } { group CH2O; count 3; } { group COOH; count 1; } { group Si; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group dCH; count 2; } { group O; count 3; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e)-4-oxidanylidene-4-(3-triethoxysilylpropylamino)but-2-enoic acid" "2-butenoic acid, 4-oxo-4-((3-(triethoxysilyl)propyl)amino)-, (2z)-" "2-butenoic acid, 4-oxo-4-[[3-(triethoxysilyl)propyl]amino]-, (2z)-" "4-oxo-4-((3-(triethoxysilyl)propyl)amino)-2-butenoic acid" "(e)-4-oxo-4-(3-triethoxysilylpropylamino)-2-butenoic acid" "(e)-4-oxo-4-(3-triethoxysilylpropylamino)but-2-enoic acid" "4-oxo-4-((3-(triethoxysilyl)propyl)amino)-2-butenoic acid (z)-" );
+gibbsFormation
+{
+    dHf_298   -1112090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     936.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-664400.0
+    phase     gas;
+}

@@ -17,7 +17,7 @@
   THE TWO RUNS (identical feed, identical recovery grid, ONLY the gamma model
   differs -- the controlled experiment):
       scan_davies   activityModel davies;   (the textbook extended-DH model)
-      scan_pitzer   activityModel pitzer;   (Pitzer-HMW, the brine-grade model)
+      scan_pitzer   activityModel pitzerHMW;   (Pitzer-HMW, the brine-grade model)
 
   THE PAYOFF ARTEFACTS (read straight off the two CSVs + the KPIs):
     1. SI_gypsum vs recovery / I, BOTH models -- the HEADLINE.  They track
@@ -90,7 +90,7 @@ operations
     {
         name          scan_pitzer;
         type          scalingScan;
-        activityModel pitzer;
+        activityModel pitzerHMW;
         totals        { Na 0.4861 mol/kg; Mg 0.0547 mol/kg; Ca 0.01065 mol/kg;
                         K 0.01058 mol/kg; Cl 0.5658 mol/kg; SO4 0.02926 mol/kg;
                         HCO3 0.0024 mol/kg; }

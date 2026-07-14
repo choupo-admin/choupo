@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: guaiazulene  (C15H18, CAS 489-84-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        guaiazulene;
+formula     C15H18;
+CAS         489-84-9;
+InChIKey    FWKQNCXZGNBPFD-UHFFFAOYSA-N;
+MW          198.309;      // g/mol [origin=calculated method=formula-sum]
+Tc          827.70;      // K   [origin=predictive method=joback]
+Pc          22.271;      // bar [origin=predictive method=joback]
+omega       0.5549;      // -   [origin=predictive method=lee-kesler]
+Tb          602.96;      // K   [origin=predictive method=joback]
+HvapTb      54498.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-34.88 1.17368 -0.0007622 1.987e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group ACH; count 5; } { group AC; count 2; } { group ACCH3; count 2; } { group ACCH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-dimethyl-7-propan-2-yl-azulene" "1,4-dimethyl-7-isopropylazulene" "guajazulene" "vetivazulen" "azulon" "7-isopropyl-1,4-dimethylazulene" "gurjunazulen" "cuteazul" "eucazulen" "guiazulene" "kessazulen" "purazulen" );
+gibbsFormation
+{
+    dHf_298   34980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     496.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=263150.0
+    phase     gas;
+}

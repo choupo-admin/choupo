@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(p-benzylbenzyl)-9,10-dihydroanthracene  (C28H24, CAS 68784-92-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PBenzylbenzyl910Dihydroanthracene;
+formula     C28H24;
+CAS         68784-92-9;
+InChIKey    FPPBVQWDFFKYBB-UHFFFAOYSA-N;
+MW          360.5;      // g/mol [origin=calculated method=formula-sum]
+Tc          1241.22;      // K   [origin=predictive method=joback]
+Pc          15.949;      // bar [origin=predictive method=joback]
+omega       0.9233;      // -   [origin=predictive method=lee-kesler]
+Tb          974.02;      // K   [origin=predictive method=joback]
+HvapTb      89724.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-152.048 2.2972 -0.00167804 4.818e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 16; } { group AC; count 4; } { group ACCH2; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH2_ring; count 2; } { group dCH_ring; count 16; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[[4-(phenylmethyl)phenyl]methyl]-9,10-dihydroanthracene" "9,10-dihydro-2-((p-benzylphenyl)methyl)anthracene" "9,10-dihydro-2-[(p-benzylphenyl)methyl]anthracene" "anthracene, 9,10-dihydro-2-((4-(phenylmethyl)phenyl)methyl)-" "anthracene, 9,10-dihydro-2-[[4-(phenylmethyl)phenyl]methyl]-" "2-[(4-benzylphenyl)methyl]-9,10-dihydroanthracene" );
+gibbsFormation
+{
+    dHf_298   378290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     728.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=676560.0
+    phase     gas;
+}

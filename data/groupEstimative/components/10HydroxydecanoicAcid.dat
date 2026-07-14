@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 10-hydroxydecanoic acid  (C10H20O3, CAS 1679-53-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        10HydroxydecanoicAcid;
+formula     C10H20O3;
+CAS         1679-53-4;
+InChIKey    YJCJVMMDTBEITC-UHFFFAOYSA-N;
+MW          188.267;      // g/mol [origin=calculated method=formula-sum]
+Tc          841.59;      // K   [origin=predictive method=joback]
+Pc          25.075;      // bar [origin=predictive method=joback]
+omega       1.3545;      // -   [origin=predictive method=lee-kesler]
+Tb          666.09;      // K   [origin=predictive method=joback]
+HvapTb      71697.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.689 1.0386 -0.0006232 1.456e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group OH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 9; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "10-oxidanyldecanoic acid" "decanoic acid, 10-hydroxy-" "10-oh-capric acid" "10-hydroxycapric acid" "10-oh-decanoic acid" "10-hydroxy capric acid" "10-hydroxy-decanoic acid" "decanoic acid,10-hydroxy-" );
+gibbsFormation
+{
+    dHf_298   -752230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     649.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-447410.0
+    phase     gas;
+}

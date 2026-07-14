@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-benzyloxy-3-methoxyacetophenone  (C16H16O3, CAS 1835-11-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Benzyloxy3Methoxyacetophenone;
+formula     C16H16O3;
+CAS         1835-11-6;
+InChIKey    HRUAWSQBQLYDKH-UHFFFAOYSA-N;
+MW          256.301;      // g/mol [origin=calculated method=formula-sum]
+Tc          959.12;      // K   [origin=predictive method=joback]
+Pc          22.828;      // bar [origin=predictive method=joback]
+omega       0.8603;      // -   [origin=predictive method=lee-kesler]
+Tb          727.71;      // K   [origin=predictive method=joback]
+HvapTb      68652.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.491 1.09264 -0.00053422 6.176e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 4; } { group CH3CO; count 1; } { group CH3O; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group O; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(3-methoxy-4-phenylmethoxy-phenyl)ethanone" "1-(4-(benzyloxy)-3-methoxyphenyl)ethanone" "4'-benzyloxy-3'-methoxyacetophenone" "1-[4-(benzyloxy)-3-methoxyphenyl]ethanone" "acetophenone, 4'-(benzyloxy)-3'-methoxy-" "1-(3-methoxy-4-phenylmethoxyphenyl)ethanone" "1-acetyl-3-methoxy-4-(phenylmethoxy)benzene" "1-(3-methoxy-4-(phenylmethoxy)phenyl)ethanone" "1-[4-(benzyloxy)-3-methoxyphenyl]ethan-1-one" "1-[3-methoxy-4-(phenylmethoxy)phenyl]ethanone" "ethanone,1-[3-methoxy-4-(phenylmethoxy)phenyl]-" "ethanone, 1-(3-methoxy-4-(phenylmethoxy)phenyl)-" );
+gibbsFormation
+{
+    dHf_298   -300470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     603.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-49520.0
+    phase     gas;
+}

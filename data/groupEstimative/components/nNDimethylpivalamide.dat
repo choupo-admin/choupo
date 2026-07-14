@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-dimethylpivalamide  (C7H15NO, CAS 24331-71-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDimethylpivalamide;
+formula     C7H15NO;
+CAS         24331-71-3;
+InChIKey    RLVGHTRVYWUWSH-UHFFFAOYSA-N;
+MW          129.203;      // g/mol [origin=calculated method=formula-sum]
+Tc          609.26;      // K   [origin=predictive method=joback]
+Pc          30.524;      // bar [origin=predictive method=joback]
+omega       0.4356;      // -   [origin=predictive method=lee-kesler]
+Tb          422.84;      // K   [origin=predictive method=joback]
+HvapTb      38669.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.28 0.8906 -0.0006227 1.7236e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group CON_CH3_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group C; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n,2,2-tetramethylpropanamide" "n,n,2,2-tetramethylpropionamide" "nn-dimethylpivalamide" "n,n-dimethyl-tert-butylcarboxamide" "propanamide,n,n,2,2-tetramethyl-" "2,2-dimethyl-n,n-dimethylpropanamide" "propionamide,n,n,2,2-tetramethyl- (8ci); 2,2,n,n-tetramethylpropanamide;2,2,n,n-tetramethylpropionamide; n,n,2,2-tetramethylpropionamide;n,n-dimethylpivalamide" );
+gibbsFormation
+{
+    dHf_298   -241610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     432.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-7240.0
+    phase     gas;
+}

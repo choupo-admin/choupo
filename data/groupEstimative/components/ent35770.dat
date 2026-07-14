@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ent 35770  (C14H25NO, CAS 52736-62-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ent35770;
+formula     C14H25NO;
+CAS         52736-62-6;
+InChIKey    CJLSOGGQZIXSMO-UHFFFAOYSA-N;
+MW          223.36;      // g/mol [origin=calculated method=formula-sum]
+Tc          852.85;      // K   [origin=predictive method=joback]
+Pc          22.871;      // bar [origin=predictive method=joback]
+omega       0.6097;      // -   [origin=predictive method=lee-kesler]
+Tb          625.33;      // K   [origin=predictive method=joback]
+HvapTb      56405.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-144.38 1.67392 -0.0009937 2.0296e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CH; count 2; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 10; } { group CH_ring; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "azepan-1-yl-(2-methylcyclohexyl)methanone" "1h-azepine, hexahydro-1-((2-methylcyclohexyl)carbonyl)-" );
+gibbsFormation
+{
+    dHf_298   -268700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     683.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97760.0
+    phase     gas;
+}

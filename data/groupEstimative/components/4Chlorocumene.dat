@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-chlorocumene  (C9H11Cl, CAS 2621-46-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Chlorocumene;
+formula     C9H11Cl;
+CAS         2621-46-7;
+InChIKey    FHBSIIZALGOVLM-UHFFFAOYSA-N;
+MW          154.637;      // g/mol [origin=calculated method=formula-sum]
+Tc          694.40;      // K   [origin=predictive method=joback]
+Pc          31.036;      // bar [origin=predictive method=joback]
+omega       0.3664;      // -   [origin=predictive method=lee-kesler]
+Tb          474.17;      // K   [origin=predictive method=joback]
+HvapTb      42563.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.69 0.73314 -0.00045356 1.05e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group ACH; count 4; } { group ACCH; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-4-propan-2-yl-benzene" "cumene, p-chloro-" "benzene, 1-chloro-4-(1-methylethyl)-" "1-chloro-4-isopropylbenzene" "1-chloro-4-(propan-2-yl)benzene" "4-isopropyl phenyl chloride" "benzene,1-chloro-4-(1-methylethyl)-" "cumene,p-chloro- (6ci,7ci,8ci); 1-chloro-4-isopropylbenzene;2-(p-chlorophenyl)propane; 4-chlorocumene; 4-chloroisopropylbenzene;p-chlorocumene; p-chloroisopropylbenzene; p-isopropylchlorobenzene" );
+gibbsFormation
+{
+    dHf_298   -25050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     417.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=113310.0
+    phase     gas;
+}

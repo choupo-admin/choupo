@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-acetyl-4-methylumbelliferone  (C12H10O4, CAS 2555-29-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8Acetyl4Methylumbelliferone;
+formula     C12H10O4;
+CAS         2555-29-5;
+InChIKey    WZOMQVFUPMLOGT-UHFFFAOYSA-N;
+MW          218.208;      // g/mol [origin=calculated method=formula-sum]
+Tc          946.43;      // K   [origin=predictive method=joback]
+Pc          34.889;      // bar [origin=predictive method=joback]
+omega       1.0787;      // -   [origin=predictive method=lee-kesler]
+Tb          714.79;      // K   [origin=predictive method=joback]
+HvapTb      74077.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.46 1.08924 -0.00091142 3.1096e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH=C; count 1; } { group ACH; count 2; } { group AC; count 3; } { group ACOH; count 1; } { group CH3CO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 5; } { group OH_phenol; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-ethanoyl-4-methyl-7-oxidanyl-chromen-2-one" "8-acetyl-7-hydroxy-4-methylcoumarin" "coumarin, 8-acetyl-7-hydroxy-4-methyl-" "8-acetyl-7-hydroxy-4-methyl-chromen-2-one" "4-methyl-7-hydroxy-8-acetylcoumarin" "8-acetyl-7-hydroxy-4-methylchromen-2-one" "8-acetyl-7-hydroxy-4-methyl-2h-chromen-2-one" "8-acetyl-7-hydroxy-4-methyl-2-oxochromene" "agn-pc-03dsdc" "8-acetyl-7-hydroxy-4-methyl-1-benzopyran-2-one" "8-acetyl-7-hydroxy-4-methyl-2h-1-benzopyran-2-one" "2h-1-benzopyran-2-one,8-acetyl-7-hydroxy-4-methyl-" );
+gibbsFormation
+{
+    dHf_298   -538980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     497.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-349710.0
+    phase     gas;
+}

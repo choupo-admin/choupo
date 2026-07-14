@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl vinyl ketone  (C4H6O, CAS 78-94-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylVinylKetone;
+formula     C4H6O;
+CAS         78-94-4;
+InChIKey    FUSUHKVFWTUUBE-UHFFFAOYSA-N;
+MW          70.091;      // g/mol [origin=calculated method=formula-sum]
+Tc          524.19;      // K   [origin=predictive method=joback]
+Pc          44.623;      // bar [origin=predictive method=joback]
+omega       0.3062;      // -   [origin=predictive method=lee-kesler]
+Tb          341.67;      // K   [origin=predictive method=joback]
+HvapTb      30574.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.62 0.33582 -0.000198 4.476e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "but-3-en-2-one" "3-buten-2-one" "butenone" "vinyl methyl ketone" "1-buten-3-one" "methylene acetone" "2-butenone" "methylvinyl ketone" "methyl ethenyl ketone" "acetyl ethylene" "methylvinylketon" "3-butenone-2" );
+gibbsFormation
+{
+    dHf_298   -113040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     333.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-58280.0
+    phase     gas;
+}

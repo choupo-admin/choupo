@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer ternary mixing parameter psi(CO3,SO4|K) --- the two anions CO3(2-)
+  and SO4(2-) with the common cation K(+).
+  Role: the triple-ion correction of the Harvie-Moller-Weare formulation,
+  active in the pitzerHMW multi-ion engine only when all three ions coexist
+  in solution; it refines the theta(CO3,SO4) mixing term and the binary
+  beta/Cphi pair sets, it never replaces them.
+  Source: Harvie, Moller & Weare, Geochim. Cosmochim. Acta 48 (1984) 723 (HMW
+  seawater system); via USGS PHREEQC pitzer.dat (public domain) -- full
+  string in the source entry below.
+\*-----------------------------------------------------------------------------*/
+recordType electrolyteMixingParameter;
+schemaVersion 1;
+kind psi;
+a CO3;
+b SO4;
+c K;
+value -0.009;
+source "Harvie, Moller & Weare, Geochim. Cosmochim. Acta 48 (1984) 723 (HMW seawater system); via USGS PHREEQC pitzer.dat (public domain)";

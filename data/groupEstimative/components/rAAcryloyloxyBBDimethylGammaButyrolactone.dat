@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (r)-a-acryloyloxy-b,b-dimethyl-gamma-butyrolactone  (C9H12O4, CAS 102096-60-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        rAAcryloyloxyBBDimethylGammaButyrolactone;
+formula     C9H12O4;
+CAS         102096-60-6;
+InChIKey    ICMBTQSRUNSRKI-ZETCQYMHSA-N;
+MW          184.191;      // g/mol [origin=calculated method=formula-sum]
+Tc          721.29;      // K   [origin=predictive method=joback]
+Pc          28.054;      // bar [origin=predictive method=joback]
+omega       0.6181;      // -   [origin=predictive method=lee-kesler]
+Tb          520.95;      // K   [origin=predictive method=joback]
+HvapTb      48225.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-51.76 1.14554 -0.0009969 3.682e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group CH2=CH; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group C_ring; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(3r)-4,4-dimethyl-2-oxidanylidene-oxolan-3-yl] prop-2-enoate" "(r)-" "a-acryloyloxy-" "a," "a-dimethyl-" "a-butyrolactone" "(r)-4,4-dimethyl-2-oxotetrahydrofuran-3-yl acrylate" "[(3r)-4,4-dimethyl-2-oxooxolan-3-yl] prop-2-enoate" "(r)-alpha-acryloyloxy-beta,beta-dimethyl-gamma-butyrolactone" "(r)-()-alpha-acryloyl-oxy-beta,beta-dimethyl-gamma-butyrolactone" "(r)-(+)-alpha-acryloyl-oxy-beta,beta-dimethyl-gamma-butyrolactone" );
+gibbsFormation
+{
+    dHf_298   -670520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     541.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-460450.0
+    phase     gas;
+}

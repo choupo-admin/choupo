@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3-dibromo-1-propanol  (C3H6Br2O, CAS 96-13-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23Dibromo1Propanol;
+formula     C3H6Br2O;
+CAS         96-13-9;
+InChIKey    QWVCIORZLNBIIC-UHFFFAOYSA-N;
+MW          217.888;      // g/mol [origin=calculated method=formula-sum]
+Tc          693.88;      // K   [origin=predictive method=joback]
+Pc          62.196;      // bar [origin=predictive method=joback]
+omega       0.8786;      // -   [origin=predictive method=lee-kesler]
+Tb          492.30;      // K   [origin=predictive method=joback]
+HvapTb      51433.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.152 0.4051 -0.0003158 1.02e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group OH; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group Br; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-bis(bromanyl)propan-1-ol" "2,3-dibromopropanol" "dibromopropanol" "2,3-dibromopropan-1-ol" "2,3-dibromopropyl alcohol" "1-propanol, 2,3-dibromo-" "1,2-dibromopropan-3-ol" "beta-dibromohydrin" "usaf do-42" "allyl alcohol dibromide" "dbp (flame retardant)" "ethoxylated hydantoin glycol dicocoate" );
+gibbsFormation
+{
+    dHf_298   -210100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     416.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-136240.0
+    phase     gas;
+}

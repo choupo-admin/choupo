@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrabromo-o-xylene  (C8H6Br4, CAS 36059-21-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrabromoOXylene;
+formula     C8H6Br4;
+CAS         36059-21-9;
+InChIKey    WVJRAJZMOVQFEC-UHFFFAOYSA-N;
+MW          421.752;      // g/mol [origin=calculated method=formula-sum]
+Tc          974.17;      // K   [origin=predictive method=joback]
+Pc          47.301;      // bar [origin=predictive method=joback]
+omega       0.8279;      // -   [origin=predictive method=lee-kesler]
+Tb          698.86;      // K   [origin=predictive method=joback]
+HvapTb      64728.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (65.97 0.54024 -0.000393 1.214e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 4; } { group ACCH3; count 2; } { group Br; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dC_ring; count 6; } { group Br; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4-tetrakis(bromanyl)-5,6-dimethyl-benzene" "3,4,5,6-tetrabromo-o-xylene" "xylene, tetrabromo derivative" "1,2,3,4-tetrabromo-5,6-dimethylbenzene" "benzene, dimethyl-, tetrabromo deriv." "benzene, 1,2,3,4-tetrabromo-5,6-dimethyl-" "tetrabromo-ortho-xylene" "benzene,2,3,4-tetrabromo-5,6-dimethyl-" "1,2,3,4-tetrabromo-5,6-dimethyl-benzene" );
+gibbsFormation
+{
+    dHf_298   76050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     534.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=138020.0
+    phase     gas;
+}

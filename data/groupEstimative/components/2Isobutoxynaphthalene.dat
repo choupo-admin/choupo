@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-isobutoxynaphthalene  (C14H16O, CAS 2173-57-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Isobutoxynaphthalene;
+formula     C14H16O;
+CAS         2173-57-1;
+InChIKey    XOHIHZHSDMWWMS-UHFFFAOYSA-N;
+MW          200.281;      // g/mol [origin=calculated method=formula-sum]
+Tc          816.55;      // K   [origin=predictive method=joback]
+Pc          24.752;      // bar [origin=predictive method=joback]
+omega       0.5849;      // -   [origin=predictive method=lee-kesler]
+Tb          592.54;      // K   [origin=predictive method=joback]
+HvapTb      53358.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.069 1.13444 -0.00073088 1.818e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group ACH; count 7; } { group AC; count 3; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-methylpropoxy)naphthalene" "fragarol" "nerolin fragarol" "2-naphthyl isobutyl ether" "isobutyl 2-naphthyl ether" "naphthalene, 2-(2-methylpropoxy)-" "naphthalene, 2-isobutoxy-" "beta-naphthol isobutyl ether" "beta-naphthyl isobutyl ether" "isobutyl beta-naphthyl ether" "ether, isobutyl(2-naphthyl)" "naphthalene, 2-isobutoxy- (7ci,8ci)" );
+gibbsFormation
+{
+    dHf_298   -53660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     481.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=168990.0
+    phase     gas;
+}

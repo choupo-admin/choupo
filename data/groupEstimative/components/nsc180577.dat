@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nsc 180577  (C21H28N2O, CAS 50765-87-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nsc180577;
+formula     C21H28N2O;
+CAS         50765-87-2;
+InChIKey    GNFSPFYMMKMHOG-UHFFFAOYSA-N;
+MW          324.468;      // g/mol [origin=calculated method=formula-sum]
+Tc          1099.43;      // K   [origin=predictive method=joback]
+Pc          16.272;      // bar [origin=predictive method=joback]
+omega       1.0272;      // -   [origin=predictive method=lee-kesler]
+Tb          870.37;      // K   [origin=predictive method=joback]
+HvapTb      85090.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-102.437 2.16028 -0.00161468 4.8086e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group CH=C; count 1; } { group ACH; count 7; } { group AC; count 3; } { group CH3N; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 1; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group CdO; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-(dimethylamino)ethyl]-5-methyl-2-naphthalen-1-yl-hex-4-enamide" "alpha-prenyl-alpha-(2-dimethylaminoethyl)-1-naphthylacetamide" "acetamide, 2-(2-dimethylaminoethyl)-2-(3-methyl-2-butenyl)-2-(1-naphthyl)-" "1-naphthaleneacetamide, alpha-(2-dimethylaminoethyl)-alpha-(3-methyl-2-butenyl)-" "1-allyl-2-(2-hydroxyethyl)thiourea" "2-(2-dimethylaminoethyl)-5-methyl-2-naphthalen-1-ylhex-4-enamide" "1-naphthaleneacetamide, .alpha.-[2-(dimethylamino)ethyl]-.alpha.-(3-methyl-2-butenyl)-" "azocane-2-carboxylic acid;azepane-2-carboxylic acid;hexahydro-1h-azepine-2-carboxylic acid;" );
+gibbsFormation
+{
+    dHf_298   26780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     797.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=458190.0
+    phase     gas;
+}

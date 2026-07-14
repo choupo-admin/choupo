@@ -40,7 +40,14 @@ License
 #include "PropertyScanBinary.H"
 #include "PurePhaseDiagram.H"
 #include "PsychrometricChart.H"
+#include "HConsistency.H"
+#include "IsothermEval.H"
 #include "PitzerActivity.H"
+#include "ENRTLMixedSolventOp.H"
+#include "ENRTLMultiSaltOp.H"
+#include "GibbsMapOp.H"
+#include "ElectrolytePackageActivity.H"
+#include "MolecularActivity.H"
 #include "ScalingScan.H"
 #include "Speciate.H"
 #include "SteamTables.H"
@@ -124,11 +131,24 @@ void PropertyOperation::registerBuiltins()
     reg("purePhaseDiagram", []{ return std::make_unique<PurePhaseDiagram>(); });
     reg("psychrometricChart", []{ return std::make_unique<PsychrometricChart>(); });
     reg("pitzerActivity", []{ return std::make_unique<PitzerActivity>(); });
+    // The PHYSICAL gate of the one-enthalpy-surface contract (#106):
+    // state identities (dh/dT == Cp_phase, the 298 K anchor, Kirchhoff),
+    // not just loci.
+    reg("hConsistency", []{ return std::make_unique<HConsistency>(); });
+    reg("enrtlMixedSolvent", []{ return std::make_unique<ENRTLMixedSolventOp>(); });
+    reg("enrtlMultiSalt", []{ return std::make_unique<ENRTLMultiSaltOp>(); });
+    reg("gibbsMap", []{ return std::make_unique<GibbsMapOp>(); });
+    reg("electrolyteActivity", []{ return std::make_unique<ElectrolytePackageActivity>(); });
+    reg("activityCoefficients", []{ return std::make_unique<MolecularActivity>(); });
     reg("speciate",       []{ return std::make_unique<Speciate>();       });
     reg("exchange",       []{ return std::make_unique<Exchange>();       });
     reg("steamTables",    []{ return std::make_unique<SteamTables>();    });
     reg("scalingScan",    []{ return std::make_unique<ScalingScan>();    });
     reg("fitParameters",  []{ return std::make_unique<FitParameters>();  });
+    // A1b adsorption: evaluate a curated isotherm record on a (T,p) grid and
+    // run the contract gates (Henry limit / saturation / anchor pin / unit
+    // invariance).  The matching regression is fitParameters kind=isotherm.
+    reg("isothermEval",   []{ return std::make_unique<IsothermEval>();   });
     reg("kinetics1D",     []{ return std::make_unique<Kinetics1D>();     });
     reg("vleConsistency", []{ return std::make_unique<VleConsistency>(); });
     reg("vaporPressureFit", []{ return std::make_unique<VaporPressureFit>(); });

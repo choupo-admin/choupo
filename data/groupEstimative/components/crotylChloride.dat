@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: crotyl chloride  (C4H7Cl, CAS 591-97-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        crotylChloride;
+formula     C4H7Cl;
+CAS         591-97-9;
+InChIKey    YTKRILODNOEEPX-UHFFFAOYSA-N;
+MW          90.55;      // g/mol [origin=calculated method=formula-sum]
+Tc          514.97;      // K   [origin=predictive method=joback]
+Pc          39.705;      // bar [origin=predictive method=joback]
+omega       0.2360;      // -   [origin=predictive method=lee-kesler]
+Tb          332.71;      // K   [origin=predictive method=joback]
+HvapTb      28841.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.039 0.41062 -0.000298 9.28e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH=CH; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranylbut-2-ene" "trans-1-chloro butene-2" "2-butene, 1-chloro-,(2z)- (9ci)" "1-chloro-2-butene;2-buten-1-yl chloride;2-butenyl chloride;crotyl chloride;a-chloro-b-butylene;g-methallyl chloride;g-methylallyl chloride;" "2-butene,1-chloro-, (z)- (8ci); (z)-1-chloro-2-butene; (z)-2-butenyl chloride;(z)-crotyl chloride; cis-1-chloro-2-butene; cis-4-chloro-2-butene;cis-but-2-enyl chloride; cis-crotyl chloride; cis-g-methallyl chloride" );
+gibbsFormation
+{
+    dHf_298   -24410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     338.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=51090.0
+    phase     gas;
+}

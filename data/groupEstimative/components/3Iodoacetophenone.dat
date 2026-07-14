@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3'-iodoacetophenone  (C8H7IO, CAS 14452-30-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Iodoacetophenone;
+formula     C8H7IO;
+CAS         14452-30-3;
+InChIKey    IWLHOUBDKCKJJQ-UHFFFAOYSA-N;
+MW          246.043;      // g/mol [origin=calculated method=formula-sum]
+Tc          818.69;      // K   [origin=predictive method=joback]
+Pc          37.684;      // bar [origin=predictive method=joback]
+omega       0.4623;      // -   [origin=predictive method=lee-kesler]
+Tb          561.31;      // K   [origin=predictive method=joback]
+HvapTb      52459.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.94 0.63642 -0.00043826 1.1546e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group CH3CO; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group I; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(3-iodanylphenyl)ethanone" "1-(3-iodophenyl)ethanone" "3-iodoacetophenone" "3-iodine-phenyl-ethanone" "ethanone, 1-(3-iodophenyl)-" "3'-iodo acetophenone" "ethanone,1-(3-iodophenyl)-" "1-(3-iodophenyl)ethan-1-one" "1-(3-iodophenyl)-ethanon;1-(3-iodophenyl)ethanone" "3-iodoacetophenone;acetophenone,3'-iodo- (6ci,7ci,8ci);m-iodoacetophenone;3-acetyl-1-iodobenzene;" );
+gibbsFormation
+{
+    dHf_298   -19100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     437.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=48460.0
+    phase     gas;
+}

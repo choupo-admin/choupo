@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1'-(methylimino)bis(3-chloropropan-2-ol)  (C7H15Cl2NO2, CAS 68140-75-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11MethyliminoBis3Chloropropan2Ol;
+formula     C7H15Cl2NO2;
+CAS         68140-75-0;
+InChIKey    QRSIATZYIUKISS-UHFFFAOYSA-N;
+MW          216.102;      // g/mol [origin=calculated method=formula-sum]
+Tc          801.64;      // K   [origin=predictive method=joback]
+Pc          32.064;      // bar [origin=predictive method=joback]
+omega       1.4616;      // -   [origin=predictive method=lee-kesler]
+Tb          630.54;      // K   [origin=predictive method=joback]
+HvapTb      74571.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.834 0.88612 -0.0005776 1.461e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 2; } { group OH; count 2; } { group CH3N; count 1; } { group CH2Cl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 2; } { group Cl; count 2; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-3-[(3-chloranyl-2-oxidanyl-propyl)-methyl-amino]propan-2-ol" "2-propanol, 1,1'-(methylimino)bis(3-chloro-" "2-propanol, 1,1'-(methylimino)bis[3-chloro-" "bis(3-chloro-2-hydroxypropyl)methylamine" "1-chloro-3-[(3-chloro-2-hydroxypropyl)-methylamino]propan-2-ol" );
+gibbsFormation
+{
+    dHf_298   -466780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     594.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-183540.0
+    phase     gas;
+}

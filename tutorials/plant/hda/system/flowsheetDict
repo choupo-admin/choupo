@@ -63,21 +63,7 @@ boundary
     outlets  ( Benzene  Purge );
 }
 
-streams
-{
-    // Declare the PHASE of each inlet via `vf` (0 = liquid, 1 = vapour): the
-    // Mixer picks its energy-balance basis from the flow-weighted inlet vf
-    // (gas-dominant -> solves a gas enthalpy balance; liquid-dominant ->
-    // liquid).  Without a declared phase every inlet defaults to liquid (vf 0)
-    // and the Mixer tries a LIQUID balance on this gas-dominant mix -> the 1-D
-    // Newton in T finds no root and the mixer "fails to converge".
-    TolueneFeed    { F 100 kmol/h; T 300 K; P 35 bar; vf 0; molarComposition { toluene 1.0; } }
-    H2Makeup       { F 110 kmol/h; T 300 K; P 35 bar; vf 1; molarComposition { H2 0.97; CH4 0.03; } }
-
-    // tear SEEDS (initial guesses; the outer loop iterates each to its fixed point)
-    H2Recycle      { F 370 kmol/h; T 320 K; P 35 bar; vf 1; molarComposition { H2 0.56; CH4 0.43; benzene 0.01; } }
-    TolueneRecycle { F 33  kmol/h; T 380 K; P 35 bar; vf 0; molarComposition { toluene 0.97; benzene 0.03; } }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 tearStreams    ( H2Recycle  TolueneRecycle );
 recycleSolver  Newton;        // one Jacobian over both tears -> captures the gas<->liquid coupling

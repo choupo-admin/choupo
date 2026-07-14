@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: neodecanoic acid, ethenyl ester, polymer with ethenyl acetate and 2-ethylhexyl 2-propenoate  (C27H48O6, CAS 96247-27-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        neodecanoicAcidEthenylEsterPolymerWithEthenylAcetateAnd2Ethy;
+formula     C27H48O6;
+CAS         96247-27-7;
+InChIKey    DQCRWECKHKFBHL-UHFFFAOYSA-N;
+MW          468.675;      // g/mol [origin=calculated method=formula-sum]
+Tc          1202.68;      // K   [origin=predictive method=joback]
+Pc          6.860;      // bar [origin=predictive method=joback]
+omega       0.6140;      // -   [origin=predictive method=lee-kesler]
+Tb          981.19;      // K   [origin=predictive method=joback]
+HvapTb      94811.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (101.08 2.06382 -0.0005753 -1.72e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 9; } { group CH; count 1; } { group C; count 1; } { group CH2=CH; count 3; } { group CH3COO; count 1; } { group CH2COO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 10; } { group CH; count 1; } { group C; count 1; } { group dCH2; count 3; } { group dCH; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethenyl 7,7-dimethyloctanoate;ethenyl ethanoate;2-ethylhexyl prop-2-enoate" );
+gibbsFormation
+{
+    dHf_298   -1413430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1514.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-700250.0
+    phase     gas;
+}

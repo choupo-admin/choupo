@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: slb 261  (C22H25F3N2O5, CAS 54851-13-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        slb261;
+formula     C22H25F3N2O5;
+CAS         54851-13-7;
+InChIKey    RWKNYCHKTYXTFQ-UHFFFAOYSA-N;
+MW          454.445;      // g/mol [origin=calculated method=formula-sum]
+Tc          1345.24;      // K   [origin=predictive method=joback]
+Pc          15.598;      // bar [origin=predictive method=joback]
+omega       1.3721;      // -   [origin=predictive method=lee-kesler]
+Tb          1098.73;      // K   [origin=predictive method=joback]
+HvapTb      112719.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.088 2.21762 -0.00137032 2.764e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group ACH; count 8; } { group AC; count 4; } { group OH; count 1; } { group CH3COO; count 1; } { group CH2N; count 2; } { group COOH; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 1; } { group CH2_ring; count 4; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group F; count 3; } { group OH; count 1; } { group COOH; count 1; } { group COO; count 1; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-acetyloxybenzoic acid;2-[4-[3-(trifluoromethyl)phenyl]piperazin-1-yl]ethanol" "1-piperazineethanol, 4-(3-(trifluoromethyl)phenyl)-, mono(2-(acetyloxy)benzoate) (salt)" "4-(3-(trifluoromethyl)phenyl)-1-piperazineethanol mono(2-(acetyloxy)benzoate) (salt)" "benzoic acid, 2-(acetyloxy)-, compd. with 4-(3-(trifluoromethyl)phenyl)-1-piperazineethanol" "2-acetyloxybenzoic acid; 2-[4-[3-(trifluoromethyl)phenyl]piperazin-1-yl]ethanol" );
+gibbsFormation
+{
+    dHf_298   -1353730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1111.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-859610.0
+    phase     gas;
+}

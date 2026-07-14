@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: gossypol hexaacetate  (C42H42O14, CAS 30719-67-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C42H42O14 (delta C+2H+2O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        gossypolHexaacetate;
+formula     C42H42O14;
+CAS         30719-67-6;
+InChIKey    LJKDPUCDUDLUOM-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          770.784;      // g/mol [origin=calculated method=formula-sum]
+Tc          2201.00;      // K   [origin=predictive method=joback]
+Pc          5.740;      // bar [origin=predictive method=joback]
+omega       -0.1011;      // -   [origin=predictive method=lee-kesler]
+Tb          1622.88;      // K   [origin=predictive method=joback]
+HvapTb      165106.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (144.29 2.69504 -0.00140308 2.03e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group ACH; count 2; } { group AC; count 14; } { group ACCH3; count 2; } { group ACCH; count 2; } { group CHO; count 2; } { group CH3COO; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 12; } { group CH; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 18; } { group COO; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[3,8-diacetyloxy-1-methanoyl-6-methyl-4-propan-2-yl-7-(1,6,7-triacetyloxy-8-methanoyl-3-methyl-5-propan-2-yl-naphthalen-2-yl)naphthalen-2-yl] ethanoate" "[2,2'-binaphthalene]-8,8'-dicarboxaldehyde, 1,1',6,6',7,7'-hexakis(acetyloxy)-3,3'-dimethyl-5,5'-bis(1-methylethyl)-" "[3,8-diacetyloxy-1-formyl-6-methyl-4-propan-2-yl-7-(1,6,7-triacetyloxy-8-formyl-3-methyl-5-propan-2-ylnaphthalen-2-yl)naphthalen-2-yl] acetate" "8,8'-diformyl-3,3'-dimethyl-5,5'-di(propan-2-yl)-2,2'-binaphthalene-1,1',6,6',7,7'-hexayl hexaacetate" );
+gibbsFormation
+{
+    dHf_298   -1976930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1725.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1173120.0
+    phase     gas;
+}

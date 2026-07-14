@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexanedioic acid, polymer with 2-ethyl-1,3-hexanediol, diacetate  (C18H32O8, CAS 73263-30-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexanedioicAcidPolymerWith2Ethyl13HexanediolDiacetate;
+formula     C18H32O8;
+CAS         73263-30-6;
+InChIKey    VLMJYDUPOIZIPZ-UHFFFAOYSA-N;
+MW          376.446;      // g/mol [origin=calculated method=formula-sum]
+Tc          1248.29;      // K   [origin=predictive method=joback]
+Pc          12.486;      // bar [origin=predictive method=joback]
+omega       1.1681;      // -   [origin=predictive method=lee-kesler]
+Tb          1019.42;      // K   [origin=predictive method=joback]
+HvapTb      104322.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (83.998 1.51148 -0.000503 -7.34e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 2; } { group CH3COO; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 8; } { group CH; count 2; } { group COOH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3-acetyloxy-2-ethyl-hexyl) ethanoate;hexanedioic acid" "hexanedioic acid, 2-ethyl-1,3-hexanediol polymer, diacetate" );
+gibbsFormation
+{
+    dHf_298   -1872130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1154.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1317520.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: vanillylmandelic acid  (C9H10O5, CAS 55-10-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        vanillylmandelicAcid;
+formula     C9H10O5;
+CAS         55-10-7;
+InChIKey    CGQCWMIAEPEHNQ-UHFFFAOYSA-N;
+MW          198.174;      // g/mol [origin=calculated method=formula-sum]
+Tc          996.10;      // K   [origin=predictive method=joback]
+Pc          47.892;      // bar [origin=predictive method=joback]
+omega       1.6521;      // -   [origin=predictive method=lee-kesler]
+Tb          777.47;      // K   [origin=predictive method=joback]
+HvapTb      87445.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.11 0.90252 -0.00068152 2.121e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group ACOH; count 1; } { group CH3O; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(3-methoxy-4-oxidanyl-phenyl)-2-oxidanyl-ethanoic acid" "vanilmandelic acid" "dl-4-hydroxy-3-methoxymandelic acid" "2-hydroxy-2-(4-hydroxy-3-methoxyphenyl)acetic acid" "vanillomandelic acid" "4-hydroxy-3-methoxymandelic acid" "(+/-)-vanillylmandelic acid" "alpha,4-dihydroxy-3-methoxybenzeneacetic acid" "mandelic acid, 4-hydroxy-3-methoxy-" "vma" "hydroxy(4-hydroxy-3-methoxyphenyl)acetic acid" "benzeneacetic acid, .alpha.,4-dihydroxy-3-methoxy-" );
+gibbsFormation
+{
+    dHf_298   -821340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     526.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-615110.0
+    phase     gas;
+}

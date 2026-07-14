@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: kuscide  (C6H11ClO4, CAS 52637-01-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        kuscide;
+formula     C6H11ClO4;
+CAS         52637-01-1;
+InChIKey    CAWRWIWCXWVNCB-UHFFFAOYSA-N;
+MW          182.6;      // g/mol [origin=calculated method=formula-sum]
+Tc          719.98;      // K   [origin=predictive method=joback]
+Pc          32.616;      // bar [origin=predictive method=joback]
+omega       1.0954;      // -   [origin=predictive method=lee-kesler]
+Tb          547.13;      // K   [origin=predictive method=joback]
+HvapTb      59831.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (66.525 0.4966 -0.0001478 -3.29e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2Cl; count 1; } { group COO; count 1; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 5; } { group Cl; count 1; } { group OH; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-hydroxyethyloxy)ethyl 2-chloranylethanoate" "2-(2-hydroxyethoxy)ethyl chloroacetate" "diethylene glycol monochloroacetate" "acetic acid, chloro-, 2-(2-hydroxyethoxy)ethyl ester" "2-(2-hydroxyethoxy)ethyl 2-chloroacetate" "acetic acid, 2-chloro-,2-(2-hydroxyethoxy)ethyl ester" "aceticacid, chloro-, 2-(2-hydroxyethoxy)ethyl ester (9ci); diethylene glycolmonochloroacetate; kuscide" );
+gibbsFormation
+{
+    dHf_298   -784640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     536.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-564480.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6,6-diphenylfulvene  (C18H14, CAS 2175-90-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        66Diphenylfulvene;
+formula     C18H14;
+CAS         2175-90-8;
+InChIKey    BULLHRADHZGONG-UHFFFAOYSA-N;
+MW          230.31;      // g/mol [origin=calculated method=formula-sum]
+Tc          959.40;      // K   [origin=predictive method=joback]
+Pc          25.899;      // bar [origin=predictive method=joback]
+omega       0.5498;      // -   [origin=predictive method=lee-kesler]
+Tb          689.59;      // K   [origin=predictive method=joback]
+HvapTb      62231.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-120.74 1.5246 -0.00114596 3.328e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 2; } { group ACH; count 10; } { group AC; count 2; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC; count 1; } { group dCH_ring; count 14; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[cyclopenta-2,4-dien-1-ylidene(phenyl)methyl]benzene" "diphenylfulvene" "5-(diphenylmethylene)-1,3-cyclopentadiene" "benzene, (2,4-cyclopentadien-1-ylidenephenylmethyl)-" "6,6'-diphenylfulvene" "methane,4-cyclopentadien-1-ylidenediphenyl-" "benzene,4-cyclopentadien-1-ylidenephenylmethyl)-" "[2,4-cyclopentadien-1-ylidene(phenyl)methyl]benzene" "1-[cyclopenta-2,4-dienyliden(phenyl)methyl]benzene" "methane, 2,4-cyclopentadien-1-ylidenediphenyl- (8ci)" "benzene, (2,4-cyclopentadien-1-ylidenephenylmethyl)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   320830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     529.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=466590.0
+    phase     gas;
+}

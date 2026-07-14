@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dibutyl acetal  (C10H22O2, CAS 871-22-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dibutylAcetal;
+formula     C10H22O2;
+CAS         871-22-7;
+InChIKey    SWTCCCJQNPGXLQ-UHFFFAOYSA-N;
+MW          174.284;      // g/mol [origin=calculated method=formula-sum]
+Tc          638.76;      // K   [origin=predictive method=joback]
+Pc          20.586;      // bar [origin=predictive method=joback]
+omega       0.6150;      // -   [origin=predictive method=lee-kesler]
+Tb          472.80;      // K   [origin=predictive method=joback]
+HvapTb      42286.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (43.116 0.83336 -0.0003014 -2.3e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group CH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(1-butoxyethoxy)butane" "acetaldehyde, dibutyl acetal" "di-n-butyl acetal" "1,1-dibutoxyethane" "1,1-di-n-butoxyethane" "ethane, 1,1-dibutoxy-" "acetaldehyde dibutyl acetal" "6-methyl-5,7-dioxaundecane" "1,1'-(ethylidenebis(oxy))dibutane" "1,1'-(ethylidenebis(oxy))bisbutane" "butane, 1,1'-[ethylidenebis(oxy)]bis-" "1,1'-[ethylidenebis(oxy)]dibutane" );
+gibbsFormation
+{
+    dHf_298   -519450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     558.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-179120.0
+    phase     gas;
+}

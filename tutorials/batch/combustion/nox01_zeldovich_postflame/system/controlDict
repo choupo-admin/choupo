@@ -1,0 +1,27 @@
+/*---------------------------------------------------------------------------*\
+  nox01_zeldovich_postflame -- THERMAL NOx IN THE POST-FLAME GAS (choupoBatch).
+
+  The classic industrial question: how fast does NO form in hot burnt gas?
+  Setup: the EQUILIBRATED H/O radical pool of a lean H2/air flame at 2125 K,
+  1 atm (Homer & Sutton Flame 1, as compiled in Glarborg 2018 Fig 4) with
+  ALL nitrogen still as N2 -- then the Glarborg 2018 nitrogen chemistry
+  (extended Zeldovich + NNH + N2O routes, Tables 2/5 verbatim) switches on
+  and NO grows toward its ceiling, ISOTHERMALLY (the post-flame zone).
+
+  THE CROSS-ENGINE PIN (verified 2026-07-02): the kinetic plateau must land
+  on the GIBBS equilibrium of the same 14-species pool at the same T,P --
+  NO_eq = 5227 ppm (choupoSolve gibbsReactor, same thermo).  Two engines,
+  one thermodynamics: the kinetics only choose the PATH and the CLOCK; the
+  destination belongs to the Gibbs surface.  See README for the recorded
+  plateau + the time-to-half-equilibrium (the "NOx forms in engineering
+  time, not flame time" lesson).
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Thermal NOx in post-flame H2/air gas, 2125 K / 1 atm (Glarborg 2018 N chemistry)";
+verbosity     3;
+
+startTime       0.0;
+endTime         6.0;
+deltaT          2.0e-2;
+writeInterval   5.0e-2;

@@ -13,6 +13,7 @@ formula     H2O2;
 CAS         7722-84-1;
 
 MW          34.0147;       // kg/kmol
+tags           ( radical gasPhase combustion );
 Tc          730.15;         // K
 Pc          220.0;         // bar
 omega       0.358;      // [-]
@@ -40,3 +41,6 @@ idealGasHeatCapacity
     coefficients  (2.676906e+01   6.189904e-02   -3.394423e-05   7.776981e-09);
     Trange        (250  1500);
 }
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( hydrogenPeroxide );

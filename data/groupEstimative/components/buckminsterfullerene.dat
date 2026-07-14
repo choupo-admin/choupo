@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: buckminsterfullerene  (C60, CAS 99685-96-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        buckminsterfullerene;
+formula     C60;
+CAS         99685-96-8;
+InChIKey    XMWRBQBLMFGWIX-UHFFFAOYSA-N;
+MW          720.66;      // g/mol [origin=calculated method=formula-sum]
+Tc          3046.44;      // K   [origin=predictive method=joback]
+Pc          15.140;      // bar [origin=predictive method=joback]
+omega       0.0497;      // -   [origin=predictive method=lee-kesler]
+Tb          2058.80;      // K   [origin=predictive method=joback]
+HvapTb      198840.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-532.93 6.27 -0.008911 4.274e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 60; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 60; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(c\{60}-i\{h})[5,6]fullerene" "fullerene c60" "[60]fullerene" "footballene" "buckyball" "fullerene" "fullerene 60" "(c60-ih)[5,6]fullerene" "carbon c60" "buckminsterfullerene c60" "[5,6]fullerene-c60-ih" "(5,6)fullerene-c60-ih" );
+gibbsFormation
+{
+    dHf_298   2854090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     -1140.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=3296880.0
+    phase     gas;
+}

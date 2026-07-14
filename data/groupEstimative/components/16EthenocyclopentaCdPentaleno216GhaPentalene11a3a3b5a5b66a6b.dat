@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,6-ethenocyclopenta[cd]pentaleno[2,1,6-gha]pentalene,1,1a,3a,3b,5a,5b,6,6a,6b,6c-decahydro-  (C16H16, CAS 66081-13-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        16EthenocyclopentaCdPentaleno216GhaPentalene11a3a3b5a5b66a6b;
+formula     C16H16;
+CAS         66081-13-8;
+InChIKey    BDGDXZGHWJTCIG-UHFFFAOYSA-N;
+MW          208.304;      // g/mol [origin=calculated method=formula-sum]
+Tc          800.64;      // K   [origin=predictive method=joback]
+Pc          23.842;      // bar [origin=predictive method=joback]
+omega       0.5187;      // -   [origin=predictive method=lee-kesler]
+Tb          576.38;      // K   [origin=predictive method=joback]
+HvapTb      49984.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-255.77 2.1744 -0.00200084 7.346e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 10; } { group CH=CH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 10; } { group dCH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,6-ethenocyclopenta(cd)pentaleno(2,1,6-gha)pentalene,1,1a,3a,3b,5a,5b,6,6a,6b,6c-decahydro-" );
+gibbsFormation
+{
+    dHf_298   167530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     -83.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=531580.0
+    phase     gas;
+}

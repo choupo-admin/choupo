@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 3,4-diaminobenzoate  (C8H10N2O2, CAS 36692-49-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl34Diaminobenzoate;
+formula     C8H10N2O2;
+CAS         36692-49-6;
+InChIKey    IOPLHGOSNCJOOO-UHFFFAOYSA-N;
+MW          166.18;      // g/mol [origin=calculated method=formula-sum]
+Tc          859.57;      // K   [origin=predictive method=joback]
+Pc          40.777;      // bar [origin=predictive method=joback]
+omega       0.8228;      // -   [origin=predictive method=lee-kesler]
+Tb          622.56;      // K   [origin=predictive method=joback]
+HvapTb      65691.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.7 0.63492 -0.00030072 2.46e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACNH2; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 1; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 3,4-bis(azanyl)benzoate" "3,4-diaminobenzoic acid methyl ester" "methyl3,4-diaminobenzoate" "3,4-diamino-benzoic acid methyl ester" "methyl-3,4-diaminobenzoate" "methyl 3,4-diaminobenzenecarboxylate" "benzoic acid, 3,4-diamino-, methyl ester" "buttpark 96\50-24" "4-(methoxycarbonyl)benzene-1,2-diamine" "4-(methoxycarbonyl)phenylene-1,2-diamine" "s370" "3,4-diaminobenzoic acid methyl ester;buttpark 96\\50-24;methyl 3,4-diaminobenzenecarboxylate;methyl 3,4-diaminobenzoate;methyldibromobenzoate;3,4-diaminobenzoic acid methyl ester 97%;3 5-diamino-2-methyl benzoic acid 97%;benzoicacid,3,4-diamino-,methylester" );
+gibbsFormation
+{
+    dHf_298   -244560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     503.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-67840.0
+    phase     gas;
+}

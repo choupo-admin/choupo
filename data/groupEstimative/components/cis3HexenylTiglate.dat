@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cis-3-hexenyl tiglate  (C11H18O2, CAS 67883-79-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cis3HexenylTiglate;
+formula     C11H18O2;
+CAS         67883-79-8;
+InChIKey    JNWQKXUWZWKUAY-UHFFFAOYSA-N;
+MW          182.263;      // g/mol [origin=calculated method=formula-sum]
+Tc          703.80;      // K   [origin=predictive method=joback]
+Pc          21.433;      // bar [origin=predictive method=joback]
+omega       0.5959;      // -   [origin=predictive method=lee-kesler]
+Tb          517.70;      // K   [origin=predictive method=joback]
+HvapTb      47483.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.757 1.03396 -0.0006499 1.592e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH=CH; count 1; } { group CH=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group dCH; count 3; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hex-3-enyl 2-methylbut-2-enoate" "2-butenoic acid, 2-methyl-, 3-hexenyl ester, (2e)-" "(z,z)-3-hexenyl 2-methyl-2-butenoate" "cis-3-hexen-1-yl tiglate" "agn-pc-00pbh0" "2-butenoic acid, 2-methyl-, (3z)-3-hexen-1-yl ester, (2e)-" "[(z)-hex-3-enyl] (e)-2-methylbut-2-enoate" "2-butenoicacid, 2-methyl-, (3z)-3-hexenyl ester, (2e)- (9ci); 2-butenoic acid, 2-methyl-,3-hexenyl ester, (e,z)-; (z)-3-hexenyl tiglate; z-3-hexenyl tiglate;cis-3-hexenyl tiglate" "cis-3-hexenyl angelate;[(e)-hex-3-enyl] (e)-2-methylbut-2-enoate;(e,z)-2-methyl-2-butenoic acid 3-hexenyl ester;2-butenoic acid, 2-methyl-, 3-hexenyl ester, (e,z)-;" );
+gibbsFormation
+{
+    dHf_298   -363000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     618.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-116740.0
+    phase     gas;
+}

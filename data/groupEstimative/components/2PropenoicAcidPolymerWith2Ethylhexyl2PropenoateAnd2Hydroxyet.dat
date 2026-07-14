@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propenoic acid, polymer with 2-ethylhexyl 2-propenoate and 2-hydroxyethyl 2-propenoate, 2-butoxyethyl ester  (C25H44O8, CAS 96311-27-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropenoicAcidPolymerWith2Ethylhexyl2PropenoateAnd2Hydroxyet;
+formula     C25H44O8;
+CAS         96311-27-2;
+InChIKey    FHRPZVHTNKJMBH-UHFFFAOYSA-N;
+MW          472.619;      // g/mol [origin=calculated method=formula-sum]
+Tc          1430.84;      // K   [origin=predictive method=joback]
+Pc          8.253;      // bar [origin=predictive method=joback]
+omega       0.5634;      // -   [origin=predictive method=lee-kesler]
+Tb          1140.43;      // K   [origin=predictive method=joback]
+HvapTb      120581.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (137.662 1.82426 -0.0003836 -2.258e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 11; } { group CH; count 1; } { group CH2=CH; count 2; } { group CH2=C; count 1; } { group OH; count 1; } { group CH2O; count 1; } { group COOH; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 12; } { group CH; count 1; } { group dCH2; count 3; } { group dCH; count 2; } { group dC; count 1; } { group OH; count 1; } { group O; count 1; } { group COOH; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-butoxyethyl 2-methylidene-4-oxidanyl-butanoate;2-ethylhexyl prop-2-enoate;prop-2-enoic acid" );
+gibbsFormation
+{
+    dHf_298   -1690630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1535.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1003840.0
+    phase     gas;
+}

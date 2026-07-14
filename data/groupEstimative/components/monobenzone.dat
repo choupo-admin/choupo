@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: monobenzone  (C13H12O2, CAS 103-16-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        monobenzone;
+formula     C13H12O2;
+CAS         103-16-2;
+InChIKey    VYQNWZOUAUKGHI-UHFFFAOYSA-N;
+MW          200.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          903.65;      // K   [origin=predictive method=joback]
+Pc          35.771;      // bar [origin=predictive method=joback]
+omega       0.7463;      // -   [origin=predictive method=lee-kesler]
+Tb          653.44;      // K   [origin=predictive method=joback]
+HvapTb      64508.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-60.159 1.1724 -0.00089116 2.728e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 2; } { group ACOH; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-phenylmethoxyphenol" "4-benzyloxyphenol" "4-(benzyloxy)phenol" "hydroquinone monobenzyl ether" "benoquin" "agerite alba" "monobenzyl hydroquinone" "dermochinona" "leucodinine" "monobenzon" "agerite" "benzoquin" );
+gibbsFormation
+{
+    dHf_298   -148120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     487.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=23780.0
+    phase     gas;
+}

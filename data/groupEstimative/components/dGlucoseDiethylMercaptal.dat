@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: d-glucose, diethyl mercaptal  (C10H22O5S2, CAS 1941-52-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dGlucoseDiethylMercaptal;
+formula     C10H22O5S2;
+CAS         1941-52-2;
+InChIKey    BTOYCPDACQXQRS-UHFFFAOYSA-N;
+MW          286.401;      // g/mol [origin=calculated method=formula-sum]
+Tc          1264.06;      // K   [origin=predictive method=joback]
+Pc          37.000;      // bar [origin=predictive method=joback]
+omega       2.0223;      // -   [origin=predictive method=lee-kesler]
+Tb          1024.66;      // K   [origin=predictive method=joback]
+HvapTb      132943.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (51.043 1.14212 -0.0006078 9.91e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 5; } { group OH; count 5; } { group CH2S; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 5; } { group OH; count 5; } { group S; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6,6-bis(ethylsulfanyl)hexane-1,2,3,4,5-pentol" "d-glucose diethyl dithioacetal" "6,6-di(ethylthio)hexane-1,2,3,4,5-pentaol" "glucose diethylmercaptal" "d-glucose diethylmercaptal" "agn-pc-04sx8w" "d-glucose-diethyldithioacetal" "diethyl mercaptal of d-mannose" "d-(-)-glucose diethyl mercaptal" "6,6-diethylthiohexane-1,2,3,4,5-pentaol" "(2s,3s,4s,5s)-6,6-bis(ethylsulfanyl)hexane-1,2,3,4,5-pentol" );
+gibbsFormation
+{
+    dHf_298   -953540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     875.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-596740.0
+    phase     gas;
+}

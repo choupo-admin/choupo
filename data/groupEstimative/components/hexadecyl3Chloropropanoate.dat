@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexadecyl 3-chloropropanoate  (C19H37ClO2, CAS 53312-70-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexadecyl3Chloropropanoate;
+formula     C19H37ClO2;
+CAS         53312-70-2;
+InChIKey    HKMCSNOMIKTPRU-UHFFFAOYSA-N;
+MW          332.953;      // g/mol [origin=calculated method=formula-sum]
+Tc          902.34;      // K   [origin=predictive method=joback]
+Pc          10.583;      // bar [origin=predictive method=joback]
+omega       0.9103;      // -   [origin=predictive method=lee-kesler]
+Tb          729.97;      // K   [origin=predictive method=joback]
+HvapTb      69680.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.917 1.76082 -0.0009356 1.668e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 15; } { group CH2COO; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 17; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexadecyl 3-chloranylpropanoate" "3-chloropropionic acid, hexadecyl ester" "propanoic acid, 3-chloro-, hexadecyl ester" );
+gibbsFormation
+{
+    dHf_298   -768510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     980.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-213200.0
+    phase     gas;
+}

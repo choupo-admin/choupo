@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclotriveratrylene  (C27H30O6, CAS 1180-60-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclotriveratrylene;
+formula     C27H30O6;
+CAS         1180-60-5;
+InChIKey    YECHEDVCXXVLIY-UHFFFAOYSA-N;
+MW          450.531;      // g/mol [origin=calculated method=formula-sum]
+Tc          1335.71;      // K   [origin=predictive method=joback]
+Pc          11.965;      // bar [origin=predictive method=joback]
+omega       1.0990;      // -   [origin=predictive method=lee-kesler]
+Tb          1088.15;      // K   [origin=predictive method=joback]
+HvapTb      103164.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (102.14 1.59492 -0.00054484 -3.88e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 9; } { group ACCH2; count 3; } { group CH3O; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2_ring; count 3; } { group dCH_ring; count 6; } { group dC_ring; count 12; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,7,8,12,13-hexamethoxy-10,15-dihydro-5h-tribenzo[a,d,g]cyclononene" "cycloveratril" "cycloveratryl" "sdccgmls-0066965.p001" "brd-k49154891-001-01-3" "2,3,7,8,12,13-hexamethoxy-5,10,15-trihydrotribenzo[a,d,g][9]annulene" "5h-tribenzo[a,g]cyclononene, 10,15-dihydro-2,3,7,8,12,13-hexamethoxy-" "5h-tribenzo[a,d,g]cyclononene, 10,15-dihydro-2,3,7,8,12,13-hexamethoxy-" "5,6,12,13,19,20-hexamethoxytetracyclo[15.4.0.0^{3,8}.0^{10,15}]henicosa-1(17),3(8),4,6,10(15),11,13,18,20-nonaene" "5,6,12,13,19,20-hexamethoxytetracyclo[15.4.0.0^{3,8}.0^{10,15}]henicosa-1(17),3,5,7,10,12,14,18,20-nonaene" );
+gibbsFormation
+{
+    dHf_298   -694430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     852.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134520.0
+    phase     gas;
+}

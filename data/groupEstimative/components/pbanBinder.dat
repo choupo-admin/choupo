@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pban (binder)  (C10H13NO2, CAS 68891-50-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pbanBinder;
+formula     C10H13NO2;
+CAS         68891-50-9;
+InChIKey    LTMGJWZFKVPEBX-UHFFFAOYSA-N;
+MW          179.219;      // g/mol [origin=calculated method=formula-sum]
+Tc          886.45;      // K   [origin=predictive method=joback]
+Pc          22.208;      // bar [origin=predictive method=joback]
+omega       0.7594;      // -   [origin=predictive method=lee-kesler]
+Tb          665.51;      // K   [origin=predictive method=joback]
+HvapTb      63404.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (85.07 0.447 0.0001762 -2.353e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 3; } { group COOH; count 1; } { group ACRY; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 4; } { group dCH; count 4; } { group COOH; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "buta-1,3-diene;prop-2-enenitrile;prop-2-enoic acid" "pban" "acrylic acid; buta-1,3-diene; prop-2-enenitrile" "2-propenoic acid, polymer with 1,3-butadiene and 2-propenenitrile" "2-propenoic acid, polymer with 1,3-butadiene and 2-propenenitrile, 3-carboxy-1-cyano-1-methylpropyl-terminated" "acrylic acid, polymer with acrylonitrile and 1,3-butadiene (8ci)" "buta-1,3-diene; prop-2-enenitrile; prop-2-enoic acid" "acrylic acid, polymer with acrylonitrile and 1,3-butadiene" "poly(acrylonitrile-co-butadiene-co-acrylic acid), dicarboxy terminated" "poly(acrylonitrile-co-butadiene-co-acrylic acid), dicarboxy terminated, glycidyl methacrylate diester" );
+gibbsFormation
+{
+    dHf_298   -156640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     801.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-35570.0
+    phase     gas;
+}

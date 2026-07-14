@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-undecene, 1-bromo-, (z)-  (C11H21Br, CAS 67952-61-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Undecene1BromoZ;
+formula     C11H21Br;
+CAS         67952-61-8;
+InChIKey    WQPPYGIJSDTEIQ-UHFFFAOYSA-N;
+MW          233.193;      // g/mol [origin=calculated method=formula-sum]
+Tc          705.37;      // K   [origin=predictive method=joback]
+Pc          21.573;      // bar [origin=predictive method=joback]
+omega       0.6342;      // -   [origin=predictive method=lee-kesler]
+Tb          521.60;      // K   [origin=predictive method=joback]
+HvapTb      46473.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.102 1.10702 -0.0007298 2.012e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CH=CH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group dCH; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanylundec-2-ene" "1-bromoundec-2-ene" "2-undecene, 1-bromo-" );
+gibbsFormation
+{
+    dHf_298   -126820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     628.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=136280.0
+    phase     gas;
+}

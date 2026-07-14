@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acepyrene  (C18H10, CAS 27208-37-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acepyrene;
+formula     C18H10;
+CAS         27208-37-3;
+InChIKey    BZCXQYVNASLLQO-UHFFFAOYSA-N;
+MW          226.278;      // g/mol [origin=calculated method=formula-sum]
+Tc          970.92;      // K   [origin=predictive method=joback]
+Pc          29.155;      // bar [origin=predictive method=joback]
+omega       0.7544;      // -   [origin=predictive method=lee-kesler]
+Tb          713.58;      // K   [origin=predictive method=joback]
+HvapTb      65212.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-125.33 1.592 -0.0015434 5.894e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group ACH; count 8; } { group AC; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 10; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclopenta[cd]pyrene" "acepyrylene" "cyclopenta(c,d)pyrene" "cyclopenta(cd)pyrene" "cyclopenteno(c,d)pyrene" "acepyrene;acepyrylene; cyclopenta[c,d]pyrene" );
+gibbsFormation
+{
+    dHf_298   460630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     291.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=599280.0
+    phase     gas;
+}

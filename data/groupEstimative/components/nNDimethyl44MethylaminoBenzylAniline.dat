@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-dimethyl-4-[4-(methylamino)benzyl]aniline  (C16H20N2, CAS 53477-27-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDimethyl44MethylaminoBenzylAniline;
+formula     C16H20N2;
+CAS         53477-27-3;
+InChIKey    JMULIAGRGJQNJJ-UHFFFAOYSA-N;
+MW          240.35;      // g/mol [origin=calculated method=formula-sum]
+Tc          918.17;      // K   [origin=predictive method=joback]
+Pc          22.440;      // bar [origin=predictive method=joback]
+omega       0.7912;      // -   [origin=predictive method=lee-kesler]
+Tb          691.61;      // K   [origin=predictive method=joback]
+HvapTb      65565.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-62.769 1.44716 -0.00093612 2.283e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 8; } { group AC; count 3; } { group ACCH2; count 1; } { group CH3NH; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[[4-(dimethylamino)phenyl]methyl]-n-methyl-aniline" "benzenamine, n,n-dimethyl-4-((4-(methylamino)phenyl)methyl)-" "benzenamine, n,n-dimethyl-4-[[4-(methylamino)phenyl]methyl]-" "4-[(4-dimethylaminophenyl)methyl]-n-methylaniline" );
+gibbsFormation
+{
+    dHf_298   197550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     610.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=489570.0
+    phase     gas;
+}

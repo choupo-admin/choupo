@@ -1,0 +1,44 @@
+/*---------------------------------------------------------------------------*\
+  column05_reactive_methylacetate / flowsheetDict
+
+  Both feeds are FLOWSHEET STREAMS (`inputs ( feed acidFeed )`) -- so the
+  plant-boundary mass + energy balance sees them.  `operation.feeds` only maps
+  each stream to a stage (no inline composition -- the credo: information follows
+  the streams).
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        rdColumn;
+        type        distillationColumn;
+        model       simultaneous;
+        inputs      ( feed  acidFeed );
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        25;
+            refluxRatio    2.1;
+            distillateRate 30.1 mol/h;
+            P              1.017 bar;
+
+            feeds                          // map each input stream to a stage
+            (
+                { stream feed;     stage 20;  quality 1.0; }
+                { stream acidFeed; stage 10;  quality 1.0; }
+            );
+        }
+
+        reaction
+        {
+            stoichiometry ( { component methanol;      nu -1; }
+                            { component aceticAcid;    nu -1; }
+                            { component methylAcetate; nu  1; }
+                            { component water;         nu  1; } );
+            reactiveStages ( 11 12 13 14 15 16 17 18 19 );
+            equilibrium { Ka298 38.7; dHrxn -5670; }
+        }
+    }
+);

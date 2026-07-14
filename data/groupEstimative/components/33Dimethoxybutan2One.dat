@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3-dimethoxybutan-2-one  (C6H12O3, CAS 21983-72-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33Dimethoxybutan2One;
+formula     C6H12O3;
+CAS         21983-72-2;
+InChIKey    UFQBSPGKRRSATO-UHFFFAOYSA-N;
+MW          132.159;      // g/mol [origin=calculated method=formula-sum]
+Tc          621.35;      // K   [origin=predictive method=joback]
+Pc          32.803;      // bar [origin=predictive method=joback]
+omega       0.4791;      // -   [origin=predictive method=lee-kesler]
+Tb          432.36;      // K   [origin=predictive method=joback]
+HvapTb      39220.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (31.32 0.54528 -0.0002337 1.346e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group C; count 1; } { group CH3CO; count 1; } { group CH3O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group C; count 1; } { group O; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3-dimethoxy-2-butanone" "3,3-dimethoxy-2-oxobutane" "3,3-dimethoxy-butan-2-one" "2,3-butanedione,dimethyl acetal (8ci);3,3-dimethoxy-2-butanone;3,3-dimethoxybutan-2-one;" );
+gibbsFormation
+{
+    dHf_298   -552940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     400.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-336440.0
+    phase     gas;
+}

@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-pentyl  (C5H11, CAS 23443-59-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        3Pentyl;
+formula     C5H11;
+CAS         23443-59-6;
+InChIKey    KYZMMXQNJXNIFO-UHFFFAOYSA-N;
+role        radical;
+MW          71.143;      // g/mol [origin=calculated method=formula-sum]
+Tc          483.37;      // K   [origin=predictive method=joback]
+Pc          35.771;      // bar [origin=predictive method=joback]
+omega       0.2444;      // -   [origin=predictive method=lee-kesler]
+Tb          316.08;      // K   [origin=predictive method=joback]
+HvapTb      26703.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.748 0.48884 -0.0002901 7.2e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentane" "diethylmethyl" "pentan-3-yl" "(ch3ch2)2ch" );
+gibbsFormation
+{
+    dHf_298   -87920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     347.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=31330.0
+    phase     gas;
+}

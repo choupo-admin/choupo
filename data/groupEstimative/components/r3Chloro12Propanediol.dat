@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (r)-(-)-3-chloro-1,2-propanediol  (C3H7ClO2, CAS 57090-45-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        r3Chloro12Propanediol;
+formula     C3H7ClO2;
+CAS         57090-45-6;
+InChIKey    SSZWWUDQMAHNAQ-VKHMYHEASA-N;
+MW          110.537;      // g/mol [origin=calculated method=formula-sum]
+Tc          657.94;      // K   [origin=predictive method=joback]
+Pc          54.788;      // bar [origin=predictive method=joback]
+omega       1.2028;      // -   [origin=predictive method=lee-kesler]
+Tb          489.59;      // K   [origin=predictive method=joback]
+HvapTb      59627.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.952 0.3695 -0.0002238 5.26e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 1; } { group OH; count 2; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group Cl; count 1; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r)-3-chloranylpropane-1,2-diol" "(r)-3-chloro-1,2-propanediol" "(2r)-3-chloropropane-1,2-diol" "1,2-propanediol, 3-chloro-, (r)-" "(r)-alpha-glycerol chlorohydrin" "(r)-(-)-alpha-chlorohydrin" "(r)-(-)-alpha-monochlorohydrin" "(r)-()-3-chloro-1,2-propanediol" "(r)-(-)-3chloro-1,2-propanediol" "glycerol (r)-(-)-alpha-monochlorohydrin" );
+gibbsFormation
+{
+    dHf_298   -430730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     398.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-313630.0
+    phase     gas;
+}

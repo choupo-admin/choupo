@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene, 1,2,4-tris-trimethylsilyl-,  (C15H30Si3, CAS 17864-15-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C15H30Si3 (delta Si+3; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        benzene124TrisTrimethylsilyl;
+formula     C15H30Si3;
+CAS         17864-15-2;
+InChIKey    JBUNNBYNEZNCGH-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          294.66;      // g/mol [origin=calculated method=formula-sum]
+Tc          795.36;      // K   [origin=predictive method=joback]
+Pc          13.546;      // bar [origin=predictive method=joback]
+omega       0.3374;      // -   [origin=predictive method=lee-kesler]
+Tb          583.64;      // K   [origin=predictive method=joback]
+HvapTb      53466.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (106.4 0.61248 0.00055508 -5.086e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 9; } { group ACH; count 3; } { group AC; count 3; } { group Si; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 9; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2,4-bis(trimethylsilyl)phenyl]-trimethyl-silane" "[2,5-bis(trimethylsilyl)phenyl](trimethyl)silane" "benzene, 1,2,4-tris-trimethylsilyl-" "[2,4-bis(trimethylsilyl)phenyl]-trimethylsilane" );
+gibbsFormation
+{
+    dHf_298   -474200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1000.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-145710.0
+    phase     gas;
+}

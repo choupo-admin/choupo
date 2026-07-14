@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  farelo_nacl_nh4cl -- a GLASS-BOX validation of Choupo's Pitzer-HMW electrolyte
+  model against the solubility measurements of Prof. Fatima Farelo (IST/DEQ).
+
+  Source of the experimental data (the validation reference):
+    M. Farelo, C. Fernandes & A. Avelino, "Solubilities for Six Ternary Systems:
+    NaCl + NH4Cl + H2O, KCl + NH4Cl + H2O, ... at T = (298 to 333) K",
+    J. Chem. Eng. Data 50 (2005) 1470-1477.  DOI 10.1021/je050111j.
+
+  THE TEST.  The model is calibrated to ONLY the two pure-salt solubilities at
+  298 K (NaCl 6.15, NH4Cl 7.35 mol/kg -- halite from PHREEQC, sal-ammoniac's Ksp
+  pinned to Farelo's NH4Cl point).  It then PREDICTS the saturation along the
+  common-ion (Cl-) SALTING-OUT line: as NH4Cl is added, NaCl solubility falls
+  (6.15 -> 5.5 -> 5.0 mol/kg).  At each of Farelo's MEASURED saturation points the
+  model's saturation index SI = log10(a_Na a_Cl) - logK should be ~ 0.  It is, to
+  +-0.03 log units -- the IST simulator reproduces the IST measurements.
+
+  A respected colleague's own dataset becomes the reference curve for the
+  electrolyte model this rigorous water-activity (osmotic-coefficient) work feeds.
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "Pitzer-HMW vs Farelo (JCED 2005): NaCl+NH4Cl common-ion salting-out -- model SI ~ 0 at each measured saturation point (NaCl 6.15->5.5->5.0; NH4Cl 7.35 mol/kg, 298 K).";
+verbosity     2;

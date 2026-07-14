@@ -27,31 +27,30 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  ElectrolyteModel -- the SIBLING activity base for ionic solutions, parallel to
-  ActivityModel.  Selected in the thermoPackage with its own block, exactly as
-  the molecular activity model is:
+  ElectrolyteModel -- the molality+charge SURFACE (water activity, mean-ionic
+  activity, osmotic coefficient, Ksp, the aqueous-reference salt enthalpy) that
+  unit operations read via ThermoPackage::electrolyte().
 
-        electrolyteModel
-        {
-            model       pitzer;     // factory key (eNRTL is the next slot)
-            salt        NaCl;       // the salt component in the streams
-            cation      Na;         // -> electrolyte/ions.dat + pairs.dat
-            anion       Cl;
-            solubility  6.144;      // measured m_sat [mol/kg], 25 C (optional)
-        }
+  It is a PURE INTERFACE, NOT a separately-selected model.  There is NO
+  `electrolyteModel {}` case block and no second factory: the engine is chosen
+  through the ONE ActivityModel slot --
 
-  Molality+charge physics is kept OUT of the mole-fraction ActivityModel path:
-  ThermoPackage builds an ElectrolyteModel ONLY when this block is present, so
-  the molecular cases are byte-identical and stay green.  Unit operations read it
-  via ThermoPackage::electrolyte() -- the saturation (Ksp) and the boiling-point
-  elevation (a_w) come from HERE, never from a per-unit dict block.
+        activityModel { model pitzer; }      // (eNRTL is the next option)
 
-  First model: `pitzer` -- implemented by ElectrolyteActivity, which IS-A
-  ActivityModel registered under `activityModel { model pitzer; }` and ALSO
-  exposes this interface.  This is a PURE INTERFACE (the molality+charge surface
-  unit ops read via ThermoPackage::electrolyte()); there is NO separate factory
-  -- selection happens through the one ActivityModel slot (classical, OpenFOAM-
-  style: one selector surface).
+  -- where the selected model (ElectrolyteActivity) IS-A ActivityModel AND exposes
+  this interface (see ElectrolyteActivity.H).  The salt's ions, solubility, and
+  Pitzer/eNRTL pairs are INTRINSIC data read from the salt component's
+  `electrolyte{}` block + species/aqueous/ + parameters/electrolyte/pitzer/pairs/ -- declared once,
+  called by name, never re-typed per case.  ThermoPackage builds an
+  ElectrolyteModel ONLY when an electrolyte activity model is selected, so the
+  molecular cases are byte-identical and stay green.  Saturation (Ksp) and the
+  boiling-point elevation (a_w) come from HERE, never from a per-unit dict block.
+
+  NB the factory KEY `pitzerHMW` (AqueousActivity -- the per-ion, multi-ion
+  speciation engine selected by `activityModel pitzerHMW;` in a propsDict speciate
+  op) is a DIFFERENT model from `pitzer` here (ElectrolyteActivity -- the
+  salt-level single-salt VLE adapter, `activityModel { model pitzer; }`).  Distinct
+  keys since 2026-06-29 so the two granularities can never be confused (A3).
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -75,6 +74,10 @@ public:
     virtual scalar osmotic(scalar molality, scalar T = 298.15)      const = 0;   // osmotic coeff phi
 
     virtual scalar solubility() const = 0;             // measured m_sat [mol/kg], 25 C datum; 0 if absent
+    // Infinite-dilution heat of solution [J/mol]; 0 if absent.  Single-sources the
+    // heat of crystallisation for the Crystalliser (the model owns the salt thermo,
+    // not the component -- so an apparent-component package works identically).
+    virtual scalar dissolutionEnthalpy() const { return 0.0; }
     // Saturation ion-activity product (gamma_pm*m_sat)^nu.  Anchored at the 25 C
     // solubility datum, then shifted to T by van't Hoff with the salt's enthalpy
     // of solution (Ksp(T) = Ksp(298) exp[-dHsol/R (1/T - 1/298)]); flat in T if

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-tert-butyl-5-ethyltoluene  (C13H20, CAS 6630-01-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3TertButyl5Ethyltoluene;
+formula     C13H20;
+CAS         6630-01-9;
+InChIKey    URDKTSKLGNWKDB-UHFFFAOYSA-N;
+MW          176.303;      // g/mol [origin=calculated method=formula-sum]
+Tc          741.77;      // K   [origin=predictive method=joback]
+Pc          21.714;      // bar [origin=predictive method=joback]
+omega       0.4368;      // -   [origin=predictive method=lee-kesler]
+Tb          530.45;      // K   [origin=predictive method=joback]
+HvapTb      46836.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.709 1.1668 -0.00075232 1.911e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group C; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH3; count 1; } { group ACCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-tert-butyl-3-ethyl-5-methyl-benzene" "1-tert-butyl-3-ethyl-5-methylbenzene" "benzene, 1-(1,1-dimethylethyl)-3-ethyl-5-methyl-" "benzene,1-dimethylethyl)-3-ethyl-5-methyl-" "1-(tert-butyl)-3-ethyl-5-methylbenzene" );
+gibbsFormation
+{
+    dHf_298   -106810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     504.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=154570.0
+    phase     gas;
+}

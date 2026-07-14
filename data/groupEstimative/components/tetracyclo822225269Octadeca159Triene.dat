@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetracyclo(8.2.2.22,5.26,9)octadeca-1,5,9-triene  (C18H24, CAS 91266-48-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetracyclo822225269Octadeca159Triene;
+formula     C18H24;
+CAS         91266-48-7;
+InChIKey    VXLJBHQLZXSBLF-UHFFFAOYSA-N;
+MW          240.39;      // g/mol [origin=calculated method=formula-sum]
+Tc          959.23;      // K   [origin=predictive method=joback]
+Pc          22.125;      // bar [origin=predictive method=joback]
+omega       0.6552;      // -   [origin=predictive method=lee-kesler]
+Tb          710.06;      // K   [origin=predictive method=joback]
+HvapTb      62430.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-159.79 1.8408 -0.001339 3.968e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 12; } { group C=C; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 12; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetracyclo[8.2.2.22,5.26,9]octadeca-1,5,9-triene" );
+gibbsFormation
+{
+    dHf_298   25270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     635.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=334020.0
+    phase     gas;
+}

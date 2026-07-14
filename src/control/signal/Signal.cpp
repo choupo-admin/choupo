@@ -90,6 +90,12 @@ void Signal::registerBuiltins()
         []() -> std::unique_ptr<Signal> { return std::make_unique<SineSignal>(); });
     registerType("sinusoidal",
         []() -> std::unique_ptr<Signal> { return std::make_unique<SineSignal>(); });
+
+    // PRBS for identification experiments (forum #100.4/#101): a
+    // maximal-length LFSR with a DECLARED seed -- deterministic, exactly
+    // repeatable, period-verified at load.  Never runtime randomness.
+    registerType("prbs",
+        []() -> std::unique_ptr<Signal> { return std::make_unique<PrbsSignal>(); });
 }
 
 } // namespace Choupo

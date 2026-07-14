@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-formyl-1,4-benzodioxane  (C9H8O3, CAS 29668-44-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H8O3 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        6Formyl14Benzodioxane;
+formula     C9H8O3;
+CAS         29668-44-8;
+InChIKey    CWKXDPPQCVWXAG-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          164.16;      // g/mol [origin=calculated method=formula-sum]
+Tc          722.26;      // K   [origin=predictive method=joback]
+Pc          40.725;      // bar [origin=predictive method=joback]
+omega       0.4250;      // -   [origin=predictive method=lee-kesler]
+Tb          488.16;      // K   [origin=predictive method=joback]
+HvapTb      46269.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-56.76 0.8308 -0.00071732 2.485e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group CHO; count 1; } { group FCH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-dihydro-1,4-benzodioxine-6-carbaldehyde" "1,4-benzodioxan-6-carboxaldehyde" "1,4-benzodioxane-6-carboxaldehyde" "3,4-ethylenedioxybenzaldehyde" "2,3-dihydrobenzo[b][1,4]dioxine-6-carbaldehyde" "1,4-benzodioxan-6-carbaldehyde" "1,4-benzodioxin-6-carboxaldehyde, 2,3-dihydro-" "2h,3h-benzo[e]1,4-dioxin-6-carbaldehyde" "2,3-dihydrobenzo[1,4]dioxine-6-carbaldehyde" "3,4-(ethylenedioxy)benzaldehyde" "upcmld0enat5258616:001" "2,3-dihydro-benzo[1,4]dioxine-6-carbaldehyde" );
+gibbsFormation
+{
+    dHf_298   -116070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     338.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=46130.0
+    phase     gas;
+}

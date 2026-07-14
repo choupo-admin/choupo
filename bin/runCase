@@ -54,11 +54,15 @@
 set -euo pipefail
 
 APPEND=
+FRESH=
 QUIET=
+REFRESH=
 while [ "$#" -gt 0 ]; do
     case "$1" in
         -a) APPEND=1; shift ;;
+        -f) FRESH=1;  shift ;;   # overwrite the old log: the re-run-a-tutorial flag
         -q) QUIET=1;  shift ;;
+        --refresh-from-ancestor) REFRESH=1; shift ;;   # re-project a unit's local run
         -h|--help)
             sed -n '3,20p' "$0" | sed 's/^# \{0,1\}//'
             exit 0
@@ -78,10 +82,106 @@ if [ "$(basename "$CASE_ABS")" = code ] && [ -d "$CASE_ABS/../system" ]; then
     CASE_ABS=$(dirname "$CASE_ABS")
 fi
 
+# ---- Local unit stream snapshot ------------------------------------------
+# Project ONE dignified unit's streams (the `inputs`/`outputs` its leaf names)
+# from a source solution into the unit's OWN folder, so a student can open the
+# operation and see its streams.  Two modes:
+#   snapshot : write BOTH 0/ and converged/ (a plant-run projection -- a local
+#              photograph of the plant solution for this unit's streams).
+#   input    : write only 0/ (a local run then computes converged/ itself).
+# NOT a second source of truth -- regenerable; runInfo records the ancestor.
+project_unit_streams() {  # <unit-dir> <source-converged-dir> <mode> <createdBy>
+    local udir="$1" src="$2" mode="$3" by="$4"
+    local ufs="$udir/system/flowsheetDict"
+    [ -f "$ufs" ] || return 0
+    grep -qE '(^|;)[[:space:]]*type[[:space:]]' "$ufs" || return 0            # a leaf
+    grep -qE '(^|;)[[:space:]]*(units|sectors)[[:space:]]*\(' "$ufs" && return 0
+    [ -f "$udir/system/controlDict" ] && return 0                         # not a case
+    local ins outs streams s f
+    ins=$(grep -oP 'inputs\s*\(\K[^)]*'  "$ufs" | tr -s ' \t\n' ' ')
+    outs=$(grep -oP 'outputs\s*\(\K[^)]*' "$ufs" | tr -s ' \t\n' ' ')
+    streams=$(echo "$ins $outs" | tr -s ' ')
+    [ -z "$streams" ] && return 0
+    rm -rf "$udir/0"; mkdir -p "$udir/0"
+    [ "$mode" = snapshot ] && { rm -rf "$udir/converged"; mkdir -p "$udir/converged"; }
+    for s in $streams; do
+        f=$(find "$src" -name "$s" -type f 2>/dev/null | head -1)   # flat OR sector-owned
+        [ -n "$f" ] || continue
+        cp "$f" "$udir/0/$s"
+        [ "$mode" = snapshot ] && cp "$f" "$udir/converged/$s"
+    done
+    printf 'runDomain        unitOperation %s;\ncreatedBy        %s;\nsourceSnapshot   ../../converged;\n' \
+        "$(basename "$udir")" "$by" > "$udir/runInfo"
+}
+
+# ---- DIGNIFIED-UNIT LOCAL RUN (F3, run-by-projection, IN-PLACE) -------------
+# The target is a unit-operation folder (a leaf flowsheetDict with a `type`, no
+# `units`/`sectors`, and no own controlDict) inside a parent case.  `runCase` then
+# means: run THIS operation alone.  Its streams (the `inputs`/`outputs` the leaf
+# NAMES -- a sequential-modular unit is defined by its streams) are projected from
+# the parent's converged solution into the unit's OWN `0/` (visible, NOT hidden in
+# .runs/); the engine resolves the property context up the tree (a unit with no
+# `constant/` inherits the ancestor's); `converged/` + `iterations/` are written
+# in-place.  For the student:  process folder -> run the process; operation folder
+# -> run that operation.
+INPLACE_UNIT=
+if [ ! -f "$CASE_ABS/system/controlDict" ] && [ -f "$CASE_ABS/system/flowsheetDict" ] \
+   && grep -qE '(^|;)[[:space:]]*type[[:space:]]' "$CASE_ABS/system/flowsheetDict" \
+   && ! grep -qE '(^|;)[[:space:]]*(units|sectors)[[:space:]]*\(' "$CASE_ABS/system/flowsheetDict"; then
+    UNIT=$(basename "$CASE_ABS")
+    # Walk UP to the nearest ancestor CASE (a folder with system/controlDict) -- the
+    # process run domain.  A unit lives at unitOperations/<u> (parent = the case) OR
+    # sectors/<S>/unitOperations/<u> (the case is further up, past the sector).
+    PARENT="$CASE_ABS"
+    for _hop in 1 2 3 4 5 6; do
+        PARENT=$(dirname "$PARENT")
+        [ -f "$PARENT/system/controlDict" ] && break
+        [ "$PARENT" = "/" ] && break
+    done
+    if [ -f "$PARENT/system/controlDict" ]; then
+        if [ ! -d "$PARENT/converged" ]; then
+            echo "runCase: unit '$UNIT' -- the process has no converged solution yet." >&2
+            echo "         run the whole process first:  (cd '$PARENT' && runCase)" >&2
+            exit 1
+        fi
+        FS="$CASE_ABS/system/flowsheetDict"
+        INS=$(grep -oP 'inputs\s*\(\K[^)]*'  "$FS" | tr -s ' \t\n' ' ')
+        OUTS=$(grep -oP 'outputs\s*\(\K[^)]*' "$FS" | tr -s ' \t\n' ' ')
+        STREAMS=$(echo "$INS $OUTS" | tr -s ' ')
+        if [ -z "$STREAMS" ]; then
+            echo "runCase: unit '$UNIT' names no streams -- add 'inputs ( ... ); outputs ( ... );'" >&2
+            exit 1
+        fi
+        # (Re)materialise the local 0/ in-place from the ancestor's converged.  An
+        # existing 0/ is RESPECTED (refresh only with --refresh-from-ancestor).
+        if [ ! -d "$CASE_ABS/0" ] || [ -n "$REFRESH" ]; then
+            echo "Running unit operation: $UNIT  (local run, projected from the process solution)"
+            rm -rf "$CASE_ABS/0"; mkdir -p "$CASE_ABS/0"
+            for s in $STREAMS; do
+                # The ancestor's converged/ is sector-OWNED (converged/BRINE/liquor),
+                # so a stream is found by NAME anywhere under it, not at a flat path.
+                src=$(find "$PARENT/converged" -type f -name "$s" 2>/dev/null | head -1)
+                [ -n "$src" ] && cp "$src" "$CASE_ABS/0/$s"
+            done
+            REL=$(realpath --relative-to="$CASE_ABS" "$PARENT" 2>/dev/null || echo "../..")
+            printf 'runDomain        unitOperation %s;\nancestorCase     %s;\nancestorSnapshot %s/converged;\ncreatedBy        projection;\n' \
+                "$UNIT" "$REL" "$REL" > "$CASE_ABS/runInfo"
+        elif [ "$PARENT/converged" -nt "$CASE_ABS/0" ]; then
+            echo "runCase: NOTE -- unit '$UNIT' local 0/ is OLDER than the process solution;" >&2
+            echo "         it may be stale.  Refresh:  runCase --refresh-from-ancestor" >&2
+        fi
+        echo "Created/using local stream folder:  0/"
+        echo "Local streams:  $STREAMS"
+        INPLACE_UNIT=1
+    fi
+fi
+
 # A case has a controlDict and EITHER a flowsheetDict (solve/batch/ctrl) OR a
 # propsDict (choupoProps -- e.g. a custom property-estimation op in code/).
-if [ ! -f "$CASE_ABS/system/controlDict" ] || \
-   { [ ! -f "$CASE_ABS/system/flowsheetDict" ] && [ ! -f "$CASE_ABS/system/propsDict" ]; }; then
+# (An in-place dignified-unit run legitimately has NO controlDict -- the leaf
+#  flowsheetDict + its projected 0/ are the case; the app is always choupoSolve.)
+if [ -z "$INPLACE_UNIT" ] && { [ ! -f "$CASE_ABS/system/controlDict" ] || \
+   { [ ! -f "$CASE_ABS/system/flowsheetDict" ] && [ ! -f "$CASE_ABS/system/propsDict" ]; }; }; then
     echo "runCase: '$CASE_ABS' does not look like a case (need system/controlDict + flowsheetDict or propsDict)" >&2
     exit 1
 fi
@@ -96,13 +196,13 @@ if [ -d "$CASE_ABS/code" ]; then
     # named by `application` (choupoSolve default, or choupoProps for a custom
     # property-estimation op).  Read it here too, for the log name + message.
     APP=$(grep -oP '^[[:space:]]*application[[:space:]]+\K\w+' \
-            "$CASE_ABS/system/controlDict" 2>/dev/null | head -1)
+            "$CASE_ABS/system/controlDict" 2>/dev/null | head -1 || true)
     APP="${APP:-choupoSolve}"
     RUNNER="$(dirname "$0")/buildCode"
 else
     # Dispatch by `application` field; default to choupoSolve.
     APP=$(grep -oP '^[[:space:]]*application[[:space:]]+\K\w+' \
-            "$CASE_ABS/system/controlDict" 2>/dev/null | head -1)
+            "$CASE_ABS/system/controlDict" 2>/dev/null | head -1 || true)
     APP="${APP:-choupoSolve}"
     case "$APP" in
         choupoSolve|choupoBatch|choupoCtrl|choupoProps) ;;
@@ -117,10 +217,11 @@ fi
 
 LOG="$CASE_ABS/log.$APP"
 
-if [ -f "$LOG" ] && [ -z "$APPEND" ]; then
-    echo "runCase: '$LOG' exists; remove it or pass -a." >&2
+if [ -f "$LOG" ] && [ -z "$APPEND" ] && [ -z "$FRESH" ]; then
+    echo "runCase: '$LOG' exists; pass -f to overwrite (fresh re-run), -a to append, or remove it." >&2
     exit 1
 fi
+[ -n "$FRESH" ] && rm -f "$LOG"
 
 echo "Running case: $CASE_ABS"
 echo "  log:    $LOG"
@@ -149,7 +250,40 @@ if [ $rc -eq 0 ]; then
     if [ -n "$QUIET" ]; then
         grep -E '(Converged|V/F:|T_bubble:|T_dew:|T_out:|Conversion|Final stream|Recycle converged|Trajectory written)' "$LOG" | head -6
     else
-        echo "  done.  Inspect with:  less $LOG"
+        # ---- Human epilogue -------------------------------------------------
+        #  A silent "done." tells the user nothing.  The log ENDS with the
+        #  machine block (<<<Choupo:result-begin/end>>>, for the GUI); the run's
+        #  own human summary sits just above it -- show THAT, plus the output
+        #  files the case wrote, so "done" always says WHAT happened and WHERE
+        #  to look next.
+        echo "  done.  ---- results ----------------------------------------------"
+        if grep -q '<<<Choupo:result-begin>>>' "$LOG"; then
+            sed '/<<<Choupo:result-begin>>>/,$d' "$LOG" | grep -vE '^[[:space:]]*$' | tail -14 | sed 's/^/    /'
+        else
+            grep -vE '^[[:space:]]*$' "$LOG" | tail -14 | sed 's/^/    /'
+        fi
+        outs=$(cd "$CASE_ABS" && { ls -- *.csv 2>/dev/null || true; } | tr '\n' ' ')
+        [ -n "$outs" ] && echo "  outputs: $outs"
+        echo "  full log:  less $LOG"
+    fi
+
+    # ---- Local unit stream snapshots (a PLANT run) ----------------------
+    #  Running the plant also leaves each unitOperation with a LOCAL photograph
+    #  of its streams -- 0/ + converged/ -- so the student can open the operation
+    #  and see its streams without running anything inside it.  The plant does
+    #  NOT initialise from these; it initialises from its OWN 0/.  These are
+    #  downstream projections of the plant solution (createdBy plantRunProjection).
+    if [ -z "$INPLACE_UNIT" ] && [ -d "$CASE_ABS/converged" ] \
+       && find "$CASE_ABS" -type d -name unitOperations -print -quit 2>/dev/null | grep -q .; then
+        nsnap=0
+        # A unit op lives at unitOperations/<u> (flat case) OR
+        # sectors/<S>/unitOperations/<u> (fractal plant) -- find them at any depth.
+        while IFS= read -r udir; do
+            [ -d "$udir" ] || continue
+            project_unit_streams "${udir%/}" "$CASE_ABS/converged" snapshot plantRunProjection
+            [ -d "${udir%/}/0" ] && nsnap=$((nsnap + 1))
+        done < <(find "$CASE_ABS" -type d -path "*/unitOperations/*" -not -path "*/unitOperations/*/*" 2>/dev/null)
+        [ "$nsnap" -gt 0 ] && echo "  unit views: local 0/ + converged/ materialised in $nsnap unitOperations/<u>"
     fi
 
     # ---- Convergence-residual window (foamMonitor-style) -----------------

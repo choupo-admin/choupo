@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethanol-d  (C2H5DO, CAS 925-93-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C2H5DO (delta D+1H-1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        ethanolD;
+formula     C2H5DO;
+CAS         925-93-9;
+InChIKey    LFQSCWFLJHTTHZ-WFVSFCRTSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          47.075;      // g/mol [origin=calculated method=formula-sum]
+Tc          499.41;      // K   [origin=predictive method=joback]
+Pc          57.566;      // bar [origin=predictive method=joback]
+omega       0.5561;      // -   [origin=predictive method=lee-kesler]
+Tb          337.54;      // K   [origin=predictive method=joback]
+HvapTb      36725.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.361 0.22782 -0.0001154 2.24e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "deuteriooxyethane" "ethanol-d1" "ethanol-od" "ethan(ol-d)" "ethyl alcohol-d1" "deuteroethanol" "ethyl alcohol-d" "ethyl (2)alcohol" "ethanol-d >99.5 atom % d" );
+gibbsFormation
+{
+    dHf_298   -236840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     284.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-170860.0
+    phase     gas;
+}

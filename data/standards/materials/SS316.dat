@@ -1,3 +1,26 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Material: Stainless steel 316 (AISI 316 / UNS S31600,
+  18Cr-10Ni-2Mo austenitic -- the Mo grade, better chloride resistance)
+
+  Costing + construction-limits record: F_M feeds the Guthrie module-
+  costing pass; sigma_y / maxT / maxP bound the design envelope;
+  thermalConductivity is the HX wall-conduction value.
+
+  Sources
+    F_M 3.05                 Turton et al., "Analysis, Synthesis and
+                             Design of Chemical Processes", 4th ed.,
+                             Appendix A (also flagged inline below).
+    density 8000 kg/m3,
+    thermalConductivity 16.3 W/(m K)
+                             handbook-typical austenitic-stainless
+                             values; primary re-citation pending
+                             (IST review).
+    sigma_y 138 MPa, maxT 925 K, maxP 100 bar
+                             allowable-stress / service envelope of
+                             pressure-vessel-code lineage; primary
+                             re-citation pending (IST review).
+\*---------------------------------------------------------------------------*/
+
 name      SS316;
 density   8000;
 F_M       3.05;      // Turton 4th ed. Appendix A

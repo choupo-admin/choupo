@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-o-hexopyranosylhexonic acid  (C12H22O12, CAS 96-82-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4OHexopyranosylhexonicAcid;
+formula     C12H22O12;
+CAS         96-82-2;
+InChIKey    JYTUSYBCFIZPBE-UHFFFAOYSA-N;
+MW          358.296;      // g/mol [origin=calculated method=formula-sum]
+Tc          2091.33;      // K   [origin=predictive method=joback]
+Pc          46.530;      // bar [origin=predictive method=joback]
+omega       0.4492;      // -   [origin=predictive method=lee-kesler]
+Tb          1405.59;      // K   [origin=predictive method=joback]
+HvapTb      197463.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (33.152 1.4401 -0.0006921 6.93e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 7; } { group OH; count 8; } { group CH-O; count 2; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 4; } { group CH_ring; count 5; } { group OH; count 8; } { group O; count 1; } { group O_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[6-(hydroxymethyl)-3,4,5-tris(oxidanyl)oxan-2-yl]oxy-2,3,5,6-tetrakis(oxidanyl)hexanoic acid" "agn-pc-00ey0t" "4-o- beta-d -galactopyranosyl-d -gulonic acid" "2,3,5,6-tetrahydroxy-4-[3,4,5-trihydroxy-6-(hydroxymethyl)oxan-2-yl]oxyhexanoic acid" "(2r,3r,4r,5r)-2,3,5,6-tetrahydroxy-4-[(3r,4s,5s,6r)-3,4,5-trihydroxy-6-(hydroxymethyl)oxan-2-yl]oxyhexanoic acid" );
+gibbsFormation
+{
+    dHf_298   -2171500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     805.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1595580.0
+    phase     gas;
+}

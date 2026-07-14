@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tribromoacetic acid  (C2HBr3O2, CAS 75-96-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tribromoaceticAcid;
+formula     C2HBr3O2;
+CAS         75-96-7;
+InChIKey    QIONYIKHPASLHO-UHFFFAOYSA-N;
+MW          296.74;      // g/mol [origin=calculated method=formula-sum]
+Tc          850.07;      // K   [origin=predictive method=joback]
+Pc          83.401;      // bar [origin=predictive method=joback]
+omega       0.8153;      // -   [origin=predictive method=lee-kesler]
+Tb          586.12;      // K   [origin=predictive method=joback]
+HvapTb      55219.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.77 0.485 -0.0005436 2.148e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group COOH; count 1; } { group Br; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group Br; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,2-tris(bromanyl)ethanoic acid" "tribromacetic acid" "2,2,2-tribromoacetic acid" "acetic acid, tribromo-" "acetic acid, 2,2,2-tribromo-" "snpljqbkdvidtaetp@" );
+gibbsFormation
+{
+    dHf_298   -364640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     401.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-332150.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-methoxyresorcinol  (C7H8O3, CAS 2174-64-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Methoxyresorcinol;
+formula     C7H8O3;
+CAS         2174-64-3;
+InChIKey    HDVRLUFGYQYLFJ-UHFFFAOYSA-N;
+MW          140.138;      // g/mol [origin=calculated method=formula-sum]
+Tc          809.98;      // K   [origin=predictive method=joback]
+Pc          61.226;      // bar [origin=predictive method=joback]
+omega       0.8170;      // -   [origin=predictive method=lee-kesler]
+Tb          570.10;      // K   [origin=predictive method=joback]
+HvapTb      61890.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.72 0.83592 -0.00078992 3.09e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACOH; count 2; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-methoxybenzene-1,3-diol" "flamenol" "3,5-dihydroxyanisole" "phloroglucinol monomethyl ether" "5-methoxy-benzene-1,3-diol" "flamenolum" "flamenolum [inn-latin]" "1,3-benzenediol,5-methoxy-" "2a7" );
+gibbsFormation
+{
+    dHf_298   -438120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     386.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-293770.0
+    phase     gas;
+}

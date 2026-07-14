@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (propargyloxy)trimethylsilane  (C6H12OSi, CAS 5582-62-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C6H12OSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        propargyloxyTrimethylsilane;
+formula     C6H12OSi;
+CAS         5582-62-7;
+InChIKey    ZZRPJWCNCLSOLR-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          128.246;      // g/mol [origin=calculated method=formula-sum]
+Tc          534.00;      // K   [origin=predictive method=joback]
+Pc          31.456;      // bar [origin=predictive method=joback]
+omega       0.2175;      // -   [origin=predictive method=lee-kesler]
+Tb          350.82;      // K   [origin=predictive method=joback]
+HvapTb      31512.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (77.531 0.21056 0.00022727 -1.9341e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2O; count 1; } { group CH_C; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl(prop-2-ynoxy)silane" "3-trimethylsiloxy-1-propyne" "silane, trimethyl(2-propynyloxy)-" "trimethyl(2-propynyloxy)silane" "o-trimethylsilylpropargyl alcohol" "trimethyl(propargyloxy)silane" "propargyloxytrimethylsilane" "o-(trimethylsilyl)propargyl alcohol" "silane, trimethyl(2-propyn-1-yloxy)-" "3-(trimethylsiloxy)propyne" "1,1-dimethyl-1-prop-2-ynyloxy-1-silaethane" "(propargyloxy)trimethylsilane; o-(trimethylsilyl)propargyl alcohol; trimethyl(2-propynyloxy)silane; trimethyl(propargyloxy)silane" );
+gibbsFormation
+{
+    dHf_298   -119110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     496.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=12950.0
+    phase     gas;
+}

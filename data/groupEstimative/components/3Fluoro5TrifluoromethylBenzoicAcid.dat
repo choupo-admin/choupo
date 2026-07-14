@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-fluoro-5-(trifluoromethyl)benzoic acid  (C8H4F4O2, CAS 161622-05-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Fluoro5TrifluoromethylBenzoicAcid;
+formula     C8H4F4O2;
+CAS         161622-05-5;
+InChIKey    NSGKIIGVPBTOBF-UHFFFAOYSA-N;
+MW          208.11;      // g/mol [origin=calculated method=formula-sum]
+Tc          759.34;      // K   [origin=predictive method=joback]
+Pc          32.393;      // bar [origin=predictive method=joback]
+omega       0.8181;      // -   [origin=predictive method=lee-kesler]
+Tb          558.64;      // K   [origin=predictive method=joback]
+HvapTb      49602.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.2 0.7897 -0.00061852 1.82e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group COOH; count 1; } { group ACF; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 4; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-fluoranyl-5-(trifluoromethyl)benzoic acid" "3-fluoro-5-trifluoromethylbenzoic acid" "alpha,alpha,alpha,5-tetrafluoro-m-toluic acid" "5-fluoro-3-(trifluoromethyl)benzoic acid" "benzoic acid, 3-fluoro-5-(trifluoromethyl)-" "buttpark 32\01-71" "a,a,a,5-tetrafluoro-m-toluic acid" "a,a,a,-5-tetrafluoro-m-toluic acid" "i286" "brd-k07182619-001-01-5" );
+gibbsFormation
+{
+    dHf_298   -1138320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     489.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1010680.0
+    phase     gas;
+}

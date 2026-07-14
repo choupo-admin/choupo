@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,11-diamino-3,6,9-trioxaundecane  (C8H20N2O3, CAS 929-75-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111Diamino369Trioxaundecane;
+formula     C8H20N2O3;
+CAS         929-75-9;
+InChIKey    NIQFAJBKEHPUAM-UHFFFAOYSA-N;
+MW          192.259;      // g/mol [origin=calculated method=formula-sum]
+Tc          779.92;      // K   [origin=predictive method=joback]
+Pc          27.042;      // bar [origin=predictive method=joback]
+omega       1.0139;      // -   [origin=predictive method=lee-kesler]
+Tb          594.96;      // K   [origin=predictive method=joback]
+HvapTb      61914.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (85.098 0.698 -0.0001652 -5.84e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2O; count 3; } { group CH2NH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 8; } { group O; count 3; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-(2-azanylethoxy)ethoxy]ethoxy]ethanamine" "3,6,9-trioxaundecane-1,11-diamine" "2,2'-[oxybis(ethane-2,1-diyloxy)]diethanamine" "ethanamine, 2,2'-[oxybis(2,1-ethanediyloxy)]bis-" "2,2 inverted exclamation marka-[oxybis(ethylenoxy)]diethylamine" "ethanamine, 2,2'-(oxybis(2,1-ethanediyloxy))bis-" "amine-peg3-amine" "agn-pc-0cr2bh" "3,6,9-trioxaundecamethylenediamine" "bis[2-(2-aminoethoxy)ethyl] ether" "2-[2-[2-(2-aminoethoxy)ethoxy]ethoxy]ethanamine" "2-{2-[2-(2-aminoethoxy)ethoxy]ethoxy}ethylamine" );
+gibbsFormation
+{
+    dHf_298   -537530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     604.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-165620.0
+    phase     gas;
+}

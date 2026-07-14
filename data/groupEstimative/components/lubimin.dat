@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lubimin  (C15H24O2, CAS 40713-31-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lubimin;
+formula     C15H24O2;
+CAS         40713-31-3;
+InChIKey    CEVNHRPKRNTGKO-ARJVPZMDSA-N;
+MW          236.355;      // g/mol [origin=calculated method=formula-sum]
+Tc          905.16;      // K   [origin=predictive method=joback]
+Pc          21.856;      // bar [origin=predictive method=joback]
+omega       0.9628;      // -   [origin=predictive method=lee-kesler]
+Tb          696.99;      // K   [origin=predictive method=joback]
+HvapTb      70229.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-149.88 1.89304 -0.001462 4.866e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 4; } { group C; count 1; } { group CH2=C; count 1; } { group OH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 4; } { group C_ring; count 1; } { group OH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3r,6r,8s,10s)-6-methyl-8-oxidanyl-3-prop-1-en-2-yl-spiro[4.5]decane-10-carbaldehyde" "(2r,6s,8s,10r)-8-hydroxy-10-methyl-2-(prop-1-en-2-yl)spiro[4.5]decane-6-carbaldehyde" "(3r,6r,8s,10s)-8-hydroxy-6-methyl-3-prop-1-en-2-ylspiro[4.5]decane-10-carbaldehyde" "spiro(4.5)decane-6-carboxaldehyde, 8-hydroxy-10-methyl-2-(1-methylethenyl)-, (5s-(5alpha(s*),6beta,8beta,10beta))-" "spiro[4.5]decane-6-carboxaldehyde,8-hydroxy-10-methyl-2-(1-methylethenyl)-, (2r,5s,6s,8s,10r)-" "spiro[4.5]decane-6-carboxaldehyde,8-hydroxy-10-methyl-2-(1-methylethenyl)-, [5s-[5a(s*),6b,8b,10b]]-; lubimin" );
+gibbsFormation
+{
+    dHf_298   -399920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     642.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-37150.0
+    phase     gas;
+}

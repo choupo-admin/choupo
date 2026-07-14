@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-fluorobenzylamine  (C7H8FN, CAS 140-75-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Fluorobenzylamine;
+formula     C7H8FN;
+CAS         140-75-0;
+InChIKey    IIFVWLUQBAIPMJ-UHFFFAOYSA-N;
+MW          125.146;      // g/mol [origin=calculated method=formula-sum]
+Tc          678.95;      // K   [origin=predictive method=joback]
+Pc          40.986;      // bar [origin=predictive method=joback]
+omega       0.4717;      // -   [origin=predictive method=lee-kesler]
+Tb          463.22;      // K   [origin=predictive method=joback]
+HvapTb      43938.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.499 0.6041 -0.00038096 8.93e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group CH2NH2; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4-fluorophenyl)methanamine" "benzylamine, p-fluoro-" "p-fluorobenzylamine" "benzenemethanamine, 4-fluoro-" "p-fluorobenzyl amine" "1-(4-fluorophenyl)methanamine" "(4-fluorophenyl)methylamine" "4-fluorobenzyl amine" "4-fluoro-benzylamine" "4-fluorobenzylamine 98%" "agn-pc-00frys" "benzylamine, p-fluoro- (8ci)" );
+gibbsFormation
+{
+    dHf_298   -125070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     399.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-17520.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: piperazineethanol  (C6H14N2O, CAS 3388-79-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        piperazineethanol;
+formula     C6H14N2O;
+CAS         3388-79-2;
+InChIKey    DSSFSAGQNGRBOR-UHFFFAOYSA-N;
+MW          130.191;      // g/mol [origin=calculated method=formula-sum]
+Tc          752.33;      // K   [origin=predictive method=joback]
+Pc          47.760;      // bar [origin=predictive method=joback]
+omega       0.9132;      // -   [origin=predictive method=lee-kesler]
+Tb          545.71;      // K   [origin=predictive method=joback]
+HvapTb      59574.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.038 0.7031 -0.0002928 1.38e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group OH; count 1; } { group CH2NH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group OH; count 1; } { group NH_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-piperazin-2-ylethanol" "2-piperazin-2-yl-ethanol" "2-piperazineethanol" "monohydroxyethylpiperazine" "2-[(2r)-piperazin-2-yl]ethanol" "2-[(2s)-piperazin-2-yl]ethanol" "2-(piperazin-2-yl)ethanol" "2-(2-hydroxyethyl)piperazine;2-piperazin-2-ylethanol" );
+gibbsFormation
+{
+    dHf_298   -189460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     397.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=62690.0
+    phase     gas;
+}

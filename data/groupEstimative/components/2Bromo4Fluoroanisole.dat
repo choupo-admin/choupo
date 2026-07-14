@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-bromo-4-fluoroanisole  (C7H6BrFO, CAS 452-08-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Bromo4Fluoroanisole;
+formula     C7H6BrFO;
+CAS         452-08-4;
+InChIKey    JIQXVIJARQLCOY-UHFFFAOYSA-N;
+MW          205.026;      // g/mol [origin=calculated method=formula-sum]
+Tc          704.44;      // K   [origin=predictive method=joback]
+Pc          39.956;      // bar [origin=predictive method=joback]
+omega       0.4989;      // -   [origin=predictive method=lee-kesler]
+Tb          484.25;      // K   [origin=predictive method=joback]
+HvapTb      42804.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (31.0 0.45772 -0.00023092 3.27e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group CH3O; count 1; } { group Br; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanyl-4-fluoranyl-1-methoxy-benzene" "2-bromo-4-fluoro-1-methoxybenzene" "1-bromo-3-fluoro-6-methoxybenzene" "benzene, 2-bromo-4-fluoro-1-methoxy-" "2-bromo-4-fluoro-methoxybenzene" "2-bromo-4-fluoro anisole" "jiqxvijarqlcoy-uhfffaoysa-" "452-08-4 2-bromo-4-fluoroanisole" "b191" "h620" "1-bromo-5-fluoro-2-methoxybenzene" "2-bromo-4-fluoro-1-methoxy-benzene;2,4-difluorobenzylchloride;benzene, 2-bromo-4-fluoro-1-methoxy-;2-bromo-4-fluoroanisole 97%;" );
+gibbsFormation
+{
+    dHf_298   -276220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     403.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-184280.0
+    phase     gas;
+}

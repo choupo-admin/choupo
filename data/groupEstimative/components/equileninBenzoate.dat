@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: equilenin, benzoate  (C25H22O3, CAS 604-58-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        equileninBenzoate;
+formula     C25H22O3;
+CAS         604-58-0;
+InChIKey    VVFAWJYXSMMTEE-DHLKQENFSA-N;
+MW          370.448;      // g/mol [origin=calculated method=formula-sum]
+Tc          1271.63;      // K   [origin=predictive method=joback]
+Pc          17.565;      // bar [origin=predictive method=joback]
+omega       1.0454;      // -   [origin=predictive method=lee-kesler]
+Tb          1002.91;      // K   [origin=predictive method=joback]
+HvapTb      89923.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-169.95 2.39982 -0.0019222 6.403e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 1; } { group ACH; count 10; } { group AC; count 4; } { group ACCH2; count 1; } { group ACCH; count 1; } { group CH2CO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 6; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(13s,14s)-13-methyl-17-oxidanylidene-12,14,15,16-tetrahydro-11h-cyclopenta[a]phenanthren-3-yl] benzoate" "3-hydroxyestra-1,3,5,7,9-pentaen-17-one benzoate" "[(13s,14s)-13-methyl-17-oxo-12,14,15,16-tetrahydro-11h-cyclopenta[a]phenanthren-3-yl] benzoate" );
+gibbsFormation
+{
+    dHf_298   -229910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     670.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=133150.0
+    phase     gas;
+}

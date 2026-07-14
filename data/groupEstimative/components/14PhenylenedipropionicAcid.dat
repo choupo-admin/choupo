@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-phenylenedipropionic acid  (C12H14O4, CAS 4251-21-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14PhenylenedipropionicAcid;
+formula     C12H14O4;
+CAS         4251-21-2;
+InChIKey    DFOCUWFSRVQSNI-UHFFFAOYSA-N;
+MW          222.24;      // g/mol [origin=calculated method=formula-sum]
+Tc          1019.34;      // K   [origin=predictive method=joback]
+Pc          28.414;      // bar [origin=predictive method=joback]
+omega       1.2995;      // -   [origin=predictive method=lee-kesler]
+Tb          796.84;      // K   [origin=predictive method=joback]
+HvapTb      79572.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.426 1.107 -0.00073836 1.882e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 4; } { group ACCH2; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[4-(3-hydroxy-3-oxopropyl)phenyl]propanoic acid" "1,4-benzenedipropanoic acid" "3-[4-(2-carboxyethyl)phenyl]propanoic acid" "p-phenylenedipropionicacid" "1,4-benzenedipropanoicacid" "3,3'-(p-phenylene)dipropionic acid" "3,3'-benzene-1,4-diyldipropanoic acid" "propionic acid, 3-[4-(2-carboxyethyl)phenyl]-" "p-benzenedipropionicacid (6ci,7ci,8ci);3-[4-(2-carboxyethyl)phenyl]propanoic acid;" );
+gibbsFormation
+{
+    dHf_298   -766490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     617.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-534880.0
+    phase     gas;
+}

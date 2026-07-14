@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  heatlink02_condenser_feed_preheat / constant/thermoPackage
+
+  benzene/toluene: the 50/50 feed the column separates AND the cold stream
+  its own condenser preheats --- the same near-ideal aromatic pair as
+  column01, so Raoult + ideal gas is accurate at ~1 atm.  The physics being
+  taught is the feedback heat-link (energy tear converged by Wegstein), so
+  the thermodynamics are kept deliberately simple and beyond doubt.
+\*---------------------------------------------------------------------------*/
+
+components       ( benzene  toluene );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

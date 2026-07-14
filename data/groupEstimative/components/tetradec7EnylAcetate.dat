@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetradec-7-enyl acetate  (C16H30O2, CAS 16974-10-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetradec7EnylAcetate;
+formula     C16H30O2;
+CAS         16974-10-0;
+InChIKey    UEZQOSGCHCNWOE-UHFFFAOYSA-N;
+MW          254.414;      // g/mol [origin=calculated method=formula-sum]
+Tc          797.99;      // K   [origin=predictive method=joback]
+Pc          13.748;      // bar [origin=predictive method=joback]
+omega       0.8424;      // -   [origin=predictive method=lee-kesler]
+Tb          628.06;      // K   [origin=predictive method=joback]
+HvapTb      58575.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.429 1.48904 -0.0008358 1.695e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group CH=CH; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 11; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetradec-7-enyl ethanoate" "(e)-tetradec-7-enyl acetate" "7-tetradecen-1-ol, 1-acetate, (7z)-" "(z)-7-tetradecen-1-yl acetate" "7-tetradecen-1-ol,1-acetate, (7e)-" "7-tetradecen-1-ol,1-acetate, (7z)-" "7-tetradecen-1-ol,acetate, (7e)- (9ci); 7-tetradecen-1-ol, acetate, (e)- (8ci);(e)-7-tetradecen-1-ol acetate; (e)-7-tetradecenyl acetate;trans-7-tetradecen-1-ol acetate; trans-7-tetradecen-1-yl acetate;trans-7-tetradecenyl acetate" "7-tetradecen-1-ol,acetate, (7z)- (9ci);7-tetradecen-1-ol, acetate, (z)- (8ci);(z)-7-tetradecen-1-ol acetate;(z)-7-tetradecenyl acetate;cis-7-tetradecen-1-ol acetate;cis-7-tetradecen-1-yl acetate;cis-7-tetradecenyl acetate;(7z)-tetradec-7-en-1-yl acetate;" );
+gibbsFormation
+{
+    dHf_298   -573630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     823.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-146310.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetraphenylethylene  (C26H20, CAS 632-51-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetraphenylethylene;
+formula     C26H20;
+CAS         632-51-9;
+InChIKey    JLZUZNKTTIRERF-UHFFFAOYSA-N;
+MW          332.446;      // g/mol [origin=calculated method=formula-sum]
+Tc          1190.62;      // K   [origin=predictive method=joback]
+Pc          18.452;      // bar [origin=predictive method=joback]
+omega       0.7443;      // -   [origin=predictive method=lee-kesler]
+Tb          905.12;      // K   [origin=predictive method=joback]
+HvapTb      82692.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-169.93 2.178 -0.0016038 4.512e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 20; } { group AC; count 4; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC; count 2; } { group dCH_ring; count 20; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,2-triphenylethenylbenzene" "tetraphenylethene" "ethylene, tetraphenyl-" "benzene, 1,1',1'',1'''-(1,2-ethenediylidene)tetrakis-" "1,1,2,2-tetraphenylethene" "1,1,2,2-tetraphenylethylene" "(1,2,2-triphenylvinyl)benzene" "1,2,2-tetraphenylethylene" "benzene,1',1'',1'''-(1,2-ethenediylidene)tetrakis-" "tetraphenylethyl ene" "tetraphenyl ethylene(tpe)" "ethylene, tetraphenyl- (8ci)" );
+gibbsFormation
+{
+    dHf_298   463790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     728.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=680800.0
+    phase     gas;
+}

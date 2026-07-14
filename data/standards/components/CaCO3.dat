@@ -12,6 +12,11 @@
   emerge from the elements reference like any other species.
 
   rho_p for calcite ~ 2710 kg/m^3.
+  Sources: solid formation datum from CODATA Key Values (Cox, Wagman &
+           Medvedev 1989), cross-checked vs Robie & Hemingway, USGS Bull.
+           2131 (1995); solidHeatCapacity fitted to Robie & Hemingway 1995
+           (public domain); rho_p 2710 kg/m^3 = calcite crystallographic
+           density (public).
 \*---------------------------------------------------------------------------*/
 
 name        CaCO3;

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methylethyleneurea  (C4H8N2O, CAS 13279-24-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethylethyleneurea;
+formula     C4H8N2O;
+CAS         13279-24-8;
+InChIKey    AWDNCVJVQYZMTL-UHFFFAOYSA-N;
+MW          100.121;      // g/mol [origin=calculated method=formula-sum]
+Tc          606.07;      // K   [origin=predictive method=joback]
+Pc          51.757;      // bar [origin=predictive method=joback]
+omega       0.5791;      // -   [origin=predictive method=lee-kesler]
+Tb          414.74;      // K   [origin=predictive method=joback]
+HvapTb      39773.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-56.35 0.74292 -0.0006583 2.3266e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3NH; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CdO; count 1; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-methylaziridine-1-carboxamide" "n,n-ethylene-n'-methylurea" "n-methyl-1-aziridinecarboxamide" "1-aziridinecarboxamide, n-methyl-" );
+gibbsFormation
+{
+    dHf_298   -18170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     327.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=134610.0
+    phase     gas;
+}

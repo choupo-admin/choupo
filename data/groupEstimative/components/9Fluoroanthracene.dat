@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9-fluoroanthracene  (C14H9F, CAS 529-85-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        9Fluoroanthracene;
+formula     C14H9F;
+CAS         529-85-1;
+InChIKey    RDXADDJRENGLRQ-UHFFFAOYSA-N;
+MW          196.224;      // g/mol [origin=calculated method=formula-sum]
+Tc          835.78;      // K   [origin=predictive method=joback]
+Pc          30.323;      // bar [origin=predictive method=joback]
+omega       0.5569;      // -   [origin=predictive method=lee-kesler]
+Tb          593.79;      // K   [origin=predictive method=joback]
+HvapTb      52821.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-71.94 1.1403 -0.00092476 2.989e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 4; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 9; } { group dC_ring; count 5; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9-fluoranylanthracene" "anthracene,9-fluoro-" "anthracene, 9-fluoro-" );
+gibbsFormation
+{
+    dHf_298   67330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     396.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=178640.0
+    phase     gas;
+}

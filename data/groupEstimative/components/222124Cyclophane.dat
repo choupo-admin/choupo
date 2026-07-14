@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2.2.2)(1,2,4)cyclophane  (C18H18, CAS 58002-98-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        222124Cyclophane;
+formula     C18H18;
+CAS         58002-98-5;
+InChIKey    APDVWYTWRPQAFD-UHFFFAOYSA-N;
+MW          234.342;      // g/mol [origin=calculated method=formula-sum]
+Tc          963.75;      // K   [origin=predictive method=joback]
+Pc          24.556;      // bar [origin=predictive method=joback]
+omega       0.6555;      // -   [origin=predictive method=lee-kesler]
+Tb          707.54;      // K   [origin=predictive method=joback]
+HvapTb      63306.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-136.45 1.6728 -0.00130084 4.094e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group ACCH2; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 6; } { group dCH_ring; count 6; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2.2.2](1,2,4)cyclophane" "5,6,11,12-tetrahydro-2,9-ethanodibenzo[a,e][8]annulene" );
+gibbsFormation
+{
+    dHf_298   198610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     523.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=423900.0
+    phase     gas;
+}

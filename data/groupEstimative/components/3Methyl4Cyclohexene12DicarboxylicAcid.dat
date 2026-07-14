@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methyl-4-cyclohexene-1,2-dicarboxylic acid  (C9H12O4, CAS 40469-16-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Methyl4Cyclohexene12DicarboxylicAcid;
+formula     C9H12O4;
+CAS         40469-16-7;
+InChIKey    ZPRXNOLDOXHXIQ-UHFFFAOYSA-N;
+MW          184.191;      // g/mol [origin=calculated method=formula-sum]
+Tc          934.12;      // K   [origin=predictive method=joback]
+Pc          33.451;      // bar [origin=predictive method=joback]
+omega       1.0587;      // -   [origin=predictive method=lee-kesler]
+Tb          705.91;      // K   [origin=predictive method=joback]
+HvapTb      70059.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-42.04 0.97352 -0.00056848 1.093e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 3; } { group CH=CH; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group dCH_ring; count 2; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylcyclohex-4-ene-1,2-dicarboxylic acid" "4-cyclohexene-1,2-dicarboxylic acid, 3-methyl-" "cis-3-methyl-4-cyclohexene-1,2-dicarboxylic acid" "1-methyl-5-cyclohexene-2,3-dicarboxylic acid" "agn-pc-00kvq1" "3-methyl-4-cyclohexene-cis-1,2-dicarboxylic acid anhydride" );
+gibbsFormation
+{
+    dHf_298   -858210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     460.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-623930.0
+    phase     gas;
+}

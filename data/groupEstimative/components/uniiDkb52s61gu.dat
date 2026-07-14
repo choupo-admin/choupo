@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: unii-dkb52s61gu  (C14H20O, CAS 101-85-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        uniiDkb52s61gu;
+formula     C14H20O;
+CAS         101-85-9;
+InChIKey    LIPHCKNQPJXUQF-UHFFFAOYSA-N;
+MW          204.313;      // g/mol [origin=calculated method=formula-sum]
+Tc          836.51;      // K   [origin=predictive method=joback]
+Pc          23.070;      // bar [origin=predictive method=joback]
+omega       0.9794;      // -   [origin=predictive method=lee-kesler]
+Tb          642.82;      // K   [origin=predictive method=joback]
+HvapTb      65751.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-52.325 1.30882 -0.0008855 2.399e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH=C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(phenylmethylidene)heptan-1-ol" "a-amylcinnamyl alcohol" "1-heptanol,2-(phenylmethylene)-" "1-heptanol,2-benzylidene- (6ci,8ci); 2-amyl-3-phenyl-2-propen-1-ol;2-benzylidene-1-heptanol; 2-pentyl-3-phenyl-2-propen-1-ol; buxinol; a-amylcinnamic alcohol; a-amylcinnamyl alcohol" );
+gibbsFormation
+{
+    dHf_298   -140560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     635.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=114260.0
+    phase     gas;
+}

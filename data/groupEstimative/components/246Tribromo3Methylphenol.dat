@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4,6-tribromo-3-methylphenol  (C7H5Br3O, CAS 4619-74-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        246Tribromo3Methylphenol;
+formula     C7H5Br3O;
+CAS         4619-74-3;
+InChIKey    QKHROXOPRBWBDD-UHFFFAOYSA-N;
+MW          344.828;      // g/mol [origin=calculated method=formula-sum]
+Tc          956.66;      // K   [origin=predictive method=joback]
+Pc          64.205;      // bar [origin=predictive method=joback]
+omega       0.9116;      // -   [origin=predictive method=lee-kesler]
+Tb          680.48;      // K   [origin=predictive method=joback]
+HvapTb      67757.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.17 0.68062 -0.00065764 2.583e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 1; } { group AC; count 3; } { group ACCH3; count 1; } { group ACOH; count 1; } { group Br; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group Br; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4,6-tris(bromanyl)-3-methyl-phenol" "micatex" "triphysan" "triphysol" "2,4,6-tribromo-m-cresol" "m-cresol, 2,4,6-tribromo-" "2,6-tribromo-m-cresol" "m-cresol,4,6-tribromo-" "2,6-tribromo-3-methylphenol" "phenol,4,6-tribromo-3-methyl-" "phenol,2,4,6-tribromo-3-methyl-" "phenol, 2,4,6-tribromo-3-methyl-" );
+gibbsFormation
+{
+    dHf_298   -84010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     483.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-20080.0
+    phase     gas;
+}

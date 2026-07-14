@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-propene, 3,3,3-trichloro-  (C3H3Cl3, CAS 2233-00-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Propene333Trichloro;
+formula     C3H3Cl3;
+CAS         2233-00-3;
+InChIKey    VKEIPALYOJMDAC-UHFFFAOYSA-N;
+MW          145.407;      // g/mol [origin=calculated method=formula-sum]
+Tc          584.05;      // K   [origin=predictive method=joback]
+Pc          41.303;      // bar [origin=predictive method=joback]
+omega       0.2180;      // -   [origin=predictive method=lee-kesler]
+Tb          373.98;      // K   [origin=predictive method=joback]
+HvapTb      33461.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.37 0.415 -0.0003953 1.408e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group CCl3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3,3-tris(chloranyl)prop-1-ene" "3,3,3-trichloroprop-1-ene" "3,3,3-trichloropropylene" "3,3,3-trichloro-1-propene" "3,3,3-trichloropropene" "propene, 3,3,3-trichloro- (6ci,7ci,8ci)" "propene, 3,3,3-trichloro-" );
+gibbsFormation
+{
+    dHf_298   -35790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     329.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=29270.0
+    phase     gas;
+}

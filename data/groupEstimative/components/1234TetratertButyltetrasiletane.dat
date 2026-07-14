@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,3,4-tetratert-butyltetrasiletane  (C16H40Si4, CAS 54141-88-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C16H40Si4 (delta H+4Si+4; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        1234TetratertButyltetrasiletane;
+formula     C16H40Si4;
+CAS         54141-88-7;
+InChIKey    APRGYUVNFMXPKX-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          344.836;      // g/mol [origin=calculated method=formula-sum]
+Tc          754.24;      // K   [origin=predictive method=joback]
+Pc          10.950;      // bar [origin=predictive method=joback]
+omega       0.2308;      // -   [origin=predictive method=lee-kesler]
+Tb          554.16;      // K   [origin=predictive method=joback]
+HvapTb      46320.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-68.73 1.82104 -0.001119 2.496e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 12; } { group C; count 4; } { group SiH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 12; } { group C; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4-tetratert-butyl-1,2,3,4-tetrasiletane" );
+gibbsFormation
+{
+    dHf_298   -520190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1068.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-9560.0
+    phase     gas;
+}

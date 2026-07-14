@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-sec-butyl-1-ethynylcyclohexanol  (C12H20O, CAS 37172-89-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2SecButyl1Ethynylcyclohexanol;
+formula     C12H20O;
+CAS         37172-89-7;
+InChIKey    NETONJQRBNZZHO-UHFFFAOYSA-N;
+MW          180.291;      // g/mol [origin=calculated method=formula-sum]
+Tc          775.73;      // K   [origin=predictive method=joback]
+Pc          27.556;      // bar [origin=predictive method=joback]
+omega       0.7369;      // -   [origin=predictive method=lee-kesler]
+Tb          571.14;      // K   [origin=predictive method=joback]
+HvapTb      57424.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-100.289 1.47734 -0.00121673 4.3869e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 2; } { group C; count 1; } { group OH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-butan-2-yl-1-ethynyl-cyclohexan-1-ol" "1-ethynyl-2-(1-methylpropyl)cyclohexan-1-ol" "cyclohexanol, 1-ethynyl-2-(1-methylpropyl)-" "2-butan-2-yl-1-ethynylcyclohexan-1-ol" "cyclohexanol,1-ethynyl-2-(1-methylpropyl)-" );
+gibbsFormation
+{
+    dHf_298   -107400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     630.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=145220.0
+    phase     gas;
+}

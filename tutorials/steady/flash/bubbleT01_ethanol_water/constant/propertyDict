@@ -1,0 +1,36 @@
+/*---------------------------------------------------------------------------*\
+  bubbleT01_ethanol_water / constant/thermoPackage
+
+  Ethanol (the volatile, strongly non-ideal in water at x_eth = 0.30,
+  gamma > 1) and water (the solvent) in a single bubble-T calculation at
+  1 atm.  NRTL: ethanol-water is the textbook positive-deviation pair — an
+  ideal-Raoult bubble T would land several K too high and miss the
+  azeotrope entirely; the pair parameters below reproduce the 1-atm
+  bubble-T curve (azeotrope at x_eth ~ 0.894, T ~ 351.3 K).  idealGas
+  vapour is adequate at 1 atm.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water );
+
+activityModel
+{
+    model        NRTL;
+
+    pairs
+    (
+        {
+            i          ethanol;
+            j          water;
+            a_ij      -0.8009;
+            b_ij       246.18;
+            a_ji       3.4578;
+            b_ji      -586.0809;
+            alpha      0.30;
+        }
+    );
+}
+
+equationOfState
+{
+    model        idealGas;
+}

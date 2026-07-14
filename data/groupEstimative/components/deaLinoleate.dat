@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dea-linoleate  (C22H43NO4, CAS 59231-42-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        deaLinoleate;
+formula     C22H43NO4;
+CAS         59231-42-4;
+InChIKey    NDCLVTJDWUOUEE-NBTZWHCOSA-N;
+MW          385.589;      // g/mol [origin=calculated method=formula-sum]
+Tc          1371.85;      // K   [origin=predictive method=joback]
+Pc          10.907;      // bar [origin=predictive method=joback]
+omega       0.7782;      // -   [origin=predictive method=lee-kesler]
+Tb          1092.72;      // K   [origin=predictive method=joback]
+HvapTb      121734.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.316 2.12262 -0.0011078 1.863e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 15; } { group CH=CH; count 2; } { group OH; count 2; } { group CH2NH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 16; } { group dCH; count 4; } { group OH; count 2; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-hydroxyethylamino)ethanol;(9z,12z)-octadeca-9,12-dienoic acid" "linoleic acid, diethanolamine salt" "diethanolamine linoleate" "diethanolammonium linoleate" "2-(2-hydroxyethylamino)ethanol; (9z,12z)-octadeca-9,12-dienoic acid" "9,12-octadecadienoic acid, compd. with 2,2'-iminobis(ethanol)(1:1)" "(9z,12z)-octadeca-9,12-dienoic acid, compound with 2,2'-iminodiethanol (1:1)" "9,12-octadecadienoic acid (9z,12z)-, compd. with 2,2'-iminobis(ethanol) (1:1)" );
+gibbsFormation
+{
+    dHf_298   -975850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1303.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-338120.0
+    phase     gas;
+}

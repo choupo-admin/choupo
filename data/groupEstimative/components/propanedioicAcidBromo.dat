@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propanedioic acid, bromo-  (C3H3BrO4, CAS 600-31-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        propanedioicAcidBromo;
+formula     C3H3BrO4;
+CAS         600-31-7;
+InChIKey    VBZOUUJVGADJBK-UHFFFAOYSA-N;
+MW          182.957;      // g/mol [origin=calculated method=formula-sum]
+Tc          856.12;      // K   [origin=predictive method=joback]
+Pc          63.898;      // bar [origin=predictive method=joback]
+omega       1.1135;      // -   [origin=predictive method=lee-kesler]
+Tb          624.98;      // K   [origin=predictive method=joback]
+HvapTb      62647.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.87 0.4345 -0.0003592 1.141e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group COOH; count 2; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group Br; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanylpropanedioic acid" "bromomalonic acid" "2-bromopropanedioic acid" "monobromomalonic acid" );
+gibbsFormation
+{
+    dHf_298   -784740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     420.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-701560.0
+    phase     gas;
+}

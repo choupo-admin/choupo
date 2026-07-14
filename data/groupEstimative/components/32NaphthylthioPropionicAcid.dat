@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(2-naphthylthio)propionic acid  (C13H12O2S, CAS 1141-45-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        32NaphthylthioPropionicAcid;
+formula     C13H12O2S;
+CAS         1141-45-3;
+InChIKey    XMQJAJQNGNSZFY-UHFFFAOYSA-N;
+MW          232.297;      // g/mol [origin=calculated method=formula-sum]
+Tc          1012.46;      // K   [origin=predictive method=joback]
+Pc          30.899;      // bar [origin=predictive method=joback]
+omega       0.9743;      // -   [origin=predictive method=lee-kesler]
+Tb          761.97;      // K   [origin=predictive method=joback]
+HvapTb      73091.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-35.778 1.14189 -0.00081668 2.256e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 7; } { group AC; count 3; } { group COOH; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group COOH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-naphthalen-2-ylsulfanylpropanoic acid" "3-(2-naphthylthio)propanoic acid" "3-(2-naphthylsulfanyl)propanoic acid" "3-(naphthalen-2-ylsulfanyl)propanoic acid" );
+gibbsFormation
+{
+    dHf_298   -203920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     555.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-42780.0
+    phase     gas;
+}

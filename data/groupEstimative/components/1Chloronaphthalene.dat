@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-chloronaphthalene  (C10H7Cl, CAS 90-13-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Chloronaphthalene;
+formula     C10H7Cl;
+CAS         90-13-1;
+InChIKey    JTPNRXUCIXHOKM-UHFFFAOYSA-N;
+MW          162.616;      // g/mol [origin=calculated method=formula-sum]
+Tc          761.03;      // K   [origin=predictive method=joback]
+Pc          36.553;      // bar [origin=predictive method=joback]
+omega       0.4023;      // -   [origin=predictive method=lee-kesler]
+Tb          516.47;      // K   [origin=predictive method=joback]
+HvapTb      46817.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-44.36 0.8185 -0.00064148 1.985e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 7; } { group AC; count 2; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 7; } { group dC_ring; count 3; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranylnaphthalene" "naphthalene, 1-chloro-" "alpha-chloronaphthalene" "chloronaphthalene" "1-naphthyl chloride" "alpha-naphthyl chloride" ".alpha.-chloronaphthalene" "1-chlornaphthalen" "1-chloro-naphthalene" "1-chloro naphthalene" "alpha-chlornaphthalene" "1-chlornaftalen" );
+gibbsFormation
+{
+    dHf_298   150660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     357.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=230820.0
+    phase     gas;
+}

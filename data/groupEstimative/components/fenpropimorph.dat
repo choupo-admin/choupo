@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: fenpropimorph  (C20H33NO, CAS 67564-91-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        fenpropimorph;
+formula     C20H33NO;
+CAS         67564-91-4;
+InChIKey    RYAUSSKQMZRMAI-ALOPSCKCSA-N;
+MW          303.49;      // g/mol [origin=calculated method=formula-sum]
+Tc          948.65;      // K   [origin=predictive method=joback]
+Pc          14.144;      // bar [origin=predictive method=joback]
+omega       0.7263;      // -   [origin=predictive method=lee-kesler]
+Tb          735.19;      // K   [origin=predictive method=joback]
+HvapTb      67869.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-108.968 2.12332 -0.00137406 3.388e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 2; } { group C; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group CH-O; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r,6s)-4-[3-(4-tert-butylphenyl)-2-methyl-propyl]-2,6-dimethyl-morpholine" "mistral" "corbel" "fenpropimorph cis-form" "fenpropimorphe" "mildofix" "funbas" "mistral t" "fenpropimorph [iso]" "cis-fenpropimorph" "fenpropimorph [bsi:iso]" "fenpropimorphe [iso-french]" );
+gibbsFormation
+{
+    dHf_298   -269430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     646.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=274200.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-diethoxytriethylamine  (C10H23NO2, CAS 3616-57-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Diethoxytriethylamine;
+formula     C10H23NO2;
+CAS         3616-57-7;
+InChIKey    HNFUIXOBWCFVAJ-UHFFFAOYSA-N;
+MW          189.299;      // g/mol [origin=calculated method=formula-sum]
+Tc          649.81;      // K   [origin=predictive method=joback]
+Pc          20.549;      // bar [origin=predictive method=joback]
+omega       0.6748;      // -   [origin=predictive method=lee-kesler]
+Tb          485.24;      // K   [origin=predictive method=joback]
+HvapTb      44329.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (32.425 0.95728 -0.000414 3.51e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 1; } { group CH2O; count 2; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 1; } { group O; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-diethoxy-n,n-diethyl-ethanamine" "2,2-diethoxy-n,n-diethylethanamine" "2,2-diethoxyethyl(diethyl)amine" "diethylaminoacetaldehyde diethylacetal" "diethylaminoacetaldehyde diethyl acetal" "(diethylamino)acetaldehyde diethyl acetal" "ethanamine, 2,2-diethoxy-n,n-diethyl-" );
+gibbsFormation
+{
+    dHf_298   -451920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     574.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-68340.0
+    phase     gas;
+}

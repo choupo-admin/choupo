@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methyl-l-prolinol  (C6H13NO, CAS 34381-71-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethylLProlinol;
+formula     C6H13NO;
+CAS         34381-71-0;
+InChIKey    VCOJPHPOVDIRJK-LURJTMIESA-N;
+MW          115.176;      // g/mol [origin=calculated method=formula-sum]
+Tc          631.33;      // K   [origin=predictive method=joback]
+Pc          41.677;      // bar [origin=predictive method=joback]
+omega       0.7612;      // -   [origin=predictive method=lee-kesler]
+Tb          452.51;      // K   [origin=predictive method=joback]
+HvapTb      47757.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-63.329 0.87302 -0.0006194 1.768e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 1; } { group OH; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(2s)-1-methylpyrrolidin-2-yl]methanol" "(s)-(-)-1-methyl-2-pyrrolidinemethanol" "(s)-2-hydroxymethyl-1-methylpyrrolidine" "n-methylprolinol" "1-methyl-l-prolinol" "(s)-1-methylpyrrolidine-2-methanol" "[(2s)-1-methyl-2-pyrrolidinyl]methanol" "(s)-(-)-2-hydroxymethyl-1-methylpyrrolidine" "racemic-[(2s)-1-methylpyrrolidin-2-yl]methanol" "2-pyrrolidinemethanol,1-methyl-, (s)-;(-)-(s)-1-methyl-2-pyrrolidinemethanol;(2s)-(hydroxymethyl)-1-methylpyrrolidine;(2s)-1-methylpyrrolidin-2-ylmethanol;(2s)-1-methylpyrrolidine-2-methanol;(s)-(-)-(1-methyl-2-pyrrolidinyl)methanol;(s)-(-)-1-methylpyrrolidine-2-methanol;(s)-(-)-2-hydroxymethyl-1-methylpyrrolidine;(s)-1-methyl-2-pyrrolidinemethanol;(s)-1-methylpyrrolidin-2-ylmethanol;(s)-2-(hydroxymethyl)-1-methylpyrrolidine;(s)-n-methylpyrrolidine-2-methanol;l-(-)-n-methyl-2-pyrrolidinylmethanol;l-n-methylprolinol;2-pyrrolidinemethanol,1-methyl-, (2s)-;" );
+gibbsFormation
+{
+    dHf_298   -185230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     386.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=22250.0
+    phase     gas;
+}

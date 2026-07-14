@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-undecenal, (z)-  (C11H20O, CAS 68820-32-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4UndecenalZ;
+formula     C11H20O;
+CAS         68820-32-6;
+InChIKey    QGNDNDFXCNBMKI-UHFFFAOYSA-N;
+MW          168.28;      // g/mol [origin=calculated method=formula-sum]
+Tc          678.83;      // K   [origin=predictive method=joback]
+Pc          21.674;      // bar [origin=predictive method=joback]
+omega       0.6658;      // -   [origin=predictive method=lee-kesler]
+Tb          504.10;      // K   [origin=predictive method=joback]
+HvapTb      46758.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.893 1.04332 -0.0006514 1.65e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group CH=CH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group dCH; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "undec-4-enal" );
+gibbsFormation
+{
+    dHf_298   -238730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     596.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=22440.0
+    phase     gas;
+}

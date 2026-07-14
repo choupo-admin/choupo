@@ -90,6 +90,18 @@ int SizingPass::run(SimulationResult& result)
                       << std::setw(12) << std::fixed << std::setprecision(1) << w
                       << "\n";
 
+            // DESIGN INVERSION output (from a `design {}` rule): the geometry the
+            // process targets require -- the rating model run BACKWARD.
+            bool anyDesign = false;
+            for (const auto& [key, val] : dims.values)
+                if (key.rfind("design_", 0) == 0)
+                {
+                    if (!anyDesign)
+                    { std::cout << "      --  design (targets -> geometry)  --\n"; anyDesign = true; }
+                    std::cout << "        " << std::left << std::setw(26) << key
+                              << std::fixed << std::setprecision(3) << val << "\n";
+                }
+
             result.sizings[uname] = std::move(dims);
         }
         catch (const std::exception& e)

@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Crystalliser.H"
+#include "CrystallisationHeat.H"
 #include "core/Advisory.H"
 #include "solver/NewtonRaphson.H"
 
@@ -197,70 +198,18 @@ SatState crystSaturation(const ThermoPackage& thermo, const sVector& z, scalar F
 
 
 // Heat RELEASED per mol of crystal leaving a saturated solution [J/mol].
-// Surface-derived when the salt's Pitzer T-slots are calorimetrically fitted
-// AND the path is aqueous (the mixed-solvent L_phi is its own future fit):
-//     dH_cryst(m_sat) = dH_soln_inf + L2_bar(m_sat)      (dissolution sign)
-// with L2_bar = L_phi + m dL_phi/dm from the SAME fitted G_ex surface
-// (docs/electrolyte-enthalpy-spec.md).  Falls back to the operation's
-// `dHcryst` constant otherwise; `source` says which path spoke, and the
-// EXTRAPOLATED suffix fires when m_sat is beyond the fitted window.
+// The body lives in the SHARED crystallisationHeatPerMol resolver
+// (CrystallisationHeat.cpp, energy phase (d)) so the steady unit and the
+// batch crystalliser speak the same sourced number and can never diverge
+// -- the reactionHeat precedent applied to solids.  This wrapper only
+// unpacks the SatState fields.
 static double crystHeatPerMol(const ThermoPackage& thermo, const SatState& sat,
                               double T_op, double dHcrystConstant,
                               std::string& source)
 {
-    if (sat.useElec && !sat.mixedSolvent
-        && thermo.electrolyte().calorimetricFit()
-        && thermo.electrolyte().hasAqueousReference())
-    {
-        const auto& el = thermo.electrolyte();
-        const double dHsolnInf =
-            thermo.comp(sat.iSolute).electrolyteDissolutionEnthalpy();
-        const double L2 = el.partialMolarRelativeEnthalpy(sat.m_sat, T_op);
-        const double mMax = el.lphiValidityMax();
-        source = "surface (dH_soln_inf + L2_bar(m_sat), calorimetric fit)";
-        if (mMax > 0.0 && sat.m_sat > mMax)
-            source += "  ** EXTRAPOLATED: m_sat "
-                    + std::to_string(sat.m_sat) + " > fit window "
-                    + std::to_string(mMax) + " mol/kg **";
-        return dHsolnInf + L2;
-    }
-    // NON-electrolyte (molecular-solute) path.  When the solute carries an
-    // aqueous-solution tier (solution/<solute>-<solvent>.dat), the heat of
-    // crystallisation EMERGES as the dissolution endotherm released on
-    // crystallising: dH_cryst = +dHsoln (dissolution sign).  This is the SAME
-    // sourced number the elements-datum stream balance reads through
-    // H_liquid_formation -- so the unit duty Q and the stream dH reconcile
-    // from one value, instead of the dHcryst placeholder (the `dHcryst 0.0;`
-    // that wrongly asserted athermal crystallisation).
-    if (!sat.useElec)
-    {
-        if (auto dHsoln = thermo.dHsolnForSolute(sat.iSolute))
-        {
-            // Heat RELEASED on crystallising at T_op = +dHsoln, PLUS the
-            // Cp-path correction (cp_aq - cp_solid)*(T_op - 298): the dissolved
-            // species reached T_op accumulating cp_aq from 298 K, while the
-            // crystal carries only cp_solid from 298 K, so crystallisation also
-            // releases that sensible-Cp difference.  This makes the unit duty
-            // EXACTLY reconcile with the elements-datum stream balance (which
-            // puts the crystal on the solid rung Hf + INT cp_solid and the
-            // dissolved solute on the aqueous rung Hf + dHsoln + INT cp_aq).
-            const Component& c = thermo.comp(sat.iSolute);
-            scalar cpCorr = 0.0;
-            if (c.hasCpSolid() && c.hasCpLiquid())
-            {
-                const scalar cpAq    = c.cpLiquid().Cp(T_op);   // dissolved-solute Cp
-                const scalar cpSolid = c.cpSolid().Cp(T_op);
-                cpCorr = (cpAq - cpSolid) * (T_op - 298.15);
-            }
-            source = "solution tier (dH_cryst = +dHsoln + (cp_aq-cp_solid)*(T-298), "
-                     "data/standards/solution/)";
-            return *dHsoln + cpCorr;
-        }
-        source = "solubility-curve dHcryst";
-        return dHcrystConstant;
-    }
-    source = "operation dHcryst constant (salt not calorimetrically fitted on this path)";
-    return dHcrystConstant;
+    return crystallisationHeatPerMol(thermo, sat.iSolute, sat.useElec,
+                                     sat.mixedSolvent, sat.m_sat,
+                                     T_op, dHcrystConstant, source);
 }
 
 // Speak the crystallisation-heat provenance aloud (no silent crutch): the
@@ -339,13 +288,13 @@ int Crystalliser::solveEquilibrium(const DictPtr& dict,
     // when it is ABSENT, so a student is never misled into reading a cooling effect
     // the data cannot support (NaCl's dHsol is small -> nearly T-independent anyway).
     if (useElec && verbosity >= 1 && std::abs(T_op - 298.15) > 1.0
-        && sol.electrolyteDissolutionEnthalpy() == 0.0)
+        && thermo.electrolyte().dissolutionEnthalpy() == 0.0)
         std::cout << "[Crystalliser] NOTE: '" << sol.name() << "' carries no dissolutionEnthalpy, so "
                      "its solubility product Ksp is held flat in T (van't Hoff off); T_op = "
                   << std::fixed << std::setprecision(1) << (T_op - 273.15)
                   << " C changes gamma_pm(T) + the cooling DUTY but not Ksp.  For NaCl this is "
                      "physical (dHsol ~ +3.9 kJ/mol, solubility nearly T-flat); add dissolutionEnthalpy "
-                     "to the electrolyte{} block for a T-sensitive salt (e.g. KNO3).\n";
+                     "to chemistry/salts/<mineral>.dat for a T-sensitive salt (e.g. KNO3).\n";
 
     // ---- Yield at T_op: mother liquor leaves SATURATED (c_sat from the helper);
     //  all solvent stays liquid (no boil-off).

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cycloundecasiloxane, docosamethyl  (C22H66O11Si11, CAS 18766-38-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C22H66O11Si11 (delta Si+11; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        cycloundecasiloxaneDocosamethyl;
+formula     C22H66O11Si11;
+CAS         18766-38-6;
+InChIKey    QKFCLXPIIJGSQB-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          815.694;      // g/mol [origin=calculated method=formula-sum]
+Tc          1304.85;      // K   [origin=predictive method=joback]
+Pc          5.198;      // bar [origin=predictive method=joback]
+omega       0.3325;      // -   [origin=predictive method=lee-kesler]
+Tb          1060.38;      // K   [origin=predictive method=joback]
+HvapTb      119008.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (525.27 -0.10636 0.0036383 -2.346e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 22; } { group SiO; count 11; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 22; } { group O_ring; count 11; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,4,4,6,6,8,8,10,10,12,12,14,14,16,16,18,18,20,20,22,22-docosamethyl-1,3,5,7,9,11,13,15,17,19,21-undecaoxa-2,4,6,8,10,12,14,16,18,20,22-undecasilacyclodocosane" "cycloundecasiloxane, docosamethyl-" "docosamethylcycloundecasiloxane" "cycloundecasiloxane,docosamethyl- (8ci,9ci); docosamethylcycloundecasiloxane" "cycloundecasiloxane,2,2,4,4,6,6,8,8,10,10,12,12,14,14,16,16,18,18,20,20,22,22-docosamethyl-" );
+gibbsFormation
+{
+    dHf_298   -3133370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1951.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1993660.0
+    phase     gas;
+}

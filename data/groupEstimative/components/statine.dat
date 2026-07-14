@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: statine  (C8H17NO3, CAS 49642-07-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        statine;
+formula     C8H17NO3;
+CAS         49642-07-1;
+InChIKey    DFVFTMTWCUHJBL-BQBZGAKWSA-N;
+MW          175.228;      // g/mol [origin=calculated method=formula-sum]
+Tc          885.70;      // K   [origin=predictive method=joback]
+Pc          33.645;      // bar [origin=predictive method=joback]
+omega       1.4058;      // -   [origin=predictive method=lee-kesler]
+Tb          691.54;      // K   [origin=predictive method=joback]
+HvapTb      76722.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.952 0.92824 -0.0005674 1.313e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group OH; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 3; } { group OH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,4s)-4-azanyl-6-methyl-3-oxidanyl-heptanoic acid" "ahmha" "(3s,4s)-4-amino-3-hydroxy-6-methylheptanoic acid" "heptanoic acid, 4-amino-3-hydroxy-6-methyl-, (3s,4s)-" "heptanoicacid, 4-amino-3-hydroxy-6-methyl-, [s-(r*,r*)]-;(-)-(3s,4s)-4-amino-3-hydroxy-6-methylheptanoic acid;(3s,4s)-4-amino-3-hydroxy-6-methylheptanoic acid;(3s,4s)-statine;(s,s)-statine;statine;" );
+gibbsFormation
+{
+    dHf_298   -693000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     594.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-405120.0
+    phase     gas;
+}

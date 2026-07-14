@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triasterane  (C9H12, CAS 3105-29-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triasterane;
+formula     C9H12;
+CAS         3105-29-1;
+InChIKey    YTFCTXSQQPWYFH-UHFFFAOYSA-N;
+MW          120.195;      // g/mol [origin=calculated method=formula-sum]
+Tc          609.76;      // K   [origin=predictive method=joback]
+Pc          34.480;      // bar [origin=predictive method=joback]
+omega       0.3432;      // -   [origin=predictive method=lee-kesler]
+Tb          410.33;      // K   [origin=predictive method=joback]
+HvapTb      34146.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-179.02 1.4382 -0.001375 5.264e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetracyclo[3.3.1.02,8.04,6]nonane" "tetracyclo[3.3.1.0(2,8).0(4,6)]nonane" "tetracyclo(3.3.1.02,8.04,6)nonane" );
+gibbsFormation
+{
+    dHf_298   39910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=288780.0
+    phase     gas;
+}

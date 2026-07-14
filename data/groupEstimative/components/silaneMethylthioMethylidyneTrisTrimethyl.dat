@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: silane, [(methylthio)methylidyne]tris[trimethyl-  (C11H30SSi3, CAS 31704-09-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C11H30SSi3 (delta Si+3; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        silaneMethylthioMethylidyneTrisTrimethyl;
+formula     C11H30SSi3;
+CAS         31704-09-3;
+InChIKey    MVZAKYSSGMIRSP-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          278.676;      // g/mol [origin=calculated method=formula-sum]
+Tc          731.23;      // K   [origin=predictive method=joback]
+Pc          14.816;      // bar [origin=predictive method=joback]
+omega       0.2394;      // -   [origin=predictive method=lee-kesler]
+Tb          521.03;      // K   [origin=predictive method=joback]
+HvapTb      46483.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (110.47 0.55059 0.0005382 -4.876e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 9; } { group C; count 1; } { group Si; count 3; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 10; } { group C; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl-[methylsulfanyl-bis(trimethylsilyl)methyl]silane" "silane, ((methylthio)methylidyne)tris(trimethyl-" );
+gibbsFormation
+{
+    dHf_298   -572110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     986.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-236580.0
+    phase     gas;
+}

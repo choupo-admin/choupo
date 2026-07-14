@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chloromethyltrimethoxysilane  (C4H11ClO3Si, CAS 5926-26-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C4H11ClO3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        chloromethyltrimethoxysilane;
+formula     C4H11ClO3Si;
+CAS         5926-26-1;
+InChIKey    FPOSCXQHGOVVPD-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          170.664;      // g/mol [origin=calculated method=formula-sum]
+Tc          578.25;      // K   [origin=predictive method=joback]
+Pc          30.524;      // bar [origin=predictive method=joback]
+omega       0.3866;      // -   [origin=predictive method=lee-kesler]
+Tb          397.21;      // K   [origin=predictive method=joback]
+HvapTb      36407.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (129.461 -0.00514 0.0005336 -3.362e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3O; count 3; } { group CH2Cl; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group Cl; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "chloromethyl(trimethoxy)silane" "chloromethyl-trimethoxysilane" "silane, chloromethyl-trimethoxy-" "(chloromethyl)trimethoxysilane" "(trimethoxychloromethyl)silane" "chloromethyl trimethoxysilane" "silane,(chloromethyl)trimethoxy-" "(chloromethyl)trimethoxysilane;chloro(trimethoxysilyl)methane; trimethoxy(chloromethyl)silane" );
+gibbsFormation
+{
+    dHf_298   -649910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     505.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-448890.0
+    phase     gas;
+}

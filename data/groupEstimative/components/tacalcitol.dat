@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tacalcitol  (C27H44O3, CAS 57333-96-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tacalcitol;
+formula     C27H44O3;
+CAS         57333-96-7;
+InChIKey    BJYLYJCXYAMOFT-RSFVBTMBSA-N;
+MW          416.646;      // g/mol [origin=calculated method=formula-sum]
+Tc          1410.67;      // K   [origin=predictive method=joback]
+Pc          11.777;      // bar [origin=predictive method=joback]
+omega       1.0080;      // -   [origin=predictive method=lee-kesler]
+Tb          1141.76;      // K   [origin=predictive method=joback]
+HvapTb      125304.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-185.908 3.05008 -0.0021944 6.708e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 9; } { group CH; count 7; } { group C; count 1; } { group CH2=C; count 1; } { group CH=C; count 2; } { group OH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 3; } { group dCH2; count 1; } { group dCH; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 4; } { group C_ring; count 1; } { group dC_ring; count 3; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1r,3s,5z)-5-[(2e)-2-[(1r,3as,7ar)-7a-methyl-1-[(2r,5r)-6-methyl-5-oxidanyl-heptan-2-yl]-2,3,3a,5,6,7-hexahydro-1h-inden-4-ylidene]ethylidene]-4-methylidene-cyclohexane-1,3-diol" "curatoderm" "bonalfa" "tv-02h" "tv-02" "1-alpha,24(r)-dihydroxyvitamin d3" "(1r,3s,5z)-5-[(2e)-2-[(1r,3as,7ar)-1-[(2r,5r)-5-hydroxy-6-methylheptan-2-yl]-7a-methyl-2,3,3a,5,6,7-hexahydro-1h-inden-4-ylidene]ethylidene]-4-methylidenecyclohexane-1,3-diol" "tacalcitolum [inn-latin]" "tacalcitolum" "tv 02" "vellutan" "apsor" );
+gibbsFormation
+{
+    dHf_298   -680840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1082.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-8580.0
+    phase     gas;
+}

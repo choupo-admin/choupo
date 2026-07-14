@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propenoic acid, butyl ester, polymer with ethyl 2-propenoate and 2-hydroxyethyl 2-propenoate  (C17H28O7, CAS 69288-63-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropenoicAcidButylEsterPolymerWithEthyl2PropenoateAnd2Hydro;
+formula     C17H28O7;
+CAS         69288-63-7;
+InChIKey    SLMYCBXXIGBIRG-UHFFFAOYSA-N;
+MW          344.404;      // g/mol [origin=calculated method=formula-sum]
+Tc          1041.66;      // K   [origin=predictive method=joback]
+Pc          12.819;      // bar [origin=predictive method=joback]
+omega       1.1554;      // -   [origin=predictive method=lee-kesler]
+Tb          848.24;      // K   [origin=predictive method=joback]
+HvapTb      90914.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (141.616 1.01604 0.0001133 -3.526e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH2=CH; count 3; } { group OH; count 1; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group dCH2; count 3; } { group dCH; count 3; } { group OH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butyl prop-2-enoate;ethyl prop-2-enoate;2-hydroxyethyl prop-2-enoate" "butyl acrylate, ethyl acrylate, 2-hydroxyethyl acrylate polymer" "ethyl acrylate, butyl acrylate, 2-hydroxyethyl acrylate polymer" );
+gibbsFormation
+{
+    dHf_298   -1345230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1224.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-921670.0
+    phase     gas;
+}

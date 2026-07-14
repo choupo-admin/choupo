@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bencyclane fumarate  (C23H35NO5, CAS 14286-84-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bencyclaneFumarate;
+formula     C23H35NO5;
+CAS         14286-84-1;
+InChIKey    LSTKNZAMFRGXCG-WLHGVMLRSA-N;
+MW          405.535;      // g/mol [origin=calculated method=formula-sum]
+Tc          1359.39;      // K   [origin=predictive method=joback]
+Pc          13.748;      // bar [origin=predictive method=joback]
+omega       1.2302;      // -   [origin=predictive method=lee-kesler]
+Tb          1108.02;      // K   [origin=predictive method=joback]
+HvapTb      107551.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-121.996 2.49044 -0.0016416 4.345e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group C; count 1; } { group CH=CH; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group CH2O; count 1; } { group CH3N; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH; count 2; } { group CH2_ring; count 6; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e)-but-2-enedioic acid;n,n-dimethyl-3-[1-(phenylmethyl)cycloheptyl]oxy-propan-1-amine" "angiociclan" "angiodel" "diacyclan" "dilangio" "fludilat" "halidor" "hemoflux" "ludilat" "bencyclane fumarate (jan)" "bencyclane fumarate [jan]" "1-benzyl-1-(3'-dimethylaminopropoxy)cycloheptane fumarate" );
+gibbsFormation
+{
+    dHf_298   -977750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1239.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-444530.0
+    phase     gas;
+}

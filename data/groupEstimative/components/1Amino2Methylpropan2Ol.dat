@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-amino-2-methylpropan-2-ol  (C4H11NO, CAS 2854-16-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Amino2Methylpropan2Ol;
+formula     C4H11NO;
+CAS         2854-16-2;
+InChIKey    LXQMHOKEXZETKB-UHFFFAOYSA-N;
+MW          89.138;      // g/mol [origin=calculated method=formula-sum]
+Tc          639.53;      // K   [origin=predictive method=joback]
+Pc          48.630;      // bar [origin=predictive method=joback]
+omega       0.7494;      // -   [origin=predictive method=lee-kesler]
+Tb          452.60;      // K   [origin=predictive method=joback]
+HvapTb      50522.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.439 0.60554 -0.0004394 1.291e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C; count 1; } { group OH; count 1; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-azanyl-2-methyl-propan-2-ol" "1-amino-2-methyl-2-propanol" "1-amino-2-methyl-propan-2-ol" "2-propanol, l-amino-2-methyl" "2-propanol, 1-amino-2-methyl-" "1,1-dimethylethanolamine" "1,1-dimethylethanolamine; 1-amino-2-methyl-2-propanol; 2-amino-a,a-dimethylethanol; 2-hydroxy-2-methyl-1-propylamine; 2-hydroxyisobutylamine; 2-methyl-2-hydroxypropylamine; 3-amino-2-methyl-2-propanol" );
+gibbsFormation
+{
+    dHf_298   -253080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     375.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-84730.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-chloro-2-naphthalenol  (C10H7ClO, CAS 29921-50-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8Chloro2Naphthalenol;
+formula     C10H7ClO;
+CAS         29921-50-4;
+InChIKey    XSMAIDLOXKONHB-UHFFFAOYSA-N;
+MW          178.615;      // g/mol [origin=calculated method=formula-sum]
+Tc          852.84;      // K   [origin=predictive method=joback]
+Pc          44.150;      // bar [origin=predictive method=joback]
+omega       0.6402;      // -   [origin=predictive method=lee-kesler]
+Tb          597.09;      // K   [origin=predictive method=joback]
+HvapTb      59831.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-53.28 0.9731 -0.00089784 3.316e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 2; } { group ACOH; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 6; } { group dC_ring; count 4; } { group Cl; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-chloranylnaphthalen-2-ol" "8-chloro-2-hydroxynaphthalene" "8-chloronaphthalen-2-ol" "agn-pc-03cz2d" "2-naphthalenol, 8-chloro-" );
+gibbsFormation
+{
+    dHf_298   -26650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     383.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=76200.0
+    phase     gas;
+}

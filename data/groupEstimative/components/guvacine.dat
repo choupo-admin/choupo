@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: guvacine  (C6H9NO2, CAS 498-96-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        guvacine;
+formula     C6H9NO2;
+CAS         498-96-4;
+InChIKey    QTDZOWFRBNTPQR-UHFFFAOYSA-N;
+MW          127.143;      // g/mol [origin=calculated method=formula-sum]
+Tc          796.01;      // K   [origin=predictive method=joback]
+Pc          49.524;      // bar [origin=predictive method=joback]
+omega       0.7121;      // -   [origin=predictive method=lee-kesler]
+Tb          559.30;      // K   [origin=predictive method=joback]
+HvapTb      54564.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.51 0.6443 -0.00037124 7.24e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH=C; count 1; } { group CH2NH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,6-tetrahydropyridine-5-carboxylic acid" "1,2,5,6-tetrahydropyridine-3-carboxylic acid" "1,2,5,6-tetrahydro-3-pyridinecarboxylic acid" "1,2,5,6-tetrahydro-pyridine-3-carboxylic acid hydrochloride" "1,2,5,6-tetrahydronicotinic acid" "4-substituted 2,4-dioxobutanoic acids" "sdccgmls-0066665.p001" "5-p-tolyl-4h-1,2,4-triazol-3-amine" "1,2,5,6-tetrahydro-pyridine-3-carboxylic acid" "3-pyridinecarboxylic acid, 1,2,5,6-tetrahydro-" );
+gibbsFormation
+{
+    dHf_298   -358660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     404.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-204070.0
+    phase     gas;
+}

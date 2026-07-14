@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethylene glycol monopropyl ether  (C9H20O4, CAS 23305-64-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethyleneGlycolMonopropylEther;
+formula     C9H20O4;
+CAS         23305-64-8;
+InChIKey    KCBPVRDDYVJQHA-UHFFFAOYSA-N;
+MW          192.255;      // g/mol [origin=calculated method=formula-sum]
+Tc          724.61;      // K   [origin=predictive method=joback]
+Pc          24.006;      // bar [origin=predictive method=joback]
+omega       1.1508;      // -   [origin=predictive method=lee-kesler]
+Tb          564.96;      // K   [origin=predictive method=joback]
+HvapTb      59537.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (76.498 0.70322 -0.0001632 -5.87e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH2O; count 2; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group OH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-(2-propoxyethoxy)ethoxy]ethanol" "Ethanol, 2-[2-(2-propoxyethoxy)ethoxy]-" "2-(2-(2-Propoxyethoxy)ethoxy)ethanol" "3,6,9-trioxadodecane-1-ol" "Ethanol, 2-(2-(2-propoxyethoxy)ethoxy)-" "Ethanol, 2-2-(2-propoxyethoxy)ethoxy-" "triethylene glycol n propyl ether" "j96.996f" "2-[2-(2-Propoxy-ethoxy)-ethoxy]-ethanol" "CHEMBL3184425" "tox21_301227" "NCGC00256095-01" );
+gibbsFormation
+{
+    dHf_298   -777980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     591.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-426920.0
+    phase     gas;
+}

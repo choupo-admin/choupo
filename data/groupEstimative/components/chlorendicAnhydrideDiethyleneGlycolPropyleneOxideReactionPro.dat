@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chlorendic anhydride, diethylene glycol, propylene oxide reaction product  (C22H30Cl6O9, CAS 72066-76-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chlorendicAnhydrideDiethyleneGlycolPropyleneOxideReactionPro;
+formula     C22H30Cl6O9;
+CAS         72066-76-3;
+InChIKey    ODFZHUDSHBUSEJ-VGORAHFOSA-N;
+MW          651.173;      // g/mol [origin=calculated method=formula-sum]
+Tc          1656.19;      // K   [origin=predictive method=joback]
+Pc          10.694;      // bar [origin=predictive method=joback]
+omega       0.6848;      // -   [origin=predictive method=lee-kesler]
+Tb          1307.86;      // K   [origin=predictive method=joback]
+HvapTb      142348.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.293 2.83456 -0.0025224 9.766e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 4; } { group OH; count 1; } { group CH2O; count 2; } { group CCl2; count 1; } { group Cl_C=C_; count 2; } { group C=C; count 1; } { group COO; count 2; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:2
+    joback ( { group CH3; count 3; } { group CH2; count 7; } { group CH; count 3; } { group CH_ring; count 2; } { group C_ring; count 3; } { group dC_ring; count 2; } { group Cl; count 6; } { group OH; count 2; } { group O; count 3; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "o6-[2-[2-[(2s)-2-[(2s)-2-oxidanylpropoxy]propoxy]ethoxy]ethyl] o5-[(2s)-2-oxidanylpropyl] (1s,4r,5r,6s)-1,2,3,4,7,7-hexakis(chloranyl)bicyclo[2.2.1]hept-2-ene-5,6-dicarboxylate" "bicyclo(2.2.1)hept-5-ene-2,3-dicarboxylic acid, 1,4,5,6,7,7-hexachloro-, 2-(2-(2-(2-(2-hydroxypropoxy)propoxy)ethoxy)ethyl) 3-(2-hydroxypropyl) ester" "bicyclo(2.2.1)hept-5-ene-2,3-dicarboxylic acid, 1,4,5,6,7,7-hexachloro-, 2-(2-(2-(2-hydroxypropoxy)propoxy)ethoxy)ethyl 2-hydroxypropyl ester" "6-o-[2-[2-[(2s)-2-[(2s)-2-hydroxypropoxy]propoxy]ethoxy]ethyl] 5-o-[(2s)-2-hydroxypropyl] (1s,4r,5r,6s)-1,2,3,4,7,7-hexachlorobicyclo[2.2.1]hept-2-ene-5,6-dicarboxylate" );
+gibbsFormation
+{
+    dHf_298   -1784390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1294.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1073420.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: firemaster ff-1  (C12H4Br6, CAS 59080-40-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        firemasterFf1;
+formula     C12H4Br6;
+CAS         59080-40-9;
+InChIKey    HMBBJSKXDBUNNT-UHFFFAOYSA-N;
+MW          627.588;      // g/mol [origin=calculated method=formula-sum]
+Tc          1269.90;      // K   [origin=predictive method=joback]
+Pc          52.207;      // bar [origin=predictive method=joback]
+omega       1.2713;      // -   [origin=predictive method=lee-kesler]
+Tb          954.36;      // K   [origin=predictive method=joback]
+HvapTb      89440.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (59.11 0.8582 -0.00071756 2.378e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 8; } { group Br; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 4; } { group dC_ring; count 8; } { group Br; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,4-tris(bromanyl)-5-[2,4,5-tris(bromanyl)phenyl]benzene" "2,2',4,4',5,5'-hexabromobiphenyl" "2,2',4,4',5,5'-hexabromo-1,1'-biphenyl" "1,1'-biphenyl, 2,2',4,4',5,5'-hexabromo-" "polybrominated biphenyl mixture" "2,4,5,2',4',5'-hexabromobiphenyl" "2,2'4,4'5,5'-hexabromo-1,1'-biphenyl" "2,2'4,4',5,5'-hexabromo-1,1'-biphenyl" "brominated biphenyl" "polybrominated biphenyl" "polybrominated biphenyl (ff-1)" "1,1'-biphenyl,2,2',4,4',5,5'-hexabromo-" );
+gibbsFormation
+{
+    dHf_298   271210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     679.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=303120.0
+    phase     gas;
+}

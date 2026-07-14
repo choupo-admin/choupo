@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-bromohexatriacontane  (C36H73Br, CAS 7461-19-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Bromohexatriacontane;
+formula     C36H73Br;
+CAS         7461-19-0;
+InChIKey    RGOXLGSJFUPZJE-UHFFFAOYSA-N;
+MW          585.884;      // g/mol [origin=calculated method=formula-sum]
+Tc          1407.17;      // K   [origin=predictive method=joback]
+Pc          4.716;      // bar [origin=predictive method=joback]
+omega       -0.0295;      // -   [origin=predictive method=lee-kesler]
+Tb          1089.44;      // K   [origin=predictive method=joback]
+HvapTb      102165.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-21.645 3.46202 -0.002006 4.513e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 35; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 35; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanylhexatriacontane" "hexatriacontane, 1-bromo-" );
+gibbsFormation
+{
+    dHf_298   -760040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1609.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=266560.0
+    phase     gas;
+}

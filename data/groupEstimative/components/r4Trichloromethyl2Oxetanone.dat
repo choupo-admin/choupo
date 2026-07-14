@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (r)-4-(trichloromethyl)-2-oxetanone  (C4H3Cl3O2, CAS 16493-62-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        r4Trichloromethyl2Oxetanone;
+formula     C4H3Cl3O2;
+CAS         16493-62-2;
+InChIKey    CPNBMBBRKINRNE-UWTATZPHSA-N;
+MW          189.416;      // g/mol [origin=calculated method=formula-sum]
+Tc          680.82;      // K   [origin=predictive method=joback]
+Pc          39.856;      // bar [origin=predictive method=joback]
+omega       0.4239;      // -   [origin=predictive method=lee-kesler]
+Tb          460.87;      // K   [origin=predictive method=joback]
+HvapTb      43505.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.26 0.6357 -0.0005988 2.074e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group CH2COO; count 1; } { group CCl3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group Cl; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4r)-4-(trichloromethyl)oxetan-2-one" "4-(trichloromethyl)-2-oxetanone" "a-trichloromethyl-" "a-propiolactone" "2-oxetanone, 4-(trichloromethyl)-, (4r)-" "(r)-(-)-3-hydroxy-4,4,4-trichlorobutyric " "a-lactone" "(r)-3-hydroxy-4,4,4-trichlorobutyric acid " "a-lactone" "(r)-3-hydroxy-4,4,4-trichlorobutyric acid beta-lactone" );
+gibbsFormation
+{
+    dHf_298   -420180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     314.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-287670.0
+    phase     gas;
+}

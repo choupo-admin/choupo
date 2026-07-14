@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-bis(trifluoromethyl)benzyl bromide  (C9H5BrF6, CAS 140690-56-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24BisTrifluoromethylBenzylBromide;
+formula     C9H5BrF6;
+CAS         140690-56-8;
+InChIKey    SWFFFUJOWAJJCH-UHFFFAOYSA-N;
+MW          307.031;      // g/mol [origin=calculated method=formula-sum]
+Tc          686.07;      // K   [origin=predictive method=joback]
+Pc          26.461;      // bar [origin=predictive method=joback]
+omega       0.6138;      // -   [origin=predictive method=lee-kesler]
+Tb          497.48;      // K   [origin=predictive method=joback]
+HvapTb      38169.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.809 1.0215 -0.00087632 2.831e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACCH2; count 1; } { group Br; count 1; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 6; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(bromomethyl)-2,4-bis(trifluoromethyl)benzene" "2,4-bis(trifluoromethyl)benzylbromide" "2,4-bis(trifluoromethyl)-1-(bromomethyl)benzene" "1-(bromomethyl)-2,4- bis(trifluoromethyl)benzene" "benzene,1-(bromomethyl)-2,4-bis(trifluoromethyl)-" "benzene, 1-(bromomethyl)-2,4-bis(trifluoromethyl)-" "1-(bromomethyl)-2,4-bis(trifluoromethyl)benzene;2,4-bis(trifluoromethyl)benzyl bromide; 2,4-di(trifluoromethyl)benzyl bromide" );
+gibbsFormation
+{
+    dHf_298   -1183330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     551.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1030810.0
+    phase     gas;
+}

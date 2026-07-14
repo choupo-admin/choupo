@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1, n2,n2-dimethyl-  (C5H14N2, CAS 19764-58-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1N2N2Dimethyl;
+formula     C5H14N2;
+CAS         19764-58-0;
+InChIKey    WNLWBCIUNCAMPH-UHFFFAOYSA-N;
+MW          102.181;      // g/mol [origin=calculated method=formula-sum]
+Tc          582.20;      // K   [origin=predictive method=joback]
+Pc          37.408;      // bar [origin=predictive method=joback]
+omega       0.4517;      // -   [origin=predictive method=lee-kesler]
+Tb          398.53;      // K   [origin=predictive method=joback]
+HvapTb      39020.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.539 0.67056 -0.0004074 9.62e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group CH2NH2; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n2,n2-dimethylpropane-1,2-diamine" "n-(2-amino-1-methylethyl)-n,n-dimethylamine" "1-amino-2-(dimethylamino)propane" "(1-aminopropan-2-yl)dimethylamine" "1,2-propanediamine, n2,n2-dimethyl-" "n2,2-propanediamine" "2-(dimethylamino)propylamine" "(2-amino-isopropyl)dimethylamine" "2-dimethylamino-n-propylamine" "n2,n2-dimethyl-1,2-propanediamine" "2-n,2-n-dimethylpropane-1,2-diamine" "n~2~,n~2~-dimethylpropane-1,2-diamine" );
+gibbsFormation
+{
+    dHf_298   -50490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     408.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=166010.0
+    phase     gas;
+}

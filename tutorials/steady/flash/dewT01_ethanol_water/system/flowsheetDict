@@ -1,17 +1,13 @@
 /*---------------------------------------------------------------------------*\
-  Dew-T of a 30/70 ethanol/water vapour at 1 atm (NRTL).
+  dewT01_ethanol_water  --  Dew-T of a 30/70 ethanol/water vapour at 1 atm
+  (NRTL gamma, non-ideal).  The mirror of bubbleT01: the unit solves
+  sum(y_i / K_i) = 1 for T at the given P (a saturation calc, no product
+  streams); the incipient liquid is water-enriched.  Dew-T sits ABOVE the
+  bubble-T of the same overall composition -- the two bound the two-phase
+  window.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            370.0 K;
-        P            1.01325 bar;
-        molarComposition  { ethanol 0.30;  water 0.70; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

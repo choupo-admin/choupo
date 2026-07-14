@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-iodononane  (C9H19I, CAS 4282-42-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Iodononane;
+formula     C9H19I;
+CAS         4282-42-2;
+InChIKey    OGSJMFCWOUHXHN-UHFFFAOYSA-N;
+MW          254.151;      // g/mol [origin=calculated method=formula-sum]
+Tc          692.14;      // K   [origin=predictive method=joback]
+Pc          22.590;      // bar [origin=predictive method=joback]
+omega       0.4968;      // -   [origin=predictive method=lee-kesler]
+Tb          498.66;      // K   [origin=predictive method=joback]
+HvapTb      45001.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.398 0.89782 -0.0005472 1.358e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-iodanylnonane" "nonyl iodide" "n-nonyl iodide" "nonane, 1-iodo-" "1-n-nonyl iodide" "nonane, iodo-" "nonane,1-iodo-" "iodononane" );
+gibbsFormation
+{
+    dHf_298   -152220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     562.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83020.0
+    phase     gas;
+}

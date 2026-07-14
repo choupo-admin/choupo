@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tert-butyl 2,2,2-trifluoroacetate  (C6H9F3O2, CAS 400-52-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tertButyl222Trifluoroacetate;
+formula     C6H9F3O2;
+CAS         400-52-2;
+InChIKey    UQJLSMYQBOJUGG-UHFFFAOYSA-N;
+MW          170.13;      // g/mol [origin=calculated method=formula-sum]
+Tc          554.05;      // K   [origin=predictive method=joback]
+Pc          28.114;      // bar [origin=predictive method=joback]
+omega       0.4254;      // -   [origin=predictive method=lee-kesler]
+Tb          386.45;      // K   [origin=predictive method=joback]
+HvapTb      31314.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.83 0.80606 -0.0006008 1.637e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group CF3; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 2; } { group F; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tert-butyl 2,2,2-tris(fluoranyl)ethanoate" "t-butyl trifluoroacetate" "acetic acid, trifluoro-, 1,1-dimethylethyl ester" "acetic acid, trifluoro-, tert-butyl ester" "tert-butyl trifluoroacetate" "tert-butyl 2,2,2-trifluoroethanoate" "trifluoroacetic acid tert-butyl ester" "acetic acid,2,2,2-trifluoro-, 1,1-dimethylethyl ester" "aceticacid, trifluoro-, 1,1-dimethylethyl ester (9ci); acetic acid, trifluoro-,tert-butyl ester (6ci,7ci,8ci); trifluoroacetic acid tert-butyl ester;tert-butyl trifluoroacetate" );
+gibbsFormation
+{
+    dHf_298   -1090280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     458.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-889480.0
+    phase     gas;
+}

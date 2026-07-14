@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: halostachine  (C9H13NO, CAS 68579-60-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        halostachine;
+formula     C9H13NO;
+CAS         68579-60-2;
+InChIKey    ZCTYHONEGJTYQV-UHFFFAOYSA-N;
+MW          151.209;      // g/mol [origin=calculated method=formula-sum]
+Tc          774.13;      // K   [origin=predictive method=joback]
+Pc          37.271;      // bar [origin=predictive method=joback]
+omega       0.9575;      // -   [origin=predictive method=lee-kesler]
+Tb          574.11;      // K   [origin=predictive method=joback]
+HvapTb      60631.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-36.799 0.89602 -0.0005792 1.412e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 5; } { group ACCH; count 1; } { group OH; count 1; } { group CH3NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(methylamino)-1-phenyl-ethanol" "(+-)-halostachine" "2-(methylamino)-1-phenylethanol" "n-methylphenylethanolamine" "2-methylamino-1-phenylethanol" "alpha-(methylaminomethyl)benzyl alcohol" "(+-)-alpha-((methylamino)methyl)benzenemethanol" "benzyl alcohol, alpha-((methylamino)methyl)-, dl-" "alpha-((methylamino)methyl)benzyl alcohol" "2-(methylamino)-1-phenylethan-1-ol" "dl-1-phenyl-1-oxy-2-(methylamino)-aethan [german]" "ethanol, 2-(methylamino)-1-phenyl-" );
+gibbsFormation
+{
+    dHf_298   -96600.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     482.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=87440.0
+    phase     gas;
+}

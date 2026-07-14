@@ -22,7 +22,8 @@ engine; HERE your job is this case.
   unified props/thermo + per-sector `constant/`.  Esterification
   AcOH + EtOH -> EtOAc + H2O, then a flash split.
 - **Sectors (THERMO REGIONS), each one unit op:**
-  - `REACTION` -- a CSTR (`reactor`); kinetics curated in `REACTION/constant/`.
+  - `REACTION` -- a CSTR (`reactor`); kinetics curated in
+    `sectors/REACTION/constant/reactions`.
   - `SEPARATION` -- an isothermal flash; ethyl-acetate–water NRTL pair is
     particular to this sector; ethanol-water inherited from the standard library.
 - **Decisions + why (defended by the Props evidence):**
@@ -30,9 +31,15 @@ engine; HERE your job is this case.
     (its curve never meets y=x), NRTL/Wilson meet it at x ~ 0.88.
   - REACTION kinetics: **2nd order** -- single-isotherm fit R^2 0.9994 (order 1
     only 0.973); multi-T Arrhenius gives **Ea ~ 50.2 kJ/mol, k0 ~ 2.7e4**.
-- **Pending / in curation:**
-  - The plant is UNWIRED (curation phase): `system/flowsheetDict` has `children`
-    but the connections are commented out.  Wire them to simulate.
-  - **Disconnect to resolve:** `REACTION/constant/reactions` still carries the
-    PLACEHOLDER `A 1.0e8; Ea 7.0e4` and pseudo-1st-order, NOT the fitted
-    2nd-order / Ea 50.2 kJ/mol.  Promote the fit (the user's call on the mapping).
+- **WIRED (2026-07-09).**  `sectors/` + `unitOperations/` layout, state in `0/`,
+  named-edge `connections`.  Runs end to end; mass closes exactly.  Fixing it
+  surfaced two engine bugs (per-node resolution of the `reactions ( ... )` list
+  and of `binaryPairs`, both of which ignored the SECTOR and only looked at the
+  leaf unit) plus a parser hardening (a bare sub-100-Pa pressure now warns).
+- **Pending / the user's call:**
+  - **Disconnect to resolve:** `sectors/REACTION/constant/reactions` still carries
+    the PLACEHOLDER `A 1.0e8; Ea 7.0e4` and pseudo-1st-order, NOT the fitted
+    2nd-order / Ea 50.2 kJ/mol from this case's own Props evidence.  Promoting the
+    fit is a curation act and it changes the conversion -- Vítor decides the
+    mapping, the assistant enacts it.  Until then the 34.2 % conversion the case
+    reports is a placeholder number, and this line is why.

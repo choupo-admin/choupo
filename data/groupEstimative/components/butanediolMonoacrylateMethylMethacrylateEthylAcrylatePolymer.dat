@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butanediol monoacrylate, methyl methacrylate, ethyl acrylate polymer  (C17H28O7, CAS 63833-84-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butanediolMonoacrylateMethylMethacrylateEthylAcrylatePolymer;
+formula     C17H28O7;
+CAS         63833-84-1;
+InChIKey    NYXKMAAQXZEKNW-UHFFFAOYSA-N;
+MW          344.404;      // g/mol [origin=calculated method=formula-sum]
+Tc          1042.32;      // K   [origin=predictive method=joback]
+Pc          12.865;      // bar [origin=predictive method=joback]
+omega       1.1488;      // -   [origin=predictive method=lee-kesler]
+Tb          848.12;      // K   [origin=predictive method=joback]
+HvapTb      90994.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (141.925 1.01596 0.000111 -3.508e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH2=CH; count 2; } { group CH2=C; count 1; } { group OH; count 1; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group dCH2; count 3; } { group dCH; count 2; } { group dC; count 1; } { group OH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl prop-2-enoate;methyl 2-methylprop-2-enoate;4-oxidanylbutyl prop-2-enoate" "ethyl prop-2-enoate; 4-hydroxybutyl prop-2-enoate; methyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, methyl ester, polymer with ethyl 2-propenoate and 4-hydroxybutyl 2-propenoate" );
+gibbsFormation
+{
+    dHf_298   -1355020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1220.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-930220.0
+    phase     gas;
+}

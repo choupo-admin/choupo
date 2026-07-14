@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): n-methyl-n-(1-oxo-9-octadecenyl)glycine, triethanolamine salt  (C27H54N2O6, CAS 73019-13-3)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           nMethylN1Oxo9OctadecenylGlycineTriethanolamineSalt;
+formula        C27H54N2O6;
+CAS            73019-13-3;
+InChIKey       FUUGOUJDTGRGMR-ASTDGNLGSA-N;
+MW             502.737;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+dissociatesTo  { n-methyl-n-(1-oxo-9-octadecenyl)glycine 1; triethanolamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

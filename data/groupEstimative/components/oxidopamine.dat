@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxidopamine  (C8H11NO3, CAS 1199-18-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oxidopamine;
+formula     C8H11NO3;
+CAS         1199-18-4;
+InChIKey    DIVDFFZHCJEHGG-UHFFFAOYSA-N;
+MW          169.18;      // g/mol [origin=calculated method=formula-sum]
+Tc          976.28;      // K   [origin=predictive method=joback]
+Pc          75.483;      // bar [origin=predictive method=joback]
+omega       1.3447;      // -   [origin=predictive method=lee-kesler]
+Tb          723.71;      // K   [origin=predictive method=joback]
+HvapTb      85361.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-58.558 1.2106 -0.00125508 5.198e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group ACCH2; count 1; } { group ACOH; count 3; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-(2-azanylethyl)benzene-1,2,4-triol" "6-hydroxydopamine" "6-ohda" "hydroxydopamine" "1,2,4-benzenetriol, 5-(2-aminoethyl)-" "2,4,5-trihydroxyphenethylamine" "oxidopamine [usan:inn]" "oxidopaminum [inn-latin]" "5-(2-aminoethyl)benzene-1,2,4-triol" "5-(2-aminoethyl)-1,2,4-benzenetriol" "oxidopamina" "oxidopaminum" );
+gibbsFormation
+{
+    dHf_298   -470060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     492.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-268520.0
+    phase     gas;
+}

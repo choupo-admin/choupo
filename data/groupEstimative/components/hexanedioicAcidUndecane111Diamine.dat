@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexanedioic acid;undecane-1,11-diamine  (C17H36N2O4, CAS 52235-79-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexanedioicAcidUndecane111Diamine;
+formula     C17H36N2O4;
+CAS         52235-79-7;
+InChIKey    DGMZXOMIRKMHEF-UHFFFAOYSA-N;
+MW          332.485;      // g/mol [origin=calculated method=formula-sum]
+Tc          1256.25;      // K   [origin=predictive method=joback]
+Pc          14.283;      // bar [origin=predictive method=joback]
+omega       1.2919;      // -   [origin=predictive method=lee-kesler]
+Tb          1026.04;      // K   [origin=predictive method=joback]
+HvapTb      109340.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (50.435 1.638 -0.0007182 5.19e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 13; } { group CH2NH2; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 15; } { group COOH; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexanedioic acid, compd. with 1,11-undecanediamine (1:1)" "hexanedioic acid, polymer with 1,11-undecanediamine" "hexanedioic acid; undecane-1,11-diamine" "hexanedioic acid, 1,11-undecanediamine polymer" );
+gibbsFormation
+{
+    dHf_298   -1138790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1135.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-567420.0
+    phase     gas;
+}

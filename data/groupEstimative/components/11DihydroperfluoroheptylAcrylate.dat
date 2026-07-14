@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1-dihydroperfluoroheptyl acrylate  (C10H5F13O2, CAS 559-11-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11DihydroperfluoroheptylAcrylate;
+formula     C10H5F13O2;
+CAS         559-11-5;
+InChIKey    XJAVADKMAMZXPW-UHFFFAOYSA-N;
+MW          404.122;      // g/mol [origin=calculated method=formula-sum]
+Tc          587.09;      // K   [origin=predictive method=joback]
+Pc          14.770;      // bar [origin=predictive method=joback]
+omega       0.7457;      // -   [origin=predictive method=lee-kesler]
+Tb          454.43;      // K   [origin=predictive method=joback]
+HvapTb      26194.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-51.439 1.7872 -0.0016925 5.723e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2=CH; count 1; } { group CF3; count 1; } { group CF2; count 5; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 6; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 13; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,5,5,6,6,7,7,7-tridecakis(fluoranyl)heptyl prop-2-enoate" "2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoroheptyl acrylate" "2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoroheptyl prop-2-enoate" "2-propenoic acid, 2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoroheptyl ester" "2-propenoic acid,2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoroheptyl ester" "2-propenoic acid, 2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoroheptyl ester (9ci)" "acrylicacid, 2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoroheptyl ester (8ci); 1-heptanol,2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoro-, acrylate (8ci);1,1-dihydroperfluoroheptyl acrylate; 1h,1h-tridecafluoroheptyl acrylate; a,a-dihydroperfluoroheptyl acrylate" );
+gibbsFormation
+{
+    dHf_298   -3043510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     771.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2704700.0
+    phase     gas;
+}

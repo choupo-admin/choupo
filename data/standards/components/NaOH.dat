@@ -24,20 +24,8 @@ identity
 
 nonvolatile    true;                // never in the vapour (K = 0)
 dissociation   2;                   // van't Hoff factor (1:1 strong electrolyte)
+dissociatesTo  { Na 1; OH 1; }   // ion stoichiometry (formula-like identity; the package activates it)
 
-electrolyte
-{
-    cation     Na;                  // -> electrolyte/ions.dat (z = +1)
-    anion      OH;                  // -> electrolyte/ions.dat (z = -1); pairs.dat (Na,OH): Appelo 2014
-    solubility 28.5;                // m_sat [mol/kg water], 25 C -- VERIFY vs primary
-                                    //   (~114 g/100 g water; stable solid = NaOH.H2O)
-    dissolutionEnthalpy -44510;     // J/mol, NaOH(s) -> Na+(aq) + OH-(aq), infinite dilution
-    provenance
-    {
-        solubility          { origin literature; method "Seidell solubility tables lineage; VERIFY against the primary before design use (25 C, monohydrate-saturated)"; }
-        dissolutionEnthalpy { origin literature; method "Wagman et al., NBS Tables of Chemical Thermodynamic Properties, J. Phys. Chem. Ref. Data 11 Suppl. 2 (1982); US-gov public domain"; }
-    }
-}
 
 solid       // anhydrous NaOH(s) -- the solid-tabulated formation datum
 {

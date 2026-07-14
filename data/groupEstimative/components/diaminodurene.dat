@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diaminodurene  (C10H16N2, CAS 3102-87-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diaminodurene;
+formula     C10H16N2;
+CAS         3102-87-2;
+InChIKey    WCZNKVPCIFMXEQ-UHFFFAOYSA-N;
+MW          164.252;      // g/mol [origin=calculated method=formula-sum]
+Tc          854.21;      // K   [origin=predictive method=joback]
+Pc          30.592;      // bar [origin=predictive method=joback]
+omega       0.7485;      // -   [origin=predictive method=lee-kesler]
+Tb          625.04;      // K   [origin=predictive method=joback]
+HvapTb      64722.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (44.37 0.70128 -0.000303 3.08e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACCH3; count 4; } { group ACNH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dC_ring; count 6; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,5,6-tetramethylbenzene-1,4-diamine" "3,6-diaminodurene" "2,3,5,6-tetramethyl-1,4-phenylenediamine" "2,3,5,6-tetramethyl-p-phenylenediamine" "4-amino-2,3,5,6-tetramethylaniline" "2,3,5,6-tetramethyl-para-phenylenediamine" "tetramethylbenzene-1,4-diamine" "2,3,5,6-tetramethyl-1,4-benzenediamine" "3,6-diamino-1,2,4,5-tetramethylbenzene" "(2,3,5,6-tetramethyl-1,4-benzenediamine" "1,4-benzenediamine,2,3,5,6-tetramethyl-" );
+gibbsFormation
+{
+    dHf_298   -2970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     511.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=230480.0
+    phase     gas;
+}

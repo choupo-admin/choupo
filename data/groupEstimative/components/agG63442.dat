@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ag-g-63442  (C9H19NO2, CAS 68459-80-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H19NO2 (delta H+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        agG63442;
+formula     C9H19NO2;
+CAS         68459-80-3;
+InChIKey    DAMFDFKOXMYOTN-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          173.256;      // g/mol [origin=calculated method=formula-sum]
+Tc          800.57;      // K   [origin=predictive method=joback]
+Pc          28.719;      // bar [origin=predictive method=joback]
+omega       0.6914;      // -   [origin=predictive method=lee-kesler]
+Tb          583.72;      // K   [origin=predictive method=joback]
+HvapTb      55411.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-56.58 1.05254 -0.0005246 6.23e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 1; } { group CH3N; count 1; } { group HCOOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethylcyclohexanamine;methanoic acid" "formic acid compd. with n,n-dimethylcyclohexanamine (1:1)" "formic acid, compd. with n,n-dimethylcyclohexanamine (1:1)" "n,n-dimethylcyclohexanamine; formic acid" "n,n-dimethylcyclohexanamine, formate salt" "formic acid, compound with n,n-dimethylcyclohexylamine (1:1)" );
+gibbsFormation
+{
+    dHf_298   -513320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     664.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-236160.0
+    phase     gas;
+}

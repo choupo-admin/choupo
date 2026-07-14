@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-cyanoethyl-n-hydroxyethyl-m-toluidine  (C12H16N2O, CAS 119-95-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nCyanoethylNHydroxyethylMToluidine;
+formula     C12H16N2O;
+CAS         119-95-9;
+InChIKey    OSNNWHRYDJYFJL-UHFFFAOYSA-N;
+MW          204.273;      // g/mol [origin=calculated method=formula-sum]
+Tc          913.02;      // K   [origin=predictive method=joback]
+Pc          25.277;      // bar [origin=predictive method=joback]
+omega       1.1973;      // -   [origin=predictive method=lee-kesler]
+Tb          712.52;      // K   [origin=predictive method=joback]
+HvapTb      74444.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.026 1.09812 -0.00070516 1.731e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 4; } { group AC; count 1; } { group ACCH3; count 1; } { group OH; count 1; } { group CH2N; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group N; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[2-hydroxyethyl-(3-methylphenyl)amino]propanenitrile" "n-(2-cyanoethyl)-n-(2-hydroxyethyl)-m-toluidine" "3-(n-(2-hydroxyethyl)-m-toluidino)propionitrile" "3-[(2-hydroxyethyl)(3-methylphenyl)amino]propionitrile" "propanenitrile, 3-[(2-hydroxyethyl)(3-methylphenyl)amino]-" "3-((2-hydroxyethyl)(m-tolyl)amino)propanenitrile" "n-(2-hydroxyethyl)-n-(2-cyanoethyl)-m-toluidine" "propionitrile, 3-[n-(2-hydroxyethyl)-m-toluidino]-" "3-[n-(2-hydroxyethyl)-m-toluidino]propionitrile" "propanenitrile, 3-((2-hydroxyethyl)(3-methylphenyl)amino)-" "3-[(2-hydroxyethyl)-m-toluidino]propionitrile" "3-(n-(2-hydroxyethyl)-m-toluidino)propiononitrile" );
+gibbsFormation
+{
+    dHf_298   14230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     583.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=260080.0
+    phase     gas;
+}

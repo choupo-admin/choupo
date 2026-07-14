@@ -42,7 +42,7 @@ License
 
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { ActionIcon, Box, Group, Text, Tooltip, UnstyledButton, useComputedColorScheme } from "@mantine/core";
-import { IconX, IconRobot, IconRefresh, IconPin, IconPinnedOff } from "@tabler/icons-react";
+import { IconChevronDown, IconChevronUp, IconX, IconRobot, IconRefresh, IconPin, IconPinnedOff } from "@tabler/icons-react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
@@ -85,8 +85,16 @@ export function AgentConsole() {
   const toggleAgent = useStore((s) => s.toggleAgent);
   const docked = useStore((s) => s.agentDocked);
   const toggleDock = useStore((s) => s.toggleAgentDock);
+  const collapsed = useStore((s) => s.agentCollapsed);
+  const toggleCollapsed = useStore((s) => s.toggleAgentCollapsed);
   const height = useStore((s) => s.agentHeight);
   const setAgentHeight = useStore((s) => s.setAgentHeight);
+  // One-click slide-down (docked only): the console folds to its slim header
+  // bar -- the AppShell animates the grid row -- while the terminal + its
+  // `claude -c` session stay MOUNTED and alive, just clipped (closing via X
+  // still destroys the session, as before).  A floating window is moved or
+  // closed, never folded, so the flag is ignored there.
+  const collapsedBar = docked && collapsed;
   const tutorialName = useStore((s) => s.tutorialName);
   const hostRef = useRef<HTMLDivElement>(null);
   const reconnectRef = useRef<() => void>(() => {});
@@ -190,7 +198,19 @@ export function AgentConsole() {
       if (tutorialName.startsWith("local:")) {
         const dir = tutorialName.slice("local:".length);
         q = `?dir=${encodeURIComponent(dir)}`;
-      } else if (tutorialName && !tutorialName.startsWith("external:")) {
+      } else if (tutorialName.startsWith("external:")) {
+        // Defense-in-depth: "Open materialises" makes a memory-only case on
+        // localhost unreachable, but if one ever is consoled here, NEVER run the
+        // agent loose in a stray repo-root cwd where its edits would vanish from
+        // this in-memory case.  Be honest instead.  (On the hosted site there is
+        // no bridge and the 🤖 is hidden, so this branch is localhost-only.)
+        const onLocalhost = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+        if (onLocalhost) {
+          term.writeln("\r\n\x1b[33m[assistant] This case isn't saved on your computer yet — I can't keep our conversation.\x1b[0m");
+          term.writeln("\x1b[2m  Reopen it (File ▸ Open Case…) to save it to your cases, then the assistant runs here.\x1b[0m");
+          return;
+        }
+      } else if (tutorialName) {
         q = `?case=${encodeURIComponent(tutorialName)}`;
       }
       ws = new WebSocket(`ws://${location.hostname}:${PORT}${q}`);
@@ -270,6 +290,9 @@ export function AgentConsole() {
         gridArea: "console", position: "relative", height: "100%", width: "100%",
         background: "light-dark(#ffffff, #151b1e)", borderTop: "2px solid var(--mantine-color-accent-7)",
         display: "flex", flexDirection: "column", minHeight: 0,
+        // Folded to the slim bar, the (still-mounted) terminal is clipped
+        // behind the header instead of painting over the canvas.
+        overflow: "hidden",
       }
     : {
         position: "fixed", left: pos.left, top: pos.top, width: FLOAT_W, height, zIndex: 300,
@@ -280,51 +303,78 @@ export function AgentConsole() {
 
   return (
     <Box style={containerStyle}>
-      {/* drag the top edge to resize */}
-      <Box
-        onMouseDown={onResizeStart}
-        title="Drag to resize"
-        style={{
-          position: "absolute", top: -3, left: 0, right: 0, height: 6,
-          cursor: "ns-resize", zIndex: 301,
-        }}
-      />
+      {/* drag the top edge to resize (not while folded to the slim bar) */}
+      {!collapsedBar && (
+        <Box
+          onMouseDown={onResizeStart}
+          title="Drag to resize"
+          style={{
+            position: "absolute", top: -3, left: 0, right: 0, height: 6,
+            cursor: "ns-resize", zIndex: 301,
+          }}
+        />
+      )}
+      {/* Folded, the header row IS the slim restore handle: the whole bar is
+          the click target (Fitts edge strip, like the Explorer's re-open
+          tab); the buttons stopPropagation so X still just closes. */}
       <Group justify="space-between" px="sm" py={4}
         onMouseDown={onMoveStart}
+        onClick={collapsedBar ? toggleCollapsed : undefined}
+        title={collapsedBar ? "Restore the assistant console (session is alive)" : undefined}
         style={{
           background: "light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-8))", borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
-          cursor: docked ? "default" : "grab",
+          cursor: collapsedBar ? "pointer" : docked ? "default" : "grab",
         }}>
         <Group gap={6} align="center">
           <IconRobot size={15} color="var(--mantine-color-accent-4)" />
           <Text size="xs" fw={600} c="accent.3">Assistant</Text>
-          <Text size="xs" c="dimmed" ff="monospace">claude -c · edits the dicts · the GUI live-reloads</Text>
+          <Text size="xs" c="dimmed" ff="monospace">
+            {collapsedBar
+              ? "claude -c · session alive · click to restore"
+              : "claude -c · edits the dicts · the GUI live-reloads"}
+          </Text>
         </Group>
         <Group gap={2}>
-          <Tooltip label={docked ? "Float (detach)" : "Pin to bottom"} withArrow>
-            <ActionIcon variant="subtle" size="sm" color="gray"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={toggleDock} aria-label={docked ? "Float console" : "Pin console"}>
-              {docked ? <IconPinnedOff size={14} /> : <IconPin size={14} />}
-            </ActionIcon>
-          </Tooltip>
-          <Tooltip label="New session (reconnect)" withArrow>
-            <ActionIcon variant="subtle" size="sm" color="gray"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={() => reconnectRef.current()} aria-label="Reconnect">
-              <IconRefresh size={14} />
-            </ActionIcon>
-          </Tooltip>
+          {docked && (
+            <Tooltip label={collapsed ? "Restore the console" : "Fold to a slim bar (session stays alive)"} withArrow>
+              <ActionIcon variant="subtle" size="sm" color="gray"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => { e.stopPropagation(); toggleCollapsed(); }}
+                aria-label={collapsed ? "Restore console" : "Fold console"}
+                aria-expanded={!collapsed}>
+                {collapsed ? <IconChevronUp size={14} /> : <IconChevronDown size={14} />}
+              </ActionIcon>
+            </Tooltip>
+          )}
+          {!collapsedBar && (
+            <Tooltip label={docked ? "Float (detach)" : "Pin to bottom"} withArrow>
+              <ActionIcon variant="subtle" size="sm" color="gray"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={toggleDock} aria-label={docked ? "Float console" : "Pin console"}>
+                {docked ? <IconPinnedOff size={14} /> : <IconPin size={14} />}
+              </ActionIcon>
+            </Tooltip>
+          )}
+          {!collapsedBar && (
+            <Tooltip label="New session (reconnect)" withArrow>
+              <ActionIcon variant="subtle" size="sm" color="gray"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={() => reconnectRef.current()} aria-label="Reconnect">
+                <IconRefresh size={14} />
+              </ActionIcon>
+            </Tooltip>
+          )}
           <Tooltip label="Close console" withArrow>
             <ActionIcon variant="subtle" size="sm" color="gray"
               onMouseDown={(e) => e.stopPropagation()}
-              onClick={toggleAgent} aria-label="Close assistant">
+              onClick={(e) => { e.stopPropagation(); toggleAgent(); }}
+              aria-label="Close assistant">
               <IconX size={15} />
             </ActionIcon>
           </Tooltip>
         </Group>
       </Group>
-      {chips.length > 0 && (
+      {!collapsedBar && chips.length > 0 && (
         // CSV artifacts of THIS session (sweep reports the agent wrote, ...):
         // latest first, click = pop-out plot, × = dismiss.  Not persisted.
         <Group gap={6} px="sm" py={4} wrap="wrap"

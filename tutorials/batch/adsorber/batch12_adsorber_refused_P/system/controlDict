@@ -1,0 +1,21 @@
+/*---------------------------------------------------------------------------*\
+  batch12_adsorber_refused_P / system/controlDict
+
+  Time control for the d5 REFUSAL lesson: the run never integrates -- the
+  batchAdsorber rejects the case at initialise because the DECLARED
+  initial P (10 bar) contradicts n*R*T/V (~4.96 bar) beyond the 1e-3
+  cross-check.  endTime/deltaT are therefore never exercised; they are
+  kept identical to batch09 so the ONLY difference between the two cases
+  is the inconsistent declaration -- the lesson is the refusal message.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "REFUSAL lesson: declared initial.P (10 bar) contradicts n*R*T/V (4.958 bar) -- the honest cross-check FATALs; P of a closed ideal-gas headspace is a result, not an input";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         600;      // s   (~1258 linearised time constants)
+deltaT          0.1;      // s   (RK4; the unit prints the stability bound)
+writeInterval   10;       // s   (trajectory snapshot every 10 s)

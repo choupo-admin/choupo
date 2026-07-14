@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (+)-p-menth-1-en-9-ol  (C10H18O, CAS 18479-68-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pMenth1En9Ol;
+formula     C10H18O;
+CAS         18479-68-0;
+InChIKey    ZTYHGIAOVUPAAH-UHFFFAOYSA-N;
+MW          154.253;      // g/mol [origin=calculated method=formula-sum]
+Tc          736.60;      // K   [origin=predictive method=joback]
+Pc          29.155;      // bar [origin=predictive method=joback]
+omega       0.7874;      // -   [origin=predictive method=lee-kesler]
+Tb          543.83;      // K   [origin=predictive method=joback]
+HvapTb      55528.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-46.119 1.00034 -0.00055504 1.06e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 2; } { group CH=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-methylcyclohex-3-en-1-yl)propan-1-ol" "p-menth-1-en-9-ol" "(+)-p-mentha-1-en-9-ol" "3-cyclohexene-1-ethanol, .beta.,4-dimethyl-" "(+)-p-menth-1-en-9-ol,mixture of isomers" "p-menth-1-en-9-ol, (4r,8r)-(+)-" "3-cyclohexene-1-ethanol, .beta.,4-dimethyl-, [r-(r*,r*)]-" "p-menth-1-ene-9-ol" "agn-pc-04rpum" "ztyhgiaovupaah-uhfffaoysa-" "beta,4-dimethylcyclohex-3-ene-1-ethanol" "2-(4-methylcyclohex-3-enyl)propan-1-ol" );
+gibbsFormation
+{
+    dHf_298   -306610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     512.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-61160.0
+    phase     gas;
+}

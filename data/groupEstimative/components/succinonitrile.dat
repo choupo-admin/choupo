@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: succinonitrile  (C4H4N2, CAS 110-61-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        succinonitrile;
+formula     C4H4N2;
+CAS         110-61-2;
+InChIKey    IAHFWCOBPZCAEA-UHFFFAOYSA-N;
+MW          80.09;      // g/mol [origin=calculated method=formula-sum]
+Tc          710.14;      // K   [origin=predictive method=joback]
+Pc          36.642;      // bar [origin=predictive method=joback]
+omega       0.5383;      // -   [origin=predictive method=lee-kesler]
+Tb          495.28;      // K   [origin=predictive method=joback]
+HvapTb      45454.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (33.252 0.2534 -0.0001318 2.38e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2CN; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CN; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butanedinitrile" "ethylene cyanide" "1,2-dicyanoethane" "deprelin" "ethylene dicyanide" "disuxyl" "succinil" "dician" "dinile" "evanex" "s-dicyanoethane" "succinodinitrile" );
+gibbsFormation
+{
+    dHf_298   203870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     324.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=249160.0
+    phase     gas;
+}

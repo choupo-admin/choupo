@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-decene  (C10H20, CAS 872-05-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Decene;
+formula     C10H20;
+CAS         872-05-9;
+InChIKey    AFFLGGQVNFXPEV-UHFFFAOYSA-N;
+MW          140.27;      // g/mol [origin=calculated method=formula-sum]
+Tc          590.78;      // K   [origin=predictive method=joback]
+Pc          21.918;      // bar [origin=predictive method=joback]
+omega       0.4748;      // -   [origin=predictive method=lee-kesler]
+Tb          425.08;      // K   [origin=predictive method=joback]
+HvapTb      37184.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.193 0.93382 -0.0005431 1.252e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group CH2=CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group dCH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dec-1-ene" "n-1-decene" "decylene" "1-decene, homopolymer" "alpha-decene" "n-decylene" "gulftene 10" "poly(1-decene)" "1-n-decene" "decene, n-" "dialene 10" "decene, homopolymer" );
+gibbsFormation
+{
+    dHf_298   -124300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     540.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=121160.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: guaiac acetate  (C17H28O2, CAS 134-28-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        guaiacAcetate;
+formula     C17H28O2;
+CAS         134-28-1;
+InChIKey    DRFSOBZVMGLICQ-UHFFFAOYSA-N;
+MW          264.409;      // g/mol [origin=calculated method=formula-sum]
+Tc          894.91;      // K   [origin=predictive method=joback]
+Pc          16.090;      // bar [origin=predictive method=joback]
+omega       0.6399;      // -   [origin=predictive method=lee-kesler]
+Tb          678.56;      // K   [origin=predictive method=joback]
+HvapTb      61368.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-90.28 1.7518 -0.0010308 2.111e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 3; } { group C; count 1; } { group CH3COO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group C; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 3; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(3,8-dimethyl-1,2,3,4,5,6,7,8-octahydroazulen-5-yl)propan-2-yl ethanoate" "guaiyl acetate" "guaiol, acetate" "guaicwood acetate" "guaiac wood acetate" "octahydroazulene acetate" "guai-1-en-11-ol acetate" "guai-1(5)-en-11-ol, acetate" "1,4-dimethyl-7-(alpha-hydroxyisopropyl)-delta9,10-octahydroazule" "1-methyl-1-((3s,8s)-1,2,3,4,5,6,7,8-octahydro-3,8-dimethylazulen-5-yl)ethyl acetate" "5-azulenemethanol, 1,2,3,4,5,6,7,8-octahydro-alpha,alpha,3,8-tetramethyl-, acetate, (3s,5r,8s)-" "5-azulenemethanol, 1,2,3,4,5,6,7,8-octahydro-alpha,alpha-3,8-tetramethyl-, acetate, (3s-(3alpha,5alpha,8alpha))-" );
+gibbsFormation
+{
+    dHf_298   -584780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     637.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-139180.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dibutyl l-(+)-tartrate  (C12H22O6, CAS 87-92-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dibutylLTartrate;
+formula     C12H22O6;
+CAS         87-92-3;
+InChIKey    PCYQQSKDZQTOQG-NXEZZACHSA-N;
+MW          262.302;      // g/mol [origin=calculated method=formula-sum]
+Tc          952.42;      // K   [origin=predictive method=joback]
+Pc          21.433;      // bar [origin=predictive method=joback]
+omega       1.5858;      // -   [origin=predictive method=lee-kesler]
+Tb          774.08;      // K   [origin=predictive method=joback]
+HvapTb      89702.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (50.016 1.11404 -0.000507 3.6e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 2; } { group OH; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 2; } { group OH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dibutyl (2r,3r)-2,3-bis(oxidanyl)butanedioate" "dibutyll-(+)-tartrate" "(2r,3r)-dibutyl 2,3-dihydroxysuccinate" "dibutyl l-tartrate" "dibutyl(2r,3r)-2,3-dihydroxysuccinate" "dibutyl (2r,3r)-2,3-dihydroxybutanedioate" "butanedioic acid, 2,3-dihydroxy-, dibutyl ester" "butanedioic acid, 2,3-dihydroxy- (2r,3r)-, dibutyl ester" "butanedioic acid, 2,3-dihydroxy- (2r,3r)-, 1,4-dibutyl ester" "l-(+)-tartaric acid dibutyl ester" "l-(+)-tartaric acid di-n-butyl ester" "butanedioic acid,2,3-dihydroxy- (2r,3r)-, 1,4-dibutyl ester" );
+gibbsFormation
+{
+    dHf_298   -1240590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     808.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-849100.0
+    phase     gas;
+}

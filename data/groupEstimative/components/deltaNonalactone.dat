@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: delta-nonalactone  (C9H16O2, CAS 3301-94-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        deltaNonalactone;
+formula     C9H16O2;
+CAS         3301-94-8;
+InChIKey    PXRBWNLUQYZAAX-UHFFFAOYSA-N;
+MW          156.225;      // g/mol [origin=calculated method=formula-sum]
+Tc          665.37;      // K   [origin=predictive method=joback]
+Pc          27.070;      // bar [origin=predictive method=joback]
+omega       0.5285;      // -   [origin=predictive method=lee-kesler]
+Tb          474.75;      // K   [origin=predictive method=joback]
+HvapTb      43120.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-35.247 0.94532 -0.000545 1.082e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-butyloxan-2-one" "2h-pyran-2-one, 6-butyltetrahydro-" ".delta. nonalactone" "5-hydroxynonanoic acid, lactone" "5-nonalactone" "a-nonalactone" "5-nonanolide" "hydroxynonanoic acid delta-lactone" "delta-nonanolactone" "delta-pelargonolactone" "2h-pyran-2-one, 6-butyltetrahydro-, (r)-" "2h-pyran-2-one, 6-butyltetrahydro-, (s)-" );
+gibbsFormation
+{
+    dHf_298   -479730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     487.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-236820.0
+    phase     gas;
+}

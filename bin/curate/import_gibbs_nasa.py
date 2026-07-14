@@ -19,7 +19,7 @@
 # ANCHORS: a verify() gate cross-checks CO2/H2O/NH3/benzene/CO against known
 # values (<= 0.5 kJ/mol) before any file is touched.
 #
-# SCOPE: writes clean NASA gibbs into matched data/proposed/components/*.dat
+# SCOPE: writes clean NASA gibbs into matched data/local/components/*.dat
 # (compl=2 CoolProp files + the Wave-2 REPLACE files, replacing any grafted/
 # excluded-source or Joback gibbs) and REFITS matched data/standards/components/
 # files whose gibbs is an ESTIMATE (Joback/DERIVED/[prior-standard]) or absent --
@@ -47,9 +47,9 @@ from pathlib import Path
 import cantera as ct
 
 ROOT = Path(__file__).resolve().parents[2]
-PROP = ROOT / 'data/proposed/components'
+PROP = ROOT / 'data/local/components'
 STD  = ROOT / 'data/standards/components'
-OUT  = ROOT / 'data/proposed/COOLPROP-GIBBS-NASA.md'
+OUT  = ROOT / 'data/local/COOLPROP-GIBBS-NASA.md'
 
 ref = importlib.util.spec_from_file_location(
     'refresh', Path(__file__).with_name('refresh_coolprop_collisions.py'))

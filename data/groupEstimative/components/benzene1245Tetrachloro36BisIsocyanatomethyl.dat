@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene, 1,2,4,5-tetrachloro-3,6-bis(isocyanatomethyl)-  (C10H4Cl4N2O2, CAS 16325-38-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzene1245Tetrachloro36BisIsocyanatomethyl;
+formula     C10H4Cl4N2O2;
+CAS         16325-38-5;
+InChIKey    UXIKMAOGSBQRNJ-UHFFFAOYSA-N;
+MW          325.954;      // g/mol [origin=calculated method=formula-sum]
+Tc          1000.14;      // K   [origin=predictive method=joback]
+Pc          27.070;      // bar [origin=predictive method=joback]
+omega       1.0156;      // -   [origin=predictive method=lee-kesler]
+Tb          763.04;      // K   [origin=predictive method=joback]
+HvapTb      80044.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group ACCH2; count 2; } { group ACCl; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:2
+    joback ( { group CH2; count 2; } { group dCd; count 2; } { group dC_ring; count 6; } { group Cl; count 4; } { group dO_oth; count 2; } { group Nd; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,4,5-tetrakis(chloranyl)-3,6-bis(isocyanatomethyl)benzene" "2,3,5,6-tetrachloro-p-xylylene diisocyanate" "isocyanic acid, (2,3,5,6-tetrachloro-p-phenylene)dimethylene ester" );
+// formation datum unavailable (element entropy missing): dHf_298=-144330.0 dGf_298=None

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrakis(dimethylamino)silane  (C8H24N4Si, CAS 1624-01-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H24N4Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        tetrakisDimethylaminoSilane;
+formula     C8H24N4Si;
+CAS         1624-01-7;
+InChIKey    SSCVMVQLICADPI-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          204.393;      // g/mol [origin=calculated method=formula-sum]
+Tc          597.90;      // K   [origin=predictive method=joback]
+Pc          22.376;      // bar [origin=predictive method=joback]
+omega       0.5330;      // -   [origin=predictive method=lee-kesler]
+Tb          433.80;      // K   [origin=predictive method=joback]
+HvapTb      41868.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.33 1.05336 -0.000447 1.64e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH3N; count 4; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group N; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-methyl-n-[tris(dimethylamino)silyl]methanamine" "octamethylsilanetetramine" "silanetetramine, octamethyl-" "octamethylsilatetramine" "silane, tetrakis(dimethylamino)-" "silane 48-12 tetrakis" "tetrakis(dimethylamido)silane" "dimethylamine, n,n',n'',n'''-silanetetrayltetrakis-" "n,n,n',n',n'',n'',n''',n'''-octamethylsilanetetramine" "silanetetramine, n,n,n',n',n'',n'',n''',n'''-octamethyl-" "dimethylamine,n',n'',n'''-silanetetrayltetrakis-" );
+gibbsFormation
+{
+    dHf_298   -49950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     658.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=354840.0
+    phase     gas;
+}

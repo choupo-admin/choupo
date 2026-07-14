@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-methylazulene  (C11H10, CAS 1654-55-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Methylazulene;
+formula     C11H10;
+CAS         1654-55-3;
+InChIKey    RGZLGZNMQMWYIM-UHFFFAOYSA-N;
+MW          142.201;      // g/mol [origin=calculated method=formula-sum]
+Tc          736.70;      // K   [origin=predictive method=joback]
+Pc          34.079;      // bar [origin=predictive method=joback]
+omega       0.3929;      // -   [origin=predictive method=lee-kesler]
+Tb          501.92;      // K   [origin=predictive method=joback]
+HvapTb      44658.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-58.16 0.90672 -0.00067548 2.014e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 7; } { group AC; count 2; } { group ACCH3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "azulene,5-methyl-" "azulene, 5-methyl-" );
+gibbsFormation
+{
+    dHf_298   145760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     362.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=251170.0
+    phase     gas;
+}

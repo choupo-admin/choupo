@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-dodecanol  (C12H26O, CAS 6836-38-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Dodecanol;
+formula     C12H26O;
+CAS         6836-38-0;
+InChIKey    LRBBIFXICMMTOW-UHFFFAOYSA-N;
+MW          186.339;      // g/mol [origin=calculated method=formula-sum]
+Tc          726.18;      // K   [origin=predictive method=joback]
+Pc          19.407;      // bar [origin=predictive method=joback]
+omega       0.9959;      // -   [origin=predictive method=lee-kesler]
+Tb          565.90;      // K   [origin=predictive method=joback]
+HvapTb      58597.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.411 1.18374 -0.0006626 1.409e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 9; } { group CH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 9; } { group CH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodecan-6-ol" "6-dodecanol;dodecan-6-ol;amylhexylcarbinol" );
+gibbsFormation
+{
+    dHf_298   -448520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     664.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-89100.0
+    phase     gas;
+}

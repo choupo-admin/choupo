@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ag-g-99682  (C20H50Si5, CAS 75217-22-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C20H50Si5 (delta Si+5; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        agG99682;
+formula     C20H50Si5;
+CAS         75217-22-0;
+InChIKey    NGAHYNFGNNHRHK-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          431.045;      // g/mol [origin=calculated method=formula-sum]
+Tc          835.23;      // K   [origin=predictive method=joback]
+Pc          7.506;      // bar [origin=predictive method=joback]
+omega       0.4544;      // -   [origin=predictive method=lee-kesler]
+Tb          662.80;      // K   [origin=predictive method=joback]
+HvapTb      61290.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (147.98 1.0792 0.000595 -6.42e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 10; } { group CH2; count 10; } { group Si; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 10; } { group CH2; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2,2,3,3,4,4,5,5-decaethyl-1,2,3,4,5-pentasilolane" "cyclopentasilane, decaethyl-" "decaethylcyclopentasilane" );
+gibbsFormation
+{
+    dHf_298   -902610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1459.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-301520.0
+    phase     gas;
+}

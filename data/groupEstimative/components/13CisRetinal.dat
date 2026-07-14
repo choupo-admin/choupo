@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 13-cis retinal  (C20H28O, CAS 472-86-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13CisRetinal;
+formula     C20H28O;
+CAS         472-86-6;
+InChIKey    NCYCYZXNIZJOKI-UHFFFAOYSA-N;
+MW          284.443;      // g/mol [origin=calculated method=formula-sum]
+Tc          972.39;      // K   [origin=predictive method=joback]
+Pc          14.907;      // bar [origin=predictive method=joback]
+omega       0.7354;      // -   [origin=predictive method=lee-kesler]
+Tb          751.17;      // K   [origin=predictive method=joback]
+HvapTb      67720.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-139.22 2.1972 -0.0018638 6.799e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 3; } { group C; count 1; } { group CH=CH; count 2; } { group CH=C; count 2; } { group CHO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group dCH; count 6; } { group dC; count 2; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dC_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7-dimethyl-9-(2,6,6-trimethylcyclohexen-1-yl)nona-2,4,6,8-tetraenal" "retinal, 9-cis-" "retinal, 13-cis-" "9-cis retinal" "11-cis retinal" "(2z,4e,6e,8e)-3,7-dimethyl-9-(2,6,6-trimethyl-1-cyclohexenyl)nona-2,4,6,8-tetraenal" "all-trans retinal-14,15-13c2" "(11z)-retinal;11-cis-retinaldehyde;11-cis-vitamin a aldehyde;neoretinene b" "(2e,4e,6e,8z)-3,7-dimethyl-9-(2,6,6-trimethylcyclohexen-1-yl)nona-2,4,6,8-tetraenal" "3,7-dimethyl-9-(2,6,6-trimethylcyclohex-1-en-1-yl)nona-2,4,6,8-tetraenal" "9-cis-3,7-dimethyl-9-(2,6,6-trimethyl-1-cyclo-hexen-1-yl)-2,4,6,8-nonatetraenal;isoretinene a;9-cis-retinaldehyde;" );
+gibbsFormation
+{
+    dHf_298   11990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     908.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=351440.0
+    phase     gas;
+}

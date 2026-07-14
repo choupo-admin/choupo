@@ -1,0 +1,32 @@
+# Reference KPIs (golden master).  REVIEWED against the INDEPENDENT analytic
+# anchors of the A2 spec (a2_vectors.py, binary competitive Newton, residual 0):
+# q_CO2 = 0.4934990047, q_N2 = 0.7728183086 mol/kg, P_total = 181876.7854 Pa
+# (equilibrium selectivity S = 71.42857143).  Spec pins, not run ulps.
+# kind   name      key         expected        reltol
+kpi     adsorber               P_final          181876.7854        1e-4
+kpi     adsorber               Q_ads_isosteric_kJ -36.1181845604     1e-4
+kpi     adsorber               T_final          298.15             1e-4
+kpi     adsorber               closure_worst_rel 0                  1e-3
+kpi     adsorber               n_CO2_final      6.500995276e-06    1e-4
+kpi     adsorber               n_N2_final       7.271816914e-04    1e-4
+kpi     adsorber               q_CO2_final      0.4934990047       1e-4
+kpi     adsorber               q_N2_final       0.7728183086       1e-4
+kpi     adsorber               t_end            600                1e-4
+kpi     adsorber               totalMoles_final 0.000733682686703  1e-4
+kpi     adsorber               uptake_CO2_mol   0.4934990047       1e-4
+kpi     adsorber               uptake_N2_mol    0.7728183086       1e-4
+kpi     campaign               element_C_closure_rel 0                  1e-3
+kpi     campaign               element_N_closure_rel 0                  1e-3
+kpi     campaign               element_O_closure_rel 0                  1e-3
+kpi     campaign               element_worst_closure_rel 0                  1e-3
+kpi     campaign               energy_balance_available 0                  1e-4
+kpi     campaign               energy_records_invalid 0                  1e-4
+kpi     campaign               energy_records_valid 0                  1e-4
+kpi     campaign               mass_closure_rel 0                  1e-3
+kpi     campaign               mass_kg_external_out 0                  1e-4
+kpi     campaign               mass_kg_final    0.0640245          1e-4
+kpi     campaign               mass_kg_initial  0.0640245          1e-4
+kpi     campaign               mass_residual_kg 0                  1e-3
+kpi     campaign               transfers_H_invalid 0                  1e-4
+kpi     campaign               transfers_H_valid 0                  1e-4
+kpi     campaign               transfers_logged 0                  1e-4

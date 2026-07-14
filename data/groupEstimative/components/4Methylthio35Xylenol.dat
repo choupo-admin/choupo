@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(methylthio)-3,5-xylenol  (C9H12OS, CAS 7379-51-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Methylthio35Xylenol;
+formula     C9H12OS;
+CAS         7379-51-3;
+InChIKey    JGFZITGNFAVSKU-UHFFFAOYSA-N;
+MW          168.254;      // g/mol [origin=calculated method=formula-sum]
+Tc          836.19;      // K   [origin=predictive method=joback]
+Pc          38.340;      // bar [origin=predictive method=joback]
+omega       0.6393;      // -   [origin=predictive method=lee-kesler]
+Tb          591.56;      // K   [origin=predictive method=joback]
+HvapTb      59059.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.08 0.80995 -0.00057908 1.771e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 1; } { group ACCH3; count 2; } { group ACOH; count 1; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,5-dimethyl-4-methylsulfanyl-phenol" "phenol, 3,5-dimethyl-4-(methylthio)-" "3,5-dimethyl-4-(methylthio)phenol" "4-methylthio-3,5-xylenol" "4-(methylthio)-3,5-dimethylphenol" "4-methylthio-3,5-dimethylphenol" "3,5-dimethyl-4-methylsulfanylphenol" "3,5-dimethyl-4-(methylsulfanyl)phenol" "phenol,3,5-dimethyl-4-(methylthio)-" "s794" "3,5-dimethyl-4-(methylthio)phenol;3,5-dimethyl-4-methylsulfanylphenol;4-methylsulfanyl-3,5-dimethylphenol;4-(methylthio)-3,5-xylenol;" );
+gibbsFormation
+{
+    dHf_298   -150940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     475.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3450.0
+    phase     gas;
+}

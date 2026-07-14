@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-tetradecylnaphthalene  (C24H36, CAS 224051-14-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Tetradecylnaphthalene;
+formula     C24H36;
+CAS         224051-14-3;
+InChIKey    DZPGLHQEKQEGGB-UHFFFAOYSA-N;
+MW          324.552;      // g/mol [origin=calculated method=formula-sum]
+Tc          996.93;      // K   [origin=predictive method=joback]
+Pc          11.406;      // bar [origin=predictive method=joback]
+omega       0.8795;      // -   [origin=predictive method=lee-kesler]
+Tb          799.36;      // K   [origin=predictive method=joback]
+HvapTb      73596.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.977 2.14172 -0.00138268 3.561e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 12; } { group ACH; count 7; } { group AC; count 2; } { group ACCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 13; } { group dCH_ring; count 7; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetradecane, naphthalenyl-" );
+gibbsFormation
+{
+    dHf_298   -122560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     869.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=360630.0
+    phase     gas;
+}

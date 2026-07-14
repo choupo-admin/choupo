@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hex-4-yn-3-one  (C6H8O, CAS 10575-41-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hex4Yn3One;
+formula     C6H8O;
+CAS         10575-41-4;
+InChIKey    BIWUZTZFFUMZIG-UHFFFAOYSA-N;
+MW          96.129;      // g/mol [origin=calculated method=formula-sum]
+Tc          603.81;      // K   [origin=predictive method=joback]
+Pc          40.518;      // bar [origin=predictive method=joback]
+omega       0.3342;      // -   [origin=predictive method=lee-kesler]
+Tb          399.75;      // K   [origin=predictive method=joback]
+HvapTb      37848.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (22.351 0.39604 -0.00019176 3.014e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2CO; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group tC; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-hexyne-3-one" );
+gibbsFormation
+{
+    dHf_298   -7450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     388.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=73520.0
+    phase     gas;
+}

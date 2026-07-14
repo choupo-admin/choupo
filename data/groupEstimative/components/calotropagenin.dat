@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: calotropagenin  (C23H32O6, CAS 24211-64-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        calotropagenin;
+formula     C23H32O6;
+CAS         24211-64-1;
+InChIKey    VRDLGTLMAZPOMK-ULYMASLISA-N;
+MW          404.503;      // g/mol [origin=calculated method=formula-sum]
+Tc          1411.04;      // K   [origin=predictive method=joback]
+Pc          19.372;      // bar [origin=predictive method=joback]
+omega       1.5434;      // -   [origin=predictive method=lee-kesler]
+Tb          1150.49;      // K   [origin=predictive method=joback]
+HvapTb      127646.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-346.29 3.57122 -0.00338244 1.3402e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 9; } { group CH; count 6; } { group C; count 3; } { group CH=C; count 1; } { group OH; count 3; } { group CHO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 6; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 3; } { group OdCH_al; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r,3r,5s,8r,9s,10r,13r,17r)-13-methyl-2,3,14-tris(oxidanyl)-17-(5-oxidanylidene-2h-furan-3-yl)-1,2,3,4,5,6,7,8,9,11,12,15,16,17-tetradecahydrocyclopenta[a]phenanthrene-10-carbaldehyde" "(2" "a,3" "a,5" "a,14xi)-2,3,14-trihydroxy-19-oxocard-20(22)-enolide" "5-alpha-card-20(22)-enolide, 2-alpha,3-beta,14-trihydroxy-19-oxo-" "5-alpha-card-20(22)-enolide, 2-alpha,3-beta,14-trihydroxy-19-oxo- (8ci)" "card-20(22)-enolide, 2,3,14-trihydroxy-19-oxo-, (2-alpha,3-beta,5-alpha)-" "card-20(22)-enolide, 2,3,14-trihydroxy-19-oxo-, (2-alpha,3-beta,5-alpha)- (9ci)" "(2r,3r,5s,8r,9s,10r,13r,17r)-2,3,14-trihydroxy-13-methyl-17-(5-oxo-2h-furan-3-yl)-1,2,3,4,5,6,7,8,9,11,12,15,16,17-tetradecahydrocyclopenta[a]phenanthrene-10-carbaldehyde" );
+gibbsFormation
+{
+    dHf_298   -1033730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     918.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-461300.0
+    phase     gas;
+}

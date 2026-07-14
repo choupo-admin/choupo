@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(methylamino)aniline  (C7H10N2, CAS 4760-34-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2MethylaminoAniline;
+formula     C7H10N2;
+CAS         4760-34-3;
+InChIKey    RPKCLSMBVQLWIN-UHFFFAOYSA-N;
+MW          122.171;      // g/mol [origin=calculated method=formula-sum]
+Tc          742.89;      // K   [origin=predictive method=joback]
+Pc          44.208;      // bar [origin=predictive method=joback]
+omega       0.5755;      // -   [origin=predictive method=lee-kesler]
+Tb          514.12;      // K   [origin=predictive method=joback]
+HvapTb      51191.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.8 0.66852 -0.00041316 9.42e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group CH3NH; count 1; } { group ACNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n2-methylbenzene-1,2-diamine" "n1-methylbenzene-1,2-diamine" "n-methylbenzene-1,2-diamine" "1,2-benzenediamine, n-methyl-" "n-methyl-o-phenylenediamine" "o-phenylenediamine, n-methyl-" "2-amino-n-methylaniline" "n-methylbenzol-1,2-diamin" "n-methyl-1,2-phenylenediamine" "1,2-benzenediamine, n1-methyl-" "n-1-methyl-1,2-benzenediamine.hcl" "(2-aminophenyl)methylamine" );
+gibbsFormation
+{
+    dHf_298   124510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     408.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=266680.0
+    phase     gas;
+}

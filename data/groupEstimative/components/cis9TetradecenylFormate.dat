@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cis-9-tetradecenyl formate  (C15H28O2, CAS 56218-79-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C15H28O2 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        cis9TetradecenylFormate;
+formula     C15H28O2;
+CAS         56218-79-2;
+InChIKey    MAOWSVNIDSZOBR-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          240.387;      // g/mol [origin=calculated method=formula-sum]
+Tc          687.10;      // K   [origin=predictive method=joback]
+Pc          14.861;      // bar [origin=predictive method=joback]
+omega       0.6241;      // -   [origin=predictive method=lee-kesler]
+Tb          523.38;      // K   [origin=predictive method=joback]
+HvapTb      46569.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-44.429 1.45692 -0.001029 3.114e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group CH=CH; count 1; } { group HCOO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetradec-9-enyl methanoate" "(z)-9-tetradecen-1-ol formate" "9-tetradecen-1-ol, 1-formate, (9z)-" "9-tetradecen-1-ol,1-formate, (9z)-" "9-tetradecen-1-ol,formate, (9z)- (9ci);9-tetradecen-1-ol, formate, (z)-;(z)-9-tetradecen-1-olformate;(z)-9-tetradecenyl formate;cis-9-tetradecen-1-yl formate;cis-9-tetradecenyl formate;" );
+gibbsFormation
+{
+    dHf_298   -159260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     917.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=199600.0
+    phase     gas;
+}

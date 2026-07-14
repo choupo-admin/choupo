@@ -28,6 +28,7 @@ License
 
 #include "thermo/electrolyte/PitzerHMW.H"
 
+#include "core/Advisory.H"
 #include "thermo/electrolyte/PitzerForm.H"
 #include "thermo/electrolyte/PitzerSingleSalt.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
@@ -47,11 +48,58 @@ namespace {
 
 // Pitzer pair parameters for one (cation,anion).  Absent pairs default to all
 // zeros -> no specific interaction (the long-range DH term still applies).
+// (T-slot fields + applyT below close the HMW half of the Pitzer-T gap:
+//  the single-salt kernel already evaluates beta(T)/Cphi(T), and the two
+//  surfaces must never diverge in T -- forum 100.2/#101/#103.)
 struct Pair
 {
     double beta0 = 0.0, beta1 = 0.0, beta2 = 0.0, Cphi = 0.0;
     double alpha1 = 2.0, alpha2 = 12.0;
     bool   found  = false;
+
+    // Temperature slots (same record keys the single-salt kernel reads):
+    // linear Parker-calorimetric slopes, or the FULL Silvester-Pitzer 1977
+    // eqs 30-32 when the record carries sp_q1..q14.  Both are DEVIATIONS
+    // from the validated 25 C surface, exactly zero at 298.15 K.
+    double dbeta0_dT = 0.0, dbeta1_dT = 0.0, dCphi_dT = 0.0;
+    bool   spForm = false;
+    double spB0[5] = {0,0,0,0,0};
+    double spB1[3] = {0,0,0};
+    double spCp[4] = {0,0,0,0};
+    double TvalidLo = 273.15, TvalidHi = 573.15;
+    std::string name;                       // "cation|anion" for advisories
+
+    // Shift the virials to T (mutating: applied ONCE on cache insert).
+    // The formulas are the single-salt kernel's own statics -- ONE source.
+    void applyT(double T)
+    {
+        if (T == 298.15 || !found) return;
+        if (spForm)
+        {
+            beta0 += PitzerSingleSalt::spEval30(spB0, T)
+                   - PitzerSingleSalt::spEval30(spB0, 298.15);
+            beta1 += PitzerSingleSalt::spEval31(spB1, T)
+                   - PitzerSingleSalt::spEval31(spB1, 298.15);
+            Cphi  += PitzerSingleSalt::spEval32(spCp, T)
+                   - PitzerSingleSalt::spEval32(spCp, 298.15);
+        }
+        else
+        {
+            beta0 += dbeta0_dT * (T - 298.15);
+            beta1 += dbeta1_dT * (T - 298.15);
+            Cphi  += dCphi_dT  * (T - 298.15);
+        }
+        // Validity is EVIDENCE, never console-only (#101: `silent` may mute
+        // presentation, never the record): an out-of-window evaluation
+        // lands in the result's advisories, deduped per pair.
+        if (T < TvalidLo || T > TvalidHi)
+            AdvisoryLog::instance().add("validity", "warning",
+                "pitzerHMW " + name,
+                "virial T-correction evaluated at " + std::to_string(T)
+                + " K outside the declared window ["
+                + std::to_string(TvalidLo) + ", " + std::to_string(TvalidHi)
+                + "] K -- EXTRAPOLATED");
+    }
 };
 
 // Read a (cation,anion) pair from the SHARED pairs.dat (case-local overlay
@@ -59,7 +107,8 @@ struct Pair
 Pair readPair(const std::string& cation, const std::string& anion)
 {
     Pair p;
-    DictPtr d = findPair("pairs.dat", "pairs", cation, anion);
+    p.name = cation + "|" + anion;
+    DictPtr d = findPitzerPair(cation, anion);
     if (!d) return p;
     p.beta0  = d->lookupScalar("beta0");
     p.beta1  = d->lookupScalar("beta1");
@@ -68,6 +117,31 @@ Pair readPair(const std::string& cation, const std::string& anion)
     p.alpha1 = d->lookupScalarOrDefault("alpha1", 2.0);
     p.alpha2 = d->lookupScalarOrDefault("alpha2", 12.0);
     p.found  = true;
+    // The record's DECLARED T-correlation form (shared resolver: the same
+    // contract + refusals the single-salt loadSalt applies).
+    const std::string tForm = resolveTCorrelationForm(d, p.name);
+    // T slots (absent -> frozen 25 C virials, the historical behaviour).
+    p.dbeta0_dT = d->lookupScalarOrDefault("dbeta0_dT", 0.0);
+    p.dbeta1_dT = d->lookupScalarOrDefault("dbeta1_dT", 0.0);
+    p.dCphi_dT  = d->lookupScalarOrDefault("dCphi_dT",  0.0);
+    if (tForm == "silvesterPitzer1977")
+    {
+        p.spForm = true;
+        p.spB0[0] = d->lookupScalar("sp_q1");
+        p.spB0[1] = d->lookupScalar("sp_q2");
+        p.spB0[2] = d->lookupScalar("sp_q3");
+        p.spB0[3] = d->lookupScalar("sp_q4");
+        p.spB0[4] = d->lookupScalar("sp_q5");
+        p.spB1[0] = d->lookupScalar("sp_q6");
+        p.spB1[1] = d->lookupScalar("sp_q9");
+        p.spB1[2] = d->lookupScalar("sp_q10");
+        p.spCp[0] = d->lookupScalar("sp_q11");
+        p.spCp[1] = d->lookupScalar("sp_q12");
+        p.spCp[2] = d->lookupScalar("sp_q13");
+        p.spCp[3] = d->lookupScalar("sp_q14");
+    }
+    p.TvalidLo = d->lookupScalarOrDefault("TvalidLo", 273.15);
+    p.TvalidHi = d->lookupScalarOrDefault("TvalidHi", 573.15);
     return p;
 }
 
@@ -83,41 +157,102 @@ Pair readPair(const std::string& cation, const std::string& anion)
 // same rule pairs.dat uses); a case may localise one theta/psi.  We scan all
 // electrolytePaths and take the FIRST matching entry (case-local wins).
 
-// theta_ij : order-independent (a,b) like-sign lookup.
+// The mixing kind is now stored ONLY as per-(kind) per-key records under
+// parameters/electrolyte/pitzer/mixing/<kind>/<name>.dat (the monolithic
+// electrolyte/mixing.dat is gone).  Read one record's `value`, or NaN if absent.
+// EVERY reader below is called from inside evaluate()'s triple loops over the
+// ions, i.e. on every single gamma evaluation, and each one used to open, read
+// and PARSE a file to answer.  A 17-point scaling scan spent over two minutes in
+// the tokenizer.  These parameters are curated constants for the run: read them
+// once, keyed by the ion names, and remember the ABSENT ones too (a missing
+// theta is a fact, and re-discovering it a million times costs the same as
+// finding a present one).
+static const DictPtr& parsedOnceHMW(const fs::path& p)
+{
+    static std::map<std::string, DictPtr> cache;
+    auto it = cache.find(p.string());
+    if (it == cache.end())
+        it = cache.emplace(p.string(), Dictionary::fromFile(p.string())).first;
+    return it->second;
+}
+
+static double mixingFileValue(const std::string& kind, const std::string& name)
+{
+    static std::map<std::string, double> cache;
+    const std::string key = kind + "/" + name;
+    auto it = cache.find(key);
+    if (it != cache.end()) return it->second;
+
+    const fs::path tp = fs::path(Database::currentRoot())
+        / "standards" / "parameters" / "electrolyte" / "pitzer" / "mixing"
+        / kind / (name + ".dat");
+    const double v = fs::exists(tp)
+        ? parsedOnceHMW(tp)->lookupScalar("value")
+        : std::nan("");
+    cache.emplace(key, v);
+    return v;
+}
+
+// theta_ij : order-independent (a,b) like-sign lookup.  Dual leg -- case-local
+// mixing.dat list (overlay, as before) then standards per-file.  Absent -> 0.
 double readTheta(const std::string& i, const std::string& j)
 {
-    for (const auto& path : electrolytePaths("mixing.dat"))
+    static std::map<std::string, double> memo;
+    const std::string memoKey = i + "|" + j;
+    { auto it = memo.find(memoKey); if (it != memo.end()) return it->second; }
+    const double memoVal = [&]() -> double
     {
-        auto d = Dictionary::fromFile(path.string());
-        for (const auto& e : d->lookupDictList("mixing"))
+        const fs::path cl = caseElectrolytePath("mixing.dat");
+        if (!cl.empty())
         {
-            if (e->lookupWord("kind") != "theta") continue;
-            const std::string a = e->lookupWord("a"), b = e->lookupWord("b");
-            if ((a == i && b == j) || (a == j && b == i))
-                return e->lookupScalar("theta");
+            const DictPtr& d = parsedOnceHMW(cl);
+            for (const auto& e : d->lookupDictList("mixing"))
+            {
+                if (e->lookupWord("kind") != "theta") continue;
+                const std::string a = e->lookupWord("a"), b = e->lookupWord("b");
+                if ((a == i && b == j) || (a == j && b == i))
+                    return e->lookupScalar("theta");
+            }
         }
-    }
-    return 0.0;
+        double v = mixingFileValue("theta", i + "-" + j);
+        if (!std::isnan(v)) return v;
+        v = mixingFileValue("theta", j + "-" + i);
+        return std::isnan(v) ? 0.0 : v;
+    }();
+    memo.emplace(memoKey, memoVal);
+    return memoVal;
 }
 
 // psi_ijk : (a,b) are the like-sign pair (order-independent), c the opposite ion.
 double readPsi(const std::string& like1, const std::string& like2,
                const std::string& opp)
 {
-    for (const auto& path : electrolytePaths("mixing.dat"))
+    static std::map<std::string, double> memo;
+    const std::string memoKey = like1 + "|" + like2 + "|" + opp;
+    { auto it = memo.find(memoKey); if (it != memo.end()) return it->second; }
+    const double memoVal = [&]() -> double
     {
-        auto d = Dictionary::fromFile(path.string());
-        for (const auto& e : d->lookupDictList("mixing"))
+        const fs::path cl = caseElectrolytePath("mixing.dat");
+        if (!cl.empty())
         {
-            if (e->lookupWord("kind") != "psi") continue;
-            const std::string a = e->lookupWord("a"), b = e->lookupWord("b"),
-                              c = e->lookupWord("c");
-            if (c != opp) continue;
-            if ((a == like1 && b == like2) || (a == like2 && b == like1))
-                return e->lookupScalar("psi");
+            const DictPtr& d = parsedOnceHMW(cl);
+            for (const auto& e : d->lookupDictList("mixing"))
+            {
+                if (e->lookupWord("kind") != "psi") continue;
+                const std::string a = e->lookupWord("a"), b = e->lookupWord("b"),
+                                  c = e->lookupWord("c");
+                if (c != opp) continue;
+                if ((a == like1 && b == like2) || (a == like2 && b == like1))
+                    return e->lookupScalar("psi");
+            }
         }
-    }
-    return 0.0;
+        double v = mixingFileValue("psi", like1 + "-" + like2 + "-" + opp);
+        if (!std::isnan(v)) return v;
+        v = mixingFileValue("psi", like2 + "-" + like1 + "-" + opp);
+        return std::isnan(v) ? 0.0 : v;
+    }();
+    memo.emplace(memoKey, memoVal);
+    return memoVal;
 }
 
 // ---- NEUTRAL interactions (slice S4) ----------------------------------------
@@ -126,17 +261,27 @@ double readPsi(const std::string& like1, const std::string& like2,
 //   ln gamma (2 m_n lambda) -- the CO2-brine salting-out.  Absent -> 0.
 double readLambda(const std::string& n, const std::string& ion)
 {
-    for (const auto& path : electrolytePaths("mixing.dat"))
+    static std::map<std::string, double> memo;
+    const std::string memoKey = n + "|" + ion;
+    { auto it = memo.find(memoKey); if (it != memo.end()) return it->second; }
+    const double memoVal = [&]() -> double
     {
-        auto d = Dictionary::fromFile(path.string());
-        for (const auto& e : d->lookupDictList("mixing"))
+        const fs::path cl = caseElectrolytePath("mixing.dat");
+        if (!cl.empty())
         {
-            if (e->lookupWord("kind") != "lambda") continue;
-            if (e->lookupWord("n") == n && e->lookupWord("ion") == ion)
-                return e->lookupScalar("lambda");
+            const DictPtr& d = parsedOnceHMW(cl);
+            for (const auto& e : d->lookupDictList("mixing"))
+            {
+                if (e->lookupWord("kind") != "lambda") continue;
+                if (e->lookupWord("n") == n && e->lookupWord("ion") == ion)
+                    return e->lookupScalar("lambda");
+            }
         }
-    }
-    return 0.0;
+        const double v = mixingFileValue("lambda", n + "-" + ion);
+        return std::isnan(v) ? 0.0 : v;
+    }();
+    memo.emplace(memoKey, memoVal);
+    return memoVal;
 }
 
 // zeta_n,c,a : the neutral-cation-anion triplet (n by key, c a cation, a an
@@ -145,25 +290,35 @@ double readLambda(const std::string& n, const std::string& ion)
 double readZeta(const std::string& n, const std::string& cation,
                 const std::string& anion)
 {
-    for (const auto& path : electrolytePaths("mixing.dat"))
+    static std::map<std::string, double> memo;
+    const std::string memoKey = n + "|" + cation + "|" + anion;
+    { auto it = memo.find(memoKey); if (it != memo.end()) return it->second; }
+    const double memoVal = [&]() -> double
     {
-        auto d = Dictionary::fromFile(path.string());
-        for (const auto& e : d->lookupDictList("mixing"))
+        const fs::path cl = caseElectrolytePath("mixing.dat");
+        if (!cl.empty())
         {
-            if (e->lookupWord("kind") != "zeta") continue;
-            if (e->lookupWord("n") == n && e->lookupWord("c") == cation
-                && e->lookupWord("a") == anion)
-                return e->lookupScalar("zeta");
+            const DictPtr& d = parsedOnceHMW(cl);
+            for (const auto& e : d->lookupDictList("mixing"))
+            {
+                if (e->lookupWord("kind") != "zeta") continue;
+                if (e->lookupWord("n") == n && e->lookupWord("c") == cation
+                    && e->lookupWord("a") == anion)
+                    return e->lookupScalar("zeta");
+            }
         }
-    }
-    return 0.0;
+        const double v = mixingFileValue("zeta", n + "-" + cation + "-" + anion);
+        return std::isnan(v) ? 0.0 : v;
+    }();
+    memo.emplace(memoKey, memoVal);
+    return memoVal;
 }
 
 } // namespace
 
 const std::string& PitzerHMW::modelName() const
 {
-    static const std::string n = "pitzer";
+    static const std::string n = "pitzerHMW";
     return n;
 }
 
@@ -211,7 +366,9 @@ ActivityResult PitzerHMW::evaluate(const IonState& st, double T) const
         const std::string key = c + "|" + a;
         auto it = pairCache.find(key);
         if (it != pairCache.end()) return it->second;
-        return pairCache.emplace(key, readPair(c, a)).first->second;
+        Pair p = readPair(c, a);
+        p.applyT(T);   // virials at THIS T (deviation form; exact 0 at 25 C)
+        return pairCache.emplace(key, std::move(p)).first->second;
     };
 
     // Cache the ternary mixing parameters needed this pass (slice S3): theta_ij
@@ -425,6 +582,88 @@ ActivityResult PitzerHMW::evaluate(const IonState& st, double T) const
         if (s != 0.0) lnG[st.name[ni]] = s;   // keep gamma=1 fallback when empty
     }
 
+    // ---- the OSMOTIC coefficient phi (the SOLVENT's non-ideality) --------------
+    // Pitzer 1991 "Activity Coefficients in Electrolyte Solutions" 2nd ed. ch.3;
+    // Harvie, Moller & Weare 1984 for the HMW assembly.  The SAME virials as the
+    // gammas, in the OSMOTIC combining form, so a_w is Pitzer-consistent (NOT the
+    // phi = 1 dilute approximation):
+    //
+    //   (phi - 1) sum_i m_i = 2 [  -A_phi I^{3/2}/(1 + b sqrt I)         (= I fPhi)
+    //       + sum_c sum_a m_c m_a (B^phi_ca + Z C_ca)
+    //       + sum_{c<c'} m_c m_c' (Phi^phi_cc' + sum_a m_a psi_cc'a)
+    //       + sum_{a<a'} m_a m_a' (Phi^phi_aa' + sum_c m_c psi_aa'c)
+    //       + sum_n sum_ion m_n m_ion lambda_n,ion
+    //       + sum_n sum_c sum_a m_n m_c m_a zeta_n,c,a ]
+    //
+    // with Phi^phi_ij = theta_ij + E_theta_ij(I) + I E_theta'_ij(I)  (the osmotic
+    // mixing form -- it CARRIES the I E_theta' term that the gamma form Phi_ij =
+    // theta + E_theta does not), B^phi_ca = beta0 + beta1 e^{-a1 sqrt I} +
+    // beta2 e^{-a2 sqrt I}, C_ca = C^phi/(2 sqrt|z_c z_a|), Z = sum_i |z_i| m_i.
+    // The water activity is then a_w = exp(-(M_w/1000) phi sum_i m_i).  As I -> 0
+    // every specific term dies faster than f^phi, so phi -> 1 (the dilute limit);
+    // for ONE salt the double sums collapse to the closed single-salt phi.
+    {
+        double sumM = 0.0;
+        for (std::size_t i = 0; i < nsp; ++i) sumM += st.molality[i];
+
+        double osm = I * PitzerForm::fPhi(I, A);   // -A_phi I^{3/2}/(1 + b sqrt I)
+
+        // binary cation-anion: B^phi_ca + Z C_ca
+        for (std::size_t ci : cats)
+            for (std::size_t ai : ans)
+            {
+                const Pair& p = pairOf(st.name[ci], st.name[ai]);
+                const double Bp = PitzerForm::Bphi(I, p.beta0, p.beta1, p.beta2,
+                                                   p.alpha1, p.alpha2);
+                const double C  = PitzerForm::Cgamma(p.Cphi, st.charge[ci],
+                                                     st.charge[ai]);
+                osm += st.molality[ci] * st.molality[ai] * (Bp + Z * C);
+            }
+        // cation-cation mixing (strict c<c'): Phi^phi_cc' + sum_a m_a psi_cc'a
+        for (std::size_t p = 0; p < cats.size(); ++p)
+            for (std::size_t q = p + 1; q < cats.size(); ++q)
+            {
+                const auto& et = ethetaOf(cats[p], cats[q]);   // {E_theta, E_theta'}
+                const double phiPhi = thetaOf(st.name[cats[p]], st.name[cats[q]])
+                                    + et.first + I * et.second;
+                double t = phiPhi;
+                for (std::size_t ai : ans)
+                    t += st.molality[ai]
+                       * psiOf(st.name[cats[p]], st.name[cats[q]], st.name[ai]);
+                osm += st.molality[cats[p]] * st.molality[cats[q]] * t;
+            }
+        // anion-anion mixing (strict a<a'): Phi^phi_aa' + sum_c m_c psi_aa'c
+        for (std::size_t p = 0; p < ans.size(); ++p)
+            for (std::size_t q = p + 1; q < ans.size(); ++q)
+            {
+                const auto& et = ethetaOf(ans[p], ans[q]);
+                const double phiPhi = thetaOf(st.name[ans[p]], st.name[ans[q]])
+                                    + et.first + I * et.second;
+                double t = phiPhi;
+                for (std::size_t ci : cats)
+                    t += st.molality[ci]
+                       * psiOf(st.name[ans[p]], st.name[ans[q]], st.name[ci]);
+                osm += st.molality[ans[p]] * st.molality[ans[q]] * t;
+            }
+        // neutral legs: lambda_n,ion (n with every ion) + zeta_n,c,a triplets
+        for (std::size_t ni : neus)
+        {
+            for (std::size_t ci : cats)
+                osm += st.molality[ni] * st.molality[ci]
+                     * lambdaOf(st.name[ni], st.name[ci]);
+            for (std::size_t ai : ans)
+                osm += st.molality[ni] * st.molality[ai]
+                     * lambdaOf(st.name[ni], st.name[ai]);
+            for (std::size_t ci : cats)
+                for (std::size_t ai : ans)
+                    osm += st.molality[ni] * st.molality[ci] * st.molality[ai]
+                         * zetaOf(st.name[ni], st.name[ci], st.name[ai]);
+        }
+
+        const double phi = (sumM > 0.0) ? 1.0 + 2.0 * osm / sumM : 1.0;
+        r.osmotic = [phi]() { return phi; };
+    }
+
     // The per-identity accessor (the solver prefers this).  A neutral (z == 0)
     // not in the map (no tabulated lambda/zeta) -> gamma = 1; a neutral WITH a
     // lambda/zeta term is in lnG and gets its salting-out gamma below.
@@ -550,12 +789,52 @@ void PitzerHMW::announceParameters(const IonState& st, std::ostream& os) const
 }
 
 // ----------------------------------------------------------------------------
+// Enumerate the (cation,anion) key-set of the Pitzer pairs for the loop-all
+// oracle.  Case-local list -> RETURN (XOR: a 1-pair case verifies ONLY its pair,
+// never the standards set); else a sorted *.dat directory listing of the
+// standards per-pair records -- the DIRECTORY is the authoritative set (no index,
+// no second store; arity-1 safe).  The by-name value read stays O(1) via
+// findPitzerPair; this enumeration runs once inside verify() only.
+static std::vector<std::pair<std::string, std::string>> enumeratePitzerPairs()
+{
+    std::vector<std::pair<std::string, std::string>> out;
+    const fs::path cl = caseElectrolytePath("pairs.dat");
+    if (!cl.empty())
+    {
+        auto d = Dictionary::fromFile(cl.string());
+        for (const auto& p : d->lookupDictList("pairs"))
+            out.emplace_back(p->lookupWord("cation"), p->lookupWord("anion"));
+        return out;                       // overlay XOR: case wins WHOLE
+    }
+    const fs::path dir = fs::path(Database::currentRoot())
+                       / "standards" / "parameters" / "electrolyte" / "pitzer" / "pairs";
+    if (fs::exists(dir))
+    {
+        std::vector<fs::path> files;
+        for (const auto& e : fs::directory_iterator(dir))
+            if (e.path().extension() == ".dat") files.push_back(e.path());
+        std::sort(files.begin(), files.end());     // deterministic logs only
+        for (const auto& f : files)
+        {
+            auto d = Dictionary::fromFile(f.string());
+            if (d->found("pair"))
+            {
+                auto pr = d->subDict("pair");
+                out.emplace_back(pr->lookupWord("cation"), pr->lookupWord("anion"));
+            }
+        }
+    }
+    return out;
+}
+
 // TIER-1 oracle: the multi-ion model reduced to a single salt MUST equal the
 // closed single-salt kernel to floating point (catches summation/index bugs),
 // and must reduce to the Debye-Huckel limiting law as I -> 0.
 double PitzerHMW::verify(int verbosity)
 {
     double maxDev = 0.0;
+    double maxDevPhi = 0.0;            // osmotic-coefficient oracle (phi)
+    std::string worstPhiPair;
     PitzerHMW hmw;
     const double T = 298.15;
 
@@ -564,13 +843,10 @@ double PitzerHMW::verify(int verbosity)
     // standard, same resolution the model uses).
     int nPairs = 0;
     std::string worstPair;
-    for (const auto& path : electrolytePaths("pairs.dat"))
+    for (const auto& ca : enumeratePitzerPairs())
     {
-        auto d = Dictionary::fromFile(path.string());
-        for (const auto& row : d->lookupDictList("pairs"))
-        {
-            const std::string cation = row->lookupWord("cation");
-            const std::string anion  = row->lookupWord("anion");
+            const std::string& cation = ca.first;
+            const std::string& anion  = ca.second;
 
             // Charges from ions.dat; skip a pair whose ions are not catalogued
             // (a few exotic complex ions in pairs.dat have no ions.dat row).
@@ -606,14 +882,24 @@ double PitzerHMW::verify(int verbosity)
                 const double dev = std::fabs(lnPM_hmw - lnPM_ref)
                                  / std::max(1.0e-12, std::fabs(lnPM_ref));
                 if (dev > maxDev) { maxDev = dev; worstPair = cation + anion; }
+
+                // OSMOTIC oracle: the HMW osmotic coefficient phi (the new sibling
+                // sum) MUST equal the closed single-salt phi to floating point for
+                // one salt -- the same gate the gammas pass, now for the solvent.
+                // (2 I/sum_m = |z_c z_a| and the B/C groupings collapse exactly by
+                // electroneutrality, so any mismatch is a summation/sign bug.)
+                const double phiHmw = ar.osmotic ? ar.osmotic() : 1.0;
+                const double phiRef = ss.osmoticCoefficient(m, T);
+                const double devPhi = std::fabs(phiHmw - phiRef)
+                                    / std::max(1.0e-12, std::fabs(phiRef));
+                if (devPhi > maxDevPhi)
+                { maxDevPhi = devPhi; worstPhiPair = cation + anion; }
             }
-        }
-        break;   // nearest file wins WHOLE (overlay rule); do not double-count
     }
 
     if (nPairs == 0)
-        throw std::runtime_error("PitzerHMW::verify: no binary pairs found in "
-            "electrolyte/pairs.dat -- the single-salt oracle has nothing to test");
+        throw std::runtime_error("PitzerHMW::verify: no binary pairs found in the "
+            "pitzer pairs catalogue -- the single-salt oracle has nothing to test");
 
     // ---- Debye-Huckel limiting law (the dilute anchor) -----------------------
     // As I -> 0 the Pitzer F-bracket [sqrt I/(1+b sqrt I) + (2/b) ln(1+b sqrt I)]
@@ -643,10 +929,14 @@ double PitzerHMW::verify(int verbosity)
     if (verbosity >= 3)
     {
         std::cout << "  [pitzer] HMW self-check:\n"
-                  << "    single-salt oracle: max rel deviation vs "
+                  << "    single-salt oracle (gamma): max rel deviation vs "
                      "PitzerSingleSalt = " << std::scientific << maxDev
                   << " over " << nPairs << " binaries";
         if (!worstPair.empty()) std::cout << " (worst " << worstPair << ")";
+        std::cout << std::defaultfloat << "\n"
+                  << "    single-salt oracle (phi/osmotic): max rel deviation vs "
+                     "PitzerSingleSalt = " << std::scientific << maxDevPhi;
+        if (!worstPhiPair.empty()) std::cout << " (worst " << worstPhiPair << ")";
         std::cout << std::defaultfloat << "\n"
                   << "    Debye-Huckel limiting law (I -> 0): "
                      "ln gamma_Na / (-3 A_phi z^2 sqrt I) = "

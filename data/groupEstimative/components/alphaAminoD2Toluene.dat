@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: alpha-amino-d2-toluene  (C7H7D2N, CAS 45579-94-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H7D2N (delta D+2H-2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        alphaAminoD2Toluene;
+formula     C7H7D2N;
+CAS         45579-94-0;
+InChIKey    WGQKYBSKWIADBV-ZSJDYOACSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          109.168;      // g/mol [origin=calculated method=formula-sum]
+Tc          685.69;      // K   [origin=predictive method=joback]
+Pc          44.326;      // bar [origin=predictive method=joback]
+omega       0.4128;      // -   [origin=predictive method=lee-kesler]
+Tb          458.97;      // K   [origin=predictive method=joback]
+HvapTb      44093.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.889 0.6518 -0.0004316 1.086e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 1; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dideuterio-1-phenyl-methanamine" "n,n-dideuterio-1-phenylmethanamine" );
+gibbsFormation
+{
+    dHf_298   82510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     373.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=186920.0
+    phase     gas;
+}

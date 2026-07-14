@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethanone, 1-(1-methylcyclopentyl)-  (C8H14O, CAS 13388-93-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethanone11Methylcyclopentyl;
+formula     C8H14O;
+CAS         13388-93-7;
+InChIKey    WUVVPVWGXABHFP-UHFFFAOYSA-N;
+MW          126.199;      // g/mol [origin=calculated method=formula-sum]
+Tc          666.37;      // K   [origin=predictive method=joback]
+Pc          34.684;      // bar [origin=predictive method=joback]
+omega       0.3801;      // -   [origin=predictive method=lee-kesler]
+Tb          452.03;      // K   [origin=predictive method=joback]
+HvapTb      39254.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-107.5 1.15944 -0.0010527 4.1246e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group C; count 1; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 4; } { group C_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(1-methylcyclopentyl)ethanone" "1-(1-methyl-cyclopentyl)-ethanone" );
+gibbsFormation
+{
+    dHf_298   -245310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     513.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-81380.0
+    phase     gas;
+}

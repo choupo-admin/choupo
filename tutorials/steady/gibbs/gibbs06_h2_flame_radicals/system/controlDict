@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Stoichiometric H2/air adiabatic flame -- the radical pool at equilibrium";
+verbosity     3;

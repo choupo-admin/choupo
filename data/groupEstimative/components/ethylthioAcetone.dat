@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (ethylthio)acetone  (C5H10OS, CAS 20996-62-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylthioAcetone;
+formula     C5H10OS;
+CAS         20996-62-7;
+InChIKey    ZKDXKBIOEVBFGV-UHFFFAOYSA-N;
+MW          118.194;      // g/mol [origin=calculated method=formula-sum]
+Tc          639.86;      // K   [origin=predictive method=joback]
+Pc          38.198;      // bar [origin=predictive method=joback]
+omega       0.4451;      // -   [origin=predictive method=lee-kesler]
+Tb          436.65;      // K   [origin=predictive method=joback]
+HvapTb      40287.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.302 0.44523 -0.0001893 1.166e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH3CO; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CdO; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethylsulfanylpropan-2-one" "2-propanone, 1-(ethylthio)-" "1-(ethylthio)acetone" "ethyl 2-oxopropyl sulfide" "1-(ethylthio)propan-2-one" "2-propanone,1-(ethylthio)-" );
+gibbsFormation
+{
+    dHf_298   -217240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     438.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-104580.0
+    phase     gas;
+}

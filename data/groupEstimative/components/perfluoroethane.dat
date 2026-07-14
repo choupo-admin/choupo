@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluoroethane  (C2F6, CAS 76-16-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluoroethane;
+formula     C2F6;
+CAS         76-16-4;
+InChIKey    WMIYKQLTONQJES-UHFFFAOYSA-N;
+MW          138.01;      // g/mol [origin=calculated method=formula-sum]
+Tc          358.16;      // K   [origin=predictive method=joback]
+Pc          37.090;      // bar [origin=predictive method=joback]
+omega       0.2615;      // -   [origin=predictive method=lee-kesler]
+Tb          234.52;      // K   [origin=predictive method=joback]
+HvapTb      12552.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.33 0.5162 -0.000527 1.9e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group F; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2,2-hexakis(fluoranyl)ethane" "hexafluoroethane" "ethane, hexafluoro-" "1,1,1,2,2,2-hexafluoroethane" "1,1,1,2,2,2-hexafluoro-ethane" "ethane, 1,1,1,2,2,2-hexafluoro-" "ethforane" "carbon hexafluoride" "hexafluoroethane (fc-116)" "ethane,1,1,1,2,2,2-hexafluoro-" "hexafluoroethane, compressed or refrigerant gas r116" "ethane,hexafluoro- (8ci,9ci);ethyl hexafluoride;f 116;f 116 (fluorocarbon);fc 116;fc 1160;freon 116;hfc 116;hexafluoroethane;pfc 116;perfluorocarbon 116;perfluoroethane;r 116;" );
+gibbsFormation
+{
+    dHf_298   -1278770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     346.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1197220.0
+    phase     gas;
+}

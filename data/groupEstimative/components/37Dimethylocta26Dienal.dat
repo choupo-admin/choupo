@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,7-dimethylocta-2,6-dienal  (C10H16O, CAS 5392-40-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        37Dimethylocta26Dienal;
+formula     C10H16O;
+CAS         5392-40-5;
+InChIKey    WTEVQBCEXWBHNA-UHFFFAOYSA-N;
+MW          152.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          676.25;      // K   [origin=predictive method=joback]
+Pc          25.252;      // bar [origin=predictive method=joback]
+omega       0.5264;      // -   [origin=predictive method=lee-kesler]
+Tb          485.14;      // K   [origin=predictive method=joback]
+HvapTb      44650.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.548 0.96816 -0.0006854 2.041e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH=C; count 2; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group dCH; count 2; } { group dC; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6-octadienal, 3,7-dimethyl-" "(2e)-3,7-dimethyl-2,6-octadienal" "2,6-octadienal,3,7-dimethyl-, (2e)-" "2,6-octadienal,3,7-dimethyl-, (2z)-" "2,6-octadienal,3,7-dimethyl-, (e)- (8ci); (2e)-3,7-dimethyl-2,6-octadien-1-al;(2e)-3,7-dimethyl-2,6-octadienal; (e)-3,7-dimethyl-2,6-octadienal;(e)-3,7-dimethyl-2,6-octadienal; (e)-citral; (e)-geranial; (e)-neral; citral a;geranaldehyde; geranial; trans-3,7-dimethyl-2,6-octadien-1-al;trans-3,7-dimethyl-2,6-octadienal; trans-citral; a-citral; b-geranial" "2,6-octadienal,3,7-dimethyl-, (z)- (8ci); (2z)-3,7-dimethyl-2,6-octadien-1-al;(2z)-3,7-dimethyl-2,6-octadienal; (z)-3,7-dimethyl-2,6-octadienal; (z)-citral;(z)-neral; 2-cis-3,7-dimethyl-2,6-octadienal; citral b; neral;cis-3,7-dimethyl-2,6-octadienal; cis-citral; b-citral" );
+gibbsFormation
+{
+    dHf_298   -120450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     542.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77140.0
+    phase     gas;
+}

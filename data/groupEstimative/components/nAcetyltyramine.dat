@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-acetyltyramine  (C10H13NO2, CAS 1202-66-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nAcetyltyramine;
+formula     C10H13NO2;
+CAS         1202-66-0;
+InChIKey    ATDWJOOPFDQZNK-UHFFFAOYSA-N;
+MW          179.219;      // g/mol [origin=calculated method=formula-sum]
+Tc          864.88;      // K   [origin=predictive method=joback]
+Pc          38.010;      // bar [origin=predictive method=joback]
+omega       0.9469;      // -   [origin=predictive method=lee-kesler]
+Tb          639.74;      // K   [origin=predictive method=joback]
+HvapTb      66326.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-42.878 1.07772 -0.00083766 2.6786e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 4; } { group ACCH2; count 1; } { group ACOH; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-[2-(4-hydroxyphenyl)ethyl]ethanamide" "n-(4-hydroxyphenethyl)acetamide" "n-acetyl tyramine" "n-(p-hydroxyphenethyl)acetamide" "n-(2-(4-hydroxyphenyl)ethyl)acetamide" "acetamide, n-(2-(4-hydroxyphenyl)ethyl)-" "acetamide, n-[2-(4-hydroxyphenyl)ethyl]-" "acetamide, n-(p-hydroxyphenethyl)- (6ci,7ci,8ci)" "n-[2-(4-hydroxyphenyl)ethyl]acetamide" "brd-k65981456-001-01-5" );
+gibbsFormation
+{
+    dHf_298   -249620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     532.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-48420.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: glyceryl monoricinoleate  (C21H40O5, CAS 1323-38-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        glycerylMonoricinoleate;
+formula     C21H40O5;
+CAS         1323-38-2;
+InChIKey    HDIFHQMREAYYJW-UHFFFAOYSA-N;
+MW          372.546;      // g/mol [origin=calculated method=formula-sum]
+Tc          1278.98;      // K   [origin=predictive method=joback]
+Pc          12.015;      // bar [origin=predictive method=joback]
+omega       0.8485;      // -   [origin=predictive method=lee-kesler]
+Tb          1018.12;      // K   [origin=predictive method=joback]
+HvapTb      118966.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.535 2.07782 -0.0012054 2.574e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 14; } { group CH; count 2; } { group CH=CH; count 1; } { group OH; count 3; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 15; } { group CH; count 2; } { group dCH; count 2; } { group OH; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-bis(oxidanyl)propyl 12-oxidanyloctadec-9-enoate" "2,3-dihydroxypropyl 12-hydroxy-9-octadecenoate" "9-octadecenoic acid, 12-hydroxy-, 2,3-dihydroxypropyl ester, (9z,12r)-" "9-octadecenoic acid, 12-hydroxy-, (9z,12r)-, monoester with 1,2,3-propanetriol" "9-octadecenoic acid, 12-hydroxy-, [r-(z)]-, monoester with 1,2,3-propanetriol" );
+gibbsFormation
+{
+    dHf_298   -1144080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1152.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-519550.0
+    phase     gas;
+}

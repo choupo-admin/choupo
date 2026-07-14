@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: boldine  (C19H21NO4, CAS 476-70-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        boldine;
+formula     C19H21NO4;
+CAS         476-70-0;
+InChIKey    LZJRNLRASBVRRX-ZDUSSCGKSA-N;
+MW          327.38;      // g/mol [origin=calculated method=formula-sum]
+Tc          1182.64;      // K   [origin=predictive method=joback]
+Pc          26.298;      // bar [origin=predictive method=joback]
+omega       1.4548;      // -   [origin=predictive method=lee-kesler]
+Tb          940.71;      // K   [origin=predictive method=joback]
+HvapTb      98432.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-84.41 2.00776 -0.00172892 6.22e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 3; } { group AC; count 4; } { group ACCH2; count 2; } { group ACCH; count 1; } { group ACOH; count 2; } { group CH3O; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 9; } { group OH_phenol; count 2; } { group O; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(6as)-1,10-dimethoxy-6-methyl-5,6,6a,7-tetrahydro-4h-dibenzo[de,g]quinoline-2,9-diol" "uniboldina" "boldin" "boldine chloroform" "(s)-boldine" "1,10-dimethoxy-2,9-dihydroxyaporphine" "1,10-dimethoxy-6a-alpha-aporphine-2,9-diol" "6a-alpha-aporphine-2,9-diol, 1,10-dimethoxy-" "4h-dibenzo(de,g)quinoline-2,9-diol, 5,6,6a,7-tetrahydro-1,10-dimethoxy-6-methyl-, (6as)-" "4h-dibenzo(de,g)quinoline-2,9-diol, 5,6,6a,7-tetrahydro-1,10-dimethoxy-6-methyl-, (s)-" "aprophine alkaloid" "2,9-dihydroxy-1,10-dimethoxyaporphine" );
+gibbsFormation
+{
+    dHf_298   -393050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     565.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=30720.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-ethyl-4-(trifluoromethyl)benzene-1,2-diamine  (C9H11F3N2, CAS 30377-63-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nEthyl4TrifluoromethylBenzene12Diamine;
+formula     C9H11F3N2;
+CAS         30377-63-0;
+InChIKey    MOQFNDFDNBIIHW-UHFFFAOYSA-N;
+MW          204.195;      // g/mol [origin=calculated method=formula-sum]
+Tc          762.44;      // K   [origin=predictive method=joback]
+Pc          29.959;      // bar [origin=predictive method=joback]
+omega       0.7571;      // -   [origin=predictive method=lee-kesler]
+Tb          559.44;      // K   [origin=predictive method=joback]
+HvapTb      52558.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.519 0.96022 -0.00067592 1.818e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 3; } { group AC; count 2; } { group CH2NH; count 1; } { group ACNH2; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 3; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n1-ethyl-4-(trifluoromethyl)benzene-1,2-diamine" "1,2-benzenediamine, n1-ethyl-4-(trifluoromethyl)-" "1-n-ethyl-4-(trifluoromethyl)benzene-1,2-diamine" "1,2-benzenediamine,n1-ethyl-4-(trifluoromethyl)-" "toluene-3,4-diamine,n4-ethyl-a,a,a-trifluoro- (8ci); n-ethyl-4-(trifluoromethyl)benzene-1,2-diamine;n1-ethyl-4-(trifluoromethyl)-1,2-benzenediamine" );
+gibbsFormation
+{
+    dHf_298   -525320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     536.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-307700.0
+    phase     gas;
+}

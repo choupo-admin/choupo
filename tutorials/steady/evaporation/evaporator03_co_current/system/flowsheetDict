@@ -47,43 +47,15 @@ variables
 {
     // INCÓGNITAS DE DESIGN (manipuladas pelo DesignSpec em outerDict):
     //   $A        : área partilhada pelos 3 efeitos
-    //   $F_steam  : caudal de vapor vivo
+    //   (F_steam agora é manipulado DIRETAMENTE na corrente: streams.liveSteam.F)
     // Pressões internas P_1, P_2, P_3 já não são $variables --- emergem
     // do balanço termo-mecânico de cada efeito (Mode 2 evaporator).
     A          17.0   m2;
-    F_steam   100.0   kmol/h;
 }
 
-streams
-{
-    feed
-    {
-        T             294.0  K;          // textbook case (a); change to 355
-                                          //   K to run case (b).
-        P             200.0  kPa;        // arbitrary > P_1; the simulator
-                                          //   stores it for tagging only,
-                                          //   does not enforce a flash drop.
-        massFlows                         // total feed = 1.25 kg/s
-        {                                 //  -> 0.125 kg/s solids = 10 wt%
-            agua      1.125   kg/s;
-            solidos   0.125   kg/s;
-        }
-    }
-
-    liveSteam
-    {
-        F                 $F_steam;        // initial estimate (incógnita);
-                                            //   driven by outerDict.
-        P                170.0  kPa;
-        state            saturatedVapour;   // -> T = T_sat(170 kPa) = 388 K
-                                            //   auto-computed.  See userGuide
-                                            //   §3.2 for `state` options.
-        molarComposition  { agua 1.0; }    // pure water; species not listed
-                                            //   default to 0.
-        category         LP_steam_170kPa;   // utility tag: aggregated in the
-                                            //   Utility Consumption summary.
-    }
-}
+// Stream STATE lives in 0/ (bin/choupo-init0).  The designSpec's hand on the
+// live steam goes through the driver override channel (forum #53): the 0/ file
+// is the BASE state, `streams.liveSteam.F` the declared knob.
 
 units
 (

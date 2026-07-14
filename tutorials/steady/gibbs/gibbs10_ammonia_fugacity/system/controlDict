@@ -1,0 +1,3 @@
+application  choupoSolve;
+description  "Ammonia synthesis equilibrium at 200 bar with the REAL-gas fugacity correction: N2 + 3 H2 <-> 2 NH3 at 700 K, 200 bar over an SRK equation of state. At this pressure the ideal-gas equilibrium (30.0 % NH3) is wrong -- the Gibbs reactor now folds the SRK fugacity coefficients into the equilibrium (Kphi ~ 0.75, favouring the fewer-moles NH3 side), giving 32.4 % NH3, toward the measured ~35-40 %. Switch the equationOfState to idealGas and watch NH3 drop back to 30.0 % -- the fugacity correction is the whole point of a high-pressure reactor.";
+verbosity    3;

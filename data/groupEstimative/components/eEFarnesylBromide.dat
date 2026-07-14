@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (e,e)-farnesyl bromide  (C15H25Br, CAS 28290-41-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        eEFarnesylBromide;
+formula     C15H25Br;
+CAS         28290-41-7;
+InChIKey    FOFMBFMTJFSEEY-UHFFFAOYSA-N;
+MW          285.269;      // g/mol [origin=calculated method=formula-sum]
+Tc          820.42;      // K   [origin=predictive method=joback]
+Pc          17.104;      // bar [origin=predictive method=joback]
+omega       0.6656;      // -   [origin=predictive method=lee-kesler]
+Tb          621.08;      // K   [origin=predictive method=joback]
+HvapTb      55533.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-44.175 1.52678 -0.0011219 3.49e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 5; } { group CH=C; count 3; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 5; } { group dCH; count 3; } { group dC; count 3; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-3,7,11-trimethyl-dodeca-2,6,10-triene" "1-bromo-3,7,11-trimethyldodeca-2,6,10-triene" "2,6,10-dodecatriene, 1-bromo-3,7,11-trimethyl-" "2,6,10-dodecatriene,1-bromo-3,7,11-trimethyl-, (e,e)- (8ci);(2e,6e)-1-bromo-3,7,11-trimethyl-2,6,10-dodecatriene;(2e,6e)-3,7,11-trimethyldodeca-2,6,10-trienyl bromide; (2e,6e)-farnesylbromide; (e,e)-farnesyl bromide; all-trans-farnesyl bromide;trans,trans-farnesyl bromide" );
+gibbsFormation
+{
+    dHf_298   -4310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     759.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=304750.0
+    phase     gas;
+}

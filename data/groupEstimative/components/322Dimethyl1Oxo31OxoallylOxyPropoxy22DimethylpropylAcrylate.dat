@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(2,2-dimethyl-1-oxo-3-((1-oxoallyl)oxy)propoxy)-2,2-dimethylpropyl acrylate  (C16H24O6, CAS 30145-51-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        322Dimethyl1Oxo31OxoallylOxyPropoxy22DimethylpropylAcrylate;
+formula     C16H24O6;
+CAS         30145-51-8;
+InChIKey    ICCCRCJXHNMZPJ-UHFFFAOYSA-N;
+MW          312.362;      // g/mol [origin=calculated method=formula-sum]
+Tc          920.39;      // K   [origin=predictive method=joback]
+Pc          14.601;      // bar [origin=predictive method=joback]
+omega       0.9253;      // -   [origin=predictive method=lee-kesler]
+Tb          727.24;      // K   [origin=predictive method=joback]
+HvapTb      69499.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.643 1.57108 -0.0009522 1.865e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 2; } { group CH2=CH; count 2; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 2; } { group dCH2; count 2; } { group dCH; count 2; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2,2-dimethyl-3-prop-2-enoyloxy-propyl) 2,2-dimethyl-3-prop-2-enoyloxy-propanoate" "3-(2,2-dimethyl-1-oxo-3-((1-oxo-2-propenyl)oxy)propoxy)-2,2-dimethylpropyl acrylate" "3-[2,2-dimethyl-1-oxo-3-[(1-oxo-2-propenyl)oxy]propoxy]-2,2-dimethylpropyl acrylate" "3-[2,2-dimethyl-1-oxo-3-[(1-oxoallyl)oxy]propoxy]-2,2-dimethylpropyl acrylate" "2-propenoic acid, 3-(2,2-dimethyl-1-oxo-3-((1-oxo-2-propen-1-yl)oxy)propoxy)-2,2-dimethylpropyl ester" "2-propenoic acid, 3-[2,2-dimethyl-1-oxo-3-[(1-oxo-2-propen-1-yl)oxy]propoxy]-2,2-dimethylpropyl ester" "propanoic acid, 3-hydroxy-2,2-dimethyl-, 3-hydroxy-2,2-dimethyl propyl ester, diacrylate" "(2,2-dimethyl-3-prop-2-enoyloxypropyl) 2,2-dimethyl-3-prop-2-enoyloxypropanoate" "2-propenoic acid, 3-(2,2-dimethyl-1-oxo-3-((1-oxo-2-propen-1-yl)oxy)propoxy)-2,2-dimethylpropyl ester, homopolymer" "2-propenoic acid, 3-(2,2-dimethyl-1-oxo-3-((1-oxo-2-propenyl)oxy)propoxy)-2,2-dimethylpropyl ester" "2-propenoic acid, 3-(2,2-dimethyl-1-oxo-3-((1-oxo-2-propenyl)oxy)propoxy)-2,2-dimethylpropyl ester, homopolymer" "2-propenoic acid,3-[2,2-dimethyl-1-oxo-3-[(1-oxo-2-propen-1-yl)oxy]propoxy]-2,2-dimethylpropylester" );
+gibbsFormation
+{
+    dHf_298   -1092050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     846.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-665910.0
+    phase     gas;
+}

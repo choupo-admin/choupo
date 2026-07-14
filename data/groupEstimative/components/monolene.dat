@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: monolene  (C5H14N2O, CAS 123-84-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        monolene;
+formula     C5H14N2O;
+CAS         123-84-2;
+InChIKey    CWKVFRNCODQPDB-UHFFFAOYSA-N;
+MW          118.18;      // g/mol [origin=calculated method=formula-sum]
+Tc          709.03;      // K   [origin=predictive method=joback]
+Pc          42.831;      // bar [origin=predictive method=joback]
+omega       1.0781;      // -   [origin=predictive method=lee-kesler]
+Tb          528.44;      // K   [origin=predictive method=joback]
+HvapTb      60092.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.233 0.65682 -0.0003738 7.91e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group CH2NH2; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group OH; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2-azanylethylamino)propan-2-ol" "n-(2-hydroxypropyl)ethylenediamine" "1-(2-aminoethylamino)propan-2-ol" "1-((2-aminoethyl)amino)propan-2-ol" "1-(2-aminoethylamino)-2-propanol" "n-(.beta.-hydroxypropyl)ethylenediamine" "2-propanol, 1-((2-aminoethyl)amino)-" "1-[(2-aminoethyl)amino]propan-2-ol" "2-propanol, 1-[(2-aminoethyl)amino]-" "n-aminoethylisopropanolamine" "cwkvfrncodqpdb-uhfffaoysa-" "2-(2-aminoethylamino)isopropanol" );
+gibbsFormation
+{
+    dHf_298   -216780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     484.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=7800.0
+    phase     gas;
+}

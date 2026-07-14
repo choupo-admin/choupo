@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,2,2,3,3-hexabromocyclododecane  (C12H18Br6, CAS 1235106-66-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        112233Hexabromocyclododecane;
+formula     C12H18Br6;
+CAS         1235106-66-7;
+InChIKey    SHRRVNVEOIKVSG-UHFFFAOYSA-N;
+MW          641.7;      // g/mol [origin=calculated method=formula-sum]
+Tc          1248.95;      // K   [origin=predictive method=joback]
+Pc          42.607;      // bar [origin=predictive method=joback]
+omega       0.8698;      // -   [origin=predictive method=lee-kesler]
+Tb          907.67;      // K   [origin=predictive method=joback]
+HvapTb      78306.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-193.3 2.2602 -0.002347 1.004e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group C; count 3; } { group Br; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 9; } { group C_ring; count 3; } { group Br; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2,2,3,3-hexakis(bromanyl)cyclododecane" "bre 5300;bromkal 73-6cd;cd 75;cd 75p;fr 104;fr 104 (fireproofing agent);fr 1206ilm;fr-cd;hbcd-lm;hbcd-lms;hbcd-sp 75;hp 900g;hexabromocyclododecane;myflam11645;nicca fi-none cg 1;niccafi-none ts 88;pyroguard f 800;pyroguard sr 103;pyroguard sr 103a;pyrovatex 3887;sp 75;safron 5261;saytex hbcd;saytexhbcd-lm;saytex hbcd-sf;saytex hp 900;saytex hp 900g;ym 88;" );
+gibbsFormation
+{
+    dHf_298   -110630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1142.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=56040.0
+    phase     gas;
+}

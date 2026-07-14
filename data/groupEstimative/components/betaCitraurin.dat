@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: beta-citraurin  (C30H40O2, CAS 650-69-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        betaCitraurin;
+formula     C30H40O2;
+CAS         650-69-1;
+InChIKey    AVPAEFHIEZLSLZ-QCPGYTKSSA-N;
+MW          432.648;      // g/mol [origin=calculated method=formula-sum]
+Tc          1327.02;      // K   [origin=predictive method=joback]
+Pc          9.335;      // bar [origin=predictive method=joback]
+omega       0.9053;      // -   [origin=predictive method=lee-kesler]
+Tb          1083.88;      // K   [origin=predictive method=joback]
+HvapTb      106342.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-193.19 3.23454 -0.0027226 9.737e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 7; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group CH=CH; count 4; } { group CH=C; count 4; } { group OH; count 1; } { group CHO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 7; } { group dCH; count 12; } { group dC; count 4; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dC_ring; count 2; } { group OH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2e,4e,6e,8e,10e,12e,14e,16e)-2,6,11,15-tetramethyl-17-[(4r)-2,6,6-trimethyl-4-oxidanyl-cyclohexen-1-yl]heptadeca-2,4,6,8,10,12,14,16-octaenal" "apo-8'-zeaxanthinal" "beta-citraurin [mi]" "all-trans-beta-citraurin" "beta-citraurin, all-trans-" "3-hydroxy-beta-apo-8'-carotenal" "(3r)-3-hydroxy-8'-apo-beta-carotenal" "(3r)-3-hydroxy-beta-apo-8'-carotenal" "(3r)-3-hydroxy-8'-apo-beta-caroten-8'-al" "(2e,4e,6e,8e,10e,12e,14e,16e)-17-((4r)-4-hydroxy-2,6,6-trimethyl-1-cyclohexen-1-yl)-2,6,11,15-tetramethyl-2,4,6,8,10,12,14,16-heptadecaoctaenal" "2,4,6,8,10,12,14,16-heptadecaoctaenal, 17-((4r)-4-hydroxy-2,6,6-trimethyl-1-cyclohexen-1-yl)-2,6,11,15-tetramethyl-, (2e,4e,6e,8e,10e,12e,14e,16e)-" );
+gibbsFormation
+{
+    dHf_298   82320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1271.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=594890.0
+    phase     gas;
+}

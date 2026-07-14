@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1-dibromo-1-propene  (C3H4Br2, CAS 13195-80-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Dibromo1Propene;
+formula     C3H4Br2;
+CAS         13195-80-7;
+InChIKey    HTEJLXYOJZOXKM-UHFFFAOYSA-N;
+MW          199.873;      // g/mol [origin=calculated method=formula-sum]
+Tc          629.48;      // K   [origin=predictive method=joback]
+Pc          58.183;      // bar [origin=predictive method=joback]
+omega       0.3389;      // -   [origin=predictive method=lee-kesler]
+Tb          404.60;      // K   [origin=predictive method=joback]
+HvapTb      35180.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (2.67 0.38512 -0.0003683 1.419e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH=C; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH; count 1; } { group dC; count 1; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1-bis(bromanyl)prop-1-ene" "1,1-dibromopropene" "1-propene, 1,1-dibromo-" "1,1-dibromoprop-1-ene" "propene,1,1-dibromo- (6ci);1,1-dibromopropene;" );
+gibbsFormation
+{
+    dHf_298   54840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     364.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=74690.0
+    phase     gas;
+}

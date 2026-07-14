@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4:4'-diaminostilbene  (C14H14N2, CAS 621-96-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44Diaminostilbene;
+formula     C14H14N2;
+CAS         621-96-5;
+InChIKey    KOGDFDWINXIWHI-UHFFFAOYSA-N;
+MW          210.28;      // g/mol [origin=calculated method=formula-sum]
+Tc          995.99;      // K   [origin=predictive method=joback]
+Pc          32.137;      // bar [origin=predictive method=joback]
+omega       0.8109;      // -   [origin=predictive method=lee-kesler]
+Tb          732.46;      // K   [origin=predictive method=joback]
+HvapTb      73874.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-50.25 1.2008 -0.00083672 2.26e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group ACH; count 8; } { group AC; count 2; } { group ACNH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[2-(4-aminophenyl)ethenyl]aniline" "4,4'-vinylenedianiline" "4,4'-(1,2-ethenediyl)bisbenzenamine" "benzenamine, 4,4'-(1,2-ethenediyl)bis-" "benzenamine,4,4'-(1e)-1,2-ethenediylbis-" "4,4'-stilbenediamine,(e)- (8ci); 4,4'-stilbenediamine, trans- (4ci); benzenamine,4,4'-(1,2-ethenediyl)bis-, (e)-; 4,4'-diamino-trans-stilbene;trans-4,4'-diaminostilbene; trans-4,4'-stilbenediamine" );
+gibbsFormation
+{
+    dHf_298   302630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     572.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=485680.0
+    phase     gas;
+}

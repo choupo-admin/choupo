@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-butoxy-2-hydroxypropyl acrylate  (C10H18O4, CAS 13282-82-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Butoxy2HydroxypropylAcrylate;
+formula     C10H18O4;
+CAS         13282-82-1;
+InChIKey    AZNUOOZUBQUQJV-UHFFFAOYSA-N;
+MW          202.25;      // g/mol [origin=calculated method=formula-sum]
+Tc          766.90;      // K   [origin=predictive method=joback]
+Pc          23.842;      // bar [origin=predictive method=joback]
+omega       1.1375;      // -   [origin=predictive method=lee-kesler]
+Tb          597.46;      // K   [origin=predictive method=joback]
+HvapTb      63292.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (45.325 0.85572 -0.0003711 2.26e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH2=CH; count 1; } { group COO; count 1; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3-butoxy-2-oxidanyl-propyl) prop-2-enoate" "2-propenoic acid, 3-butoxy-2-hydroxypropyl ester" "3-butoxy-2-hydroxy-1-propyl acrylate" "(3-butoxy-2-hydroxypropyl) prop-2-enoate" "2-propenoic acid,3-butoxy-2-hydroxypropyl ester" "acrylicacid, 3-butoxy-2-hydroxypropyl ester (7ci,8ci); 1,2-propanediol, 3-butoxy-,1-monoacrylate (8ci); 1-butoxy-3-acryloyloxy-2-propanol;3-butoxy-2-hydroxypropyl acrylate; acrylic acid-butyl glycidyl ether adduct" );
+gibbsFormation
+{
+    dHf_298   -731310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     644.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-433470.0
+    phase     gas;
+}

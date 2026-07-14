@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methylenecyclopropane-1,2-dicarboxylic acid  (C6H6O4, CAS 499-02-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Methylenecyclopropane12DicarboxylicAcid;
+formula     C6H6O4;
+CAS         499-02-5;
+InChIKey    XZVHROKAQFFOCA-UHFFFAOYSA-N;
+MW          142.11;      // g/mol [origin=calculated method=formula-sum]
+Tc          848.38;      // K   [origin=predictive method=joback]
+Pc          44.444;      // bar [origin=predictive method=joback]
+omega       1.0546;      // -   [origin=predictive method=lee-kesler]
+Tb          629.13;      // K   [origin=predictive method=joback]
+HvapTb      63041.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.38 0.6823 -0.0005202 1.582e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 2; } { group CH2=C; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group CH_ring; count 2; } { group dC_ring; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylidenecyclopropane-1,2-dicarboxylic acid" "3-methylene-cyclopropane-1,2-dicarboxylic acid" "3-methylenecyclopropane-trans-1,2-dicarboxylic acid" "trans-1-methylene cyclopropane-2,3-dicarboxylic acid" "3-methylene-1,2-cyclopropanedicarboxylic acid" "trans-3-methylenecyclopropane-1,2-dicarboxylic acid" "1,2-cyclopropanedicarboxylicacid, 3-methylene-, (1r,2r)-rel-" "1,2-cyclopropanedicarboxylicacid, 3-methylene-, trans- (8ci); feist's acid (6ci); 3-methylenecyclopropane-trans-1,2-dicarboxylicacid" );
+gibbsFormation
+{
+    dHf_298   -731010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     337.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-582060.0
+    phase     gas;
+}

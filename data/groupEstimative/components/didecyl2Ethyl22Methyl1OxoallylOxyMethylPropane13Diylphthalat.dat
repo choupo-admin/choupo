@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: didecyl 2-ethyl-2-(((2-methyl-1-oxoallyl)oxy)methyl)propane-1,3-diylphthalate  (C46H66O10, CAS 68443-43-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        didecyl2Ethyl22Methyl1OxoallylOxyMethylPropane13Diylphthalat;
+formula     C46H66O10;
+CAS         68443-43-6;
+InChIKey    XLWCDUFQDYZSAZ-UHFFFAOYSA-N;
+MW          779.024;      // g/mol [origin=calculated method=formula-sum]
+Tc          2386.57;      // K   [origin=predictive method=joback]
+Pc          4.146;      // bar [origin=predictive method=joback]
+omega       -0.4509;      // -   [origin=predictive method=lee-kesler]
+Tb          1599.83;      // K   [origin=predictive method=joback]
+HvapTb      159015.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.752 3.92878 -0.00213092 3.43e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 22; } { group C; count 1; } { group CH2=C; count 1; } { group ACH; count 8; } { group AC; count 4; } { group COO; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 22; } { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group COO; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "o2-[2-[(2-decoxycarbonylphenyl)carbonyloxymethyl]-2-(2-methylprop-2-enoyloxymethyl)butyl] o1-decyl benzene-1,2-dicarboxylate" "1,2-benzenedicarboxylic acid, 1,1'-(2-ethyl-2-(((2-methyl-1-oxo-2-propen-1-yl)oxy)methyl)-1,3-propanediyl) 2,2'-didecyl ester" "1,2-benzenedicarboxylic acid, 1,1'-[2-ethyl-2-[[(2-methyl-1-oxo-2-propen-1-yl)oxy]methyl]-1,3-propanediyl] 2,2'-didecyl ester" "1,2-benzenedicarboxylic acid, 2-ethyl-2-(((2-methyl-1-oxo-2-propenyl)oxy)methyl)-1,3-propanediyl didecyl ester" "1,2-benzenedicarboxylic acid, 2-ethyl-2-[[(2-methyl-1-oxo-2-propenyl)oxy]methyl]-1,3-propanediyl didecyl ester" "2-o-[2-[(2-decoxycarbonylbenzoyl)oxymethyl]-2-(2-methylprop-2-enoyloxymethyl)butyl] 1-o-decyl benzene-1,2-dicarboxylate" "decyl 2-[({2-[(decyloxy)carbonyl]benzoyl}oxy)methyl]-2-{[(2-methylacryloyl)oxy]methyl}butyl benzene-1,2-dicarboxylate" );
+gibbsFormation
+{
+    dHf_298   -2022160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1931.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-927720.0
+    phase     gas;
+}

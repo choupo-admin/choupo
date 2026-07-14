@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: o1-butyl o4-prop-2-enyl but-2-enedioate  (C11H16O4, CAS 68969-35-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        o1ButylO4Prop2EnylBut2Enedioate;
+formula     C11H16O4;
+CAS         68969-35-7;
+InChIKey    DIGXOCVEAAIPAN-UHFFFAOYSA-N;
+MW          212.245;      // g/mol [origin=calculated method=formula-sum]
+Tc          752.07;      // K   [origin=predictive method=joback]
+Pc          21.236;      // bar [origin=predictive method=joback]
+omega       0.7868;      // -   [origin=predictive method=lee-kesler]
+Tb          568.56;      // K   [origin=predictive method=joback]
+HvapTb      54182.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (26.534 0.93922 -0.0004921 7.03e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH2=CH; count 1; } { group CH=CH; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH2; count 1; } { group dCH; count 3; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-butenedioic acid (2z)-, butyl 2-propenyl ester" "2-butenedioic acid (2z)-, 1-butyl 4-(2-propen-1-yl) ester" "2-butenedioic acid(2z)-, 1-butyl 4-(2-propen-1-yl) ester" "2-butenedioicacid (2z)-, butyl 2-propenyl ester (9ci); 2-butenedioic acid (z)-, butyl2-propenyl ester; allyl butyl maleate" );
+gibbsFormation
+{
+    dHf_298   -662280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     675.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-410940.0
+    phase     gas;
+}

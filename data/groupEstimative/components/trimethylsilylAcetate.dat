@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimethylsilyl acetate  (C5H12O2Si, CAS 2754-27-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C5H12O2Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        trimethylsilylAcetate;
+formula     C5H12O2Si;
+CAS         2754-27-0;
+InChIKey    QHUNJMXHQHHWQP-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          132.234;      // g/mol [origin=calculated method=formula-sum]
+Tc          554.40;      // K   [origin=predictive method=joback]
+Pc          30.423;      // bar [origin=predictive method=joback]
+omega       0.3025;      // -   [origin=predictive method=lee-kesler]
+Tb          373.62;      // K   [origin=predictive method=joback]
+HvapTb      34425.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (64.57 0.21788 0.0002612 -2.26e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH3COO; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethylsilyl ethanoate" "acetoxytrimethylsilane" "trimethylacetoxysilane" "acetic acid trimethylsilyl ester" "(acetato)trimethylsilane" "silanol, trimethyl-, acetate" "silanol, 1,1,1-trimethyl-, 1-acetate" "acetic acid, trimethylsilyl ester" "(trimethylsilyl) acetic acid" );
+gibbsFormation
+{
+    dHf_298   -575430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     528.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-423910.0
+    phase     gas;
+}

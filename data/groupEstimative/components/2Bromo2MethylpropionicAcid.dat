@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-bromo-2-methylpropionic acid  (C4H7BrO2, CAS 2052-01-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Bromo2MethylpropionicAcid;
+formula     C4H7BrO2;
+CAS         2052-01-9;
+InChIKey    XXSPGBOGLXKMDU-UHFFFAOYSA-N;
+MW          167.002;      // g/mol [origin=calculated method=formula-sum]
+Tc          723.33;      // K   [origin=predictive method=joback]
+Pc          49.246;      // bar [origin=predictive method=joback]
+omega       0.6089;      // -   [origin=predictive method=lee-kesler]
+Tb          499.56;      // K   [origin=predictive method=joback]
+HvapTb      46801.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.43 0.59864 -0.0005096 1.704e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C; count 1; } { group COOH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group C; count 1; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanyl-2-methyl-propanoic acid" "2-bromoisobutyric acid" "2-bromo-2-methylpropanoic acid" "isobromobutyric acid" "alpha-bromoisobutyric acid" "propanoic acid, 2-bromo-2-methyl-" ".alpha.-bromoisobutyric acid" "propionic acid, 2-bromo-2-methyl-" "alpha-bromo-alpha-methylpropionic acid" "2-bromo isobutyric acid" "2-bromo-2-methyl-propanoic acid" "xxspgboglxkmdu-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -458580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     377.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-343950.0
+    phase     gas;
+}

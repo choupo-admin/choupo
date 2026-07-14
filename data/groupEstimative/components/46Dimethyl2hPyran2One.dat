@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,6-dimethyl-2h-pyran-2-one  (C7H8O2, CAS 675-09-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        46Dimethyl2hPyran2One;
+formula     C7H8O2;
+CAS         675-09-2;
+InChIKey    IXYLIUKQQQXXON-UHFFFAOYSA-N;
+MW          124.139;      // g/mol [origin=calculated method=formula-sum]
+Tc          643.91;      // K   [origin=predictive method=joback]
+Pc          36.509;      // bar [origin=predictive method=joback]
+omega       0.4547;      // -   [origin=predictive method=lee-kesler]
+Tb          441.94;      // K   [origin=predictive method=joback]
+HvapTb      40885.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.79 0.55084 -0.00033208 7.12e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH=C; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,6-dimethylpyran-2-one" "4,6-dimethyl-2-pyrone" "mesitene lactone" "2h-pyran-2-one, 4,6-dimethyl-" "4,6-dimethylcoumalin" "4,6-dimethyl-alpha-pyrone" "2,4-dimethyl-alpha-pyrone" "4,6-dimethyl-mpyrone" "sorbic acid, 5-hydroxy-3-methyl-, .delta.-lactone" "4,6-dimethyl-2-pyranone" "4,6-dimethyl-pyran-2-one" "2,4-dimethyl-.alpha.-pyrone" );
+gibbsFormation
+{
+    dHf_298   -325490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     364.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-205290.0
+    phase     gas;
+}

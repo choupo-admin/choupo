@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-butyldiethanolamine  (C8H19NO2, CAS 102-79-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nButyldiethanolamine;
+formula     C8H19NO2;
+CAS         102-79-4;
+InChIKey    GVNHOISKXMSMPX-UHFFFAOYSA-N;
+MW          161.245;      // g/mol [origin=calculated method=formula-sum]
+Tc          735.74;      // K   [origin=predictive method=joback]
+Pc          30.727;      // bar [origin=predictive method=joback]
+omega       1.4461;      // -   [origin=predictive method=lee-kesler]
+Tb          579.44;      // K   [origin=predictive method=joback]
+HvapTb      68803.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.493 0.95572 -0.0005848 1.41e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group OH; count 2; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[butyl(2-hydroxyethyl)amino]ethanol" "2,2'-(butylimino)diethanol" "ethanol, 2,2'-(butylimino)bis-" "bide" "butyldiethanolamine" "n,n-bis(2-hydroxyethyl)butylamine" "ethanol, 2,2'-(butylimino)di-" "2,2'-butyliminodiethanol" "butylbis(2-hydroxyethyl)amine" "n-butyl-2,2'-iminodiethanol" "n-butyl-n,n-bis(hydroxyethyl)amine" "n-butyl-n,n-bis(2-hydroxyethyl)amine" );
+gibbsFormation
+{
+    dHf_298   -445380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     585.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-146380.0
+    phase     gas;
+}

@@ -1,0 +1,20 @@
+FINISHING sector -- dry + recover the battery-precursor Li2CO3 product.
+
+GREEN (runnable standalone: runCase tutorials/plant/lithiumBrinePlant/FINISHING).
+
+Two units, the natural finishing train:
+  - dryer (evaporativeDryer): removes the cake's FREE surface moisture by a
+    real hot-air stream.  This is a NEW engine unit, built for exactly this:
+    a crystalline inorganic like Li2CO3 holds free surface water, NOT
+    GAB-sorbed water, so the sorption-based solidDryer was the wrong model.
+    The evaporativeDryer is the honest one -- constant-rate evaporation
+    limited by the first of three declared limits (all water gone / exhaust
+    air saturates / energy floor), each announced.  Adiabatic: T_out is a
+    RESULT, no phantom duty.
+  - recoverer (cyclone, Lapple): recovers the dried fines from the carrier
+    air as product; the cut diameter follows from the gas + the Li2CO3
+    crystal density (its case-local component record).
+
+The Li2CO3 solid product record (constant/components/Li2CO3.dat, Route 2,
+real public-domain crystal data) is the crystalliser's product in CARBONATION
+-- ready when that sector wires the real slurry rate here.

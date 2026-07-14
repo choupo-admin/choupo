@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrahydrofuran-3,4-diol  (C4H8O3, CAS 22554-74-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrahydrofuran34Diol;
+formula     C4H8O3;
+CAS         22554-74-1;
+InChIKey    SSYDTHANSGMJTP-UHFFFAOYSA-N;
+MW          104.105;      // g/mol [origin=calculated method=formula-sum]
+Tc          694.85;      // K   [origin=predictive method=joback]
+Pc          61.035;      // bar [origin=predictive method=joback]
+omega       1.1900;      // -   [origin=predictive method=lee-kesler]
+Tb          513.04;      // K   [origin=predictive method=joback]
+HvapTb      62314.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.39 0.554 -0.0003127 5.86e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 2; } { group OH; count 2; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group CH_ring; count 2; } { group OH; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oxolane-3,4-diol" "1,4-anhydro-l-threitol" "3,4-furandiol, tetrahydro-, trans-" "erythritan" "cis-tetrahydrofuran-3,4-diol" "trans-tetrahydrofuran-3,4-diol" "agn-pc-00ash3" "3,4-furandiol, tetrahydro-, cis-" "(3s,4s)-tetrahydro-furan-3,4-diol" );
+gibbsFormation
+{
+    dHf_298   -522210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     269.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-348120.0
+    phase     gas;
+}

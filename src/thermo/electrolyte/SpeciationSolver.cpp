@@ -32,6 +32,7 @@ License
 #include "core/Constants.H"
 #include "core/Dictionary.H"
 #include "solver/NewtonND.H"
+#include "thermo/ThermoAnnounce.H"
 #include "thermo/electrolyte/AqueousActivity.H"
 #include "thermo/electrolyte/PitzerHMW.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
@@ -120,7 +121,7 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
     // pairs.dat, plus the I -> 0 Debye-Huckel limiting law.  A Pitzer built on a
     // wrong summation is worse than no Pitzer: REFUSE the run on a failed check
     // (do not loosen the tolerance).
-    if (activityName_ == "pitzer")
+    if (activityName_ == "pitzerHMW")
     {
         const double dev = PitzerHMW::verify(0);   // silent gate; verbose echo in solve()
         if (!(dev < 1.0e-9))
@@ -134,13 +135,35 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
     // merge: a mass-action network is one coherent model, so a case-local
     // catalogue ECLIPSES the standard one entirely (and we say so).
     {
-        auto paths = electrolytePaths("speciation.dat");
-        if (paths.empty())
-            throw std::runtime_error(
-                "speciation: no speciation.dat in constant/electrolyte/ (case) or "
-                "data/standards/electrolyte/" + std::string(howToObtain));
-        auto d = Dictionary::fromFile(paths.front().string());
-        for (const auto& e : d->lookupDictList("reactions"))
+        // The speciation kind is now per-file under standards/chemistry/aqueousSpeciation/
+        // (the monolith electrolyte/speciation.dat is gone).  Dual leg: case-local
+        // constant/electrolyte/speciation.dat read WHOLE (overlay XOR -- a mass-action
+        // network is one coherent model, AND it carries the optional `gases` sidecar)
+        // ELSE a sorted *.dat directory listing of the per-reaction records.  The
+        // case-local leg MUST stay a whole-file read so the open-system gas pins survive.
+        std::vector<DictPtr> records;
+        DictPtr caseDict;   // the case-local file (holds the gases sidecar, if any)
+        const fs::path cl = caseElectrolytePath("speciation.dat");
+        if (!cl.empty())
+        {
+            caseDict = Dictionary::fromFile(cl.string());
+            for (const auto& e : caseDict->lookupDictList("reactions")) records.push_back(e);
+        }
+        else
+        {
+            const fs::path dir = fs::path(Database::currentRoot())
+                               / "standards" / "chemistry" / "aqueousSpeciation";
+            if (!fs::exists(dir))
+                throw std::runtime_error(
+                    "speciation: no case-local speciation.dat and no standards "
+                    "chemistry/aqueousSpeciation/" + std::string(howToObtain));
+            std::vector<fs::path> files;
+            for (const auto& f : fs::directory_iterator(dir))
+                if (f.path().extension() == ".dat") files.push_back(f.path());
+            std::sort(files.begin(), files.end());
+            for (const auto& f : files) records.push_back(Dictionary::fromFile(f.string()));
+        }
+        for (const auto& e : records)
         {
             SpeciationReaction r;
             r.species = e->lookupWord("species");
@@ -157,8 +180,8 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
         // Optional `gases` section: gas dissolution (Henry) constants for the
         // OPEN-system option (absence-tolerant -- a closed-only catalogue is
         // complete without it).
-        if (d->found("gases"))
-            for (const auto& e : d->lookupDictList("gases"))
+        if (caseDict && caseDict->found("gases"))
+            for (const auto& e : caseDict->lookupDictList("gases"))
             {
                 GasEntry g;
                 g.gas     = e->lookupWord("gas");
@@ -170,20 +193,42 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                 g.source  = e->lookupWordOrDefault("source", "undeclared");
                 gases_.push_back(std::move(g));
             }
-        if (paths.size() > 1)        // a standards file exists underneath: loud
-            std::cerr << "[overlay] speciation: case-local " << paths.front().string()
+        if (!cl.empty() && thermoAnnounce())   // case-local eclipses the standards tier: loud
+            std::cerr << "[overlay] speciation: case-local " << cl.string()
                       << " ECLIPSES the standard catalogue (network taken whole, "
                       << reactions_.size() << " reactions)\n";
     }
 
     {
-        auto paths = electrolytePaths("minerals.dat");
-        if (paths.empty())
-            throw std::runtime_error(
-                "speciation: no minerals.dat in constant/electrolyte/ (case) or "
-                "data/standards/electrolyte/" + std::string(howToObtain));
-        auto d = Dictionary::fromFile(paths.front().string());
-        for (const auto& e : d->lookupDictList("minerals"))
+        // The mineral kind is now per-file under standards/chemistry/mineralSolubility/
+        // (the monolith electrolyte/minerals.dat is gone).  Dual leg, mirroring the
+        // pitzer/mixing migrations: case-local constant/electrolyte/minerals.dat list
+        // read WHOLE (overlay XOR, eclipses standard) ELSE a sorted *.dat directory
+        // listing -- the DIRECTORY is the authoritative set (no index, arity-1 safe).
+        // Each per-file's top-level dict IS one mineral record (same readMasters/readKT).
+        std::vector<DictPtr> records;
+        const fs::path cl = caseElectrolytePath("minerals.dat");
+        const bool caseLocal = !cl.empty();
+        if (caseLocal)
+        {
+            auto d = Dictionary::fromFile(cl.string());
+            for (const auto& e : d->lookupDictList("minerals")) records.push_back(e);
+        }
+        else
+        {
+            const fs::path dir = fs::path(Database::currentRoot())
+                               / "standards" / "chemistry" / "mineralSolubility";
+            if (!fs::exists(dir))
+                throw std::runtime_error(
+                    "speciation: no case-local minerals.dat and no standards "
+                    "chemistry/mineralSolubility/ -- " + std::string(howToObtain));
+            std::vector<fs::path> files;
+            for (const auto& f : fs::directory_iterator(dir))
+                if (f.path().extension() == ".dat") files.push_back(f.path());
+            std::sort(files.begin(), files.end());
+            for (const auto& f : files) records.push_back(Dictionary::fromFile(f.string()));
+        }
+        for (const auto& e : records)
         {
             MineralEntry m;
             m.mineral = e->lookupWord("mineral");
@@ -197,8 +242,8 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
             m.source  = e->lookupWordOrDefault("source", "undeclared");
             minerals_.push_back(std::move(m));
         }
-        if (paths.size() > 1)
-            std::cerr << "[overlay] minerals: case-local " << paths.front().string()
+        if (caseLocal && thermoAnnounce())
+            std::cerr << "[overlay] minerals: case-local " << cl.string()
                       << " ECLIPSES the standard catalogue (taken whole, "
                       << minerals_.size() << " minerals)\n";
     }
@@ -213,18 +258,35 @@ std::vector<ExchangeReaction> SpeciationSolver::loadExchangeNetwork() const
     // Same nearest-wins-WHOLE rule as speciation.dat: a case-local exchange.dat
     // ECLIPSES the standard one entirely (a half-reaction network is one
     // coherent model -- half-merged selectivities are not a model).
-    auto paths = electrolytePaths("exchange.dat");
-    if (paths.empty())
-        throw std::runtime_error(
-            "exchange: no exchange.dat in constant/electrolyte/ (case) or "
-            "data/standards/electrolyte/ -- generate it from the USGS PHREEQC "
-            "databases (public domain; phreeqc.dat EXCHANGE_SPECIES -> "
-            "exchange.dat via bin/curate/parse_speciation.py), or copy the "
-            "self-contained snapshot from a softener tutorial's "
-            "constant/electrolyte/ into this case.");
-    auto d = Dictionary::fromFile(paths.front().string());
+    // The exchange kind is now per-file under standards/chemistry/ionExchange/
+    // (the monolith electrolyte/exchange.dat is gone).  Dual leg, mirroring the
+    // mineral migration: case-local constant/electrolyte/exchange.dat list read
+    // WHOLE (overlay XOR -- a half-reaction network is one coherent model) else a
+    // sorted *.dat directory listing of chemistry/ionExchange/.
+    std::vector<DictPtr> records;
+    const fs::path cl = caseElectrolytePath("exchange.dat");
+    if (!cl.empty())
+    {
+        auto d = Dictionary::fromFile(cl.string());
+        for (const auto& e : d->lookupDictList("exchange")) records.push_back(e);
+    }
+    else
+    {
+        const fs::path dir = fs::path(Database::currentRoot())
+                           / "standards" / "chemistry" / "ionExchange";
+        if (!fs::exists(dir))
+            throw std::runtime_error(
+                "exchange: no case-local exchange.dat and no standards "
+                "chemistry/ionExchange/ -- generate it (USGS PHREEQC EXCHANGE_SPECIES, "
+                "public domain) or copy a softener tutorial's snapshot into this case.");
+        std::vector<fs::path> files;
+        for (const auto& f : fs::directory_iterator(dir))
+            if (f.path().extension() == ".dat") files.push_back(f.path());
+        std::sort(files.begin(), files.end());
+        for (const auto& f : files) records.push_back(Dictionary::fromFile(f.string()));
+    }
     std::vector<ExchangeReaction> net;
-    for (const auto& e : d->lookupDictList("exchange"))
+    for (const auto& e : records)
     {
         ExchangeReaction r;
         r.species   = e->lookupWord("species");
@@ -263,8 +325,8 @@ std::vector<ExchangeReaction> SpeciationSolver::loadExchangeNetwork() const
         r.source = e->lookupWordOrDefault("source", "undeclared");
         net.push_back(std::move(r));
     }
-    if (paths.size() > 1)
-        std::cerr << "[overlay] exchange: case-local " << paths.front().string()
+    if (!cl.empty() && thermoAnnounce())
+        std::cerr << "[overlay] exchange: case-local " << cl.string()
                   << " ECLIPSES the standard catalogue (network taken whole, "
                   << net.size() << " half-reactions)\n";
     return net;
@@ -283,7 +345,7 @@ double SpeciationSolver::mineralMW(const std::string& mineral) const
         const double m = ionMW(ion);
         if (m <= 0.0)
             throw std::runtime_error("mineralMW: ion '" + ion + "' (in " + mineral
-                + ") has no MW in ions.dat -- add `MW <g/mol>;` to its entry");
+                + ") has no MW in its ion record (species/aqueous/) -- add `MW <g/mol>;` to its entry");
         mw += nu * m;
     }
     return mw;
@@ -307,7 +369,7 @@ double SpeciationSolver::chargeOf(const std::string& master) const
     if (!ion)
         throw std::runtime_error("speciation: master ion '" + master
             + "' not in constant/electrolyte/ions.dat (case) or "
-              "data/standards/electrolyte/ions.dat");
+              "data/standards/species/aqueous/");
     const double z = ion->lookupScalar("z");
     masterCharge_[master] = z;
     return z;
@@ -735,7 +797,7 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         // Display the active model with an initial capital (davies -> Davies).
         std::string actDisp = activityName_;
         if (!actDisp.empty()) actDisp[0] = char(std::toupper((unsigned char)actDisp[0]));
-        if (activityName_ == "pitzer")
+        if (activityName_ == "pitzerHMW")
             // A here is A_phi(T) (the molality-scale osmotic DH slope, 0.3915 at
             // 25 C), NOT the Davies log10 A.  binaries + ternary theta/psi +
             // E_theta higher-order electrostatic mixing (v2a).
@@ -745,7 +807,8 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                          "mixing) (A_phi = "
                       << std::setprecision(4) << A
                       << " at T) -- per-ion specific-interaction gamma; "
-                         "a_w from phi = 1\n" << std::defaultfloat;
+                         "a_w from the HMW osmotic coefficient phi(I) "
+                         "(NOT phi = 1)\n" << std::defaultfloat;
             // The glass-box self-check: single-salt reduction vs the closed
             // kernel + the I -> 0 Debye-Huckel limiting law (verbosity >= 3).
             if (verbosity >= 3) PitzerHMW::verify(3);
@@ -754,7 +817,8 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
             std::cout << "  aqueous activity: " << actDisp << " (A = "
                       << std::setprecision(4) << A
                       << ") -- trustworthy to I ~ 0.5 mol/kg, indicative beyond;"
-                         " a_w from phi = 1\n" << std::defaultfloat;
+                         " a_w from phi = 1 (dilute approximation)\n"
+                      << std::defaultfloat;
         if (doExchange)
         {
             // count the exchange species whose binding cation is present
@@ -1147,7 +1211,15 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
             }
             double sumM = m_H + mSpeciesSum;       // free site m_X excluded (not aqueous)
             for (std::size_t j = 0; j < n; ++j) sumM += std::exp(xa[j]);
-            const double awNew = std::exp(-18.015e-3 * sumM);
+            // Water activity with the model's OSMOTIC coefficient:
+            //   a_w = exp(-(M_w/1000) phi sum_i m_i).
+            // Pitzer fills ar.osmotic (the rigorous HMW phi on the same virials as
+            // its gammas); Davies leaves it null -> phi = 1 (the dilute approx,
+            // consistent with Davies being indicative beyond I ~ 0.5).  phi is
+            // frozen with the gammas for this pass and converges with the I fixed
+            // point (at convergence the frozen state IS the current state).
+            const double phi    = ar.osmotic ? ar.osmotic() : 1.0;
+            const double awNew  = std::exp(-18.015e-3 * phi * sumM);
             if (verbosity >= 3)
                 std::cout << "    gamma pass " << g + 1 << ":  I = " << std::scientific
                           << std::setprecision(6) << Inew << std::defaultfloat
@@ -1517,7 +1589,7 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                          "  | driving force.\n"
                          "  +---------------------------------------------------------+\n";
             std::cout << "  [note] mineral MW derived as sum nu*MW(ion) + nuWater*MW(H2O)"
-                         " from ions.dat (no minerals.dat MW field)\n";
+                         " from species/aqueous/ (no minerals.dat MW field)\n";
 
             std::cout << "  PRECIPITATION LEDGER:\n";
             for (const auto& al : allowed)

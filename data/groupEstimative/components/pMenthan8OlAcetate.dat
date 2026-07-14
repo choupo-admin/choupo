@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: p-menthan-8-ol, acetate  (C12H22O2, CAS 80-25-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pMenthan8OlAcetate;
+formula     C12H22O2;
+CAS         80-25-1;
+InChIKey    HBNHCGDYYBMKJN-UHFFFAOYSA-N;
+MW          198.306;      // g/mol [origin=calculated method=formula-sum]
+Tc          752.86;      // K   [origin=predictive method=joback]
+Pc          21.158;      // bar [origin=predictive method=joback]
+omega       0.4816;      // -   [origin=predictive method=lee-kesler]
+Tb          544.03;      // K   [origin=predictive method=joback]
+HvapTb      48537.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-66.75 1.31048 -0.0007318 1.278e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 2; } { group C; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group C; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-methylcyclohexyl)propan-2-yl ethanoate" "terpineol, dihydro-, acetate" "p-8-menthanyl acetate" "p-menthan-8-yl acetate" "cis-p-menthan-8-ol, acetate" "dihydro-alpha-terpinyl acetate" "trans-p-menthan-8-ol, acetate" "acetic acid, dihydroterpinyl ester" "acetic acid, p-menthan-8-ol ester" "cis-dihydro-.alpha.-terpinyl acetate" "cyclohexanemethanol, .alpha.,.alpha.,4-trimethyl-, acetate" "2-(4-methylcyclohexyl)propan-2-yl acetate" );
+gibbsFormation
+{
+    dHf_298   -583060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     562.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-240630.0
+    phase     gas;
+}

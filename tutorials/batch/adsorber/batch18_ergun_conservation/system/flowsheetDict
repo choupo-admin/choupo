@@ -1,0 +1,24 @@
+units
+(
+    {
+        name bed;
+        type fixedBedAdsorber;
+        solver { samplingInterval 2.0; rtol 1e-6; }
+        operation
+        {
+            adsorbent zeolite13X_A4; flowModel ergun;
+            L 0.5 m; area 0.01 m2; eps 0.4; u 0.05 m/s;
+            T 298.15 K; P 1 bar; P_out 1 bar;
+            Dax [0 2 -1 0 0] 1e-4; nCells 25;
+            feed { molarComposition { CO2 0.15; He 0.85; } }
+            initial { molarComposition { He 1.0; } }
+            kLDF
+            {
+                basis solidFilm;
+                scope "2 mm synthetic A4 conservation anchor";
+                source "declared numerical comparison";
+                k { CO2 [0 0 -1 0 0] 0.05; }
+            }
+        }
+    }
+);

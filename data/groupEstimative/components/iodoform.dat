@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: iodoform  (CHI3, CAS 75-47-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        iodoform;
+formula     CHI3;
+CAS         75-47-8;
+InChIKey    OKJPEAGHQZHRQV-UHFFFAOYSA-N;
+MW          393.719;      // g/mol [origin=calculated method=formula-sum]
+Tc          811.22;      // K   [origin=predictive method=joback]
+Pc          53.124;      // bar [origin=predictive method=joback]
+omega       0.1805;      // -   [origin=predictive method=lee-kesler]
+Tb          501.46;      // K   [origin=predictive method=joback]
+HvapTb      45551.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (35.37 0.2217 -0.000278 1.199e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group I; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group I; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tris(iodanyl)methane" "triiodomethane" "methane, triiodo-" "carbon triiodide" "jodoform" "dezinfekt v" "trijodmethane" "iodoform (tn)" "iodoform [jan]" "iodoform (jp16/usp)" "k290" );
+gibbsFormation
+{
+    dHf_298   161360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     352.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=129460.0
+    phase     gas;
+}

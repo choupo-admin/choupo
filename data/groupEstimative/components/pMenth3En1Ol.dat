@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: p-menth-3-en-1-ol  (C10H18O, CAS 586-82-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pMenth3En1Ol;
+formula     C10H18O;
+CAS         586-82-3;
+InChIKey    XJWZDXFFNOMMTD-UHFFFAOYSA-N;
+MW          154.253;      // g/mol [origin=calculated method=formula-sum]
+Tc          744.33;      // K   [origin=predictive method=joback]
+Pc          30.626;      // bar [origin=predictive method=joback]
+omega       0.7418;      // -   [origin=predictive method=lee-kesler]
+Tb          544.07;      // K   [origin=predictive method=joback]
+HvapTb      54377.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-96.11 1.29226 -0.00108764 4.04e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group CH=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methyl-4-propan-2-yl-cyclohex-3-en-1-ol" "3-cyclohexen-1-ol, 1-methyl-4-(1-methylethyl)-" "4-isopropyl-1-methyl-3-cyclohexen-1-ol" "4-(isopropyl)-1-methylcyclohex-3-en-1-ol" "1-terpinenol" "3-terpinen-1-ol" "1-methyl-4-isopropyl-3-cyclohexen-1-ol" "1-methyl-4-propan-2-ylcyclohex-3-en-1-ol" "3-cyclohexen-1-ol, 1-methyl-4-(1-methyethyl)-" "1-methyl-4-(1-methylethyl)-3-cyclohexen-1-ol" );
+gibbsFormation
+{
+    dHf_298   -291370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     582.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-66650.0
+    phase     gas;
+}

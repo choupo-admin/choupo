@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-acetoxy-3-(3'-carbomethoxy-4'-hydroxynaphthyl)-1,8-naphthalide  (C26H18O7, CAS 52435-87-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Acetoxy33Carbomethoxy4Hydroxynaphthyl18Naphthalide;
+formula     C26H18O7;
+CAS         52435-87-7;
+InChIKey    FLIPGGYCYPKIFD-UHFFFAOYSA-N;
+MW          442.423;      // g/mol [origin=calculated method=formula-sum]
+Tc          1426.39;      // K   [origin=predictive method=joback]
+Pc          18.373;      // bar [origin=predictive method=joback]
+omega       1.4514;      // -   [origin=predictive method=lee-kesler]
+Tb          1159.44;      // K   [origin=predictive method=joback]
+HvapTb      117603.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-116.93 2.52284 -0.00227644 8.307e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group C; count 1; } { group ACH; count 11; } { group AC; count 8; } { group ACOH; count 1; } { group CH3COO; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group C_ring; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 9; } { group OH_phenol; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 4-(1-acetoxy-3-oxo-1h,3h-benzo[de]isochromen-1-yl)-1-hydroxy-2-naphthoate" "2-naphthalenecarboxylic acid, 4-(1-(acetyloxy)-3-oxo-1h,3h-naphtho(1,8-cd)pyran-1-yl)-1-hydroxy-, methyl ester" "2-naphthalenecarboxylic acid, 4-[1-(acetyloxy)-3-oxo-1h,3h-naphtho[1,8-cd]pyran-1-yl]-1-hydroxy-, methyl ester" "methyl 4-(1-(acetoxy)-3-oxo-1h,3h-naphtho(1,8-cd)pyran-1-yl)-1-hydroxy-2-naphthoate" "methyl 4-[1-(acetyloxy)-3-oxo-1h,3h-benzo[de]isochromen-1-yl]-1-hydroxynaphthalene-2-carboxylate" );
+gibbsFormation
+{
+    dHf_298   -799440.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     833.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-438630.0
+    phase     gas;
+}

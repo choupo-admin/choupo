@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrachloro-1,2-diiodobenzene  (C6Cl4I2, CAS 40707-59-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrachloro12Diiodobenzene;
+formula     C6Cl4I2;
+CAS         40707-59-3;
+InChIKey    QWGSRNUTDBCMQH-UHFFFAOYSA-N;
+MW          467.666;      // g/mol [origin=calculated method=formula-sum]
+Tc          1034.27;      // K   [origin=predictive method=joback]
+Pc          33.412;      // bar [origin=predictive method=joback]
+omega       0.5217;      // -   [origin=predictive method=lee-kesler]
+Tb          724.46;      // K   [origin=predictive method=joback]
+HvapTb      70822.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (109.97 0.3026 -0.000243 7.7e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 2; } { group ACCl; count 4; } { group I; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 6; } { group Cl; count 4; } { group I; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4-tetrakis(chloranyl)-5,6-bis(iodanyl)benzene" "1,2,3,4-tetrachloro-5,6-diiodobenzene" );
+gibbsFormation
+{
+    dHf_298   102790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     497.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=132420.0
+    phase     gas;
+}

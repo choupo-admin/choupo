@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hydrocinnamic acid, trimethylsilyl ester  (C12H18O2Si, CAS 21273-15-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C12H18O2Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        hydrocinnamicAcidTrimethylsilylEster;
+formula     C12H18O2Si;
+CAS         21273-15-4;
+InChIKey    GRONVOGSDOJOMG-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          222.359;      // g/mol [origin=calculated method=formula-sum]
+Tc          770.49;      // K   [origin=predictive method=joback]
+Pc          21.553;      // bar [origin=predictive method=joback]
+omega       0.5293;      // -   [origin=predictive method=lee-kesler]
+Tb          560.46;      // K   [origin=predictive method=joback]
+HvapTb      52283.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.302 0.80396 -0.0001508 -1.172e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group ACH; count 5; } { group ACCH2; count 1; } { group CH2COO; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethylsilyl 3-phenylpropanoate" "benzenepropanoic acid, trimethylsilyl ester" "3-phenylpropanoic acid trimethylsilyl ester" );
+gibbsFormation
+{
+    dHf_298   -483380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     694.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-252560.0
+    phase     gas;
+}

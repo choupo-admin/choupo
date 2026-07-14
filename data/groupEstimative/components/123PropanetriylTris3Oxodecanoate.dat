@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,3-propanetriyl tris(3-oxodecanoate)  (C33H56O9, CAS 94236-90-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        123PropanetriylTris3Oxodecanoate;
+formula     C33H56O9;
+CAS         94236-90-5;
+InChIKey    JMGZJVGBEHSEEW-UHFFFAOYSA-N;
+MW          596.802;      // g/mol [origin=calculated method=formula-sum]
+Tc          1733.72;      // K   [origin=predictive method=joback]
+Pc          5.740;      // bar [origin=predictive method=joback]
+omega       -0.0676;      // -   [origin=predictive method=lee-kesler]
+Tb          1290.47;      // K   [origin=predictive method=joback]
+HvapTb      131123.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (69.513 2.89636 -0.0014347 1.8258e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 17; } { group CH; count 1; } { group CH2CO; count 3; } { group CH2COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 23; } { group CH; count 1; } { group CdO; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-bis(3-oxidanylidenedecanoyloxy)propyl 3-oxidanylidenedecanoate" "glyceryl tri(3-oxodecanoate)" "2,3-bis(3-oxodecanoyloxy)propyl 3-oxodecanoate" "decanoic acid, 3-oxo-, 1,2,3-propanetriyl ester" );
+gibbsFormation
+{
+    dHf_298   -2019310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1665.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1093330.0
+    phase     gas;
+}

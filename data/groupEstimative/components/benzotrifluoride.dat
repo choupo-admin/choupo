@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzotrifluoride  (C7H5F3, CAS 98-08-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzotrifluoride;
+formula     C7H5F3;
+CAS         98-08-8;
+InChIKey    GETTZEONDQJALK-UHFFFAOYSA-N;
+MW          146.111;      // g/mol [origin=calculated method=formula-sum]
+Tc          571.35;      // K   [origin=predictive method=joback]
+Pc          35.643;      // bar [origin=predictive method=joback]
+omega       0.3181;      // -   [origin=predictive method=lee-kesler]
+Tb          381.02;      // K   [origin=predictive method=joback]
+HvapTb      29705.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-43.58 0.7511 -0.0006092 1.863e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trifluoromethylbenzene" "(trifluoromethyl)benzene" "phenylfluoroform" "alpha,alpha,alpha-trifluorotoluene" "benzene, (trifluoromethyl)-" "benzenyl fluoride" "benzylidyne fluoride" "a,a,a-trifluorotoluene" "trifluoro toluene" "toluene trifluoride" "usaf ma-16" "(trifluoromethyl)-benzene" );
+gibbsFormation
+{
+    dHf_298   -548360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     378.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-461120.0
+    phase     gas;
+}

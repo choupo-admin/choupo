@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dichloromethyl  (CHCl2, CAS 3474-12-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        dichloromethyl;
+formula     CHCl2;
+CAS         3474-12-2;
+InChIKey    ZJULYDCRWUEPTK-UHFFFAOYSA-N;
+role        radical;
+MW          83.919;      // g/mol [origin=calculated method=formula-sum]
+Tc          486.42;      // K   [origin=predictive method=joback]
+Pc          53.907;      // bar [origin=predictive method=joback]
+omega       0.1720;      // -   [origin=predictive method=lee-kesler]
+Tb          299.42;      // K   [origin=predictive method=joback]
+HvapTb      26569.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.67 0.1224 -0.0001133 4.24e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group dCH; count 1; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(chloranyl)methane" "methyl, dichloro-" "dichloromethyl radical" "chcl2" );
+gibbsFormation
+{
+    dHf_298   -36840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     258.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-26210.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isopropyl dichloroacetate  (C5H8Cl2O2, CAS 25006-60-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isopropylDichloroacetate;
+formula     C5H8Cl2O2;
+CAS         25006-60-4;
+InChIKey    JBTISLVNJCYZCH-UHFFFAOYSA-N;
+MW          171.017;      // g/mol [origin=calculated method=formula-sum]
+Tc          644.22;      // K   [origin=predictive method=joback]
+Pc          32.616;      // bar [origin=predictive method=joback]
+omega       0.4533;      // -   [origin=predictive method=lee-kesler]
+Tb          446.20;      // K   [origin=predictive method=joback]
+HvapTb      42125.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (46.17 0.44944 -0.0002008 8.2e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group CHCl2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 2; } { group Cl; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propan-2-yl 2,2-bis(chloranyl)ethanoate" "acetic acid, dichloro-, 1-methylethyl ester" "propan-2-yl 2,2-dichloroacetate" "acetic acid,2,2-dichloro-, 1-methylethyl ester" "aceticacid, dichloro-, 1-methylethyl ester (9ci); acetic acid, dichloro-, isopropylester (8ci); 1-methylethyl 2,2-dichloroacetate; 1-methylethyl dichloroacetate;dichloroacetic acid isopropyl ester; isopropyl dichloroacetate" );
+gibbsFormation
+{
+    dHf_298   -505850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     449.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-347890.0
+    phase     gas;
+}

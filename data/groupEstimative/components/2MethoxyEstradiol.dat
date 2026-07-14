@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methoxy estradiol  (C19H26O3, CAS 362-07-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2MethoxyEstradiol;
+formula     C19H26O3;
+CAS         362-07-2;
+InChIKey    CQOQDQWUFQDJMK-UHFFFAOYSA-N;
+MW          302.414;      // g/mol [origin=calculated method=formula-sum]
+Tc          1116.43;      // K   [origin=predictive method=joback]
+Pc          22.719;      // bar [origin=predictive method=joback]
+omega       1.3096;      // -   [origin=predictive method=lee-kesler]
+Tb          885.84;      // K   [origin=predictive method=joback]
+HvapTb      91905.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-196.9 2.40874 -0.00207228 7.584e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 3; } { group C; count 1; } { group ACH; count 2; } { group AC; count 1; } { group ACCH2; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group ACOH; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH; count 1; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methoxy-13-methyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthrene-3,17-diol" "2-methoxy-.beta.-estradiol" "agn-pc-00fdad" "(17beta)-2-methoxyestra-1(10),2,4-triene-3,17-diol" "tpc-s002" "brd-a79248021-001-01-1" "estra-1,3,5(10)-triene-3,17.beta.-diol, 2-methoxy-" "estra-1,3,5(10)-triene-3,17-diol, 2-methoxy-, (17.beta.)-" "(8r,9s,13r,14s,17r)-2-methoxy-13-methyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthrene-3,17-diol" "2-methoxyestra-1(10),2,4-triene-3,17-diol; 2-methoxyestra-1,3,5(10)-triene-3,17.beta.-diol" );
+gibbsFormation
+{
+    dHf_298   -503020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     619.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-57050.0
+    phase     gas;
+}

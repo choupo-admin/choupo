@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-chloro-4-fluorophenyl isocyanate  (C7H3ClFNO, CAS 50529-33-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Chloro4FluorophenylIsocyanate;
+formula     C7H3ClFNO;
+CAS         50529-33-4;
+InChIKey    XVIPJBUXMFLHSI-UHFFFAOYSA-N;
+MW          171.555;      // g/mol [origin=calculated method=formula-sum]
+Tc          720.54;      // K   [origin=predictive method=joback]
+Pc          39.209;      // bar [origin=predictive method=joback]
+omega       0.5375;      // -   [origin=predictive method=lee-kesler]
+Tb          499.77;      // K   [origin=predictive method=joback]
+HvapTb      47876.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACCl; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group dCd; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-1-fluoranyl-4-isocyanato-benzene" "2-chloro-1-fluoro-4-isocyanatobenzene" "3-chloro-4-fluorobenzenisocyanate" "2-chloro-1-fluoro-4-isocyanato-benzen" "2-chloro-1-fluoro-4-(isocyanato)benzene;3-chloro-4-fluorophenyl isocyanate;" );
+// formation datum unavailable (element entropy missing): dHf_298=-191480.0 dGf_298=None

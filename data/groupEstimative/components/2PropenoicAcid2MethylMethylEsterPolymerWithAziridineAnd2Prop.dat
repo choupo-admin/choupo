@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propenoic acid, 2-methyl-, methyl ester, polymer with aziridine and 2-propenoic acid  (C10H17NO4, CAS 70146-01-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropenoicAcid2MethylMethylEsterPolymerWithAziridineAnd2Prop;
+formula     C10H17NO4;
+CAS         70146-01-9;
+InChIKey    LZTBIQUWUOYPOC-UHFFFAOYSA-N;
+MW          215.249;      // g/mol [origin=calculated method=formula-sum]
+Tc          910.41;      // K   [origin=predictive method=joback]
+Pc          25.430;      // bar [origin=predictive method=joback]
+omega       0.8944;      // -   [origin=predictive method=lee-kesler]
+Tb          688.13;      // K   [origin=predictive method=joback]
+HvapTb      68733.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (60.51 0.66134 6.83e-05 -2.245e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH2=CH; count 1; } { group CH2=C; count 1; } { group CH2NH; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 2; } { group COOH; count 1; } { group COO; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "aziridine;methyl 2-methylprop-2-enoate;prop-2-enoic acid" "methyl methacrylate, ethylenimine, acrylic acid polymer" );
+gibbsFormation
+{
+    dHf_298   -768500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     797.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-507180.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-propylbutanamide  (C7H15NO, CAS 5129-73-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nPropylbutanamide;
+formula     C7H15NO;
+CAS         5129-73-7;
+InChIKey    TUDFZSGUEDLTJC-UHFFFAOYSA-N;
+MW          129.203;      // g/mol [origin=calculated method=formula-sum]
+Tc          644.20;      // K   [origin=predictive method=joback]
+Pc          30.390;      // bar [origin=predictive method=joback]
+omega       0.6375;      // -   [origin=predictive method=lee-kesler]
+Tb          463.80;      // K   [origin=predictive method=joback]
+HvapTb      44358.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (2.674 0.71704 -0.0003869 7.356e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butanamide, n-propyl-" "n-propyl-butyramide" "butyramide, n-propyl-" );
+gibbsFormation
+{
+    dHf_298   -246920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     496.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-31470.0
+    phase     gas;
+}

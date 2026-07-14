@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene, 1,4-bis(1-isocyanato-1-methylethyl)-  (C14H16N2O2, CAS 2778-41-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzene14Bis1Isocyanato1Methylethyl;
+formula     C14H16N2O2;
+CAS         2778-41-8;
+InChIKey    AGJCSCSSMFRMFQ-UHFFFAOYSA-N;
+MW          244.294;      // g/mol [origin=calculated method=formula-sum]
+Tc          909.73;      // K   [origin=predictive method=joback]
+Pc          23.565;      // bar [origin=predictive method=joback]
+omega       0.7437;      // -   [origin=predictive method=lee-kesler]
+Tb          678.46;      // K   [origin=predictive method=joback]
+HvapTb      66168.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group C; count 2; } { group ACH; count 4; } { group AC; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:2
+    joback ( { group CH3; count 4; } { group C; count 2; } { group dCd; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group dO_oth; count 2; } { group Nd; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-bis(2-isocyanatopropan-2-yl)benzene" "bis(isocyanatomethyl)durene" "p-tetramethylxylylene diisocyanate" "1,4-bis(1-isocyanato-1-methylethyl)benzene" "isocyanic acid, p-phenylenediisopropylidene ester (7ci)" "1,4-bis-(1-isocyanato-1-methylethyl)benzene" "benzene,1,4-bis(1-isocyanato-1-methylethyl)-" "isocyanic acid, p-phenylenediisopropylidene ester" "isocyanic acid, alpha,alpha,alpha',alpha'-tetramethyl-p-xylylene ester" "isocyanic acid, alpha,alpha,alpha',alpha'-tetramethyl-p-xylylene ester (8ci)" "isocyanicacid, p-phenylenediisopropylidene ester (7ci); isocyanic acid, a,a,a',a'-tetramethyl-p-xylylene ester (8ci);1,4-bis(1-isocyanato-1-methylethyl)benzene; 1,4-bis(a-isocyanatoisopropyl)benzene;bis(isocyanatomethyl)durene; p-tmxdi; p-tetramethylxylylene diisocyanate; a,a,a',a'-tetramethyl-p-phenylenedimethylenediisocyanate; a,a,a',a'-tetramethyl-p-xylylene diisocyanate; a,a,a',a'-tetramethylxylylene diisocyanate" );
+// formation datum unavailable (element entropy missing): dHf_298=-135550.0 dGf_298=None

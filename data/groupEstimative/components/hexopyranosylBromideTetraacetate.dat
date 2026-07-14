@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexopyranosyl bromide, tetraacetate  (C14H19BrO9, CAS 3068-32-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexopyranosylBromideTetraacetate;
+formula     C14H19BrO9;
+CAS         3068-32-4;
+InChIKey    CYAYKKUWALRRPA-UHFFFAOYSA-N;
+MW          411.201;      // g/mol [origin=calculated method=formula-sum]
+Tc          1058.84;      // K   [origin=predictive method=joback]
+Pc          17.232;      // bar [origin=predictive method=joback]
+omega       1.1858;      // -   [origin=predictive method=lee-kesler]
+Tb          846.78;      // K   [origin=predictive method=joback]
+HvapTb      86524.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (75.461 1.16598 -0.0002763 -1.508e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 4; } { group CH3COO; count 4; } { group CH-O; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH_ring; count 5; } { group Br; count 1; } { group O_ring; count 1; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3,4,5-triacetyloxy-6-bromanyl-oxan-2-yl)methyl ethanoate" "acetic acid 4,5-diacetoxy-6-acetoxymethyl-2-bromo-tetrahydro-pyran-3-yl ester" "acetobromo glucose" "2,3,4,6-tetra-o-acetylhexopyranosyl bromide" "acetobromo-alpha-d-galactose" "bromo 2,3,4,6-tetra-o-acetyl-a-d-glucopyranose" "alpha-d-galactopyranosyl bromide, tetraacetate" "2,3,4,6-tetra-o-acetyl-alpha-d-galactopyranosyl bromide" "?-d-galactopyranosyl bromide, tetraacetate" ".alpha.-d-glucopyranosyl bromide, tetraacetate" "1-bromo-2,3,4,6-tetra-acetyl-?d-galactoside" "tetra-o-acetyl-alpha-d-galactopyranosyl bromide" );
+gibbsFormation
+{
+    dHf_298   -1734120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     706.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1252670.0
+    phase     gas;
+}

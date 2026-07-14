@@ -95,6 +95,7 @@ interface PersistedSession {
   activeWorkspace: WorkspaceKey | null;
   agentOpen: boolean;
   agentDocked: boolean;
+  agentCollapsed: boolean;
   panels: { property: boolean; output: boolean };
 }
 
@@ -141,6 +142,12 @@ function caseRefOf(tutorialName: string): PersistedSession["caseRef"] {
 
 export type RunStatus = "idle" | "running" | "done" | "error";
 
+/** Panel-visibility flags persisted in the session.  `property` drives the
+ *  flowsheet's floating selection card: true = expanded beside its handle,
+ *  false = slid away to the right edge (FlowCanvas.tsx + ui/panelFold.ts).
+ *  `output` is the historical bottom-output-panel slot — kept in the session
+ *  schema, currently unused (the bottom dock today is the assistant console,
+ *  which folds via `agentCollapsed` below). */
 export type PanelKey = "property" | "output";
 
 /** Top-menu workspaces (Fase B of the layout redesign).  At most one
@@ -190,6 +197,12 @@ interface AppState {
    *  it) vs floating (a movable overlay).  Default docked. */
   agentDocked: boolean;
   toggleAgentDock: () => void;
+  /** Docked-mode fold: true = the console row is a slim header-only bar (the
+   *  terminal + its `claude -c` session stay ALIVE, just clipped); false =
+   *  the full agentHeight row.  One click on the bar restores it.  Ignored
+   *  while floating (a floating window is moved or closed, not folded). */
+  agentCollapsed: boolean;
+  toggleAgentCollapsed: () => void;
   agentHeight: number;
   setAgentHeight: (px: number) => void;
 
@@ -320,20 +333,47 @@ function bootCase(): {
     }
     const param = q.get("case");
     if (param) {
-      const t = tutorialByName(param);
+      let t = tutorialByName(param);
       if (t) {
+        // Make the drilled sub-case RUNNABLE: freeze its boundary inlets as
+        // feed streams so Run re-solves with the parent's inputs instead of
+        // hitting unfed boundary inlets and producing nothing.  A sub-case's
+        // OWN stream def for a name always wins.
+        const withFeeds = (files: CaseFiles, defs: Record<string, unknown>): CaseFiles => {
+          if (!Object.keys(defs).length) return files;
+          const fs = { ...((files.flowsheet ?? {}) as JsonDict) };
+          const streams = { ...((fs["streams"] ?? {}) as JsonDict) };
+          for (const [nm, def] of Object.entries(defs))
+            if (!streams[nm]) streams[nm] = def as JsonDict[string];
+          fs["streams"] = streams;
+          return { ...files, flowsheet: fs };
+        };
+        // (a) the explicit stash from the drill (STABLE key -> survives F5).
+        const feedsKey = q.get("feeds");
+        if (feedsKey) {
+          try {
+            const raw = window.localStorage.getItem(feedsKey);
+            if (raw) t = { ...t, files: withFeeds(t.files, JSON.parse(raw) as Record<string, unknown>) };
+          } catch { /* corrupt / blocked stash -- open unfed */ }
+        }
         // Drill-in result inheritance: the parent tab sliced its finished
-        // RunResult to this sub-case's scope and stashed it under the
-        // `inherit` key (FlowCanvas.openInNewWindow).  Read + consume it so
-        // the drilled tab opens WITH the parent's converged numbers, seeded
-        // exactly like a finished run; Run still overrides them normally.
+        // RunResult to this sub-case's scope and stashed it under the `inherit`
+        // key (FlowCanvas.openInNewWindow).  Open WITH the parent's converged
+        // numbers; and (b) DERIVE the frozen feeds from the inherited FEED
+        // streams too, so a tab opened before the stash mechanism existed still
+        // runs.  Consumed (one-shot) so a plain F5 re-derives from the stash.
         const inheritKey = q.get("inherit");
         if (inheritKey) {
           try {
             const raw = window.localStorage.getItem(inheritKey);
             if (raw) {
               window.localStorage.removeItem(inheritKey);
-              return { ...t, inherited: JSON.parse(raw) as RunResult };
+              const inherited = JSON.parse(raw) as RunResult;
+              const defs: Record<string, unknown> = {};
+              for (const s of inherited.streams)
+                if (s.role === "feed")
+                  defs[s.name] = { F: s.F, T: s.T, P: s.P, molarComposition: s.composition ?? {} };
+              return { ...t, files: withFeeds(t.files, defs), inherited };
             }
           } catch { /* corrupt / blocked stash -- open unrun */ }
         }
@@ -630,10 +670,17 @@ export const useStore = create<AppState>((set, get) => ({
   toggleAgent: () => set((s) => ({ agentOpen: !s.agentOpen })),
   agentDocked: bootSession?.agentDocked ?? true,
   toggleAgentDock: () => set((s) => ({ agentDocked: !s.agentDocked })),
+  agentCollapsed: bootSession?.agentCollapsed ?? false,
+  toggleAgentCollapsed: () => set((s) => ({ agentCollapsed: !s.agentCollapsed })),
   agentHeight: 360,
   setAgentHeight: (px) => set({ agentHeight: Math.max(140, Math.min(px, window.innerHeight - 80)) }),
 
-  startRun: () => set({ runStatus: "running", runLog: "", runResult: null, scrubIdx: null }),
+  // KEEP the last converged results visible while a new run is in flight: the
+  // "running" status is the in-progress signal, and finishRun REPLACES the
+  // result when the solve lands.  Nulling it here flashed the flowsheet empty on
+  // every Run and, if the solve then failed, discarded a good solution outright.
+  // Reset (resetRun) is the explicit way to clear.
+  startRun: () => set({ runStatus: "running", runLog: "", scrubIdx: null }),
   appendLog: (chunk) => set((s) => ({ runLog: s.runLog + chunk })),
   finishRun: (result) => set({ runStatus: result.status, runResult: result }),
   markPropsRun: () =>
@@ -662,6 +709,7 @@ if (typeof window !== "undefined" && !isolatedTab()) {
       activeWorkspace: s.activeWorkspace,
       agentOpen: s.agentOpen,
       agentDocked: s.agentDocked,
+      agentCollapsed: s.agentCollapsed,
       panels: { property: s.panels.property, output: s.panels.output },
     };
     const key = JSON.stringify(blob);

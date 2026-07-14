@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclohexane-1,4-dicarboxylic acid;undecane-1,11-diamine  (C19H38N2O4, CAS 52734-17-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclohexane14DicarboxylicAcidUndecane111Diamine;
+formula     C19H38N2O4;
+CAS         52734-17-5;
+InChIKey    INVIGRMXYCVFIK-UHFFFAOYSA-N;
+MW          358.523;      // g/mol [origin=calculated method=formula-sum]
+Tc          1330.42;      // K   [origin=predictive method=joback]
+Pc          14.070;      // bar [origin=predictive method=joback]
+omega       1.2790;      // -   [origin=predictive method=lee-kesler]
+Tb          1086.68;      // K   [origin=predictive method=joback]
+HvapTb      113912.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.049 1.9236 -0.0008526 5.71e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 13; } { group CH; count 2; } { group CH2NH2; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 11; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group COOH; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-cyclohexanedicarboxylic acid, compd. with 1,11-undecanediamine (1:1)" "1,4-cyclohexanedicarboxylic acid, polymer with 1,11-undecanediamine" "cyclohexane-1,4-dicarboxylic acid; undecane-1,11-diamine" "1,4-cyclohexanedicarboxlyic acid, 1,11-undecanediamine polymer" );
+gibbsFormation
+{
+    dHf_298   -1146090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1140.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-533840.0
+    phase     gas;
+}

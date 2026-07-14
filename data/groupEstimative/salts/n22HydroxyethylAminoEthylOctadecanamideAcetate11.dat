@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): n-{2-[(2-hydroxyethyl)amino]ethyl}octadecanamide acetate(1:1)  (C24H50N2O4, CAS 53585-52-7)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           n22HydroxyethylAminoEthylOctadecanamideAcetate11;
+formula        C24H50N2O4;
+CAS            53585-52-7;
+InChIKey       FMPKQAWGNSGARV-UHFFFAOYSA-N;
+MW             430.674;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: n-{2-[(2-hydroxyethyl)amino]ethyl}octadecanamide acetate(1:1)

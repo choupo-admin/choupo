@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7-bromobenz[a]anthracene  (C18H11Br, CAS 32795-84-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        7BromobenzAAnthracene;
+formula     C18H11Br;
+CAS         32795-84-9;
+InChIKey    LGRNWCDRODWMOH-UHFFFAOYSA-N;
+MW          307.19;      // g/mol [origin=calculated method=formula-sum]
+Tc          1050.25;      // K   [origin=predictive method=joback]
+Pc          29.030;      // bar [origin=predictive method=joback]
+omega       0.7923;      // -   [origin=predictive method=lee-kesler]
+Tb          776.16;      // K   [origin=predictive method=joback]
+HvapTb      71279.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-90.62 1.4835 -0.00126704 4.312e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 11; } { group AC; count 7; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 11; } { group dC_ring; count 7; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-bromanylbenzo[a]anthracene" "7-bromobenzanthracene" "7-bromobenz(a)anthracene" "benz(a)anthracene, 7-bromo-" "10-bromo-1,2-benzanthracene" "10-brom-1,2-benzanthracen [german]" "benz[a]anthracene, 7-bromo-" "7-bromobenzo[a]anthracene" "7-bromo-benz[a]anthracene" "benz[a]anthracene,7-bromo-" "10-brom-1,2-benzanthracen" );
+gibbsFormation
+{
+    dHf_298   386810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     456.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=518470.0
+    phase     gas;
+}

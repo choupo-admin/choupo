@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methyl-1-butene  (C5H10, CAS 563-46-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methyl1Butene;
+formula     C5H10;
+CAS         563-46-2;
+InChIKey    MHNNAWXXUZQSNM-UHFFFAOYSA-N;
+MW          70.135;      // g/mol [origin=calculated method=formula-sum]
+Tc          480.20;      // K   [origin=predictive method=joback]
+Pc          36.686;      // bar [origin=predictive method=joback]
+omega       0.2140;      // -   [origin=predictive method=lee-kesler]
+Tb          310.56;      // K   [origin=predictive method=joback]
+HvapTb      26134.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.339 0.45874 -0.0002734 6.75e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH2=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylbut-1-ene" "1-butene, 2-methyl-" "butene, 2-methyl-" "2-methylbutene" "1-isoamylene" "isopentenes" "gamma-isoamylene" ".gamma.-isoamylene" "agn-pc-0d7qbr" "1-butene,2-methyl" "2-methyl-1-butene, technical" );
+gibbsFormation
+{
+    dHf_298   -30890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     342.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=70510.0
+    phase     gas;
+}

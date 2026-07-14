@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetra(isopropoxy)silane  (C12H28O4Si, CAS 1992-48-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C12H28O4Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        tetraIsopropoxySilane;
+formula     C12H28O4Si;
+CAS         1992-48-9;
+InChIKey    ZUEKXCXHTXJYAR-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          264.437;      // g/mol [origin=calculated method=formula-sum]
+Tc          740.75;      // K   [origin=predictive method=joback]
+Pc          15.672;      // bar [origin=predictive method=joback]
+omega       0.6473;      // -   [origin=predictive method=lee-kesler]
+Tb          563.48;      // K   [origin=predictive method=joback]
+HvapTb      50688.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (128.07 0.70856 0.000217 -3.068e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 8; } { group CH-O; count 4; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH; count 4; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetrapropan-2-yl silicate" "tetraisopropoxysilane" "tetraisopropyl orthosilicate" "tetraisopropyl o-silicate" "tetrakis(i-propoxy)silane" "tetrakis(isopropoxy)silane" "silicic acid (h4sio4), tetraisopropyl ester" "isopropyl silicate ((c3h7o)4si)" "silicic acid (h4sio4), tetrakis(1-methylethyl) ester" "silicic acid, tetrakis(1-methylethyl) ester" "isopropyl silicate" "tetra(propan-2-yloxy)silane" );
+gibbsFormation
+{
+    dHf_298   -952630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     756.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-484360.0
+    phase     gas;
+}

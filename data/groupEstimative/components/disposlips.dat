@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: disposlips  (C6H9ClO2, CAS 9003-22-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        disposlips;
+formula     C6H9ClO2;
+CAS         9003-22-9;
+InChIKey    HGAZMNJKRQFZKS-UHFFFAOYSA-N;
+MW          148.586;      // g/mol [origin=calculated method=formula-sum]
+Tc          622.69;      // K   [origin=predictive method=joback]
+Pc          29.861;      // bar [origin=predictive method=joback]
+omega       0.3730;      // -   [origin=predictive method=lee-kesler]
+Tb          427.29;      // K   [origin=predictive method=joback]
+HvapTb      39696.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (70.57 0.27962 0.0001406 -1.703e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 2; } { group CH3COO; count 1; } { group Cl_C=C_; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH2; count 2; } { group dCH; count 2; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "chloranylethene;ethenyl ethanoate" "pevikon" "sconatex" "flovic" "vinyon" "tygon" "rhodopas ax" "hostalit pvp" "pliovac ao" "pliovic ao" "bakelite vlfv" "bakelite vmcc" );
+gibbsFormation
+{
+    dHf_298   -360950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     572.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-251740.0
+    phase     gas;
+}

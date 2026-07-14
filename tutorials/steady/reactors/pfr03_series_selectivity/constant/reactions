@@ -1,0 +1,47 @@
+/*---------------------------------------------------------------------------*\
+  A SERIES reaction network -- the problem a single-reaction reactor cannot
+  even express:
+
+        A  --(k1)-->  B  --(k2)-->  C
+
+  B is the DESIRED product; C is over-reaction.  Its yield passes through a
+  MAXIMUM in residence time: too small a reactor and little A has reacted; too
+  large and the B you made is consumed.  Selectivity is the whole design
+  question, and it needs BOTH reactions solved together.
+
+  The toy species carry MW = 30 (compA) and 50 (compB, compC), so the first
+  step is written 5 A -> 3 B to CONSERVE MASS (5x30 = 3x50 = 150 g); the second
+  is an isomerisation (50 -> 50).  The odd 5:3 is an artefact of the toy molar
+  masses, not of the physics: B still peaks.  Both steps are first order in
+  their own reactant, same activation energy, k1 > k2.
+\*---------------------------------------------------------------------------*/
+
+a_to_b                  // 5 A -> 3 B     (the wanted step)
+{
+    stoichiometry
+    (
+        { component compA;  nu -5;  order 1; }
+        { component compB;  nu  3;  order 0; }
+    );
+    kinetics
+    {
+        type   Arrhenius;
+        A      2.0e3;
+        Ea     4.0e4;
+    }
+}
+
+b_to_c                  // B -> C         (the over-reaction; slower)
+{
+    stoichiometry
+    (
+        { component compB;  nu -1;  order 1; }
+        { component compC;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type   Arrhenius;
+        A      5.0e2;
+        Ea     4.0e4;
+    }
+}

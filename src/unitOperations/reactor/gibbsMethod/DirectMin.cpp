@@ -91,7 +91,8 @@ GibbsEquilibrium DirectMin::equilibrium(const GibbsProblem& p, scalar T,
     std::vector<bool> cond(N, false);
     for (std::size_t i = 0; i < N; ++i)
     {
-        g_over_RT[i] = thermo.comp(p.compIdx[i]).g_pure_ig(T) / RTt;
+        g_over_RT[i] = thermo.comp(p.compIdx[i]).g_pure_ig(T + p.dTapproach)
+                     / (constant::R * (T + p.dTapproach));   // chemistry at T+dT (approach); Psat/enthalpy stay at T
         if (p.condensable[i])
         { cond[i] = true; lnPsat[i] = std::log(thermo.comp(p.compIdx[i]).vp().Psat_Pa(T) / constant::Pref); }  // ln(Psat/P0): symmetric with the gas ln(P/P0) so the V-L equilibrium term is consistent (QA gibbs09)
     }

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: azacyclotridecane  (C12H25N, CAS 295-03-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        azacyclotridecane;
+formula     C12H25N;
+CAS         295-03-4;
+InChIKey    UFADJPZTTUWZMP-UHFFFAOYSA-N;
+MW          183.339;      // g/mol [origin=calculated method=formula-sum]
+Tc          830.37;      // K   [origin=predictive method=joback]
+Pc          26.791;      // bar [origin=predictive method=joback]
+omega       0.3851;      // -   [origin=predictive method=lee-kesler]
+Tb          576.82;      // K   [origin=predictive method=joback]
+HvapTb      51006.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-98.49 1.2118 -0.00038 -7.28e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 11; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 12; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-azacyclotridecane" "azacyclotridecane-" "dodecamethylenimine" );
+gibbsFormation
+{
+    dHf_298   -221660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     768.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=85330.0
+    phase     gas;
+}

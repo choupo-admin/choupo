@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3,5-trithiane-2,4,6-tricarboxylic acid  (C6H6O6S3, CAS 68928-51-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        135Trithiane246TricarboxylicAcid;
+formula     C6H6O6S3;
+CAS         68928-51-8;
+InChIKey    VZFJMKRFMNCZSK-UHFFFAOYSA-N;
+MW          270.288;      // g/mol [origin=calculated method=formula-sum]
+Tc          1195.29;      // K   [origin=predictive method=joback]
+Pc          50.586;      // bar [origin=predictive method=joback]
+omega       1.6088;      // -   [origin=predictive method=lee-kesler]
+Tb          927.11;      // K   [origin=predictive method=joback]
+HvapTb      97689.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (22.97 0.83853 -0.0005467 1.238e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 3; } { group CHS; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 3; } { group COOH; count 3; } { group S_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4,6-tricarboxy-1,3,5-trithiane" "1,3,5-trithiane-2,4,6-tricarboxylicacid" );
+gibbsFormation
+{
+    dHf_298   -1068560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     584.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-903480.0
+    phase     gas;
+}

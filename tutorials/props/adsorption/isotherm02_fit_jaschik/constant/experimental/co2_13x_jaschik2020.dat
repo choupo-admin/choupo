@@ -1,0 +1,172 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  EXPERIMENTAL DATASET (vendored, case-local): adsorption equilibria of pure
+  CO2 on zeolite molecular sieve 13X (Grace), gravimetric (IGA003, Hiden
+  Isochema), 293/313/333 K, 0-1 bar.  44 points per isotherm, 132 total;
+  the published tables' trivial (0, 0) anchor rows are omitted (the model
+  satisfies them identically).  Numbers extracted programmatically from the
+  article's Table 1 (PMC full-text XML) -- reproduced unmodified.
+
+  SOURCE (CC BY 4.0 -- verified on the article):
+    M. Jaschik, M. Tanczyk, J. Jaschik, A. Janusz-Cygan, "Data concerning
+    adsorption equilibria of carbon dioxide, nitrogen and oxygen over a
+    zeolite molecular sieve 13X for the modelling of carbon dioxide capture
+    from gaseous mixtures by adsorptive processes", Data in Brief 30 (2020)
+    105638.  DOI 10.1016/j.dib.2020.105638.
+    Licence: Creative Commons Attribution 4.0 (CC BY 4.0),
+    http://creativecommons.org/licenses/by/4.0/ -- data reproduced
+    unmodified; this header is the attribution required by the licence.
+
+  Used by system/propsDict op `fit_jaschik` (fitParameters kind isotherm):
+  joint multi-T van't Hoff Langmuir regression of {q_max, b_ref, dH_ads}.
+  The fit log (choupoProps stdout) prints the residual statistics and the
+  identifiability verdict this dataset earns.
+\*-----------------------------------------------------------------------------*/
+
+columns
+(
+    { name T;  unit K;      }
+    { name p;  unit bar;    }
+    { name q;  unit mol/kg; }
+);
+
+data
+(
+    293    0.004   1.338
+    293    0.007   1.652
+    293    0.01    1.833
+    293    0.013   1.979
+    293    0.015   2.074
+    293    0.02    2.237
+    293    0.02    2.243
+    293    0.025   2.38
+    293    0.03    2.511
+    293    0.04    2.707
+    293    0.041   2.711
+    293    0.05    2.862
+    293    0.06    3.001
+    293    0.061   3.003
+    293    0.07    3.116
+    293    0.074   3.115
+    293    0.08    3.213
+    293    0.106   3.386
+    293    0.121   3.497
+    293    0.134   3.57
+    293    0.164   3.722
+    293    0.171   3.758
+    293    0.202   3.873
+    293    0.22    3.94
+    293    0.253   4.03
+    293    0.269   4.079
+    293    0.302   4.149
+    293    0.32    4.193
+    293    0.353   4.25
+    293    0.371   4.287
+    293    0.403   4.333
+    293    0.42    4.367
+    293    0.472   4.437
+    293    0.501   4.467
+    293    0.546   4.523
+    293    0.603   4.575
+    293    0.646   4.62
+    293    0.701   4.661
+    293    0.747   4.701
+    293    0.801   4.735
+    293    0.846   4.769
+    293    0.901   4.8
+    293    0.945   4.827
+    293    1.001   4.857
+    313    0.004   0.875
+    313    0.007   1.126
+    313    0.01    1.287
+    313    0.013   1.409
+    313    0.015   1.472
+    313    0.02    1.616
+    313    0.02    1.635
+    313    0.025   1.751
+    313    0.03    1.855
+    313    0.04    2.021
+    313    0.04    2.038
+    313    0.051   2.174
+    313    0.06    2.289
+    313    0.06    2.303
+    313    0.071   2.402
+    313    0.073   2.405
+    313    0.08    2.491
+    313    0.106   2.66
+    313    0.121   2.784
+    313    0.133   2.838
+    313    0.164   3.002
+    313    0.171   3.051
+    313    0.203   3.167
+    313    0.221   3.25
+    313    0.252   3.335
+    313    0.27    3.403
+    313    0.302   3.473
+    313    0.321   3.533
+    313    0.353   3.591
+    313    0.37    3.639
+    313    0.402   3.687
+    313    0.419   3.73
+    313    0.471   3.813
+    313    0.502   3.846
+    313    0.546   3.916
+    313    0.602   3.973
+    313    0.647   4.031
+    313    0.702   4.076
+    313    0.747   4.126
+    313    0.802   4.165
+    313    0.848   4.206
+    313    0.901   4.24
+    313    0.945   4.273
+    313    1.0     4.307
+    333    0.005   0.469
+    333    0.007   0.674
+    333    0.01    0.77
+    333    0.013   0.927
+    333    0.015   0.945
+    333    0.02    1.083
+    333    0.02    1.134
+    333    0.025   1.191
+    333    0.03    1.287
+    333    0.04    1.496
+    333    0.04    1.445
+    333    0.05    1.568
+    333    0.06    1.676
+    333    0.06    1.734
+    333    0.071   1.78
+    333    0.073   1.824
+    333    0.08    1.864
+    333    0.106   2.019
+    333    0.121   2.172
+    333    0.134   2.188
+    333    0.164   2.338
+    333    0.171   2.422
+    333    0.203   2.504
+    333    0.22    2.614
+    333    0.253   2.675
+    333    0.269   2.77
+    333    0.302   2.816
+    333    0.32    2.906
+    333    0.352   2.938
+    333    0.369   3.016
+    333    0.402   3.043
+    333    0.42    3.116
+    333    0.471   3.205
+    333    0.502   3.216
+    333    0.546   3.316
+    333    0.601   3.358
+    333    0.647   3.445
+    333    0.701   3.478
+    333    0.747   3.55
+    333    0.801   3.584
+    333    0.847   3.64
+    333    0.903   3.678
+    333    0.946   3.721
+    333    1.003   3.755
+);
+
+provenance
+{
+    source    "Jaschik et al., Data in Brief 30 (2020) 105638 -- CC BY 4.0";
+    citation  "M. Jaschik, M. Tanczyk, J. Jaschik, A. Janusz-Cygan, Data in Brief 30 (2020) 105638, DOI 10.1016/j.dib.2020.105638 (CC BY 4.0); CO2 on zeolite 13X Grace, gravimetric, 293/313/333 K, 0-1 bar; reproduced unmodified";
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 17-n-hexadecyltetratriacontane  (C50H102, CAS 55256-07-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        17NHexadecyltetratriacontane;
+formula     C50H102;
+CAS         55256-07-0;
+InChIKey    DAQUEPISOMDKQG-UHFFFAOYSA-N;
+MW          703.366;      // g/mol [origin=calculated method=formula-sum]
+Tc          2172.53;      // K   [origin=predictive method=joback]
+Pc          2.769;      // bar [origin=predictive method=joback]
+omega       -0.6353;      // -   [origin=predictive method=lee-kesler]
+Tb          1343.16;      // K   [origin=predictive method=joback]
+HvapTb      126506.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-44.244 4.75976 -0.0026994 5.833e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 46; } { group CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 46; } { group CH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "17-hexadecyltetratriacontane" "tetratriacontane, 17-hexadecyl-" );
+gibbsFormation
+{
+    dHf_298   -1080610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     2094.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=367680.0
+    phase     gas;
+}

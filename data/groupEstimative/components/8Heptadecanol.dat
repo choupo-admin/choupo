@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-heptadecanol  (C17H36O, CAS 2541-75-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8Heptadecanol;
+formula     C17H36O;
+CAS         2541-75-5;
+InChIKey    KAYMRANHJDGOQZ-UHFFFAOYSA-N;
+MW          256.474;      // g/mol [origin=calculated method=formula-sum]
+Tc          843.03;      // K   [origin=predictive method=joback]
+Pc          13.223;      // bar [origin=predictive method=joback]
+omega       1.0727;      // -   [origin=predictive method=lee-kesler]
+Tb          680.30;      // K   [origin=predictive method=joback]
+HvapTb      69727.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.956 1.65874 -0.0009346 2.004e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 14; } { group CH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 14; } { group CH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "heptadecan-8-ol" );
+gibbsFormation
+{
+    dHf_298   -551720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     859.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-47000.0
+    phase     gas;
+}

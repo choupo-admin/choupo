@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octadecanoic acid, pentacosyl ester  (C43H86O2, CAS 121877-65-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octadecanoicAcidPentacosylEster;
+formula     C43H86O2;
+CAS         121877-65-4;
+InChIKey    FMRVRXSPNFNCQO-UHFFFAOYSA-N;
+MW          635.159;      // g/mol [origin=calculated method=formula-sum]
+Tc          1787.99;      // K   [origin=predictive method=joback]
+Pc          3.506;      // bar [origin=predictive method=joback]
+omega       -0.4719;      // -   [origin=predictive method=lee-kesler]
+Tb          1241.66;      // K   [origin=predictive method=joback]
+HvapTb      118719.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.79 4.03404 -0.0022208 4.434e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 39; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 40; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentacosyl octadecanoate" "c18-32-alkyl stearates" "(c18-32)alkyl stearate" "octadecanoic acid, c18-32-alkyl esters" );
+gibbsFormation
+{
+    dHf_298   -1248130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1882.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=810.0
+    phase     gas;
+}

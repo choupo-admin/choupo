@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-amino-1-deoxyhexitol  (C6H15NO5, CAS 488-43-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Amino1Deoxyhexitol;
+formula     C6H15NO5;
+CAS         488-43-7;
+InChIKey    SDOFMBGMRVAJNF-UHFFFAOYSA-N;
+MW          181.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          1063.67;      // K   [origin=predictive method=joback]
+Pc          64.515;      // bar [origin=predictive method=joback]
+omega       2.6589;      // -   [origin=predictive method=lee-kesler]
+Tb          868.55;      // K   [origin=predictive method=joback]
+HvapTb      121434.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.652 0.8293 -0.0005108 1.182e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 4; } { group OH; count 5; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 4; } { group OH; count 5; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-azanylhexane-1,2,3,4,5-pentol" "d-glucamine" "glucamine" "6-aminohexane-1,2,3,4,5-pentol" "agn-pc-03vlqr" "d-glucitol, 1-amino-1-deoxy-" "(2r,3s,4s,5s)-6-aminohexane-1,2,3,4,5-pentol" "1-amino-1-deoxyglucitol;glucamine;glucitol, 1-amino-1-deoxy-, d- (8ci);sorbitol,1-amino-1-deoxy- (6ci);(2r,3r,4r,5s)-6-aminohexane-1,2,3,4,5-pentol;" );
+gibbsFormation
+{
+    dHf_298   -915650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     657.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-627770.0
+    phase     gas;
+}

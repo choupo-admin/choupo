@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2a,3a,5a,6a-tetramethoxycarbonyl-bicyclo(2,2,2)oct-7-ene  (C16H20O8, CAS 72598-54-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2a3a5a6aTetramethoxycarbonylBicyclo222Oct7Ene;
+formula     C16H20O8;
+CAS         72598-54-0;
+InChIKey    CAOGMEMPDFAZPR-UHFFFAOYSA-N;
+MW          340.328;      // g/mol [origin=calculated method=formula-sum]
+Tc          1006.30;      // K   [origin=predictive method=joback]
+Pc          15.747;      // bar [origin=predictive method=joback]
+omega       1.0614;      // -   [origin=predictive method=lee-kesler]
+Tb          801.06;      // K   [origin=predictive method=joback]
+HvapTb      80064.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.79 1.42528 -0.00058148 -1.9e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH; count 6; } { group CH=CH; count 1; } { group COO; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH_ring; count 6; } { group dCH_ring; count 2; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetramethyl bicyclo[2.2.2]oct-7-ene-2,3,5,6-tetracarboxylate" "agn-pc-00nhpd" "2a,3b,5a,6a-tetramethoxycarbonyl-bicyclo(2,2,2)oct-7-ene" "2a,3b,5b,6a-tetramethoxycarbonyl-bicyclo(2,2,2)oct-7-ene" "tetramethylbicyclo(2.2.2)-7-octene-2,3,5,6-tetracarboxylate" "methyl 3,7,8-tris(methoxycarbonyl)bicyclo[2.2.2]oct-5-ene-2-carboxylate" "tetramethyl (2r,3s,5r,6s)-bicyclo[2.2.2]oct-7-ene-2,3,5,6-tetracarboxylate" );
+gibbsFormation
+{
+    dHf_298   -1532990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     636.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1061220.0
+    phase     gas;
+}

@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-chloro-3-isocyanato-2-methylbenzene  (C8H6ClNO, CAS 40397-90-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Chloro3Isocyanato2Methylbenzene;
+formula     C8H6ClNO;
+CAS         40397-90-8;
+InChIKey    NGQMCUWZGVMILT-UHFFFAOYSA-N;
+MW          167.592;      // g/mol [origin=calculated method=formula-sum]
+Tc          752.30;      // K   [origin=predictive method=joback]
+Pc          36.820;      // bar [origin=predictive method=joback]
+omega       0.5270;      // -   [origin=predictive method=lee-kesler]
+Tb          523.38;      // K   [origin=predictive method=joback]
+HvapTb      50919.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACCH3; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH3; count 1; } { group dCd; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-3-isocyanato-2-methyl-benzene" "3-chloro-2-methylphenyl isocyanate" "3-chloro-2-methylbenzenisocyanate" "2-chloro-6-isocyanatotoluene" "3-chloro-2-methylphenylisocyanate" "benzene,1-chloro-3-isocyanato-2-methyl-" "1-chloro-3-isocyanato-2-methylbenzene;3-chloro-2-methylphenyl isocyanate;" );
+// formation datum unavailable (element entropy missing): dHf_298=-16010.0 dGf_298=None

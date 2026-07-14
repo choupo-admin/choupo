@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propargyloxane  (C8H12O2, CAS 6089-04-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Propargyloxane;
+formula     C8H12O2;
+CAS         6089-04-9;
+InChIKey    HQAXHIGPGBPPFU-UHFFFAOYSA-N;
+MW          140.182;      // g/mol [origin=calculated method=formula-sum]
+Tc          656.94;      // K   [origin=predictive method=joback]
+Pc          36.334;      // bar [origin=predictive method=joback]
+omega       0.3589;      // -   [origin=predictive method=lee-kesler]
+Tb          441.68;      // K   [origin=predictive method=joback]
+HvapTb      40609.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.389 0.7258 -0.00036343 4.849e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group CH2O; count 1; } { group FCH2O; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-prop-2-ynoxyoxane" "tetrahydro-2-(2-propynyloxy)-2h-pyran" "2-(2-propynyloxy)tetrahydropyran" "2-(propargyloxy)tetrahydropyran" "propargyl alcohol tetrahydropyranyl ether" "2h-pyran, tetrahydro-2-(2-propynyloxy)-" "propargyl 2-tetrahydropyranyl ether" "2-propynyl 2-pyranyl ether" "3-(2'-tetrahydropyranyloxy)propyne" "1-(2'-tetrahydropyranyloxy)-2-propyne" "2-(prop-2-yn-1-yloxy)tetrahydro-2h-pyran" "2-prop-2-ynoxy-tetrahydro-pyran" );
+gibbsFormation
+{
+    dHf_298   -126450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     366.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=72880.0
+    phase     gas;
+}

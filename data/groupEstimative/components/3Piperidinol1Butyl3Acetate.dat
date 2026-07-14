@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-piperidinol,1-butyl-, 3-acetate  (C11H21NO2, CAS 70289-15-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Piperidinol1Butyl3Acetate;
+formula     C11H21NO2;
+CAS         70289-15-5;
+InChIKey    MNVLECBWAZLTNW-UHFFFAOYSA-N;
+MW          199.294;      // g/mol [origin=calculated method=formula-sum]
+Tc          825.01;      // K   [origin=predictive method=joback]
+Pc          24.826;      // bar [origin=predictive method=joback]
+omega       0.8924;      // -   [origin=predictive method=lee-kesler]
+Tb          624.51;      // K   [origin=predictive method=joback]
+HvapTb      59544.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-73.686 1.35522 -0.0008872 2.246e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group CH; count 1; } { group CH2N; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(1-butylpiperidin-3-yl)ethanoic acid" "2-(1-butyl-3-piperidyl)acetic acid" "acetic acid, 1-butyl-3-piperidyl ester" "2-(1-butylpiperidin-3-yl)acetic acid" "2-(1-butyl-piperidin-3-yl)acetic acid" "3-piperidinol,1-butyl-, acetate (ester) (9ci)" );
+gibbsFormation
+{
+    dHf_298   -492630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     603.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-154840.0
+    phase     gas;
+}

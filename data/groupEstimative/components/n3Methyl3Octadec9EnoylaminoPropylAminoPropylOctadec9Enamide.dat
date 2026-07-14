@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-[3-[methyl-[3-(octadec-9-enoylamino)propyl]amino]propyl]octadec-9-enamide  (C43H83N3O2, CAS 45320-65-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        n3Methyl3Octadec9EnoylaminoPropylAminoPropylOctadec9Enamide;
+formula     C43H83N3O2;
+CAS         45320-65-8;
+InChIKey    NGBCHNCGPJMVHI-UHFFFAOYSA-N;
+MW          674.156;      // g/mol [origin=calculated method=formula-sum]
+Tc          2165.90;      // K   [origin=predictive method=joback]
+Pc          3.857;      // bar [origin=predictive method=joback]
+omega       -0.5052;      // -   [origin=predictive method=lee-kesler]
+Tb          1412.28;      // K   [origin=predictive method=joback]
+HvapTb      139635.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-62.956 4.34916 -0.0026554 6.3562e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 32; } { group CH=CH; count 2; } { group CH3N; count 1; } { group CONHCH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 34; } { group dCH; count 4; } { group CdO; count 2; } { group NH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "agn-pc-02vt18" "9-octadecenamide, n,n'-[(methylimino)di-3,1-propanediyl]bis-, (9z,9'z)-" "(e)-n-[3-[methyl-[3-[[(e)-octadec-9-enoyl]amino]propyl]amino]propyl]octadec-9-enamide" );
+gibbsFormation
+{
+    dHf_298   -747100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1968.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=503340.0
+    phase     gas;
+}

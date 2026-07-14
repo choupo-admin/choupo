@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9,9'-bi-9h-fluorene  (C26H18, CAS 1530-12-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        99Bi9hFluorene;
+formula     C26H18;
+CAS         1530-12-7;
+InChIKey    QXAIDADUIMVTPS-UHFFFAOYSA-N;
+MW          330.43;      // g/mol [origin=calculated method=formula-sum]
+Tc          1189.04;      // K   [origin=predictive method=joback]
+Pc          19.069;      // bar [origin=predictive method=joback]
+omega       0.8912;      // -   [origin=predictive method=lee-kesler]
+Tb          917.52;      // K   [origin=predictive method=joback]
+HvapTb      84360.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-179.17 2.2604 -0.00187324 6.188e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 16; } { group AC; count 6; } { group ACCH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 2; } { group dCH_ring; count 16; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9-(9h-fluoren-9-yl)-9h-fluorene" "9,9'-bifluorene" "9,9'-bifluorenyl" "9-fluoren-9-ylfluorene" "difluorenyl" "qxaidaduimvtps-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   490510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     458.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=749060.0
+    phase     gas;
+}

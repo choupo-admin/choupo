@@ -1,0 +1,16 @@
+recordType modelSpecies;   // model species — summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+
+name    H4SiO4;
+ion     "H4SiO4";
+charge  0;
+
+MW { value 96.113; unit g/mol;}
+
+aqueousThermo
+{
+    hfAq { value -1468600; unit J/mol;}
+    sAq  { value 180;  unit J/mol/K;}
+}
+
+source "neutral silica master, phreeqc.dat (speciation)  [+formation: Wagman 1982 NBS; FLAGGED: aqueous dfH not independently confirmed (NBS-derived); silica-scaling tier, review]";

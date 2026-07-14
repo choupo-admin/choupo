@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3-dimethylglutaric acid  (C7H12O4, CAS 4839-46-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33DimethylglutaricAcid;
+formula     C7H12O4;
+CAS         4839-46-7;
+InChIKey    DUHQIGLHYXLKAE-UHFFFAOYSA-N;
+MW          160.169;      // g/mol [origin=calculated method=formula-sum]
+Tc          859.39;      // K   [origin=predictive method=joback]
+Pc          34.889;      // bar [origin=predictive method=joback]
+omega       1.0573;      // -   [origin=predictive method=lee-kesler]
+Tb          647.55;      // K   [origin=predictive method=joback]
+HvapTb      64208.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.748 0.89624 -0.000674 2e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3-dimethylpentanedioic acid" "3,3-dimethylglutarate" ".beta.,.beta.-dimethylglutaric acid" "3,3-dimethylpentaneodioic acid" "3,3-dimethyl-pentanedioic acid" "pentanedioic acid, 3,3-dimethyl-" "glutaric acid,3-dimethyl-" "pentanedioic acid,3-dimethyl-" "b,b-dimethylglutarate" "b,b-dimethylglutaric acid" "3,3-dimethyl-glutaric acid" "a," "a-dimethylglutaric acid" );
+gibbsFormation
+{
+    dHf_298   -897100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     496.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-676920.0
+    phase     gas;
+}

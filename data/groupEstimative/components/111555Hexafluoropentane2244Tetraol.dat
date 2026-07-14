@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1,5,5,5-hexafluoropentane-2,2,4,4-tetraol  (C5H6F6O4, CAS 428-75-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111555Hexafluoropentane2244Tetraol;
+formula     C5H6F6O4;
+CAS         428-75-1;
+InChIKey    BZMWYBPDQWRVHE-UHFFFAOYSA-N;
+MW          244.087;      // g/mol [origin=calculated method=formula-sum]
+Tc          820.13;      // K   [origin=predictive method=joback]
+Pc          43.056;      // bar [origin=predictive method=joback]
+omega       2.1710;      // -   [origin=predictive method=lee-kesler]
+Tb          665.42;      // K   [origin=predictive method=joback]
+HvapTb      83354.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-41.839 1.1888 -0.0011554 4.087e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group C; count 2; } { group OH; count 4; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 4; } { group F; count 6; } { group OH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,5,5,5-hexakis(fluoranyl)pentane-2,2,4,4-tetrol" "1,1,1,5,5,5-hexafluoroacetylacetone dihydrate" "1,1,1,5,5,5-hexafluoro-2,2,4,4-pentanetetrol" "1,1,1,5,5,5-hexafluoropentane-2,2,4,4-tetrol" "2,2,4,4-pentanetetrol,1,1,1,5,5,5-hexafluoro-" "1,1,1,5,5,5-hexafluoro-2,2,4,4-pentane-t etrol" "1,1,1,5,5,5-hexafluoroacetylacetonedihydrate; 1,1,1,5,5,5-hexafluoropentane-2,2,4,4-tetrol" );
+gibbsFormation
+{
+    dHf_298   -1967110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     589.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1713560.0
+    phase     gas;
+}

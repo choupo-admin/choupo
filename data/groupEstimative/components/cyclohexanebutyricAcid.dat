@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclohexanebutyric acid  (C10H18O2, CAS 4441-63-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclohexanebutyricAcid;
+formula     C10H18O2;
+CAS         4441-63-8;
+InChIKey    UVZMNGNFERVGRC-UHFFFAOYSA-N;
+MW          170.252;      // g/mol [origin=calculated method=formula-sum]
+Tc          806.48;      // K   [origin=predictive method=joback]
+Pc          28.173;      // bar [origin=predictive method=joback]
+omega       0.7450;      // -   [origin=predictive method=lee-kesler]
+Tb          593.46;      // K   [origin=predictive method=joback]
+HvapTb      55447.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-67.207 1.1267 -0.0006738 1.454e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-cyclohexylbutanoic acid" "4-cyclohexylbutyric acid" "cyclohexanebutanoic acid" "4-cyclohexanebutyric acid" "cyclohexane-butyric acid" "cyclohexanebutyric acid (8ci)" "uvzmngnfervgrc-uhfffaoysa-" "2218-80-6 (copper salt)" "3906-55-6 (nickel salt)" "38582-17-1 (cobalt salt)" "38582-18-2 (zinc salt)" "62637-99-4 (lead salt)" );
+gibbsFormation
+{
+    dHf_298   -545680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     568.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-286140.0
+    phase     gas;
+}

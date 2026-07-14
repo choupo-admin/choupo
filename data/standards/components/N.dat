@@ -13,6 +13,7 @@ CAS            17778-88-0;
 
 MW             14.007;       // kg/kmol
 nonvolatile    true;
+tags           ( radical gasPhase combustion );
 
 gibbsFormation
 {

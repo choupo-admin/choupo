@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetratriacontane  (C34H70, CAS 14167-59-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetratriacontane;
+formula     C34H70;
+CAS         14167-59-0;
+InChIKey    GWVDBZWVFGFBCN-UHFFFAOYSA-N;
+MW          478.934;      // g/mol [origin=calculated method=formula-sum]
+Tc          1230.89;      // K   [origin=predictive method=joback]
+Pc          4.978;      // bar [origin=predictive method=joback]
+omega       0.1412;      // -   [origin=predictive method=lee-kesler]
+Tb          977.52;      // K   [origin=predictive method=joback]
+HvapTb      91278.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.018 3.23384 -0.0018258 3.934e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 32; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 32; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-tetratriacontane" "ai3-36492" "tetratriacontane, analytical standard" "tetratriacontane; nsc 2998; n-tetratriacontane" "ntetratriacontane" "tetratriacontane, 98%" "NSC2998" "STL557642" "HY-W269867" "AS-57006" "DB-042580" "CS-0315160" );
+gibbsFormation
+{
+    dHf_298   -745090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1480.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=235400.0
+    phase     gas;
+}

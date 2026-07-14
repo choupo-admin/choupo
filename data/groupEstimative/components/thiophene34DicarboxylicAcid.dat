@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: thiophene-3,4-dicarboxylic acid  (C6H4O4S, CAS 4282-29-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        thiophene34DicarboxylicAcid;
+formula     C6H4O4S;
+CAS         4282-29-5;
+InChIKey    ZWWLLYJRPKYTDF-UHFFFAOYSA-N;
+MW          172.154;      // g/mol [origin=calculated method=formula-sum]
+Tc          951.48;      // K   [origin=predictive method=joback]
+Pc          53.513;      // bar [origin=predictive method=joback]
+omega       1.1366;      // -   [origin=predictive method=lee-kesler]
+Tb          703.96;      // K   [origin=predictive method=joback]
+HvapTb      71564.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.19 0.61701 -0.00048978 1.513e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 2; } { group C4H2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 2; } { group dC_ring; count 2; } { group COOH; count 2; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4-thiophenedicarboxylic acid" "t5sj cvq dvq[wln]" "3,4-dicarboxythiophene" "3,4-thiophenedicarboxylicacid" "wt634" "4282-29-5 thiophene-3,4-dicarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -649010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     450.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-563400.0
+    phase     gas;
+}

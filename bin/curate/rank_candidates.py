@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# rank_candidates.py -- re-rank the data/proposed/components/ proposal tier into
+# rank_candidates.py -- re-rank the data/local/components/ proposal tier into
 # a promotion-candidate list, AFTER the CoolProp import + collision refresh.
 # Supersedes the hand-built PROMOTION-CANDIDATES.md.  Deterministic; promotes
 # NOTHING -- it writes a ranked review list with the exact (commented) `mv`
@@ -22,10 +22,10 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-COMP = ROOT / 'data/proposed/components'
+COMP = ROOT / 'data/local/components'
 STD  = ROOT / 'data/standards/components'
-VAL  = ROOT / 'data/proposed/PROPOSED-VALIDATION.md'
-OUT  = ROOT / 'data/proposed/PROMOTION-CANDIDATES.md'
+VAL  = ROOT / 'data/local/PROPOSED-VALIDATION.md'
+OUT  = ROOT / 'data/local/PROMOTION-CANDIDATES.md'
 
 COMMON = {
     'water', 'methanol', 'ethanol', 'onePropanol', 'twoPropanol', 'acetone',
@@ -156,7 +156,7 @@ def write(new, rep):
     L.append('')
     L.append('```sh')
     for r in new[:25]:
-        L.append(f'# mv data/proposed/components/{r["name"]}.dat data/standards/components/')
+        L.append(f'# mv data/local/components/{r["name"]}.dat data/standards/components/')
     L.append('```')
     L.append('')
     L.append('## Track REPLACE -- a frozen standard already exists (side-by-side review first)')

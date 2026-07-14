@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxymesterone  (C20H30O3, CAS 145-12-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oxymesterone;
+formula     C20H30O3;
+CAS         145-12-0;
+InChIKey    RXXBBHGCAXVBES-XMUHMHRVSA-N;
+MW          318.457;      // g/mol [origin=calculated method=formula-sum]
+Tc          1189.39;      // K   [origin=predictive method=joback]
+Pc          20.680;      // bar [origin=predictive method=joback]
+omega       1.4292;      // -   [origin=predictive method=lee-kesler]
+Tb          958.19;      // K   [origin=predictive method=joback]
+HvapTb      95776.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-296.57 3.00686 -0.00287 1.1731e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 7; } { group CH; count 3; } { group C; count 3; } { group OH; count 2; } { group CH2CO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 8; } { group CH_ring; count 3; } { group C_ring; count 3; } { group dC_ring; count 2; } { group OH; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(8r,9s,10r,13s,14s,17s)-10,13,17-trimethyl-4,17-bis(oxidanyl)-2,6,7,8,9,11,12,14,15,16-decahydro-1h-cyclopenta[a]phenanthren-3-one" "anamidol" "oranabol" "aranabol" "theranabol" "4-hydroxy-17-methyltestosterone" "ossimesterone" "oximesterona" "oximesteronum" "oxymesteronum" "oxymestrone" "balnimax" );
+gibbsFormation
+{
+    dHf_298   -598010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     770.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-117400.0
+    phase     gas;
+}

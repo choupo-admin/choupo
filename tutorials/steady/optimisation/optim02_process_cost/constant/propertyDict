@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------*\
+  optim02_process_cost / constant/thermoPackage
+
+  The esterification quartet: ethanol + aceticAcid (the reactor feed) ->
+  ethylAcetate + water; heater then flash downstream.  The Nelder-Mead
+  simplex varies reactor V_R and heater Q to minimise the total Guthrie
+  module cost.  Ideal Raoult + idealGas: the case teaches cost optimisation
+  over design variables, not VLE accuracy — a 4-component NRTL would need
+  all 6 binary pairs and would not change the costing lesson.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water  aceticAcid  ethylAcetate );
+
+// Ideal liquid (Raoult): reactor + separation KINETICS demo, not a VLE-
+// accuracy demo; a 4-component NRTL would need all 6 binary pairs.
+activityModel    { model  ideal; }
+
+equationOfState  { model  idealGas; }

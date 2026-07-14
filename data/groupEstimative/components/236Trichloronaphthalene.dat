@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,6-trichloronaphthalene  (C10H5Cl3, CAS 55720-40-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        236Trichloronaphthalene;
+formula     C10H5Cl3;
+CAS         55720-40-6;
+InChIKey    ZYTLBFKRYKUCMJ-UHFFFAOYSA-N;
+MW          231.5;      // g/mol [origin=calculated method=formula-sum]
+Tc          856.27;      // K   [origin=predictive method=joback]
+Pc          32.357;      // bar [origin=predictive method=joback]
+omega       0.5213;      // -   [origin=predictive method=lee-kesler]
+Tb          601.29;      // K   [origin=predictive method=joback]
+HvapTb      56911.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.02 0.7131 -0.0005482 1.667e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 2; } { group ACCl; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 5; } { group dC_ring; count 5; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,6-tris(chloranyl)naphthalene" "naphthalene, 2,3,6-trichloro-" "2,3,7-trichloronaphthalene" "naphthalene,2,3,6-trichloro-" "pcn 26" "2,3,6-trichloronaphthalene;2,3,7-trichloronaphthalene; pcn 26" );
+gibbsFormation
+{
+    dHf_298   96240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     411.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=187700.0
+    phase     gas;
+}

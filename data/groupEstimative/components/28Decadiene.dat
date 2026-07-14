@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,8-decadiene  (C10H18, CAS 19398-85-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        28Decadiene;
+formula     C10H18;
+CAS         19398-85-7;
+InChIKey    ZIWONNNFUQQNAZ-UHFFFAOYSA-N;
+MW          138.254;      // g/mol [origin=calculated method=formula-sum]
+Tc          615.26;      // K   [origin=predictive method=joback]
+Pc          23.248;      // bar [origin=predictive method=joback]
+omega       0.4296;      // -   [origin=predictive method=lee-kesler]
+Tb          436.72;      // K   [origin=predictive method=joback]
+HvapTb      37770.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-34.566 0.99384 -0.0006878 2.026e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH=CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "deca-2,8-diene" "2,8-decadiene, (2e,8e)-" "2,8-decadiene,(e,e)- (8ci,9ci); trans,trans-2,8-decadiene" );
+gibbsFormation
+{
+    dHf_298   -15290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     532.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=193760.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oleic acid nitrile  (C18H33N, CAS 112-91-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oleicAcidNitrile;
+formula     C18H33N;
+CAS         112-91-4;
+InChIKey    UIAMCVSNZQYIQS-KTKRTIGZSA-N;
+MW          263.469;      // g/mol [origin=calculated method=formula-sum]
+Tc          896.74;      // K   [origin=predictive method=joback]
+Pc          11.736;      // bar [origin=predictive method=joback]
+omega       0.8835;      // -   [origin=predictive method=lee-kesler]
+Tb          717.68;      // K   [origin=predictive method=joback]
+HvapTb      66098.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.656 1.66862 -0.0010082 2.441e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 13; } { group CH=CH; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 14; } { group dCH; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z)-octadec-9-enenitrile" "oleonitrile" "oleoylnitrile" "oleylonitrile" "oleic nitrile" "oleyl nitrile" "9-octadecenenitrile, (z)-" "9-octadecenenitrile, (9z)-" "olsaeurenitril [german]" "(z)-9-octadecenenitrile" "9-octadecenoic acid (cis), nitrile (cis)" "oleanitrile" );
+gibbsFormation
+{
+    dHf_298   -132750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     856.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=314080.0
+    phase     gas;
+}

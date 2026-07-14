@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1-trifluoropropane  (C3H5F3, CAS 421-07-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111Trifluoropropane;
+formula     C3H5F3;
+CAS         421-07-8;
+InChIKey    KDWQLICBSFIDRM-UHFFFAOYSA-N;
+MW          98.067;      // g/mol [origin=calculated method=formula-sum]
+Tc          404.89;      // K   [origin=predictive method=joback]
+Pc          38.010;      // bar [origin=predictive method=joback]
+omega       0.2383;      // -   [origin=predictive method=lee-kesler]
+Tb          262.82;      // K   [origin=predictive method=joback]
+HvapTb      18525.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.039 0.45002 -0.0003604 1.132e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1-tris(fluoranyl)propane" "propane, 1,1,1-trifluoro-" "propane, trifluoro-" "1,1,1-trifluoro-propane" "1,1,1-trifluoropropane;" "propane,1,1,1-trifluoro-" "1,1,1-trifluoropropane 97%" );
+gibbsFormation
+{
+    dHf_298   -702330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     329.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-607210.0
+    phase     gas;
+}

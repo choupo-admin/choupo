@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxalic acid  (C2H2O4, CAS 144-62-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oxalicAcid;
+formula     C2H2O4;
+CAS         144-62-7;
+InChIKey    MUBZPKHOEPUJKR-UHFFFAOYSA-N;
+MW          90.034;      // g/mol [origin=calculated method=formula-sum]
+Tc          753.73;      // K   [origin=predictive method=joback]
+Pc          65.884;      // bar [origin=predictive method=joback]
+omega       0.9269;      // -   [origin=predictive method=lee-kesler]
+Tb          536.38;      // K   [origin=predictive method=joback]
+HvapTb      54374.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.27 0.2954 -0.0002302 6.86e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethanedioic acid" "aktisal" "aquisal" "oxiric acid" "oxalate" "oxaalzuur" "oxalsaeure" "acidum oxalicum" "kyselina stavelova" "oxaalzuur [dutch]" "oxalsaeure [german]" "acide oxalique" );
+gibbsFormation
+{
+    dHf_298   -785150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     340.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-721860.0
+    phase     gas;
+}

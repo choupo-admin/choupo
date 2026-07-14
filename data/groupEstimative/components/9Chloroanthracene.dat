@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9-chloroanthracene  (C14H9Cl, CAS 716-53-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        9Chloroanthracene;
+formula     C14H9Cl;
+CAS         716-53-0;
+InChIKey    KULLJOPUZUWTMF-UHFFFAOYSA-N;
+MW          212.676;      // g/mol [origin=calculated method=formula-sum]
+Tc          889.98;      // K   [origin=predictive method=joback]
+Pc          30.592;      // bar [origin=predictive method=joback]
+omega       0.5579;      // -   [origin=predictive method=lee-kesler]
+Tb          631.95;      // K   [origin=predictive method=joback]
+HvapTb      58023.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-65.14 1.1353 -0.00092876 3.023e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 4; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 9; } { group dC_ring; count 5; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9-chloranylanthracene" "anthracene, 9-chloro-" "9-chloro-anthracene" "10-chloroanthracene;9-chloroanthracene;" );
+gibbsFormation
+{
+    dHf_298   247700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     398.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=361520.0
+    phase     gas;
+}

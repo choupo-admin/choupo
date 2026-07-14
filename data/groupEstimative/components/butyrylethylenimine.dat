@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyrylethylenimine  (C6H11NO, CAS 10431-86-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butyrylethylenimine;
+formula     C6H11NO;
+CAS         10431-86-4;
+InChIKey    UFWIDNCIQKQRIJ-UHFFFAOYSA-N;
+MW          113.16;      // g/mol [origin=calculated method=formula-sum]
+Tc          594.44;      // K   [origin=predictive method=joback]
+Pc          39.308;      // bar [origin=predictive method=joback]
+omega       0.5134;      // -   [origin=predictive method=lee-kesler]
+Tb          410.33;      // K   [origin=predictive method=joback]
+HvapTb      37789.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-56.958 0.85672 -0.0007185 2.4596e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(aziridin-1-yl)butan-1-one" "butyrylethyleneimine" "1-n-butyrylaziridine" "aziridine, 1-butyryl-" "aziridine, 1-n-butyryl" "1-(1-oxobutyl)aziridine" "aziridine, 1-(1-oxobutyl)-" "aziridine, 1-butyryl- (8ci)" "aziridine, 1-(1-oxobutyl)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -112920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     364.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=62060.0
+    phase     gas;
+}

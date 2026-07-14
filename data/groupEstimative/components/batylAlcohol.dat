@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: batyl alcohol  (C21H44O3, CAS 544-62-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        batylAlcohol;
+formula     C21H44O3;
+CAS         544-62-7;
+InChIKey    OGBUMNBNEWYMNJ-UHFFFAOYSA-N;
+MW          344.58;      // g/mol [origin=calculated method=formula-sum]
+Tc          1092.18;      // K   [origin=predictive method=joback]
+Pc          10.687;      // bar [origin=predictive method=joback]
+omega       0.9547;      // -   [origin=predictive method=lee-kesler]
+Tb          886.42;      // K   [origin=predictive method=joback]
+HvapTb      97720.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.199 2.00952 -0.0010716 2.03e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 18; } { group OH; count 1; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 19; } { group CH; count 1; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-octadecoxypropane-1,2-diol" "batilol" "1-o-octadecylglycerol" "stearyl monoglyceride" "glycerol 1-octadecyl ether" "batilolum" "3-(octadecyloxy)-1,2-propanediol" "glyceryl-1-octadecyl ether" "glycerol monooctadecyl ether" "c18:0 glyceryl 1-ether" "glycerine 1-monostearyl ether" "monooctadecyl ether of glycerol" );
+gibbsFormation
+{
+    dHf_298   -918730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1077.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-255140.0
+    phase     gas;
+}

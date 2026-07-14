@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,2,3-tetrachloropropane  (C3H4Cl4, CAS 13116-53-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1223Tetrachloropropane;
+formula     C3H4Cl4;
+CAS         13116-53-5;
+InChIKey    UDPHJTAYHSSOQB-UHFFFAOYSA-N;
+MW          181.865;      // g/mol [origin=calculated method=formula-sum]
+Tc          628.39;      // K   [origin=predictive method=joback]
+Pc          37.408;      // bar [origin=predictive method=joback]
+omega       0.2941;      // -   [origin=predictive method=lee-kesler]
+Tb          414.73;      // K   [origin=predictive method=joback]
+HvapTb      38516.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (27.252 0.4418 -0.0003928 1.324e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2Cl; count 2; } { group CCl2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group C; count 1; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,2,3-tetrakis(chloranyl)propane" "propane, 1,2,2,3-tetrachloro-" "propane,1,2,2,3-tetrachloro-" "udphjtayhssoqb-uhfffaoysa-" "s700" );
+gibbsFormation
+{
+    dHf_298   -176960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     367.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-70500.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bromoform  (CHBr3, CAS 75-25-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bromoform;
+formula     CHBr3;
+CAS         75-25-2;
+InChIKey    DIKBFYAXUHHXCS-UHFFFAOYSA-N;
+MW          252.731;      // g/mol [origin=calculated method=formula-sum]
+Tc          662.07;      // K   [origin=predictive method=joback]
+Pc          82.795;      // bar [origin=predictive method=joback]
+omega       0.4020;      // -   [origin=predictive method=lee-kesler]
+Tb          420.52;      // K   [origin=predictive method=joback]
+HvapTb      36737.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.87 0.2193 -0.000248 1.025e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group Br; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group Br; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tris(bromanyl)methane" "tribromomethane" "methane, tribromo-" "methyl tribromide" "methenyl tribromide" "tribrommethan" "bromoforme" "bromoformio" "tribrommethaan" "tribromometan" "bromoforme [french]" "tribrommethaan [dutch]" );
+gibbsFormation
+{
+    dHf_298   9740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     338.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1940.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-propanamine, 3-(diethoxymethylsilyl)-  (C8H21NO2Si, CAS 3179-76-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H21NO2Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        1Propanamine3Diethoxymethylsilyl;
+formula     C8H21NO2Si;
+CAS         3179-76-8;
+InChIKey    HXLAEGYMDGUSBD-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          191.346;      // g/mol [origin=calculated method=formula-sum]
+Tc          683.14;      // K   [origin=predictive method=joback]
+Pc          23.047;      // bar [origin=predictive method=joback]
+omega       0.6204;      // -   [origin=predictive method=lee-kesler]
+Tb          501.41;      // K   [origin=predictive method=joback]
+HvapTb      49157.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (93.925 0.49316 0.000182 -2.318e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH2O; count 2; } { group CH2NH2; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group O; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[diethoxy(methyl)silyl]propan-1-amine" "3-(diethoxymethylsilyl)propylamine" "3-aminopropyl(diethoxy)methylsilane" "3-aminopropyl-methyl-diethoxysilane" "gamma-aminopropylmethyldiethoxysilane" "propylamine, 3-(diethoxymethylsilyl)-" "(3-aminopropyl)diethoxymethylsilane" "silane, (3-aminopropyl)diethoxymethyl-" "aminopropylmethyldiethoxy silane" "3-aminopropylmethyldiethoxysilane" "3-aminopropylmethyl diethoxysilane" "l369" );
+gibbsFormation
+{
+    dHf_298   -550720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     668.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-231830.0
+    phase     gas;
+}

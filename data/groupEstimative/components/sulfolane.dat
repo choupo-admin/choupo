@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sulfolane  (C4H8O2S, CAS 126-33-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C4H8O2S (delta S+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        sulfolane;
+formula     C4H8O2S;
+CAS         126-33-0;
+InChIKey    HXJUTPCZVOIRIF-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          120.166;      // g/mol [origin=calculated method=formula-sum]
+Tc          442.76;      // K   [origin=predictive method=joback]
+Pc          58.450;      // bar [origin=predictive method=joback]
+omega       0.3567;      // -   [origin=predictive method=lee-kesler]
+Tb          285.80;      // K   [origin=predictive method=joback]
+HvapTb      36710.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-48.41 0.5908 -0.0003976 9.84e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2SuCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group dO_oth; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "thiolane 1,1-dioxide" "tetramethylene sulfone" "tetrahydrothiophene 1,1-dioxide" "sulfolan" "sulpholane" "sulphoxaline" "1,1-dioxothiolan" "dioxothiolan" "sulfalone" "thiophan sulfone" "bondelane a" "bondolane a" );
+gibbsFormation
+{
+    dHf_298   -534130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     542.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-462500.0
+    phase     gas;
+}

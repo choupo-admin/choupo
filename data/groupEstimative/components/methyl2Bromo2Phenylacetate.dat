@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 2-bromo-2-phenylacetate  (C9H9BrO2, CAS 3042-81-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl2Bromo2Phenylacetate;
+formula     C9H9BrO2;
+CAS         3042-81-7;
+InChIKey    NHFBYYMNJUMVOT-UHFFFAOYSA-N;
+MW          229.073;      // g/mol [origin=calculated method=formula-sum]
+Tc          789.55;      // K   [origin=predictive method=joback]
+Pc          35.899;      // bar [origin=predictive method=joback]
+omega       0.5843;      // -   [origin=predictive method=lee-kesler]
+Tb          556.14;      // K   [origin=predictive method=joback]
+HvapTb      51358.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.28 0.76922 -0.000477 9.79e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 5; } { group ACCH; count 1; } { group Br; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-bromanyl-2-phenyl-ethanoate" "methyl alpha-bromophenylacetate" "methyl .alpha.-bromophenylacetate" "methyl bromo(phenyl)acetate" "methylalpha-bromophenylacetate" "benzeneacetic acid, .alpha.-bromo-, methyl ester" "methyl bromophenylacetate" "methyl bromophenyl acetate" "methyl " "a-bromophenylacetate" "methyl .alpha.-bromobenzeneacetate" "alpha-bromophenylacetic acid methyl ester" "methyl .alpha.-bromo-.alpha.-phenylacetate" );
+gibbsFormation
+{
+    dHf_298   -288790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     492.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-161180.0
+    phase     gas;
+}

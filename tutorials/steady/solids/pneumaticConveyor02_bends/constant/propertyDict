@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  pneumaticConveyor02_bends / constant/thermoPackage
+
+  Same gas-solid pair as pneumaticConveyor01_sand: N2 carries silica sand,
+  now through six long-radius bends.  Ideal gas fixes the gas density behind
+  every velocity and re-acceleration dP term (3 bar N2 is essentially
+  ideal); Chung supplies the gas viscosity for the friction/drag Reynolds
+  numbers.  No VLE is ever posed, so the ideal activity model sits unused.
+\*---------------------------------------------------------------------------*/
+
+components ( N2 silica );           // N2 = carrier gas; silica = conveyed sand (solid)
+phase           { type vle; }
+activityModel   { model ideal; }
+equationOfState { model idealGas; }
+transport       { viscosity           { model Chung; } }    // gas viscosity for the friction Reynolds numbers

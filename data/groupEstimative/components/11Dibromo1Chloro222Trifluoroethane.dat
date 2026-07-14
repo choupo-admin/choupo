@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1-dibromo-1-chloro-2,2,2-trifluoroethane  (C2Br2ClF3, CAS 754-17-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Dibromo1Chloro222Trifluoroethane;
+formula     C2Br2ClF3;
+CAS         754-17-6;
+InChIKey    WGIRTDAEWOUFQR-UHFFFAOYSA-N;
+MW          276.274;      // g/mol [origin=calculated method=formula-sum]
+Tc          617.87;      // K   [origin=predictive method=joback]
+Pc          50.586;      // bar [origin=predictive method=joback]
+omega       0.3851;      // -   [origin=predictive method=lee-kesler]
+Tb          406.46;      // K   [origin=predictive method=joback]
+HvapTb      32258.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.33 0.564 -0.000641 2.504e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group Br; count 2; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:1
+    joback ( { group C; count 2; } { group F; count 3; } { group Cl; count 1; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1-bis(bromanyl)-1-chloranyl-2,2,2-tris(fluoranyl)ethane" "chlorodibromotrifluoroethane" "ethane, 1,1-dibromo-1-chloro-2,2,2-trifluoro-" "dibromotrifluoromonochloroethane" "monochlorodibromotrifluoroethane" "1-chloro-1,1-dibromotrifluoroethane" "ethane, chlorodibromotrifluoro-" "1,1-dibromo-1-chlorotrifluoroethane" "ethane,dibromochlorotrifluoro- (7ci,9ci)" "1-chloro-1,1-dibromo-2,2,2-trifluoroethane" "1-chloro-1,1-dibromo-2,2,2-trifluoroethane (fc-113ab2)" "dibromochlorotrifluoroethane;monochlorodibromotrifluoroethane" );
+gibbsFormation
+{
+    dHf_298   -653520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     386.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-596080.0
+    phase     gas;
+}

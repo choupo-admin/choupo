@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heptafluorobutyl methacrylate  (C8H7F7O2, CAS 13695-31-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heptafluorobutylMethacrylate;
+formula     C8H7F7O2;
+CAS         13695-31-3;
+InChIKey    VIEHKBXCWMMOOU-UHFFFAOYSA-N;
+MW          268.128;      // g/mol [origin=calculated method=formula-sum]
+Tc          572.60;      // K   [origin=predictive method=joback]
+Pc          20.812;      // bar [origin=predictive method=joback]
+omega       0.6020;      // -   [origin=predictive method=lee-kesler]
+Tb          422.62;      // K   [origin=predictive method=joback]
+HvapTb      30612.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.439 1.14892 -0.0009722 3.01e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2=C; count 1; } { group CF3; count 1; } { group CF2; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 3; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 7; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,4-heptakis(fluoranyl)butyl 2-methylprop-2-enoate" "2,2,3,3,4,4,4-heptafluorobutyl methacrylate" "2,2,3,3,4,4,4-heptafluorobutyl 2-methylprop-2-enoate" "methacrylic acid, 2,2,3,3,4,4,4-heptafluorobutyl ester" "2-propenoic acid, 2-methyl-, 2,2,3,3,4,4,4-heptafluorobutyl ester" "1h,1h-perfluorobutyl methacrylate" );
+gibbsFormation
+{
+    dHf_298   -1809110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     615.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1569750.0
+    phase     gas;
+}

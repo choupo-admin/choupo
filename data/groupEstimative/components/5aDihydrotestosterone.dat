@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5a-dihydrotestosterone  (C19H30O2, CAS 521-18-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5aDihydrotestosterone;
+formula     C19H30O2;
+CAS         521-18-6;
+InChIKey    NVKAWKQGWWIWPM-UHFFFAOYSA-N;
+MW          290.447;      // g/mol [origin=calculated method=formula-sum]
+Tc          1063.24;      // K   [origin=predictive method=joback]
+Pc          19.254;      // bar [origin=predictive method=joback]
+omega       0.9966;      // -   [origin=predictive method=lee-kesler]
+Tb          829.10;      // K   [origin=predictive method=joback]
+HvapTb      76097.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-281.4 2.73444 -0.002344 8.708e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 5; } { group C; count 2; } { group OH; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 9; } { group CH_ring; count 5; } { group C_ring; count 2; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "10,13-dimethyl-17-oxidanyl-1,2,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydrocyclopenta[a]phenanthren-3-one" "17-hydroxyandrostan-3-one" "5.beta.-dihydrotestosterone" "anaprotin" "etiocholan-17.beta.-ol-3-one" "17.beta.-hydroxyetiocholan-3-one" "5.beta.-androstan-17.beta.-ol-3-one" "5.beta.,17.beta.-hydroxyandrostan-3-one" "androstan-17b-ol-3-one" "5.alpha.-dihydrotestosterone" "5b-dihydrotestosterone" "17-beta-hydroxyandrostan-3-one" );
+gibbsFormation
+{
+    dHf_298   -495560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     618.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1920.0
+    phase     gas;
+}

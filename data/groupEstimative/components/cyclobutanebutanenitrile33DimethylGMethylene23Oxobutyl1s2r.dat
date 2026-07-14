@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclobutanebutanenitrile,3,3-dimethyl-g-methylene-2-(3-oxobutyl)-,(1s,2r)-  (C15H23NO, CAS 131468-89-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclobutanebutanenitrile33DimethylGMethylene23Oxobutyl1s2r;
+formula     C15H23NO;
+CAS         131468-89-8;
+InChIKey    RVBKTOCMDDHDAM-ZIAGYGMSSA-N;
+MW          233.355;      // g/mol [origin=calculated method=formula-sum]
+Tc          905.00;      // K   [origin=predictive method=joback]
+Pc          16.810;      // bar [origin=predictive method=joback]
+omega       0.7931;      // -   [origin=predictive method=lee-kesler]
+Tb          697.22;      // K   [origin=predictive method=joback]
+HvapTb      63934.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-82.546 1.69576 -0.0013633 4.8216e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 2; } { group C; count 1; } { group CH2=C; count 1; } { group CH3CO; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group C_ring; count 1; } { group CdO; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[(1s,2r)-3,3-dimethyl-2-(3-oxidanylidenebutyl)cyclobutyl]pent-4-enenitrile" "cyclobutanebutanenitrile,3,3-dimethyl-g-methylene-2-(3-oxobutyl)-,(1s-trans)-" );
+gibbsFormation
+{
+    dHf_298   -143790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     678.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=186710.0
+    phase     gas;
+}

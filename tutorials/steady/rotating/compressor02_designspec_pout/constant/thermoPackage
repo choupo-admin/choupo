@@ -1,5 +1,0 @@
-components       ( N2  O2 );
-
-activityModel    { model  ideal; }
-
-equationOfState  { model  idealGas; }

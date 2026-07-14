@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  BRINE sector: real electrolyte subdomain.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    crystNaCl
+);
+
+connections
+{
+    salarBrine { to crystNaCl/feedBrine; }
+    halite     { from crystNaCl/halite; }
+    liquor     { from crystNaCl/liquor; }
+}

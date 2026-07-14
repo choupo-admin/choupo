@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-butyl radical  (C4H9, CAS 2348-55-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        2ButylRadical;
+formula     C4H9;
+CAS         2348-55-2;
+InChIKey    ULOIAOPTGWSNHU-UHFFFAOYSA-N;
+role        radical;
+MW          57.116;      // g/mol [origin=calculated method=formula-sum]
+Tc          459.35;      // K   [origin=predictive method=joback]
+Pc          40.261;      // bar [origin=predictive method=joback]
+omega       0.1996;      // -   [origin=predictive method=lee-kesler]
+Tb          293.20;      // K   [origin=predictive method=joback]
+HvapTb      24477.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.839 0.39384 -0.0002357 6.01e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butane" "1-methyl-propyl" "sec-c4h9" "butan-2-yl" );
+gibbsFormation
+{
+    dHf_298   -67280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     308.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=22910.0
+    phase     gas;
+}

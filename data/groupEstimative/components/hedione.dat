@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hedione  (C13H22O3, CAS 24851-98-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hedione;
+formula     C13H22O3;
+CAS         24851-98-7;
+InChIKey    KVWWIYGFBYDJQC-UHFFFAOYSA-N;
+MW          226.316;      // g/mol [origin=calculated method=formula-sum]
+Tc          834.10;      // K   [origin=predictive method=joback]
+Pc          19.254;      // bar [origin=predictive method=joback]
+omega       0.7658;      // -   [origin=predictive method=lee-kesler]
+Tb          633.69;      // K   [origin=predictive method=joback]
+HvapTb      56134.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.635 1.12094 -0.0004168 -1.53e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 2; } { group CH2CO; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-(3-oxidanylidene-2-pentyl-cyclopentyl)ethanoate" "kharismal" "methyl dihydrojasmonate" "cyclopentaneacetic acid, 3-oxo-2-pentyl-, methyl ester" "methyl (3-oxo-2-pentylcyclopentyl)acetate" "methyl 2-(3-oxo-2-pentylcyclopentyl)acetate" "methyl(2-amyl-3-oxocyclopentyl)acetate" "methyl 3-oxo-2-pentylcyclopentaneacetate" "methyl (2-pentyl-3-oxocyclopentyl)acetate" "methyl 3-oxo-2-pentyl-cyclopentaneacetate" "dihydrojasmonic acid methyl ester" "(1r,2r)-methyl dihydrojasmonate" );
+gibbsFormation
+{
+    dHf_298   -726490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     542.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-345540.0
+    phase     gas;
+}

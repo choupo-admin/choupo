@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopropanecarboxylic acid, 2,2-dimethyl-3-(2,2,2-trichloroethyl)-, ethyl ester  (C10H15Cl3O2, CAS 60066-84-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopropanecarboxylicAcid22Dimethyl3222TrichloroethylEthylE;
+formula     C10H15Cl3O2;
+CAS         60066-84-4;
+InChIKey    BFRKWUSVYDWEBX-UHFFFAOYSA-N;
+MW          273.578;      // g/mol [origin=calculated method=formula-sum]
+Tc          808.17;      // K   [origin=predictive method=joback]
+Pc          21.513;      // bar [origin=predictive method=joback]
+omega       0.5854;      // -   [origin=predictive method=lee-kesler]
+Tb          593.32;      // K   [origin=predictive method=joback]
+HvapTb      55264.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-54.948 1.43506 -0.0013006 4.905e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 2; } { group C; count 1; } { group CCl3; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group CH_ring; count 2; } { group C_ring; count 1; } { group Cl; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2,2-dimethyl-3-[2,2,2-tris(chloranyl)ethyl]cyclopropane-1-carboxylate" "ethyl 2,2-dimethyl-3-(2,2,2-trichloroethyl)cyclopropanecarboxylate" "cyclopropanecarboxylic acid, 2,2-dimethyl-3-(2,2,2-trichloroethyl)-, ethyl ester, (1r,3r)-rel-" "ethyl 2,2-dimethyl-3-(2,2,2-trichloroethyl)cyclopropane-1-carboxylate" "ethyl trans-3-(2,2,2-trichloroethyl)-2,2-dimethyl-cyclopropane-1-carboxylate" );
+gibbsFormation
+{
+    dHf_298   -575620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     552.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-270160.0
+    phase     gas;
+}

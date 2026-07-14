@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methyldihexylamine  (C13H29N, CAS 37615-53-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethyldihexylamine;
+formula     C13H29N;
+CAS         37615-53-5;
+InChIKey    POMGZMHIXYRARC-UHFFFAOYSA-N;
+MW          199.382;      // g/mol [origin=calculated method=formula-sum]
+Tc          668.69;      // K   [origin=predictive method=joback]
+Pc          16.418;      // bar [origin=predictive method=joback]
+omega       0.6886;      // -   [origin=predictive method=lee-kesler]
+Tb          509.48;      // K   [origin=predictive method=joback]
+HvapTb      46575.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.62 1.36276 -0.000796 1.809e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 10; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 10; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-hexyl-n-methyl-hexan-1-amine" "n-hexyl-n-methylhexan-1-amine" "n,n-di-n-hexyl methylamine" );
+gibbsFormation
+{
+    dHf_298   -244120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     678.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=169360.0
+    phase     gas;
+}

@@ -30,30 +30,7 @@
   baseline.  rankine02 is the steam-table truth.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    // Initial guess for the tear: saturated condensate at the condenser
-    // pressure (~0.1 bar, Tsat ~ 319 K).  Wegstein iterates from here.
-    condensate
-    {
-        F             3.6 kmol/h;             // = 1 mol/s
-        T           445.0 K;                   // ~ Tsat at the turbine back-pressure
-        P             8.6 bar;
-        state         saturatedLiquid;
-        molarComposition { water 1.0; }
-
-        // Cage the tear iterate inside the IF97 liquid box (T >= 273.15 K).
-        // The condensate T is physically slaved to the condenser pressure
-        // (Tsat), so a generous additive band on T keeps the Newton search in
-        // the valid region; the flow band is generous (closed loop, no makeup
-        // -> F is invariant).
-        bounds
-        {
-            F  { min 0.5 kmol/h;  max 10.0 kmol/h; }
-            T  { min 300 K;       max 600 K; }
-        }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 tearStreams        ( condensate );
 // The loop is effectively a feed-forward chain: the condensate temperature is

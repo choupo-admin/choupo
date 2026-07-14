@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: thujic acid  (C10H12O2, CAS 499-89-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        thujicAcid;
+formula     C10H12O2;
+CAS         499-89-8;
+InChIKey    JHHXPQAUADQJBQ-UHFFFAOYSA-N;
+MW          164.204;      // g/mol [origin=calculated method=formula-sum]
+Tc          837.26;      // K   [origin=predictive method=joback]
+Pc          33.763;      // bar [origin=predictive method=joback]
+omega       0.6637;      // -   [origin=predictive method=lee-kesler]
+Tb          600.43;      // K   [origin=predictive method=joback]
+HvapTb      56006.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-84.68 1.18154 -0.0010548 4.012e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C; count 1; } { group CH=CH; count 2; } { group CH=C; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5,5-dimethylcyclohepta-1,3,6-triene-1-carboxylic acid" "dehydroperillic acid" "1,3,6-cycloheptatriene-1-carboxylicacid, 5,5-dimethyl-" "1,6-cycloheptatriene-1-carboxylic acid, 5,5-dimethyl-" "5,5-dimethyl-1,3,6-cycloheptatriene-1-carboxylic acid" "1,3,6-cycloheptatriene-1-carboxylic acid, 5,5-dimethyl- (8ci)(9ci)" );
+gibbsFormation
+{
+    dHf_298   -374730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     539.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-223480.0
+    phase     gas;
+}

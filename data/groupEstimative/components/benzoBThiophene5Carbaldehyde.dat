@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzo[b]thiophene-5-carbaldehyde  (C9H6OS, CAS 10133-30-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H6OS (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        benzoBThiophene5Carbaldehyde;
+formula     C9H6OS;
+CAS         10133-30-9;
+InChIKey    QHHRWAPVYHRAJA-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          162.206;      // g/mol [origin=calculated method=formula-sum]
+Tc          723.32;      // K   [origin=predictive method=joback]
+Pc          41.947;      // bar [origin=predictive method=joback]
+omega       0.3305;      // -   [origin=predictive method=lee-kesler]
+Tb          476.98;      // K   [origin=predictive method=joback]
+HvapTb      43181.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-56.68 0.80481 -0.0007975 3.088e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group CHO; count 1; } { group C4H2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 5; } { group dC_ring; count 3; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-benzothiophene-5-carbaldehyde" "benzo[b]thiophene-5-carboxaldehyde" "5-formylbenzo[b]thiophene" "1-benzothiophene-5-carboxaldehyde" "benzo(b)thiophene-5-carboxaldehyde" "benzothiophene-5-carbaldehyde" "5-benzo[b]thiophenecarboxaldehyde;5-benzothiophenecarboxaldehyde;5-formylbenzo[b]thiophene;5-formylbenzothiophene;benzothiophen-5-carboxaldehyde;" );
+gibbsFormation
+{
+    dHf_298   257130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     433.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=300290.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cis,trans,cis-1,2,3,4-tetravinylcyclobutane  (C12H16, CAS 82865-42-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cisTransCis1234Tetravinylcyclobutane;
+formula     C12H16;
+CAS         82865-42-7;
+InChIKey    XXHDHKZTASMVSX-UHFFFAOYSA-N;
+MW          160.26;      // g/mol [origin=calculated method=formula-sum]
+Tc          651.04;      // K   [origin=predictive method=joback]
+Pc          21.714;      // bar [origin=predictive method=joback]
+omega       0.3531;      // -   [origin=predictive method=lee-kesler]
+Tb          457.88;      // K   [origin=predictive method=joback]
+HvapTb      38784.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-57.53 1.1256 -0.0007282 1.86e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 4; } { group CH2=CH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 4; } { group dCH; count 4; } { group CH_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4-tetrakis(ethenyl)cyclobutane" "1,2,3,4-tetraethenylcyclobutane" "trans,trans,trans-1,2,3,4-tetravinylcyclobutane" "cis,trans,cis-1,2,3,4-tetraethenylcyclobutane" "trans,trans,trans-1,2,3,4-tetraethenylcyclobutane" );
+gibbsFormation
+{
+    dHf_298   216330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     407.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=427040.0
+    phase     gas;
+}

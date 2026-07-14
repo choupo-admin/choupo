@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(2-ethylhexyl) dodecanedioate  (C28H54O4, CAS 19074-24-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis2EthylhexylDodecanedioate;
+formula     C28H54O4;
+CAS         19074-24-9;
+InChIKey    MTPSFISGWJGUGN-UHFFFAOYSA-N;
+MW          454.736;      // g/mol [origin=calculated method=formula-sum]
+Tc          1179.62;      // K   [origin=predictive method=joback]
+Pc          6.643;      // bar [origin=predictive method=joback]
+omega       0.5232;      // -   [origin=predictive method=lee-kesler]
+Tb          955.80;      // K   [origin=predictive method=joback]
+HvapTb      91960.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.89 2.56608 -0.0013166 2.068e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 18; } { group CH; count 2; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 20; } { group CH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodecanedioic acid, bis(2-ethylhexyl) ester" "dodecanedioic acid, bis(2-ethylhexyl)ester" "di(2-ethylhexyl) dodecanedioate" "dodecanedioic acid dioctyl ester" "dodecanedioic acid di(2-ethylhexyl) ester" "dodecanedioic acid,1,12-bis(2-ethylhexyl) ester" "dodecanedioicacid, bis(2-ethylhexyl) ester (6ci,7ci,8ci,9ci); 1,10-decanedicarboxylic aciddi-2-ethylhexyl ester; 1,12-dodecanedioic acid bis(2-ethylhexyl) ester;bis(2-ethylhexyl) 1,12-dodecanedioate; bis(2-ethylhexyl) dodecanedioate" );
+gibbsFormation
+{
+    dHf_298   -1266370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1330.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-440740.0
+    phase     gas;
+}

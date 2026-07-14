@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nonenenitrile  (C9H15N, CAS 68039-77-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nonenenitrile;
+formula     C9H15N;
+CAS         68039-77-0;
+InChIKey    HWVWCKLNHVPAQP-UHFFFAOYSA-N;
+MW          137.226;      // g/mol [origin=calculated method=formula-sum]
+Tc          703.25;      // K   [origin=predictive method=joback]
+Pc          23.680;      // bar [origin=predictive method=joback]
+omega       0.5798;      // -   [origin=predictive method=lee-kesler]
+Tb          511.76;      // K   [origin=predictive method=joback]
+HvapTb      46064.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.475 0.81362 -0.0005186 1.37e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH=CH; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "non-6-enenitrile" );
+gibbsFormation
+{
+    dHf_298   53010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     506.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=238300.0
+    phase     gas;
+}

@@ -61,13 +61,17 @@ License
                      runResult stays the flowsheet's choupoSolve result.
 \*---------------------------------------------------------------------------*/
 
+import { compositeMembers } from "../case/toGraph.js";
+import { readEdges } from "../case/toGraph.js";
 import {
   Accordion,
   Anchor,
   Badge,
   Box,
   Button,
+  Center,
   Checkbox,
+  Drawer,
   Group,
   ScrollArea,
   Stack,
@@ -104,14 +108,62 @@ import {
   MultiTxyOverlay,
 } from "./plotting/CsvAutoPlot.js";
 import { Plot, PLOT_CONFIG, PLOT_COLORS, darkLayout } from "./plotting/plotly.js";
-import { propsTheoryLink } from "../case/modelDocs.js";
+import { GibbsMapPanel } from "./GibbsMapPanel.js";
+import { propsOpHelpLink, propsTheoryLink } from "../case/modelDocs.js";
 import { ThermoView } from "./ThermoView.js";
 import {
-  parsePropertyPointLog,
   parsePropertyPointReferences,
   type PointResult,
   type PointReference,
 } from "./parsePropertyPointLog.js";
+
+/** Property-point rows from the STRUCTURED channel (each propertyPoint op's
+ *  engine diagnostics) -- the machine block is the source, never the log
+ *  (strategy P4b: the log-scrape is retired).  Composition comes from the
+ *  op's own dict (the state block), the dict being the source of truth. */
+function pointsFromOps(ops: JsonDict[], opResults: OperationResult[]): PointResult[] {
+  const out: PointResult[] = [];
+  for (const op of ops) {
+    if (!op || typeof op !== "object" || Array.isArray(op)) continue;
+    if (op["type"] !== "propertyPoint") continue;
+    const name = typeof op["name"] === "string" ? op["name"] : "";
+    const r = opResults.find((x) => x.name === name && x.type === "propertyPoint");
+    if (!r) continue;
+    const d = r.diagnostics;
+    const T = d["T"], P = d["P"];
+    if (T === undefined || P === undefined) continue;
+    let composition = "";
+    const state = op["state"];
+    if (state && typeof state === "object" && !Array.isArray(state)) {
+      const mc = (state as JsonDict)["molarComposition"];
+      if (mc && typeof mc === "object" && !Array.isArray(mc)) {
+        const entries = Object.entries(mc as JsonDict);
+        composition = entries
+          .map(([sp, x]) => (entries.length === 1 ? sp : `${sp}:${String(x)}`))
+          .join(" ");
+      }
+    }
+    out.push({ name, T_K: T, P_bar: P / 1e5, composition,
+      H_ig: d["H_ig"], S_ig: d["S_ig"], Cp_ig: d["Cp_ig"],
+      gamma: d["gamma"], Z: d["Z"], S_real: d["S_real"] });
+  }
+  return out;
+}
+
+/** The author's own case story: the leading /*---…---*\ comment block at the
+ *  top of a dict, stripped of its decorative frame.  THE glass-box answer to
+ *  "what does this case do?" -- the case documents itself; F1 shows it. */
+function dictHeaderComment(raw: string | undefined): string | null {
+  if (!raw) return null;
+  const m = raw.match(/\/\*([\s\S]*?)\*\//);
+  if (!m) return null;
+  const body = m[1]!
+    .split("\n")
+    .filter((l) => !/^[\s\-\\*|]*$/.test(l))   // drop pure frame lines
+    .join("\n")
+    .trimEnd();
+  return body.trim().length > 40 ? body : null;
+}
 
 /** Pretty trace name from a CSV filename: drops the trailing .csv. */
 function stripCsvExt(name: string): string {
@@ -136,18 +188,19 @@ interface PropsItem {
   group: string;
   label: string;
   node: React.ReactNode;
+  /** Contextual help target (F1 / the Theory link): what does this panel's
+   *  operation DO?  Set per-op from its type; groups fall back to the group
+   *  map, then to the Properties Guide front. */
+  theory?: string;
 }
 
-const GROUP_ORDER = ["Foundation", "Ledger", "Comparison", "Consistency", "Estimate", "Fit", "Points", "Scan"];
+const GROUP_ORDER = ["Foundation", "Ledger", "Results", "Comparison", "Operations"];
 const GROUP_LABEL: { [k: string]: string } = {
   Foundation: "Thermo (ready / gaps)",
   Ledger: "Decisions",
+  Results: "Results (the run's answers)",
   Comparison: "Comparison (data vs models)",
-  Consistency: "Consistency",
-  Estimate: "Estimates",
-  Fit: "Fits",
-  Points: "Property points",
-  Scan: "Scans",
+  Operations: "Operations (the propsDict, in order)",
 };
 
 /** op name -> its output CSV basename, for one target's propsDict. */
@@ -258,20 +311,21 @@ function ValidationTable({ blocks }: { blocks: ValidationBlock[] }) {
  *  comparisons are distinct pills. */
 function buildTargetItems(opts: {
   result: RunResult | undefined;
-  log: string;
   propsDict: JsonDict | null;
   thermoComponents: unknown;
   showLab: boolean;
   labelPrefix: string;   // "" for a leaf; "REACTION · " for a composite sector
   keyPrefix: string;     // "" for a leaf; "REACTION:" for a composite sector
 }): PropsItem[] {
-  const { result, log, propsDict, thermoComponents, showLab, labelPrefix, keyPrefix } = opts;
+  const { result, propsDict, thermoComponents, showLab, labelPrefix, keyPrefix } = opts;
   const out: PropsItem[] = [];
   const csvFiles = result?.csvFiles ?? {};
   const csvNames = Object.keys(csvFiles).sort();
   const opToCsv = opOutputMap(propsDict);
 
-  const modelCsvNames = csvNames.filter((n) => !n.startsWith("exp_"));
+  // constant/ CSVs are the case's curated INPUT datasets (cited experimental
+  // tables), not run results -- they feed overlays, never standalone panels.
+  const modelCsvNames = csvNames.filter((n) => !n.startsWith("exp_") && !n.startsWith("constant/"));
   const expCsvNames = csvNames.filter((n) => n.startsWith("exp_"));
   const consumed = new Set<string>();
 
@@ -326,45 +380,90 @@ function buildTargetItems(opts: {
 
   const opResults = result?.operationResults ?? [];
 
-  // 2. Consistency tests (each its own verdict card).
-  for (const r of opResults.filter((x) => x.type === "vleConsistency")) {
-    const f = opToCsv.get(r.name);
-    out.push({ key: `${keyPrefix}cons:${r.name}`, group: "Consistency", label: `${labelPrefix}${r.name}`,
-      node: <ConsistencyPanel result={r} propsDict={propsDict} csv={f ? csvFiles[f] : undefined} /> });
+  // 2. THE OP CONTRACT (docs/gui-props-strategy.md P4): one pill per declared
+  //    operation, in the AUTHOR'S dict order, under the author's names.  Typed
+  //    renderers where a richer panel exists; the generic panel (diagnostics +
+  //    this op's CSV) for every other type -- no operation can be born
+  //    invisible.  propertyPoint ops aggregate into ONE table pill (six steam
+  //    pins want one table, not six identical pills).
+  const ops = (propsDict?.["operations"] ?? []) as JsonDict[];
+  let pointsPillDone = false;
+  for (const op of ops) {
+    if (!op || typeof op !== "object" || Array.isArray(op)) continue;
+    const opName = typeof op["name"] === "string" ? op["name"] : "";
+    const opType = typeof op["type"] === "string" ? op["type"] : "";
+    if (!opName) continue;
+    const r = opResults.find((x) => x.name === opName);
+    const f = opToCsv.get(opName);
+    const csvText = f ? csvFiles[f] : undefined;
+
+    const opHelp = propsOpHelpLink(opType);
+    if (opType === "propertyPoint") {
+      if (pointsPillDone) continue;
+      pointsPillDone = true;
+      const points = result?.status === "done" ? pointsFromOps(ops, opResults) : [];
+      if (points.length > 0) {
+        const references = parsePropertyPointReferences(propsDict);
+        out.push({ key: `${keyPrefix}points`, group: "Operations",
+          label: `${labelPrefix}Property points`, theory: opHelp,
+          node: <PropertyPointPanel points={points} references={references} /> });
+      } else {
+        out.push({ key: `${keyPrefix}op:${opName}`, group: "Operations",
+          label: `${labelPrefix}Property points`, theory: opHelp,
+          node: <OpGenericPanel opName={opName} opType={opType} result={r} /> });
+      }
+      continue;
+    }
+    if (opType === "vleConsistency" && r) {
+      out.push({ key: `${keyPrefix}op:${opName}`, group: "Operations", label: `${labelPrefix}${opName}`,
+        theory: opHelp,
+        node: <ConsistencyPanel result={r} propsDict={propsDict} csv={csvText} /> });
+      if (f) consumed.add(f);
+      continue;
+    }
+    if (opType === "estimateComponent" && r) {
+      out.push({ key: `${keyPrefix}op:${opName}`, group: "Operations", label: `${labelPrefix}${opName}`,
+        theory: opHelp,
+        node: <EstimatePanel results={[r]} propsDict={propsDict}
+          proposals={result?.proposals} components={thermoComponents} /> });
+      continue;
+    }
+    if (opType === "gibbsMap" && csvText) {
+      out.push({ key: `${keyPrefix}op:${opName}`, group: "Operations", label: `${labelPrefix}${opName}`,
+        theory: opHelp,
+        node: <GibbsMapPanel op={op} csv={csvText} /> });
+      if (f) consumed.add(f);
+      continue;
+    }
+    if (opType === "fitParameters" && r) {
+      out.push({ key: `${keyPrefix}op:${opName}`, group: "Operations", label: `${labelPrefix}${opName}`,
+        theory: opHelp,
+        node: (
+          <Box style={{ position: "absolute", inset: 0, overflow: "auto" }}>
+            <ScrollArea h="100%" type="auto" px="md" py="sm">
+              <FitStatsPanel results={[r]} propsDict={propsDict ?? undefined} />
+            </ScrollArea>
+          </Box>
+        ) });
+      if (f) consumed.add(f);
+      continue;
+    }
+    // Generic: this op's diagnostics band + its CSV plot (or an honest note).
+    if (csvText && consumed.has(f!)) continue;   // fed the comparison overlay above
+    out.push({ key: `${keyPrefix}op:${opName}`, group: "Operations", label: `${labelPrefix}${opName}`,
+      theory: opHelp,
+      node: <OpGenericPanel opName={opName} opType={opType} result={r}
+        csv={csvText} filename={f} /> });
     if (f) consumed.add(f);
   }
-  // 3. Component estimates (Joback cards + the promote proposal .dat preview).
-  for (const r of opResults.filter((x) => x.type === "estimateComponent"))
-    out.push({ key: `${keyPrefix}est:${r.name}`, group: "Estimate", label: `${labelPrefix}${r.name}`,
-      node: <EstimatePanel results={[r]} propsDict={propsDict}
-        proposals={result?.proposals} components={thermoComponents} /> });
-  // 4. Parameter fits (identifiability stats).
-  for (const r of opResults.filter((x) => x.type === "fitParameters")) {
-    out.push({ key: `${keyPrefix}fit:${r.name}`, group: "Fit", label: `${labelPrefix}${r.name}`,
-      node: (
-        <Box style={{ position: "absolute", inset: 0, overflow: "auto" }}>
-          <ScrollArea h="100%" type="auto" px="md" py="sm">
-            <FitStatsPanel results={[r]} propsDict={propsDict ?? undefined} />
-          </ScrollArea>
-        </Box>
-      ) });
-    const f = opToCsv.get(r.name); if (f) consumed.add(f);
-  }
-  // 5. Property-point audit (one table for all point ops in this target).
-  const ops = (propsDict?.["operations"] ?? []) as JsonDict[];
-  const pointOnly = ops.length > 0 && ops.every((o) => o["type"] === "propertyPoint");
-  const points = pointOnly && result?.status === "done" ? parsePropertyPointLog(log) : [];
-  if (points.length > 0) {
-    const references = parsePropertyPointReferences(propsDict);
-    out.push({ key: `${keyPrefix}points`, group: "Points", label: `${labelPrefix}Property points`,
-      node: <PropertyPointPanel points={points} references={references} /> });
-  }
-  // 6. Standalone scans (model CSVs not consumed above).
+
+  // 3. Defensive tail: any output CSV no operation claimed (never invisible).
   for (const n of modelCsvNames) {
     if (consumed.has(n)) continue;
     const text = csvFiles[n];
     if (!text) continue;
-    out.push({ key: `${keyPrefix}scan:${n}`, group: "Scan", label: `${labelPrefix}${stripCsvExt(n)}`,
+    if ([...opToCsv.values()].includes(n)) continue;   // claimed above
+    out.push({ key: `${keyPrefix}scan:${n}`, group: "Operations", label: `${labelPrefix}${stripCsvExt(n)}`,
       node: <CsvAutoPlot csv={text} filename={n} /> });
   }
   return out;
@@ -391,8 +490,8 @@ export function PropsView() {
   const inCuration = (() => {
     const fs = caseFiles.flowsheet;
     return Boolean(fs)
-      && Array.isArray(fs!["children"]) && (fs!["children"] as unknown[]).length > 0
-      && (!Array.isArray(fs!["connections"]) || (fs!["connections"] as unknown[]).length === 0);
+      && compositeMembers(fs!).length > 0
+      && (readEdges(fs!).length === 0);
   })();
 
   // `controlDict.description` -- a free-text one-liner carrying the case's
@@ -410,7 +509,7 @@ export function PropsView() {
     if (caseFiles.propsDict)
       return [{ sector: null, caseName: tutorialName, files: caseFiles, propsDict: caseFiles.propsDict }];
     const fs = caseFiles.flowsheet;
-    const children = (fs && Array.isArray(fs["children"]) ? fs["children"] : []) as string[];
+    const children = fs ? compositeMembers(fs) : [];
     const out: PropsTarget[] = [];
     for (const child of children) {
       const sub = tutorialByName(`${tutorialName}/${child}`);
@@ -475,7 +574,13 @@ export function PropsView() {
   }, [hasFlowsheet, localRuns, storeRunResult, tutorialName]);
 
   const running = hasFlowsheet ? localRunning : runStatus === "running";
+  // After a run the user must SEE what it produced ("see, then decide") -- a
+  // completed run that leaves the view sitting on `thermo readiness` reads as
+  // silence.  Arm a one-shot jump on Run; when the results land, focus the
+  // first RESULT panel (the readiness/ledger panels are pre-run machinery).
+  const [jumpToResults, setJumpToResults] = useState(false);
   const onRun = useCallback(() => {
+    setJumpToResults(true);
     if (hasFlowsheet) void runPropsLocal();
     else window.dispatchEvent(new CustomEvent("choupo:run"));
   }, [hasFlowsheet, runPropsLocal]);
@@ -494,7 +599,6 @@ export function PropsView() {
       const res = runs.get(t.caseName);
       return buildTargetItems({
         result: res,
-        log: hasFlowsheet ? (res?.log ?? "") : runLog,
         propsDict: t.propsDict,
         thermoComponents,
         showLab,
@@ -541,22 +645,79 @@ export function PropsView() {
             <DecisionLedger ops={aggOps} pairs={aggPairs} datasets={aggData} />
           </Box>
         ) });
+    // The run's ANSWERS, first-class (strategy P1): the post-run landing.
+    if (ranAny)
+      out.push({ key: "results", group: "Results", label: "results",
+        node: <ResultsEpilogue runs={runs} /> });
     out.push(...targetItems);
     return out;
-  }, [hasProps, aggOps, aggPairs, aggData, targetItems]);
+  }, [hasProps, aggOps, aggPairs, aggData, targetItems, ranAny, runs]);
 
   // Selected item; keep the selection across re-renders, fall back to first.
   const [selectedKey, setSelectedKey] = useState<string>("foundation");
   useEffect(() => {
     if (!items.some((i) => i.key === selectedKey)) setSelectedKey(items[0]!.key);
   }, [items, selectedKey]);
+  // The armed post-run landing: results arrived -> land on the Results
+  // epilogue (the run's answers); evidence panels are one click behind it.
+  useEffect(() => {
+    if (!jumpToResults || running || runs.size === 0) return;
+    const target = items.find((i) => i.key === "results")
+      ?? items.find((i) => i.key !== "foundation" && i.key !== "ledger");
+    if (target) setSelectedKey(target.key);
+    setJumpToResults(false);
+  }, [jumpToResults, running, runs, items]);
   const selectedItem = items.find((i) => i.key === selectedKey) ?? items[0] ?? null;
   const showNav = items.length >= 2;
-  const theoryHref = selectedItem ? propsTheoryLink(selectedItem.group) : null;
+  const theoryHref = selectedItem
+    ? (selectedItem.theory ?? propsTheoryLink(selectedItem.group)
+       ?? `${import.meta.env.BASE_URL}docs/propsGuide.pdf`)
+    : null;
+  // F1 = THE THEORY: open the guide at the section deriving the thermophysics
+  // + the numerical method of the SELECTED operation (ch:speciation for a
+  // speciate op, ch:electrolytes for Pitzer, ch:lm for fits...).  One press,
+  // the derivation.  The case's own story (its propsDict header) lives behind
+  // the visible "About this case" button instead -- two questions, two doors.
+  const [helpOpen, setHelpOpen] = useState(false);
+  const rawFiles = useStore((s) => s.caseFiles.rawFiles);
+  const caseStory = useMemo(
+    () => dictHeaderComment(rawFiles?.["system/propsDict"]), [rawFiles]);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "F1") return;
+      e.preventDefault();
+      window.open(theoryHref ?? `${import.meta.env.BASE_URL}docs/theoryGuide.pdf`,
+        "_blank", "noopener");
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [theoryHref]);
 
   return (
     <Box style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column",
       background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))" }}>
+      <Drawer opened={helpOpen} onClose={() => setHelpOpen(false)} position="right"
+        size="lg" title={`What this case does — ${tutorialName}`}>
+        {typeof controlDict?.["description"] === "string" && (
+          <Text size="sm" mb="md">{controlDict["description"] as string}</Text>
+        )}
+        {caseStory ? (
+          <Text size="xs" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>{caseStory}</Text>
+        ) : (
+          <Text size="sm" c="dimmed">
+            This case's propsDict carries no header comment — the description
+            above is its story. (Case authors: the leading comment block of
+            system/propsDict is what F1 shows here.)
+          </Text>
+        )}
+        {selectedItem && theoryHref && (
+          <Text size="sm" mt="md">
+            theory behind <Text span fw={600}>{selectedItem.label}</Text>:{" "}
+            <Anchor href={theoryHref} target="_blank" rel="noopener">open the guide section</Anchor>
+          </Text>
+        )}
+        <Text size="xs" c="dimmed" mt="md">F1 opens the THEORY section for the selected operation.</Text>
+      </Drawer>
 
       {/* Consolidation bar (flowsheet cases): props + the flowsheet are ONE
           case -- the validated foundation IS what the simulation runs.
@@ -622,6 +783,10 @@ export function PropsView() {
             {running ? "Running…"
               : isComposite ? `Run properties (${targets.length} sectors)`
               : "Run properties"}
+          </Button>
+          <Button size="xs" variant="subtle" c="dimmed"
+            onClick={() => setHelpOpen(true)}>
+            About this case
           </Button>
           {anyLabData && (
             <Checkbox size="xs" checked={showLab} onChange={(e) => setShowLab(e.currentTarget.checked)}
@@ -877,6 +1042,19 @@ function EstimatePanel({
           { label: "Hvap (at Tb)", est: d.Hvap_kJmol, unit: "kJ/mol" },
           { label: "Cp_ig(298 K)", est: d.Cp298, unit: "J/mol·K" },
         ];
+        // GENERIC TAIL: every diagnostic the estimator emitted that the fixed
+        // list above does not know (Yang2020's Tg_K, van Krevelen's
+        // density_g_cm3, Riazi-Daubert's SG, ...) -- an estimator's key result
+        // must never be invisible because the card was written for Joback.
+        {
+          const known = new Set(["MW", "Tb_K", "Tc_K", "Pc_bar", "Vc_cm3mol",
+            "omega", "dHf_kJmol", "dGf_kJmol", "Hvap_kJmol", "Cp298"]);
+          for (const [k, v] of Object.entries(d)) {
+            if (known.has(k) || typeof v !== "number") continue;
+            rows.push({ label: k, est: v, unit: "" });
+          }
+        }
+        const estMethod = r.provenance?.["method"] ?? "Joback";
         return (
           <Box key={r.name}>
             {/* STICKY action band -- pinned top of the pane, so the proposal +
@@ -888,7 +1066,7 @@ function EstimatePanel({
               borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))" }}>
               <Group justify="space-between" align="center" wrap="nowrap" px="md" py={8}>
                 <Group gap={8} align="center" wrap="wrap" style={{ minWidth: 0 }}>
-                  <Text fw={600} c="accent">Joback estimate — {comp}</Text>
+                  <Text fw={600} c="accent">{estMethod} estimate — {comp}</Text>
                   {groups.map((g, i) => (
                     <Badge key={i} variant="light" color="grape" size="sm" radius="sm"
                       styles={{ root: { textTransform: "none" } }}>
@@ -1191,6 +1369,117 @@ function ValueCell({
 
 /** Compact number formatting: 4 sig-figs for "ordinary" magnitudes,
  *  scientific (2 decimals) for very small or very large numbers. */
+/** Compact key/value table of one op's engine diagnostics (shared by the
+ *  Results epilogue and the generic op panel -- same numbers, same source). */
+function DiagnosticsTable({ diag, headline }: {
+  diag: { [k: string]: number }; headline?: string[];
+}) {
+  const all = Object.keys(diag);
+  if (all.length === 0)
+    return <Text size="xs" c="dimmed">no diagnostics reported — see the Log</Text>;
+  // The op's own ranking: headline keys (that the run produced) first,
+  // emphasised; the rest follow in emission order.
+  const head = (headline ?? []).filter((k) => diag[k] !== undefined);
+  const rest = all.filter((k) => !head.includes(k));
+  const keys = [...head, ...rest];
+  return (
+    <Table verticalSpacing={2} style={{ maxWidth: 560 }}>
+      <Table.Tbody>
+        {keys.map((k) => {
+          const isHead = head.includes(k);
+          return (
+            <Table.Tr key={k}>
+              <Table.Td><Text size="xs" ff="monospace"
+                c={isHead ? "accent" : "dimmed"} fw={isHead ? 600 : undefined}>{k}</Text></Table.Td>
+              <Table.Td><Text size="xs" ff="monospace"
+                fw={isHead ? 600 : undefined}>{fmtNum(diag[k])}</Text></Table.Td>
+            </Table.Tr>
+          );
+        })}
+      </Table.Tbody>
+    </Table>
+  );
+}
+
+/** The GENERIC op panel (strategy P4): the fallback that guarantees no
+ *  operation is ever invisible -- this op's diagnostics band on top, its
+ *  output CSV plotted below (when it has one), an honest note when it
+ *  doesn't, and an honest note when it produced no result at all. */
+function OpGenericPanel({ opName, opType, result, csv, filename }: {
+  opName: string; opType: string;
+  result?: OperationResult; csv?: string; filename?: string;
+}) {
+  return (
+    <Box style={{ position: "absolute", inset: 0, display: "flex",
+      flexDirection: "column", overflow: "hidden" }}>
+      <Box px="md" py={8} style={{ flex: "0 0 auto" }}>
+        <Group gap={8} mb={4}>
+          <Text size="sm" fw={600} ff="monospace">{opName}</Text>
+          <Badge size="xs" variant="light">{opType}</Badge>
+        </Group>
+        {result
+          ? <DiagnosticsTable diag={result.diagnostics} headline={result.headline} />
+          : <Text size="xs" c="dimmed">this operation reported no result — run the case, or see the Log for why it did not finish.</Text>}
+      </Box>
+      <Box style={{ flex: 1, minHeight: 0 }}>
+        {csv
+          ? <CsvAutoPlot csv={csv} filename={filename} />
+          : <Center style={{ height: "100%" }}>
+              <Text size="xs" c="dimmed">no plottable output declared — the numbers above are this op's result.</Text>
+            </Center>}
+      </Box>
+    </Box>
+  );
+}
+
+/** The run's ANSWERS, first-class (docs/gui-props-strategy.md P1): one row per
+ *  operation -- the op's own name, its type, its full engine diagnostics --
+ *  plus a failure card IN PLACE for a target that did not finish.  The GUI
+ *  twin of the runCase terminal epilogue: same numbers, same source (the
+ *  machine block).  Silence is never a valid render: an op with no
+ *  diagnostics SAYS so. */
+function ResultsEpilogue({ runs }: { runs: Map<string, RunResult> }) {
+  const entries = [...runs.entries()];
+  return (
+    <Box style={{ position: "absolute", inset: 0, overflow: "auto", padding: 16 }}>
+      <Stack gap="lg">
+        {entries.map(([caseName, r]) => (
+          <Box key={caseName}>
+            {entries.length > 1 && <Text size="sm" fw={600} mb={4}>{caseName}</Text>}
+            {r.status !== "done" && (
+              <Box mb="sm" p="sm"
+                style={{ border: "1px solid var(--mantine-color-red-8)", borderRadius: 6 }}>
+                <Group gap={6} mb={4}>
+                  <IconAlertTriangle size={14} color="var(--mantine-color-red-5)" />
+                  <Text size="sm" c="red.4" fw={600}>run did not finish</Text>
+                </Group>
+                <Text size="xs" c="dimmed"
+                  style={{ whiteSpace: "pre-wrap", fontFamily: "monospace" }}>
+                  {r.log.trimEnd().split("\n").slice(-8).join("\n")}
+                </Text>
+              </Box>
+            )}
+            {(r.operationResults ?? []).map((op) => (
+              <Box key={op.name} mb="sm">
+                <Group gap={8} mb={2}>
+                  <Text size="sm" fw={600} ff="monospace">{op.name}</Text>
+                  <Badge size="xs" variant="light">{op.type}</Badge>
+                </Group>
+                <DiagnosticsTable diag={op.diagnostics} headline={op.headline} />
+              </Box>
+            ))}
+            {r.status === "done" && (r.operationResults ?? []).length === 0 && (
+              <Text size="xs" c="dimmed">
+                the run finished but reported no per-operation results — see the Log.
+              </Text>
+            )}
+          </Box>
+        ))}
+      </Stack>
+    </Box>
+  );
+}
+
 function fmtNum(v: number | undefined): string {
   if (v === undefined) return "—";
   if (v === 0) return "0";

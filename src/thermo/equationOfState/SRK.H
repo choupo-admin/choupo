@@ -119,6 +119,7 @@ public:
     // The vapour root of the cubic; for sub-critical low-P this is the
     // gas-side answer.
     sVector phi(scalar T_K, scalar P_Pa, const sVector& y) const override;
+    sVector phiLiquid(scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  molarVolume(scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  Z(scalar T_K, scalar P_Pa, const sVector& y) const override;
 
@@ -160,7 +161,7 @@ private:
 
     // Real vapour root of Z³ − Z² + (A − B − B²)Z − AB = 0.
     // Cardano with explicit branch selection.
-    scalar cardano_vapourRoot(scalar A, scalar B) const;
+    scalar cardano_root(scalar A, scalar B, bool liquid) const;
 
     std::size_t                            n_;
     std::vector<PureParams>                pure_;

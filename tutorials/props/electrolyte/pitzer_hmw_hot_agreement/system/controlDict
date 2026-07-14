@@ -1,0 +1,19 @@
+/*---------------------------------------------------------------------------*\
+  pitzer_hmw_hot_agreement / system/controlDict
+
+  WHAT THIS CASE IS: the adversarial agreement test of the Pitzer-T fix
+  (forum 100.2/#101 -- the HMW half).  The multi-ion HMW engine and the
+  single-salt kernel evaluate THE SAME NaCl state at 100 C; before the
+  fix the HMW froze its virials at 25 C while the single salt applied
+  the Silvester-Pitzer T-functions, and the two "one Pitzer" surfaces
+  disagreed.  Now both read the same record slots: the golden pins the
+  per-ion gammas (HMW) and gamma_pm (single salt) at the same (T, m),
+  and the case header states the agreement arithmetic.
+
+  Narrative: system/propsDict header.  Run log: log.choupoProps.
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "HMW vs single-salt Pitzer at 100 C, same NaCl 4 m state: the two surfaces must AGREE now that both apply the SP77 T-functions";
+
+verbosity     3;

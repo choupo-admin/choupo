@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-octylethanolamine  (C10H23NO, CAS 32582-63-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nOctylethanolamine;
+formula     C10H23NO;
+CAS         32582-63-1;
+InChIKey    UVYBWDBLVDZIOX-UHFFFAOYSA-N;
+MW          173.3;      // g/mol [origin=calculated method=formula-sum]
+Tc          732.77;      // K   [origin=predictive method=joback]
+Pc          23.270;      // bar [origin=predictive method=joback]
+omega       1.1184;      // -   [origin=predictive method=lee-kesler]
+Tb          570.75;      // K   [origin=predictive method=joback]
+HvapTb      60969.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.121 1.06402 -0.0005992 1.281e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group OH; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 9; } { group OH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(octylamino)ethanol" "ethanol, 2-(octylamino)-" "n-octyl-amino ethanol" "n-(2-hydroxyethyl)octylamine" "2-(octylamino)ethan-1-ol" "octyl ethanolamine" );
+gibbsFormation
+{
+    dHf_298   -348490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     637.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-14110.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: medrogestone  (C23H32O2, CAS 977-79-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        medrogestone;
+formula     C23H32O2;
+CAS         977-79-7;
+InChIKey    HCFSGRMEEXUOSS-SAEZQQPQSA-N;
+MW          340.507;      // g/mol [origin=calculated method=formula-sum]
+Tc          1147.82;      // K   [origin=predictive method=joback]
+Pc          15.117;      // bar [origin=predictive method=joback]
+omega       0.8304;      // -   [origin=predictive method=lee-kesler]
+Tb          895.50;      // K   [origin=predictive method=joback]
+HvapTb      76134.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-294.74 3.1399 -0.00294098 1.18436e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 3; } { group C; count 3; } { group CH=C; count 2; } { group CH3CO; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group CdO; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(17s)-17-ethanoyl-6,10,13,17-tetramethyl-2,8,9,11,12,14,15,16-octahydro-1h-cyclopenta[a]phenanthren-3-one" "medrogesterone" "metrogestone" "colprone" "prothil" "colpro" "etogyn" "medrogestonum [inn-latin]" "medrogestone [usan:inn:ban]" "6,17-dimethyl-6-dehydroprogesterone" "6-methyl-6-dehydro-17-methylprogesterone" "6,17-dimethylpregna-4,6-diene-3,20-dione" );
+gibbsFormation
+{
+    dHf_298   -410270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     775.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=82540.0
+    phase     gas;
+}

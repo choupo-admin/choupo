@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 1884715  (C24H16, CAS 7350-86-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn1884715;
+formula     C24H16;
+CAS         7350-86-9;
+InChIKey    UTSURFBZZZAUIB-UHFFFAOYSA-N;
+MW          304.392;      // g/mol [origin=calculated method=formula-sum]
+Tc          1150.33;      // K   [origin=predictive method=joback]
+Pc          21.674;      // bar [origin=predictive method=joback]
+omega       0.9322;      // -   [origin=predictive method=lee-kesler]
+Tb          883.36;      // K   [origin=predictive method=joback]
+HvapTb      81214.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-158.17 2.0796 -0.00184668 6.572e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 8; } { group ACCH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group dCH_ring; count 12; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5,10-dihydro-3,4:8,9-dibenzopyrene" "dibenzo(b,def)chrysene, 7,14-dihydro-" "7,14-dihydrodibenzo[c,pqr]tetraphene" );
+gibbsFormation
+{
+    dHf_298   504070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     450.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=722620.0
+    phase     gas;
+}

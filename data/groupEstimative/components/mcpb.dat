@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: mcpb  (C11H13ClO3, CAS 94-81-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        mcpb;
+formula     C11H13ClO3;
+CAS         94-81-5;
+InChIKey    LLWADFLAOKUBDR-UHFFFAOYSA-N;
+MW          228.672;      // g/mol [origin=calculated method=formula-sum]
+Tc          911.90;      // K   [origin=predictive method=joback]
+Pc          26.625;      // bar [origin=predictive method=joback]
+omega       0.9732;      // -   [origin=predictive method=lee-kesler]
+Tb          693.28;      // K   [origin=predictive method=joback]
+HvapTb      67639.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (30.573 0.84532 -0.00045372 7.76e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 3; } { group AC; count 1; } { group ACCH3; count 1; } { group CH2O; count 1; } { group COOH; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(4-chloranyl-2-methyl-phenoxy)butanoic acid" "trifolex" "4-(4-chloro-2-methylphenoxy)butanoic acid" "legumex" "thitrol" "bexone" "trotox" "mcp-butyric" "4-(4-chloro-2-methylphenoxy)butyric acid" "4mcpb" "butanoic acid, 4-(4-chloro-2-methylphenoxy)-" "2m 4khm" );
+gibbsFormation
+{
+    dHf_298   -555010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     563.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-325950.0
+    phase     gas;
+}

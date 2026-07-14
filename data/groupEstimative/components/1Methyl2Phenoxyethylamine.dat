@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-methyl-2-phenoxyethylamine  (C9H13NO, CAS 35205-54-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Methyl2Phenoxyethylamine;
+formula     C9H13NO;
+CAS         35205-54-0;
+InChIKey    IKYFHRVPKIFGMH-UHFFFAOYSA-N;
+MW          151.209;      // g/mol [origin=calculated method=formula-sum]
+Tc          748.76;      // K   [origin=predictive method=joback]
+Pc          34.480;      // bar [origin=predictive method=joback]
+omega       0.5588;      // -   [origin=predictive method=lee-kesler]
+Tb          526.71;      // K   [origin=predictive method=joback]
+HvapTb      50567.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.889 0.78452 -0.0004326 7.71e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH2O; count 1; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-phenoxypropan-2-amine" "2-phenoxyisopropylamine" "ethylamine, 1-methyl-2-phenoxy-" "1-phenoxy-2-propanamine" "1-methyl-2-phenoxy-ethylamine" "1-phenoxyprop-2-ylamine" "(s) 1-phenoxy-2-propylamine" "(2-aminopropoxy)benzene" "1-phenoxy-2-propylamine" "2-propanamine, 1-phenoxy-" "2-propanamine, 1-phenoxy- (9ci)" "2-propanamine,1-phenoxy-, (2r)-" );
+gibbsFormation
+{
+    dHf_298   -96270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     453.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=96320.0
+    phase     gas;
+}

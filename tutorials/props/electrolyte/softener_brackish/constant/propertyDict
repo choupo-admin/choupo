@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  softener_brackish / constant/thermoPackage
+
+  Water is the solvent and the package's only component: the brackish feed's
+  ions and the SAC_Na resin sites are declared in the exchange / scalingScan
+  ops (Davies activities for the aqueous ions, Gaines-Thomas equivalent
+  fractions for the bound species on the resin).  The ideal/ideal-gas pair
+  below carries the solvent basis only -- the softening chemistry lives
+  entirely in the propsDict ops.
+\*---------------------------------------------------------------------------*/
+
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }

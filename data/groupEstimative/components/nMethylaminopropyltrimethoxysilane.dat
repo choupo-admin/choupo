@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methylaminopropyltrimethoxysilane  (C7H19NO3Si, CAS 3069-25-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H19NO3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        nMethylaminopropyltrimethoxysilane;
+formula     C7H19NO3Si;
+CAS         3069-25-8;
+InChIKey    DVYVMJLSUSGYMH-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          193.318;      // g/mol [origin=calculated method=formula-sum]
+Tc          652.92;      // K   [origin=predictive method=joback]
+Pc          23.842;      // bar [origin=predictive method=joback]
+omega       0.6295;      // -   [origin=predictive method=lee-kesler]
+Tb          478.59;      // K   [origin=predictive method=joback]
+HvapTb      45136.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (112.633 0.34928 0.0003422 -2.99e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH3O; count 3; } { group CH3NH; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group O; count 3; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-methyl-3-trimethoxysilyl-propan-1-amine" "n-methyl-3-(trimethoxysilyl)propan-1-amine" "n-methyl-3-(trimethoxysilyl)propylamine" "trimethoxy[3-(methylamino)propyl]silane" "(3-methylaminopropyl)-trimethoxysilane" "1-propanamine, n-methyl-3-(trimethoxysilyl)-" "methyl[3-(trimethoxysilyl)propyl]amine" "n-methyl-3-aminopropyltrimethoxysilane" "[3-(methylamino)propyl]trimethoxysilane" "n-methyl-3-trimethoxysilylpropan-1-amine" "u751" "n-methyl-3-aminopropyl-trimethoxysilane" );
+gibbsFormation
+{
+    dHf_298   -642620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     629.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-322310.0
+    phase     gas;
+}

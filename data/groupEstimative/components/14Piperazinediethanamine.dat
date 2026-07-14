@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-piperazinediethanamine  (C8H20N4, CAS 6531-38-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14Piperazinediethanamine;
+formula     C8H20N4;
+CAS         6531-38-0;
+InChIKey    PAOXFRSJRCGJLV-UHFFFAOYSA-N;
+MW          172.276;      // g/mol [origin=calculated method=formula-sum]
+Tc          772.23;      // K   [origin=predictive method=joback]
+Pc          35.096;      // bar [origin=predictive method=joback]
+omega       0.8628;      // -   [origin=predictive method=lee-kesler]
+Tb          568.26;      // K   [origin=predictive method=joback]
+HvapTb      59164.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-74.086 1.3032 -0.0009526 2.784e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2NH2; count 2; } { group CH2N; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group CH2_ring; count 4; } { group NH2; count 2; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[4-(2-azanylethyl)piperazin-1-yl]ethanamine" "piperazine-1,4-diethylamine" "2-[4-(2-amino-ethyl)-piperazin-1-yl]-ethylamine" "n,n'-di-(2-aminoethyl)piperazine" "n,n'-bis(2-aminoethyl)piperazine" "2-[4-(2-aminoethyl)-1-piperazinyl]ethanamine" "2-[4-(2-aminoethyl)piperazin-1-yl]ethanamine" "2-[4-(2-amino-ethyl)-piperazin-1-yl]-ethylaminetetrahydrochloride" "piperazine,1,4-bis(2-aminoethyl)- (7ci,8ci);1,4-bis(2-aminoethyl)-1,4-diazacyclohexane;1,4-bis(2-aminoethyl)piperazine;1,4-piperazinediethylamine;n,n'-bis(2-aminoethyl)piperazine;[2-[4-(2-aminoethyl)piperazin-1-yl]ethyl]amine;" );
+gibbsFormation
+{
+    dHf_298   81170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     574.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=427300.0
+    phase     gas;
+}

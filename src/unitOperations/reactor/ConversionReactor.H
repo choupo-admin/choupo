@@ -64,6 +64,17 @@ public:
     std::map<std::string, scalar> kpis() const override { return kpis_; }
 
 private:
+    // MULTI-REACTION path (`reactions ( r1 r2 );`): each reaction's extent is
+    // SPECIFIED -- by a fractional `conversion` of its limiting reactant (of the
+    // FEED amount) or by a direct `extent`.  No solver: the extents are inputs.
+    int solveMultiReaction(const DictPtr&       dict,
+                           const ThermoPackage& thermo,
+                           int                  verbosity,
+                           scalar               F_in,
+                           scalar               T,
+                           scalar               P,
+                           const sVector&       z);
+
     inline static const std::string type_ = "conversionReactor";
     std::vector<ProcessStream>     produced_;
     std::map<std::string, scalar>  kpis_;

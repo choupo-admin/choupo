@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: citro; phenyltoloxamine  (C23H29NO8, CAS 1176-08-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        citroPhenyltoloxamine;
+formula     C23H29NO8;
+CAS         1176-08-5;
+InChIKey    ZZYHCCDMBJTROG-UHFFFAOYSA-N;
+MW          447.484;      // g/mol [origin=calculated method=formula-sum]
+Tc          1671.97;      // K   [origin=predictive method=joback]
+Pc          15.898;      // bar [origin=predictive method=joback]
+omega       1.1987;      // -   [origin=predictive method=lee-kesler]
+Tb          1345.92;      // K   [origin=predictive method=joback]
+HvapTb      143628.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-21.285 2.13824 -0.00122956 2.197e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group C; count 1; } { group ACH; count 9; } { group AC; count 2; } { group ACCH2; count 1; } { group OH; count 1; } { group CH2O; count 1; } { group CH3N; count 1; } { group COOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group C; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 1; } { group COOH; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethyl-2-[2-(phenylmethyl)phenoxy]ethanamine;2-oxidanylpropane-1,2,3-tricarboxylic acid" "2-(2-benzylphenoxy)-n,n-dimethylethanamine 2-hydroxypropane-1,2,3-tricarboxylate" "n,n-dimethyl-2[alpha-phenyl-o-tolyl)oxy]ethylamine citrate" "phenyltoloxamine citrate salt" "phenyltoloxamine citrate (usp)" "phenyl toloxamine dihydrogen citrate" "n,n-dimethyl-2([" "a-phenyl-o-tolyl]oxy)ethylamine" "ethylamine,n-dimethyl-2-[(.alpha.-phenyl-o-tolyl)oxy]-, citrate (1:1)" "n,n-dimethyl-2-(.alpha.-phenyl-o-toloxy)ethylamine dihydrogen citrate" "2-(2-benzylphenoxy)-n,n-dimethylethanamine; 2-hydroxypropane-1,2,3-tricarboxylic acid" "ethanamine,n-dimethyl-2-[2-(phenylmethyl)phenoxy]-, 2-hydroxy-1,2,3-propanetricarboxylate (1:1)" "phenyltoloxamine dihydrogen citrate;kutrase;phenoxadrine citrate;ethylamine, n, n-dimethyl-2-[ (.alpha.-phenyl-o-tolyl)oxy]-, citrate (1:1);ethanamine, n,n-dimethyl-2-(2-(phenylmethyl)phenoxy)-, 2-hydroxy-1,2,3-propanetricarboxylate (1:1);phenoxadrin citrate;mobigesic;ethanamine,n,n-dimethyl-2-[2-(phenylmethyl) phenoxy]-,2-hydroxy-1,2,3- propanetricarboxylate (1:1);2-(2-benzylphenoxy)ethyl-dimethyl-azanium; 3-carboxy-3,5-dihydroxy-5-oxo-pentanoate;floxamine;" );
+gibbsFormation
+{
+    dHf_298   -1444560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1139.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-906720.0
+    phase     gas;
+}

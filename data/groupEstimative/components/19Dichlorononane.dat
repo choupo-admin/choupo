@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,9-dichlorononane  (C9H18Cl2, CAS 821-99-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        19Dichlorononane;
+formula     C9H18Cl2;
+CAS         821-99-8;
+InChIKey    JMGRNJZUQCEJDB-UHFFFAOYSA-N;
+MW          197.143;      // g/mol [origin=calculated method=formula-sum]
+Tc          656.35;      // K   [origin=predictive method=joback]
+Pc          21.513;      // bar [origin=predictive method=joback]
+omega       0.5659;      // -   [origin=predictive method=lee-kesler]
+Tb          480.38;      // K   [origin=predictive method=joback]
+HvapTb      44398.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.489 0.8724 -0.0005066 1.139e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group CH2Cl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 9; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,9-bis(chloranyl)nonane" "nonane, 1,9-dichloro-" "1,9-dichlornonane" "nonane,9-dichloro-" "1,9-dichlornonan;1,9-dichloro-nonan;nonane, 1,9-dichloro-;nonane,1,9-dichloro-;" );
+gibbsFormation
+{
+    dHf_298   -260570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     573.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1040.0
+    phase     gas;
+}

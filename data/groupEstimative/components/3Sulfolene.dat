@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-sulfolene  (C4H6O2S, CAS 77-79-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C4H6O2S (delta S+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        3Sulfolene;
+formula     C4H6O2S;
+CAS         77-79-2;
+InChIKey    MBDNRNMVTZADMQ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          118.15;      // g/mol [origin=calculated method=formula-sum]
+Tc          443.52;      // K   [origin=predictive method=joback]
+Pc          61.805;      // bar [origin=predictive method=joback]
+omega       0.3564;      // -   [origin=predictive method=lee-kesler]
+Tb          284.96;      // K   [origin=predictive method=joback]
+HvapTb      37002.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-40.63 0.5348 -0.00038488 1.026e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group CH2SuCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group dCH_ring; count 2; } { group dO_oth; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,5-dihydrothiophene 1,1-dioxide" "butadiene sulfone" "thiophene, 2,5-dihydro-, 1,1-dioxide" "beta-sulfolene" "2,5-dihydrothiophene sulfone" "sulfolene" "2,5-dihydrothiophene dioxide" "thiophene, dihydro-, 1,1-dioxide" "2,5-dihydrothiophene-1,1-dioxide" "1-thia-3-cyclopentene 1,1-dioxide" "thiophene,5-dihydro-, 1,1-dioxide" "dihydrothiophene 1,1-dioxide" );
+gibbsFormation
+{
+    dHf_298   -476350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     505.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-432540.0
+    phase     gas;
+}

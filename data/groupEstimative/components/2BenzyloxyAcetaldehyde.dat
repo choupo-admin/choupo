@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(benzyloxy)acetaldehyde  (C9H10O2, CAS 60656-87-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2BenzyloxyAcetaldehyde;
+formula     C9H10O2;
+CAS         60656-87-3;
+InChIKey    NFNOAHXEQXMCGT-UHFFFAOYSA-N;
+MW          150.177;      // g/mol [origin=calculated method=formula-sum]
+Tc          714.09;      // K   [origin=predictive method=joback]
+Pc          34.848;      // bar [origin=predictive method=joback]
+omega       0.5743;      // -   [origin=predictive method=lee-kesler]
+Tb          503.28;      // K   [origin=predictive method=joback]
+HvapTb      47034.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.298 0.6912 -0.000379 6.45e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group ACCH2; count 1; } { group CHO; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenylmethoxyethanal" "benzyloxyacetaldehyde" "(benzyloxy)acetaldehyde" "2-phenylmethoxyacetaldehyde" "2-(phenylmethoxy)ethanal" "(phenylmethoxy)acetaldehyde" "alpha-(2-oxoethoxy)toluene" "2-(benzyl-oxy)acetaldehyde" "acetaldehyde,2-(phenylmethoxy)-" "acetaldehyde,(benzyloxy)- (6ci);acetaldehyde, (phenylmethoxy)- (9ci);(benzyloxy)acetaldehyde;(benzyloxy)ethanal;(phenylmethoxy)acetaldehyde;2-(benzyloxy)acetaldehyde;2-(benzyloxy)ethanal;2-(phenylmethoxy)acetaldehyde;a-(benzyloxy)acetaldehyde;" );
+gibbsFormation
+{
+    dHf_298   -210360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     430.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-67210.0
+    phase     gas;
+}

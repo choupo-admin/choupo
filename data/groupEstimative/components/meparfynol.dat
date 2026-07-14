@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: meparfynol  (C6H10O, CAS 77-75-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        meparfynol;
+formula     C6H10O;
+CAS         77-75-8;
+InChIKey    QXLPXWSKPNOQLE-UHFFFAOYSA-N;
+MW          98.145;      // g/mol [origin=calculated method=formula-sum]
+Tc          599.03;      // K   [origin=predictive method=joback]
+Pc          42.441;      // bar [origin=predictive method=joback]
+omega       0.5767;      // -   [origin=predictive method=lee-kesler]
+Tb          415.95;      // K   [origin=predictive method=joback]
+HvapTb      44191.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.969 0.63974 -0.00050073 1.6029e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group OH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylpent-1-yn-3-ol" "3-methyl-1-pentyn-3-ol" "methylparafynol" "seral" "1-pentyn-3-ol, 3-methyl-" "methylpentynol" "metilparafinolo" "metilpentinolo" "allotropal" "aniphor" "apridol" "atemorin" );
+gibbsFormation
+{
+    dHf_298   -36250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     371.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=88730.0
+    phase     gas;
+}

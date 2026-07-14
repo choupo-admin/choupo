@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: androst-4-ene-3,11,17-trione  (C19H24O3, CAS 382-45-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        androst4Ene31117Trione;
+formula     C19H24O3;
+CAS         382-45-6;
+InChIKey    RZRPTBIGEANTGU-UHFFFAOYSA-N;
+MW          300.398;      // g/mol [origin=calculated method=formula-sum]
+Tc          1161.00;      // K   [origin=predictive method=joback]
+Pc          20.401;      // bar [origin=predictive method=joback]
+omega       0.8390;      // -   [origin=predictive method=lee-kesler]
+Tb          886.04;      // K   [origin=predictive method=joback]
+HvapTb      69484.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-203.63 2.30134 -0.00185664 6.707e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH; count 3; } { group C; count 2; } { group CH=C; count 1; } { group CH2CO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 3; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "10,13-dimethyl-1,2,6,7,8,9,12,14,15,16-decahydrocyclopenta[a]phenanthrene-3,11,17-trione" "agn-pc-00bph0" "(8alpha,9beta,13alpha)-androst-4-ene-3,11,17-trione" "2,15-dimethyltetracyclo[8.7.0.0<2,7>.0<11,15>]heptadec-6-ene-5,14,17-trione" "(8s,9r,10r,13s,14r)-10,13-dimethyl-1,2,6,7,8,9,12,14,15,16-decahydrocyclopenta[a]phenanthrene-3,11,17-trione" "10,13-dimethyl-2,3,6,7,8,9,10,11,12,13,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthrene-3,11,17-trione" );
+gibbsFormation
+{
+    dHf_298   -531740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     451.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-74530.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: allyl acetate  (C5H8O2, CAS 591-87-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        allylAcetate;
+formula     C5H8O2;
+CAS         591-87-7;
+InChIKey    FWZUNOYOVVKUNF-UHFFFAOYSA-N;
+MW          100.117;      // g/mol [origin=calculated method=formula-sum]
+Tc          546.90;      // K   [origin=predictive method=joback]
+Pc          36.686;      // bar [origin=predictive method=joback]
+omega       0.3766;      // -   [origin=predictive method=lee-kesler]
+Tb          368.90;      // K   [origin=predictive method=joback]
+HvapTb      33461.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.761 0.40402 -0.0001765 8.6e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2=CH; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "prop-2-enyl ethanoate" "3-acetoxypropene" "acetic acid, 2-propenyl ester" "2-propenyl acetate" "2-propenyl ethanoate" "2-propenyl methanoate" "3-acetoxy-1-propene" "acetic acid, 2-propen-1-yl ester" "acetic acid prop-2-enyl ester" "alloac" "prop-2-enyl acetate" "acetic acid allyl ester" );
+gibbsFormation
+{
+    dHf_298   -338380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     397.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-231310.0
+    phase     gas;
+}

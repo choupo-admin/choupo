@@ -1,0 +1,51 @@
+/*---------------------------------------------------------------------------*\
+  optim06_integer_stages / system/outerDict
+
+  WHAT THIS CASE IS: the INTEGER variable by declared enumeration
+  (design forum #102.6, approved #103 -- Front 4c).  The course's
+  classic column question -- how many stages? -- is an INTEGER decision
+  no continuous optimizer can honestly answer: `integer;` on nStages
+  makes the driver enumerate EVERY stage count (each one a NEW run: a
+  changed nStages rebuilds the column, never a late mutation on a sized
+  object), solving the inner continuous problem
+
+      minimise V_strip  over R in [1.5, 6]
+      subject to x_D_LK >= 0.98
+
+  at each N.  Fewer stages need more reflux to make the purity spec (V
+  up); more stages relax it (V down, flattening) -- the N-vs-R trade on
+  ONE table, every value shown including any failures, the best marked.
+  No branch-and-bound magic: the pedagogical range is small enough to
+  LOOK AT, and looking is the point.
+\*---------------------------------------------------------------------------*/
+
+type    optimization;
+method  sqp;
+
+variables
+(
+    {
+        path     units[0].operation.nStages;
+        integer  true;
+        min      8;
+        max      14;
+    }
+    {
+        path     units[0].operation.refluxRatio;
+        min      1.5;
+        max      6.0;
+        initial  3.0;
+    }
+);
+
+objective
+{
+    kind     kpi;
+    path     column01.V_strip;
+    sense    minimise;
+}
+
+constraints
+(
+    { kpi column01.x_D_LK;  atLeast 0.98; }
+);

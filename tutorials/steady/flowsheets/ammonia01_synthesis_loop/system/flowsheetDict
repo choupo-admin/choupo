@@ -1,0 +1,101 @@
+/*---------------------------------------------------------------------------*\
+  ammonia01_synthesis_loop -- the classic Haber-Bosch loop, recycle + purge
+  =======================================================================
+        makeup (N2:H2 = 1:3 + trace Ar) ─┐
+                                         ▼
+                                    [mixer] ◄──────── recycle ◄──────┐
+                                         │                            │
+                                         ▼                            │
+                        [converter]  gibbsReactor (SRK)               │
+                        N2 + 3H2 <-> 2NH3, 700 K, 200 bar             │
+                        (fugacity-corrected equilibrium ~30% NH3)     │
+                                         ▼                            │
+                        [separator]  isothermalFlash 250 K, 200 bar   │
+                          │      │   (chill: NH3 condenses out)        │
+                rawLiquid─┘      └── unreactedGas                      │
+                    │                    │                            │
+                    ▼               [purgeSplit] splitter             │
+              [letdown]              │        │                       │
+              flash 20 bar    purge ─┘        └── recycle ────────────┘
+                │       │      (bleeds Ar)     (~95% back to the mixer)
+      productNH3┘       └letdownGas
+      (97.8% NH3)        (H2-rich)
+
+  THE LOOP.  Per-pass conversion is equilibrium-limited (~30% NH3 at the reactor
+  outlet), but the RECYCLE lifts overall N2/H2 utilisation high -- the reason the
+  loop exists.  The reactor equilibrium AND the separator both use SRK FUGACITY
+  (real gas at 200 bar): switch the package to idealGas and the conversion falls.
+  Mass closes to 100% on N, H and Ar.
+
+  THE PURGE.  Ar enters with the makeup and would accumulate without end; the
+  purge bleeds it, holding Ar at steady state (Ar_in_makeup = Ar_out).  Delete
+  the purge and the recycle fills with Ar until the loop chokes -- try it.
+
+  THE LET-DOWN.  At 200 bar the SRK flash leaves a lot of N2/H2 DISSOLVED in the
+  liquid (a real high-pressure effect, over-stated here because there is no
+  N2/H2-NH3 binary interaction parameter -- SRK over-predicts light-gas
+  solubility).  So the raw separator liquid is only ~80% NH3.  A let-down drum
+  (flash to 20 bar) boils the dissolved gas off -> 97.8% NH3 product.
+
+  HONEST SIMPLIFICATIONS.  (1) The loop is isobaric at 200 bar; the makeup
+  compression and the feed/effluent heat integration are folded into the unit
+  duties (reported), not drawn as separate machines.  (2) The let-down gas
+  (letdownGas, H2-rich) is RECOMPRESSED AND RECYCLED in a real plant; here it
+  exits as a secondary stream to keep ONE clean recycle tear -- so the H2 loss
+  reads higher than industrial.  Recovering it (a recompressor + a second tear)
+  is the efficiency refinement.  The topology keeps the loop's ESSENCE: reaction,
+  separation, recycle, purge, product finishing.
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+tearStreams          ( recycle );
+recycleSolver         Newton;
+recycleTol            1e-5;
+recycleMaxIter        200;
+units
+(
+    {
+        name     mixer;
+        type     mixer;
+        inputs   ( makeup  recycle );
+        outputs  ( mixed );
+    }
+    {
+        name     converter;
+        type     gibbsReactor;
+        in       mixed;
+        outputs  ( reacted );
+        operation
+        {
+            T 700.0 K;  P 200.0 bar;
+            elements ( N  H  Ar );
+            species
+            (
+                { name N2;  atoms ( 2 0 0 ); }
+                { name H2;  atoms ( 0 2 0 ); }
+                { name NH3; atoms ( 1 3 0 ); }
+                { name Ar;  atoms ( 0 0 1 ); }
+            );
+        }
+    }
+    {
+        name     separator;
+        type     isothermalFlash;
+        in       reacted;
+        outputs  ( rawLiquid  unreactedGas );
+        operation { T 250.0 K;  P 200.0 bar; }
+    }
+    {
+        name     letdown;
+        type     isothermalFlash;
+        in       rawLiquid;
+        outputs  ( productNH3  letdownGas );
+        operation { T 250.0 K;  P 20.0 bar; }   // let-down drum: flash off the dissolved N2/H2
+    }
+    {
+        name     purgeSplit;
+        type     splitter;
+        in       unreactedGas;
+        outputs  ( purge  recycle );
+        operation { fractions ( 0.05  0.95 ); }
+    }
+);

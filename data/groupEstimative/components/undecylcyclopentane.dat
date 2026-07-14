@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: undecylcyclopentane  (C16H32, CAS 6785-23-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        undecylcyclopentane;
+formula     C16H32;
+CAS         6785-23-5;
+InChIKey    FIWKORYTHDYMGF-UHFFFAOYSA-N;
+MW          224.432;      // g/mol [origin=calculated method=formula-sum]
+Tc          759.24;      // K   [origin=predictive method=joback]
+Pc          15.093;      // bar [origin=predictive method=joback]
+omega       0.6680;      // -   [origin=predictive method=lee-kesler]
+Tb          580.96;      // K   [origin=predictive method=joback]
+HvapTb      51467.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-72.14 1.65552 -0.000974 2.187e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 14; } { group CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 10; } { group CH2_ring; count 4; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclopentane, undecyl-" "undecane, 1-cyclopentyl-" "n-undecylcyclopentane" );
+gibbsFormation
+{
+    dHf_298   -313090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     728.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=120390.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,5-dihydrothiophene  (C4H6S, CAS 1708-32-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        25Dihydrothiophene;
+formula     C4H6S;
+CAS         1708-32-3;
+InChIKey    WURYWHAKEJHAOV-UHFFFAOYSA-N;
+MW          86.152;      // g/mol [origin=calculated method=formula-sum]
+Tc          577.99;      // K   [origin=predictive method=joback]
+Pc          54.145;      // bar [origin=predictive method=joback]
+omega       0.1922;      // -   [origin=predictive method=lee-kesler]
+Tb          358.06;      // K   [origin=predictive method=joback]
+HvapTb      31168.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.57 0.50041 -0.00038258 1.171e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH=CH; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group dCH_ring; count 2; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "thiophene, 2,5-dihydro-" );
+gibbsFormation
+{
+    dHf_298   57970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     316.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=96880.0
+    phase     gas;
+}

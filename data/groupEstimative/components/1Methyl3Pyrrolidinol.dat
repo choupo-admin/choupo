@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-methyl-3-pyrrolidinol  (C5H11NO, CAS 13220-33-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Methyl3Pyrrolidinol;
+formula     C5H11NO;
+CAS         13220-33-2;
+InChIKey    FLVFPAIGVBQGET-UHFFFAOYSA-N;
+MW          101.149;      // g/mol [origin=calculated method=formula-sum]
+Tc          609.88;      // K   [origin=predictive method=joback]
+Pc          47.366;      // bar [origin=predictive method=joback]
+omega       0.7083;      // -   [origin=predictive method=lee-kesler]
+Tb          429.63;      // K   [origin=predictive method=joback]
+HvapTb      45531.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-62.42 0.77802 -0.000565 1.649e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group OH; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methylpyrrolidin-3-ol" "n-methyl-3-pyrrolidinol" "3-hydroxy-1-methylpyrrolidine" "3-hydroxy-n-methylpyrrolidine" "3-pyrrolidinol, 1-methyl-" "3-hydroxy-n-methyl pyrrolidine" "n-methyl-3-hydroxy pyrrolidine" "n-methyl-3-hydroxypyrrolidine" "1-methyl-3-hydroxypyrrolidine" );
+gibbsFormation
+{
+    dHf_298   -164590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     347.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13830.0
+    phase     gas;
+}

@@ -1,8 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { proposedCataloguePlugin } from "./scripts/proposedCataloguePlugin.js";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [proposedCataloguePlugin(), react()],
   server: {
     port: 5173,
     // strictPort: a stale vite left on 5173 used to make the new one drift to
@@ -25,7 +26,11 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
-    sourcemap: true,
+    // Production embeds the complete offline tutorial corpus.  Emitting a
+    // source map for that generated 35+ MB string table more than doubles the
+    // artefact and drives Rollup beyond Node's 4 GB heap.  Vite development
+    // retains normal source mapping; the static release does not ship it.
+    sourcemap: false,
     target: "es2022",
   },
 });

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,5-dibromopyridine  (C5H3Br2N, CAS 624-28-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        25Dibromopyridine;
+formula     C5H3Br2N;
+CAS         624-28-2;
+InChIKey    ZHXUWDPHUQHFOV-UHFFFAOYSA-N;
+MW          236.894;      // g/mol [origin=calculated method=formula-sum]
+Tc          803.86;      // K   [origin=predictive method=joback]
+Pc          64.723;      // bar [origin=predictive method=joback]
+omega       0.4941;      // -   [origin=predictive method=lee-kesler]
+Tb          531.68;      // K   [origin=predictive method=joback]
+HvapTb      48742.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.18 0.45056 -0.00036442 1.189e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C5H3N; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Br; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,5-bis(bromanyl)pyridine" "2,5-dibromo pyridine" "2,5-dibrompyridin" "2,5,-dibromopyridine" "pyridine, 2,5-dibromo-" "pyridine,5-dibromo-" "2,5-dibromo-pyridine" "2,5-dibromopyridin" "agn-pc-00jg9l" "3,6-dibromopyridine" "tpc-py043" "pyridine, 2,5-dibromo-;2,5-dibromo pyridine;" );
+gibbsFormation
+{
+    dHf_298   163980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     352.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=199690.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-ethoxy-1,1'-biphenyl  (C14H14O, CAS 54852-73-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Ethoxy11Biphenyl;
+formula     C14H14O;
+CAS         54852-73-2;
+InChIKey    WCZZIGCDPVIDGI-UHFFFAOYSA-N;
+MW          198.265;      // g/mol [origin=calculated method=formula-sum]
+Tc          837.83;      // K   [origin=predictive method=joback]
+Pc          26.791;      // bar [origin=predictive method=joback]
+omega       0.5512;      // -   [origin=predictive method=lee-kesler]
+Tb          600.68;      // K   [origin=predictive method=joback]
+HvapTb      54382.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.849 1.05332 -0.00062216 1.267e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 9; } { group AC; count 3; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethoxy-3-phenyl-benzene" "1-ethoxy-3-phenylbenzene" "1,1'-biphenyl, 3-ethoxy-" );
+gibbsFormation
+{
+    dHf_298   -2920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     493.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=177190.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: allyl 2,4-dichlorophenyl ether  (C9H8Cl2O, CAS 5441-16-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        allyl24DichlorophenylEther;
+formula     C9H8Cl2O;
+CAS         5441-16-7;
+InChIKey    PGFLETJYXQVZSD-UHFFFAOYSA-N;
+MW          203.062;      // g/mol [origin=calculated method=formula-sum]
+Tc          760.26;      // K   [origin=predictive method=joback]
+Pc          29.861;      // bar [origin=predictive method=joback]
+omega       0.5084;      // -   [origin=predictive method=lee-kesler]
+Tb          536.12;      // K   [origin=predictive method=joback]
+HvapTb      49738.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (37.691 0.5913 -0.00031562 5.22e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group ACH; count 3; } { group AC; count 1; } { group CH2O; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4-bis(chloranyl)-1-prop-2-enoxy-benzene" "2,4-dichloro-1-prop-2-enoxybenzene" "allyl (2,4-dichlorophenyl) ether" "1-(allyloxy)-2,4-dichlorobenzene" "1-allyl-oxy-2,4-dichloro-benzene" "ether, allyl, 2,4-dichlorophenyl," "(2,4-dichlorophenyl) (2-propenyl) ether" "benzene, 2,4-dichloro-1-(2-propenyloxy)-" );
+gibbsFormation
+{
+    dHf_298   -53770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     461.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77030.0
+    phase     gas;
+}

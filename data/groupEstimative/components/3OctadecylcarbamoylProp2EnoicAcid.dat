@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(octadecylcarbamoyl)prop-2-enoic acid  (C22H41NO3, CAS 3077-27-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3OctadecylcarbamoylProp2EnoicAcid;
+formula     C22H41NO3;
+CAS         3077-27-8;
+InChIKey    NWODYZCQADERLP-UHFFFAOYSA-N;
+MW          367.574;      // g/mol [origin=calculated method=formula-sum]
+Tc          1172.15;      // K   [origin=predictive method=joback]
+Pc          10.319;      // bar [origin=predictive method=joback]
+omega       0.9877;      // -   [origin=predictive method=lee-kesler]
+Tb          956.67;      // K   [origin=predictive method=joback]
+HvapTb      94870.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.543 2.21282 -0.0013593 3.2746e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 16; } { group CH=CH; count 1; } { group COOH; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 17; } { group dCH; count 2; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(octadecylamino)-4-oxidanylidene-but-2-enoic acid" "4-(octadecylamino)-4-oxoisocrotonic acid" "2-butenoic acid, 4-(octadecylamino)-4-oxo-, (2z)-" "agn-pc-00nko3" "4-(octadecylamino)-4-oxobut-2-enoic acid" );
+gibbsFormation
+{
+    dHf_298   -789570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1126.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-168860.0
+    phase     gas;
+}

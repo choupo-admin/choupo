@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: riddelliine  (C18H23NO6, CAS 23246-96-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        riddelliine;
+formula     C18H23NO6;
+CAS         23246-96-0;
+InChIKey    SVCNNZDUGWLODJ-RAYFHMIRSA-N;
+MW          349.383;      // g/mol [origin=calculated method=formula-sum]
+Tc          1186.68;      // K   [origin=predictive method=joback]
+Pc          21.139;      // bar [origin=predictive method=joback]
+omega       1.6273;      // -   [origin=predictive method=lee-kesler]
+Tb          967.89;      // K   [origin=predictive method=joback]
+HvapTb      106881.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-123.379 2.20142 -0.00178994 6.031e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 2; } { group C; count 1; } { group CH2=C; count 1; } { group CH=C; count 2; } { group OH; count 2; } { group CH2N; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 3; } { group OH; count 2; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "riddelline" "riddeliine" "riddeliin" "riddeline" "13,19-didehydro-12,18-dihydroxysenecionan-11,16-dione" "(15z)-12,18-dihydroxy-13,19-didehydrosenecionan-11,16-dione" "riddelliin" "18-hydroxyseneciphylline" "senecionan-11,16-dione, 13,19-didehydro-12,18-dihydroxy-" "trans-15-ethylidene-12beta-hydroxy-12alpha-hydroxymethyl-13-methylenesenec-1-enine" "stereoisomer of 3-ethylidene-3,4,5,6,9,11,13,14,14alpha,14beta-decahydro-6-hydroxy-6-(hydroxymethyl)-5-methylene(1,6)dioxacyclododecino[2,3,4-gh] -pyrrolizidine-2,7-dione" "stereoisomer of 3-ethylidene-3,4,5,6,9,11,13,14,14alpha,14beta-decahydro-6-hydroxy-6-(hydroxymethyl)-5-methylene(1,6)dioxacyclododecino[2,3,4-gh]-pyrrolizidine-2,7-dione" );
+gibbsFormation
+{
+    dHf_298   -864600.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     838.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-423590.0
+    phase     gas;
+}

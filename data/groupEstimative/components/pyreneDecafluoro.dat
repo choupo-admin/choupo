@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pyrene, decafluoro-  (C16F10, CAS 1493-68-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pyreneDecafluoro;
+formula     C16F10;
+CAS         1493-68-1;
+InChIKey    ZRQXDCFMDRAOSA-UHFFFAOYSA-N;
+MW          382.156;      // g/mol [origin=calculated method=formula-sum]
+Tc          871.45;      // K   [origin=predictive method=joback]
+Pc          17.303;      // bar [origin=predictive method=joback]
+omega       1.1413;      // -   [origin=predictive method=lee-kesler]
+Tb          694.06;      // K   [origin=predictive method=joback]
+HvapTb      57544.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (95.07 0.913 -0.000753 2.608e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 6; } { group ACF; count 10; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 16; } { group F; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5,6,7,8,9,10-decakis(fluoranyl)pyrene" "decafluoropyrene" "1,2,3,4,5,6,7,8,9,10-decafluoropyrene" );
+gibbsFormation
+{
+    dHf_298   -1708030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     586.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1553220.0
+    phase     gas;
+}

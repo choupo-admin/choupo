@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): octadecanoic acid- 2-[(2-aminoethyl)amino]ethanol(1:1)  (C22H48N2O3, CAS 68815-50-9)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           octadecanoicAcid22AminoethylAminoEthanol11;
+formula        C22H48N2O3;
+CAS            68815-50-9;
+InChIKey       HGTATKUEMJEGAV-UHFFFAOYSA-N;
+MW             388.637;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: octadecanoic acid- 2-[(2-aminoethyl)amino]ethanol(1:1)

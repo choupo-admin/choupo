@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-bis(heptafluoroisopropyl)benzene  (C12H4F14, CAS 51114-12-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14BisHeptafluoroisopropylBenzene;
+formula     C12H4F14;
+CAS         51114-12-6;
+InChIKey    BPGZBMINTWQDOH-UHFFFAOYSA-N;
+MW          414.136;      // g/mol [origin=calculated method=formula-sum]
+Tc          621.73;      // K   [origin=predictive method=joback]
+Pc          15.140;      // bar [origin=predictive method=joback]
+omega       0.6777;      // -   [origin=predictive method=lee-kesler]
+Tb          476.22;      // K   [origin=predictive method=joback]
+HvapTb      26030.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-89.19 1.9254 -0.00185356 6.42e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group CF3; count 4; } { group CF; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 6; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 14; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-bis[1,1,1,2,3,3,3-heptakis(fluoranyl)propan-2-yl]benzene" "1,4-bis(1,1,1,2,3,3,3-heptafluoropropan-2-yl)benzene" "1,4-bis(heptafluoropropan-2-yl)benzene" "benzene,1,4-bis[1,2,2,2-tetrafluoro-1-(trifluoromethyl)ethyl]-" "1,4-bis(heptafluoroisopropyl)benzene;1,4-bis(1,1,1,2,3,3,3-heptafluoropropan-2-yl)benzene;" );
+gibbsFormation
+{
+    dHf_298   -2863990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     721.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2557360.0
+    phase     gas;
+}

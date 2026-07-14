@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(2-thienyl)butyric acid  (C8H10O2S, CAS 4653-11-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        42ThienylButyricAcid;
+formula     C8H10O2S;
+CAS         4653-11-6;
+InChIKey    VYTXLSQVYGNWLV-UHFFFAOYSA-N;
+MW          170.226;      // g/mol [origin=calculated method=formula-sum]
+Tc          828.55;      // K   [origin=predictive method=joback]
+Pc          37.500;      // bar [origin=predictive method=joback]
+omega       0.7709;      // -   [origin=predictive method=lee-kesler]
+Tb          599.23;      // K   [origin=predictive method=joback]
+HvapTb      58190.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.527 0.81571 -0.00059302 1.72e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group COOH; count 1; } { group C4H3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COOH; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-thiophen-2-ylbutanoic acid" "2-thiophenebutyric acid" "2-thiophenebutanoic acid" "4-(thiophen-2-yl)butanoic acid" "4-(2-thienyl)butanoic acid" "4-thiophen-2-yl-butyricacid" "gamma-(alpha-thienyl)butyricacid" ".gamma.-(.alpha.-thienyl)butyric acid" "4tb" "2-thiophenebutanoicacid" "4-(2-thienyl)butyric" "4-thiophen-2-yl-butyric acid" );
+gibbsFormation
+{
+    dHf_298   -328550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     481.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-193020.0
+    phase     gas;
+}

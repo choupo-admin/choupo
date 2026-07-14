@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethyl perfluoroadipate  (C10H10F8O4, CAS 376-50-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diethylPerfluoroadipate;
+formula     C10H10F8O4;
+CAS         376-50-1;
+InChIKey    UBMQHNSEGKYMTP-UHFFFAOYSA-N;
+MW          346.17;      // g/mol [origin=calculated method=formula-sum]
+Tc          678.90;      // K   [origin=predictive method=joback]
+Pc          16.633;      // bar [origin=predictive method=joback]
+omega       0.8363;      // -   [origin=predictive method=lee-kesler]
+Tb          526.08;      // K   [origin=predictive method=joback]
+HvapTb      40948.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.548 1.44184 -0.0011494 3.26e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CF2; count 4; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 4; } { group F; count 8; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "diethyl 2,2,3,3,4,4,5,5-octakis(fluoranyl)hexanedioate" "diethyl octafluoroadipate" "diethyl octafluorohexanedioate" "hexanedioic acid, octafluoro-, diethyl ester" "hexanedioic acid, 2,2,3,3,4,4,5,5-octafluoro-, 1,6-diethyl ester" "diethyl 2,2,3,3,4,4,5,5-octafluorohexanedioate" "hexanedioic acid,2,2,3,3,4,4,5,5-octafluoro-, 1,6-diethyl ester" "hexanedioic acid,octafluoro-, diethyl ester (6ci,7ci,8ci,9ci); diethyl octafluoroadipate; diethylperfluoroadipate" );
+gibbsFormation
+{
+    dHf_298   -2488170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     746.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2134540.0
+    phase     gas;
+}

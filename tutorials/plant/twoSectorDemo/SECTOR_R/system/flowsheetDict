@@ -1,11 +1,7 @@
 /*--- SECTOR_R: one custom reactor (compiled from code/). Build + run with:
         bin/buildCode tutorials/plant/twoSectorDemo/SECTOR_R
         runCase       tutorials/plant/twoSectorDemo/SECTOR_R                       ---*/
-streams
-{
-    feed { F 100 kmol/h;  T 360 K;  P 1.01325 bar;
-           molarComposition { compA 0.5;  compB 0.5; } }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 units
 (
     { name R1;  type stoichReactor;  in feed;  outputs ( rOut );

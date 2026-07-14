@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: l-levallorphan tartrate  (C23H31NO7, CAS 71-82-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lLevallorphanTartrate;
+formula     C23H31NO7;
+CAS         71-82-9;
+InChIKey    FWMLYVACGDQRFU-ZTMWJVNESA-N;
+MW          433.501;      // g/mol [origin=calculated method=formula-sum]
+Tc          1673.54;      // K   [origin=predictive method=joback]
+Pc          21.217;      // bar [origin=predictive method=joback]
+omega       1.4471;      // -   [origin=predictive method=lee-kesler]
+Tb          1347.87;      // K   [origin=predictive method=joback]
+HvapTb      150081.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-208.829 3.0191 -0.00252782 8.744e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 4; } { group C; count 1; } { group CH2=CH; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group OH; count 2; } { group ACOH; count 1; } { group CH2N; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 2; } { group OH_phenol; count 1; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "levallorphan hydrogen tartrate" "levallorphan (+)-tartrate salt" "tartrate de levallorphane [french]" "levallorphan tartrate" "17-(2-propenyl)morphinan-3-ol tartrate" "morphinan-3-ol, 17-allyl-, tartrate (1:1) (salt)" "2h-10,4a-iminoethanophenanthren-6-ol, 11-allyl-1,3,4,9,10,10a-hexahydro-, tartrate" "morphinan-3-ol, 17-(2-propenyl)-, (r-(r*,r*))-2,3-dihydroxybutanedioate (1:1) (salt)" "lorfan (tn)" "tartrate de levallorphane" "levallorphan tartrate salt" "levallorphan tartrate [jan]" );
+gibbsFormation
+{
+    dHf_298   -1177040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1092.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-616880.0
+    phase     gas;
+}

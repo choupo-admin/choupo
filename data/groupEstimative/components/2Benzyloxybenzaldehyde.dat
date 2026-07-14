@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-benzyloxybenzaldehyde  (C14H12O2, CAS 5896-17-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C14H12O2 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2Benzyloxybenzaldehyde;
+formula     C14H12O2;
+CAS         5896-17-3;
+InChIKey    PBEJTRAJWCNHRS-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          212.248;      // g/mol [origin=calculated method=formula-sum]
+Tc          815.30;      // K   [origin=predictive method=joback]
+Pc          28.054;      // bar [origin=predictive method=joback]
+omega       0.5007;      // -   [origin=predictive method=lee-kesler]
+Tb          577.10;      // K   [origin=predictive method=joback]
+HvapTb      52009.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-57.349 1.0614 -0.00077516 2.234e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 3; } { group CHO; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenylmethoxybenzaldehyde" "2-(benzyloxy)benzaldehyde" "benzaldehyde, o-(benzyloxy)-" "benzaldehyde, 2-(phenylmethoxy)-" "2-(phenylmethoxy)benzaldehyde" "o-benzylsalicylaldehyde" "2-benzyloxy-benzaldehyde" "o-(benzyloxy)benzaldehyde" "2-(benzyl-oxy)benzaldehyde" "2-formyl-alpha-phenylanisole" "integrase inhibitor, r2{4}" );
+gibbsFormation
+{
+    dHf_298   73530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     574.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=221150.0
+    phase     gas;
+}

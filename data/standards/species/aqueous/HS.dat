@@ -1,0 +1,16 @@
+recordType modelSpecies;   // model species — summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+
+name    HS;
+ion     "HS-";
+charge  -1;
+
+MW { value 33.068; unit g/mol;}
+
+aqueousThermo
+{
+    hfAq { value -17600; unit J/mol;}
+    sAq  { value 62.8;  unit J/mol/K;}
+}
+
+source "+formation: hfAq+sAq Wagman 1982 (cpAq pending; NBS-derived, weak independence)";

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3,5-undecatriene  (C11H18, CAS 16356-11-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        135Undecatriene;
+formula     C11H18;
+CAS         16356-11-9;
+InChIKey    JQQDKNVOSLONRS-UHFFFAOYSA-N;
+MW          150.265;      // g/mol [origin=calculated method=formula-sum]
+Tc          636.98;      // K   [origin=predictive method=joback]
+Pc          22.083;      // bar [origin=predictive method=joback]
+omega       0.4538;      // -   [origin=predictive method=lee-kesler]
+Tb          456.28;      // K   [origin=predictive method=joback]
+HvapTb      39326.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.466 1.06882 -0.0007651 2.319e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH2=CH; count 1; } { group CH=CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH2; count 1; } { group dCH; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "undeca-1,3,5-triene" "(e,e)-undeca-1,3,5-triene" "(e,z)-undeca-1,3,5-triene" "(z,e)-undeca-1,3,5-triene" "(z,z)-undeca-1,3,5-triene" "1,3,5-undecatriene,(3e,5e)-" "1,3,5-undecatriene,(3e,5z)-" "1,3,5-undecatriene,(3z,5e)-" "1,3,5-undecatriene,(z,z)- (8ci,9ci)" "(z,z)-1,3,5-undecatriene;cis,cis-undeca-1,3,5-triene" "1,3,5-undecatriene,(e,z)-; cis,trans-1,3,5-undecatriene" "1,3,5-undecatriene,(e,e)- (8ci); (3e,5e)-1,3,5-undecatriene; (3e,5e)-1,3,5-undecatriene;(e,e)-1,3,5-undecatriene; trans,trans-1,3,5-undecatriene; trans-galbanolene" );
+gibbsFormation
+{
+    dHf_298   89500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     566.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=290020.0
+    phase     gas;
+}

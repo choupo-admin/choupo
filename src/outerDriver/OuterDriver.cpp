@@ -28,9 +28,9 @@ License
 
 #include "OuterDriver.H"
 #include "DesignSpec.H"
-#include "FitBinaryPair.H"
 #include "GridSweepDriver.H"
 #include "OptimizationDriver.H"
+#include "ParetoSweepDriver.H"
 #include "SweepDriver.H"
 
 #include <stdexcept>
@@ -80,9 +80,24 @@ void OuterDriver::registerBuiltins()
         [](const DictPtr& d) -> std::unique_ptr<OuterDriver>
         { return std::make_unique<GridSweepDriver>(d); });
 
+    // `fitBinaryPair` was RETIRED (forum #53/#55): its one case migrated to
+    // choupoProps/fitParameters -- the canonical fit engine -- WITH a golden.
+    // A request for it gets the pointer, not a silent unknown-type error.
     registerType("fitBinaryPair",
+        [](const DictPtr&) -> std::unique_ptr<OuterDriver>
+        { throw std::runtime_error("outerDict `type fitBinaryPair;` was RETIRED: "
+            "pair regression lives in choupoProps as the `fitParameters` "
+            "operation (see docs/ai/outer-drivers.md and "
+            "tutorials/steady/optimisation/fitNRTL01_ethanol_water).  It fits "
+            "the same NRTL/Wilson pairs with honest identifiability "
+            "diagnostics and a golden."); });
+
+    // Pareto front by epsilon-constraint over the SQP (forum #102.6/#103):
+    // multi-objective as a swept constraint bound, one auditable
+    // constrained optimisation per point -- never a new solver.
+    registerType("paretoSweep",
         [](const DictPtr& d) -> std::unique_ptr<OuterDriver>
-        { return std::make_unique<FitBinaryPair>(d); });
+        { return std::make_unique<ParetoSweepDriver>(d); });
 
     registerType("optimization",
         [](const DictPtr& d) -> std::unique_ptr<OuterDriver>

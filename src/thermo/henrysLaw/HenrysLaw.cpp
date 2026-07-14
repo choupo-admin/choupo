@@ -27,6 +27,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "HenrysLaw.H"
+#include "thermo/ThermoAnnounce.H"
+#include <iostream>
 #include "core/Constants.H"
 
 #include <cmath>
@@ -47,15 +49,31 @@ void HenrysLaw::readFromDict(const DictPtr& d)
     T_ref_   = d->lookupScalar("T_ref",   Dims::temperature);
     dHdiss_  = d->lookupScalar("enthalpy", Dims::molarEnergy);
 
+    // Optional Krichevsky-Kasarnovsky / Krichevsky-Ilinskaya constants.
+    v_inf_     = d->lookupScalarOrDefault("v_inf",     0.0);   // m^3/mol (raw SI)
+    margulesA_ = d->lookupScalarOrDefault("margulesA", 0.0);   // J/mol   (raw SI)
+
     if (d->found("Trange"))
     {
         auto r = d->lookupList("Trange");
-        if (r.size() == 2) { T_min_ = r[0]; T_max_ = r[1]; }
+        if (r.size() == 2) { T_min_ = r[0]; T_max_ = r[1]; hasTrange_ = true; }
     }
 }
 
 scalar HenrysLaw::H(scalar T) const
 {
+    // Round-4 (professor): Trange was stored but never consumed -- silent
+    // extrapolation.  Announce it once per pair per run; never refuse (the
+    // van't Hoff form extrapolates smoothly and refusing would break sweeps),
+    // but the student SEES the model leave its data.
+    if (T < T_min_ || T > T_max_)
+        if (announceOnce("henryTrange:" + solute_ + "-" + solvent_))
+            std::cerr << "[henry] " << solute_ << "-" << solvent_
+                      << ": T = " << T << " K is outside "
+                      << (hasTrange_ ? "the fitted Trange [" : "the DEFAULT window [")
+                      << T_min_ << ", " << T_max_ << "]"
+                      << (hasTrange_ ? "" : " (no Trange declared in the pair file)")
+                      << " -- van't Hoff EXTRAPOLATION, treat with caution.\n";
     // van't Hoff:  H(T) = H_ref * exp[ +dHdiss/R * (1/T - 1/T_ref) ]
     //
     // Sign: from d(ln K_sol)/dT = dHdiss/(R T^2) with K_sol = 1/H, so

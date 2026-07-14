@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopentylacetylene  (C7H10, CAS 930-51-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopentylacetylene;
+formula     C7H10;
+CAS         930-51-8;
+InChIKey    TXVJSWLZYQMWPC-UHFFFAOYSA-N;
+MW          94.157;      // g/mol [origin=calculated method=formula-sum]
+Tc          574.45;      // K   [origin=predictive method=joback]
+Pc          40.986;      // bar [origin=predictive method=joback]
+omega       0.1917;      // -   [origin=predictive method=lee-kesler]
+Tb          365.16;      // K   [origin=predictive method=joback]
+HvapTb      31291.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-50.18 0.7066 -0.00048033 1.2999e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethynylcyclopentane" "cyclopentyl acetylene" "cyclopentylethyne" );
+gibbsFormation
+{
+    dHf_298   164570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     347.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=267680.0
+    phase     gas;
+}

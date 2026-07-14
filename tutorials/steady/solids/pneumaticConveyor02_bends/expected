@@ -1,0 +1,26 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  Feed                   F                0.0138888888889    1e-4
+stream  conveyed               F                0.0138888888889    1e-4
+kpi     node                   P_out            279210.165228      1e-4
+kpi     node                   accelerationLength 15.5453372639      1e-4
+kpi     node                   deltaP           20789.8347721      1e-4
+kpi     node                   deltaP_bends     2070.63576081      1e-4
+kpi     node                   deltaP_gasAccel  361.754574941      1e-4
+kpi     node                   deltaP_gasFriction 397.89529681       1e-4
+kpi     node                   deltaP_solidsAccel 1380.42384054      1e-4
+kpi     node                   deltaP_solidsFriction 16373.2628912      1e-4
+kpi     node                   deltaP_static    205.862407804      1e-4
+kpi     node                   nBends           6                  1e-4
+kpi     node                   particleWallFriction 0.4                1e-4
+kpi     node                   rho_gas          3.39180174393      1e-4
+kpi     node                   rho_particle     2650               1e-4
+kpi     node                   saltationMargin  1.72315568159      1e-4
+kpi     node                   sauterDiameter   0.000169491525424  1e-4
+kpi     node                   solidsLoading    1.99907185949      1e-4
+kpi     node                   solidsMassFlow   0.777777777778     1e-4
+kpi     node                   suspensionDensity 7.10426000009      1e-4
+kpi     node                   u_gas            14.6051756475      1e-4
+kpi     node                   u_particle       13.9394873452      1e-4
+kpi     node                   u_saltation      8.47583059586      1e-4
+kpi     node                   u_terminal       0.917882330342     1e-4

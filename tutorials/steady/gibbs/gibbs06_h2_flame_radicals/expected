@@ -1,0 +1,25 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  burnt                  F                0.000808562123724  1e-4
+stream  feed                   F                0.000938888888889  1e-4
+kpi     flame                  F_in_kmol_h      3.38               1e-4
+kpi     flame                  F_out_kmol_h     2.91082364541      1e-4
+kpi     flame                  N_in_mol_s       0.938888888889     1e-4
+kpi     flame                  N_out_mol_s      0.808562123724     1e-4
+kpi     flame                  P                101325             1e-4
+kpi     flame                  T                2385.83679448      1e-4
+kpi     flame                  converged        1                  1e-4
+kpi     flame                  lambda_H         -240335.177161     1e-4
+kpi     flame                  lambda_N         -277509.500244     1e-4
+kpi     flame                  lambda_O         -344071.838893     1e-4
+kpi     flame                  outerIterations  3                  1e-4
+kpi     flame                  y_H              0.00181958387904   1e-4
+kpi     flame                  y_H2             0.0151592579612    1e-4
+kpi     flame                  y_H2O2           1.30380870623e-07  1e-4
+kpi     flame                  y_HO2            1.18349277565e-06  1e-4
+kpi     flame                  y_N2             0.644493021288     1e-4
+kpi     flame                  y_NO             0.00273756318664   1e-4
+kpi     flame                  y_O              0.000561708028523  1e-4
+kpi     flame                  y_O2             0.00501826082784   1e-4
+kpi     flame                  y_OH             0.00546270287719   1e-4
+kpi     flame                  y_water          0.324746588078     1e-4

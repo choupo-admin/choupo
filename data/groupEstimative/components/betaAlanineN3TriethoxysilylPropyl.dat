@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: beta-alanine, n-(3-(triethoxysilyl)propyl)-  (C12H27NO5Si, CAS 67674-57-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C12H27NO5Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        betaAlanineN3TriethoxysilylPropyl;
+formula     C12H27NO5Si;
+CAS         67674-57-1;
+InChIKey    YJYSBEOJEPNLSQ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          293.435;      // g/mol [origin=calculated method=formula-sum]
+Tc          924.94;      // K   [origin=predictive method=joback]
+Pc          16.921;      // bar [origin=predictive method=joback]
+omega       1.1453;      // -   [origin=predictive method=lee-kesler]
+Tb          738.06;      // K   [origin=predictive method=joback]
+HvapTb      73042.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (111.006 0.88098 -5.6e-06 -2.12e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 1; } { group CH2O; count 3; } { group CH2NH; count 1; } { group COOH; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 6; } { group CH; count 1; } { group O; count 3; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(3-triethoxysilylpropylamino)propanoic acid" ".beta.-alanine, n-[3-(triethoxysilyl)propyl]-" );
+gibbsFormation
+{
+    dHf_298   -1101370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     868.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-626560.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (5-fluoro-12-methylbenzo[a]anthracen-7-yl)methyl acetate  (C22H17FO2, CAS 68310-88-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Fluoro12MethylbenzoAAnthracen7YlMethylAcetate;
+formula     C22H17FO2;
+CAS         68310-88-3;
+InChIKey    BWBNQGMPRXNAEL-UHFFFAOYSA-N;
+MW          332.374;      // g/mol [origin=calculated method=formula-sum]
+Tc          1104.67;      // K   [origin=predictive method=joback]
+Pc          17.669;      // bar [origin=predictive method=joback]
+omega       1.0227;      // -   [origin=predictive method=lee-kesler]
+Tb          868.97;      // K   [origin=predictive method=joback]
+HvapTb      81662.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-42.349 1.66334 -0.00120096 3.434e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 6; } { group ACCH3; count 1; } { group ACCH2; count 1; } { group CH3COO; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 9; } { group F; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5-fluoranyl-12-methyl-benzo[a]anthracen-7-yl)methyl ethanoate" "(5-fluoro-12-methyltetraphen-7-yl)methyl acetate" "5-fluoro-7-hydroxymethyl-12-methylbenz(a)anthracene acetate" "benz(a)anthracene-7-methanol, 5-fluoro-12-methyl-, acetate" );
+gibbsFormation
+{
+    dHf_298   -258410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     631.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13390.0
+    phase     gas;
+}

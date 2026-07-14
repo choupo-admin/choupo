@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propyne  (C3H4, CAS 74-99-7)
+  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
+  pure-fluid properties from the published reference EOS below.
+  Reference EOS: Polt-CT-1992
+  NOTE: formation properties (dHf, s_298) and group decompositions
+  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+\*---------------------------------------------------------------------------*/
+
+name        propyne;
+formula     C3H4;
+CAS         74-99-7;
+
+MW          40.0600;        // kg/kmol  [CoolProp]
+Tc          402.7011;        // K        [CoolProp EOS]
+Pc          56.57503;        // bar      [CoolProp EOS]
+omega       0.20400;        // [-]      [CoolProp EOS]
+Vliq        6.5524e-05;        // m3/mol @298K     [CoolProp]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (4.72629   1252.52   18.009);
+    Trange        (273.50  394.65);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (15.0303  0.184343  -0.00011393  3.04827e-08);
+    Trange        (283  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (830.523  -6.5142  0.0175188  -1.33227e-05);
+    Trange        (278  342);
+}
+
+sublimation
+{
+    tripleT   273.0000;        // K   [CoolProp]
+    tripleP   263566.9060;        // Pa  [CoolProp]
+    // Hfus / Hsub absent: CoolProp models no solid phase.  The
+    // sublimation curve stays undrawn until measured Hsub lands.
+}
+
+gibbsFormation
+{
+    dHf_298   186650;      // J/mol ideal-gas -- provenance: see the structured dHf_298 block below
+    dGf_298   197450;      // J/mol  ideal-gas [Joback]
+    s_298     242.357;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S; ~25 J/mol/K; biased ~R*ln(sigma) for symmetric species]
+    phase     gas;
+}
+
+groups { joback ( { group CH3; count 1; } { group yneCH; count 1; } { group yneC; count 1; } ); }
+
+provenance
+{
+    dHf_298
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH3:1,yneC:1,yneCH:1";
+        uncertainty      { status unquantified; reason "bulk-import band ~9 kJ/mol, primary basis not verified"; }
+    }
+
+    constants      "CoolProp 7.2.0 -- Polt-CT-1992";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.11%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 0.05%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.14%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+    preserved      "from prior proposal (NOT CoolProp): gibbsFormation, groups";
+}

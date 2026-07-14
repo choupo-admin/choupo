@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propenoic acid, 2-methyl-, telomer with 1-dodecanethiol and methyl 2-methyl-2-propenoate  (C21H40O4S, CAS 113976-92-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropenoicAcid2MethylTelomerWith1DodecanethiolAndMethyl2Meth;
+formula     C21H40O4S;
+CAS         113976-92-4;
+InChIKey    PGIPUSBXTHTINV-UHFFFAOYSA-N;
+MW          388.607;      // g/mol [origin=calculated method=formula-sum]
+Tc          1156.48;      // K   [origin=predictive method=joback]
+Pc          10.027;      // bar [origin=predictive method=joback]
+omega       0.9460;      // -   [origin=predictive method=lee-kesler]
+Tb          942.59;      // K   [origin=predictive method=joback]
+HvapTb      93056.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (104.971 1.56958 -0.0003398 -1.808e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 10; } { group CH2=C; count 2; } { group COOH; count 1; } { group CH2SH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 11; } { group dCH2; count 2; } { group dC; count 2; } { group COOH; count 1; } { group COO; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodecane-1-thiol;methyl 2-methylprop-2-enoate;2-methylprop-2-enoic acid" );
+gibbsFormation
+{
+    dHf_298   -1097800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1338.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-549890.0
+    phase     gas;
+}

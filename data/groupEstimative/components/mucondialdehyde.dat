@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: mucondialdehyde  (C6H6O2, CAS 18409-46-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        mucondialdehyde;
+formula     C6H6O2;
+CAS         18409-46-6;
+InChIKey    NDCAAPXLWRAESY-ZPUQHVIOSA-N;
+MW          110.112;      // g/mol [origin=calculated method=formula-sum]
+Tc          640.67;      // K   [origin=predictive method=joback]
+Pc          42.056;      // bar [origin=predictive method=joback]
+omega       0.5444;      // -   [origin=predictive method=lee-kesler]
+Tb          442.52;      // K   [origin=predictive method=joback]
+HvapTb      42306.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.13 0.5628 -0.0004562 1.508e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 2; } { group CHO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 4; } { group OdCH_al; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2e,4e)-hexa-2,4-dienedial" "muconic dialdehyde" "muconaldehyde" "muconic aldehyde" "hexa-2,4-dienedial" "(e,e)-muconaldehyde" "trans,trans-muconaldehyde" "(e,e)-2,4-hexendial" "(e,e)-2,4-hexadienedial" "2,4-hexadienedial, (e,e)-" "c6h8o" );
+gibbsFormation
+{
+    dHf_298   -103890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     413.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-38960.0
+    phase     gas;
+}

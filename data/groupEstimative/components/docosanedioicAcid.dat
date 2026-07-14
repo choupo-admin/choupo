@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: docosanedioic acid  (C22H42O4, CAS 505-56-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        docosanedioicAcid;
+formula     C22H42O4;
+CAS         505-56-6;
+InChIKey    DGXRZJSPDXZJFG-UHFFFAOYSA-N;
+MW          370.574;      // g/mol [origin=calculated method=formula-sum]
+Tc          1221.22;      // K   [origin=predictive method=joback]
+Pc          10.065;      // bar [origin=predictive method=joback]
+omega       0.9338;      // -   [origin=predictive method=lee-kesler]
+Tb          993.98;      // K   [origin=predictive method=joback]
+HvapTb      98894.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.91 2.1954 -0.0013182 3.066e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 20; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 20; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "felogenic acid" "phellogenic acid" "1,22-docosanedioic acid" "1,20-eicosanedicarboxylic acid" "phelogenic acid" "1,22-docosanedoic acid" "1,20-icosanedicarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -1197950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1119.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-553460.0
+    phase     gas;
+}

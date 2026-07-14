@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------*\
   still03_with_receiver  --  Rayleigh batch distillation INTO a receiver
-  (v0.73 accumulator vessel + continuous dischargeTo).
+  (accumulator vessel + continuous dischargeTo).
 
   Same pot as still01 (1 mol equimolar benzene/toluene, F_vap = 1.5e-6
   kmol/s, ideal Raoult), but the still's vapour is no longer lost: the
@@ -25,7 +25,7 @@ units
         {
             T            365.0 K;
             P            1.013 bar;
-            V            1.0e-4;
+            V            1.0e-4;   // m^3 (raw SI: 0.1 L receiver)
             totalMoles   1.0e-3;           // kmol  (1 mol equimolar)
             molarComposition  { benzene 0.5;  toluene 0.5; }
         }
@@ -45,7 +45,7 @@ units
         {
             T            350.0 K;            // placeholder; inherits the distillate T
             P            1.013 bar;
-            V            1.0e-4;
+            V            1.0e-4;   // m^3 (raw SI: 0.1 L receiver)
             totalMoles   0.0;               // empty; fills from the still's vapour
         }
     }

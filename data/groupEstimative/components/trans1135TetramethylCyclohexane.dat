@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trans-1,1,3,5-tetramethyl cyclohexane  (C10H20, CAS 50876-31-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trans1135TetramethylCyclohexane;
+formula     C10H20;
+CAS         50876-31-8;
+InChIKey    WOJSMJIXPQLESQ-IUCAKERBSA-N;
+MW          140.27;      // g/mol [origin=calculated method=formula-sum]
+Tc          643.71;      // K   [origin=predictive method=joback]
+Pc          25.151;      // bar [origin=predictive method=joback]
+omega       0.2769;      // -   [origin=predictive method=lee-kesler]
+Tb          438.85;      // K   [origin=predictive method=joback]
+HvapTb      36514.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-109.92 1.31488 -0.001023 3.59e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 2; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,5s)-1,1,3,5-tetramethylcyclohexane" "cyclohexane,1,1,3,5-tetramethyl-, trans-" "cyclohexane,1,1,3,5-tetramethyl-, (3r,5r)-rel-" );
+gibbsFormation
+{
+    dHf_298   -220850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     499.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=36860.0
+    phase     gas;
+}

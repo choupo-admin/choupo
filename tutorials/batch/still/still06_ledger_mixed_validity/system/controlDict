@@ -1,0 +1,27 @@
+/*---------------------------------------------------------------------------*\
+  still06_ledger_mixed_validity / system/controlDict
+
+  WHAT THIS CASE IS: the adversarial test of the material ledger's
+  enthalpy-validity contract (design forum #99/#101).  Two stills run the
+  SAME campaign shape but poison their transfer records in OPPOSITE
+  temporal orders (invalid->valid and valid->invalid packages on one
+  accumulated record).  The contract under test: validity is MONOTONIC ---
+  once one package could not be priced, the record's integrated enthalpy
+  is lost FOREVER; a later priceable package must never resurrect it.
+
+  Verdict surface: the campaign KPIs `transfers_H_valid` /
+  `transfers_H_invalid` (golden-pinned) + each record's H_missing naming
+  the unpriceable species in the results JSON.
+
+  Full narrative: system/flowsheetDict header.  Run log: log.choupoBatch.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Ledger H-validity is MONOTONIC: mixed valid/invalid packages never resurrect a poisoned record";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         600;      // s
+deltaT          1.0;      // s
+writeInterval   20;       // s

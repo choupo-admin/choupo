@@ -36,7 +36,9 @@ License
 #include "thermo/Component.H"
 
 #include <cmath>
+#include <algorithm>
 #include <stdexcept>
+#include <iostream>
 
 namespace Choupo {
 
@@ -55,13 +57,23 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
     scalar N0 = 0.0; for (auto v : p.nIn) N0 += v;
     if (N0 <= 0.0) N0 = 1.0;
 
+    // Effective standard-state Gibbs = g_over_RT PLUS the fugacity correction
+    // ln(phi_i), so the equilibrium condition is the REAL-gas one,
+    //   mu_i/RT = g_i/RT + ln y_i + ln(P/P0) + ln phi_i.
+    // For an ideal-gas package phi = 1 -> g_eff == g_over_RT and the ideal path
+    // is byte-identical; for a real EoS (SRK / Peng-Robinson) the outer loop
+    // below folds phi in by successive substitution.  This is what makes the
+    // high-pressure reaction equilibrium (ammonia synthesis) quantitative.
+    sVector g_eff = g_over_RT;
+    const bool nonIdeal = (p.thermo != nullptr) && !p.thermo->eos().isIdeal();
+
     auto residual = [&](const sVector& x) -> sVector
     {
         const scalar ln_N = x[M];
         sVector loc_n(N);
         for (std::size_t i = 0; i < N; ++i)
         {
-            scalar arg = ln_N - ln_P - g_over_RT[i];
+            scalar arg = ln_N - ln_P - g_eff[i];
             for (std::size_t k = 0; k < M; ++k) arg += x[k] * A[k][i];
             loc_n[i] = std::exp(clampArg(arg));
         }
@@ -91,7 +103,7 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
         }
         sVector rhs(N);
         for (std::size_t i = 0; i < N; ++i)
-            rhs[i] = g_over_RT[i] + std::log(yFeed[i]) + ln_P;
+            rhs[i] = g_eff[i] + std::log(yFeed[i]) + ln_P;
         std::vector<sVector> AAt(M, sVector(M, 0.0));
         sVector Arhs(M, 0.0);
         for (std::size_t j = 0; j < M; ++j)
@@ -112,26 +124,52 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
     if (onIter) ndo.onIter = [&](const solver::NDTrace& tr)
         { onIter(tr.iteration, tr.normF, tr.alpha); };
 
-    auto r = solver::newtonND(residual, x0, ndo);
-
+    // Outer fugacity loop: ONE pass for an ideal package (result identical to
+    // before), a few passes for a real EoS as phi settles by successive
+    // substitution.
     GibbsEquilibrium eq;
-    eq.nGas.assign(N, 0.0);
-    eq.nLiq.assign(N, 0.0);
-    const scalar ln_N = r.x[M];
-    for (std::size_t i = 0; i < N; ++i)
+    const int maxOuter = nonIdeal ? 30 : 1;
+    for (int outer = 0; outer < maxOuter; ++outer)
     {
-        scalar arg = ln_N - ln_P - g_over_RT[i];
-        for (std::size_t k = 0; k < M; ++k) arg += r.x[k] * A[k][i];
-        eq.nGas[i] = std::exp(arg);     // NO clamp: keep deep-underflow values
+        auto r = solver::newtonND(residual, x0, ndo);
+
+        eq = GibbsEquilibrium{};
+        eq.nGas.assign(N, 0.0);
+        eq.nLiq.assign(N, 0.0);
+        const scalar ln_N = r.x[M];
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            scalar arg = ln_N - ln_P - g_eff[i];
+            for (std::size_t k = 0; k < M; ++k) arg += r.x[k] * A[k][i];
+            eq.nGas[i] = std::exp(arg);     // NO clamp: keep deep-underflow values
+        }
+        scalar Nt = 0.0; for (auto v : eq.nGas) Nt += v;
+        eq.Ntotal_gas = Nt; eq.Ntotal_liq = 0.0;
+        eq.pi.assign(M, 0.0);
+        for (std::size_t j = 0; j < M; ++j) eq.pi[j] = r.x[j];
+        eq.twoPhase   = false;
+        eq.converged  = r.converged;
+        eq.iterations = r.iterations;
+        eq.residual   = r.residual;
+
+        if (!nonIdeal || Nt <= 0.0) break;   // ideal: single, identical pass
+
+        // Fugacity coefficients at the current gas composition -> next g_eff.
+        sVector yFull(p.thermo->n(), 0.0);
+        for (std::size_t i = 0; i < N; ++i)
+            yFull[p.compIdx[i]] = std::max(0.0, eq.nGas[i] / Nt);
+        const sVector phiFull = p.thermo->eos().phi(T, p.P, yFull);
+        scalar dMax = 0.0;
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            const scalar lnPhi = std::log(std::max(phiFull[p.compIdx[i]], 1.0e-300));
+            const scalar gNew  = g_over_RT[i] + lnPhi;
+            dMax = std::max(dMax, std::abs(gNew - g_eff[i]));
+            g_eff[i] = gNew;
+        }
+        x0 = r.x;                            // warm start the next pass
+        if (dMax < 1.0e-8) break;            // phi self-consistent
     }
-    scalar Nt = 0.0; for (auto v : eq.nGas) Nt += v;
-    eq.Ntotal_gas = Nt; eq.Ntotal_liq = 0.0;
-    eq.pi.assign(M, 0.0);
-    for (std::size_t j = 0; j < M; ++j) eq.pi[j] = r.x[j];
-    eq.twoPhase   = false;
-    eq.converged  = r.converged;
-    eq.iterations = r.iterations;
-    eq.residual   = r.residual;
     return eq;
 }
 

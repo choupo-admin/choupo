@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3',5,5'-tetramethylbiphenyl  (C16H18, CAS 25570-02-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3355Tetramethylbiphenyl;
+formula     C16H18;
+CAS         25570-02-9;
+InChIKey    CMZYGFLOKOQMKF-UHFFFAOYSA-N;
+MW          210.32;      // g/mol [origin=calculated method=formula-sum]
+Tc          872.82;      // K   [origin=predictive method=joback]
+Pc          21.593;      // bar [origin=predictive method=joback]
+omega       0.5693;      // -   [origin=predictive method=lee-kesler]
+Tb          638.96;      // K   [origin=predictive method=joback]
+HvapTb      58410.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.27 1.12808 -0.00064084 1.306e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 2; } { group ACCH3; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH_ring; count 6; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(3,5-dimethylphenyl)-3,5-dimethyl-benzene" "3,5,3',5'-tetramethylbiphenyl" "1-(3,5-dimethylphenyl)-3,5-dimethylbenzene" "1,1'-biphenyl, 3,3',5,5'-tetramethyl-" "3,3',5,5'-tetramethyl-1,1'-biphenyl" "biphenyl,3,3',5,5'-tetramethyl- (6ci,8ci); 3,3',5,5'-tetramethyl-1,1'-biphenyl;3,3',5,5'-tetramethylbiphenyl; 3,5,3',5'-tetramethyl-1,1'-biphenyl;3,5,3',5'-tetramethylbiphenyl" );
+gibbsFormation
+{
+    dHf_298   53610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     541.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=270140.0
+    phase     gas;
+}

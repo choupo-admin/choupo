@@ -1,0 +1,16 @@
+/*---------------------------------------------------------------------------*\
+  tartaricAcid / constant/thermoPackage
+
+  The wine-route reactor train: water (the process solvent), potassium
+  bitartrate + calcium hydroxide (R1 precipitation feeds), calcium tartrate
+  + KOH (R1 products), H2SO4 (the acidulation agent), tartaric acid + CaSO4
+  gypsum (R2 products).  Ideal + idealGas: this plant demonstrates the
+  REACTION chemistry and closes the mass balance with molecular reactors —
+  the precipitates are carried as dissolved nonvolatiles, so no activity
+  model is exercised; the real solution chemistry (Pitzer, gypsum
+  saturation) lives in tutorials/props/electrolyte/tartaricAcid_acidulation.
+\*---------------------------------------------------------------------------*/
+
+components ( water potassiumBitartrate calciumHydroxide calciumTartrate KOH H2SO4 tartaricAcid CaSO4 );
+activityModel   { model ideal; }
+equationOfState { model idealGas; }

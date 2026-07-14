@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexa-1,5-dien-3-ylbenzene  (C12H14, CAS 1076-66-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexa15Dien3Ylbenzene;
+formula     C12H14;
+CAS         1076-66-0;
+InChIKey    MLOYWDLVXDGQLG-UHFFFAOYSA-N;
+MW          158.244;      // g/mol [origin=calculated method=formula-sum]
+Tc          706.57;      // K   [origin=predictive method=joback]
+Pc          26.380;      // bar [origin=predictive method=joback]
+omega       0.4072;      // -   [origin=predictive method=lee-kesler]
+Tb          493.76;      // K   [origin=predictive method=joback]
+HvapTb      42854.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-49.589 1.0308 -0.0007092 1.914e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2=CH; count 2; } { group ACH; count 5; } { group ACCH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 2; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   191100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     498.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=335810.0
+    phase     gas;
+}

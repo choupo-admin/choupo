@@ -86,6 +86,17 @@ public:
     scalar H_ref() const { return H_ref_; }
     scalar T_ref() const { return T_ref_; }
     scalar dHdiss() const { return dHdiss_; }
+
+    // Krichevsky-Kasarnovsky / Krichevsky-Ilinskaya extensions (optional;
+    // both default 0 -> the plain van't Hoff Henry above, byte-identical).
+    //   v_inf     [m^3/mol]  partial molar volume of the DISSOLVED gas at
+    //             infinite dilution -> the Poynting pressure correction
+    //             exp( v_inf (P - Psat_solvent) / RT )   (KK 1935).
+    //   margulesA [J/mol]    two-suffix Margules constant of the UNSYMMETRIC
+    //             activity coefficient  ln g2* = (A/RT)(x1^2 - 1), g2*->1 as
+    //             x2->0  (KI 1945).  0 = dilute-ideal (g2* = 1).
+    scalar v_inf()     const { return v_inf_;     }
+    scalar margulesA() const { return margulesA_; }
     scalar T_min() const { return T_min_; }
     scalar T_max() const { return T_max_; }
 
@@ -96,8 +107,11 @@ private:
     scalar      H_ref_  = 0.0;            // Pa
     scalar      T_ref_  = 298.15;         // K
     scalar      dHdiss_ = 0.0;            // J/mol (negative for exothermic)
+    bool        hasTrange_ = false;
     scalar      T_min_  = 273.15;
     scalar      T_max_  = 373.15;
+    scalar      v_inf_     = 0.0;         // m^3/mol (KK Poynting; 0 = off)
+    scalar      margulesA_ = 0.0;         // J/mol   (KI gamma*;   0 = off)
 };
 
 } // namespace Choupo

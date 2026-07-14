@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: valeric acid  (C5H10O2, CAS 109-52-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        valericAcid;
+formula     C5H10O2;
+CAS         109-52-4;
+InChIKey    NQPDZGIKBAWPEJ-UHFFFAOYSA-N;
+MW          102.133;      // g/mol [origin=calculated method=formula-sum]
+Tc          650.69;      // K   [origin=predictive method=joback]
+Pc          38.627;      // bar [origin=predictive method=joback]
+omega       0.6320;      // -   [origin=predictive method=lee-kesler]
+Tb          459.51;      // K   [origin=predictive method=joback]
+HvapTb      43888.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (2.943 0.52962 -0.0003208 7.63e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentanoic acid" "n-valeric acid" "valerianic acid" "n-pentanoic acid" "1-butanecarboxylic acid" "propylacetic acid" "butanecarboxylic acid" "pentanoate" "pentoic acid" "n-pentanoate" "valeric acid, n-" "valerate" );
+gibbsFormation
+{
+    dHf_298   -496800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     403.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-352690.0
+    phase     gas;
+}

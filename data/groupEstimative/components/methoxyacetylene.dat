@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methoxyacetylene  (C3H4O, CAS 6443-91-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methoxyacetylene;
+formula     C3H4O;
+CAS         6443-91-0;
+InChIKey    QRNDDJXJUHBGSG-UHFFFAOYSA-N;
+MW          56.064;      // g/mol [origin=calculated method=formula-sum]
+Tc          455.01;      // K   [origin=predictive method=joback]
+Pc          52.893;      // bar [origin=predictive method=joback]
+omega       0.1741;      // -   [origin=predictive method=lee-kesler]
+Tb          280.78;      // K   [origin=predictive method=joback]
+HvapTb      24540.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (39.44 0.13172 -2.433e-05 -1.191e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3O; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group tCH; count 1; } { group tC; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methoxyethyne" "hc.equiv.coch3" "ethyne, methoxy-" "ethyne, methoxy- (9ci)" "ether,ethynyl methyl (6ci,7ci,8ci); 1-methoxyethyne; ethynyl methyl ether;methoxyacetylene; methoxyethyne" );
+gibbsFormation
+{
+    dHf_298   54430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     253.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=92450.0
+    phase     gas;
+}

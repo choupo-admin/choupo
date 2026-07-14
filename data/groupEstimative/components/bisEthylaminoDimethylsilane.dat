@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(ethylamino)dimethylsilane  (C6H18N2Si, CAS 6143-68-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C6H18N2Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        bisEthylaminoDimethylsilane;
+formula     C6H18N2Si;
+CAS         6143-68-6;
+InChIKey    NGAVXENYOVMGDJ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          146.309;      // g/mol [origin=calculated method=formula-sum]
+Tc          619.20;      // K   [origin=predictive method=joback]
+Pc          28.054;      // bar [origin=predictive method=joback]
+omega       0.5047;      // -   [origin=predictive method=lee-kesler]
+Tb          438.62;      // K   [origin=predictive method=joback]
+HvapTb      42116.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (35.832 0.52008 1.5e-05 -1.36e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2NH; count 2; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-[ethylamino(dimethyl)silyl]ethanamine" "n,n'-diethyl-1,1-dimethylsilanediamine" "silanediamine, n,n'-diethyl-1,1-dimethyl-" "silanediamine,n,n'-diethyl-1,1-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -171850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     597.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=73660.0
+    phase     gas;
+}

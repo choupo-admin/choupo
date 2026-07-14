@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methyl-2-morpholinone  (C5H9NO2, CAS 18424-96-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethyl2Morpholinone;
+formula     C5H9NO2;
+CAS         18424-96-9;
+InChIKey    NMAIBUJJZUMSPH-UHFFFAOYSA-N;
+MW          115.132;      // g/mol [origin=calculated method=formula-sum]
+Tc          584.71;      // K   [origin=predictive method=joback]
+Pc          42.607;      // bar [origin=predictive method=joback]
+omega       0.4524;      // -   [origin=predictive method=lee-kesler]
+Tb          396.07;      // K   [origin=predictive method=joback]
+HvapTb      36396.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-43.12 0.72532 -0.0005418 1.561e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2COO; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-methylmorpholin-2-one" "2-morpholinone, 4-methyl-," "4-methyl-2-morpholinone" "4-methyl-morpholin-2-one" "2-morpholinone, 4-methyl-" );
+gibbsFormation
+{
+    dHf_298   -303140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     370.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-139910.0
+    phase     gas;
+}

@@ -1,0 +1,3 @@
+application  choupoSolve;
+description  "phi-phi VLE VALIDATION vs Stryjek, Chappelear & Kobayashi (1974), J. Chem. Eng. Data 19:334 (DOI 10.1021/je60063a023), Table III, -190 F = 149.82 K. The case carries its thermo as an INLINE manifest: liquid+vapour both eos.SRK (one cubic, two roots: K = phi_L/phi_V) with the N2-CH4 interaction constant kij = 0.0289 (a small measured correction to the mixing rule, from the Knapp/DECHEMA data compilation). Measured at 299 psia: x_N2=0.1503, y_N2=0.4579 -- compare the Flash Result table in the log with these measured values (agreement ~2%).";
+verbosity    3;

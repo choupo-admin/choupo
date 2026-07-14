@@ -1,0 +1,59 @@
+/*---------------------------------------------------------------------------*\
+  batch10_adsorber_co2_n2  --  COMPETITIVE binary uptake, closed vessel.
+
+  0.5 mol CO2 + 1.5 mol N2 in a 0.01 m3 ideal-gas headspace over 1 kg of
+  regenerated zeolite 13X at 298.15 K.  Both species carry an isotherm
+  record (extended Langmuir: CO2 q_max 5.0 / b_298 9.0 1/bar; N2 3.5 /
+  0.18 1/bar) and both carry a declared LDF constant -- so both integrate,
+  and the strong adsorbate suppresses the weak one through the SHARED
+  site denominator 1 + Sum_j b_j p_j.
+
+  The final state solves the 2-species inventory system
+      n_gas_i + m_ads * q_i(p_CO2, p_N2) = n0_i,   p_i = n_gas_i R T / V
+  whose root (a2_vectors.py, Newton residual 0):
+
+      CO2: p_inf = 0.01611568794 bar   q = 0.4934990047 mol/kg
+      N2 : p_inf = 1.802652166 bar     q = 0.7728183086 mol/kg
+      P_total = 181876.7854 Pa
+      selectivity S = (q_CO2/q_N2)/(p_CO2/p_N2) = 71.42857143
+                    = (q_max*b)_CO2/(q_max*b)_N2  (extended-Langmuir identity)
+
+  The golden pins the COMPETITIVE path: get the shared denominator wrong
+  and every one of these numbers moves.  closure_worst_rel stays exact by
+  construction (state = q only; n_gas algebraic).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        adsorber;
+        type        batchAdsorber;
+
+        initial
+        {
+            T            298.15 K;
+            V            0.01;             // m3 -- the GAS headspace volume
+            totalMoles   0.002;            // kmol = 2 mol gas
+            molarComposition { CO2 0.25;  N2 0.75; }   // 0.5 + 1.5 mol
+        }
+
+        operation
+        {
+            adsorbent    zeolite13X;       // vendored under constant/ (self-contained)
+            m_ads        1.0 kg;
+            T_setpoint   298.15 K;
+
+            kLDF                           // EQUIPMENT/SAMPLE data (this case's pellets)
+            {
+                basis    solidFilm;        // dq/dt = k*(q* - q)
+                scope    "1.6 mm 13X beads, batch RUN-2026-07-A, crushed sample";
+                source   "Glueckauf k = 15 De/rp^2; De(CO2) = 5.9e-10, De(N2) = 1.2e-9 m2/s (estimated)";
+                k
+                {
+                    CO2  [0 0 -1 0 0]  0.05;   // 1/s
+                    N2   [0 0 -1 0 0]  0.10;   // 1/s
+                }
+            }
+        }
+    }
+);

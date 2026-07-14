@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: carboprost  (C21H36O5, CAS 35700-23-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        carboprost;
+formula     C21H36O5;
+CAS         35700-23-3;
+InChIKey    DLJKPYFALUEJCK-IIELGFQLSA-N;
+MW          368.514;      // g/mol [origin=calculated method=formula-sum]
+Tc          1379.60;      // K   [origin=predictive method=joback]
+Pc          14.080;      // bar [origin=predictive method=joback]
+omega       1.0755;      // -   [origin=predictive method=lee-kesler]
+Tb          1108.49;      // K   [origin=predictive method=joback]
+HvapTb      127491.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-91.232 2.36964 -0.001583 4.177e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 9; } { group CH; count 4; } { group C; count 1; } { group CH=CH; count 2; } { group OH; count 3; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 8; } { group C; count 1; } { group dCH; count 4; } { group CH2_ring; count 1; } { group CH_ring; count 4; } { group OH; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z)-7-[(1r,2r,3r,5s)-2-[(e,3s)-3-methyl-3-oxidanyl-oct-1-enyl]-3,5-bis(oxidanyl)cyclopentyl]hept-5-enoic acid" "15-methyl-pgf2-alpha (alpha and beta)" "carboprostum" "methyl-pgf2-alpha" "prostin 15m" "15-methyl prostaglandin f2alpha" "15-methyl-pgf2alpha" "prosta-5,13-dien-1-oic acid, 15-methyl-9,11,15-trihydroxy-, (5z,9-alpha,11-alpha,13e,15s)-, (+-)-" "15-me-pgf2-alpha" "15-methyl pgf2-alpha" "carboprostum [inn-latin]" "carboprost [usan:inn:ban]" );
+gibbsFormation
+{
+    dHf_298   -1058580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     950.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-451730.0
+    phase     gas;
+}

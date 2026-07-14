@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oleyl methacrylate  (C22H40O2, CAS 13533-08-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oleylMethacrylate;
+formula     C22H40O2;
+CAS         13533-08-9;
+InChIKey    BXOBFMUWVVHLFK-UHFFFAOYSA-N;
+MW          336.56;      // g/mol [origin=calculated method=formula-sum]
+Tc          939.06;      // K   [origin=predictive method=joback]
+Pc          9.609;      // bar [origin=predictive method=joback]
+omega       0.8580;      // -   [origin=predictive method=lee-kesler]
+Tb          761.90;      // K   [origin=predictive method=joback]
+HvapTb      71341.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.565 2.03894 -0.0011874 2.601e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 15; } { group CH=CH; count 1; } { group CH2=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 15; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "octadec-9-enyl 2-methylprop-2-enoate" "9-octadecenyl methacrylate" "2-propenoic acid, 2-methyl-, (9z)-9-octadecen-1-yl ester" "2-propenoic acid,2-methyl-, 9-octadecen-1-yl ester" "2-propenoic acid,2-methyl-, (9z)-9-octadecen-1-yl ester" "2-propenoicacid, 2-methyl-, 9-octadecenyl ester (9ci); 9-octadecenyl methacrylate" "2-propenoicacid, 2-methyl-, (9z)-9-octadecenyl ester (9ci);2-propenoic acid, 2-methyl-,9-octadecenyl ester, (z)-;oleyl methacrylate;" );
+gibbsFormation
+{
+    dHf_298   -581830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1048.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-16500.0
+    phase     gas;
+}

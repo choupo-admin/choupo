@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dioctylamine  (C16H35N, CAS 1120-48-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dioctylamine;
+formula     C16H35N;
+CAS         1120-48-5;
+InChIKey    LAWOZCWGWDVVSG-UHFFFAOYSA-N;
+MW          241.463;      // g/mol [origin=calculated method=formula-sum]
+Tc          778.43;      // K   [origin=predictive method=joback]
+Pc          13.310;      // bar [origin=predictive method=joback]
+omega       0.8675;      // -   [origin=predictive method=lee-kesler]
+Tb          615.85;      // K   [origin=predictive method=joback]
+HvapTb      57646.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.866 1.60004 -0.0008952 1.897e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 13; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 14; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-octyloctan-1-amine" "di-n-octylamine" "1-octanamine, n-octyl-" "n-n-octyl-n-octylamine" "di(n-octyl)amine" "amines, di-c8-20-alkyl" "dioctyl-amine" "n-octyl-1-octanamine" "di(c8-c20)alkylamine" "n-(oct-1-yl)octan-1-amine" "dioctylamine(6ci,8ci);n-octyloctan-1-amine;n-n-octyl-n-octylamine;" );
+gibbsFormation
+{
+    dHf_298   -320100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     819.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=173230.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bromotriiodomethane  (CBrI3, CAS 558-16-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bromotriiodomethane;
+formula     CBrI3;
+CAS         558-16-7;
+InChIKey    SVGXPROWWXKVKR-UHFFFAOYSA-N;
+MW          472.615;      // g/mol [origin=calculated method=formula-sum]
+Tc          909.03;      // K   [origin=predictive method=joback]
+Pc          59.907;      // bar [origin=predictive method=joback]
+omega       0.2298;      // -   [origin=predictive method=lee-kesler]
+Tb          564.83;      // K   [origin=predictive method=joback]
+HvapTb      51078.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.77 0.3798 -0.000518 2.264e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group I; count 3; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group Br; count 1; } { group I; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bromanyl-tris(iodanyl)methane" );
+gibbsFormation
+{
+    dHf_298   184220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     373.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=149060.0
+    phase     gas;
+}

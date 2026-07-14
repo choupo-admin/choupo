@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxacyclotridecan-2-one  (C12H22O2, CAS 947-05-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oxacyclotridecan2One;
+formula     C12H22O2;
+CAS         947-05-7;
+InChIKey    DQGSJTVMODPFBK-UHFFFAOYSA-N;
+MW          198.306;      // g/mol [origin=calculated method=formula-sum]
+Tc          812.22;      // K   [origin=predictive method=joback]
+Pc          24.950;      // bar [origin=predictive method=joback]
+omega       0.4753;      // -   [origin=predictive method=lee-kesler]
+Tb          577.95;      // K   [origin=predictive method=joback]
+HvapTb      51311.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-79.76 1.1896 -0.0004388 -3.72e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 11; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-oxacyclotridecan-2-one" "dodecanolactone" "2-oxacyclotridecan-1-one" );
+gibbsFormation
+{
+    dHf_298   -564430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     786.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-288550.0
+    phase     gas;
+}

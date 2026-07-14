@@ -512,11 +512,15 @@ void SolutionWriter::writeInstant(
     const std::vector<FlatUnit>&                 units)
 {
     std::error_code ec;
-    fs::create_directories(caseRoot_, ec);
+    // Numerical-history instants live under iterations/NNNNNN (constitution:
+    // 0/ is the committable stream-state INPUT, never solver output; iterations/
+    // is numerical history).  Physical-time snapshots (writeTime) keep the root.
+    const fs::path iterRoot = fs::path(caseRoot_) / "iterations";
+    fs::create_directories(iterRoot, ec);
+    char pad[16]; std::snprintf(pad, sizeof pad, "%06d", meta.iteration);
 
-    const fs::path instDir = fs::path(caseRoot_) / std::to_string(meta.iteration);
-    const fs::path tmpDir  = fs::path(caseRoot_)
-                           / (".tmp_" + std::to_string(meta.iteration));
+    const fs::path instDir = iterRoot / pad;
+    const fs::path tmpDir  = iterRoot / (".tmp_" + std::string(pad));
 
     // Clean any stale tmp from a previous aborted write of THIS instant.
     fs::remove_all(tmpDir, ec);
@@ -695,19 +699,22 @@ void SolutionWriter::appendResiduals(const SolutionInstantMeta& meta) const
 // ---------------------------------------------------------------------------
 void SolutionWriter::refreshLatestSymlink(int iteration) const
 {
-    const fs::path link = fs::path(caseRoot_) / "latest";
+    // The iteration instants live under iterations/; so does their `latest`.
+    const fs::path iterRoot = fs::path(caseRoot_) / "iterations";
+    char pad[16]; std::snprintf(pad, sizeof pad, "%06d", iteration);
+    const fs::path link = iterRoot / "latest";
     std::error_code ec;
     fs::remove(link, ec);
     // Relative target so the tree stays portable if the case is moved.
-    fs::create_directory_symlink(std::to_string(iteration), link, ec);
+    fs::create_directory_symlink(pad, link, ec);
     if (ec)
     {
         // Filesystems without symlink support: drop a plain marker file so
         // `latest` is still discoverable (restart also scans numbered dirs by
         // max-number, so this marker is purely a human convenience).
-        std::ofstream f((fs::path(caseRoot_) / "latest.txt").string(),
+        std::ofstream f((iterRoot / "latest.txt").string(),
                         std::ios::out | std::ios::trunc);
-        f << iteration << "\n";
+        f << pad << "\n";
     }
 }
 
@@ -925,14 +932,14 @@ void SolutionWriter::purgeOldInstants(int currentIteration,
     // CONCENTRATION is never numeric, so it can never be purged.
     std::vector<int> nums;
     std::error_code ec;
-    for (const auto& e : fs::directory_iterator(caseRoot_, ec))
+    const fs::path iterRoot = fs::path(caseRoot_) / "iterations";
+    for (const auto& e : fs::directory_iterator(iterRoot, ec))
     {
         if (!e.is_directory()) continue;
         const std::string nm = e.path().filename().string();
-        if (!isNumericName(nm)) continue;
-        // D6 (robustness): an all-digit name can still overflow int (e.g. a
-        // pathological 30-digit dir).  stoi would throw out_of_range and abort
-        // the run --- skip such names rather than crash.
+        if (!isNumericName(nm)) continue;   // skips `latest`, `.tmp_*`
+        // D6 (robustness): an all-digit name can still overflow int -- skip
+        // rather than crash.
         try { nums.push_back(std::stoi(nm)); }
         catch (const std::exception&) { continue; }
     }
@@ -951,7 +958,10 @@ void SolutionWriter::purgeOldInstants(int currentIteration,
     }
     for (int n : nums)
         if (!keepSet.count(n))
-            fs::remove_all(fs::path(caseRoot_) / std::to_string(n), ec);
+        {
+            char pad[16]; std::snprintf(pad, sizeof pad, "%06d", n);
+            fs::remove_all(iterRoot / pad, ec);
+        }
 }
 
 // ---------------------------------------------------------------------------
@@ -963,9 +973,10 @@ int SolutionWriter::latestInstantNumber() const
     // and a half-written (payload-less) dir is skipped.  This is the source of
     // truth for restart even when the `latest` symlink is missing.
     std::error_code ec;
-    if (!fs::exists(caseRoot_, ec)) return -1;
+    const fs::path iterRoot = fs::path(caseRoot_) / "iterations";
+    if (!fs::exists(iterRoot, ec)) return -1;
     int best = -1;
-    for (const auto& e : fs::directory_iterator(caseRoot_, ec))
+    for (const auto& e : fs::directory_iterator(iterRoot, ec))
     {
         if (!e.is_directory()) continue;
         const std::string nm = e.path().filename().string();
@@ -987,7 +998,8 @@ int SolutionWriter::restartFromLatest(
     const int n = latestInstantNumber();
     if (n < 0) return -1;
 
-    const fs::path instRoot = fs::path(caseRoot_) / std::to_string(n);
+    char pad[16]; std::snprintf(pad, sizeof pad, "%06d", n);
+    const fs::path instRoot = fs::path(caseRoot_) / "iterations" / pad;
     std::set<std::string> tearSet(tears.begin(), tears.end());
 
     // PER-BRANCH restart: the instant is fractal.  An intra-sector tear (e.g.

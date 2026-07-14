@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Nitric oxide  (NO, CAS 10102-43-9)
+  The principal thermal-NOx pollutant from high-temperature combustion.
+  Formed via the Zeldovich mechanism (N2 + O <-> NO + N, then
+  N + O2 <-> NO + O), reaching equilibrium populations ~ 100-1000 ppm
+  at typical adiabatic flame temperatures.
+  Sources: gibbsFormation cross-checked vs NASA TM-4513
+  (McBride-Gordon-Reno 1993); constants and idealGasHeatCapacity --
+  individual literature values, primary re-citation pending (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        NO;
+formula     NO;
+CAS         10102-43-9;
+
+MW          30.006;       // kg/kmol
+Tc          180.00;       // K
+Pc          64.85;        // bar
+omega       0.583;        // [-]   (NO is polar -- high omega)
+Tb          121.40;       // K
+HvapTb      13830;        // J/mol
+Vliq        2.30e-5;      // m^3/mol  (23 cm^3/mol at Tb)
+
+gibbsFormation
+{
+    dHf_298   +90250.0;           // J/mol  -- positive: endothermic formation
+    s_298     210.760;            // J/(mol·K)
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.0   400.0   -30.0);
+    Trange        (90  180);
+}
+
+idealGasHeatCapacity
+{
+    // CASE-LOCAL OVERRIDE for post-flame temperatures (2125 K): NASA-7
+    // two-range form, GRI-Mech 3.0 thermo, valid 200-3500 K (the catalogue
+    // poly3 is a 250-1500/3000 K process fit).
+    model    NASA7;
+    low      ( 4.21847630e+00 -4.63897600e-03 1.10410220e-05 -9.33613540e-09 2.80357700e-12 9.84462300e+03 2.28084640e+00 );
+    high     ( 3.26060560e+00 1.19110430e-03 -4.29170480e-07 6.94576690e-11 -4.03360990e-15 9.92097460e+03 6.36930270e+00 );
+    Tlow     200.0;
+    Tcommon  1000.0;
+    Thigh    3500.0;
+}

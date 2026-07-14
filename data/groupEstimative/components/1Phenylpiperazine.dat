@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-phenylpiperazine  (C10H14N2, CAS 92-54-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Phenylpiperazine;
+formula     C10H14N2;
+CAS         92-54-6;
+InChIKey    YZTJYBJCZXZGCT-UHFFFAOYSA-N;
+MW          162.236;      // g/mol [origin=calculated method=formula-sum]
+Tc          777.81;      // K   [origin=predictive method=joback]
+Pc          38.531;      // bar [origin=predictive method=joback]
+omega       0.4968;      // -   [origin=predictive method=lee-kesler]
+Tb          536.02;      // K   [origin=predictive method=joback]
+HvapTb      49497.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-100.3 1.1436 -0.0007862 2.055e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 5; } { group AC; count 1; } { group CH2NH; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-phenylpiperazine" "phenylpiperazine" "piperazine, 1-phenyl-" "n-phenyldiethylenediamine" "1-phenyl-piperazine" "1-phenylpiperazinehydrochloride" "1-fenylpiperazin" "n phenyl piperazine" "n-phenyl piperazine" "1-phenyl piperazine" "1- phenylpiperazine" "4004-95-9 (di-hydrochloride)" );
+gibbsFormation
+{
+    dHf_298   172960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     440.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=388480.0
+    phase     gas;
+}

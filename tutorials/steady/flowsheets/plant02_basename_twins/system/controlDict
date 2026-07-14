@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "basename twins: a top-level `feed` and a DISTINCT sector-internal `A.feed` coexist";
+verbosity     3;

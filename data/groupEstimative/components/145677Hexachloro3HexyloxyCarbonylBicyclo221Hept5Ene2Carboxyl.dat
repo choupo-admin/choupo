@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4,5,6,7,7-hexachloro-3-[(hexyloxy)carbonyl]bicyclo[2.2.1]hept-5-ene-2-carboxylic acid  (C15H16Cl6O4, CAS 68186-72-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        145677Hexachloro3HexyloxyCarbonylBicyclo221Hept5Ene2Carboxyl;
+formula     C15H16Cl6O4;
+CAS         68186-72-1;
+InChIKey    LPEOUEDVYKKKMC-UHFFFAOYSA-N;
+MW          472.989;      // g/mol [origin=calculated method=formula-sum]
+Tc          1226.48;      // K   [origin=predictive method=joback]
+Pc          16.538;      // bar [origin=predictive method=joback]
+omega       1.1992;      // -   [origin=predictive method=lee-kesler]
+Tb          984.69;      // K   [origin=predictive method=joback]
+HvapTb      97099.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-104.775 2.37902 -0.0025714 1.1247e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 2; } { group COOH; count 1; } { group CCl2; count 1; } { group Cl_C=C_; count 2; } { group C=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:2
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group CH_ring; count 2; } { group C_ring; count 3; } { group dC_ring; count 2; } { group Cl; count 6; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,7,7-hexakis(chloranyl)-5-hexoxycarbonyl-bicyclo[2.2.1]hept-2-ene-6-carboxylic acid" "bicyclo(2.2.1)hept-5-ene-2,3-dicarboxylic acid, 1,4,5,6,7,7-hexachloro-, hexyl ester" "bicyclo[2.2.1]hept-5-ene-2,3-dicarboxylic acid, 1,4,5,6,7,7-hexachloro-, hexyl ester" "chlorendic anhydride, hexanol ester" "bicyclo(2.2.1)hept-5-ene-2,3-dicarboxylic acid, 1,4,5,6,7,7-hexachloro-, ester with 2,2'-oxybis(ethanol) and 1,2-propanediol" "bicyclo[2.2.1]hept-5-ene-2,3-dicarboxylic acid, 1,4,5,6,7,7-hexachloro-, ester with 2,2'-oxybis[ethanol] and 1,2-propanediol" "1,2,3,4,7,7-hexachloro-5-hexoxycarbonylbicyclo[2.2.1]hept-2-ene-6-carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -955940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     916.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-569940.0
+    phase     gas;
+}

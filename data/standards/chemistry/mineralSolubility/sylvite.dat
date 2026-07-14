@@ -1,0 +1,6 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral sylvite; formula "KCl"; masters ( { ion K; nu 1; } { ion Cl; nu 1; } );
+      logK25 0.9; dH 8500; source "USGS PHREEQC phreeqc.dat (public domain)";
+

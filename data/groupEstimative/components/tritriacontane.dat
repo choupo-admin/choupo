@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tritriacontane  (C33H68, CAS 630-05-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tritriacontane;
+formula     C33H68;
+CAS         630-05-7;
+InChIKey    SUJUOAZFECLBOA-UHFFFAOYSA-N;
+MW          464.907;      // g/mol [origin=calculated method=formula-sum]
+Tc          1194.06;      // K   [origin=predictive method=joback]
+Pc          5.198;      // bar [origin=predictive method=joback]
+omega       0.2170;      // -   [origin=predictive method=lee-kesler]
+Tb          954.64;      // K   [origin=predictive method=joback]
+HvapTb      89052.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.109 3.13884 -0.0017714 3.815e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 31; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 31; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-tritriacontane" "CH3-[CH2]31-ch3" "CH3-(CH2)31-CH3" "tritriacontane, 98%" "tritriacontane; n-tritriacontane" "tritriacontane, analytical standard" "N-c-33" "HY-W540836" "bs-49205" "NS00010792" "t0968" "C08393" );
+gibbsFormation
+{
+    dHf_298   -724450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1441.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=226980.0
+    phase     gas;
+}

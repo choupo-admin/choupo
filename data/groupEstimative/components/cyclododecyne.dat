@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclododecyne  (C12H20, CAS 1129-90-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclododecyne;
+formula     C12H20;
+CAS         1129-90-4;
+InChIKey    BYDOJAHKOHCERE-UHFFFAOYSA-N;
+MW          164.292;      // g/mol [origin=calculated method=formula-sum]
+Tc          778.66;      // K   [origin=predictive method=joback]
+Pc          28.536;      // bar [origin=predictive method=joback]
+omega       0.2763;      // -   [origin=predictive method=lee-kesler]
+Tb          524.46;      // K   [origin=predictive method=joback]
+HvapTb      45884.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-82.49 1.1042 -0.00048766 2.878e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tC; count 2; } { group CH2_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-cyclododecyne" );
+gibbsFormation
+{
+    dHf_298   31310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     686.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=236720.0
+    phase     gas;
+}

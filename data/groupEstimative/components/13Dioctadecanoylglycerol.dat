@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-dioctadecanoylglycerol  (C39H76O5, CAS 1323-83-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13Dioctadecanoylglycerol;
+formula     C39H76O5;
+CAS         1323-83-7;
+InChIKey    IZHVBANLECCAGF-UHFFFAOYSA-N;
+MW          625.032;      // g/mol [origin=calculated method=formula-sum]
+Tc          1922.71;      // K   [origin=predictive method=joback]
+Pc          4.248;      // bar [origin=predictive method=joback]
+omega       -0.4308;      // -   [origin=predictive method=lee-kesler]
+Tb          1300.10;      // K   [origin=predictive method=joback]
+HvapTb      133513.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.864 3.63914 -0.0019422 3.48e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 32; } { group CH; count 1; } { group OH; count 1; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 34; } { group CH; count 1; } { group OH; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3-octadecanoyloxy-2-oxidanyl-propyl) octadecanoate" "glyceryl 1,3-distearate" "1,3-distearin" "1,3-distearoylglycerin" "1,3-distearoylglycerol" "glycerin 1,3-distearate" "1,3-di-o-stearoylglycerol" "stearic acid diglycerin ester" "1,3-distearin glyceride" "octadecanoic acid, diester with 1,2,3-propanetriol" "2-hydroxypropane-1,3-diyl distearate" "octadecanoic acid, 2-hydroxy-1,3-propanediyl ester" );
+gibbsFormation
+{
+    dHf_298   -1640360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1819.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-482500.0
+    phase     gas;
+}

@@ -58,6 +58,8 @@ Description
 
 #pragma once
 
+#include "thermo/reaction/RateLaw.H"
+
 #include "BatchUnitOperation.H"
 
 namespace Choupo {
@@ -88,6 +90,22 @@ public:
 
     void setOperationParameter(const std::string& key, scalar value) override;
 
+    // ---- Energy ledger (phase (a), forum #98.3/#99/#101) -----------------
+    //   The isothermal jacket duty per SEGMENT of constant physics.  E is an
+    //   EXACT state difference, never a quadrature: on the elements datum
+    //   Sum_j dH_j*dXi_j == Sum_i dn_i*h_i(T), so a closed constant-P
+    //   isothermal segment has Q = dH computed from the committed mole
+    //   numbers alone -- the integrator is untouched and every existing
+    //   trajectory stays byte-identical.  Segments close on setParameter
+    //   (T change) and on any recipe material charge/discharge
+    //   (notifyStateChanged), so the state difference is always PURELY
+    //   reactive.  Adiabatic mode exchanges nothing (records none).
+    void noteTimeAdvanced(scalar t) override;
+    void notifyStateChanged() override;
+    std::vector<SimulationResult::EnergyRecord>
+         energyRecords(scalar tEnd) override;
+    std::string energyLedgerGap() const override;
+
 protected:
     BatchState& mutableState() override { return state_; }
 
@@ -99,7 +117,11 @@ private:
     //   ModArrhenius  k = A·T^b·exp(−Ea/RT)              (the 3-parameter form)
     //   ThirdBody     k·[M], [M] = Σ eff_j·c_j           (explicit +M reactant)
     //   Falloff       Lindemann/Troe blend of kLow,kInf  (pressure dependence)
-    enum class RateForm { Arrhenius, ModArrhenius, ThirdBody, Falloff };
+    // LHHW joins the CHEMKIN gas forms as a peer: it does not replace them, it is
+    // simply the rate law a CATALYTIC surface obeys.  Its whole definition lives in
+    // the shared `RateLaw`, so a batch reactor and a steady CSTR cannot disagree
+    // about what an adsorption denominator means.
+    enum class RateForm { Arrhenius, ModArrhenius, ThirdBody, Falloff, LHHW };
 
     // Per-reaction kinetic + thermo data
     struct ReactionSpec
@@ -120,6 +142,8 @@ private:
         scalar                   b_low = 0;
         scalar                   Ea_low = 0;
         sVector                  troe;           // (a T*** T* [T**]); empty => Lindemann
+        // LHHW: the whole law (basis, adsorption denominator, reverse leg) parsed once.
+        RateLaw                  law;
     };
 
     enum class Mode { Isothermal, Adiabatic };
@@ -134,6 +158,9 @@ private:
 
     BatchState                  state_;
     const ThermoPackage*        thermo_ = nullptr;
+    // kg of dry catalyst per m^3 of reactor.  Absent (0) => the LHHW rate constants
+    // are already volumetric.  Declared, printed, never assumed.
+    scalar                      catalystLoading_ = 0.0;
     std::vector<ReactionSpec>   reactions_;
     Mode                        mode_       = Mode::Isothermal;
     Energy                      energy_     = Energy::LiquidDH;
@@ -143,6 +170,8 @@ private:
     // method (EulerSI / Rosenbrock23) selected via `solver { integrator … }`.
     // Default RK4 keeps every existing batch tutorial byte-identical.
     std::string                 integrator_ = "RK4";
+    // Set in initialise() from the run's controlDict verbosity (via
+    // thermoAnnounceLevel()); `solver { verbosity … }` overrides per unit.
     int                         verbosity_  = 1;
 
     // Rate r [kmol/(m³·s)] of a single reaction at (T, n, V).
@@ -167,6 +196,34 @@ private:
     // Returns derivatives in the same packing.  For isothermal mode
     // the temperature derivative is forced to zero.
     sVector derivatives_(const sVector& packed) const;
+
+    // ---- Energy-ledger segment bookkeeping (phase (a)) --------------------
+    //  A segment is a stretch of constant physics: constant T_setpoint and
+    //  no external material change.  segN0_ snapshots the mole numbers at
+    //  the segment opening; closing prices E from the committed difference.
+    scalar  lastTime_  = 0.0;    // latest committed time (noteTimeAdvanced)
+    bool    timeSeen_  = false;  // false until the driver's first clock call
+    scalar  segStart_  = 0.0;
+    sVector segN0_;
+    scalar  segT_      = 0.0;    // the segment's pinned temperature
+    std::vector<SimulationResult::EnergyRecord> energyLog_;
+    // Static duty resolution, decided once at initialise():
+    //   dutyMissing_ non-empty  -> every segment is E-invalid, named.
+    //   dutyByStateDiff_        -> all reacting species carry formation data:
+    //                              E = Sum dn_i*h_i(T)  (Hess built in).
+    //   otherwise               -> extent branch: solve N*xi = dn (least
+    //                              squares, pivot-checked) and E = Sum
+    //                              dH_j*xi_j with the announced overrides.
+    std::vector<std::string> dutyMissing_;
+    bool                     dutyByStateDiff_ = false;
+
+    void openSegment_(scalar t);
+    void closeSegment_(scalar t);
+    // The setParameter T IMPULSE (phase (e), #99-3): an instantaneous
+    // temperature forcing is an energy intervention, priced as the state
+    // difference E = H(n, T_new) - H(n, T_old) on the SAME elements datum
+    // the duty uses -- never Sum n*Cp*dT when enthalpy is available.
+    void emitImpulse_(scalar T_old, scalar T_new);
 };
 
 } // namespace Choupo

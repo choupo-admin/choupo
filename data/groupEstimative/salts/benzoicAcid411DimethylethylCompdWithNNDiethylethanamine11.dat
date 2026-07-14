@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): benzoic acid, 4-(1,1-dimethylethyl)-, compd. with n,n-diethylethanamine (1:1)  (C17H29NO2, CAS 68929-15-7)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           benzoicAcid411DimethylethylCompdWithNNDiethylethanamine11;
+formula        C17H29NO2;
+CAS            68929-15-7;
+InChIKey       CUFVEFNSNXROKL-UHFFFAOYSA-N;
+MW             279.424;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: benzoic acid, 4-(1,1-dimethylethyl)-, compd. with n,n-diethylethanamine (1:1)

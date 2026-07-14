@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-chloro-2-fluorobenzoic acid  (C7H4ClFO2, CAS 161957-55-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Chloro2FluorobenzoicAcid;
+formula     C7H4ClFO2;
+CAS         161957-55-7;
+InChIKey    FCSSYEWURMTUSM-UHFFFAOYSA-N;
+MW          174.555;      // g/mol [origin=calculated method=formula-sum]
+Tc          805.84;      // K   [origin=predictive method=joback]
+Pc          39.956;      // bar [origin=predictive method=joback]
+omega       0.7527;      // -   [origin=predictive method=lee-kesler]
+Tb          578.61;      // K   [origin=predictive method=joback]
+HvapTb      55508.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.8 0.5403 -0.00036352 9.04e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group COOH; count 1; } { group ACCl; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-chloranyl-2-fluoranyl-benzoic acid" "2-fluoro-3-chlorobenzoic acid" "3-chloro-2-fluoro benzoic acid" "3-chloro-2-fluoro-benzoic acid" "3-chloro-2-fluorbenzoic acid" "benzoic acid, chlorofluoro-" "3-chloro-2-fluorobenzoicacid" "3-chloro-2-fluorobenzoic acid," "buttpark 14\01-29" "l504" "161957-55-7 2-fluoro-3-chlorobenzoic acid" );
+gibbsFormation
+{
+    dHf_298   -536340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     428.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-449440.0
+    phase     gas;
+}

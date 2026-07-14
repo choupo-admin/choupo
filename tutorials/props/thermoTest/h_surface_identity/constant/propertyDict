@@ -1,0 +1,12 @@
+/*---------------------------------------------------------------------------*\
+  h_surface_identity / constant/propertyDict
+
+  Four workhorse volatiles (vendored from the standards) whose liquid AND
+  ideal-gas Cp blocks both exist -- exactly the species for which the
+  canonical surface's state identities are testable to round-off.
+\*---------------------------------------------------------------------------*/
+
+components       ( benzene  toluene  water  ethanol );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

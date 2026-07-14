@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl chrysanthemate  (C11H18O2, CAS 5460-63-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylChrysanthemate;
+formula     C11H18O2;
+CAS         5460-63-9;
+InChIKey    ITNHSNMLIFFVQC-UHFFFAOYSA-N;
+MW          182.263;      // g/mol [origin=calculated method=formula-sum]
+Tc          709.70;      // K   [origin=predictive method=joback]
+Pc          22.611;      // bar [origin=predictive method=joback]
+omega       0.4958;      // -   [origin=predictive method=lee-kesler]
+Tb          511.18;      // K   [origin=predictive method=joback]
+HvapTb      45669.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-83.93 1.4038 -0.0012081 4.527e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH; count 2; } { group C; count 1; } { group CH=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group dCH; count 1; } { group dC; count 1; } { group CH_ring; count 2; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2,2-dimethyl-3-(2-methylprop-1-enyl)cyclopropane-1-carboxylate" "cyclopropanecarboxylic acid, 2,2-dimethyl-3-(2-methyl-1-propenyl)-, methyl ester" "cyclopropanecarboxylic acid,2-dimethyl-3-(2-methylpropenyl)-, methyl ester" "cyclopropanecarboxylic acid, 2,2-dimethyl-3-(2-methylpropenyl)-, methyl ester" "cyclopropanecarboxylic acid, 2,2-dimethyl-3-(2-methylpropenyl)-, methyl ester (8ci)" "cyclopropanecarboxylic acid, 2-2-dimethyl-3-(2-methyl-1-propenyl)-, methyl ester, trans-" "cyclopropanecarboxylic acid,2-dimethyl-3-(2-methyl-1-propenyl)-, methyl ester" "methyl (1r,3s)-2,2-dimethyl-3-(2-methylprop-1-enyl)cyclopropane-1-carboxylate" "methyl trans-(+-)-2,2-dimethyl-3-(2-methyl-1-propenyl)cyclopropanecarboxylate" "cyclopropanecarboxylic acid, 2,2-dimethyl-3-(2-methyl-1-propenyl)-, methyl ester, trans-(+-)-" );
+gibbsFormation
+{
+    dHf_298   -432860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     519.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-157120.0
+    phase     gas;
+}

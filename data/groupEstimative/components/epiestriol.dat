@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: epiestriol  (C18H24O3, CAS 547-81-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        epiestriol;
+formula     C18H24O3;
+CAS         547-81-9;
+InChIKey    PROQIPRRNZUXQM-UHFFFAOYSA-N;
+MW          288.387;      // g/mol [origin=calculated method=formula-sum]
+Tc          1148.21;      // K   [origin=predictive method=joback]
+Pc          27.383;      // bar [origin=predictive method=joback]
+omega       1.6342;      // -   [origin=predictive method=lee-kesler]
+Tb          923.07;      // K   [origin=predictive method=joback]
+HvapTb      102977.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-224.56 2.44392 -0.00217092 8.078e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 4; } { group C; count 1; } { group ACH; count 3; } { group ACCH2; count 1; } { group ACCH; count 1; } { group OH; count 2; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 5; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "13-methyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthrene-3,16,17-triol" "16-epiestriol" "estra-1,3,5(10)-triene-3,16,17-triol, (16.beta.,17.beta.)-" "16" "a-hydroxy-17" "a-estradiol" "1,3,5(10)-estratriene-3,16" "a,17" "a-triol" "3,16" "a,17" "a-trihydroxy-1,3,5(10)-estratriene" "agn-pc-00dg5v" "tpc-s008" "tpc-s009" "estra-1,3,5(10)-triene-3,16,17-triol, (16.alpha.,17.beta.)-" "16beta-hydroxy-17beta-estradiol" "h065" );
+gibbsFormation
+{
+    dHf_298   -511260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     584.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-95370.0
+    phase     gas;
+}

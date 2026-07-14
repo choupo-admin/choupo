@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetraethylene glycol monobutyl ether  (C12H26O5, CAS 1559-34-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetraethyleneGlycolMonobutylEther;
+formula     C12H26O5;
+CAS         1559-34-8;
+InChIKey    MXVMODFDROLTFD-UHFFFAOYSA-N;
+MW          250.335;      // g/mol [origin=calculated method=formula-sum]
+Tc          817.37;      // K   [origin=predictive method=joback]
+Pc          18.170;      // bar [origin=predictive method=joback]
+omega       1.2727;      // -   [origin=predictive method=lee-kesler]
+Tb          656.02;      // K   [origin=predictive method=joback]
+HvapTb      68625.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (99.271 0.92502 -0.0002154 -7.78e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CH2O; count 3; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 11; } { group OH; count 1; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-(2-butoxyethoxy)ethoxy]ethoxy]ethanol" "2-(2-(2-(2-Butoxyethoxy)ethoxy)ethoxy)ethanol" "3,6,9,12-tetraoxahexadecan-1-ol" "butycenol 40" "butysenol 40" "Ethanol, 2-[2-[2-(2-butoxyethoxy)ethoxy]ethoxy]-" "tetraethylene glycol butyl ether" "tetraoxyethylene monobutyl ether" "tetraethylene glycol, monobutyl ether" "2-(2-(2-Butoxy-ethoxy)-ethoxy)-ethoxy)ethanol" "ETHANOL, 2-(2-(2-(2-BUTOXYETHOXY)ETHOXY)ETHOXY)-" "butyltetraglycol" );
+gibbsFormation
+{
+    dHf_298   -972120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     719.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-506660.0
+    phase     gas;
+}

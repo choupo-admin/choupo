@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,13-tetradecadiene  (C14H26, CAS 21964-49-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        113Tetradecadiene;
+formula     C14H26;
+CAS         21964-49-8;
+InChIKey    XMRSTLBCBDIKFI-UHFFFAOYSA-N;
+MW          194.362;      // g/mol [origin=calculated method=formula-sum]
+Tc          678.28;      // K   [origin=predictive method=joback]
+Pc          16.285;      // bar [origin=predictive method=joback]
+omega       0.6328;      // -   [origin=predictive method=lee-kesler]
+Tb          513.28;      // K   [origin=predictive method=joback]
+HvapTb      45418.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.82 1.2938 -0.0007836 1.902e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group CH2=CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 10; } { group dCH2; count 2; } { group dCH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetradeca-1,13-diene" "tetradecadiene-1,13" "tetradecadiene-1,13;1,13-tetradecadiene;tetradecadiene;tetradeca-1,13-diene;1,13-tetradecadiene 99+%" );
+gibbsFormation
+{
+    dHf_298   -81430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     692.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=242680.0
+    phase     gas;
+}

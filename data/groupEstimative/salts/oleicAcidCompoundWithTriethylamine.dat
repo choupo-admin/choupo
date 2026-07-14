@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): oleic acid, compound with triethylamine  (C24H49NO2, CAS 10103-17-0)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           oleicAcidCompoundWithTriethylamine;
+formula        C24H49NO2;
+CAS            10103-17-0;
+InChIKey       GCVIWLTVOFILLW-UHFFFAOYSA-N;
+MW             383.661;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+dissociatesTo  { oleic acid 1; triethylamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

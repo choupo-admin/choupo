@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-dimethylbutyric acid  (C6H12O2, CAS 595-37-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22DimethylbutyricAcid;
+formula     C6H12O2;
+CAS         595-37-9;
+InChIKey    VUAXHMVRKOTJKP-UHFFFAOYSA-N;
+MW          116.16;      // g/mol [origin=calculated method=formula-sum]
+Tc          680.39;      // K   [origin=predictive method=joback]
+Pc          35.179;      // bar [origin=predictive method=joback]
+omega       0.5742;      // -   [origin=predictive method=lee-kesler]
+Tb          479.16;      // K   [origin=predictive method=joback]
+HvapTb      44818.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.439 0.75046 -0.000547 1.601e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-dimethylbutanoic acid" "2,2-dimethyl butanoic acid" "2,2-dimethyl-butyric acid" "2,2-dimethyl-butanoic acid" "butyric acid, 2,2-dimethyl-" "butanoic acid, 2,2-dimethyl-" "neohexanoic acid" "dimethyl ethyl acetic acid" "butanoic acid,2-dimethyl-" "alpha,alpha-dimethylbutyric acid" "alpha,alpha-dimethylbutanoic acid" ".alpha.,.alpha.-dimethylbutyric acid" );
+gibbsFormation
+{
+    dHf_298   -526190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     403.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-341430.0
+    phase     gas;
+}

@@ -65,24 +65,13 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
         return -1.0;                       // unknown
     };
 
-    // Lowest-grade catalogue utility that serves a duty of sign(Q) at T
-    // (tightest feasible temperature margin).
+    // Lowest-grade catalogue utility that serves a duty of sign(Q) at T --
+    // the ONE allocation rule, shared with the batch campaign pass
+    // (UtilityCatalogue::pickForDuty; moved there in energy phase (f) so
+    // steady and batch can never diverge on the pick).
     auto pick = [&](bool heating, scalar T) -> const Utility*
     {
-        const Utility* best = nullptr;
-        scalar bestMargin = std::numeric_limits<scalar>::infinity();
-        for (const auto& name : UtilityCatalogue::availableNames())
-        {
-            const Utility& u = UtilityCatalogue::byName(name);
-            if (heating && u.tier != "heating") continue;
-            if (!heating && u.tier != "cooling") continue;
-            if (u.dutyPerKg <= 0.0) continue;
-            scalar margin;
-            if (heating) { if (u.T_in < T + dTmin) continue; margin = u.T_in - T; }
-            else         { if (u.T_in > T - dTmin) continue; margin = T - u.T_in; }
-            if (margin < bestMargin) { bestMargin = margin; best = &u; }
-        }
-        return best;
+        return UtilityCatalogue::pickForDuty(heating, T, dTmin);
     };
 
     // ---- carriers from topology (utility streams) -------------------------
@@ -92,7 +81,7 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
         for (const auto& [sname, s] : result.streams)
             if (!s.category.empty()) utilStreams[sname] = s.category;
 
-        if (flowsheet && flowsheet->found("units"))
+        if (flowsheet && flowsheet->hasDictList("units"))
             for (const auto& ud : flowsheet->lookupDictList("units"))
             {
                 const std::string uname = ud->lookupWordOrDefault("name", "");
@@ -111,7 +100,7 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
 
     // ---- explicit per-port utility (column condenser/reboiler block) ------
     std::map<std::string, std::string> portUtility;   // "<unit>/<port>" -> utility
-    if (flowsheet && flowsheet->found("units"))
+    if (flowsheet && flowsheet->hasDictList("units"))
         for (const auto& ud : flowsheet->lookupDictList("units"))
         {
             const std::string uname = ud->lookupWordOrDefault("name", "");
@@ -129,7 +118,7 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
     // ---- heat-links (energy wires kind heat): BOTH ends carried -----------
     std::map<std::string, std::string> heatLinkUnit;   // consumer -> "<src>.<port>"
     std::map<std::string, std::string> heatLinkPort;   // "<unit>/<port>" -> consumer
-    if (flowsheet && flowsheet->found("units"))
+    if (flowsheet && flowsheet->hasDictList("units"))
         for (const auto& ud : flowsheet->lookupDictList("units"))
         {
             const std::string uname = ud->lookupWordOrDefault("name", "");
@@ -155,7 +144,7 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
     //   turbine's generator, so charging it again to the grid double-counts.
     std::map<std::string, std::string> unitType;
     std::set<std::string> workCoupled;
-    if (flowsheet && flowsheet->found("units"))
+    if (flowsheet && flowsheet->hasDictList("units"))
         for (const auto& ud : flowsheet->lookupDictList("units"))
         {
             const std::string uname = ud->lookupWordOrDefault("name", "");

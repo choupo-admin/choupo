@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl pentafluorobenzoate  (C8H3F5O2, CAS 36629-42-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylPentafluorobenzoate;
+formula     C8H3F5O2;
+CAS         36629-42-2;
+InChIKey    UXJRQNXHCZKHRJ-UHFFFAOYSA-N;
+MW          226.1;      // g/mol [origin=calculated method=formula-sum]
+Tc          661.45;      // K   [origin=predictive method=joback]
+Pc          26.298;      // bar [origin=predictive method=joback]
+omega       0.7378;      // -   [origin=predictive method=lee-kesler]
+Tb          488.79;      // K   [origin=predictive method=joback]
+HvapTb      42310.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (89.07 0.39162 -9.48e-05 -4.41e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group AC; count 1; } { group ACF; count 5; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dC_ring; count 6; } { group F; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2,3,4,5,6-pentakis(fluoranyl)benzoate" "methyl 2,3,4,5,6-pentafluorobenzoate" "methyl perfluorobenzoate" "perfluorobenzoic acid methyl ester" "pentafluorobenzoic acid methyl ester" "pentafluorobenzoic acid, methyl ester" "2,3,4,5,6-pentafluorobenzoic acid methyl ester" "benzoic acid, 2,3,4,5,6-pentafluoro-, methyl ester" "benzoic acid,2,3,4,5,6-pentafluoro-, methyl ester" "benzoicacid, pentafluoro-, methyl ester (9ci);methyl pentafluorobenzoate;" );
+gibbsFormation
+{
+    dHf_298   -1327100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     540.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1203680.0
+    phase     gas;
+}

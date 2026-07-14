@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------*\
-  Meta-control for this case.
+  fitNRTL01_ethanol_water -- meta-control
 \*---------------------------------------------------------------------------*/
 
-application   choupoSolve;
+application   choupoProps;
 description   "Fit NRTL ethanol/water pair against 1 atm bubble-T data (Levenberg-Marquardt)";
 
 verbosity     1;

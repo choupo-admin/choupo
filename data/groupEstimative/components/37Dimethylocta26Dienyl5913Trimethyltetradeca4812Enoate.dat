@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,7-dimethylocta-2,6-dienyl 5,9,13-trimethyltetradeca-4,8,12-enoate  (C27H44O2, CAS 51-77-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        37Dimethylocta26Dienyl5913Trimethyltetradeca4812Enoate;
+formula     C27H44O2;
+CAS         51-77-4;
+InChIKey    ZPACYDRSPFRDHO-UHFFFAOYSA-N;
+MW          400.647;      // g/mol [origin=calculated method=formula-sum]
+Tc          1099.13;      // K   [origin=predictive method=joback]
+Pc          8.071;      // bar [origin=predictive method=joback]
+omega       0.7502;      // -   [origin=predictive method=lee-kesler]
+Tb          895.78;      // K   [origin=predictive method=joback]
+HvapTb      83293.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-65.611 2.61364 -0.0017809 4.99e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 7; } { group CH2; count 8; } { group CH=C; count 5; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 7; } { group CH2; count 9; } { group dCH; count 5; } { group dC; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7-dimethylocta-2,6-dienyl 5,9,13-trimethyltetradeca-4,8,12-trienoate" "agn-pc-03qpk9" "3,7-dimethylocta-2,6-dien-1-yl 5,9,13-trimethyltetradeca-4,8,12-trienoate" "4,8,12-tetradecatrienoic acid, 5,9,13-trimethyl-, (2e)-3,7-dimethyl-2,6-octadien-1-yl ester, (4e,8e)-" "[(2z)-3,7-dimethylocta-2,6-dienyl] 5,9,13-trimethyltetradeca-4,8,12-trienoate" "4,8,12-tetradecatrienoicacid, 5,9,13-trimethyl-, (2e)-3,7-dimethyl-2,6-octadien-1-yl ester, (4e,8e)-" "4,8,12-tetradecatrienoicacid, 5,9,13-trimethyl-, (2e)-3,7-dimethyl-2,6-octadienyl ester, (4e,8e)-(9ci);4,8,12-tetradecatrienoic acid, 5,9,13-trimethyl-,3,7-dimethyl-2,6-octadienyl ester, (e,e,e)- (8ci);5,9,13-trimethyl-4,8,12-tetradecatrienoic acid 3,7-dimethyl-2,6-octadienylester;alsanate;arsanyl;da 688;gefanil;gefarnil;gefarnyl;gefulcer;geranyl farnesylacetate;osteol;salanil;zackal;trans-3,7-dimethyl-2,6-octadienyl 5,9,13-trimethyl-4,8,12-tetradecatrienoate;" );
+gibbsFormation
+{
+    dHf_298   -380740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1205.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=224440.0
+    phase     gas;
+}

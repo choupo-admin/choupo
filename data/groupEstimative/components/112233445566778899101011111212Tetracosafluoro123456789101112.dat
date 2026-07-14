@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12-tetracosafluoro-1,2,3,4,5,6,7,8,9,10,11,12-dodecahydrotetracyclopenta[a,c,e,g][8]annulene  (C20F24, CAS 32936-99-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        112233445566778899101011111212Tetracosafluoro123456789101112;
+formula     C20F24;
+CAS         32936-99-5;
+InChIKey    ZYGDWGSSKZNUEX-UHFFFAOYSA-N;
+MW          696.172;      // g/mol [origin=calculated method=formula-sum]
+Tc          861.49;      // K   [origin=predictive method=joback]
+Pc          10.339;      // bar [origin=predictive method=joback]
+omega       0.9612;      // -   [origin=predictive method=lee-kesler]
+Tb          701.40;      // K   [origin=predictive method=joback]
+HvapTb      31420.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-558.73 5.5108 -0.007743 3.9044e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C=C; count 4; } { group CF2; count 12; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C_ring; count 12; } { group dC_ring; count 8; } { group F; count 24; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -4649710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1683.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4391720.0
+    phase     gas;
+}

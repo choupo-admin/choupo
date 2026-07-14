@@ -1,0 +1,83 @@
+/*---------------------------------------------------------------------------*\
+  column11_murphree  --  the same 15-stage benzene/toluene column as column09,
+  with ONE line added:  murphreeEfficiency 0.70.
+
+  Every column before this one is built from EQUILIBRIUM stages: the vapour
+  leaving a tray is in equilibrium with the liquid leaving it.  No real tray does
+  that.  The vapour spends a finite time in the froth and comes off somewhere
+  between what entered it and what equilibrium would give.  Murphree measured the
+  shortfall on the vapour side:
+
+      y_j = E_MV . y*_j  +  (1 - E_MV) . y_{j+1},      y*_j = K_j x_j
+
+  With E_MV = 1 the tray is an ideal stage and nothing changes -- every existing
+  case still runs byte for byte.  With E_MV < 1, `nStages` stops counting ideal
+  stages and starts counting REAL TRAYS.  Which matters, because the hydraulics
+  pass below sizes those trays: until now we were dimensioning, to the millimetre,
+  a tray we then assumed was perfect.
+
+  E_MV is a DECLARED number.  It comes from a correlation (O'Connell), a chart, or
+  plant data, and it is yours to own -- exactly like the orifice coefficient C_o
+  and the weep constant K2 in the hydraulics block.  Choupo will not invent it.
+
+  Compare against column09 (same column, E_MV = 1):
+
+      distillate benzene   98.12 %  (ideal)   ->   95.05 %  (E_MV = 0.70)
+      bottoms    toluene   98.12 %  (ideal)   ->   95.05 %
+
+  Fourteen real trays do less than fourteen ideal ones.  That is the whole content
+  of a tray efficiency, and it is why a column designed on ideal stages and built
+  on real trays comes up short.  Sweep E_MV and watch the limit close:
+
+      E_MV   0.50    0.70    0.90    0.99    0.999   1.000
+      x_D   0.9100  0.9505  0.9738  0.9806  0.9812  0.98125   <- the ideal stage
+
+  Nothing is switched on at E_MV = 1; the effective K collapses to K and the case
+  reproduces column09 to the last bit.
+
+  NOTE: the efficiency is folded into an effective K, with the vapour from the
+  tray below lagged one outer pass -- the linear solve keeps its tridiagonal
+  shape.  At convergence the lag vanishes and the Murphree relation holds exactly.
+  The MESH `simultaneous` method REFUSES the keyword rather than quietly returning
+  ideal stages: there the relation would have to enter the residual and Jacobian.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        column11;
+        type        distillationColumn;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        15;
+            feedStage      8;
+            refluxRatio    2.0;
+            distillateRate 50.0 kmol/h;
+            feedQuality    1.0;
+            P              1.01325 bar;
+
+            murphreeEfficiency  0.70;    // DECLARED -- yours to defend
+
+            hydraulics
+            {
+                trayType               sieve;
+                // diameter            1.2;      // uncomment -> RATING mode
+                traySpacing            0.50;     // m
+                weirHeight             0.050;    // m
+                holeDiameter           5.0e-3;   // m
+                holeAreaFraction       0.10;     // A_holes / A_active
+                downcomerAreaFraction  0.12;     // A_downcomer / A_tower
+                weirLengthFraction     0.77;     // l_weir / D  (goes with 0.12)
+                orificeCoefficient     0.84;     // C_o -- read off the Liebson chart
+                floodFraction          0.80;     // design target
+                K2                     30.7;     // weep chart at h_w + h_ow ~ 60 mm
+            }
+        }
+
+        compositionTol   1e-7;
+        maxOuterIter     200;
+    }
+);

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-bis(4-carboxyphenyl)hexafluoropropane  (C17H10F6O4, CAS 1171-47-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Bis4CarboxyphenylHexafluoropropane;
+formula     C17H10F6O4;
+CAS         1171-47-7;
+InChIKey    PHQYMDAUTAXXFZ-UHFFFAOYSA-N;
+MW          392.251;      // g/mol [origin=calculated method=formula-sum]
+Tc          1155.80;      // K   [origin=predictive method=joback]
+Pc          19.701;      // bar [origin=predictive method=joback]
+omega       1.3559;      // -   [origin=predictive method=lee-kesler]
+Tb          928.83;      // K   [origin=predictive method=joback]
+HvapTb      84850.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-79.45 1.8918 -0.00158832 4.976e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group ACH; count 8; } { group AC; count 4; } { group COOH; count 2; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 3; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group F; count 6; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[2-(4-carboxyphenyl)-1,1,1,3,3,3-hexakis(fluoranyl)propan-2-yl]benzoic acid" "2,2-bis[4-carboxyphenyl]hexafluoropropane" "4-[2-(4-carboxyphenyl)-1,1,1,3,3,3-hexafluoropropan-2-yl]benzoic acid" "4,4'-(hexafluoroisopropylidene)bis(benzoic acid)" "4,4'-(perfluoropropane-2,2-diyl)dibenzoic acid" "benzoic acid, 4,4'-(2,2,2-trifluoro-1-(trifluoromethyl)ethylidene)bis-" "benzoic acid, 4,4'-[2,2,2-trifluoro-1-(trifluoromethyl)ethylidene]bis-" "2,2-bis-(4-carboxyphenyl)hexafluoropropane" "4,4'-(1,1,1,3,3,3-hexafluoropropane-2,2-diyl)dibenzoic acid" "benzoic acid,4,4'-[2,2,2-trifluoro-1-(trifluoromethyl)ethylidene]bis-" "4-[1-(4-carboxyphenyl)-2,2,2-trifluoro-1-(trifluoromethyl)ethyl]benzoic acid" "benzoicacid, 4,4'-[2,2,2-trifluoro-1-(trifluoromethyl)ethylidene]di- (7ci);benzoicacid, 4,4'-[trifluoro-1-(trifluoromethyl)ethylidene]di- (8ci);2,2-bis(4-carboxyphenyl)hexafluoropropane;2,2-bis(p-carboxyphenyl)hexafluoropropane;4,4'-(1,1,1,3,3,3-hexafluoropropane-2,2-diyl)dibenzoic acid;4,4'-(hexafluoroisopropylidene)bis(benzoic acid);4,4'-(hexafluoroisopropylidene)dibenzoic acid;4,4'-hexafluoroisopropylidenediphenyl-1,1'-dicarboxylic acid;hexafluoro-2,2-bis(4-carboxyphenyl)propane;" );
+gibbsFormation
+{
+    dHf_298   -1847540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     772.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1550340.0
+    phase     gas;
+}

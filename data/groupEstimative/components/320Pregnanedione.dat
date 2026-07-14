@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,20-pregnanedione  (C21H32O2, CAS 128-23-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        320Pregnanedione;
+formula     C21H32O2;
+CAS         128-23-4;
+InChIKey    XMRPGKVKISIQBV-XWOJZHJZSA-N;
+MW          316.485;      // g/mol [origin=calculated method=formula-sum]
+Tc          1085.25;      // K   [origin=predictive method=joback]
+Pc          16.000;      // bar [origin=predictive method=joback]
+omega       0.7650;      // -   [origin=predictive method=lee-kesler]
+Tb          836.55;      // K   [origin=predictive method=joback]
+HvapTb      70616.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-281.15 2.86246 -0.0024037 8.7576e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 5; } { group C; count 2; } { group CH3CO; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 9; } { group CH_ring; count 5; } { group C_ring; count 2; } { group CdO; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5r,8r,9s,10s,13s,14s,17s)-17-ethanoyl-10,13-dimethyl-1,2,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydrocyclopenta[a]phenanthren-3-one" "5beta-dihydroprogesterone" "5beta-pregnan-3,20-dione" "(5beta)-pregnane-3,20-dione" "5beta-pregnane-3,20-dione" "5b-pregnane-3,20-dione" "ci2" "(5r,8r,9s,10s,13s,14s,17s)-17-acetyl-10,13-dimethyl-1,2,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydrocyclopenta[a]phenanthren-3-one" "5.beta.-dihydroprogesterone" "5" "a-pregnane-3,20-dione" "pregnane-3, (5.beta.)-" "5-beta-pregnan-3,20 dione" );
+gibbsFormation
+{
+    dHf_298   -497190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     672.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=22820.0
+    phase     gas;
+}

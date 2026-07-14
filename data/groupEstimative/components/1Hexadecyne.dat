@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-hexadecyne  (C16H30, CAS 629-74-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Hexadecyne;
+formula     C16H30;
+CAS         629-74-3;
+InChIKey    UCIDYSLOTJMRAM-UHFFFAOYSA-N;
+MW          222.416;      // g/mol [origin=calculated method=formula-sum]
+Tc          722.49;      // K   [origin=predictive method=joback]
+Pc          14.725;      // bar [origin=predictive method=joback]
+omega       0.6935;      // -   [origin=predictive method=lee-kesler]
+Tb          555.80;      // K   [origin=predictive method=joback]
+HvapTb      51068.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (2.123 1.42992 -0.00084253 1.9759e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 13; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 13; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexadec-1-yne" "tetradecylacetylene" "1-hexadecyne;" );
+gibbsFormation
+{
+    dHf_298   -81670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     748.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=306910.0
+    phase     gas;
+}

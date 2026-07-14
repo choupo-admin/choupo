@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (z)-2-(4-chlorophenyl)-3-hydroxy-prop-2-enal  (C9H7ClO2, CAS 205676-17-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        z24Chlorophenyl3HydroxyProp2Enal;
+formula     C9H7ClO2;
+CAS         205676-17-1;
+InChIKey    BPCQPZCKKNFWCF-UHFFFAOYSA-N;
+MW          182.603;      // g/mol [origin=calculated method=formula-sum]
+Tc          835.20;      // K   [origin=predictive method=joback]
+Pc          40.058;      // bar [origin=predictive method=joback]
+omega       0.9988;      // -   [origin=predictive method=lee-kesler]
+Tb          619.49;      // K   [origin=predictive method=joback]
+HvapTb      66388.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.19 0.7556 -0.00055986 1.624e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=C; count 1; } { group ACH; count 4; } { group AC; count 1; } { group OH; count 1; } { group CHO; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group OH; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-chlorophenyl)-3-oxidanyl-prop-2-enal" "agn-pc-0cjg1b" "2-(4-chlorophenyl)-3-hydroxyprop-2-enal" "(e)-2-(4-chlorophenyl)-3-hydroxyprop-2-enal" );
+gibbsFormation
+{
+    dHf_298   -150150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     486.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-48920.0
+    phase     gas;
+}

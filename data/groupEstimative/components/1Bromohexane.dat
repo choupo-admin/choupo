@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-bromohexane  (C6H13Br, CAS 111-25-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Bromohexane;
+formula     C6H13Br;
+CAS         111-25-1;
+InChIKey    MNDIARAMWBIKFW-UHFFFAOYSA-N;
+MW          165.074;      // g/mol [origin=calculated method=formula-sum]
+Tc          586.86;      // K   [origin=predictive method=joback]
+Pc          33.606;      // bar [origin=predictive method=joback]
+omega       0.4244;      // -   [origin=predictive method=lee-kesler]
+Tb          403.04;      // K   [origin=predictive method=joback]
+HvapTb      35385.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.625 0.61202 -0.000374 9.43e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanylhexane" "hexyl bromide" "n-hexyl bromide" "bromohexane" "hexane, 1-bromo-" "1-hexyl bromide" "1-bromhexan" "bromohexane;" "1-bromo-hexane" "hexane, bromo-" );
+gibbsFormation
+{
+    dHf_298   -140840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     440.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13960.0
+    phase     gas;
+}

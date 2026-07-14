@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluoro-2,7-dimethyloctane  (C10F22, CAS 3021-63-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluoro27Dimethyloctane;
+formula     C10F22;
+CAS         3021-63-4;
+InChIKey    OBAVAMUHCSFDSY-UHFFFAOYSA-N;
+MW          538.066;      // g/mol [origin=calculated method=formula-sum]
+Tc          482.61;      // K   [origin=predictive method=joback]
+Pc          11.276;      // bar [origin=predictive method=joback]
+omega       0.7001;      // -   [origin=predictive method=lee-kesler]
+Tb          380.04;      // K   [origin=predictive method=joback]
+HvapTb      6920.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-116.93 2.4714 -0.002599 9.5e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CF3; count 4; } { group CF2; count 4; } { group CF; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 10; } { group F; count 22; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,3,3,4,4,5,5,6,6,7,8,8,8-hexadecakis(fluoranyl)-2,7-bis(trifluoromethyl)octane" "1,1,1,2,3,3,4,4,5,5,6,6,7,8,8,8-hexadecafluoro-2,7-bis(trifluoromethyl)octane" "perfluoroalcane-c8" "octane, 1,1,1,2,3,3,4,4,5,5,6,6,7,8,8,8-hexadecafluoro-2,7-bis(trifluoromethyl)-" "octane,1,1,1,2,3,3,4,4,5,5,6,6,7,8,8,8-hexadecafluoro-2,7-bis(trifluoromethyl)-" "octane,hexadecafluoro-2,7-bis(trifluoromethyl)- (7ci,8ci); perfluoro-2,7-dimethyloctane" );
+gibbsFormation
+{
+    dHf_298   -4651650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     854.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4224100.0
+    phase     gas;
+}

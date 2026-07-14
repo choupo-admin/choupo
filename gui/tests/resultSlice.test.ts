@@ -13,6 +13,7 @@ import {
   sliceHasContent,
   sliceRunResult,
   stripScope,
+  withFrozenBoundaryFeeds,
 } from "../src/case/resultSlice.js";
 import type { RunResult, StreamResult } from "../src/adapters/SolverAdapter.js";
 
@@ -182,6 +183,38 @@ describe("sliceRunResult: synthesized run shape", () => {
     expect(sliceHasContent(sliceRunResult(parent, "NOWHERE"))).toBe(false);
     expect(sliceHasContent(sliceRunResult(parent, "SECTOR"))).toBe(true);
   });
+
+  it("pulls a boundary inlet fed by an internal parent stream (via connections)", () => {
+    // EXTRACTION's `liquor` inlet is fed by the parent's `BRINE.liquor`: the
+    // feed name is flattened+prefixed, so it is neither prefix-stripped into
+    // scope nor matched unprefixed -- boundaryFeeds resolves it, keeping the
+    // parent's last converged values.  A plant-source inlet (`organic`) still
+    // passes through unprefixed.
+    const p: RunResult = {
+      ...parent,
+      streams: [
+        stream("organic", { role: "feed", T: 298 }),
+        stream("BRINE.liquor", { T: 305, F: 42 }),
+        // a sector outlet that is INTERNAL in the parent (feeds nothing at the
+        // plant boundary): role "intermediate", prefix-strips to "raffinate".
+        stream("EXTRACTION.raffinate", { T: 297, role: "intermediate" }),
+      ],
+    };
+    const sliced = sliceRunResult(p, "EXTRACTION", {
+      localStreamNames: ["liquor", "organic", "raffinate"],
+      boundaryFeeds: { liquor: "BRINE.liquor", organic: "organic" },
+      boundaryOutlets: ["raffinate"],
+    });
+    const liquor = sliced.streams.find((s) => s.name === "liquor");
+    expect(liquor).toBeDefined();
+    expect(liquor!.T).toBe(305);
+    expect(liquor!.F).toBe(42);
+    expect(sliced.streams.find((s) => s.name === "organic")?.T).toBe(298);
+    // Boundary re-roling: inlets -> feed, outlets -> product, so the drilled
+    // sub-case's plant-boundary balance counts both sides.
+    expect(liquor!.role).toBe("feed");
+    expect(sliced.streams.find((s) => s.name === "raffinate")?.role).toBe("product");
+  });
 });
 
 describe("localStreamNames", () => {
@@ -205,5 +238,34 @@ describe("localStreamNames", () => {
 
   it("is empty for a missing flowsheet", () => {
     expect(localStreamNames(undefined)).toEqual([]);
+  });
+});
+
+describe("withFrozenBoundaryFeeds", () => {
+  const run: RunResult = {
+    status: "done", log: "", streams: [
+      stream("liquor", { role: "feed", F: 42, T: 305, P: 1e5, composition: { water: 0.9 } }),
+      stream("organic", { role: "feed", F: 40, T: 298 }),
+    ],
+    convergence: [], kpis: {}, profiles: [], utilityAllocation: [], advisories: [],
+  } as unknown as RunResult;
+
+  it("injects boundary inlets as feeds from the run (own def wins)", () => {
+    const fs = {
+      boundary: { inlets: ["liquor", "organic"], outlets: ["raff"] },
+      streams: { organic: { F: 99 } }, // authored -> wins
+    };
+    const out = withFrozenBoundaryFeeds(fs, run);
+    const outStreams = out["streams"] as Record<string, Record<string, unknown> | undefined>;
+    // liquor pulled from the run
+    expect(outStreams["liquor"]?.["T"]).toBe(305);
+    // organic kept its authored def
+    expect(outStreams["organic"]?.["F"]).toBe(99);
+  });
+
+  it("is a no-op without a run or a boundary", () => {
+    const fs = { streams: {}, units: [] };
+    expect(withFrozenBoundaryFeeds(fs, null)).toBe(fs);
+    expect(withFrozenBoundaryFeeds(fs, run)).toBe(fs); // no boundary
   });
 });

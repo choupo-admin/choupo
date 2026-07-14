@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(propylthio)ethanol  (C5H12OS, CAS 22812-90-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropylthioEthanol;
+formula     C5H12OS;
+CAS         22812-90-4;
+InChIKey    KCWWXXYQPUDKBX-UHFFFAOYSA-N;
+MW          120.21;      // g/mol [origin=calculated method=formula-sum]
+Tc          657.22;      // K   [origin=predictive method=joback]
+Pc          39.605;      // bar [origin=predictive method=joback]
+omega       0.7927;      // -   [origin=predictive method=lee-kesler]
+Tb          474.96;      // K   [origin=predictive method=joback]
+HvapTb      50220.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.234 0.50721 -0.0002384 3.05e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group OH; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group OH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-propylsulfanylethanol" "2-hydroxyethyl propyl sulfide" "2-hydroxyethyl n-propyl sulfide" "2-propylthioethan-1-ol" "2-(n-propylthio)ethanol" "2-(propylsulfanyl)ethanol" "t300" );
+gibbsFormation
+{
+    dHf_298   -256890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     463.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-112480.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: madrox  (C14H28O, CAS 37514-30-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        madrox;
+formula     C14H28O;
+CAS         37514-30-0;
+InChIKey    QACBYNLZEUNZSC-UHFFFAOYSA-N;
+MW          212.377;      // g/mol [origin=calculated method=formula-sum]
+Tc          825.16;      // K   [origin=predictive method=joback]
+Pc          21.061;      // bar [origin=predictive method=joback]
+omega       0.4018;      // -   [origin=predictive method=lee-kesler]
+Tb          587.75;      // K   [origin=predictive method=joback]
+HvapTb      49478.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-130.66 1.62704 -0.000962 2.288e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group C; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 11; } { group C_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methoxy-1-methyl-cyclododecane" "1-methoxy-1-methylcyclododecane" "1-methylcyclododecyl methyl ether" "cyclododecane, 1-methoxy-1-methyl-" "1-methyl-1-methoxycyclododecane" "cyclododecane,1-methoxy-1-methyl-" "1-methyl-1-methoxycyclododecane;1-methylcyclododecyl methyl ether; madrox" );
+gibbsFormation
+{
+    dHf_298   -431910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     871.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-91640.0
+    phase     gas;
+}

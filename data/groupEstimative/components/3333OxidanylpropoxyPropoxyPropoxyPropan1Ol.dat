@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-[3-[3-(3-oxidanylpropoxy)propoxy]propoxy]propan-1-ol  (C12H26O5, CAS 30242-05-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3333OxidanylpropoxyPropoxyPropoxyPropan1Ol;
+formula     C12H26O5;
+CAS         30242-05-8;
+InChIKey    SSQYDJBBYFFAOG-UHFFFAOYSA-N;
+MW          250.335;      // g/mol [origin=calculated method=formula-sum]
+Tc          892.12;      // K   [origin=predictive method=joback]
+Pc          19.983;      // bar [origin=predictive method=joback]
+omega       1.5383;      // -   [origin=predictive method=lee-kesler]
+Tb          725.78;      // K   [origin=predictive method=joback]
+HvapTb      82894.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (79.062 1.0222 -0.0003568 -1.32e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group OH; count 2; } { group CH2O; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 12; } { group OH; count 2; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -992130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     759.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-538480.0
+    phase     gas;
+}

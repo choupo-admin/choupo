@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: substance h 20  (C16H14O3, CAS 20890-72-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        substanceH20;
+formula     C16H14O3;
+CAS         20890-72-6;
+InChIKey    SJSYJHLLBBSLIH-SDNWHVSQSA-N;
+MW          254.285;      // g/mol [origin=calculated method=formula-sum]
+Tc          1042.76;      // K   [origin=predictive method=joback]
+Pc          25.559;      // bar [origin=predictive method=joback]
+omega       0.9842;      // -   [origin=predictive method=lee-kesler]
+Tb          795.99;      // K   [origin=predictive method=joback]
+HvapTb      76036.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-48.94 1.31402 -0.00088966 2.277e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=C; count 1; } { group ACH; count 9; } { group AC; count 3; } { group CH3O; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e)-3-(2-methoxyphenyl)-2-phenyl-prop-2-enoic acid" "cinnamic acid, o-methoxy-alpha-phenyl- (e)-" "trans-3-(o-methoxyphenyl)-2-phenylacrylic acid" "acide alpha phenyl-ortho-methoxycinnamique [french]" "(2e)-3-(2-methoxyphenyl)-2-phenylprop-2-enoic acid" "acide alpha phenyl-ortho-methoxycinnamique" "(e)-3-(2-methoxyphenyl)-2-phenylprop-2-enoic acid" );
+gibbsFormation
+{
+    dHf_298   -287040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     613.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-78210.0
+    phase     gas;
+}

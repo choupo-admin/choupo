@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-chloro-19-nortestosterone acetate  (C20H27ClO3, CAS 1164-99-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Chloro19NortestosteroneAcetate;
+formula     C20H27ClO3;
+CAS         1164-99-4;
+InChIKey    FNMAFGQVNCRKGS-JZQWUOKRSA-N;
+MW          350.883;      // g/mol [origin=calculated method=formula-sum]
+Tc          1115.01;      // K   [origin=predictive method=joback]
+Pc          15.936;      // bar [origin=predictive method=joback]
+omega       0.8582;      // -   [origin=predictive method=lee-kesler]
+Tb          869.00;      // K   [origin=predictive method=joback]
+HvapTb      76512.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-168.87 2.30704 -0.0016698 5.094e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group CH; count 5; } { group C; count 1; } { group CH2CO; count 1; } { group CH3COO; count 1; } { group Cl_C=C_; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 1; } { group dC_ring; count 2; } { group Cl; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(8r,9s,10r,13s,14s,17s)-4-chloranyl-13-methyl-3-oxidanylidene-2,6,7,8,9,10,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-17-yl] ethanoate" "4-chloro-17beta-hydroxyestr-4-en-3-one 17-acetate" "estr-4-en-3-one,17-(acetyloxy)-4-chloro-, (17b)-" "[(8r,9s,10r,13s,14s,17s)-4-chloro-13-methyl-3-oxo-2,6,7,8,9,10,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-17-yl] acetate" );
+gibbsFormation
+{
+    dHf_298   -657050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     614.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-155080.0
+    phase     gas;
+}

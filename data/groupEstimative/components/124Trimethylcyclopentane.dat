@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,4-trimethylcyclopentane  (C8H16, CAS 16883-48-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        124Trimethylcyclopentane;
+formula     C8H16;
+CAS         16883-48-0;
+InChIKey    PNUFYSGVPVMNRN-UHFFFAOYSA-N;
+MW          112.216;      // g/mol [origin=calculated method=formula-sum]
+Tc          580.27;      // K   [origin=predictive method=joback]
+Pc          28.536;      // bar [origin=predictive method=joback]
+omega       0.2537;      // -   [origin=predictive method=lee-kesler]
+Tb          388.58;      // K   [origin=predictive method=joback]
+HvapTb      33041.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-52.99 0.84256 -0.000428 6.71e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclopentane, 1,2,4-trimethyl-" "cyclopentane, 1,2,4-trimethyl-, (1.alpha.,2.beta.,4.alpha.)-" "cyclopentane, 1,2,4-trimethyl-, trans,cis-" "cyclopentane, 1,2,4-trimethyl-, cis-1,cis-2,trans-4-" "cyclopentane, 1,2,4-trimethyl-, (1.alpha.,2.alpha.,4.beta.)-" "(1alpha,2alpha,4beta)-1,2,4-trimethylcyclopentane" "(1alpha,2beta,4alpha)-1,2,4-trimethylcyclopentane" "(1alpha,2alpha,4alpha)-1,2,4-trimethylcyclopentane" "cyclopentane, 1,2,4-trimethyl-, (1alpha,2beta,4alpha)-" );
+gibbsFormation
+{
+    dHf_298   -188650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     332.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37610.0
+    phase     gas;
+}

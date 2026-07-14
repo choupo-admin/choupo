@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-allylthio-2-ethylbutyramide  (C9H17NOS, CAS 64037-65-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Allylthio2Ethylbutyramide;
+formula     C9H17NOS;
+CAS         64037-65-6;
+InChIKey    DYAWASAZUYPBDU-UHFFFAOYSA-N;
+MW          187.301;      // g/mol [origin=calculated method=formula-sum]
+Tc          812.51;      // K   [origin=predictive method=joback]
+Pc          28.173;      // bar [origin=predictive method=joback]
+omega       0.7011;      // -   [origin=predictive method=lee-kesler]
+Tb          594.15;      // K   [origin=predictive method=joback]
+HvapTb      57866.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.693 0.99293 -0.000645 1.5956e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group CH2=CH; count 1; } { group CONH2; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethyl-2-prop-2-enylsulfanyl-butanamide" "2-allylmercapto-2-ethylbutyramide" "acetamide, 2-(allylthio)-2,2-diethyl-" "butyramide, 2-(allylthio)-2-ethyl-" "alpha-allylmercapto-alpha,alpha-diethylacetamide" "2-ethyl-2-prop-2-enylsulfanylbutanamide" "butanamide, 2-ethyl-2-(2-propenylthio)-" "butanamide, 2-ethyl-2- (2-propenylthio)-" );
+gibbsFormation
+{
+    dHf_298   -149330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     602.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=86230.0
+    phase     gas;
+}

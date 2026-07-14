@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,4,5,6-pentamethylbenzyl chloride  (C12H17Cl, CAS 484-65-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23456PentamethylbenzylChloride;
+formula     C12H17Cl;
+CAS         484-65-1;
+InChIKey    CXUAEBDTJFKMBV-UHFFFAOYSA-N;
+MW          196.718;      // g/mol [origin=calculated method=formula-sum]
+Tc          772.83;      // K   [origin=predictive method=joback]
+Pc          21.613;      // bar [origin=predictive method=joback]
+omega       0.5415;      // -   [origin=predictive method=lee-kesler]
+Tb          563.17;      // K   [origin=predictive method=joback]
+HvapTb      52277.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (42.461 0.7743 -0.0003454 4.16e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 1; } { group ACCH3; count 5; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 1; } { group dC_ring; count 6; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(chloromethyl)-2,3,4,5,6-pentamethyl-benzene" "pentamethylbenzyl chloride" "benzene, (chloromethyl)pentamethyl-" "(chloromethyl)pentamethylbenzene" "1-(chloromethyl)-2,3,4,5,6-pentamethylbenzene" "benzene, 1-(chloromethyl)-2,3,4,5,6-pentamethyl-" "cxuaebdtjfkmbv-uhfffaoysa-" "2,4,5,6-pentamethylbenzyl chloride" "alpha-chloro-2,3,4,5,6-pentamethyltoluene" "2-(chloromethyl)-1,3,4,5,6-pentamethylbenzene" );
+gibbsFormation
+{
+    dHf_298   -127570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     519.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=102490.0
+    phase     gas;
+}

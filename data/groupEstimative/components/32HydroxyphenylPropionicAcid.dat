@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(2-hydroxyphenyl)propionic acid  (C9H10O3, CAS 495-78-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        32HydroxyphenylPropionicAcid;
+formula     C9H10O3;
+CAS         495-78-3;
+InChIKey    CJBDUOMQLFKVQC-UHFFFAOYSA-N;
+MW          166.176;      // g/mol [origin=calculated method=formula-sum]
+Tc          891.69;      // K   [origin=predictive method=joback]
+Pc          43.684;      // bar [origin=predictive method=joback]
+omega       1.0074;      // -   [origin=predictive method=lee-kesler]
+Tb          658.33;      // K   [origin=predictive method=joback]
+HvapTb      68082.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-43.518 0.9853 -0.00082596 2.825e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 4; } { group ACCH2; count 1; } { group ACOH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(2-hydroxyphenyl)propanoic acid" "melilotic acid" "melilotate" "benzenepropanoic acid, 2-hydroxy-" "2-hydroxyhydrocinnamic acid" "3-(o-hydroxyphenyl) propionic acid" "o-hydroxyphenylpropionic acid" "2-hydroxyphenylpropanoate" "2-hydroxybenzenepropanoic acid" "beta-(o-hydroxyphenyl)propionic acid" "3-(2-hydroxyphenyl) propionate" "o-hydrocoumaric acid" );
+gibbsFormation
+{
+    dHf_298   -520140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     479.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-361220.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diisoamyl adipate  (C16H30O4, CAS 6624-70-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diisoamylAdipate;
+formula     C16H30O4;
+CAS         6624-70-0;
+InChIKey    HIEOGLNFUKBFCF-UHFFFAOYSA-N;
+MW          286.412;      // g/mol [origin=calculated method=formula-sum]
+Tc          856.35;      // K   [origin=predictive method=joback]
+Pc          13.437;      // bar [origin=predictive method=joback]
+omega       0.9298;      // -   [origin=predictive method=lee-kesler]
+Tb          681.24;      // K   [origin=predictive method=joback]
+HvapTb      65248.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (35.798 1.42608 -0.0006638 6.4e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 6; } { group CH; count 2; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 8; } { group CH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(3-methylbutyl) hexanedioate" "di(3-methylbutyl)adipate" "bis(3-methylbutyl) adipate" "adipic acid bis(3-methylbutyl) ester" "adipic acid, diisopentyl ester" "hexanedioic acid, bis(3-methylbutyl) ester" "hexanedioic acid,1,6-bis(3-methylbutyl) ester" "hexanedioic acid, bis(3-methylbutyl) ester (9ci)" );
+gibbsFormation
+{
+    dHf_298   -1018690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     862.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-541780.0
+    phase     gas;
+}

@@ -1,0 +1,13 @@
+/*---------------------------------------------------------------------------*\
+  estimate_ethanol_benzene / constant/thermoPackage
+
+  Ethanol (a strong H-bonder, Joback's honest miss on Tb) and benzene (an
+  aromatic ring, Joback at its best) are here as ESTIMATION TARGETS only: the
+  two ops build group-contribution proposals and compare them to the curated
+  references.  No mixture is ever flashed, so the ideal-gamma / ideal-gas
+  pair is an inert placeholder, not a claim about ethanol-benzene physics.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  benzene );
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

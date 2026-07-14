@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexadecyl lactate  (C19H38O3, CAS 35274-05-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexadecylLactate;
+formula     C19H38O3;
+CAS         35274-05-6;
+InChIKey    WUKXMJCZWYUIRZ-UHFFFAOYSA-N;
+MW          314.51;      // g/mol [origin=calculated method=formula-sum]
+Tc          961.40;      // K   [origin=predictive method=joback]
+Pc          11.593;      // bar [origin=predictive method=joback]
+omega       1.0872;      // -   [origin=predictive method=lee-kesler]
+Tb          784.28;      // K   [origin=predictive method=joback]
+HvapTb      81586.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.635 1.79394 -0.0009488 1.671e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 15; } { group CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 15; } { group CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexadecyl 2-oxidanylpropanoate" "cetyl lactate" "propanoic acid, 2-hydroxy-, hexadecyl ester" "n-hexadecyl lactate" "lactic acid hexadecyl ester" "hexadecyl 2-hydroxypropanoate" "hexadecyl 2-hydroxypropionate" "n-hexadecyl-2-hydroxypropanoate" "2-hydroxypropionic acid hexadecyl ester" "propanoic acid,2-hydroxy-, hexadecyl ester" "lacticacid, hexadecyl ester (7ci);cetyl lactate;cyclochem cl;hexadecyl lactate;" );
+gibbsFormation
+{
+    dHf_298   -910280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     988.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-340530.0
+    phase     gas;
+}

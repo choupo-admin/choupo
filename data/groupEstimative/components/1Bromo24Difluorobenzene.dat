@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-bromo-2,4-difluorobenzene  (C6H3BrF2, CAS 348-57-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Bromo24Difluorobenzene;
+formula     C6H3BrF2;
+CAS         348-57-2;
+InChIKey    MGHBDQZXPCTTIH-UHFFFAOYSA-N;
+MW          192.99;      // g/mol [origin=calculated method=formula-sum]
+Tc          651.35;      // K   [origin=predictive method=joback]
+Pc          43.626;      // bar [origin=predictive method=joback]
+omega       0.4299;      // -   [origin=predictive method=lee-kesler]
+Tb          438.22;      // K   [origin=predictive method=joback]
+HvapTb      37351.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.5 0.4377 -0.00030392 8.12e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group Br; count 1; } { group ACF; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-2,4-bis(fluoranyl)benzene" "2,4-difluorobromobenzene" "fr cf de" "benzene, 1-bromo-2,4-difluoro-" "1-bromo-2,4-difluoro-benzene" "1-bromo-2 4-difluorobenzene" "2,4-difluoro-1-bromobenzene" "bromo-2,4-difluorobenzene" "am928" "1-bromo-2,4-difluorobenzene;2,4-difluorobromobenzene" "2,4-difluoro-1-bromobenzene;2,4-difluorobromobenzene;2,4-difluorophenylbromide;4-bromo-1,3-difluorobenzene;" );
+gibbsFormation
+{
+    dHf_298   -319470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     385.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-282510.0
+    phase     gas;
+}

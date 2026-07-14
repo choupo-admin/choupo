@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-octanone, 1-(2,5-dihydroxy-4-octylphenyl)-  (C22H36O3, CAS 63134-27-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Octanone125Dihydroxy4Octylphenyl;
+formula     C22H36O3;
+CAS         63134-27-0;
+InChIKey    DCJOHKAKSCTBKS-UHFFFAOYSA-N;
+MW          348.527;      // g/mol [origin=calculated method=formula-sum]
+Tc          1166.16;      // K   [origin=predictive method=joback]
+Pc          14.208;      // bar [origin=predictive method=joback]
+omega       1.2488;      // -   [origin=predictive method=lee-kesler]
+Tb          949.73;      // K   [origin=predictive method=joback]
+HvapTb      100278.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.197 2.23664 -0.00163118 5.0836e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 11; } { group ACH; count 2; } { group AC; count 1; } { group ACCH2; count 1; } { group ACOH; count 2; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 13; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[4-octyl-2,5-bis(oxidanyl)phenyl]octan-1-one" "1-(2,5-dihydroxy-4-octylphenyl)octan-1-one" );
+gibbsFormation
+{
+    dHf_298   -739550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     979.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-201020.0
+    phase     gas;
+}

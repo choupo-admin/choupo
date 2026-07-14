@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-tridecanethiol  (C13H28S, CAS 19484-26-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Tridecanethiol;
+formula     C13H28S;
+CAS         19484-26-5;
+InChIKey    IPBROXKVGHZHJV-UHFFFAOYSA-N;
+MW          216.427;      // g/mol [origin=calculated method=formula-sum]
+Tc          736.78;      // K   [origin=predictive method=joback]
+Pc          17.332;      // bar [origin=predictive method=joback]
+omega       0.7025;      // -   [origin=predictive method=lee-kesler]
+Tb          559.90;      // K   [origin=predictive method=joback]
+HvapTb      51269.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.962 1.26612 -0.0007058 1.491e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 12; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tridecane-1-thiol" "tridecyl mercaptan" "1-tridecanthiol" );
+gibbsFormation
+{
+    dHf_298   -273170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     724.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=87970.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (s)-2-tetrahydrofuroic acid  (C5H8O3, CAS 87392-07-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        s2TetrahydrofuroicAcid;
+formula     C5H8O3;
+CAS         87392-07-2;
+InChIKey    UJJLJRQIPMGXEZ-BYPYZUCNSA-N;
+MW          116.116;      // g/mol [origin=calculated method=formula-sum]
+Tc          723.67;      // K   [origin=predictive method=joback]
+Pc          48.360;      // bar [origin=predictive method=joback]
+omega       0.6230;      // -   [origin=predictive method=lee-kesler]
+Tb          501.74;      // K   [origin=predictive method=joback]
+HvapTb      48655.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-40.22 0.6583 -0.0004343 1.071e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group FCH2O; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group O_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-oxolane-2-carboxylic acid" "(s)-(-)-2-tetrahydrofuroic acid" "(s)-(-)-tetrahydro-2-furoic acid" "(s)-(-)-2-carboxytetrahydrofuroic acid" "(s)-tetrahydro-2-furoic acid" "(s)-(-)-tetrahydrofuran-2-carboxylic acid" "tfb" "(-)-tetrahydro-2-furoic acid" "(2s)-2-oxolanecarboxylic acid" "tetrahydro-2-furoic acid, (-)-" "(2s)-(-)-2-carboxytetrahydrofuran" "(s)-tetrahydro-2-furancarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -568320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     302.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-402260.0
+    phase     gas;
+}

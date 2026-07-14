@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-dibutylformamide  (C9H19NO, CAS 761-65-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H19NO (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        nNDibutylformamide;
+formula     C9H19NO;
+CAS         761-65-9;
+InChIKey    NZMAJUHVSZBJHL-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          157.257;      // g/mol [origin=calculated method=formula-sum]
+Tc          554.04;      // K   [origin=predictive method=joback]
+Pc          24.029;      // bar [origin=predictive method=joback]
+omega       0.4598;      // -   [origin=predictive method=lee-kesler]
+Tb          394.38;      // K   [origin=predictive method=joback]
+HvapTb      35298.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-35.484 0.99084 -0.0007314 2.3e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CONCH3CH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dibutylmethanamide" "formamide, n,n-dibutyl-" "dibutylformamide" "n,n-di-n-butylformamide" "formamide, n,n-di-n-butyl-" "formamide, dibutyl-" "n-formyldibutylamine" "formamide,n-dibutyl-" "n,n-di-butylformamide" "formamide,n-di-n-butyl-" "dibutylamid kyseliny mravenci" "u184" );
+gibbsFormation
+{
+    dHf_298   -85110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     603.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=179640.0
+    phase     gas;
+}

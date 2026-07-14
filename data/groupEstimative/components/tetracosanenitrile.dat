@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetracosanenitrile  (C24H47N, CAS 95804-62-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetracosanenitrile;
+formula     C24H47N;
+CAS         95804-62-9;
+InChIKey    RPUYSRPQKZDIAL-UHFFFAOYSA-N;
+MW          349.647;      // g/mol [origin=calculated method=formula-sum]
+Tc          1041.63;      // K   [origin=predictive method=joback]
+Pc          7.948;      // bar [origin=predictive method=joback]
+omega       0.7592;      // -   [origin=predictive method=lee-kesler]
+Tb          850.80;      // K   [origin=predictive method=joback]
+HvapTb      79496.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.928 2.21862 -0.0012508 2.681e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 21; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 22; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "agn-pc-00oagz" );
+gibbsFormation
+{
+    dHf_298   -373810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1096.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=284380.0
+    phase     gas;
+}

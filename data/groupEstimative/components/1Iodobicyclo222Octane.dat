@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-iodobicyclo[2.2.2]octane  (C8H13I, CAS 931-98-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Iodobicyclo222Octane;
+formula     C8H13I;
+CAS         931-98-6;
+InChIKey    SMDJHIPXLFNPTJ-UHFFFAOYSA-N;
+MW          236.092;      // g/mol [origin=calculated method=formula-sum]
+Tc          757.63;      // K   [origin=predictive method=joback]
+Pc          36.598;      // bar [origin=predictive method=joback]
+omega       0.2714;      // -   [origin=predictive method=lee-kesler]
+Tb          498.04;      // K   [origin=predictive method=joback]
+HvapTb      41794.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-153.41 1.3773 -0.001373 5.607e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 1; } { group C; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 6; } { group CH_ring; count 1; } { group C_ring; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-iodanylbicyclo[2.2.2]octane" "bicyclo[2.2.2]octane, 1-iodo-" "bicyclo(2.2.2)octane, 1-iodo-" "4-iodobicyclo[2.2.2]octane" );
+gibbsFormation
+{
+    dHf_298   16940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     452.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=166410.0
+    phase     gas;
+}

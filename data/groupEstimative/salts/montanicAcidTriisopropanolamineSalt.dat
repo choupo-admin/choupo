@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): montanic acid, triisopropanolamine salt  (C37H77NO5, CAS 67952-99-2)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           montanicAcidTriisopropanolamineSalt;
+formula        C37H77NO5;
+CAS            67952-99-2;
+InChIKey       OQOLGRQQMXUQNR-UHFFFAOYSA-N;
+MW             616.025;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+dissociatesTo  { montanic acid 1; triisopropanolamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

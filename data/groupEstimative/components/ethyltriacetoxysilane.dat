@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyltriacetoxysilane  (C8H14O6Si, CAS 17689-77-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H14O6Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        ethyltriacetoxysilane;
+formula     C8H14O6Si;
+CAS         17689-77-9;
+InChIKey    KXJLGCBCRCSXQF-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          234.279;      // g/mol [origin=calculated method=formula-sum]
+Tc          747.23;      // K   [origin=predictive method=joback]
+Pc          22.871;      // bar [origin=predictive method=joback]
+omega       0.7456;      // -   [origin=predictive method=lee-kesler]
+Tb          558.70;      // K   [origin=predictive method=joback]
+HvapTb      55917.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (112.661 0.39328 0.0002872 -3.045e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH3COO; count 3; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[diacetyloxy(ethyl)silyl] ethanoate" "triacetoxy(ethyl)silane" "silanetriol, ethyl-, triacetate" "ethylsilanetriyl triacetate" "(triacetoxy)ethylsilane" "silanetriol, 1-ethyl-, 1,1,1-triacetate" "[diacetyloxy(ethyl)silyl] acetate" "silanetriol,ethyl-, triacetate (6ci,7ci,8ci,9ci);ac 3034;e 6345;ethylsilanetrioltriacetate;ethyltriacetoxysilane;triacetoxyethylsilane;tris(acetyloxy)ethylsilane;ethylsilanetriyl triacetate;silanetriol, 1-ethyl-, triacetate;" );
+gibbsFormation
+{
+    dHf_298   -1271910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     747.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1019390.0
+    phase     gas;
+}

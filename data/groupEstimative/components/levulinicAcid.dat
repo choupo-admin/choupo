@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: levulinic acid  (C5H8O3, CAS 123-76-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        levulinicAcid;
+formula     C5H8O3;
+CAS         123-76-2;
+InChIKey    JOOXCMJARBKPKM-UHFFFAOYSA-N;
+MW          116.116;      // g/mol [origin=calculated method=formula-sum]
+Tc          714.49;      // K   [origin=predictive method=joback]
+Pc          41.839;      // bar [origin=predictive method=joback]
+omega       0.7797;      // -   [origin=predictive method=lee-kesler]
+Tb          513.38;      // K   [origin=predictive method=joback]
+HvapTb      50634.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.302 0.50162 -0.0003021 6.726e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH3CO; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CdO; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-oxidanylidenepentanoic acid" "4-oxopentanoic acid" "laevulinic acid" "pentanoic acid, 4-oxo-" "levulic acid" "4-oxovaleric acid" "gamma-ketovaleric acid" "3-acetylpropionic acid" "4-ketovaleric acid" "levulinsaeure" "acetopropionic acid" "leva" );
+gibbsFormation
+{
+    dHf_298   -609380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     430.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-481610.0
+    phase     gas;
+}

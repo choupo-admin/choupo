@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 3-bromobenzoate  (C9H9BrO2, CAS 24398-88-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl3Bromobenzoate;
+formula     C9H9BrO2;
+CAS         24398-88-7;
+InChIKey    QAUASTLEZAPQTB-UHFFFAOYSA-N;
+MW          229.073;      // g/mol [origin=calculated method=formula-sum]
+Tc          790.85;      // K   [origin=predictive method=joback]
+Pc          34.930;      // bar [origin=predictive method=joback]
+omega       0.6189;      // -   [origin=predictive method=lee-kesler]
+Tb          561.56;      // K   [origin=predictive method=joback]
+HvapTb      52408.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.701 0.70382 -0.00040676 7.35e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 4; } { group AC; count 2; } { group Br; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 3-bromanylbenzoate" "ethyl3-bromobenzoate" "3-bromobenzoic acid ethyl ester" "benzoic acid, m-bromo-, ethyl ester" "benzoic acid, 3-bromo-, ethyl ester" "m-bromobenzoic acid, ethyl ester" "ethyl-3-bromobenzoate" "3-(ethoxycarbonyl)bromobenzene" "qauastlezapqtb-uhfffaoysa-" "m-bromo benzoic acid ethyl ester" "ethyl-3-bromo benzoate;3-bromoethyl benzoate;m-bromo benzoic acid ethyl ester;" );
+gibbsFormation
+{
+    dHf_298   -294980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     496.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-168370.0
+    phase     gas;
+}

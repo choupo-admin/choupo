@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentafluoropropionamide  (C3H2F5NO, CAS 354-76-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentafluoropropionamide;
+formula     C3H2F5NO;
+CAS         354-76-7;
+InChIKey    KQTOYEUYHXUEDB-UHFFFAOYSA-N;
+MW          163.045;      // g/mol [origin=calculated method=formula-sum]
+Tc          554.56;      // K   [origin=predictive method=joback]
+Pc          40.415;      // bar [origin=predictive method=joback]
+omega       0.5485;      // -   [origin=predictive method=lee-kesler]
+Tb          384.53;      // K   [origin=predictive method=joback]
+HvapTb      32982.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.48 0.6333 -0.0005897 1.9826e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CF3; count 1; } { group CF2; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group F; count 5; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,3-pentakis(fluoranyl)propanamide" "2,2,3,3,3-pentafluoropropanamide" "propanamide, 2,2,3,3,3-pentafluoro-" "pentafluoropropanamide" "2,2,3,3,3-pentafluoropropionamide" "2,2,3,3,3-pentafluoropropionamide," "propanamide,2,2,3,3,3-pentafluoro-" "propionamide,2,2,3,3,3-pentafluoro- (6ci,7ci,8ci);2,2,3,3,3-pentafluoropropionamide;pentafluoropropionamide;" );
+gibbsFormation
+{
+    dHf_298   -1182090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     431.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1056460.0
+    phase     gas;
+}

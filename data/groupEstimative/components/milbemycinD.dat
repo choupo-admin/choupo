@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: milbemycin d  (C33H48O7, CAS 77855-81-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        milbemycinD;
+formula     C33H48O7;
+CAS         77855-81-3;
+InChIKey    BWCRYQGQPDBOAU-WZBVPYLGSA-N;
+MW          556.74;      // g/mol [origin=calculated method=formula-sum]
+Tc          1681.89;      // K   [origin=predictive method=joback]
+Pc          9.663;      // bar [origin=predictive method=joback]
+omega       0.7941;      // -   [origin=predictive method=lee-kesler]
+Tb          1355.55;      // K   [origin=predictive method=joback]
+HvapTb      144067.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-254.89 3.82752 -0.0027331 8.223e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 6; } { group CH; count 7; } { group C; count 2; } { group CH=CH; count 1; } { group CH=C; count 3; } { group OH; count 2; } { group CH-O; count 2; } { group FCH2O; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 8; } { group C_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 3; } { group OH; count 2; } { group O_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "antibiotic b 41d" "b 41d" "(6r,25)-5-o-demethyl-28-deoxy-6,28-epoxy-25-(1-methylethyl)milbemycin b" "milbemycin b, 5-o-demethyl-28-deoxy-6,28-epoxy-25-(1-methylethyl)-, (6r,25r)-" "5-hydroxymilbemycin beta7" );
+gibbsFormation
+{
+    dHf_298   -1338060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     997.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-429960.0
+    phase     gas;
+}

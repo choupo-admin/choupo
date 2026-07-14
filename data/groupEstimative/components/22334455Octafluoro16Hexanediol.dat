@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,3,3,4,4,5,5-octafluoro-1,6-hexanediol  (C6H6F8O2, CAS 355-74-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22334455Octafluoro16Hexanediol;
+formula     C6H6F8O2;
+CAS         355-74-8;
+InChIKey    NHEKBXPLFJSSBZ-UHFFFAOYSA-N;
+MW          262.096;      // g/mol [origin=calculated method=formula-sum]
+Tc          640.85;      // K   [origin=predictive method=joback]
+Pc          27.877;      // bar [origin=predictive method=joback]
+omega       1.3207;      // -   [origin=predictive method=lee-kesler]
+Tb          502.48;      // K   [origin=predictive method=joback]
+HvapTb      50588.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-41.148 1.2394 -0.0011818 4.122e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group OH; count 2; } { group CF2; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group C; count 4; } { group F; count 8; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,5,5-octakis(fluoranyl)hexane-1,6-diol" "2,2,3,3,4,4,5,5-octafluorohexane-1,6-diol" "1,6-dihydroxy-2,2,3,3,4,4,5,5-octafluorohexane" "1,6-hexanediol, 2,2,3,3,4,4,5,5-octafluoro-" "nhekbxplfjssbz-uhfffaoysa-" "2,2,3,3,4,4,5,5-octafluorohexan-1,6-diol" "2,2,3,3,4,4,5,5octafluoro-1,6-hexanediol" "1,6-dihydroxy-2,2,3,3,4,4,5,5-octafluorohexane;2,2,3,3,4,4,5,5-octafluoro-1,6-hexanediol;2,2,3,3,4,4,5,5-octafluorohexanediol;a 7412;c 6di0l;2,2,3,3,4,4,5,5-octafluorohexane-1,6-diol;1,6-hexanediol, 2,2,3,3,4,4,5,5-octafluoro-;" );
+gibbsFormation
+{
+    dHf_298   -2075510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     589.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1821120.0
+    phase     gas;
+}

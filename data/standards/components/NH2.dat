@@ -13,6 +13,7 @@ CAS            13770-40-6;
 
 MW             16.0226;       // kg/kmol
 nonvolatile    true;
+tags           ( radical gasPhase combustion );
 
 gibbsFormation
 {

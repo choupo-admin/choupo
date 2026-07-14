@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  enrtl_multisalt_nacl_kcl / constant/thermoPackage
+
+  Water, the shared solvent of the Harned sweep, is the package's only
+  component: the two salts (NaCl + KCl at 4 mol/kg total) and their ions are
+  declared in the enrtlMultiSalt ops themselves, whose Song & Chen 2009
+  parameters come from the case-local constant/electrolyte/enrtl.dat.  The
+  ideal/ideal-gas pair here never touches gamma_pm -- it only supplies the
+  solvent basis of the package.
+\*---------------------------------------------------------------------------*/
+
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(11-methyldodecyl) dodecanedioate  (C38H74O4, CAS 84731-63-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis11MethyldodecylDodecanedioate;
+formula     C38H74O4;
+CAS         84731-63-5;
+InChIKey    XLXMYOUBZINZAX-UHFFFAOYSA-N;
+MW          595.006;      // g/mol [origin=calculated method=formula-sum]
+Tc          1592.29;      // K   [origin=predictive method=joback]
+Pc          4.269;      // bar [origin=predictive method=joback]
+omega       -0.2362;      // -   [origin=predictive method=lee-kesler]
+Tb          1184.60;      // K   [origin=predictive method=joback]
+HvapTb      114220.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.8 3.51608 -0.0018606 3.258e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 28; } { group CH; count 2; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 30; } { group CH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodecanedioic acid, diisotridecyl ester" "diisotridecyl dodecanedioate" "dodecanedioic acid, di-c11-14-isoalkyl esters, c13-rich" "dodecanedioic acid,1,12-diisotridecyl ester" "dodecanedioicacid, diisotridecyl ester (9ci)" );
+gibbsFormation
+{
+    dHf_298   -1472770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1719.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-356540.0
+    phase     gas;
+}

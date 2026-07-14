@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4'-dimethoxy-trans-stilbene  (C16H16O2, CAS 15638-14-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44DimethoxyTransStilbene;
+formula     C16H16O2;
+CAS         15638-14-9;
+InChIKey    CAWFCZIEFIQKRV-UHFFFAOYSA-N;
+MW          240.302;      // g/mol [origin=calculated method=formula-sum]
+Tc          912.80;      // K   [origin=predictive method=joback]
+Pc          22.590;      // bar [origin=predictive method=joback]
+omega       0.6905;      // -   [origin=predictive method=lee-kesler]
+Tb          678.00;      // K   [origin=predictive method=joback]
+HvapTb      61864.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.05 1.14064 -0.00063672 1.182e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group ACH; count 8; } { group AC; count 4; } { group CH3O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methoxy-4-[2-(4-methoxyphenyl)ethenyl]benzene" "4,4'-dimethoxystilbene" "benzene, 1,1'-(1,2-ethenediyl)bis[4-methoxy-, (e)-" "1,1'-(z)-ethene-1,2-diylbis(4-methoxybenzene)" "benzene,1,1'-(1e)-1,2-ethenediylbis[4-methoxy-" "benzene,1,1'-(1,2-ethenediyl)bis[4-methoxy-, (e)-; stilbene, 4,4'-dimethoxy-, (e)-(8ci); stilbene, 4,4'-dimethoxy-, trans- (6ci);(e)-1,2-bis(4-methoxyphenyl)ethene; (e)-4,4'-dimethoxystilbene;(e)-p,p'-dimethoxystilbene; 1,1'-(1e)-1,2-ethenediylbis[4-methoxybenzene];4,4'-dimethoxy-trans-stilbene; trans-4,4'-dimethoxystilbene" );
+gibbsFormation
+{
+    dHf_298   -70670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     570.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=159620.0
+    phase     gas;
+}

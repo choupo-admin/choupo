@@ -20,8 +20,4 @@ MW             120.37;         // g/mol
 nonvolatile    true;
 dissociation   2;              // van't Hoff factor (Mg++ + SO4--)
 
-electrolyte
-{
-    cation     Mg;             // -> ions.dat (z = +2)
-    anion      SO4;            // -> ions.dat (z = -2)
-}
+dissociatesTo  { Mg 1; SO4 1; }   // ion stoichiometry (formula-like identity)

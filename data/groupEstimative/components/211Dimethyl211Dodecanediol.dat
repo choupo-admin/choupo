@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,11-dimethyl-2,11-dodecanediol  (C14H30O2, CAS 22092-59-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        211Dimethyl211Dodecanediol;
+formula     C14H30O2;
+CAS         22092-59-7;
+InChIKey    KKADLXHVRDQAFN-UHFFFAOYSA-N;
+MW          230.392;      // g/mol [origin=calculated method=formula-sum]
+Tc          867.97;      // K   [origin=predictive method=joback]
+Pc          18.263;      // bar [origin=predictive method=joback]
+omega       1.2985;      // -   [origin=predictive method=lee-kesler]
+Tb          697.82;      // K   [origin=predictive method=joback]
+HvapTb      77524.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-48.202 1.65348 -0.0011422 3.188e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 8; } { group C; count 2; } { group OH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 8; } { group C; count 2; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,11-dimethyldodecane-2,11-diol" );
+gibbsFormation
+{
+    dHf_298   -654250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     725.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-200960.0
+    phase     gas;
+}

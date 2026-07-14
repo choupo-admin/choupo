@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-chloro-2-fluorocinnamic acid  (C9H6ClFO2, CAS 202982-65-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Chloro2FluorocinnamicAcid;
+formula     C9H6ClFO2;
+CAS         202982-65-8;
+InChIKey    FVLPOWWRHAOKMT-UHFFFAOYSA-N;
+MW          200.593;      // g/mol [origin=calculated method=formula-sum]
+Tc          856.81;      // K   [origin=predictive method=joback]
+Pc          33.724;      // bar [origin=predictive method=joback]
+omega       0.8180;      // -   [origin=predictive method=lee-kesler]
+Tb          628.53;      // K   [origin=predictive method=joback]
+HvapTb      59918.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.2 0.7503 -0.00055612 1.616e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group ACH; count 3; } { group AC; count 1; } { group COOH; count 1; } { group ACCl; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(4-chloranyl-2-fluoranyl-phenyl)prop-2-enoic acid" "4-chloro-2-fluorocinnamicacid" "3-(4-chloro-2-fluorophenyl)prop-2-enoic acid" "3-(4-chloro-2-fluorophenyl)acrylicacid;" "(e)-3-(4-chloro-2-fluorophenyl)acrylic acid" );
+gibbsFormation
+{
+    dHf_298   -460400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     499.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-352380.0
+    phase     gas;
+}

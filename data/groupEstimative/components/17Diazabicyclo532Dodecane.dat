@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,7-diazabicyclo[5.3.2]dodecane  (C10H20N2, CAS 84904-97-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        17Diazabicyclo532Dodecane;
+formula     C10H20N2;
+CAS         84904-97-2;
+InChIKey    QVDQQPFABXMASK-UHFFFAOYSA-N;
+MW          168.284;      // g/mol [origin=calculated method=formula-sum]
+Tc          709.39;      // K   [origin=predictive method=joback]
+Pc          32.430;      // bar [origin=predictive method=joback]
+omega       0.4697;      // -   [origin=predictive method=lee-kesler]
+Tb          493.18;      // K   [origin=predictive method=joback]
+HvapTb      43072.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-160.43 1.518 -0.001111 3.18e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH2N; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 10; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,7-diazabicyclo(5.3.2)dodecane" );
+gibbsFormation
+{
+    dHf_298   46970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     561.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=343400.0
+    phase     gas;
+}

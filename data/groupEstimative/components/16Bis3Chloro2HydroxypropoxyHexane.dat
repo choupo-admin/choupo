@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,6-bis(3-chloro-2-hydroxypropoxy)hexane  (C12H24Cl2O4, CAS 20387-39-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        16Bis3Chloro2HydroxypropoxyHexane;
+formula     C12H24Cl2O4;
+CAS         20387-39-7;
+InChIKey    LBJXEKNHZKWYDM-UHFFFAOYSA-N;
+MW          303.22;      // g/mol [origin=calculated method=formula-sum]
+Tc          955.60;      // K   [origin=predictive method=joback]
+Pc          19.270;      // bar [origin=predictive method=joback]
+omega       1.5044;      // -   [origin=predictive method=lee-kesler]
+Tb          777.34;      // K   [origin=predictive method=joback]
+HvapTb      88478.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (75.98 1.1108 -0.000515 5.86e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH2Cl; count 2; } { group C2H4O2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 10; } { group CH; count 2; } { group Cl; count 2; } { group OH; count 2; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-3-[6-(3-chloranyl-2-oxidanyl-propoxy)hexoxy]propan-2-ol" "2-propanol, 1,1'-(1,6-hexanediylbis(oxy))bis(3-chloro-" "2-propanol, 1,1'-[1,6-hexanediylbis(oxy)]bis[3-chloro-" "1,1'-(hexamethylenedioxy)bis(3-chloro-2-propanol)" "1,1'-(hexamethylenedioxy)bis(3-chloropropan-2-ol)" "1,1'-[hexane-1,6-diylbis(oxy)]bis(3-chloropropan-2-ol)" "1-chloro-3-[6-(3-chloro-2-hydroxypropoxy)hexoxy]propan-2-ol" );
+gibbsFormation
+{
+    dHf_298   -901950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     795.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-462220.0
+    phase     gas;
+}

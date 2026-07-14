@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 11-tridecyn-1-ol  (C13H24O, CAS 33925-75-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Tridecyn1Ol;
+formula     C13H24O;
+CAS         33925-75-6;
+InChIKey    QBYUWRZJJAYBJR-UHFFFAOYSA-N;
+MW          196.334;      // g/mol [origin=calculated method=formula-sum]
+Tc          770.62;      // K   [origin=predictive method=joback]
+Pc          20.401;      // bar [origin=predictive method=joback]
+omega       0.9930;      // -   [origin=predictive method=lee-kesler]
+Tb          598.22;      // K   [origin=predictive method=joback]
+HvapTb      63363.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (13.92 1.12302 -0.00062166 1.3228e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group OH; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 10; } { group tC; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tridec-11-yn-1-ol" "timtec-bb sbb009038;11-tridecyn-1-ol" );
+gibbsFormation
+{
+    dHf_298   -191580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     685.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=124560.0
+    phase     gas;
+}

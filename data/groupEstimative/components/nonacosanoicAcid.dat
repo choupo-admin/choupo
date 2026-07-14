@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nonacosanoic acid  (C29H58O2, CAS 4250-38-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nonacosanoicAcid;
+formula     C29H58O2;
+CAS         4250-38-8;
+InChIKey    IHEJEKZAKSNRLY-UHFFFAOYSA-N;
+MW          438.781;      // g/mol [origin=calculated method=formula-sum]
+Tc          1257.38;      // K   [origin=predictive method=joback]
+Pc          6.531;      // bar [origin=predictive method=joback]
+omega       0.4264;      // -   [origin=predictive method=lee-kesler]
+Tb          1008.63;      // K   [origin=predictive method=joback]
+HvapTb      97312.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.873 2.80962 -0.0016264 3.619e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 27; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 27; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-nonacosanoate" "n-nonacosanoic acid" "c29:0" "c3835646-6d3d-4b9e-9e22-e3b396f10f87" );
+gibbsFormation
+{
+    dHf_298   -992160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1338.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-150610.0
+    phase     gas;
+}

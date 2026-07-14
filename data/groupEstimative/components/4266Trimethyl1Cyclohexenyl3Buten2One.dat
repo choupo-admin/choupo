@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(2,6,6-trimethyl-1-cyclohexenyl)-3-buten-2-one  (C13H20O, CAS 79-77-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4266Trimethyl1Cyclohexenyl3Buten2One;
+formula     C13H20O;
+CAS         79-77-6;
+InChIKey    PSQYTAPXSHCGMF-UHFFFAOYSA-N;
+MW          192.302;      // g/mol [origin=calculated method=formula-sum]
+Tc          803.16;      // K   [origin=predictive method=joback]
+Pc          22.784;      // bar [origin=predictive method=joback]
+omega       0.5551;      // -   [origin=predictive method=lee-kesler]
+Tb          583.98;      // K   [origin=predictive method=joback]
+HvapTb      52130.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-94.97 1.46988 -0.0012153 4.4386e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group CH=CH; count 1; } { group CH3CO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH; count 2; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dC_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(2,6,6-trimethylcyclohexen-1-yl)but-3-en-2-one" "beta-jonone" "beta-irisone" "(z)-4-(2,6,6-trimethyl-1-cyclohexen-1-yl)-3-buten-2-one" "agn-pc-00s3g5" "3-buten-2-one, 4-(2,6,6-trimethyl-1-cyclohexen-1-yl)-, (3e)-" "3-buten-2-one, 4-(2,2,6-trimethylcyclohexenyl)-" "4-(2,6,6-trimethyl-cyclohex-1-enyl)-but-3-en-2-one" "3-buten-2-one,4-(2,6,6-trimethyl-1-cyclohexen-1-yl)-, (3z)-" "3-buten-2-one,4-(2,6,6-trimethyl-1-cyclohexen-1-yl)-, (z)-; (z)-b-ionone; cis-b-ionone" );
+gibbsFormation
+{
+    dHf_298   -202610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     671.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=39540.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: glutaraldehyde  (C5H8O2, CAS 111-30-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        glutaraldehyde;
+formula     C5H8O2;
+CAS         111-30-8;
+InChIKey    SXRSQZLOMIGNAQ-UHFFFAOYSA-N;
+MW          100.117;      // g/mol [origin=calculated method=formula-sum]
+Tc          592.42;      // K   [origin=predictive method=joback]
+Pc          41.623;      // bar [origin=predictive method=joback]
+omega       0.5680;      // -   [origin=predictive method=lee-kesler]
+Tb          411.32;      // K   [origin=predictive method=joback]
+HvapTb      40164.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.143 0.4278 -0.0002342 4.41e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CHO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group OdCH_al; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentanedial" "glutaral" "glutaric dialdehyde" "cidex" "glutardialdehyde" "1,5-pentanedial" "glutarol" "sonacide" "glutaric aldehyde" "glutaric acid dialdehyde" "1,5-pentanedione" "glutaraldehyd" );
+gibbsFormation
+{
+    dHf_298   -317690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     388.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-207820.0
+    phase     gas;
+}

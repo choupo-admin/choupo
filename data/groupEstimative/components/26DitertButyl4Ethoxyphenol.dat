@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,6-ditert-butyl-4-ethoxyphenol  (C16H26O2, CAS 5442-35-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        26DitertButyl4Ethoxyphenol;
+formula     C16H26O2;
+CAS         5442-35-3;
+InChIKey    YQQQXXUABFURLN-UHFFFAOYSA-N;
+MW          250.382;      // g/mol [origin=calculated method=formula-sum]
+Tc          918.89;      // K   [origin=predictive method=joback]
+Pc          19.186;      // bar [origin=predictive method=joback]
+omega       0.7726;      // -   [origin=predictive method=lee-kesler]
+Tb          698.90;      // K   [origin=predictive method=joback]
+HvapTb      67642.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-49.329 1.66904 -0.00123268 3.77e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 7; } { group C; count 2; } { group ACH; count 2; } { group AC; count 3; } { group ACOH; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 7; } { group CH2; count 1; } { group C; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6-ditert-butyl-4-ethoxy-phenol" "phenol, 2,6-bis(1,1-dimethylethyl)-4-ethoxy-" "2,6-di-tert-butyl-4-ethoxyphenol" "phenol,6-bis(1,1-dimethylethyl)-4-ethoxy-" );
+gibbsFormation
+{
+    dHf_298   -487010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     620.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76950.0
+    phase     gas;
+}

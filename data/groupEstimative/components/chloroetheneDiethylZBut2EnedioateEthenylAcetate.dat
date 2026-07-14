@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chloroethene; diethyl (z)-but-2-enedioate; ethenyl acetate  (C14H21ClO6, CAS 65072-38-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chloroetheneDiethylZBut2EnedioateEthenylAcetate;
+formula     C14H21ClO6;
+CAS         65072-38-0;
+InChIKey    OYYOIZJVZYPNPS-XNOMRPDFSA-N;
+MW          320.766;      // g/mol [origin=calculated method=formula-sum]
+Tc          930.84;      // K   [origin=predictive method=joback]
+Pc          14.524;      // bar [origin=predictive method=joback]
+omega       0.8792;      // -   [origin=predictive method=lee-kesler]
+Tb          732.33;      // K   [origin=predictive method=joback]
+HvapTb      72570.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (140.752 0.74386 0.0002256 -3.591e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH2=CH; count 2; } { group CH=CH; count 1; } { group CH3COO; count 1; } { group Cl_C=C_; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group dCH2; count 2; } { group dCH; count 4; } { group Cl; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "chloranylethene;diethyl (z)-but-2-enedioate;ethenyl ethanoate" "2-butenedioic acid (2z)-, diethyl ester, polymer with chloroethene and ethenyl acetate" "2-butenedioic acid (2z)-, 1,4-diethyl ester, polymer with chloroethene and ethenyl acetate" );
+gibbsFormation
+{
+    dHf_298   -1155030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1088.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-829660.0
+    phase     gas;
+}

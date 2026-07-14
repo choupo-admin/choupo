@@ -98,13 +98,38 @@ for `adiabaticFlash`).  Its duty `Q` is a RESULT (a KPI + heat stream), never an
 `heater(Q) → flash`; for a target T, a DesignSpec on the heater's `$Q`.  See
 [`energy.md`](energy.md) → "the flash/heater rule".
 
-### Over-specifying a feed's state (`T` + `P` + `vf`)
-A stream of known composition is fixed by exactly two variables (Duhem's
-theorem).  Giving `T`, `P` AND `vf` is three numbers on a two-variable state —
-the phase is a CONSEQUENCE of `(T,P,z)`, not an input.  Declare `(T,P,z)` and
-let the phase be computed; reach for `vf` / `state` only as a deliberate
-override to assert a metastable / kinetically-frozen inlet (see
-[`dict-syntax.md`](dict-syntax.md) → "State keyword on a source stream").
+### Specifying a feed's thermal state — the `vaporFraction` rule
+A stream of known composition + flow is fixed by exactly **two** intensive
+variables (Duhem).  Give **`P` + exactly ONE of {`T`, `vaporFraction`}**:
+
+| you write | engine resolves | use |
+|---|---|---|
+| `T` + `P` | flash → `vf` | general feed (single- or two-phase) |
+| `P` + `vaporFraction` | solves `T` (bubble/dew/flash-at-vf) | saturated-liquid (`vaporFraction 0`) / vapour (`1`) feed |
+| `T` + `vaporFraction` | solves `P` | feed pinned at a temperature |
+
+**`vaporFraction` is often ESSENTIAL, not optional sugar:** on the phase boundary
+`T` and `P` are NOT independent (a pure two-phase stream has `P = Psat(T)`), so a
+saturated / two-phase feed CANNOT be pinned with `(T,P)` — you must give
+`vaporFraction` with one of them.  This is the classic point of confusion.
+
+- All three (`T` + `P` + `vaporFraction`) is **over-specified → REFUSED** (the
+  flash at `(T,P)` already fixes the vf; a declared vf that disagrees is named in
+  the error).
+- Only one is under-specified → refused with guidance.
+- (`vf` is the legacy alias of `vaporFraction`; the pure-only
+  `state saturatedLiquid`/… keyword still works.)
+
+### A feed's phase must match its declared state (don't call a vapour "liquid")
+At low pressure, light species sit ABOVE their boiling point, so a feed you think
+is liquid actually flashes to VAPOUR (propane/butane at 1 atm, 290 K → `vf=1`).
+The flowsheet flash resolves the real `vf` and **announces it** (`[phase] stream
+'feed1': … → vf=1.00`) — read that line.  A distillation column takes its feed
+quality `q = 1 − vf` from the STREAM, not a separate `operation.feeds.quality`;
+a `quality` that contradicts the stream is **refused** (it was the silent bug
+that lost a feed's latent heat and broke the energy balance).  Fix it by setting
+the right `P` (a C3–C6 split runs at ~16 bar so the feeds are liquid) or by
+declaring the feed's `vaporFraction` explicitly.
 
 ### Boiling: `dT_excess` is NOT `dT_film`; the nucleate flux is INDICATIVE
 A geometry-mode **boiler** (`boiling {}`) is the inverse of a geometry-mode
@@ -139,13 +164,52 @@ Newton, quadratic).
 ### NRTL without `pairs` block
 If you select NRTL but `data/standards/binaryPairs/NRTL/<i>-<j>.dat`
 doesn't exist AND you didn't write inline `pairs (...)`, the model
-defaults to ideal (γ=1) for that pair — silently.  Always verify the
-file exists for your component pair, or inline the parameters.
+defaults to ideal (γ=1) for that pair — **announced loudly**, never
+silently: a `[thermo] NRTL: N binary pair(s) have no parameters ->
+defaulted to IDEAL` log line, an advisory the GUI shows as an amber
+toast, and the pair-coverage matrix colouring the pair as
+ideal-default.  The pitfall is IGNORING the announcement, not the
+absence of one.  Always verify the file exists for your component
+pair, or inline the parameters.  (Contrast the `propertyPackage`
+world: there a DECLARED pair file that is missing does not default at
+all — the builder REFUSES at assembly, naming the entry.)
 
 ### `model ideal` for a strongly non-ideal mixture
 Common mistake.  Ethanol/water at 1 atm has a 12% offset from Raoult
 near the azeotrope; using ideal there gives wrong K-values.  Switch
 to NRTL.
+
+## propertyPackage (the declarative manifest)
+
+Reference cases: `flash08_co2_water_package` (inline manifest, Henry
+world) and `flash09_n2ch4_stryjek` (φ-φ world + kijPairs).
+
+### Mixed cubics in one VLE → REFUSED
+`liquid eos.SRK;` with a DIFFERENT vapour cubic (or `builtin.idealGas`)
+is two Gibbs surfaces pretending to be one VLE.  The builder refuses at
+assembly: the φ-φ world needs the SAME cubic on both phases
+(`liquid eos.SRK; vapour eos.SRK;` — one Gibbs surface per phase,
+`K = φ_L/φ_V` from the one cubic's two roots).
+
+### A declared parameter file that is missing → REFUSED, not defaulted
+Unlike the legacy NRTL ideal-default (announced but tolerated), a
+`parameters.henryPairs` / `parameters.kijPairs` entry whose file is
+absent or unparseable REFUSES at assembly, naming the entry to add
+(amendment A3: declare → verify → refuse).  So does a `solution{}`
+solute with no matching `henryPairs` entry.
+
+### Omitting `kijPairs` on an EoS package → kij = 0 (announced)
+No `kijPairs` block is legal — the cubic runs predictive with
+`kij = 0`, announced.  Near-critical phase splits will be off (the
+N2-CH4 split needs its DECHEMA kij 0.0289).  Declare the pair file
+(`data/standards/parameters/eos/kij/<i>-<j>.dat`) and watch for the
+`[builder] kij(...)` line confirming it loaded.
+
+### A bare one-line selector file → forbidden (juice-less)
+`package <name>;` alone, with no header, tells the reader nothing.  The
+selector file's header is REQUIRED: which manifest it selects, a
+summary of what that manifest declares (methods, pairs + sources), and
+the pointer to the run log's assembly story.  See `thermo.md`.
 
 ## Reactions
 
@@ -203,6 +267,20 @@ The component must carry both:
 - `solid { rho_p; k_v; }` (for the number↔mass bridge)
 
 Sucrose and similar crystalliser-targeted components ship both.
+
+### A crystallising SALT's formation is ION-DERIVED — never add a component `gibbsFormation`
+If a salt crystalliser reports `Q = 0` / `dH_cryst = 0` and the log warns
+`Component 'NaCl': h_pure_ig(T) needs gibbsFormation`, the fix is **NOT** to add a
+`gibbsFormation` block to the salt's `.dat` (Claude did, in circles, on 2026-06-29
+— don't repeat it).  A salt's solid formation is a DERIVATIVE:
+`Hf_solid = Σνᵢ·hfAq_i − dH_soln`, from the aqueous ions
+(`data/standards/components/true/aqueous/` `hfAq`) **plus** the salt's
+`electrolyte { dissolutionEnthalpy }`.  Storing it a second time is the arity-1
+sin (it drifts silently); `bin/curate/check_ion_pins.py` **exits 1** on it.  The
+heat of crystallisation comes from `dissolutionEnthalpy` read straight — make
+sure the salt's `electrolyte {}` block carries it (primary-cited).  A nonvolatile
+salt never takes the ideal-gas enthalpy path.  Full story: `docs/ai/energy.md` +
+CLAUDE.md §5 (settled 2026-06-29, forum 5/6).
 
 ## Drying
 
@@ -300,7 +378,10 @@ range covers your temperature, or a richer model (Pitzer with its own
 T-treatment).
 
 ### Pitzer in a mixed brine: ternary mixing + E_theta higher-order electrostatics
-`activityModel pitzer;` uses the multi-ion Pitzer-HMW model — binary
+`activityModel pitzerHMW;` (the propsDict `speciate` selector — NOT
+`pitzer`, which since the 2026-06-29 key split names the salt-level
+single-salt VLE adapter selected inside a propertyDict /
+propertyPackage) uses the multi-ion Pitzer-HMW model — binary
 virials (`pairs.dat`) **plus** the ternary cation-cation / anion-anion
 mixing (`theta`) and triplet (`psi`) terms (`mixing.dat`). This matters
 for **mixed brines** (seawater, RO concentrate): the mixing terms are the
@@ -325,7 +406,7 @@ seawater/brine system; see
 `tutorials/props/electrolyte/pitzer_seawater_verify`.
 
 ### Pitzer carbonate: CO2 salting-out, and Pitzer ≠ Davies for scaling
-With `activityModel pitzer;` the carbonate system (CO3, HCO3, the neutral
+With `activityModel pitzerHMW;` the carbonate system (CO3, HCO3, the neutral
 CO2aq) is fully wired (slice S4): the neutral **CO2(aq) gets γ > 1 in
 brine** (the *salting-out* lambda term), so dissolved CO2 is less soluble in
 seawater than the Davies model — which forces γ ≡ 1 for every neutral —
@@ -375,16 +456,19 @@ recycle flow looks suspicious, force `recycleSolver Newton;`.
 
 ## Reporting
 
-### Energy balance "n/a" on a reactor
-If a reaction is endothermic / exothermic but the report uses the
-sensible+latent enthalpy datum (per-component zero), the heat of
-reaction is silently dropped.  defaults to the
-**elements-formation** datum (`H_ig - dHvap`), which CAPTURES the
-reaction heat.  If your reactor report shows `n/a` or a tiny ΔH for
-an obviously hot reaction, the case may be missing
-`gibbsFormation { dHf_298; s_298; phase; }` on some species — without those,
-the elements-datum can't be computed and the report falls back to
-sensible (which drops the reaction heat).
+### Energy balance "n/a" or a tiny ΔH on a reactor
+The heat of reaction is computed on the **elements / formation datum**
+(`dH_rxn = Σ νᵢ·hᵢ(T)`, the `H_ig − dHvap` base) in **every** reactor — steady
+AND batch/dynamic.  If a reactor report shows `n/a` or a tiny ΔH for an obviously
+hot reaction, some reacting species is **missing**
+`gibbsFormation { dHf_298; s_298; phase; }` — without it the elements-datum can't
+be computed.  In the steady reactors the duty is then dropped (announced); in
+`batchReactor` / `dynamicCSTR` the engine falls back to an explicit `dH_rxn` key
+in the reactions dict, announced as a **dict OVERRIDE** — that key is for
+formation-data-absent toy / lumped components ONLY, and it is **ignored** by the
+steady reactors (which compute the duty from `gibbsFormation`).  Add
+`gibbsFormation` to every reacting species and the same heat of reaction flows
+everywhere.
 
 ## Energy wires / heat-links
 

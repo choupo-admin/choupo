@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methylglucosamine  (C7H15NO5, CAS 3329-30-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethylglucosamine;
+formula     C7H15NO5;
+CAS         3329-30-4;
+InChIKey    LDDMACCNBZAMSG-BDVNFPICSA-N;
+MW          193.199;      // g/mol [origin=calculated method=formula-sum]
+Tc          1011.20;      // K   [origin=predictive method=joback]
+Pc          50.802;      // bar [origin=predictive method=joback]
+omega       2.4378;      // -   [origin=predictive method=lee-kesler]
+Tb          825.55;      // K   [origin=predictive method=joback]
+HvapTb      109496.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.151 0.87912 -0.000533 1.177e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 4; } { group OH; count 4; } { group CHO; count 1; } { group CH3NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 4; } { group OH; count 4; } { group OdCH_al; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r,3r,4s,5r)-2-(methylamino)-3,4,5,6-tetrakis(oxidanyl)hexanal" "d-glucose, 2-deoxy-2-(methylamino)-" "d-glucosamine, n-methyl-" "d-glucosamine, n-methyl- (6ci)" "d-glucose,2-deoxy-2-(methylamino)-" "(2r,3r,4s,5r)-3,4,5,6-tetrahydroxy-2-(methylamino)hexanal" "d-glucosamine,n-methyl- (6ci);n-methyl-d-glucosamine;n-methylglucosamine;" );
+gibbsFormation
+{
+    dHf_298   -849960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     653.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-559110.0
+    phase     gas;
+}

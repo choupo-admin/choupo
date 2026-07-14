@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ag-g-95638  (C12H17NO3, CAS 74398-46-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        agG95638;
+formula     C12H17NO3;
+CAS         74398-46-2;
+InChIKey    HCSGAGXOCHYBLF-UHFFFAOYSA-N;
+MW          223.272;      // g/mol [origin=calculated method=formula-sum]
+Tc          918.01;      // K   [origin=predictive method=joback]
+Pc          30.457;      // bar [origin=predictive method=joback]
+omega       1.2763;      // -   [origin=predictive method=lee-kesler]
+Tb          713.08;      // K   [origin=predictive method=joback]
+HvapTb      77464.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-44.266 1.2509 -0.00081816 2.045e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group ACH; count 4; } { group AC; count 2; } { group OH; count 1; } { group CH-O; count 1; } { group FCH2O; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group O_ring; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(2,3-dihydro-1,4-benzodioxin-3-ylmethylamino)propan-1-ol" "3-[(2,3-dihydro-benzo[1,4]dioxin-2-ylmethyl)-amino]-propan-1-ol" "propanol, 3-[[(1,4-benzodioxan-2-yl)methyl]amino]-" "1-propanol,3-[[(2,3-dihydro-1,4-benzodioxin-2-yl)methyl]amino]-" "1-propanol,3-[(1,4-benzodioxan-2-ylmethyl)amino]- (7ci); 1-propanol,3-[[(2,3-dihydro-1,4-benzodioxin-2-ylmethyl)amino]- (9ci); propanol,3-[(1,4-benzodioxan-2-ylmethyl)amino]- (6ci); 1,4-benzodioxin, 1-propanolderiv." );
+gibbsFormation
+{
+    dHf_298   -362070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     429.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-18080.0
+    phase     gas;
+}

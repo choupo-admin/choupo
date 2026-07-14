@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 4,6,6,6-tetrachloro-3,3-dimethylhexanoate  (C9H14Cl4O2, CAS 64667-33-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl4666Tetrachloro33Dimethylhexanoate;
+formula     C9H14Cl4O2;
+CAS         64667-33-0;
+InChIKey    POFHGKISWXYKLB-UHFFFAOYSA-N;
+MW          296.009;      // g/mol [origin=calculated method=formula-sum]
+Tc          823.01;      // K   [origin=predictive method=joback]
+Pc          21.061;      // bar [origin=predictive method=joback]
+omega       0.5990;      // -   [origin=predictive method=lee-kesler]
+Tb          606.56;      // K   [origin=predictive method=joback]
+HvapTb      57595.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.052 1.08876 -0.0007996 2.181e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group CH2COO; count 1; } { group CHCl; count 1; } { group CCl3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group C; count 2; } { group Cl; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 4,6,6,6-tetrakis(chloranyl)-3,3-dimethyl-hexanoate" "hexanoic acid, 3,3-dimethyl-4,6,6,6-tetrachloro, methyl ester" "hexanoic acid, 4,6,6,6-tetrachloro-3,3-dimethyl-, methyl ester" "4,6,6,6-tetrachloro-3,3-dimethylhexanoic acid, methyl ester" );
+gibbsFormation
+{
+    dHf_298   -632110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     604.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-329950.0
+    phase     gas;
+}

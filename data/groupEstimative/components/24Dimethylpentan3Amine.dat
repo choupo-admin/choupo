@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-dimethylpentan-3-amine  (C7H17N, CAS 4083-57-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24Dimethylpentan3Amine;
+formula     C7H17N;
+CAS         4083-57-2;
+InChIKey    FATQVQVMXNESGD-UHFFFAOYSA-N;
+MW          115.22;      // g/mol [origin=calculated method=formula-sum]
+Tc          622.36;      // K   [origin=predictive method=joback]
+Pc          30.558;      // bar [origin=predictive method=joback]
+omega       0.4252;      // -   [origin=predictive method=lee-kesler]
+Tb          430.97;      // K   [origin=predictive method=joback]
+HvapTb      40653.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.03 0.74848 -0.00041 8.16e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH; count 2; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-amino-2,4-dimethylpentane" "3-pentanamine, 2,4-dimethyl-" "1-isopropyl-2-methylpropylamine" "2,4-dimethyl-3-pentylamine" );
+gibbsFormation
+{
+    dHf_298   -169860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     451.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=67190.0
+    phase     gas;
+}

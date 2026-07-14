@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-butylpyridine  (C9H13N, CAS 539-32-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Butylpyridine;
+formula     C9H13N;
+CAS         539-32-2;
+InChIKey    QSNMFWFDOFQASV-UHFFFAOYSA-N;
+MW          135.21;      // g/mol [origin=calculated method=formula-sum]
+Tc          704.20;      // K   [origin=predictive method=joback]
+Pc          32.653;      // bar [origin=predictive method=joback]
+omega       0.4352;      // -   [origin=predictive method=lee-kesler]
+Tb          485.90;      // K   [origin=predictive method=joback]
+HvapTb      44114.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.137 0.81368 -0.00050626 1.232e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group C5H4N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-n-butylpyridine" "pyridine, 3-butyl-" "1-(3-pyridyl)butane" "3- butylpyridine" "qsnmfwfdofqasv-uhfffaoysa-" "1-(3-pyridyl)butane;3-n-butylpyridine;pyridine, 3-butyl-;" );
+gibbsFormation
+{
+    dHf_298   40230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     412.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=214360.0
+    phase     gas;
+}

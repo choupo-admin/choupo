@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-dodecenoic acid  (C12H22O2, CAS 505-92-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4DodecenoicAcid;
+formula     C12H22O2;
+CAS         505-92-0;
+InChIKey    GCORITRBZMICMI-UHFFFAOYSA-N;
+MW          198.306;      // g/mol [origin=calculated method=formula-sum]
+Tc          808.35;      // K   [origin=predictive method=joback]
+Pc          20.127;      // bar [origin=predictive method=joback]
+omega       0.9284;      // -   [origin=predictive method=lee-kesler]
+Tb          623.83;      // K   [origin=predictive method=joback]
+HvapTb      59428.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.602 1.21462 -0.0007854 2.07e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CH=CH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group dCH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodec-4-enoic acid" "4-dodecenoic acid, (z)-" );
+gibbsFormation
+{
+    dHf_298   -524060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     669.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-213530.0
+    phase     gas;
+}

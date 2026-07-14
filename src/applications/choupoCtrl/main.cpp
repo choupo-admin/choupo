@@ -47,7 +47,7 @@ Description
         │   ├── controlDict      verbosity + time settings
         │   └── flowsheetDict    units list + controllers list
         └── constant/
-            ├── thermoPackage    components + γ-φ models
+            ├── propertyDict     components + γ-φ models
             └── reactions        named-reaction library     [optional]
 
     Output: trajectory.csv with state variables of every unit plus the
@@ -66,6 +66,7 @@ Description
 #include "thermo/solution/SolutionRegistry.H"
 #include "thermo/utility/UtilityCatalogue.H"
 #include "thermo/Database.H"
+#include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/electrolyte/AqueousActivity.H"
@@ -85,6 +86,7 @@ Description
 #include "unitOperations/dynamic/DynamicUnitOperation.H"
 #include "io/SolutionWriter.H"
 #include "solver/ODE/AdaptiveTimeStep.H"
+#include "core/ResultEmitter.H"
 
 #include <algorithm>
 #include <filesystem>
@@ -148,7 +150,12 @@ try
 
     auto controlDict   = Dictionary::fromFile("system/controlDict");
     auto flowsheetDict = Dictionary::fromFile("system/flowsheetDict");
-    auto thermoDict    = Dictionary::fromFile("constant/thermoPackage");
+    // ONE property-package file: constant/propertyDict (there are more
+    // properties than thermodynamics -- transport, chemistry, solids).  The
+    // old thermoPackage/propertyPackage names were retired corpus-wide with
+    // NO backward compatibility (0da8bcba); the engine reads only this path.
+    const std::string pkgFile = "constant/propertyDict";
+    auto thermoDict    = Dictionary::fromFile(pkgFile);
 
     DictPtr reactionsDict;
     if (fs::exists("constant/reactions"))
@@ -158,6 +165,7 @@ try
     DisplayUnits::instance().readPrecision(controlDict);
 
     const int verbosity = static_cast<int>(controlDict->lookupScalarOrDefault("verbosity", 3));
+    thermoAnnounceLevel() = verbosity;   // gate the load-phase thermo chorus too
     const std::string application =
         controlDict->lookupWordOrDefault("application", "choupoCtrl");
     const std::string description =
@@ -565,6 +573,30 @@ try
                   << "    MV = " << c->lastMV() << "\n";
     }
     std::cout << "==================================================\n";
+
+    // ---- Golden-master emission (same rationale as choupoBatch): the final
+    //  state + each controller's terminal SP/PV/MV become pinned KPIs.
+    {
+        SimulationResult result;
+        result.converged = true;
+        for (const auto& u : units)
+        {
+            auto& k = result.kpis[u->name()];
+            k["t_end"] = t;
+            const auto labels = u->stateLabels();
+            const auto vals   = u->stateVector();
+            for (std::size_t i = 0; i < labels.size(); ++i)
+                k[labels[i] + "_final"] = vals[i];
+        }
+        for (const auto& c : controllers)
+        {
+            auto& k = result.kpis[c->name()];
+            k["SP_final"] = c->setpoint();
+            k["PV_final"] = c->lastCV();
+            k["MV_final"] = c->lastMV();
+        }
+        emitResultJson(std::cout, result);
+    }
 
     return 0;
 }

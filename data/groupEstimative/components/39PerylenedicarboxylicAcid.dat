@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,9-perylenedicarboxylic acid  (C22H12O4, CAS 6364-19-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        39PerylenedicarboxylicAcid;
+formula     C22H12O4;
+CAS         6364-19-8;
+InChIKey    SDPOODQJUWAHOW-UHFFFAOYSA-N;
+MW          340.334;      // g/mol [origin=calculated method=formula-sum]
+Tc          1380.24;      // K   [origin=predictive method=joback]
+Pc          24.950;      // bar [origin=predictive method=joback]
+omega       1.6111;      // -   [origin=predictive method=lee-kesler]
+Tb          1113.78;      // K   [origin=predictive method=joback]
+HvapTb      110404.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-93.63 1.8794 -0.0016666 5.876e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 10; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 10; } { group dC_ring; count 10; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "perylene-3,9-dicarboxylic acid" "3,9-perylenedicarboxylicacid" "perylene-3, 9-dicarboxylic acid;" );
+gibbsFormation
+{
+    dHf_298   -299950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     543.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-68360.0
+    phase     gas;
+}

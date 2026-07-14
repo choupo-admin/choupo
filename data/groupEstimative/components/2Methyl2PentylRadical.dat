@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methyl-2-pentyl radical  (C6H13, CAS 21058-26-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        2Methyl2PentylRadical;
+formula     C6H13;
+CAS         21058-26-4;
+InChIKey    RXIKKIVDKYVUDC-UHFFFAOYSA-N;
+role        radical;
+MW          85.17;      // g/mol [origin=calculated method=formula-sum]
+Tc          510.18;      // K   [origin=predictive method=joback]
+Pc          32.173;      // bar [origin=predictive method=joback]
+omega       0.2654;      // -   [origin=predictive method=lee-kesler]
+Tb          338.84;      // K   [origin=predictive method=joback]
+HvapTb      29009.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.348 0.58376 -0.0003468 8.57e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylpentane" "dimethylbutyl" "n-c3h7c(ch3)2" "2-methylpentan-2-yl" );
+gibbsFormation
+{
+    dHf_298   -118350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     382.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=31200.0
+    phase     gas;
+}

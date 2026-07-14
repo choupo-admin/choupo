@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isopropyl cinnamate  (C12H14O2, CAS 7780-06-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isopropylCinnamate;
+formula     C12H14O2;
+CAS         7780-06-5;
+InChIKey    RGACABDFLVLVCT-UHFFFAOYSA-N;
+MW          190.242;      // g/mol [origin=calculated method=formula-sum]
+Tc          780.00;      // K   [origin=predictive method=joback]
+Pc          25.663;      // bar [origin=predictive method=joback]
+omega       0.5679;      // -   [origin=predictive method=lee-kesler]
+Tb          562.78;      // K   [origin=predictive method=joback]
+HvapTb      51559.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.38 1.03604 -0.0006526 1.469e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group CH=CH; count 1; } { group ACH; count 5; } { group AC; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propan-2-yl 3-phenylprop-2-enoate" "2-propenoic acid, 3-phenyl-, 1-methylethyl ester" "cinnamic acid isopropyl ester" "agn-pc-00h18z" "2-propenoic acid, 3-phenyl-, 1-methylethyl ester, (e)-" "cinnamicacid, isopropyl ester (6ci,7ci,8ci);iso-propyl cinnamate;" );
+gibbsFormation
+{
+    dHf_298   -259820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     552.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-70020.0
+    phase     gas;
+}

@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pent-1-en-4-yn-3-yl radical  (C5H5, CAS 78596-31-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        pent1En4Yn3YlRadical;
+formula     C5H5;
+CAS         78596-31-3;
+InChIKey    MOHCYMPYDWGDHY-UHFFFAOYSA-N;
+role        radical;
+MW          65.095;      // g/mol [origin=calculated method=formula-sum]
+Tc          486.48;      // K   [origin=predictive method=joback]
+Pc          45.531;      // bar [origin=predictive method=joback]
+omega       0.1586;      // -   [origin=predictive method=lee-kesler]
+Tb          302.88;      // K   [origin=predictive method=joback]
+HvapTb      25891.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (2.04 0.3749 -0.00030893 1.0779e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group dCH2; count 1; } { group dCH; count 2; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pent-1-en-4-yne" );
+gibbsFormation
+{
+    dHf_298   329410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     312.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=342240.0
+    phase     gas;
+}

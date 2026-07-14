@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: silistren  (C8H20O8Si, CAS 17622-94-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H20O8Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        silistren;
+formula     C8H20O8Si;
+CAS         17622-94-5;
+InChIKey    URFIZJRFOOZIBS-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          272.325;      // g/mol [origin=calculated method=formula-sum]
+Tc          1032.70;      // K   [origin=predictive method=joback]
+Pc          30.659;      // bar [origin=predictive method=joback]
+omega       1.9657;      // -   [origin=predictive method=lee-kesler]
+Tb          842.44;      // K   [origin=predictive method=joback]
+HvapTb      110052.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (159.598 0.4408 0.0003258 -3.132e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group OH; count 4; } { group CH2O; count 4; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 8; } { group OH; count 4; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetrakis(2-hydroxyethyl) silicate" "tetraglycolatosilane" "tetraglycol silicate" "ethylene glycol silicate" "tetra(ethylene glycol) silicate" "tetrakis(beta-hydroxyethyl) silicate" "ethylene glycol, ester with silicic acid (4:1)" "tetrakis(2-hydroxyethyl) orthosilicate" "silicic acid (h4sio4), tetrakis(2-hydroxyethyl) ester" "tetrakis(2-hydroxyethyl) orthosilicate solution" "tetrakis(2-hydroxyethoxy)silane" "silicic acid, tetrakis(2-hydroxyethyl) ester" );
+gibbsFormation
+{
+    dHf_298   -1457870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     842.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1055560.0
+    phase     gas;
+}

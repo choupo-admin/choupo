@@ -133,6 +133,12 @@ export interface EnergyBalance {
   closureErr: number;
   /** Boundary streams skipped because the solver emitted no enthalpy. */
   skipped: number;
+  /** Components genuinely PRESENT in a boundary stream that have NO enthalpy
+   *  datum (no gibbsFormation, no aqueous-ion reference) -- the reason the
+   *  balance is REFUSED, named for the student.  Empty when the solver did not
+   *  report them (older run log) even though `skipped` > 0; the refusal still
+   *  holds, just unnamed.  Deduplicated, in first-seen order. */
+  missingComponents: string[];
 }
 
 /** Total flow enthalpy of one stream [kW].  Prefer the solver's H_kW (which
@@ -155,20 +161,35 @@ export function energyBalance(
   const feeds = streams.filter((s) => s.role === "feed");
   const products = streams.filter((s) => s.role === "product");
   let inKw = 0, outKw = 0, skipped = 0;
+  // A boundary stream with mass but no enthalpy is missing-DATA, not
+  // composition (composition never nulls a stream's enthalpy -- the kernel
+  // skips absent species internally).  Name the offending component(s) so the
+  // refusal points the student at the curation gap (the no-silent-crutch
+  // credo), instead of a bare "N streams skipped".
+  const missingSet = new Set<string>();
+  const noteSkip = (s: StreamResult) => {
+    if ((s.F_mass ?? 0) > 1e-15) {
+      skipped++;
+      for (const c of s.H_missing ?? []) missingSet.add(c);
+    }
+  };
   for (const s of feeds) {
     const h = enthalpyKw(s);
-    if (h === null) { if ((s.F_mass ?? 0) > 1e-15) skipped++; } else inKw += h;
+    if (h === null) noteSkip(s); else inKw += h;
   }
   for (const s of products) {
     const h = enthalpyKw(s);
-    if (h === null) { if ((s.F_mass ?? 0) > 1e-15) skipped++; } else outKw += h;
+    if (h === null) noteSkip(s); else outKw += h;
   }
   const heatKw = added?.heatKw ?? 0;
   const workKw = added?.workKw ?? 0;
   const delta = (inKw + heatKw + workKw) - outKw;
   const denom = Math.abs(inKw + heatKw + workKw);
   const closureErr = denom > 1e-9 ? Math.abs(delta) / denom : 0;
-  return { inKw, outKw, heatKw, workKw, delta, closureErr, skipped };
+  return {
+    inKw, outKw, heatKw, workKw, delta, closureErr, skipped,
+    missingComponents: [...missingSet],
+  };
 }
 
 /** Net energy the units ADD to the streams [kW], from a run result.  Heat from
@@ -177,17 +198,36 @@ export function energyBalance(
 export function unitEnergy(
   utilityAllocation: { tier: string; duty_kW: number }[] | undefined,
   kpis: { [unit: string]: { [k: string]: number } } | undefined,
-): { heatKw: number; workKw: number } {
-  let heatKw = 0;
+): { heatAddedKw: number; heatRemovedKw: number; workKw: number } {
+  // SPLIT the duties by direction, not netted: heat ADDED (reboilers, heaters)
+  // belongs on the INPUTS side, heat REMOVED (condensers, coolers -- the "cold")
+  // on the OUTPUTS side.  Netting them onto one side is physically wrong and
+  // makes the bars unreadable; split, and both columns close at the same level.
+  let heatAddedKw = 0, heatRemovedKw = 0;
   for (const a of utilityAllocation ?? []) {
     const d = Math.abs(a.duty_kW);
-    if (a.tier === "heating") heatKw += d;
-    else if (a.tier === "cooling") heatKw -= d;
+    if (a.tier === "heating") heatAddedKw += d;
+    else if (a.tier === "cooling") heatRemovedKw += d;
   }
   let workKw = 0;
+  // Reactor / heat-transfer DUTIES from the unit kpis (Q_kW), signed: a duty is
+  // heat crossing the plant boundary that no NAMED utility absorbed.  Q_kW > 0
+  // = heat ADDED (endothermic reactor, heater) -> INPUTS; Q_kW < 0 = heat
+  // REMOVED (exothermic reactor -- e.g. the water-gas-shift Gibbs reactor at a
+  // held T, coolers) -> OUTPUTS.  Only counted when NO utility allocation was
+  // resolved, so a case that DID assign utilities (its duties already in
+  // utilityAllocation) is never double-counted; a standalone reactor whose heat
+  // was not routed to a utility (gibbs01) now closes.
+  const noUtilities = (utilityAllocation?.length ?? 0) === 0;
+  let workKw2 = 0;
   for (const k of Object.values(kpis ?? {})) {
-    if (typeof k.W_shaft_kW === "number") workKw += k.W_shaft_kW;
-    else if (typeof k.W_shaft === "number") workKw += k.W_shaft / 1000.0;
+    if (typeof k.W_shaft_kW === "number") workKw2 += k.W_shaft_kW;
+    else if (typeof k.W_shaft === "number") workKw2 += k.W_shaft / 1000.0;
+    if (noUtilities && typeof k.Q_kW === "number") {
+      if (k.Q_kW > 0) heatAddedKw += k.Q_kW;
+      else heatRemovedKw += -k.Q_kW;
+    }
   }
-  return { heatKw, workKw };
+  workKw = workKw2;
+  return { heatAddedKw, heatRemovedKw, workKw };
 }

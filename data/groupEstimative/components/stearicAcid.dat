@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: stearic acid  (C18H36O2, CAS 57-11-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        stearicAcid;
+formula     C18H36O2;
+CAS         57-11-4;
+InChIKey    QIQXTHQIDYTFRH-UHFFFAOYSA-N;
+MW          284.484;      // g/mol [origin=calculated method=formula-sum]
+Tc          935.37;      // K   [origin=predictive method=joback]
+Pc          12.251;      // bar [origin=predictive method=joback]
+omega       1.0403;      // -   [origin=predictive method=lee-kesler]
+Tb          756.95;      // K   [origin=predictive method=joback]
+HvapTb      72826.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.874 1.76462 -0.001028 2.31e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 16; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 16; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "octadecanoic acid" "stearophanic acid" "n-octadecanoic acid" "pearl stearic" "stearex beads" "cetylacetic acid" "octadecansaeure" "stearinsaeure" "vanicol" "industrene r" "glycon dp" "glycon tp" );
+gibbsFormation
+{
+    dHf_298   -765120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     910.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-243230.0
+    phase     gas;
+}

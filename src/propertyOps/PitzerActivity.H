@@ -32,7 +32,7 @@ License
   salt in water at 25 C, by the Pitzer ion-interaction model.
 
   Parameters are CURATED data read BY ION NAME from the frozen two-file catalogue
-  data/standards/electrolyte/ions.dat (species + charge) + pairs.dat (Pitzer
+  data/standards/species/aqueous/ (species + charge) + parameters/electrolyte/pitzer/pairs/ (Pitzer
   beta0/beta1/beta2/Cphi per cation-anion pair), resolved via
   Database::currentRoot() -- visible + cited, never typed per case.  The salt
   stoichiometry is DERIVED from the charges by electroneutrality (Ca + Cl ->
@@ -69,6 +69,9 @@ public:
     const std::string& type() const override { static const std::string t = "pitzerActivity"; return t; }
     int run(const DictPtr& dict, const ThermoPackage& thermo, int verbosity) override;
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
+
+    std::vector<std::string> headline() const override
+    { return { "gamma_AAD_pct", "phi_AAD_pct", "Lphi_AAD_rel_pct", "Lphi_AAD_abs_Jmol" }; }
 
 private:
     std::map<std::string, scalar> diag_;

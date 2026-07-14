@@ -1,0 +1,27 @@
+/*  isotherm02_fit_jaschik -- the A1b isotherm REGRESSION bench:
+    fitParameters kind=isotherm, four operations that together demonstrate
+    the fit AND its three identifiability gates.
+
+    1. fit_jaschik      REAL data: CO2 on zeolite 13X (Grace), Jaschik et
+                        al. 2020 (CC BY 4.0, vendored in constant/
+                        experimental/), 132 points at 293/313/333 K, 0-1
+                        bar.  Joint multi-T van't Hoff Langmuir fit of
+                        {q_max, b_ref, dH_ads}; unweighted absolute-q
+                        residuals (announced); writes a schema-exact record
+                        PROPOSAL to data/proposed/adsorption/equilibria/
+                        for human promotion.
+    2. recovery_multiT  zero-noise synthetic (q_max 4.6, b_ref 3.0e-4 1/Pa,
+                        dH_ads -38000): the fit must RECOVER all three to
+                        1e-6 -- the round-trip gate.
+    3. gate_singleT     the same surface sampled at ONE temperature: dH_ads
+                        is structurally unidentifiable -- the fit reports
+                        q_max and b(T_data) and REFUSES to quote dH_ads.
+    4. gate_henry       the same surface sampled at b*p < 0.05: q_max and
+                        b_ref are inseparable -- only the PRODUCT (the
+                        Henry slope) is reported, with its uncertainty.
+
+    The golden `expected` pins the Jaschik parameters +/- uncertainties and
+    all three gate verdicts.  */
+application   choupoProps;
+description   "Isotherm regression: CO2/13X Jaschik 2020 (CC BY) multi-T Langmuir fit + recovery/single-T/Henry identifiability gates";
+verbosity     3;

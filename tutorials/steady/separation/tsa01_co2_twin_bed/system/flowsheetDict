@@ -1,0 +1,32 @@
+/*---------------------------------------------------------------------------*\
+  tsa01_co2_twin_bed -- cycle-averaged twin-bed thermal swing.
+
+  One column adsorbs while the other regenerates. tCycle is the switch
+  interval and therefore the adsorption duration of one column. The unit
+  refuses a bed that cannot hold every adsorbate mole arriving in that time.
+
+  This teaching case uses a CASE-LOCAL synthetic property anchor: cpSolid =
+  920 J/(kg.K), explicitly assumed for this numerical gate. It is not promoted
+  to the global zeolite13X catalogue.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        co2tsa;
+        type        tsaTwinBed;
+        in          feed;
+        outputs     ( cleanHe regenerationGas );
+
+        operation
+        {
+            adsorbent       zeolite13X_tsaAnchor;
+            mAdsPerColumn   3 kg;
+            tCycle          300 s;
+            T_ads           298 K;
+            T_regen         398 K;
+            lightKey        He;
+            purgeRatio      0.10;
+        }
+    }
+);

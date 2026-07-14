@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n1,n2-dimethylbenzene-1,2-diamine  (C8H12N2, CAS 3213-79-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        n1N2Dimethylbenzene12Diamine;
+formula     C8H12N2;
+CAS         3213-79-4;
+InChIKey    UMAPFAAAQBMYNJ-UHFFFAOYSA-N;
+MW          136.198;      // g/mol [origin=calculated method=formula-sum]
+Tc          729.66;      // K   [origin=predictive method=joback]
+Pc          37.000;      // bar [origin=predictive method=joback]
+omega       0.6054;      // -   [origin=predictive method=lee-kesler]
+Tb          514.64;      // K   [origin=predictive method=joback]
+HvapTb      49212.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.41 0.77784 -0.00047276 1.056e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group CH3NH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-benzenediamine, n,n'-dimethyl-" "n,n inverted exclamation marka-dimethyl-1,2-diaminobenzene" "n,n inverted exclamation marka-dimethyl-1,2-phenylenediamine" );
+gibbsFormation
+{
+    dHf_298   123550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     436.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=298040.0
+    phase     gas;
+}

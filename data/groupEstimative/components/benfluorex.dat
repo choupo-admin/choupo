@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benfluorex  (C19H20F3NO2, CAS 23602-78-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benfluorex;
+formula     C19H20F3NO2;
+CAS         23602-78-0;
+InChIKey    CJAVTWRYCDNHSM-UHFFFAOYSA-N;
+MW          351.368;      // g/mol [origin=calculated method=formula-sum]
+Tc          1005.44;      // K   [origin=predictive method=joback]
+Pc          16.194;      // bar [origin=predictive method=joback]
+omega       1.0134;      // -   [origin=predictive method=lee-kesler]
+Tb          795.19;      // K   [origin=predictive method=joback]
+HvapTb      72810.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-51.577 1.78002 -0.00118336 2.826e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group ACH; count 9; } { group AC; count 2; } { group ACCH2; count 1; } { group CH2NH; count 1; } { group CF3; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group F; count 3; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[1-[3-(trifluoromethyl)phenyl]propan-2-ylamino]ethyl benzoate" "benfluramate" "minolip" "n-(2-benzoyloxyethyl)norfenfluramine" "mediator" "benfluorexum [inn-latin]" "2-(alpha-methyl-m-trifluoromethylphenethylamino)ethanol benzoate" "ethanol, 2-(alpha-methyl-m-trifluoromethylphenethylamino)-, benzoate" "ethanol, 2-[[1-methyl-2-[3-(trifluoromethyl)phenyl]ethyl]amino]-, benzoate" "n-(2-hydroxyethyl)-alpha-methyl-m-trifluoromethylphenethylamine benzoate" "phenethylamine, n-(2-hydroxyethyl)-alpha-methyl-m-trifluoromethyl-, benzoate" "2-[[1-methyl-2-[3-(trifluoromethyl)-phenyl]ethyl]amino]ethanol benzoate ester" );
+gibbsFormation
+{
+    dHf_298   -840070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     815.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-480720.0
+    phase     gas;
+}

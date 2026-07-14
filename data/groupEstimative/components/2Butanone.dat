@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-butanone  (C4H8O, CAS 78-93-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Butanone;
+formula     C4H8O;
+CAS         78-93-3;
+InChIKey    ZWEHNKRNPOVVGH-UHFFFAOYSA-N;
+MW          72.107;      // g/mol [origin=calculated method=formula-sum]
+Tc          523.60;      // K   [origin=predictive method=joback]
+Pc          42.220;      // bar [origin=predictive method=joback]
+omega       0.3294;      // -   [origin=predictive method=lee-kesler]
+Tb          344.99;      // K   [origin=predictive method=joback]
+HvapTb      31244.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.611 0.35584 -0.0001751 2.736e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butan-2-one" "methyl ethyl ketone" "butanone" "ethyl methyl ketone" "methylethyl ketone" "meetco" "methyl acetone" "methylethylketone" "ethylmethylketone" "3-butanone" "mek" "methylacetone" );
+gibbsFormation
+{
+    dHf_298   -238470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     338.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-146120.0
+    phase     gas;
+}

@@ -118,7 +118,7 @@ void AqueousActivity::registerBuiltins()
     registerType("davies", []{ return std::make_unique<DaviesActivity>(); });
     // S2: the multi-ion Pitzer (Harvie-Moller-Weare) model.  Binaries only --
     // ternary theta/psi land in S3.
-    registerType("pitzer", []{ return std::make_unique<PitzerHMW>(); });
+    registerType("pitzerHMW", []{ return std::make_unique<PitzerHMW>(); });
 }
 
 } // namespace electrolyte

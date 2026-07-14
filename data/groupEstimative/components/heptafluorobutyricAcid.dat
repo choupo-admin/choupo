@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heptafluorobutyric acid  (C4HF7O2, CAS 375-22-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heptafluorobutyricAcid;
+formula     C4HF7O2;
+CAS         375-22-4;
+InChIKey    YPJUNDFVDDCYIH-UHFFFAOYSA-N;
+MW          214.036;      // g/mol [origin=calculated method=formula-sum]
+Tc          583.11;      // K   [origin=predictive method=joback]
+Pc          31.883;      // bar [origin=predictive method=joback]
+omega       0.6919;      // -   [origin=predictive method=lee-kesler]
+Tb          421.83;      // K   [origin=predictive method=joback]
+HvapTb      32055.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.93 0.8946 -0.0008966 3.193e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 1; } { group CF3; count 1; } { group CF2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 3; } { group F; count 7; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,4-heptakis(fluoranyl)butanoic acid" "perfluorobutyric acid" "perfluorobutanoic acid" "heptafluorobutanoic acid" "butanoic acid, heptafluoro-" "heptafluoro-1-butanoic acid" "perfluoropropanecarboxylic acid" "edman reagent no. 3" "2,2,3,3,4,4,4-heptafluorobutanoic acid" "butanoic acid, 2,2,3,3,4,4,4-heptafluoro-" "hfba solution" "heptaflurorbutyric acid" );
+gibbsFormation
+{
+    dHf_298   -1875180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     470.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1716260.0
+    phase     gas;
+}

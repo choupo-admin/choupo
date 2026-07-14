@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sebaconitrile  (C10H16N2, CAS 1871-96-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sebaconitrile;
+formula     C10H16N2;
+CAS         1871-96-1;
+InChIKey    DFJYZCUIKPGCSG-UHFFFAOYSA-N;
+MW          164.252;      // g/mol [origin=calculated method=formula-sum]
+Tc          829.11;      // K   [origin=predictive method=joback]
+Pc          20.145;      // bar [origin=predictive method=joback]
+omega       0.8285;      // -   [origin=predictive method=lee-kesler]
+Tb          632.56;      // K   [origin=predictive method=joback]
+HvapTb      58810.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (27.798 0.8234 -0.0004582 9.52e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH2CN; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 8; } { group CN; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "decanedinitrile" "octamethylene dicyanide" "1,8-dicyanooctane" "oktamethylendikyanid" "octane-1,8-dicarbonitrile" );
+gibbsFormation
+{
+    dHf_298   80030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     557.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=299680.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cycloheptane, (1-methylethylidene)-  (C10H18, CAS 7087-36-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cycloheptane1Methylethylidene;
+formula     C10H18;
+CAS         7087-36-7;
+InChIKey    ZFNODGQTFJVUPO-UHFFFAOYSA-N;
+MW          138.254;      // g/mol [origin=calculated method=formula-sum]
+Tc          680.32;      // K   [origin=predictive method=joback]
+Pc          28.263;      // bar [origin=predictive method=joback]
+omega       0.3189;      // -   [origin=predictive method=lee-kesler]
+Tb          463.41;      // K   [origin=predictive method=joback]
+HvapTb      39631.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-71.46 1.01524 -0.000581 1.184e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dC; count 1; } { group CH2_ring; count 6; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propan-2-ylidenecycloheptane" );
+gibbsFormation
+{
+    dHf_298   -114990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     545.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=90290.0
+    phase     gas;
+}

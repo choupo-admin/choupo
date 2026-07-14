@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-dibromotoluene  (C7H6Br2, CAS 1611-92-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35Dibromotoluene;
+formula     C7H6Br2;
+CAS         1611-92-3;
+InChIKey    DPKKOVGCHDUSAI-UHFFFAOYSA-N;
+MW          249.933;      // g/mol [origin=calculated method=formula-sum]
+Tc          781.31;      // K   [origin=predictive method=joback]
+Pc          47.497;      // bar [origin=predictive method=joback]
+omega       0.4891;      // -   [origin=predictive method=lee-kesler]
+Tb          528.72;      // K   [origin=predictive method=joback]
+HvapTb      47646.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.6 0.54732 -0.00039692 1.16e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACCH3; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-bis(bromanyl)-5-methyl-benzene" "1,3-dibromo-5-methylbenzene" "3 ,5-dibromotoluene" "benzene, 1,3-dibromo-5-methyl-" "toluene, 3,5-dibromo-" "3,5-dibromo toluene" "3,5-dibromotoluene," "1,5-dibromo-3-methylbenzene" "benzene,3-dibromo-5-methyl-" "r816" );
+gibbsFormation
+{
+    dHf_298   78440.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     411.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=129850.0
+    phase     gas;
+}

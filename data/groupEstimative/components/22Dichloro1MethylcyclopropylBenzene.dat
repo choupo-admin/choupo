@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2,2-dichloro-1-methylcyclopropyl)benzene  (C10H10Cl2, CAS 3591-42-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Dichloro1MethylcyclopropylBenzene;
+formula     C10H10Cl2;
+CAS         3591-42-2;
+InChIKey    NXYPRVQXSWVEOB-UHFFFAOYSA-N;
+MW          201.09;      // g/mol [origin=calculated method=formula-sum]
+Tc          786.36;      // K   [origin=predictive method=joback]
+Pc          33.258;      // bar [origin=predictive method=joback]
+omega       0.3563;      // -   [origin=predictive method=lee-kesler]
+Tb          532.49;      // K   [origin=predictive method=joback]
+HvapTb      46202.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-158.61 1.59672 -0.0018222 8.184e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CCl2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2,2-bis(chloranyl)-1-methyl-cyclopropyl]benzene" "benzene, (2,2-dichloro-1-methylcyclopropyl)-" "(s)-n-cbz-leucinenitrile" "2,2-dichloro-1-methylcyclopropylbenzene" "(2,2-dichloro-1-methyl cyclopropyl)benzene" "1,1-dichloro-2-methyl-2-phenylcyclopropane" "1-phenyl-1-methyl-2,2-dichlorocyclopropane" "(2,2-dichloro-1-methyl-cyclopropyl)-benzene" "benzene,(2,2-dichloro-1-methylcyclopropyl)-" "(1-cyano-3-methyl-butyl)-carbamic acid benzyl ester" "(2,2-dichloro-1-methylcyclopropyl)benzene;1,1-dichloro-2-methyl-2-phenylcyclopropane;2,2-dichloro-1-methyl-1-phenylcyclopropane;" );
+gibbsFormation
+{
+    dHf_298   38260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     512.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=163930.0
+    phase     gas;
+}

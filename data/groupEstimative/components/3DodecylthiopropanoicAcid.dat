@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-dodecylthiopropanoic acid  (C15H30O2S, CAS 1462-52-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3DodecylthiopropanoicAcid;
+formula     C15H30O2S;
+CAS         1462-52-8;
+InChIKey    VKLOPQHLJNFYKK-UHFFFAOYSA-N;
+MW          274.463;      // g/mol [origin=calculated method=formula-sum]
+Tc          947.00;      // K   [origin=predictive method=joback]
+Pc          15.355;      // bar [origin=predictive method=joback]
+omega       1.0890;      // -   [origin=predictive method=lee-kesler]
+Tb          757.09;      // K   [origin=predictive method=joback]
+HvapTb      72965.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (13.453 1.47401 -0.0008246 1.677e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 12; } { group COOH; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 13; } { group COOH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-dodecylsulfanylpropanoic acid" "propanoic acid, 3-(dodecylthio)-" "3-(dodecylthio)propionic acid" "3-dodecylthiopropionic acid" "laurylmercaptopropionic acid" "3-(dodecylsulfanyl)propanoic acid" "propionic acid, 3-(dodecylthio)-" "3-(laurylthio)propionic acid" "3-(dodecylthio)propanoic acid" "propanoic acid,3-(dodecylthio)-" "t308" );
+gibbsFormation
+{
+    dHf_298   -661330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     854.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-235370.0
+    phase     gas;
+}

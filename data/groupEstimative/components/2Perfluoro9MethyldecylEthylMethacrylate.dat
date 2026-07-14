@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(perfluoro-9-methyldecyl)ethyl methacrylate  (C17H9F23O2, CAS 74256-14-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Perfluoro9MethyldecylEthylMethacrylate;
+formula     C17H9F23O2;
+CAS         74256-14-7;
+InChIKey    PVMWMBHAEVDBQR-UHFFFAOYSA-N;
+MW          682.211;      // g/mol [origin=calculated method=formula-sum]
+Tc          724.40;      // K   [origin=predictive method=joback]
+Pc          7.614;      // bar [origin=predictive method=joback]
+omega       0.7087;      // -   [origin=predictive method=lee-kesler]
+Tb          591.02;      // K   [origin=predictive method=joback]
+HvapTb      27206.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-118.948 3.19912 -0.0030986 1.0729e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH2=C; count 1; } { group CF3; count 2; } { group CF2; count 8; } { group CF; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 11; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 23; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-icosakis(fluoranyl)-11-(trifluoromethyl)dodecyl] 2-methylprop-2-enoate" "(3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-eicosafluoro-11-trifluoromethyl)-dodecyl methacrylate;2-(perfluoro-9-methyldecyl)ethyl methacrylate;3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-icosafluoro-11-(trifluoromethyl)dodecyl methacrylate;eicosafluoro-11-(trifluoromethyl)dodecyl  methacrylate, 96%;2-(perfluoro-9-methyldecyl)ethyl methacrylate 97%;2-(perfluoro-9-methyldecyl)ethylmethacrylate97%" "[3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-icosafluoro-11-(trifluoromethyl)dodecyl] 2-methylprop-2-enoate" "2-methyl-2-propenoic acid [3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-eicosafluoro-11-(trifluoromethyl)dodecyl] ester" "2-propenoic acid,2-methyl-,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-eicosafluoro-11-(trifluoromethyl)dodecylester" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-icosafluoro-11-(trifluoromethyl)dodecyl 2-methylprop-2-enoate" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,12,12,12-icosafluoro-11-(trifluoromethyl)dodecyl methacrylate" );
+gibbsFormation
+{
+    dHf_298   -5202630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1162.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4588210.0
+    phase     gas;
+}

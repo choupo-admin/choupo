@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-fluoroquinoline  (C9H6FN, CAS 394-69-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Fluoroquinoline;
+formula     C9H6FN;
+CAS         394-69-4;
+InChIKey    WMFXCDGQRHJFKL-UHFFFAOYSA-N;
+MW          147.152;      // g/mol [origin=calculated method=formula-sum]
+Tc          749.48;      // K   [origin=predictive method=joback]
+Pc          40.829;      // bar [origin=predictive method=joback]
+omega       0.4495;      // -   [origin=predictive method=lee-kesler]
+Tb          509.13;      // K   [origin=predictive method=joback]
+HvapTb      45599.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-40.19 0.76226 -0.00059234 1.85e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group C5H3N; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 6; } { group dC_ring; count 3; } { group F; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-fluoranylquinoline" "quinoline, 5-fluoro-" "5-fluoro quinoline" "5-fluoro-quinolinium" "5-fluoro-1-azanaphthalene" );
+gibbsFormation
+{
+    dHf_298   23720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     329.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=116570.0
+    phase     gas;
+}

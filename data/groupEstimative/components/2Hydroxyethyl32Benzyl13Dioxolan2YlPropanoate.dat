@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-hydroxyethyl 3-(2-benzyl-1,3-dioxolan-2-yl)propanoate  (C15H20O5, CAS 68083-99-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Hydroxyethyl32Benzyl13Dioxolan2YlPropanoate;
+formula     C15H20O5;
+CAS         68083-99-8;
+InChIKey    ISFIHGMRNGUEGX-UHFFFAOYSA-N;
+MW          280.32;      // g/mol [origin=calculated method=formula-sum]
+Tc          1000.36;      // K   [origin=predictive method=joback]
+Pc          24.435;      // bar [origin=predictive method=joback]
+omega       1.2975;      // -   [origin=predictive method=lee-kesler]
+Tb          789.30;      // K   [origin=predictive method=joback]
+HvapTb      83472.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-89.785 1.7467 -0.0013914 4.656e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group C; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group OH; count 1; } { group CH2COO; count 1; } { group FCH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 5; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group O_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-hydroxyethyl 3-[2-(phenylmethyl)-1,3-dioxolan-2-yl]propanoate" "hydroxyethyl 4-ethylenedioxy-5-phenylvalerate" "1,3-dioxolane-2-propanoic acid, 2-(phenylmethyl)-, 2-hydroxyethyl ester" "hydroxyethyl-4-ethylenedioxy-5-phenylvalerate" "2-hydroxyethyl 2-benzyl-1,3-dioxolane-2-propionate" );
+gibbsFormation
+{
+    dHf_298   -774190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     652.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-400540.0
+    phase     gas;
+}

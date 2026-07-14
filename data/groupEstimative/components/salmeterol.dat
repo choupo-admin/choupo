@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: salmeterol  (C25H37NO4, CAS 89365-50-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        salmeterol;
+formula     C25H37NO4;
+CAS         89365-50-4;
+InChIKey    GIIZNNXWQWCKIB-UHFFFAOYSA-N;
+MW          415.574;      // g/mol [origin=calculated method=formula-sum]
+Tc          1447.26;      // K   [origin=predictive method=joback]
+Pc          14.413;      // bar [origin=predictive method=joback]
+omega       1.1375;      // -   [origin=predictive method=lee-kesler]
+Tb          1167.07;      // K   [origin=predictive method=joback]
+HvapTb      131288.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-49.078 2.403 -0.00158952 4.203e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group ACH; count 8; } { group ACCH2; count 2; } { group ACCH; count 1; } { group OH; count 2; } { group ACOH; count 1; } { group CH2O; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 12; } { group CH; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group OH; count 2; } { group OH_phenol; count 1; } { group O; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(hydroxymethyl)-4-[1-oxidanyl-2-[6-(4-phenylbutoxy)hexylamino]ethyl]phenol" "serevent" "astmerole" "aeromax" "salmeterolum" "salmeterolum [latin]" "salmaterol" "salmeterol (usan/inn)" "salmeterol [usan:ban:inn]" "94749-08-3 (xinafoate)" "2-(hydroxymethyl)-4-(1-hydroxy-2-{[6-(4-phenylbutoxy)hexyl]amino}ethyl)phenol" "2-(hydroxymethyl)-4-[1-hydroxy-2-[6-(4-phenylbutoxy)hexylamino]ethyl]phenol" );
+gibbsFormation
+{
+    dHf_298   -663540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1081.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-71500.0
+    phase     gas;
+}

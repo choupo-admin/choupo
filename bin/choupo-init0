@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# choupo-init0 -- materialise a case's COMPLETE 0/ stream state by explicit
+# propagation from the authored inlets (+ any tear seeds).
+#
+#   choupo-init0 <caseDir> [--force]
+#
+# The stream-state architecture (ratified 2026-07-06, build-order step 2):
+# the author writes the DOMAIN INLETS; this tool walks the topology and writes
+# an initial-state file for every remaining stream -- announced, inspectable,
+# on disk.  It never overwrites an authored file; --force regenerates existing
+# internal/outlet estimates (never an inlet).  A stream inside an unseeded
+# recycle is a hard error asking for a tear seed, never a magic constant.
+#
+# `incomplete 0/ + choupoSolve` stays FATAL; this is the sanctioned way out.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+exec "$ROOT/choupoSolve" -init0 "$@"

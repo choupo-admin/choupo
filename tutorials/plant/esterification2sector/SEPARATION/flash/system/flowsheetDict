@@ -1,5 +1,0 @@
-/*--- the isothermal flash -- the unit op inside SEPARATION.  NRTL pair in
-  SEPARATION/constant/binaryPairs (walk-up).  CURATION: not wired yet. */
-type        isothermalFlash;
-operation   { T 355.0;  P 1.01325; }
-thermo      { activityModel { model NRTL; } }

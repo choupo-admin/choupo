@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-chloro-2,4-dihydroxybenzoic acid  (C7H5ClO4, CAS 67828-44-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Chloro24DihydroxybenzoicAcid;
+formula     C7H5ClO4;
+CAS         67828-44-8;
+InChIKey    SAZOOWOGQNYJLS-UHFFFAOYSA-N;
+MW          188.563;      // g/mol [origin=calculated method=formula-sum]
+Tc          989.77;      // K   [origin=predictive method=joback]
+Pc          66.748;      // bar [origin=predictive method=joback]
+omega       1.3018;      // -   [origin=predictive method=lee-kesler]
+Tb          735.60;      // K   [origin=predictive method=joback]
+HvapTb      81691.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.43 0.8972 -0.00092688 3.759e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 1; } { group ACOH; count 2; } { group COOH; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 1; } { group OH_phenol; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-chloranyl-2,4-bis(oxidanyl)benzoic acid" "5-chloro-beta-resorcylic acid" "benzoic acid, 5-chloro-2,4-dihydroxy-" "beta-resorcylic acid, 5-chloro-" "5-chloro-4-hydroxysalicylic acid" "5-chloro-2,4-dihydroxybenzoicacid" "benzoic acid,5-chloro-2,4-dihydroxy-" "b-resorcylic acid, 5-chloro-(6ci,7ci);2,4-dihydroxy-5-chlorobenzoic acid;5-chloro-2,4-dihydroxybenzoicacid;5-chloro-4-hydroxysalicylic acid;" );
+gibbsFormation
+{
+    dHf_298   -683380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     455.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-554240.0
+    phase     gas;
+}

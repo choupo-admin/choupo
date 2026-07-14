@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: polybrene  (C13H30Br2N2, CAS 9011-04-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        polybrene;
+formula     C13H30Br2N2;
+CAS         9011-04-5;
+InChIKey    KZKAYEGOIJEWQB-UHFFFAOYSA-N;
+MW          374.205;      // g/mol [origin=calculated method=formula-sum]
+Tc          842.13;      // K   [origin=predictive method=joback]
+Pc          17.075;      // bar [origin=predictive method=joback]
+omega       0.8970;      // -   [origin=predictive method=lee-kesler]
+Tb          655.64;      // K   [origin=predictive method=joback]
+HvapTb      61782.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (26.889 1.35688 -0.0006366 6.93e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 9; } { group CH3N; count 2; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 9; } { group Br; count 2; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-bis(bromanyl)propane;n,n,n',n'-tetramethylhexane-1,6-diamine" "hexadimethrine" "hexadimethrine bromide" "6,3-ionene bromide" "6,3-ionene" "hexadimethrine bromide (van)" "hexadimethrini bromidum [inn-latin]" "bromure d'hexadimethrine [inn-french]" "1,6-hexanediamine, n,n,n',n'-tetramethyl-, polymer with 1,3-dibromopropane" "1,5-dimethyl-1,5-d-diazaundecamethylene polymethobromide" "n,n,n',n'-tetramethylhexamethylenediamine-1,3-dibromopropane copolymer" "poly((dimethyliminio)hexamethylene(dimethylimino)trimethylene dibromide)" );
+gibbsFormation
+{
+    dHf_298   -235550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     904.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=204020.0
+    phase     gas;
+}

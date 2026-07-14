@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: d-galacturonic acid  (C6H10O7, CAS 685-73-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dGalacturonicAcid;
+formula     C6H10O7;
+CAS         685-73-4;
+InChIKey    IAJILQKETJEXLJ-RSJOWCBRSA-N;
+MW          194.139;      // g/mol [origin=calculated method=formula-sum]
+Tc          1099.43;      // K   [origin=predictive method=joback]
+Pc          65.991;      // bar [origin=predictive method=joback]
+omega       2.6857;      // -   [origin=predictive method=lee-kesler]
+Tb          898.01;      // K   [origin=predictive method=joback]
+HvapTb      117998.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (27.87 0.7587 -0.0005026 1.233e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 4; } { group OH; count 4; } { group CHO; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 4; } { group OH; count 4; } { group OdCH_al; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s,3r,4s,5r)-2,3,4,5-tetrakis(oxidanyl)-6-oxidanylidene-hexanoic acid" "(2s,3r,4s,5r)-2,3,4,5-tetrahydroxy-6-oxohexanoic acid" "galacturonic acid, d-" "d-galactopyranuronic acid" "dgu" "dl-galacturonic acid" "aldehydo-d-galacturonic acid" "d-galacturonic acid, homopolymer" "d-galactopyranuronic acid;d-galacturonate" "594208b9-401c-4893-9727-674a8b6d6a89" );
+gibbsFormation
+{
+    dHf_298   -1233060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     626.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1000830.0
+    phase     gas;
+}

@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chlorodifluoromethyl radical  (CClF2, CAS 1691-89-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        chlorodifluoromethylRadical;
+formula     CClF2;
+CAS         1691-89-0;
+InChIKey    QPAXMPYBNSHKAK-UHFFFAOYSA-N;
+role        radical;
+MW          85.457;      // g/mol [origin=calculated method=formula-sum]
+Tc          416.74;      // K   [origin=predictive method=joback]
+Pc          50.299;      // bar [origin=predictive method=joback]
+omega       0.1980;      // -   [origin=predictive method=lee-kesler]
+Tb          260.41;      // K   [origin=predictive method=joback]
+HvapTb      20630.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.27 0.1391 -0.000128 4.64e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group dC; count 1; } { group F; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "chloranyl-bis(fluoranyl)methane" "cclf2" "chloro(difluoro)methyl" );
+gibbsFormation
+{
+    dHf_298   -423110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     284.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-412450.0
+    phase     gas;
+}

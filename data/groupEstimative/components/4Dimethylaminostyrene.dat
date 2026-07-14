@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-dimethylaminostyrene  (C10H13N, CAS 2039-80-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Dimethylaminostyrene;
+formula     C10H13N;
+CAS         2039-80-7;
+InChIKey    GQWAOUOHRMHSHL-UHFFFAOYSA-N;
+MW          147.221;      // g/mol [origin=calculated method=formula-sum]
+Tc          676.99;      // K   [origin=predictive method=joback]
+Pc          30.123;      // bar [origin=predictive method=joback]
+omega       0.4232;      // -   [origin=predictive method=lee-kesler]
+Tb          469.18;      // K   [origin=predictive method=joback]
+HvapTb      42165.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-39.49 0.91934 -0.00061986 1.632e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2=CH; count 1; } { group ACH; count 4; } { group AC; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-ethenyl-n,n-dimethyl-aniline" "n,n-dimethyl-4-vinylaniline" "p-(dimethylamino)styrene" "4-n,n-dimethylaminostyrene" "p-n,n-dimethyl-aminostyrene" "n,n-dimethyl-p-vinylaniline" "aniline,n-dimethyl-p-vinyl-" "p-(n,n-dimethylamino)styrene" "4-ethenyl-n,n-dimethylaniline" );
+gibbsFormation
+{
+    dHf_298   168290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     444.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=334720.0
+    phase     gas;
+}

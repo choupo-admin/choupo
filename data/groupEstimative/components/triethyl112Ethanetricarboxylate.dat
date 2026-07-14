@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethyl 1,1,2-ethanetricarboxylate  (C11H18O6, CAS 7459-46-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethyl112Ethanetricarboxylate;
+formula     C11H18O6;
+CAS         7459-46-3;
+InChIKey    TVWZLLYAJDSSCJ-UHFFFAOYSA-N;
+MW          246.259;      // g/mol [origin=calculated method=formula-sum]
+Tc          806.86;      // K   [origin=predictive method=joback]
+Pc          19.736;      // bar [origin=predictive method=joback]
+omega       0.9572;      // -   [origin=predictive method=lee-kesler]
+Tb          625.50;      // K   [origin=predictive method=joback]
+HvapTb      61913.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (67.434 0.89036 -0.000294 -5.21e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group CH2COO; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "triethyl ethane-1,1,2-tricarboxylate" "1,1,2-ethanetricarboxylic acid, triethyl ester" "2-ethoxycarbonyl-succinic acid diethyl ester" "triethylethane-1,1,2-tricarboxylate" "triethyl ethane-1,2,2-tricarboxylate" "ethane-1,1,2-tricarboxylic acid, triethyl ester" "diethyl 2-(ethoxycarbonyl)butane-1,4-dioate" "triethyl ethane tricarboxylate" "1,2-tricarbethoxyethane" "agn-pc-0cyk52" "triethyl ethane-1,2-tricarboxylate" "4-ethylhexane-3,3,4-tricarboxylate" );
+gibbsFormation
+{
+    dHf_298   -1227490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     728.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-891810.0
+    phase     gas;
+}

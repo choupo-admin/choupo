@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sulfide, ethyl pentyl  (C7H16S, CAS 26158-99-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sulfideEthylPentyl;
+formula     C7H16S;
+CAS         26158-99-6;
+InChIKey    SOGIWVXLDPPMMF-UHFFFAOYSA-N;
+MW          132.265;      // g/mol [origin=calculated method=formula-sum]
+Tc          615.92;      // K   [origin=predictive method=joback]
+Pc          28.505;      // bar [origin=predictive method=joback]
+omega       0.4191;      // -   [origin=predictive method=lee-kesler]
+Tb          428.54;      // K   [origin=predictive method=joback]
+HvapTb      37993.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (16.125 0.66323 -0.0003168 4.45e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethylsulfanylpentane" "pentane, 1-(ethylthio)-" "ethyl pentyl sulfide" );
+gibbsFormation
+{
+    dHf_298   -145940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     490.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=41180.0
+    phase     gas;
+}

@@ -196,3 +196,23 @@ describe("mccabeThiele — sensitivity sweep N(R)", () => {
     expect(points[0]!.R).toBeGreaterThan(rMin);
   });
 });
+
+describe("mccabeThiele — Murphree tray efficiency", () => {
+  const ideal = buildMccabe(curve, defaultSpec());
+  it("E_MV = 1 is the ideal-stage path (no pseudo-curve)", () => {
+    expect(ideal.pseudoCurve).toBeNull();
+    expect(ideal.efficiency).toBe(1);
+    expect(Number.isFinite(ideal.nStages)).toBe(true);
+  });
+  it("E_MV < 1 needs MORE trays than ideal stages and draws a pseudo-curve", () => {
+    const real = buildMccabe(curve, defaultSpec({ efficiency: 0.6 }));
+    expect(real.pseudoCurve).not.toBeNull();
+    expect(real.efficiency).toBeCloseTo(0.6, 6);
+    expect(real.nStages).toBeGreaterThan(ideal.nStages);
+  });
+  it("lower efficiency needs at least as many trays (monotone)", () => {
+    const n70 = buildMccabe(curve, defaultSpec({ efficiency: 0.7 })).nStages;
+    const n50 = buildMccabe(curve, defaultSpec({ efficiency: 0.5 })).nStages;
+    expect(n50).toBeGreaterThanOrEqual(n70);
+  });
+});

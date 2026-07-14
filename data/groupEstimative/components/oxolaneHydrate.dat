@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxolane;hydrate  (C4H10O2, CAS 18879-05-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C4H10O2 (delta H+2O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        oxolaneHydrate;
+formula     C4H10O2;
+CAS         18879-05-5;
+InChIKey    BSCHIACBONPEOB-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          90.122;      // g/mol [origin=calculated method=formula-sum]
+Tc          536.90;      // K   [origin=predictive method=joback]
+Pc          44.802;      // bar [origin=predictive method=joback]
+omega       0.1878;      // -   [origin=predictive method=lee-kesler]
+Tb          338.02;      // K   [origin=predictive method=joback]
+HvapTb      29574.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-49.85 0.539 -0.0003627 9.54e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group H2O; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "agn-pc-03h4ky" "furan, tetrahydro-, hydrate" "furan, tetrahydro-, monohydrate" );
+gibbsFormation
+{
+    dHf_298   -177070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     485.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-59060.0
+    phase     gas;
+}

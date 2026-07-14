@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-bromotetradecane  (C14H29Br, CAS 112-71-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Bromotetradecane;
+formula     C14H29Br;
+CAS         112-71-0;
+InChIKey    KOFZTCSTGIWCQG-UHFFFAOYSA-N;
+MW          277.29;      // g/mol [origin=calculated method=formula-sum]
+Tc          758.23;      // K   [origin=predictive method=joback]
+Pc          16.090;      // bar [origin=predictive method=joback]
+omega       0.7919;      // -   [origin=predictive method=lee-kesler]
+Tb          586.08;      // K   [origin=predictive method=joback]
+HvapTb      53193.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.647 1.37202 -0.0008092 1.895e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 13; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 13; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyltetradecane" "myristyl bromide" "tetradecane, 1-bromo-" "tetradecyl bromide" "n-tetradecyl-1-bromide" "n-tetradecyl bromide" "1-tetradecyl bromide" "bromotetradecane" "1-bromo-n-tetradecane" "i869" );
+gibbsFormation
+{
+    dHf_298   -305960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     752.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=81320.0
+    phase     gas;
+}

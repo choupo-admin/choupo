@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethoxymethane  (C3H8O2, CAS 109-87-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethoxymethane;
+formula     C3H8O2;
+CAS         109-87-5;
+InChIKey    NKDDWNXOKDWJAK-UHFFFAOYSA-N;
+MW          76.095;      // g/mol [origin=calculated method=formula-sum]
+Tc          477.72;      // K   [origin=predictive method=joback]
+Pc          42.166;      // bar [origin=predictive method=joback]
+omega       0.3080;      // -   [origin=predictive method=lee-kesler]
+Tb          313.08;      // K   [origin=predictive method=joback]
+HvapTb      27092.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (51.161 0.16244 8.26e-05 -8.51e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH3O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methane, dimethoxy-" "methylal" "formal" "dimethyl formal" "formaldehyde dimethyl acetal" "anesthenyl" "2,4-dioxapentane" "bis(methoxy)methane" "methylene dimethyl ether" "methoxymethyl methyl ether" "metylal [polish]" "formaldehyde methyl ketal" );
+gibbsFormation
+{
+    dHf_298   -369690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     295.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-235620.0
+    phase     gas;
+}

@@ -1,0 +1,5 @@
+/* h2: consumes the internal twin A.feed and produces A's outlet. */
+type        heater;
+in          feed;
+outputs     ( out );
+operation   { Q 1.0 kW; }

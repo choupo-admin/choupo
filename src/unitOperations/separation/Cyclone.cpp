@@ -102,7 +102,7 @@ int Cyclone::solve(const DictPtr& dict,
     const scalar rho_g = P * MWg / (R * T);                                  // kg/m^3
     if (!thermo.hasTransport())
         throw std::runtime_error("Cyclone: needs a gas viscosity --- add "
-            "`transport { model Chung; }` to the thermoPackage.");
+            "`transport { viscosity { model Chung; } }` to the thermoPackage.");
     const scalar mu = thermo.viscosityGas(T, y);                             // Pa·s
 
     // ---- Particle density (mass-weighted over the solid components) -----
@@ -137,6 +137,16 @@ int Cyclone::solve(const DictPtr& dict,
     ctx.Dc = Dc; ctx.Ne = Ne; ctx.Q = Q; ctx.vi = vi;
     ctx.mu = mu; ctx.rho_g = rho_g; ctx.rho_p = rho_p; ctx.T = T;
     ctx.loading = (gasMass > 0.0) ? sMassTot / gasMass : 0.0;   // kg solid/kg gas
+    // Full standard-cyclone geometry for the flow-pattern models (Iozia-Leith);
+    // each dimension defaults to its Stairmand HE ratio x Dc (a Dc-only case runs).
+    auto geom = oper->found("geometry") ? oper->subDict("geometry") : oper;
+    ctx.a  = geom->lookupScalarOrDefault("inletHeight",    0.5   * Dc, Dims::length);
+    ctx.b  = geom->lookupScalarOrDefault("inletWidth",     0.2   * Dc, Dims::length);
+    ctx.De = geom->lookupScalarOrDefault("exitDiameter",   0.5   * Dc, Dims::length);
+    ctx.S  = geom->lookupScalarOrDefault("vortexLength",   0.5   * Dc, Dims::length);
+    ctx.h  = geom->lookupScalarOrDefault("cylinderHeight", 1.5   * Dc, Dims::length);
+    ctx.H  = geom->lookupScalarOrDefault("totalHeight",    4.0   * Dc, Dims::length);
+    ctx.B  = geom->lookupScalarOrDefault("dustOutlet",     0.375 * Dc, Dims::length);
     const scalar d50 = model->cutDiameter(ctx);
     const scalar dP  = model->pressureDrop(ctx);
 
@@ -243,7 +253,8 @@ int Cyclone::solve(const DictPtr& dict,
                   << " micron\n"
                   << "  Pressure drop dP = " << std::setprecision(0) << dP
                   << " Pa  (Eu = " << std::setprecision(1)
-                  << (rho_g > 0 && vi > 0 ? dP/(0.5*rho_g*vi*vi) : 0.0) << ")"
+                  << (rho_g > 0 && vi > 0 ? dP/(0.5*rho_g*vi*vi) : 0.0)
+                  << " velocity heads; " << model->pressureDropName() << ")"
                   << ",  inlet loading = " << std::scientific << std::setprecision(3)
                   << ctx.loading << " kg/kg\n" << std::fixed
                   << "  ------  grade efficiency by size  ------\n";

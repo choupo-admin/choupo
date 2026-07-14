@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (r)-(+)-3-benzyloxy-1,2-propanediol  (C10H14O3, CAS 56552-80-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        r3Benzyloxy12Propanediol;
+formula     C10H14O3;
+CAS         56552-80-8;
+InChIKey    LWCIBYRXSHRIAP-SNVBAGLBSA-N;
+MW          182.219;      // g/mol [origin=calculated method=formula-sum]
+Tc          846.84;      // K   [origin=predictive method=joback]
+Pc          35.771;      // bar [origin=predictive method=joback]
+omega       1.4534;      // -   [origin=predictive method=lee-kesler]
+Tb          661.42;      // K   [origin=predictive method=joback]
+HvapTb      75510.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.707 0.8856 -0.0005044 9.76e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group OH; count 1; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r)-3-phenylmethoxypropane-1,2-diol" "3-benzyl-sn-glycerol" "3-o-benzyl-sn-glycerol" "(r)-glycerol 1-benzyl ether" "(r)-3-(benzyloxy)propane-1,2-diol" "l-alpha-o-benzylglycerol" "(r)-3-benzyloxy-1,2-propanediol" "(r)-(+)-glycerol alpha-benzyl ether" );
+gibbsFormation
+{
+    dHf_298   -455160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     542.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-235350.0
+    phase     gas;
+}

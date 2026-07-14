@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,4-dimethyl-2-pentanol  (C7H16O, CAS 64502-86-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34Dimethyl2Pentanol;
+formula     C7H16O;
+CAS         64502-86-9;
+InChIKey    SODKTKJZYBOMMT-UHFFFAOYSA-N;
+MW          116.204;      // g/mol [origin=calculated method=formula-sum]
+Tc          621.44;      // K   [origin=predictive method=joback]
+Pc          31.776;      // bar [origin=predictive method=joback]
+omega       0.7058;      // -   [origin=predictive method=lee-kesler]
+Tb          450.62;      // K   [origin=predictive method=joback]
+HvapTb      46691.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.23 0.72058 -0.000397 8.04e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH; count 3; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4-dimethylpentan-2-ol" "agn-pc-00mh2a" "2-pentanol,3,4-dimethyl-" "2-pentanol, 3,4-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -355880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     450.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-136080.0
+    phase     gas;
+}

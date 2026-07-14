@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-cyanoethyl acrylate  (C6H7NO2, CAS 106-71-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2CyanoethylAcrylate;
+formula     C6H7NO2;
+CAS         106-71-8;
+InChIKey    AEPWOCLBLLCOGZ-UHFFFAOYSA-N;
+MW          125.127;      // g/mol [origin=calculated method=formula-sum]
+Tc          693.03;      // K   [origin=predictive method=joback]
+Pc          31.847;      // bar [origin=predictive method=joback]
+omega       0.5973;      // -   [origin=predictive method=lee-kesler]
+Tb          493.86;      // K   [origin=predictive method=joback]
+HvapTb      46165.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (36.852 0.4338 -0.0001999 1.42e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2=CH; count 1; } { group CH2CN; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-cyanoethyl prop-2-enoate" "cyanoethyl acrylate" "2-cyanoethyl propenoate" "2-propenoic acid, 2-cyanoethyl ester" "acrylic acid, 2-cyanoethyl ester" "hydracrylonitrile, acrylate" "acrylic acid, ester with hydracrylonitrile" "2-cyanoethylacrylate" "hydracrylonitrile acrylate" "3-acryloyloxypropionitrile" "b-cyanoethyl acrylate" "acrylic acid 2-cyanoethyl ester" );
+gibbsFormation
+{
+    dHf_298   -194140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     442.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-89710.0
+    phase     gas;
+}

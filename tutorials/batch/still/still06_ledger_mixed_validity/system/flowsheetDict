@@ -1,0 +1,172 @@
+/*---------------------------------------------------------------------------*\
+  still06_ledger_mixed_validity  --  MONOTONIC enthalpy validity on the
+  material ledger (the adversarial case of design forum #99/#101).
+
+  The campaign ledger integrates each transfer's enthalpy PACKAGE BY
+  PACKAGE at each package's own temperature.  A package containing a
+  species with NO formation datum (here `compA`, a lumped teaching
+  species that deliberately carries no gibbsFormation block) cannot be
+  priced --- the record must mark H invalid and NAME the species.  The
+  contract under test is the temporal one:
+
+      once ONE package is unpriceable, the record's integrated H has
+      lost a parcel FOREVER.  Validity is MONOTONIC: a later priceable
+      package must never resurrect it.
+
+  Two stills exercise the two orders on ONE accumulated record each:
+
+  potA  (invalid -> valid):  starts with 10 % compA, so its distillate
+      record potA->recA begins UNPRICEABLE.  At t = 200 s the recipe
+      dumps the whole pot to `dump` and recharges clean benzene/toluene
+      from `fresh`; every later distillate package is priceable.  The
+      record must STAY invalid (H_missing = compA), and the discrete
+      potA->dump record is invalid too (it carried the compA).
+
+  potB  (valid -> invalid):  starts clean, so its distillate record
+      potB->recB begins priceable and accumulates real enthalpy.  At
+      t = 200 s the recipe spikes it with pure compA from `spike`;
+      every later package is unpriceable.  The record flips invalid and
+      the partial integral is WITHHELD --- an emitted H_kJ that silently
+      lost its tail would be a lie.
+
+  Five ledger records result: potA->recA (continuous, poisoned early),
+  potB->recB (continuous, poisoned late), potA->dump and spike->potB
+  (discrete, carrying compA: unpriceable), fresh->potA (discrete, clean:
+  the ONE priceable record).  The golden pins the campaign census
+  transfers_H_valid = 1 / transfers_H_invalid = 4; the results JSON
+  carries H_missing = [ compA ] and NO H_kJ key on every poisoned record.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        potA;
+        type        batchStill;
+        dischargeTo  recA;
+
+        initial
+        {
+            T            366.0 K;
+            P            1.013 bar;
+            V            1.0e-4;           // m^3
+            totalMoles   1.0e-3;           // kmol
+            molarComposition  { benzene 0.45;  toluene 0.45;  compA 0.10; }
+        }
+
+        operation
+        {
+            P            1.013 bar;
+            F_vap        1.5e-6;           // kmol/s
+        }
+    }
+
+    {
+        name        recA;
+        type        batchAccumulator;
+
+        initial
+        {
+            T            350.0 K;
+            P            1.013 bar;
+            V            1.0e-4;
+            totalMoles   0.0;
+        }
+    }
+
+    {
+        name        dump;                  // takes potA's poisoned heel at t=200
+        type        batchAccumulator;
+
+        initial
+        {
+            T            350.0 K;
+            P            1.013 bar;
+            V            1.0e-4;
+            totalMoles   0.0;
+        }
+    }
+
+    {
+        name        fresh;                 // the clean recharge for potA
+        type        batchAccumulator;
+
+        initial
+        {
+            T            360.0 K;
+            P            1.013 bar;
+            V            1.0e-4;
+            totalMoles   1.0e-3;           // kmol
+            molarComposition  { benzene 0.50;  toluene 0.50; }
+        }
+    }
+
+    {
+        name        potB;
+        type        batchStill;
+        dischargeTo  recB;
+
+        initial
+        {
+            T            365.0 K;
+            P            1.013 bar;
+            V            1.0e-4;
+            totalMoles   1.0e-3;           // kmol
+            molarComposition  { benzene 0.50;  toluene 0.50; }
+        }
+
+        operation
+        {
+            P            1.013 bar;
+            F_vap        1.5e-6;           // kmol/s
+        }
+    }
+
+    {
+        name        recB;
+        type        batchAccumulator;
+
+        initial
+        {
+            T            350.0 K;
+            P            1.013 bar;
+            V            1.0e-4;
+            totalMoles   0.0;
+        }
+    }
+
+    {
+        name        spike;                 // the poison charge for potB
+        type        batchAccumulator;
+
+        initial
+        {
+            T            360.0 K;
+            P            1.013 bar;
+            V            1.0e-4;
+            totalMoles   2.0e-4;           // kmol
+            molarComposition  { compA 1.0; }
+        }
+    }
+);
+
+recipe
+(
+    {
+        time      200;          // s   potA: dump the poisoned heel...
+        action    transfer;
+        from      potA;
+        to        dump;
+    }
+    {
+        time      200;          // s   ...and recharge clean (same step
+        action    transfer;     //     boundary, fired in listed order)
+        from      fresh;
+        to        potA;
+    }
+    {
+        time      200;          // s   potB: spike with the datum-less species
+        action    transfer;
+        from      spike;
+        to        potB;
+    }
+);

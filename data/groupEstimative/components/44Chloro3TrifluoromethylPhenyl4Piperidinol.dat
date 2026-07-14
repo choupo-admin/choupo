@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-[4-chloro-3-(trifluoromethyl)phenyl]-4-piperidinol  (C12H13ClF3NO, CAS 21928-50-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44Chloro3TrifluoromethylPhenyl4Piperidinol;
+formula     C12H13ClF3NO;
+CAS         21928-50-7;
+InChIKey    RALRVIPTUXSBPO-UHFFFAOYSA-N;
+MW          279.686;      // g/mol [origin=calculated method=formula-sum]
+Tc          922.49;      // K   [origin=predictive method=joback]
+Pc          29.061;      // bar [origin=predictive method=joback]
+omega       1.0542;      // -   [origin=predictive method=lee-kesler]
+Tb          703.33;      // K   [origin=predictive method=joback]
+HvapTb      69259.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-100.02 1.5485 -0.00135092 4.895e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group C; count 1; } { group ACH; count 3; } { group AC; count 2; } { group OH; count 1; } { group CH2NH; count 1; } { group ACCl; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group CH2_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 3; } { group Cl; count 1; } { group OH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[4-chloranyl-3-(trifluoromethyl)phenyl]piperidin-4-ol" "piperidine alcohol" "4-(4-chloro-3-(trifluoromethyl)phenyl)-4-piperidinol" "4-[4-chlor-3-(trifluormethyl)phenyl]piperidin-4-ol" "4-[4-chloro-3-(trifluoromethyl)phenyl]piperidin-4-ol" "4-(4-chloro-3-(trifluoromethyl)phenyl)piperidin-4-ol" );
+gibbsFormation
+{
+    dHf_298   -735100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     678.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-480360.0
+    phase     gas;
+}

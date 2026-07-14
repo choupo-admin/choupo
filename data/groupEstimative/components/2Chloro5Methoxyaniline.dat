@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloro-5-methoxyaniline  (C7H8ClNO, CAS 2401-24-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chloro5Methoxyaniline;
+formula     C7H8ClNO;
+CAS         2401-24-3;
+InChIKey    GBOUQGUQUUPGLO-UHFFFAOYSA-N;
+MW          157.597;      // g/mol [origin=calculated method=formula-sum]
+Tc          761.06;      // K   [origin=predictive method=joback]
+Pc          39.755;      // bar [origin=predictive method=joback]
+omega       0.5525;      // -   [origin=predictive method=lee-kesler]
+Tb          528.78;      // K   [origin=predictive method=joback]
+HvapTb      52212.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (36.1 0.47642 -0.00020692 1.3e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group CH3O; count 1; } { group ACNH2; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-5-methoxy-aniline" "6-chloro-m-anisidine" "2-chloro-5-methoxyanilinehydrochloride" "2-chloro-5-methoxybenzenamine hydrochloride" "2-chloro-5-methoxyanilinium chloride" "3-amino-4-chloroanisole" "2-chloro-5-methoxyanilline" "2-chloro-5-methoxyphenylamine" "benzenamine, 2-chloro-5-methoxy-" "2-chloro-5-methoxy aniline" "2-chloro-5-methoxy-phenylamine" "q967" );
+gibbsFormation
+{
+    dHf_298   -88390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     406.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=50730.0
+    phase     gas;
+}

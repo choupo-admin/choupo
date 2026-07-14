@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4'-bipyridine  (C10H8N2, CAS 581-47-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24Bipyridine;
+formula     C10H8N2;
+CAS         581-47-5;
+InChIKey    RMHQDKYZXJVCME-UHFFFAOYSA-N;
+MW          156.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          867.76;      // K   [origin=predictive method=joback]
+Pc          43.626;      // bar [origin=predictive method=joback]
+omega       0.4724;      // -   [origin=predictive method=lee-kesler]
+Tb          589.16;      // K   [origin=predictive method=joback]
+HvapTb      54826.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-53.89 0.86352 -0.00060112 1.624e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C5H4N; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 8; } { group dC_ring; count 2; } { group Nd_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-pyridin-4-ylpyridine" "2,4'-dipyridyl" "2,4-bipyridyl" "2,4'-bipyridyl" "2,4'-dipyridine" "4-pyridylpyridine" "2-pyridin-4-ylpyridin" "2-(4-pyridyl)pyridine" "l082" "2,4'-bipyridyl;2,4'-dipyridine;2,4'-dipyridyl;4-(2-pyridyl)pyridine;" );
+gibbsFormation
+{
+    dHf_298   288910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     358.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=412240.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,7-cyclotridecadiyne  (C13H18, CAS 4533-25-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        17Cyclotridecadiyne;
+formula     C13H18;
+CAS         4533-25-9;
+InChIKey    JJCWLXCBUFGPRY-UHFFFAOYSA-N;
+MW          174.287;      // g/mol [origin=calculated method=formula-sum]
+Tc          825.26;      // K   [origin=predictive method=joback]
+Pc          29.763;      // bar [origin=predictive method=joback]
+omega       0.2651;      // -   [origin=predictive method=lee-kesler]
+Tb          552.07;      // K   [origin=predictive method=joback]
+HvapTb      50090.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-60.72 1.059 -0.00049632 4.956e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group C_C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tC; count 4; } { group CH2_ring; count 9; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclotrideca-1,7-diyne" );
+gibbsFormation
+{
+    dHf_298   289130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     677.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=460040.0
+    phase     gas;
+}

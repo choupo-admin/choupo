@@ -38,22 +38,7 @@
   scale-up arithmetic.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        T            298.15 K;
-        P              5.0 bar;
-        // Per-species molar flows: same as the conceptual
-        // "100 kmol/h sour-gas + 5000 kmol/h water" mix
-        molarFlows
-        {
-            CO2     10.0 kmol/h;     //  10 % of  100 kmol/h sour-gas
-            N2      90.0 kmol/h;     //  90 % of  100 kmol/h sour-gas
-            water 5000.0 kmol/h;     // pure water solvent
-        }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

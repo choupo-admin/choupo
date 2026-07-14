@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1,2,3,3,4,4,5,5,6,6,7,7,8,8-hexadecafluoro-8-iodo-2-(trifluoromethyl)octane  (C9F19I, CAS 865-77-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1112334455667788Hexadecafluoro8Iodo2TrifluoromethylOctane;
+formula     C9F19I;
+CAS         865-77-0;
+InChIKey    VRJGWRPPKVEMMR-UHFFFAOYSA-N;
+MW          595.961;      // g/mol [origin=calculated method=formula-sum]
+Tc          588.04;      // K   [origin=predictive method=joback]
+Pc          12.865;      // bar [origin=predictive method=joback]
+omega       0.6615;      // -   [origin=predictive method=lee-kesler]
+Tb          455.72;      // K   [origin=predictive method=joback]
+HvapTb      17814.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-98.13 2.2542 -0.002405 8.893e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group I; count 1; } { group CF3; count 2; } { group CF2; count 6; } { group CF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 9; } { group F; count 19; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,3,3,4,4,5,5,6,6,7,7,8,8-hexadecakis(fluoranyl)-8-iodanyl-2-(trifluoromethyl)octane" "octane, 1,1,1,2,3,3,4,4,5,5,6,6,7,7,8,8-hexadecafluoro-8-iodo-2-(trifluoromethyl)-" "perfluoroisononyl iodide" "1-iodoperfluoro(7-methyloctane)" "octane,1,1,1,2,3,3,4,4,5,5,6,6,7,7,8,8-hexadecafluoro-8-iodo-2-(trifluoromethyl)-" "octane,hexadecafluoro-1-iodo-7-(trifluoromethyl)- (7ci,8ci);1-iodo-7-(trifluoromethyl)perfluorooctane;nonadecafluoro-1-iodo-7-methyloctane;" );
+gibbsFormation
+{
+    dHf_298   -3957060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     814.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3592810.0
+    phase     gas;
+}

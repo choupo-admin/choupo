@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-n-octyloxyphenol  (C14H22O2, CAS 3780-50-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4NOctyloxyphenol;
+formula     C14H22O2;
+CAS         3780-50-5;
+InChIKey    HFRUPPHPJRZOCM-UHFFFAOYSA-N;
+MW          222.328;      // g/mol [origin=calculated method=formula-sum]
+Tc          852.44;      // K   [origin=predictive method=joback]
+Pc          22.697;      // bar [origin=predictive method=joback]
+omega       0.8945;      // -   [origin=predictive method=lee-kesler]
+Tb          649.64;      // K   [origin=predictive method=joback]
+HvapTb      64458.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.163 1.34632 -0.00091436 2.592e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group ACH; count 4; } { group AC; count 1; } { group ACOH; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-octoxyphenol" "4-(octyloxy)phenol" "4-(n-octyloxy)phenol" "phenol, 4-(octyloxy)-" "4-octyloxyphenol" "p-(octyloxy)phenol" "hydroquinone mono-n-octyl ether" "s267" "phenol,p-(octyloxy)- (6ci,7ci,8ci);4-(n-octyloxy)phenol;hydroquinone octyl ether;p-(octyloxy)phenol;" );
+gibbsFormation
+{
+    dHf_298   -405290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     632.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-80210.0
+    phase     gas;
+}

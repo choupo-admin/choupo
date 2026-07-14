@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,3,3,5-pentamethylhexane  (C11H24, CAS 61868-86-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22335Pentamethylhexane;
+formula     C11H24;
+CAS         61868-86-8;
+InChIKey    QGVXFIIZUSICQO-UHFFFAOYSA-N;
+MW          156.313;      // g/mol [origin=calculated method=formula-sum]
+Tc          630.76;      // K   [origin=predictive method=joback]
+Pc          20.145;      // bar [origin=predictive method=joback]
+omega       0.3279;      // -   [origin=predictive method=lee-kesler]
+Tb          444.38;      // K   [origin=predictive method=joback]
+HvapTb      37100.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-57.739 1.30644 -0.0009214 2.63e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 7; } { group CH2; count 1; } { group CH; count 1; } { group C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 7; } { group CH2; count 1; } { group CH; count 1; } { group C; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -293150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     497.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=44980.0
+    phase     gas;
+}

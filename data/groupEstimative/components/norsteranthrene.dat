@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: norsteranthrene  (C22H16, CAS 3570-54-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        norsteranthrene;
+formula     C22H16;
+CAS         3570-54-5;
+InChIKey    JOSBVBHHXHTLSU-UHFFFAOYSA-N;
+MW          280.37;      // g/mol [origin=calculated method=formula-sum]
+Tc          1090.07;      // K   [origin=predictive method=joback]
+Pc          23.158;      // bar [origin=predictive method=joback]
+omega       0.9072;      // -   [origin=predictive method=lee-kesler]
+Tb          830.74;      // K   [origin=predictive method=joback]
+HvapTb      75834.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-161.67 2.0208 -0.00185612 6.848e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 6; } { group ACCH2; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group dCH_ring; count 8; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "f-norsteranthrene" "1,2,5,6-tetrahydrobenzo(j)cyclopent(fg)aceanthrylene" "benzo(j)cyclopent(fg)aceanthrylene, 1,2,5,6-tetrahydro-" );
+gibbsFormation
+{
+    dHf_298   442110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     407.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=670060.0
+    phase     gas;
+}

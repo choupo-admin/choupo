@@ -1,0 +1,39 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "chemistry/salts/sylvite.dat"; }
+recordType saltEquilibrium;
+schemaVersion 1;
+
+name    sylvite;
+formula "KCl";
+
+solidPhase sylvite;
+
+reaction
+{
+    solid sylvite;
+
+    products
+    {
+        K  1;
+        Cl 1;
+    }
+}
+
+measuredSolubilityAnchor
+{
+    solubility
+    {
+        value 4.76;
+        unit  mol/kgWater;
+        T     298.15;
+        source "Pinho & Macedo, J. Chem. Eng. Data 50 (2005) 29 (aqueous, 25 C; primary)";
+    }
+
+    dissolutionEnthalpy
+    {
+        value 17200;
+        unit  J/mol;
+        basis "KCl(s) -> K+(aq) + Cl-(aq), infinite dilution (endothermic)";
+    }
+}
+
+defaultEquilibriumData measuredSolubilityAnchor;

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trinonylamine  (C27H57N, CAS 2044-22-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trinonylamine;
+formula     C27H57N;
+CAS         2044-22-6;
+InChIKey    ZQJAONQEOXOVNR-UHFFFAOYSA-N;
+MW          395.76;      // g/mol [origin=calculated method=formula-sum]
+Tc          1017.05;      // K   [origin=predictive method=joback]
+Pc          6.882;      // bar [origin=predictive method=joback]
+omega       0.6174;      // -   [origin=predictive method=lee-kesler]
+Tb          829.80;      // K   [origin=predictive method=joback]
+HvapTb      77739.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.346 2.69276 -0.0015576 3.475e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 23; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 24; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-di(nonyl)nonan-1-amine" "amines, tri-c8-10-alkyl" );
+gibbsFormation
+{
+    dHf_298   -533080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1223.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=287240.0
+    phase     gas;
+}

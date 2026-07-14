@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: mycophenolic acid  (C17H20O6, CAS 24280-93-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        mycophenolicAcid;
+formula     C17H20O6;
+CAS         24280-93-1;
+InChIKey    HPNSFSBZBAHARI-RUDMXATFSA-N;
+MW          320.341;      // g/mol [origin=calculated method=formula-sum]
+Tc          1174.65;      // K   [origin=predictive method=joback]
+Pc          20.984;      // bar [origin=predictive method=joback]
+omega       1.4783;      // -   [origin=predictive method=lee-kesler]
+Tb          948.84;      // K   [origin=predictive method=joback]
+HvapTb      98271.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.497 1.60586 -0.0012419 4.027e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH=C; count 1; } { group AC; count 2; } { group ACCH3; count 1; } { group ACCH2; count 2; } { group ACOH; count 1; } { group CH3O; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 1; } { group dC_ring; count 6; } { group OH_phenol; count 1; } { group O; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e)-6-(6-methoxy-7-methyl-4-oxidanyl-3-oxidanylidene-1h-2-benzofuran-5-yl)-4-methyl-hex-4-enoic acid" "melbex" "mycophenolate" "myfortic" "mycophenolsaeure" "acido micofenolico" "micofenolico acido" "acide mycophenolique" "acidum mycophenolicum" "6-(4-hydroxy-6-methoxy-7-methyl-3-oxo-5-phthalanyl)-4-methyl-4-hexenoic acid" "acide mycophenolique [inn-french]" "acidum mycophenolicum [inn-latin]" );
+gibbsFormation
+{
+    dHf_298   -967750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     730.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-583420.0
+    phase     gas;
+}

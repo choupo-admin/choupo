@@ -1,0 +1,62 @@
+/*---------------------------------------------------------------------------*\
+  psa01_h2_psa  --  the canonical first PSA case: hydrogen recovery from
+                    steam-methane-reformer / shifted syngas.
+
+  Feed: a typical PSA feed gas (mol fractions)
+        H2  0.70   (the LIGHT product -> raffinate)
+        CO2 0.18   (the strongest adsorbate -> tail gas)
+        CH4 0.05
+        CO  0.04
+        N2  0.03
+        F = 1000 kmol/h, 20 bar, 313 K.
+
+  Adsorbent: zeolite 5A (Ca-LTA), the classic H2-PSA sieve.  CO2 >> CH4 >
+        CO ~ N2 >> H2 on the competitive (extended) Langmuir isotherm, so the
+        heavy impurities load onto the bed at P_high (20 bar) and are blown
+        down with the tail at P_low (1.2 bar), while H2 barely adsorbs and
+        sweeps through as the high-pressure raffinate product.
+
+  Operation: P_high 20 bar / P_low 1.2 bar swing; isothermal 313 K bed;
+        purgeRatio 0.15 (a Skarstrom-style countercurrent light-product sweep
+        that cleans the regeneration at the cost of product); eta 0.80 (the
+        equilibrium-utilisation / LUB derating --- the equilibrium ceiling is
+        eta = 1); bedCapacity 2.0 kg adsorbent per mol of feed throughput (the
+        lumped throughput knob; cycle time / bed volume are deliberately
+        collapsed into it by the equilibrium shortcut).
+
+  Expected (this model, golden-checked):
+        H2 recovery   ~ 74 %   (single train, with the 0.15 purge sweep)
+        H2 purity     ~ 98-99 %  in the raffinate
+        tail gas      CO2-enriched ~ 18 % -> ~ 38 %
+
+  The run header prints, out loud, what the equilibrium shortcut does NOT
+  model (breakthrough / cycle time, thermal swing, blowdown gas loss,
+  hydraulics, isotherm-validity window) --- "all models are wrong, some
+  useful".
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        h2psa;
+        type        psa;
+        model       langmuir;
+        in          feed;
+        outputs     ( hydrogen  tailgas );    // 0 = raffinate (product), 1 = tail (extract)
+
+        operation
+        {
+            adsorbent     zeolite5A;          // data/standards/adsorbents/zeolite5A.dat
+            P_high        20.0 bar;            // adsorption pressure
+            P_low         1.2 bar;             // regeneration / blowdown pressure
+            T             313.0 K;             // isothermal bed (the stated assumption)
+            lightKey      H2;                  // the raffinate product component
+            purgeRatio    0.15;                // gamma: light-product countercurrent sweep
+            eta           0.80;                // equilibrium-utilisation / LUB derating
+            bedCapacity   2.0;                 // w: kg adsorbent per mol feed throughput
+            // blowdownLoss 0.10;              // optional CORRECTION-3 recovery penalty
+        }
+    }
+);

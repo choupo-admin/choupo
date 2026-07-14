@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octadecanal  (C18H36O, CAS 638-66-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octadecanal;
+formula     C18H36O;
+CAS         638-66-4;
+InChIKey    FWWQKRXKHIRPJY-UHFFFAOYSA-N;
+MW          268.485;      // g/mol [origin=calculated method=formula-sum]
+Tc          824.72;      // K   [origin=predictive method=joback]
+Pc          12.124;      // bar [origin=predictive method=joback]
+omega       0.9108;      // -   [origin=predictive method=lee-kesler]
+Tb          660.10;      // K   [origin=predictive method=joback]
+HvapTb      62382.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.074 1.68832 -0.0009484 2.009e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 16; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 16; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "stearaldehyde" "stearyl aldehyde" "octadecyl aldehyde" "n-octadecanal" "octadecanaldehyde" "1-octadecanal" "octadecanal (9ci)" "cpd-55" );
+gibbsFormation
+{
+    dHf_298   -500430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     875.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1160.0
+    phase     gas;
+}

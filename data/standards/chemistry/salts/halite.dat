@@ -1,0 +1,51 @@
+recordType saltEquilibrium;
+schemaVersion 1;
+
+name    halite;
+formula "NaCl";
+
+solidPhase halite;
+
+reaction
+{
+    solid halite;
+
+    products
+    {
+        Na 1;
+        Cl 1;
+    }
+}
+
+
+// CALORIMETRIC dissolution anchor (measured solubility + standard enthalpy of
+// solution): the crystalliser reads this for the heat-of-crystallisation duty.
+// The PHREEQC-fit logK/dH -- a Davies/PHREEQC MODEL parameter, NOT the
+// calorimetric enthalpy -- lives ONCE in chemistry/mineralSolubility/halite.dat
+// (read by the SpeciationSolver). Property vs model-parameter, each in its
+// consumer home; there is nothing to reconcile.
+
+measuredSolubilityAnchor
+{
+    solubility
+    {
+        value 6.144;
+        unit  mol/kgWater;
+        T     298.15;
+        origin "data/standards/components/NaCl.dat electrolyte block";
+        source "Pinho & Macedo, J. Chem. Eng. Data 50 (2005) 29 (aqueous, 25 C; primary)";
+    }
+
+    dissolutionEnthalpy
+    {
+        value 3880;
+        unit  J/mol;
+        basis "NaCl(s) -> Na+(aq) + Cl-(aq)";
+        origin "data/standards/components/NaCl.dat electrolyte block";
+    }
+}
+
+notes
+{
+    purpose "Salt dissolution equilibrium for halite (NaCl): the calorimetric solubility anchor.";
+}

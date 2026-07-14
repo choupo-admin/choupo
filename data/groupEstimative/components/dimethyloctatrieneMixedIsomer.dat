@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethyloctatriene (mixed isomer)  (C10H16, CAS 29714-87-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethyloctatrieneMixedIsomer;
+formula     C10H16;
+CAS         29714-87-2;
+InChIKey    PMRMCTRIVCIICU-LQPGMRSMSA-N;
+MW          136.238;      // g/mol [origin=calculated method=formula-sum]
+Tc          622.91;      // K   [origin=predictive method=joback]
+Pc          24.532;      // bar [origin=predictive method=joback]
+omega       0.3494;      // -   [origin=predictive method=lee-kesler]
+Tb          432.84;      // K   [origin=predictive method=joback]
+HvapTb      36792.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.93 0.97966 -0.0007162 2.213e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH; count 1; } { group CH2=CH; count 1; } { group CH=CH; count 1; } { group CH=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 4; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3e,5e)-3,7-dimethylocta-1,3,5-triene" "2,6-dimethyloctane, hexadehydro derivative" );
+gibbsFormation
+{
+    dHf_298   95070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     514.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=270610.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene, (1-isopropyl-2-methylpropyl)-  (C13H20, CAS 21777-84-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzene1Isopropyl2Methylpropyl;
+formula     C13H20;
+CAS         21777-84-4;
+InChIKey    GKGTVJOYFGUPSA-UHFFFAOYSA-N;
+MW          176.303;      // g/mol [origin=calculated method=formula-sum]
+Tc          732.29;      // K   [origin=predictive method=joback]
+Pc          22.440;      // bar [origin=predictive method=joback]
+omega       0.4394;      // -   [origin=predictive method=lee-kesler]
+Tb          522.40;      // K   [origin=predictive method=joback]
+HvapTb      45644.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.88 1.17768 -0.0007242 1.675e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH; count 2; } { group ACH; count 5; } { group ACCH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4-dimethylpentan-3-ylbenzene" "benzene, [2-methyl-1-(1-methylethyl)propyl]-" "2,4-dimethyl-3-phenylpentane" "(1-isopropyl-2-methyl-propyl)-benzene" "2,4-dimethyl-3-phenyl-pentane" "benzene,[2-methyl-1-(1-methylethyl)propyl]-" "benzene,(1-isopropyl-2-methylpropyl)- (8ci); 2,4-dimethyl-3-phenylpentane; a,a-diisopropyltoluene" );
+gibbsFormation
+{
+    dHf_298   -90960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     527.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=163670.0
+    phase     gas;
+}

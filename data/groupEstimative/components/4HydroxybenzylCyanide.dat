@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-hydroxybenzyl cyanide  (C8H7NO, CAS 14191-95-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4HydroxybenzylCyanide;
+formula     C8H7NO;
+CAS         14191-95-8;
+InChIKey    AYKYOOPFBCOXSL-UHFFFAOYSA-N;
+MW          133.15;      // g/mol [origin=calculated method=formula-sum]
+Tc          835.21;      // K   [origin=predictive method=joback]
+Pc          42.663;      // bar [origin=predictive method=joback]
+omega       0.6999;      // -   [origin=predictive method=lee-kesler]
+Tb          592.02;      // K   [origin=predictive method=joback]
+HvapTb      59170.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.209 0.7743 -0.00066796 2.363e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group ACOH; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-hydroxyphenyl)ethanenitrile" "4-hydroxyphenylacetonitrile" "p-hydroxybenzyl cyanide" "2-(4-hydroxyphenyl)acetonitrile" "(4-hydroxyphenyl)acetonitrile" "4-hydroxybenzylcyanide" "benzeneacetonitrile, 4-hydroxy-" "acetonitrile, (p-hydroxyphenyl)-" "p-hydroxyphenylacetonitrile" "4-hydroxybenzeneacetonitrile" "4-hydroxy benzyl cyanide" "phbc" );
+gibbsFormation
+{
+    dHf_298   15650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     393.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=107450.0
+    phase     gas;
+}

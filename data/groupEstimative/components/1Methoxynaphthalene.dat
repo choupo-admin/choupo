@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-methoxynaphthalene  (C11H10O, CAS 2216-69-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Methoxynaphthalene;
+formula     C11H10O;
+CAS         2216-69-5;
+InChIKey    NQMUGNMMFTYOHK-UHFFFAOYSA-N;
+MW          158.2;      // g/mol [origin=calculated method=formula-sum]
+Tc          756.19;      // K   [origin=predictive method=joback]
+Pc          33.412;      // bar [origin=predictive method=joback]
+omega       0.4690;      // -   [origin=predictive method=lee-kesler]
+Tb          524.34;      // K   [origin=predictive method=joback]
+HvapTb      47068.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.66 0.84352 -0.00056448 1.466e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 7; } { group AC; count 3; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "naphthalene, 1-methoxy-" "methyl 1-naphthyl ether" ".alpha.-methoxynaphthalene" "methoxynaphthalene" "1-methoxy naphthalene" "alpha-methoxynaphthalene" "alpha-naphthyl methyl ether" "1-methoxynapthalene" "1-methoxy-naphthalene" "naphthalene, methoxy-" "agn-pc-00b8nd" ".alpha.-naphthyl methyl ether" );
+gibbsFormation
+{
+    dHf_298   13540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     374.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=146170.0
+    phase     gas;
+}

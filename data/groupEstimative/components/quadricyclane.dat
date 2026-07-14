@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: quadricyclane  (C7H8, CAS 278-06-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        quadricyclane;
+formula     C7H8;
+CAS         278-06-8;
+InChIKey    DGZUEIPKRRSMGK-UHFFFAOYSA-N;
+MW          92.141;      // g/mol [origin=calculated method=formula-sum]
+Tc          541.60;      // K   [origin=predictive method=joback]
+Pc          41.039;      // bar [origin=predictive method=joback]
+omega       0.3106;      // -   [origin=predictive method=lee-kesler]
+Tb          356.03;      // K   [origin=predictive method=joback]
+HvapTb      29350.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-166.96 1.2674 -0.001359 5.624e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetracyclo[3.2.0.02,7.04,6]heptane" "[2.2.1.02,6.03,5]quadricycloheptane" "quadricyclo[2.2.1.02.6.03.5]heptane" "tetracyclo(2.2.1.02,6.03,5)heptane" "tetracyclo[3.2.0.0(2,7).0(4,6)]heptane" "tetracyclo(2.2.1.0(sup 2,6).0(sup 3,5))heptane" "tetracyclo(3.2.0.0(sup 2,7).0(sup 4,6))heptane" "agn-pc-04y224" "quadricyclo[2.2.1.02,6.03,5]heptane" "tetracyclo[3.2.0.0^{2,7}.0^{4,6}]heptane" "quadricyclane;tetracyclo[2.2.1.02,6.03,5]heptane; [2.2.1.02,6.03,5]quadricycloheptane" );
+gibbsFormation
+{
+    dHf_298   93510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     -116.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=296140.0
+    phase     gas;
+}

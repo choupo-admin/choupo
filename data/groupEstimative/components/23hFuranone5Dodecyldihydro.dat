@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2(3h)-furanone, 5-dodecyldihydro-  (C16H30O2, CAS 730-46-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23hFuranone5Dodecyldihydro;
+formula     C16H30O2;
+CAS         730-46-1;
+InChIKey    SRIFJCOBFTWCTM-UHFFFAOYSA-N;
+MW          254.414;      // g/mol [origin=calculated method=formula-sum]
+Tc          804.05;      // K   [origin=predictive method=joback]
+Pc          14.579;      // bar [origin=predictive method=joback]
+omega       0.8532;      // -   [origin=predictive method=lee-kesler]
+Tb          630.64;      // K   [origin=predictive method=joback]
+HvapTb      58530.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-36.489 1.61992 -0.0009722 2.214e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 12; } { group CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 11; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-dodecyloxolan-2-one" "hexadecanoic acid, 4-hydroxy-, .gamma.-lactone" "gamma-palmitolactone" ".gamma.-palmitolactone" "hexadeca-1,4-lactone" "hexadecanoic acid, .gamma.-lactone" "2(3h)-furanone, 5-dodecyldihydro- (9ci)" "hexadecanoic acid, 4-hydroxy-, gamma-lactone (8ci)" );
+gibbsFormation
+{
+    dHf_298   -618050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     740.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-165780.0
+    phase     gas;
+}

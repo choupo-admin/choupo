@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  ksp_temperature / constant/thermoPackage
+
+  Water is the solvent and the package's only component; the hard
+  carbonate-bearing groundwater's ions (Ca, Na, Cl, SO4, HCO3) enter through
+  the five speciate ops' totals at I ~ 0.09 mol/kg, comfortably inside the
+  default Davies window.  The lesson is K(T) -- the sign of dK/dT per
+  mineral -- so the fluid package stays a bare solvent carrier.
+\*---------------------------------------------------------------------------*/
+
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }

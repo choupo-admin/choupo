@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-[benzyl(methyl)amino]propane-1,2-diol  (C11H17NO2, CAS 60278-98-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3BenzylMethylAminoPropane12Diol;
+formula     C11H17NO2;
+CAS         60278-98-0;
+InChIKey    HGPHYOVGIFFHJB-UHFFFAOYSA-N;
+MW          195.262;      // g/mol [origin=calculated method=formula-sum]
+Tc          857.68;      // K   [origin=predictive method=joback]
+Pc          32.541;      // bar [origin=predictive method=joback]
+omega       1.4669;      // -   [origin=predictive method=lee-kesler]
+Tb          674.32;      // K   [origin=predictive method=joback]
+HvapTb      77369.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-42.807 1.16772 -0.0007824 2.017e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group OH; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[methyl-(phenylmethyl)amino]propane-1,2-diol" "3-(n-benzyl-n-methylamino)-1,2-propanediol" "3-[methylbenzylamino]propane-1,2-diol" "3-(n-benzyl-n-methylamino)propane-1,2-diol" "1,2-propanediol,3-[methyl(phenylmethyl)amino]-" "1,2-propanediol, 3-[methyl(phenylmethyl)amino]-" "3-(n-benzyl-n-methylamino)-1,2-propanediol;3-(n-benzyl-n-methylamino)propane-1,2-diol;3-(n-benzyl-n-methylamino)-1,2-propanediol 96%;3-(n-benzyl-n-methylamino)-1,2-propanediol 96+%" );
+gibbsFormation
+{
+    dHf_298   -276050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     586.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11150.0
+    phase     gas;
+}

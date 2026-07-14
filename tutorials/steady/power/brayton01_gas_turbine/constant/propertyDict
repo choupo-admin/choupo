@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  brayton01_gas_turbine / constant/thermoPackage
+
+  Air modelled as N2 + O2, the working fluid looping compressor -> combustor
+  (gas-aware heater) -> turbine at 1-10 bar and 298-1250 K.  Ideal gas is the
+  physically right EOS here (high T, moderate P, far from any dew point); the
+  heater integrates the ideal-gas Cp(T) since the stream is all vapour.  The
+  activity model is never exercised -- the cycle has no liquid anywhere.
+\*---------------------------------------------------------------------------*/
+
+components       ( N2  O2 );
+
+activityModel    { model  ideal; }
+
+equationOfState  { model  idealGas; }

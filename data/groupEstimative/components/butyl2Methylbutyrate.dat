@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl 2-methylbutyrate  (C9H18O2, CAS 15706-73-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butyl2Methylbutyrate;
+formula     C9H18O2;
+CAS         15706-73-7;
+InChIKey    OTKQNSSMCDLVQV-UHFFFAOYSA-N;
+MW          158.241;      // g/mol [origin=calculated method=formula-sum]
+Tc          637.50;      // K   [origin=predictive method=joback]
+Pc          23.360;      // bar [origin=predictive method=joback]
+omega       0.5648;      // -   [origin=predictive method=lee-kesler]
+Tb          463.30;      // K   [origin=predictive method=joback]
+HvapTb      42647.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.434 0.80996 -0.0003744 3.83e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butyl 2-methylbutanoate" "n-butyl 2-methylbutyrate" "n-butyl-2-methylbutyrate" "butanoic acid, 2-methyl-, butyl ester" "alpha-butyl 2-methylbutylate" "n-butyl-2-methylbutyrate (natural)" "butyric acid, 2-methyl-, butyl ester" "butyl 2-methyl-butanoate" "butyl-2-methylbutyrate" "butanoic acid,2-methyl-, butyl ester" "we(4:0/4:0(2me))" "butyricacid, 2-methyl-, butyl ester (8ci);butyl 2-methylbutanoate;n-butyl 2-methylbutyrate;" );
+gibbsFormation
+{
+    dHf_298   -551650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     548.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-287910.0
+    phase     gas;
+}

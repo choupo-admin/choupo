@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: p-terphenyl-d14  (C18D14, CAS 1718-51-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C18D14 (delta D+14H-14; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        pTerphenylD14;
+formula     C18D14;
+CAS         1718-51-0;
+InChIKey    XJKSTNDFUHDPQJ-WZAAGXFHSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          244.394;      // g/mol [origin=calculated method=formula-sum]
+Tc          966.77;      // K   [origin=predictive method=joback]
+Pc          25.820;      // bar [origin=predictive method=joback]
+omega       0.5616;      // -   [origin=predictive method=lee-kesler]
+Tb          696.46;      // K   [origin=predictive method=joback]
+HvapTb      63152.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-100.89 1.4176 -0.00098196 2.546e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 14; } { group AC; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 14; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5-pentadeuterio-6-[2,3,5,6-tetradeuterio-4-(2,3,4,5,6-pentadeuteriophenyl)phenyl]benzene" "[2h14]terphenyl" );
+gibbsFormation
+{
+    dHf_298   283270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     531.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=428280.0
+    phase     gas;
+}

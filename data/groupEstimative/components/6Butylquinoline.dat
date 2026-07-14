@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-butylquinoline  (C13H15N, CAS 7634-74-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Butylquinoline;
+formula     C13H15N;
+CAS         7634-74-4;
+InChIKey    HIFRWMLBTWKDIH-UHFFFAOYSA-N;
+MW          185.27;      // g/mol [origin=calculated method=formula-sum]
+Tc          835.22;      // K   [origin=predictive method=joback]
+Pc          27.585;      // bar [origin=predictive method=joback]
+omega       0.5908;      // -   [origin=predictive method=lee-kesler]
+Tb          601.38;      // K   [origin=predictive method=joback]
+HvapTb      55320.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-49.917 1.13048 -0.00079354 2.27e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group ACH; count 3; } { group ACCH2; count 1; } { group C5H3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 6; } { group dC_ring; count 3; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "quinoline, 6-butyl-" "quinoline, butyl-" );
+gibbsFormation
+{
+    dHf_298   137270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     453.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=345060.0
+    phase     gas;
+}

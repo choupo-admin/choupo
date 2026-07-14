@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimethylolpropane trilaurate  (C42H80O6, CAS 25268-73-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trimethylolpropaneTrilaurate;
+formula     C42H80O6;
+CAS         25268-73-9;
+InChIKey    GSAHAZJWNMHSNI-UHFFFAOYSA-N;
+MW          681.096;      // g/mol [origin=calculated method=formula-sum]
+Tc          1953.78;      // K   [origin=predictive method=joback]
+Pc          3.676;      // bar [origin=predictive method=joback]
+omega       -0.4761;      // -   [origin=predictive method=lee-kesler]
+Tb          1331.99;      // K   [origin=predictive method=joback]
+HvapTb      130011.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (16.464 3.95528 -0.002149 3.892e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 31; } { group C; count 1; } { group CH2COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 34; } { group C; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-bis(dodecanoyloxymethyl)butyl dodecanoate" "dodecanoic acid, 1,1'-(2-ethyl-2-(((1-oxododecyl)oxy)methyl)-1,3-propanediyl) ester" "dodecanoic acid, 1,1'-[2-ethyl-2-[[(1-oxododecyl)oxy]methyl]-1,3-propanediyl] ester" "1,1,1-trimethylolpropane, trilaurate" "2,2-bis[(dodecanoyloxy)methyl]butyl dodecanoate" "2-ethyl-2-(((1-oxododecyl)oxy)methyl)propane-1,3-diyl dilaurate" "2-ethyl-2-(((1-oxododecyl)oxy)methyl)-1,3-propanediyl didodecanoate" "dodecanoic acid, 2-ethyl-2-(((oxododecyl)oxy)methyl)-1,3-propanediyl ester" "dodecanoic acid, 2-ethyl-2-(((1-oxododecyl)oxy)methyl)-1,3-propanediyl ester" );
+gibbsFormation
+{
+    dHf_298   -1870800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1906.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-625510.0
+    phase     gas;
+}

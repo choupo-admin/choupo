@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethanamine, n,n-dimethyl-2-(2-(2-methyl-4-(1,1,3,3-tetramethylbutyl)phenoxy)ethoxy)-  (C21H37NO2, CAS 71550-69-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethanamineNNDimethyl222Methyl41133TetramethylbutylPhenoxyEth;
+formula     C21H37NO2;
+CAS         71550-69-1;
+InChIKey    RJVBKWPFEURYNE-UHFFFAOYSA-N;
+MW          335.532;      // g/mol [origin=calculated method=formula-sum]
+Tc          964.09;      // K   [origin=predictive method=joback]
+Pc          11.640;      // bar [origin=predictive method=joback]
+omega       0.8247;      // -   [origin=predictive method=lee-kesler]
+Tb          767.54;      // K   [origin=predictive method=joback]
+HvapTb      70211.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.145 2.05016 -0.00124992 2.86e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 3; } { group C; count 2; } { group ACH; count 3; } { group AC; count 2; } { group ACCH3; count 1; } { group CH2O; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2; count 5; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethyl-2-[2-[2-methyl-4-(2,4,4-trimethylpentan-2-yl)phenoxy]ethoxy]ethanamine" "ethanamine, n,n-dimethyl-2-[2-[2-methyl-4-(1,1,3,3-tetramethylbutyl)phenoxy]ethoxy]-" );
+gibbsFormation
+{
+    dHf_298   -477590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     816.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=125550.0
+    phase     gas;
+}

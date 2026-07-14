@@ -47,3 +47,6 @@ idealGasHeatCapacity
     coefficients  (19.25   5.213e-2   1.197e-5   -1.132e-8);
     Trange        (250  1500);
 }
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( methane );

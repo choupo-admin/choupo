@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: di(trimethylolpropane)  (C12H26O5, CAS 23235-61-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diTrimethylolpropane;
+formula     C12H26O5;
+CAS         23235-61-2;
+InChIKey    WMYINDVYGQKYMI-UHFFFAOYSA-N;
+MW          250.335;      // g/mol [origin=calculated method=formula-sum]
+Tc          1052.17;      // K   [origin=predictive method=joback]
+Pc          25.482;      // bar [origin=predictive method=joback]
+omega       1.8086;      // -   [origin=predictive method=lee-kesler]
+Tb          858.84;      // K   [origin=predictive method=joback]
+HvapTb      108840.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.302 1.46824 -0.0009832 2.598e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 7; } { group C; count 2; } { group OH; count 4; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 8; } { group C; count 2; } { group OH; count 4; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2,2-bis(hydroxymethyl)butoxymethyl]-2-ethyl-propane-1,3-diol" "2,2'-(oxydimethanediyl)bis(2-ethylpropane-1,3-diol)" "ditrimethylolpropane" "1,3-propanediol, 2,2'-(oxybis(methylene))bis(2-ethyl-" "1,3-propanediol, 2,2'-[oxybis(methylene)]bis[2-ethyl-" "2-ethyl-1h-imidazole-4-carboxylate" "2,2'-oxybis(methylene)bis(2-ethyl-1,3-propanediol)" "2,2'-(oxybis(methylene))bis(2-ethylpropane-1,3-diol)" "2-[2,2-bis(hydroxymethyl)butoxymethyl]-2-ethylpropane-1,3-diol" "2,2 inverted exclamation marka-oxybis(methylene)bis(2-ethyl-1,3-propanediol)" );
+gibbsFormation
+{
+    dHf_298   -1049650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     760.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-596440.0
+    phase     gas;
+}

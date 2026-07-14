@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-propanediol, 2-ethyl-2-(hydroxymethyl)-, polymer with 1,3,5-trimethoxy-1,5-dimethyl-1,3,5-triphenyltrisiloxane  (C29H44O8Si3, CAS 68992-19-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C29H44O8Si3 (delta Si+3; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        13Propanediol2Ethyl2HydroxymethylPolymerWith135Trimethoxy15D;
+formula     C29H44O8Si3;
+CAS         68992-19-8;
+InChIKey    VZTCOCFWTJXIIP-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          604.918;      // g/mol [origin=calculated method=formula-sum]
+Tc          1683.96;      // K   [origin=predictive method=joback]
+Pc          9.485;      // bar [origin=predictive method=joback]
+omega       0.6218;      // -   [origin=predictive method=lee-kesler]
+Tb          1334.17;      // K   [origin=predictive method=joback]
+HvapTb      148943.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (156.984 1.60922 0.0003038 -6.311e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group C; count 1; } { group ACH; count 15; } { group AC; count 3; } { group OH; count 3; } { group CH3O; count 3; } { group Si; count 1; } { group SiO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 4; } { group C; count 1; } { group dCH_ring; count 15; } { group dC_ring; count 3; } { group OH; count 3; } { group O; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethyl-2-(hydroxymethyl)propane-1,3-diol;methoxy-bis[(methoxy-methyl-phenyl-silyl)oxy]-phenyl-silane" "dimethyltriphenyltrimethoxytrisiloxane, trimethylolpropane polymer" );
+gibbsFormation
+{
+    dHf_298   -1505320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1623.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-821130.0
+    phase     gas;
+}

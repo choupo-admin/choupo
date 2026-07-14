@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: undecanoic acid  (C11H22O2, CAS 112-37-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        undecanoicAcid;
+formula     C11H22O2;
+CAS         112-37-8;
+InChIKey    ZDPHROOEEOARMN-UHFFFAOYSA-N;
+MW          186.295;      // g/mol [origin=calculated method=formula-sum]
+Tc          776.30;      // K   [origin=predictive method=joback]
+Pc          20.946;      // bar [origin=predictive method=joback]
+omega       0.9197;      // -   [origin=predictive method=lee-kesler]
+Tb          596.79;      // K   [origin=predictive method=joback]
+HvapTb      57244.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.511 1.09962 -0.0006472 1.477e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 9; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 9; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "undecylic acid" "n-undecanoic acid" "n-undecoic acid" "n-undecylic acid" "undecoic acid" "1-decanecarboxylic acid" "undecans" "undekansaeure" "undecanoate" "hendecanoate" "undecylate" "n-undecanoate" );
+gibbsFormation
+{
+    dHf_298   -620640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     637.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-302170.0
+    phase     gas;
+}

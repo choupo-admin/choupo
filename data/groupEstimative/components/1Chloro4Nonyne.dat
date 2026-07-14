@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-chloro-4-nonyne  (C9H15Cl, CAS 3416-74-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Chloro4Nonyne;
+formula     C9H15Cl;
+CAS         3416-74-8;
+InChIKey    RHZYERSKMQJUCP-UHFFFAOYSA-N;
+MW          158.669;      // g/mol [origin=calculated method=formula-sum]
+Tc          644.85;      // K   [origin=predictive method=joback]
+Pc          26.057;      // bar [origin=predictive method=joback]
+omega       0.4163;      // -   [origin=predictive method=lee-kesler]
+Tb          451.95;      // K   [origin=predictive method=joback]
+HvapTb      42165.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.156 0.71582 -0.00039406 8.388e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH2Cl; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 6; } { group tC; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranylnon-4-yne" "1-chloronon-4-yne" "4-nonyne, 1-chloro-" "1-chloro-4-nonyne;4-nonynyl chloride;" );
+gibbsFormation
+{
+    dHf_298   27470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     511.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=215770.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenethyl anthranilate  (C15H15NO2, CAS 133-18-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenethylAnthranilate;
+formula     C15H15NO2;
+CAS         133-18-6;
+InChIKey    PXWNBAGCFUDYBE-UHFFFAOYSA-N;
+MW          241.29;      // g/mol [origin=calculated method=formula-sum]
+Tc          973.94;      // K   [origin=predictive method=joback]
+Pc          26.325;      // bar [origin=predictive method=joback]
+omega       0.8670;      // -   [origin=predictive method=lee-kesler]
+Tb          731.89;      // K   [origin=predictive method=joback]
+HvapTb      72246.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.358 1.2186 -0.00073636 1.473e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 9; } { group AC; count 1; } { group ACCH2; count 1; } { group ACNH2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenylethyl 2-azanylbenzoate" "2-phenylethyl 2-aminobenzoate" "2-phenylethyl anthranilate" "anthranilic acid, phenethyl ester" "benzoic acid, 2-amino-, 2-phenylethyl ester" "phenylethyl anthranilate" "benzylcarbinyl anthranilate" "2-phenylethyl o-aminobenzoate" "2-phenylethyl-o-aminobenzoate" "beta-phenethyl o-aminobenzoate" "beta-phenethyl-o-aminobenzoate" "phenethyl 2-aminobenzoate" );
+gibbsFormation
+{
+    dHf_298   -174830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     624.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=46690.0
+    phase     gas;
+}

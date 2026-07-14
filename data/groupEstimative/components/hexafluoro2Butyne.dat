@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexafluoro-2-butyne  (C4F6, CAS 692-50-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexafluoro2Butyne;
+formula     C4F6;
+CAS         692-50-2;
+InChIKey    WBCLXFIDEDJGCC-UHFFFAOYSA-N;
+MW          162.032;      // g/mol [origin=calculated method=formula-sum]
+Tc          439.63;      // K   [origin=predictive method=joback]
+Pc          35.685;      // bar [origin=predictive method=joback]
+omega       0.2664;      // -   [origin=predictive method=lee-kesler]
+Tb          289.28;      // K   [origin=predictive method=joback]
+HvapTb      19156.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.41 0.5564 -0.00054366 1.9278e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C_C; count 1; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group tC; count 2; } { group F; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,4,4,4-hexakis(fluoranyl)but-2-yne" "butyne 06" "bis(trifluoromethyl)acetylene" "1,1,1,4,4,4-hexafluorobut-2-yne" "2-butyne, 1,1,1,4,4,4-hexafluoro-" "perfluoro-2-butyne" "hexafluorobut-2-yne" "1,1,1,4,4,4-hexafluoro-2-butyne" "2-butyne, hexafluoro- (6ci,7ci)" "1,1,1,4,4,4-hexafluoro-but-2-yne" "2-butyne,1,1,1,4,4,4-hexafluoro-" "2-butyne,hexafluoro- (6ci,7ci);1,1,1,4,4,4-hexafluoro-2-butyne;bis(trifluoromethyl)acetylene;hexafluoro-2-butyne;perfluoro-2-butyne;1,1,1,4,4,4-hexafluorobut-2-yne;" );
+gibbsFormation
+{
+    dHf_298   -1047750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     396.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-977580.0
+    phase     gas;
+}

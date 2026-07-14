@@ -1,0 +1,39 @@
+/*---------------------------------------------------------------------------*\
+  still02_ethanol_water_azeo / constant/thermoPackage
+
+  Ethanol (the preferentially vaporised species below the azeotrope) and
+  water (what the pot residue concentrates into).  NRTL: the ethanol-water
+  minimum-boiling azeotrope (x_eth ~ 0.894, T ~ 351.3 K at 1 atm) exists
+  only through liquid-phase non-ideality — gamma_ethanol > 1 at the 0.40
+  starting composition is precisely what bends the Rayleigh enrichment
+  curve away from still01's constant-alpha shape.  idealGas vapour is fine
+  at 1 atm.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water );
+
+activityModel
+{
+    model        NRTL;
+
+    // NRTL parameters tuned to reproduce the 1-atm bubble-T curve of
+    // ethanol/water --- same set as used in bubbleT01_ethanol_water.
+    // Yields the azeotrope at x_eth ~ 0.894, T ~ 351.3 K.
+    pairs
+    (
+        {
+            i          ethanol;
+            j          water;
+            a_ij      -0.8009;
+            b_ij       246.18;
+            a_ji       3.4578;
+            b_ji      -586.0809;
+            alpha      0.30;
+        }
+    );
+}
+
+equationOfState
+{
+    model        idealGas;
+}

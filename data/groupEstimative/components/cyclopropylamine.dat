@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopropylamine  (C3H7N, CAS 765-30-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopropylamine;
+formula     C3H7N;
+CAS         765-30-0;
+InChIKey    HTJDQJBWANPRPF-UHFFFAOYSA-N;
+MW          57.096;      // g/mol [origin=calculated method=formula-sum]
+Tc          546.98;      // K   [origin=predictive method=joback]
+Pc          57.479;      // bar [origin=predictive method=joback]
+omega       0.2925;      // -   [origin=predictive method=lee-kesler]
+Tb          347.51;      // K   [origin=predictive method=joback]
+HvapTb      32826.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-43.59 0.5016 -0.000403 1.348e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclopropanamine" "aminocyclopropane" "cyclopropanamin" "cyclopropyl amine" "aminotrimethylene" "agn-pc-0d4tkw" "htjdqjbwanprpf-uhfffaoysa-" "cyclopropanamine;aminocyclopropane;" );
+gibbsFormation
+{
+    dHf_298   1340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     234.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=101580.0
+    phase     gas;
+}

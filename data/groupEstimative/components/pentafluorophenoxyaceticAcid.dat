@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentafluorophenoxyacetic acid  (C8H3F5O3, CAS 14892-14-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentafluorophenoxyaceticAcid;
+formula     C8H3F5O3;
+CAS         14892-14-9;
+InChIKey    SMXPFEBIAASLOR-UHFFFAOYSA-N;
+MW          242.099;      // g/mol [origin=calculated method=formula-sum]
+Tc          781.79;      // K   [origin=predictive method=joback]
+Pc          28.203;      // bar [origin=predictive method=joback]
+omega       1.0742;      // -   [origin=predictive method=lee-kesler]
+Tb          598.50;      // K   [origin=predictive method=joback]
+HvapTb      54477.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (93.761 0.434 -0.000151 -1.38e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 1; } { group CH2O; count 1; } { group COOH; count 1; } { group ACF; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dC_ring; count 6; } { group F; count 5; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2,3,4,5,6-pentakis(fluoranyl)phenoxy]ethanoic acid" "(pentafluorophenoxy)acetic acid" "pentafluorophenyloxyacetic acid" "2,3,4,5,6-pentafluorophenoxy acetic acid" "2-(2,3,4,5,6-pentafluorophenoxy)acetic acid" "acetic acid, (pentafluorophenoxy)-" "(pentafluorophenoxy)acetic acid 98%" );
+gibbsFormation
+{
+    dHf_298   -1492310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     553.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1342220.0
+    phase     gas;
+}

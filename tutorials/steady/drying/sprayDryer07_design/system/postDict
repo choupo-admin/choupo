@@ -1,0 +1,24 @@
+/*--- Post-processing: the spray-dryer DESIGN pass.  The rating above runs
+      FORWARD (geometry -> performance); this inverts it -- given the process
+      targets, it reports the geometry needed, scaled from the rated anchor.
+      Simulation and design are two directions of ONE model, both visible. ---*/
+
+sizing
+{
+    units
+    (
+        {
+            unitName    dryer;
+            type        sprayDryer;
+            material    SS304;
+            designRules
+            {
+                design
+                {
+                    targetSize       40;      // um -- target powder Sauter mean d32
+                    residenceFactor  3.0;     // chamber residence >= 3 x drying time
+                }
+            }
+        }
+    );
+}

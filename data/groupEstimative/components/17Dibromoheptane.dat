@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,7-dibromoheptane  (C7H14Br2, CAS 4549-31-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        17Dibromoheptane;
+formula     C7H14Br2;
+CAS         4549-31-9;
+InChIKey    LVWSZGCVEZRFBT-UHFFFAOYSA-N;
+MW          257.997;      // g/mol [origin=calculated method=formula-sum]
+Tc          691.04;      // K   [origin=predictive method=joback]
+Pc          32.579;      // bar [origin=predictive method=joback]
+omega       0.6035;      // -   [origin=predictive method=lee-kesler]
+Tb          492.08;      // K   [origin=predictive method=joback]
+HvapTb      44046.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.907 0.7452 -0.0004998 1.403e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 7; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,7-bis(bromanyl)heptane" "heptamethylene dibromide" "heptane, 1,7-dibromo-" "heptane,7-dibromo-" "lvwszgcvezrfbt-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -135150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     530.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=36700.0
+    phase     gas;
+}

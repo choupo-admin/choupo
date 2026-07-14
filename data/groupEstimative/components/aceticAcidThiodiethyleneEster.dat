@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetic acid, thiodiethylene ester  (C8H14O4S, CAS 4275-28-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        aceticAcidThiodiethyleneEster;
+formula     C8H14O4S;
+CAS         4275-28-9;
+InChIKey    HWLINJPYLXLANY-UHFFFAOYSA-N;
+MW          206.256;      // g/mol [origin=calculated method=formula-sum]
+Tc          763.68;      // K   [origin=predictive method=joback]
+Pc          26.057;      // bar [origin=predictive method=joback]
+omega       0.7785;      // -   [origin=predictive method=lee-kesler]
+Tb          567.86;      // K   [origin=predictive method=joback]
+HvapTb      55033.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (66.034 0.64863 -0.000182 -5.78e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH3COO; count 2; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group COO; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-acetyloxyethylsulfanyl)ethyl ethanoate" "2,2'-thiodiethanol diacetate" "2,2'-thiodiethyl diacetate" "ethanol, 2,2'-thiobis-, diacetate" "bis(beta-thioethyl acetate)" "ethanol, 2,2'-thiodi-, diacetate" "ethanol,2'-thiodi-, diacetate" "ethanol,2'-thiobis-, diacetate" "sulfanediyldiethane-2,1-diyl diacetate" "2-(2-acetyloxyethylsulfanyl)ethyl acetate" );
+gibbsFormation
+{
+    dHf_298   -801140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     631.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-571140.0
+    phase     gas;
+}

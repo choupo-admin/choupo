@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexahydroxycalix[6]arene  (C42H36O6, CAS 96107-95-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexahydroxycalix6Arene;
+formula     C42H36O6;
+CAS         96107-95-8;
+InChIKey    JLSWUKWFQCVKCL-UHFFFAOYSA-N;
+MW          636.744;      // g/mol [origin=calculated method=formula-sum]
+Tc          2320.74;      // K   [origin=predictive method=joback]
+Pc          20.254;      // bar [origin=predictive method=joback]
+omega       1.3333;      // -   [origin=predictive method=lee-kesler]
+Tb          1858.46;      // K   [origin=predictive method=joback]
+HvapTb      205536.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-277.99 4.2396 -0.00372052 1.3286e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 18; } { group AC; count 6; } { group ACCH2; count 6; } { group ACOH; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 6; } { group dCH_ring; count 18; } { group dC_ring; count 18; } { group OH_phenol; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "calix[6]arene" "heptacyclo[31.3.1.13,7.19,13.115,19.121,25.127,31]dotetraconta-1(37),3,5,7(42),9,11,13(41),15,17,19(40),21,23,25(39),27,29,31(38),33,35-octadecaene-37,38,39,40,41,42-hexol" );
+gibbsFormation
+{
+    dHf_298   -549050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1287.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=23880.0
+    phase     gas;
+}

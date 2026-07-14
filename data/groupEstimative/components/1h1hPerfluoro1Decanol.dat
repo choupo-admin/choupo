@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1h,1h-perfluoro-1-decanol  (C10H3F19O, CAS 307-37-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1h1hPerfluoro1Decanol;
+formula     C10H3F19O;
+CAS         307-37-9;
+InChIKey    NIRPXSQCRWXHNZ-UHFFFAOYSA-N;
+MW          500.095;      // g/mol [origin=calculated method=formula-sum]
+Tc          594.96;      // K   [origin=predictive method=joback]
+Pc          13.033;      // bar [origin=predictive method=joback]
+omega       1.0022;      // -   [origin=predictive method=lee-kesler]
+Tb          477.64;      // K   [origin=predictive method=joback]
+HvapTb      27346.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-105.439 2.3442 -0.0024084 8.711e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group OH; count 1; } { group CF3; count 1; } { group CF2; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 9; } { group F; count 19; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecakis(fluoranyl)decan-1-ol" "1h,1h-perfluorodecan-1-ol" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecafluoro-1-decanol" "1h,1h-nonadecafluoro-1-decanol" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecafluorodecan-1-ol" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecfluoro-1-decanol" "1h,1h-perfluoro-1-decanol;pcr 171132;2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecafluorodecan-1-ol;1h,1h-nonadecafluoro-1-decanol;" );
+gibbsFormation
+{
+    dHf_298   -4206800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     848.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3779330.0
+    phase     gas;
+}

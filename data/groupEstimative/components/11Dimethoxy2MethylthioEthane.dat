@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1-dimethoxy-2-(methylthio)ethane  (C5H12O2S, CAS 40015-15-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Dimethoxy2MethylthioEthane;
+formula     C5H12O2S;
+CAS         40015-15-4;
+InChIKey    DVOAQLUDKIFSNB-UHFFFAOYSA-N;
+MW          136.209;      // g/mol [origin=calculated method=formula-sum]
+Tc          621.23;      // K   [origin=predictive method=joback]
+Pc          34.319;      // bar [origin=predictive method=joback]
+omega       0.4389;      // -   [origin=predictive method=lee-kesler]
+Tb          427.18;      // K   [origin=predictive method=joback]
+HvapTb      37973.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (67.261 0.35275 1.08e-05 -8.94e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 1; } { group CH3O; count 2; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group O; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1-dimethoxy-2-methylsulfanyl-ethane" "(methylthio)acetaldehyde dimethyl acetal" "1,1-dimethoxy-2-methylsulfanylethane" "(methylthio)acetaldehyde dimethylacetal" "ethane,1,1-dimethoxy-2-(methylthio)-" "ethane, 1,1-dimethoxy-2-(methylthio)-" "(methylmercapto)acetaldehyde dimethyl acetal" "2-(methylthio) acetaldehyde dimethyl acetal" );
+gibbsFormation
+{
+    dHf_298   -374380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     425.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-188100.0
+    phase     gas;
+}

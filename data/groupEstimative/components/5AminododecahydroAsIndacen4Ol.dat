@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-aminododecahydro-as-indacen-4-ol  (C12H21NO, CAS 73495-63-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5AminododecahydroAsIndacen4Ol;
+formula     C12H21NO;
+CAS         73495-63-3;
+InChIKey    SNFQBHZULFXOGB-UHFFFAOYSA-N;
+MW          195.306;      // g/mol [origin=calculated method=formula-sum]
+Tc          872.70;      // K   [origin=predictive method=joback]
+Pc          29.061;      // bar [origin=predictive method=joback]
+omega       0.9522;      // -   [origin=predictive method=lee-kesler]
+Tb          657.89;      // K   [origin=predictive method=joback]
+HvapTb      68954.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-144.51 1.5841 -0.001058 2.76e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 5; } { group OH; count 1; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 6; } { group CH_ring; count 6; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-azanyl-1,2,3,3a,4,5,5a,6,7,8,8a,8b-dodecahydro-as-indacen-4-ol" "5-amino-1,2,3,3a,4,5,5a,6,7,8,8a,8b-dodecahydro-as-indacen-4-ol" "(7s,8r)-7-hydroxy-8-amino-trans-anti-trans-tricyclo[7.3.0.0(2,6)]dodecane" "3-amino-tricyclo(7.3.0.04,8)dodecan-2-ol" "3-amino-tricyclo [7.3.0.04,8]dodecan-2-ol" );
+gibbsFormation
+{
+    dHf_298   -270550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     387.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=102610.0
+    phase     gas;
+}

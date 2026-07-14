@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------*\
+  membrane01_RO_NaCl_seawater / constant/thermoPackage
+
+  Water (the permeating solvent) + NaCl (the rejected solute) for the
+  canonical 35 g/L seawater RO at 55 bar.  All the separation physics
+  lives inside the spiral-wound unit op (solution-diffusion + film model
+  + van't Hoff osmotic pressure); the ideal activity / ideal-gas entries
+  below are loader-satisfying stubs the membrane never consults.
+\*---------------------------------------------------------------------------*/
+
+components       ( water  NaCl );
+
+// Activity model is irrelevant for dilute aqueous NF/RO at v0.26:
+// the membrane unit op does not consult γ_i.  We set `ideal` to keep
+// the loader happy; v0.28+ adds a proper electrolyte activity model
+// for high-concentration brines.
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

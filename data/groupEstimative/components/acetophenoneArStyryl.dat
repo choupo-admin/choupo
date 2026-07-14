@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetophenone, ar-styryl-  (C16H14O, CAS 1322-90-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acetophenoneArStyryl;
+formula     C16H14O;
+CAS         1322-90-3;
+InChIKey    VNUWQZDEKYVXSI-KHPPLWFESA-N;
+MW          222.287;      // g/mol [origin=calculated method=formula-sum]
+Tc          929.32;      // K   [origin=predictive method=joback]
+Pc          25.201;      // bar [origin=predictive method=joback]
+omega       0.6672;      // -   [origin=predictive method=lee-kesler]
+Tb          682.05;      // K   [origin=predictive method=joback]
+HvapTb      63128.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-71.99 1.29852 -0.00090706 2.4366e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group ACH; count 9; } { group AC; count 3; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[3-[(z)-2-phenylethenyl]phenyl]ethanone" );
+gibbsFormation
+{
+    dHf_298   92660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     580.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=250330.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,14-dibromotetradecane  (C14H28Br2, CAS 37688-96-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        114Dibromotetradecane;
+formula     C14H28Br2;
+CAS         37688-96-3;
+InChIKey    SDENLXLNLFKRAR-UHFFFAOYSA-N;
+MW          356.186;      // g/mol [origin=calculated method=formula-sum]
+Tc          835.98;      // K   [origin=predictive method=joback]
+Pc          17.019;      // bar [origin=predictive method=joback]
+omega       0.9147;      // -   [origin=predictive method=lee-kesler]
+Tb          652.24;      // K   [origin=predictive method=joback]
+HvapTb      59628.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.544 1.4102 -0.0008806 2.236e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 14; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 14; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,14-bis(bromanyl)tetradecane" "tetradecane, 1,14-dibromo-" "tetradecamethylene dibromide" "tetradecane,1,14-dibromo-" "1,14-dibromotetradecane;tetradecamethylene dibromide;tetradecane, 1,14-dibromo-;" );
+gibbsFormation
+{
+    dHf_298   -279630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     803.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=95640.0
+    phase     gas;
+}

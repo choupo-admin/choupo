@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: .alpha.-ionene  (C13H18, CAS 475-03-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        alphaIonene;
+formula     C13H18;
+CAS         475-03-6;
+InChIKey    LTMQZVLXCLQPCT-UHFFFAOYSA-N;
+MW          174.287;      // g/mol [origin=calculated method=formula-sum]
+Tc          776.01;      // K   [origin=predictive method=joback]
+Pc          25.899;      // bar [origin=predictive method=joback]
+omega       0.4233;      // -   [origin=predictive method=lee-kesler]
+Tb          544.93;      // K   [origin=predictive method=joback]
+HvapTb      47066.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-119.59 1.47416 -0.00128692 4.866e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH3; count 1; } { group ACCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,4,7-trimethyl-2,3-dihydro-1h-naphthalene" "ionene" "1,1,6-trimethyltetralin" "naphthalene, 1,2,3,4-tetrahydro-1,1,6-trimethyl-" "1,1,6-trimethyltetraline" "1,1,6-trimethyl tetralin" "1,2,3,4-tetrahydro-1,1,6-trimethylnaphthalene" "naphthalene, 1,2,3,4-tetrahydro-1,6,6-trimethyl-" );
+gibbsFormation
+{
+    dHf_298   -16180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     542.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=194890.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-fluorobenzo(a)pyrene  (C20H11F, CAS 59417-86-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6FluorobenzoAPyrene;
+formula     C20H11F;
+CAS         59417-86-6;
+InChIKey    WELROXOUKNZNRH-UHFFFAOYSA-N;
+MW          270.306;      // g/mol [origin=calculated method=formula-sum]
+Tc          1024.22;      // K   [origin=predictive method=joback]
+Pc          24.556;      // bar [origin=predictive method=joback]
+omega       0.8428;      // -   [origin=predictive method=lee-kesler]
+Tb          771.29;      // K   [origin=predictive method=joback]
+HvapTb      70145.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-109.22 1.6591 -0.00149604 5.383e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 11; } { group AC; count 8; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 11; } { group dC_ring; count 9; } { group F; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-fluoranylbenzo[a]pyrene" "benzo(a)pyrene, 6-fluoro-" "6-fluorobenzo[a]pyrene" );
+gibbsFormation
+{
+    dHf_298   257230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     397.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=417440.0
+    phase     gas;
+}

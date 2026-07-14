@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: beta-chlordene  (C10H6Cl6, CAS 56534-03-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        betaChlordene;
+formula     C10H6Cl6;
+CAS         56534-03-3;
+InChIKey    OSFPUJNCRLXHDW-VPQDZJFTSA-N;
+MW          338.858;      // g/mol [origin=calculated method=formula-sum]
+Tc          944.15;      // K   [origin=predictive method=joback]
+Pc          25.151;      // bar [origin=predictive method=joback]
+omega       0.6064;      // -   [origin=predictive method=lee-kesler]
+Tb          686.61;      // K   [origin=predictive method=joback]
+HvapTb      65538.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-50.06 1.3266 -0.001385 5.802e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 3; } { group CHCl; count 1; } { group Cl_C=C_; count 4; } { group C=C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:1
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 4; } { group C_ring; count 1; } { group dC_ring; count 4; } { group Cl; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,6-methano-1h-indene, 2,3,3a,4,5,7-hexachloro-3a,6,7,7a-tetrahydro-, (1r,3ar,6s,7s,7ar)-rel-" "1,6-methano-1h-indene, 2,3,3a,4,5,7-hexachloro-3a,6,7,7a-tetrahydro-,     (1alpha,3abeta,6alpha,7alpha,7abeta)-" );
+gibbsFormation
+{
+    dHf_298   -87690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     380.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=132380.0
+    phase     gas;
+}

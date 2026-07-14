@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ether, octyl propyl  (C11H24O, CAS 29379-41-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        etherOctylPropyl;
+formula     C11H24O;
+CAS         29379-41-7;
+InChIKey    KPFDWNLAMXJSNJ-UHFFFAOYSA-N;
+MW          172.312;      // g/mol [origin=calculated method=formula-sum]
+Tc          635.58;      // K   [origin=predictive method=joback]
+Pc          19.052;      // bar [origin=predictive method=joback]
+omega       0.6182;      // -   [origin=predictive method=lee-kesler]
+Tb          473.70;      // K   [origin=predictive method=joback]
+HvapTb      42490.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.389 0.98564 -0.0004636 6.49e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 9; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-propoxyoctane" "octane, 1-propoxy-" );
+gibbsFormation
+{
+    dHf_298   -402590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     595.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-63260.0
+    phase     gas;
+}

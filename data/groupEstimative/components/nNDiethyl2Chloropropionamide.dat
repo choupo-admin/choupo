@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-diethyl-2-chloropropionamide  (C7H14ClNO, CAS 54333-75-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDiethyl2Chloropropionamide;
+formula     C7H14ClNO;
+CAS         54333-75-4;
+InChIKey    WORKHWHULFDZDE-UHFFFAOYSA-N;
+MW          163.645;      // g/mol [origin=calculated method=formula-sum]
+Tc          648.52;      // K   [origin=predictive method=joback]
+Pc          28.967;      // bar [origin=predictive method=joback]
+omega       0.5645;      // -   [origin=predictive method=lee-kesler]
+Tb          463.06;      // K   [origin=predictive method=joback]
+HvapTb      43962.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.402 0.77746 -0.0004745 1.0896e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CHCl; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group Cl; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-n,n-diethyl-propanamide" "propanamide, 2-chloro-n,n-diethyl-" "2-chloro-n,n-diethylpropanamide" "2-chloro-n,n-diethylpropionamide" "alpha-chloro-n,n-diethylpropionamide" "agn-pc-00m1dk" );
+gibbsFormation
+{
+    dHf_298   -253880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     495.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-24450.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: o-xylene, decafluoro-  (C8F10, CAS 1978-04-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oXyleneDecafluoro;
+formula     C8F10;
+CAS         1978-04-7;
+InChIKey    UWTFGHPTJQPZQP-UHFFFAOYSA-N;
+MW          286.068;      // g/mol [origin=calculated method=formula-sum]
+Tc          566.15;      // K   [origin=predictive method=joback]
+Pc          21.795;      // bar [origin=predictive method=joback]
+omega       0.6694;      // -   [origin=predictive method=lee-kesler]
+Tb          420.46;      // K   [origin=predictive method=joback]
+HvapTb      28226.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (45.17 0.757 -0.000615 1.848e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 2; } { group ACF; count 4; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group dC_ring; count 6; } { group F; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4-tetrakis(fluoranyl)-5,6-bis(trifluoromethyl)benzene" "1,2,3,4-tetrafluoro-5,6-bis(trifluoromethyl)benzene" "o-xylene, decafluoro-," );
+gibbsFormation
+{
+    dHf_298   -2007870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     569.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1861680.0
+    phase     gas;
+}

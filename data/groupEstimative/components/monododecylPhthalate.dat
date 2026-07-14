@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: monododecyl phthalate  (C20H30O4, CAS 21577-80-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        monododecylPhthalate;
+formula     C20H30O4;
+CAS         21577-80-0;
+InChIKey    WGQVJOPQTOUKDI-UHFFFAOYSA-N;
+MW          334.456;      // g/mol [origin=calculated method=formula-sum]
+Tc          1099.74;      // K   [origin=predictive method=joback]
+Pc          13.437;      // bar [origin=predictive method=joback]
+omega       1.1560;      // -   [origin=predictive method=lee-kesler]
+Tb          892.59;      // K   [origin=predictive method=joback]
+HvapTb      87623.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.889 1.76142 -0.00100636 1.983e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group ACH; count 4; } { group AC; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-dodecoxycarbonylbenzoic acid" "2-[(dodecyloxy)carbonyl]benzoic acid" "1,2-benzenedicarboxylic acid, monododecyl ester" "dodecyl hydrogen phthalate" "1,2-benzenedicarboxylicacid, 1-dodecyl ester" "1,2-benzenedicarboxylicacid, monododecyl ester (9ci); phthalic acid, dodecyl ester (6ci); phthalicacid, monododecyl ester (8ci); dodecyl hydrogen phthalate; dodecyl phthalate;lauryl phthalate; monododecyl phthalate; monolauryl phthalate" );
+gibbsFormation
+{
+    dHf_298   -898620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     926.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-433980.0
+    phase     gas;
+}

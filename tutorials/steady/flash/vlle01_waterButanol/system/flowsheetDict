@@ -8,7 +8,7 @@
   no vapour.  A simple `phaseSet LL` flash (Michelsen TPD pre-check, then direct
   Gibbs-energy minimisation, multi-start Nelder-Mead) finds the split.
 
-  THE PARAMETERS (cited, NOT fabricated -- see constant/thermoPackage and
+  THE PARAMETERS (cited, NOT fabricated -- see constant/propertyDict and
   README.md):  the UNIQUAC interaction parameters are the LLE-specific fit of
 
       J.G.M. Winkelman, G.N. Kraai, H.J. Heeres, Fluid Phase Equilibria 284
@@ -40,22 +40,7 @@
   NRTL catalogue file's provenance.)
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            320.0 K;
-        P            1.013 bar;
-        // Overall composition chosen INSIDE the miscibility gap.  At 320 K the
-        // two binodal points are x_butanol ~ 0.017 (water-rich) and ~ 0.46
-        // (butanol-rich), so a feed must satisfy 0.017 < z_butanol < 0.46 to
-        // split into two liquids (lever rule).  z_butanol = 0.20 sits squarely
-        // inside; an equimolar feed (z=0.5) would be a SINGLE butanol-rich
-        // liquid -- outside the envelope on the butanol side.
-        molarComposition  { water 0.80;  nButanol 0.20; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

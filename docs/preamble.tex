@@ -178,7 +178,7 @@
 \renewcommand{\sectionmark}[1]{\markboth{\thesection\quad #1}{}}
 \fancyhead[L]{\small\sffamily\nouppercase{\leftmark}}
 \fancyhead[R]{\small\sffamily\thepage}
-\fancyfoot[C]{\small\sffamily Choupo-v0.9.0}
+\fancyfoot[C]{\small\sffamily Choupo-2607}
 \renewcommand{\headrulewidth}{0.3pt}
 \renewcommand{\footrulewidth}{0pt}
 
@@ -211,10 +211,14 @@
 \newcommand{\dict}[1]{\texttt{#1}}
 \newcommand{\cpp}{C\texttt{++}}
 
-% Manual authorship: the Developer Guide is V\'itor Geraldes alone (he authored
-% the code it documents); the other manuals are co-authored with Pedro Mendes.
-% A guide opts into the solo credit by defining \soloDevAuthor before the call.
-\newcommand{\manualauthors}{\ifdefined\soloDevAuthor V\'{\i}tor Geraldes\else V\'{\i}tor Geraldes and Pedro Mendes\fi}
+% Manual authorship is selected by each guide before loading this preamble.
+% Properties/Theory: Vitor, Pedro, Miguel. All other guides: Vitor alone.
+\newcommand{\manualauthors}{%
+  \ifdefined\propertyTheoryAuthors
+    V\'{\i}tor Geraldes, Pedro Mendes, and Miguel Rodrigues%
+  \else
+    V\'{\i}tor Geraldes%
+  \fi}
 
 % OpenFOAM-style manual front matter: title page, then a copyright/licence
 % notice page.  No source-code banner belongs on manual covers.
@@ -227,8 +231,8 @@
   {\Huge\bfseries\sffamily Choupo}\\[0.35cm]
   {\Large\sffamily The Open Source Chemical Process Simulator}\\[1.3cm]
   {\Huge\bfseries\sffamily #1}\\[0.7cm]
-  {Version v0.9.0}\\[0.1cm]
-  {25 June 2026}
+  {Version 2607}\\[0.1cm]
+  {30 June 2026}
   \end{center}
   \end{titlepage}
 

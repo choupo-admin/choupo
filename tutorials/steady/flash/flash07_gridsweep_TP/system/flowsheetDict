@@ -6,16 +6,7 @@
   envelope (V/F=0 bubble line, V/F=1 dew line) over the T x P plane.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            370.0 K;
-        P              1.0 bar;
-        molarComposition  { benzene 0.40;  toluene 0.60; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

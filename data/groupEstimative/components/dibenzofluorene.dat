@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dibenzofluorene  (C21H14, CAS 73560-78-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dibenzofluorene;
+formula     C21H14;
+CAS         73560-78-8;
+InChIKey    XNKVIGSNRYAOQZ-UHFFFAOYSA-N;
+MW          266.343;      // g/mol [origin=calculated method=formula-sum]
+Tc          1059.82;      // K   [origin=predictive method=joback]
+Pc          24.290;      // bar [origin=predictive method=joback]
+omega       0.7974;      // -   [origin=predictive method=lee-kesler]
+Tb          794.19;      // K   [origin=predictive method=joback]
+HvapTb      72698.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-135.64 1.7922 -0.00155468 5.396e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 7; } { group ACCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "13h-dibenzo(a,c)fluorene" "1,2,3,4-dibenzfluorene" "13h-indeno(1,2-l)phenanthrene" );
+gibbsFormation
+{
+    dHf_298   438010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     430.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=618200.0
+    phase     gas;
+}

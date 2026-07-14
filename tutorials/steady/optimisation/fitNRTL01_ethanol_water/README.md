@@ -6,7 +6,7 @@ The **parameter-estimation workflow**: regress the four NRTL binary
 interaction parameters of the ethanol-water pair (a_ij, b_ij, a_ji,
 b_ji; α held fixed) against experimental bubble-temperature data at
 1.01325 bar, using hand-rolled Levenberg-Marquardt inside the
-`fitBinaryPair` outer driver.
+`fitParameters` engine (successor of the retired `fitBinaryPair` driver).
 
 Pedagogical goals (read the LM trace in the log):
 
@@ -25,9 +25,9 @@ fitNRTL01_ethanol_water/
 ├── system/
 │   ├── controlDict                       verbosity 1 (quiet inner Newtons)
 │   ├── flowsheetDict                     1 stream + 1 bubbleT — the forward model
-│   └── outerDict                         type fitBinaryPair; 4 keywords
+│   └── propsDict                         type fitParameters; kind T_bubble
 └── constant/
-    ├── thermoPackage                     NRTL with the initial pair (DECHEMA)
+    ├── propertyDict                      NRTL with the initial pair (DECHEMA)
     └── experiments/
         └── ethanol-water-101kPa          11 (x, T) pairs at 1 atm
 ```

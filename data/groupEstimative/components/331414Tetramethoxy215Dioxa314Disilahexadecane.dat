@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3,14,14-tetramethoxy-2,15-dioxa-3,14-disilahexadecane  (C16H38O6Si2, CAS 122185-09-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C16H38O6Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        331414Tetramethoxy215Dioxa314Disilahexadecane;
+formula     C16H38O6Si2;
+CAS         122185-09-5;
+InChIKey    JFFBPULXPLWPAA-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          382.644;      // g/mol [origin=calculated method=formula-sum]
+Tc          873.16;      // K   [origin=predictive method=joback]
+Pc          10.433;      // bar [origin=predictive method=joback]
+omega       0.8478;      // -   [origin=predictive method=lee-kesler]
+Tb          703.00;      // K   [origin=predictive method=joback]
+HvapTb      66258.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (222.98 0.73232 0.000649 -5.84e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group CH3O; count 6; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 10; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethoxy(10-trimethoxysilyldecyl)silane" "1,10-bis-trimethoxysilyldecane" "2,15-dioxa-3,14-disilahexadecane, 3,3,14,14-tetramethoxy-" "2,15-dioxa-3,14-disilahexadecane,3,3,14,14-tetramethoxy-" );
+gibbsFormation
+{
+    dHf_298   -1390130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1099.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-755680.0
+    phase     gas;
+}

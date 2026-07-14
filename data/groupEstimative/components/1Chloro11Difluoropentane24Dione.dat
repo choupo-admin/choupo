@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-chloro-1,1-difluoropentane-2,4-dione  (C5H5ClF2O2, CAS 2375-76-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Chloro11Difluoropentane24Dione;
+formula     C5H5ClF2O2;
+CAS         2375-76-0;
+InChIKey    ZPBKLXPYUKILDE-UHFFFAOYSA-N;
+MW          170.539;      // g/mol [origin=calculated method=formula-sum]
+Tc          644.48;      // K   [origin=predictive method=joback]
+Pc          35.431;      // bar [origin=predictive method=joback]
+omega       0.5849;      // -   [origin=predictive method=lee-kesler]
+Tb          454.48;      // K   [origin=predictive method=joback]
+HvapTb      41671.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (13.661 0.57902 -0.0004358 1.2232e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3CO; count 1; } { group CH2CO; count 1; } { group CClF2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group F; count 2; } { group Cl; count 1; } { group CdO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-1,1-bis(fluoranyl)pentane-2,4-dione" "1-chloro-1,1-difluoroacetylacetone" "1-chloro-1,1-difluoro-2,4-pentanedione" "2,4-pentanedione,1-chloro-1,1-difluoro-" "1-chloro-1,1-difluoro-2,4-pentanedione;1-chloro-1,1-difluoroacetylacetone;1-chloro-1,1-difluoropentane-2,4-dione;" );
+gibbsFormation
+{
+    dHf_298   -788400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     462.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-665330.0
+    phase     gas;
+}

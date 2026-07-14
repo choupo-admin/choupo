@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-morpholinocyclopentene  (C9H15NO, CAS 936-52-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Morpholinocyclopentene;
+formula     C9H15NO;
+CAS         936-52-7;
+InChIKey    VAPOFMGACKUWCI-UHFFFAOYSA-N;
+MW          153.225;      // g/mol [origin=calculated method=formula-sum]
+Tc          713.98;      // K   [origin=predictive method=joback]
+Pc          36.910;      // bar [origin=predictive method=joback]
+omega       0.4484;      // -   [origin=predictive method=lee-kesler]
+Tb          488.95;      // K   [origin=predictive method=joback]
+HvapTb      44267.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-109.43 1.1806 -0.00085034 2.393e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH=C; count 1; } { group FCH2O; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 7; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(cyclopenten-1-yl)morpholine" "1-(n-morpholino)cyclopentene" "4-(1-cyclopenten-1-yl)morpholine" "n-(1-cyclopenten-1-yl)-morpholine" "morpholine, 4-(1-cyclopenten-1-yl)-" "n-(1-cyclopenten-1-yl)morpholine" "1-morpholino-1-cyclopentene" "4-(1-cyclopentenyl)morpholine" "(1-morpholinocyclopentene)" "n-(cyclopent-1-en-1-yl)morpholine" "4-cyclopent-1-enylmorpholine" "cyclopentanone morpholine enamine" );
+gibbsFormation
+{
+    dHf_298   -85610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     411.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=158410.0
+    phase     gas;
+}

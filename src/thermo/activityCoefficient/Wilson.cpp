@@ -30,6 +30,7 @@ License
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "core/ThermoResolution.H"
+#include "thermo/PairAudit.H"
 #include "thermo/Database.H"
 
 #include <cmath>
@@ -70,28 +71,46 @@ fs::path locatePairFile(const std::string& pairName)
         fs::path stdFile = fs::path(root)
                            / "standards" / "binaryPairs" / "Wilson" / pairName;
         if (fs::exists(stdFile)) return stdFile;
+        fs::path proposedFile = fs::path(root)
+                           / "local" / "binaryPairs" / "Wilson" / pairName;
+        if (fs::exists(proposedFile)) return proposedFile;
     }
     return {};
 }
 
 } // anonymous
 
-Wilson::Wilson(const DictPtr& dict, const std::vector<std::string>& names)
-:   n_(names.size())
+Wilson::Wilson(const DictPtr& dict, const std::vector<Component>& comps)
+:   n_(comps.size())
 {
     Amat_.assign(n_*n_, 0.0);
     idealPair_.assign(n_*n_, false);
     V_.assign(n_,    0.0);
+
+    // Molar volumes straight from the components -- self-configured AT
+    // construction (no post-construction setMolarVolumes two-phase dance).
+    // Throw LOUD on a missing Vliq (no silent crutch).
+    std::vector<std::string> names;  names.reserve(n_);
+    for (std::size_t i = 0; i < n_; ++i)
+    {
+        names.push_back(comps[i].name());
+        if (comps[i].Vliq() <= 0.0)
+            throw std::runtime_error("Wilson: component '" + comps[i].name()
+                + "' has Vliq <= 0 -- add 'Vliq' to its data/components/*.dat");
+        V_[i] = comps[i].Vliq();
+    }
 
     std::vector<bool> covered(n_*n_, false);
     for (std::size_t i = 0; i < n_; ++i) covered[i*n_ + i] = true;
 
     auto record = [&](const std::string& ni, const std::string& nj,
                       const std::string& status, const std::string& source,
-                      const std::string& provSource)
+                      const std::string& provSource,
+                      const DictPtr& provDict = nullptr)
     {
-        ThermoResolutionLog::instance().add(
-            PairResolution{ "Wilson", ni, nj, status, source, provSource });
+        PairResolution r{ "Wilson", ni, nj, status, source, provSource };
+        fillPairAudit(r, provDict, ni + "-" + nj, status == "standard");
+        ThermoResolutionLog::instance().add(std::move(r));
     };
 
     auto applyPair = [&](const DictPtr& p, const std::string& sourceLabel)
@@ -144,6 +163,18 @@ Wilson::Wilson(const DictPtr& dict, const std::vector<std::string>& names)
             }
 
             auto fileDict = Dictionary::fromFile(file.string());
+            const bool isProposed =
+                file.string().find("/proposed/binaryPairs/") != std::string::npos;
+            if (isProposed)
+            {
+                const bool isNew = AdvisoryLog::instance().add(
+                    "provenance", "warning", "Wilson " + names[i] + "-" + names[j],
+                    "loaded from data/local/binaryPairs -- UNVERIFIED");
+                if (isNew)
+                    std::cout << "  [local] Wilson binary pair " << names[i]
+                              << "-" << names[j]
+                              << ": UNVERIFIED local (imported/licensed) data\n";
+            }
 
             if (fileDict->found("model"))
             {
@@ -164,9 +195,11 @@ Wilson::Wilson(const DictPtr& dict, const std::vector<std::string>& names)
             if (fileDict->found("provenance"))
                 provSource = fileDict->subDict("provenance")
                                  ->lookupWordOrDefault("source", "");
-            const std::string tier =
+            const std::string tier = isProposed ? "local" :
                 (file.string().find("/standards/") != std::string::npos) ? "standard" : "caseRoot";
-            record(names[i], names[j], tier, file.string(), provSource);
+            record(names[i], names[j], tier, file.string(), provSource,
+               fileDict->found("provenance")
+                   ? fileDict->subDict("provenance") : nullptr);
         }
 
     // Announce the ideal-defaulted pairs (no silent crutch).
@@ -186,18 +219,6 @@ Wilson::Wilson(const DictPtr& dict, const std::vector<std::string>& names)
     }
 }
 
-void Wilson::setMolarVolumes(const sVector& V)
-{
-    if (V.size() != n_)
-        throw std::runtime_error("Wilson::setMolarVolumes: size mismatch");
-    for (std::size_t i = 0; i < n_; ++i)
-    {
-        if (V[i] <= 0.0)
-            throw std::runtime_error("Wilson: component " + std::to_string(i)
-                + " has Vliq <= 0 -- add 'Vliq' to its data/components/*.dat");
-    }
-    V_ = V;
-}
 
 sVector Wilson::gamma(scalar T, const sVector& x) const
 {

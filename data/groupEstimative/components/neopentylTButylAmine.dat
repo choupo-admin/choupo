@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: neopentyl, t-butyl amine  (C9H21N, CAS 58471-09-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        neopentylTButylAmine;
+formula     C9H21N;
+CAS         58471-09-3;
+InChIKey    JPTZOFZNRFPMPG-UHFFFAOYSA-N;
+MW          143.274;      // g/mol [origin=calculated method=formula-sum]
+Tc          638.25;      // K   [origin=predictive method=joback]
+Pc          24.243;      // bar [origin=predictive method=joback]
+omega       0.4056;      // -   [origin=predictive method=lee-kesler]
+Tb          449.23;      // K   [origin=predictive method=joback]
+HvapTb      39472.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-55.449 1.18672 -0.000858 2.502e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group C; count 2; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 1; } { group C; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-tert-butyl-2,2-dimethyl-propan-1-amine" "n-tert-butyl-2,2-dimethylpropan-1-amine" "tert-c5h11(tert-c4h9)nh" "jptzofznrfpmpg-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -193120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     469.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=119970.0
+    phase     gas;
+}

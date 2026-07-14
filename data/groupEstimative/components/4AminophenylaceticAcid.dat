@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-aminophenylacetic acid  (C8H9NO2, CAS 1197-55-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4AminophenylaceticAcid;
+formula     C8H9NO2;
+CAS         1197-55-3;
+InChIKey    CSEWAUGPAQPMDC-UHFFFAOYSA-N;
+MW          151.165;      // g/mol [origin=calculated method=formula-sum]
+Tc          869.17;      // K   [origin=predictive method=joback]
+Pc          43.056;      // bar [origin=predictive method=joback]
+omega       0.8832;      // -   [origin=predictive method=lee-kesler]
+Tb          632.34;      // K   [origin=predictive method=joback]
+HvapTb      64145.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.899 0.7381 -0.00049156 1.236e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group ACCH2; count 1; } { group ACNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-aminophenyl)ethanoic acid" "benzeneacetic acid, 4-amino-" "p-aminophenylacetic acid" "4-aminobenzeneacetic acid" "acetic acid, (p-aminophenyl)-" "2-(4-aminophenyl)acetic acid" "(p-aminophenyl)acetic acid" "(para-aminophenyl)acetic acid" "4-carboxymethylaniline" "p-amino-alpha-toluic acid" "(4-aminophenyl)acetic acid" "4-aminophenylaceticacid" );
+gibbsFormation
+{
+    dHf_298   -299870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     459.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-158200.0
+    phase     gas;
+}

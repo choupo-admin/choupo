@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4,6,6-tetramethylnonane  (C13H28, CAS 74286-93-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4466Tetramethylnonane;
+formula     C13H28;
+CAS         74286-93-4;
+InChIKey    WLQCITPYUAWICA-UHFFFAOYSA-N;
+MW          184.367;      // g/mol [origin=calculated method=formula-sum]
+Tc          669.55;      // K   [origin=predictive method=joback]
+Pc          16.963;      // bar [origin=predictive method=joback]
+omega       0.4479;      // -   [origin=predictive method=lee-kesler]
+Tb          490.58;      // K   [origin=predictive method=joback]
+HvapTb      41940.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-57.875 1.49052 -0.001027 2.873e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 5; } { group C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 5; } { group C; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -329150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     584.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=64260.0
+    phase     gas;
+}

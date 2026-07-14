@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dl-2-amino-1-pentanol  (C5H13NO, CAS 4146-04-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dl2Amino1Pentanol;
+formula     C5H13NO;
+CAS         4146-04-7;
+InChIKey    ULAXUFGARZZKTK-UHFFFAOYSA-N;
+MW          103.165;      // g/mol [origin=calculated method=formula-sum]
+Tc          656.37;      // K   [origin=predictive method=joback]
+Pc          42.111;      // bar [origin=predictive method=joback]
+omega       0.8835;      // -   [origin=predictive method=lee-kesler]
+Tb          478.27;      // K   [origin=predictive method=joback]
+HvapTb      53656.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.443 0.58062 -0.0003252 6.86e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group OH; count 1; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanylpentan-1-ol" "2-amino-1-pentanol" "1-pentanol, 2-amino-" "2-aminopentan-1-ol" "(2s)-2-amino-1-pentanol" "1-pentanol,2-amino-, (?a'a a'a currency)-; 1-pentanol, 2-amino-, dl-(8ci); (?a'a a'a currency)-2-aminopentan-1-ol;2-amino-1-pentanol; dl-2-amino-1-pentanol; [1-(hydroxymethyl)butyl]amine;dl-norvalinol" );
+gibbsFormation
+{
+    dHf_298   -270250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     443.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-81590.0
+    phase     gas;
+}

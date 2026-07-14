@@ -1,0 +1,38 @@
+/*---------------------------------------------------------------------------*\
+  column04_multifeed_sidedraw / flowsheetDict
+
+  Multiple feeds as FLOWSHEET STREAMS (`inputs ( feed feed2 )`) + a liquid side
+  draw.  operation.feeds maps each input stream to a stage (information follows
+  the streams -> the plant-boundary mass + energy balance closes).
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        radfracLite;
+        type        distillationColumn;
+        model       simultaneous;
+        inputs      ( feed  feed2 );
+        outputs     ( distillate  bottoms  intermediateCut );
+
+        operation
+        {
+            nStages        15;
+            refluxRatio    3.0;
+            distillateRate 42 kmol/h;
+            P              1.01325 bar;
+
+            feeds
+            (
+                { stream feed;  stage 5;   quality 1.0; }
+                { stream feed2; stage 11;  quality 1.0; }
+            );
+
+            sideDraws
+            (
+                { stage 8;  phase liquid;  rate 15 kmol/h; }
+            );
+        }
+    }
+);

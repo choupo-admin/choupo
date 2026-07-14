@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-methyl-2-(1-phenylethyl)phenol  (C15H16O, CAS 1817-67-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Methyl21PhenylethylPhenol;
+formula     C15H16O;
+CAS         1817-67-0;
+InChIKey    DJRYJQNZAYJVGF-UHFFFAOYSA-N;
+MW          212.292;      // g/mol [origin=calculated method=formula-sum]
+Tc          930.68;      // K   [origin=predictive method=joback]
+Pc          29.092;      // bar [origin=predictive method=joback]
+omega       0.7255;      // -   [origin=predictive method=lee-kesler]
+Tb          681.32;      // K   [origin=predictive method=joback]
+HvapTb      66824.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-74.86 1.37204 -0.00104712 3.26e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 8; } { group AC; count 1; } { group ACCH3; count 1; } { group ACCH; count 1; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "phenol, 4-methyl(1-phenylethyl)-" "2-(.alpha.-methylbenzyl)-p-cresol" "agn-pc-00ka89" "2-(alpha-methylbenzyl)-4-methylphenol" "phenol, 4-methyl-2-(1-phenylethyl)-" "phenol, 2-(alpha-methylbenzyl)-4-methyl-" "4-methyl-2-(1-phenyl-ethyl)-phenol" );
+gibbsFormation
+{
+    dHf_298   -73930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     538.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=133550.0
+    phase     gas;
+}

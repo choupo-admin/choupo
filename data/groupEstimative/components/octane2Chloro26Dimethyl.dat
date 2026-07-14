@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octane, 2-chloro-2,6-dimethyl-  (C10H21Cl, CAS 102736-13-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octane2Chloro26Dimethyl;
+formula     C10H21Cl;
+CAS         102736-13-0;
+InChIKey    JDLSLBJTXRCRNN-UHFFFAOYSA-N;
+MW          176.728;      // g/mol [origin=calculated method=formula-sum]
+Tc          645.13;      // K   [origin=predictive method=joback]
+Pc          20.888;      // bar [origin=predictive method=joback]
+omega       0.4278;      // -   [origin=predictive method=lee-kesler]
+Tb          462.16;      // K   [origin=predictive method=joback]
+HvapTb      40555.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.466 1.09238 -0.0007156 1.882e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:1
+    joback ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-2,6-dimethyl-octane" "2-chloro-2,6-dimethyloctane" );
+gibbsFormation
+{
+    dHf_298   -279500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     530.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=21790.0
+    phase     gas;
+}

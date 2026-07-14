@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,2-trichloropropane  (C3H5Cl3, CAS 598-77-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        112Trichloropropane;
+formula     C3H5Cl3;
+CAS         598-77-6;
+InChIKey    GRSQYISVQKPZCW-UHFFFAOYSA-N;
+MW          147.423;      // g/mol [origin=calculated method=formula-sum]
+Tc          580.94;      // K   [origin=predictive method=joback]
+Pc          39.014;      // bar [origin=predictive method=joback]
+omega       0.2712;      // -   [origin=predictive method=lee-kesler]
+Tb          379.65;      // K   [origin=predictive method=joback]
+HvapTb      34651.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (35.47 0.32102 -0.000207 5.05e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CHCl; count 1; } { group CHCl2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 2; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2-tris(chloranyl)propane" "propane, 1,1,2-trichloro-" "2-chloropropylidene chloride" );
+gibbsFormation
+{
+    dHf_298   -163030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     354.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-66290.0
+    phase     gas;
+}

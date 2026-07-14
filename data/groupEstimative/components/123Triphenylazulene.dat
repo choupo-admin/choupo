@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,3-triphenylazulene  (C28H20, CAS 1055-26-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        123Triphenylazulene;
+formula     C28H20;
+CAS         1055-26-1;
+InChIKey    BBAHZGDEGNYDBK-UHFFFAOYSA-N;
+MW          356.468;      // g/mol [origin=calculated method=formula-sum]
+Tc          1265.41;      // K   [origin=predictive method=joback]
+Pc          17.624;      // bar [origin=predictive method=joback]
+omega       0.8788;      // -   [origin=predictive method=lee-kesler]
+Tb          980.88;      // K   [origin=predictive method=joback]
+HvapTb      90652.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-146.73 2.166 -0.0015598 4.304e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 20; } { group AC; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 20; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "azulene, 1,2,3-triphenyl-" );
+gibbsFormation
+{
+    dHf_298   481530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     693.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=712280.0
+    phase     gas;
+}

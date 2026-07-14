@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentalgine  (C22H33NO4, CAS 17146-95-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentalgine;
+formula     C22H33NO4;
+CAS         17146-95-1;
+InChIKey    QNLDTXPVZPRSAM-VPSGEPSNSA-N;
+MW          375.509;      // g/mol [origin=calculated method=formula-sum]
+Tc          1323.16;      // K   [origin=predictive method=joback]
+Pc          16.838;      // bar [origin=predictive method=joback]
+omega       1.4248;      // -   [origin=predictive method=lee-kesler]
+Tb          1079.42;      // K   [origin=predictive method=joback]
+HvapTb      114714.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-165.709 2.7056 -0.00220122 7.594e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 2; } { group CH; count 3; } { group C; count 1; } { group CH=C; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group OH; count 1; } { group ACOH; count 1; } { group CH2N; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 1; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentazocine lactate" "359-83-1 (parent)" "2-hydroxypropanoic acid compd. with (2alpha,6alpha,11r*)-1,2,3,4,5,6-hexahydro-6,11-dimethyl-3-(3-methyl-2-butenyl)-2,6-methanol-3-benzocin-8-ol (1:1)" "lactic acid, compd. with 1,2,3,4,5,6-hexahydro-6,11-dimethyl-3-(3-methyl-2-butenyl)-2,6-methano-3-benzazocin-8-ol (1:1)" "lactic acid, compound with (2alpha,6alpha,11r*)-1,2,3,4,5,6-hexahydro-6,11-dimethyl-3-(3-methylbut-2-enyl)-2,6-methano-3-benzocin-8-ol (1:1)" "propanoic acid, 2-hydroxy-, compd. with (2alpha,6alpha,11r*)-1,2,3,4,5,6-hexahydro-6,11-dimethyl-3-(3-methyl-2-butenyl)-2,6-methanol-3-benzocin-8-ol (1:1)" "talwin (as lactate)" "pentazocine lactate [usan]" "c19h27no.c3h6o3" "(2r*,6r*,11r*)-1,2,3,4,5,6-hexahydro-6,11-dimethyl-3-(3-methyl-2-butenyl)-2,6-methano-3-benzazocin-8-ol lactate (salt)" "2,6-methano-3-benzazocin-8-ol, 1,2,3,4,5,6-hexahydro-6,11-dimethyl-3-(3-methyl-2-butenyl)-, (2alpha,6alpha,11r*)-, compd. with 2-hydroxypropanoic acid (1:1)" );
+gibbsFormation
+{
+    dHf_298   -753600.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     980.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-214660.0
+    phase     gas;
+}

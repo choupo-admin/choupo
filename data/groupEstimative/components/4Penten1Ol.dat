@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-penten-1-ol  (C5H10O, CAS 821-09-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Penten1Ol;
+formula     C5H10O;
+CAS         821-09-0;
+InChIKey    LQAVWYMTUMSFBE-UHFFFAOYSA-N;
+MW          86.134;      // g/mol [origin=calculated method=formula-sum]
+Tc          567.77;      // K   [origin=predictive method=joback]
+Pc          40.881;      // bar [origin=predictive method=joback]
+omega       0.6867;      // -   [origin=predictive method=lee-kesler]
+Tb          402.86;      // K   [origin=predictive method=joback]
+HvapTb      42733.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.643 0.4928 -0.0003015 7.55e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2=CH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pent-4-en-1-ol" "4-pentenol" "2-allylethyl alcohol" "4-pentenyl alcohol" "4-pentenol-1" "lqavwymtumsfbe-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -173330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     397.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-57760.0
+    phase     gas;
+}

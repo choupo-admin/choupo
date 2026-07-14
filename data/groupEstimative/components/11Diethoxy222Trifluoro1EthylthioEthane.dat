@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1-diethoxy-2,2,2-trifluoro-1-(ethylthio)ethane  (C8H15F3O2S, CAS 68058-56-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Diethoxy222Trifluoro1EthylthioEthane;
+formula     C8H15F3O2S;
+CAS         68058-56-0;
+InChIKey    UURXWCXKJIPEMW-UHFFFAOYSA-N;
+MW          232.26;      // g/mol [origin=calculated method=formula-sum]
+Tc          666.18;      // K   [origin=predictive method=joback]
+Pc          22.676;      // bar [origin=predictive method=joback]
+omega       0.5940;      // -   [origin=predictive method=lee-kesler]
+Tb          487.61;      // K   [origin=predictive method=joback]
+HvapTb      39996.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (35.543 0.91885 -0.000542 1.074e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group CH2O; count 2; } { group CF3; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 2; } { group F; count 3; } { group O; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1-diethoxy-1-ethylsulfanyl-2,2,2-tris(fluoranyl)ethane" "1,1-diethoxy-1-ethylsulfanyl-2,2,2-trifluoroethane" "ethane,1,1-diethoxy-1-(ethylthio)-2,2,2-trifluoro-" "1,1-diethoxy-1-(ethylsulfanyl)-2,2,2-trifluoroethane" );
+gibbsFormation
+{
+    dHf_298   -1036850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     568.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-739150.0
+    phase     gas;
+}

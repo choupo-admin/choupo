@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: glaucarubin  (C25H36O10, CAS 1448-23-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        glaucarubin;
+formula     C25H36O10;
+CAS         1448-23-3;
+InChIKey    LZKVXMYVBSNXER-YZPKDWIXSA-N;
+MW          496.553;      // g/mol [origin=calculated method=formula-sum]
+Tc          1845.04;      // K   [origin=predictive method=joback]
+Pc          15.835;      // bar [origin=predictive method=joback]
+omega       0.5700;      // -   [origin=predictive method=lee-kesler]
+Tb          1387.07;      // K   [origin=predictive method=joback]
+HvapTb      167914.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-297.489 3.8721 -0.00359534 1.3969e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 2; } { group CH; count 9; } { group C; count 4; } { group CH=C; count 1; } { group OH; count 5; } { group FCH2O; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 1; } { group C; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 9; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 5; } { group O_ring; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "simarubaceae" "glarubin" "glaumeba" "glaucarubine" "mk-53" ".beta.-kirondrin" ".alpha.-kirondrin" "butyric acid, 4-ester with 1,2,3,3a.beta.,4,6a.beta.,7,7a.alpha.,10,11,11a,11b.alpha.-dodecahydro-1.alpha.,2.alpha.,4.beta.,10.alpha.,11.beta.-pentahydroxy-3.alpha.,8,11a.beta.-trimethyl-5h-1,11c.beta.-(epoxymethano)phenanthro[10,1-bc]pyran-5-one" "picras-3-en-16-one,20-epoxy-1,2,11,12-tetrahydroxy-15-(2-hydroxy-2-methyl-1-oxobutoxy)-, [1.beta.,2.alpha.,11.beta.,12.alpha.,15.beta.(s)]-" );
+gibbsFormation
+{
+    dHf_298   -1794460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     853.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-999060.0
+    phase     gas;
+}

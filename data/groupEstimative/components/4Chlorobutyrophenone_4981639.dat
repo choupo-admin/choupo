@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4'-chlorobutyrophenone  (C10H11ClO, CAS 4981-63-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Chlorobutyrophenone;
+formula     C10H11ClO;
+CAS         4981-63-9;
+InChIKey    XLCJPQYALLFIPW-UHFFFAOYSA-N;
+MW          182.647;      // g/mol [origin=calculated method=formula-sum]
+Tc          772.26;      // K   [origin=predictive method=joback]
+Pc          29.666;      // bar [origin=predictive method=joback]
+omega       0.5752;      // -   [origin=predictive method=lee-kesler]
+Tb          551.36;      // K   [origin=predictive method=joback]
+HvapTb      51923.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.558 0.79422 -0.00048606 1.0836e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 4; } { group AC; count 1; } { group CH2CO; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-chlorophenyl)butan-1-one" "p-chlorobutyrophenone" "1-butanone, 1-(4-chlorophenyl)-" "butyrophenone, 4'-chloro-" "4-chlorophenyl propyl ketone" "xlcjpqyallfipw-uhfffaoysa-" "st032" "939-52-6 4'-chlorobutyrophenone" "1-(4-chlorophenyl)butan-1-one;4-chloro-1-phenyl-butan-1-one;1-butanone, 1-(4-chlorophenyl)-;1-(4-chlorophenyl)butan-1-one;1-butanone, 1-(4-chlorophenyl)-;butyrophenone, 4'-chloro-;p-chlorobutyrophenone;" );
+gibbsFormation
+{
+    dHf_298   -152990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     493.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4750.0
+    phase     gas;
+}

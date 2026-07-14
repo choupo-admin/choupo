@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methoxyacetic acid  (C3H6O3, CAS 625-45-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methoxyaceticAcid;
+formula     C3H6O3;
+CAS         625-45-6;
+InChIKey    RMIODHQZRUFFFF-UHFFFAOYSA-N;
+MW          90.078;      // g/mol [origin=calculated method=formula-sum]
+Tc          630.51;      // K   [origin=predictive method=joback]
+Pc          48.630;      // bar [origin=predictive method=joback]
+omega       0.6128;      // -   [origin=predictive method=lee-kesler]
+Tb          436.17;      // K   [origin=predictive method=joback]
+HvapTb      41846.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (30.261 0.27642 -0.000101 -2.3e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH3O; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methoxyethanoic acid" "2-methoxyacetic acid" "acetic acid, methoxy-" "methoxyethanoic acid" "acetic acid, 2-methoxy-" "methoxyessigs" "50402-70-5 (hydrochloride salt)" );
+gibbsFormation
+{
+    dHf_298   -587740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     337.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-474530.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triisopropanolamine  (C9H21NO3, CAS 122-20-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triisopropanolamine;
+formula     C9H21NO3;
+CAS         122-20-3;
+InChIKey    SLINHMUFWFWBMU-UHFFFAOYSA-N;
+MW          191.271;      // g/mol [origin=calculated method=formula-sum]
+Tc          858.15;      // K   [origin=predictive method=joback]
+Pc          31.420;      // bar [origin=predictive method=joback]
+omega       1.8228;      // -   [origin=predictive method=lee-kesler]
+Tb          693.18;      // K   [origin=predictive method=joback]
+HvapTb      86544.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.157 1.10246 -0.0006792 1.612e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 3; } { group OH; count 3; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 3; } { group OH; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[bis(2-oxidanylpropyl)amino]propan-2-ol" "tipa" "tris(2-hydroxypropyl)amine" "2-propanol, 1,1',1''-nitrilotris-" "tri-2-propanolamine" "tri-iso-propanolamine" "tris(2-propanol)amine" "2-propanol, 1,1',1''-nitrilotri-" "tris(2-hydroxy-1-propyl)amine" "1,1',1''-nitrilotripropan-2-ol" "1,1',1''-nitrilotri-2-propanol" ""3,3',3""-nitrilotri(2-propanol)"" );
+gibbsFormation
+{
+    dHf_298   -634090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     646.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-282100.0
+    phase     gas;
+}

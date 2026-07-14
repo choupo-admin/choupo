@@ -1,0 +1,64 @@
+/*---------------------------------------------------------------------------*\
+       \|/       C hemicals     | Open-source, glass-box chemical process simulator
+      \\|//      H eat-transfer | https://choupo.org
+     \\\|///     O perations    |
+      \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+       \|/       P roperties    | Licence: GPL-3.0-or-later
+        |        O ptimization  |
+       /|\                      |
+-------------------------------------------------------------------------------
+License
+    This file is part of Choupo.
+
+    Choupo is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Choupo is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+    License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+
+    SPDX-License-Identifier: GPL-3.0-or-later
+
+    Credit and attribution: see AUTHORS
+    Required legal notices:  see NOTICE
+-------------------------------------------------------------------------------
+Class
+    Choupo::RotaryAtomizer
+
+Description
+    Rotary / centrifugal-wheel atomizer (the SprayDryer default).  Friedman/
+    Marshall correlation for the Sauter mean diameter:
+
+      d32/D = 0.4 (Gamma/(rho_L N D^2))^0.6 (mu_L/Gamma)^0.2 (sigma rho_L D/Gamma^2)^0.1
+
+    Gamma = feed mass flow per wetted perimeter (pi D); N in rev/s.  Dominant
+    lever is wheel speed (~ N^-0.5) -- easy size control by changing rpm.
+    Hardware: `wheelSpeed` [rpm], `wheelDiameter` [m].
+    Ref: Marshall (1954), AIChE Monograph 2; Handbook of Industrial Drying
+    (Mujumdar ed., DOI 10.1201/b17208).
+\*---------------------------------------------------------------------------*/
+
+#pragma once
+
+#include "Atomizer.H"
+
+namespace Choupo {
+
+class RotaryAtomizer : public Atomizer
+{
+public:
+    explicit RotaryAtomizer(const DictPtr& dict);
+
+    const std::string& name() const override { return name_; }
+    DropletResult dropletSize(const Feed& feed) const override;
+
+private:
+    inline static const std::string name_ = "rotary";
+    scalar Nrpm_  = 10000.0;   // wheel speed    [rpm]
+    scalar Ddisk_ = 0.0;       // wheel diameter [m]
+};
+
+} // namespace Choupo

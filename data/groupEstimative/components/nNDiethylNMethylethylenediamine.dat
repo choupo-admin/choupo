@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-diethyl-n'-methylethylenediamine  (C7H18N2, CAS 104-79-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDiethylNMethylethylenediamine;
+formula     C7H18N2;
+CAS         104-79-0;
+InChIKey    MKDYQLJYEBWUIG-UHFFFAOYSA-N;
+MW          130.235;      // g/mol [origin=calculated method=formula-sum]
+Tc          590.27;      // K   [origin=predictive method=joback]
+Pc          28.323;      // bar [origin=predictive method=joback]
+omega       0.5664;      // -   [origin=predictive method=lee-kesler]
+Tb          422.37;      // K   [origin=predictive method=joback]
+HvapTb      39655.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.376 0.86896 -0.0005182 1.2e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH3NH; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n',n'-diethyl-n-methyl-ethane-1,2-diamine" "1,2-ethanediamine, n,n-diethyl-n'-methyl-" "n1,n1-diethyl-n2-methyl-1,2-ethanediamine" "diethyl[2-(methylamino)ethyl]amine" "2-(diethylamino)-n-methylethylamine" "ethylenediamine, n,n-diethyl-n'-methyl-" "n1,n1-diethyl-n2-methylethane-1,2-diamine" "1,2-ethanediamine, n1,n1-diethyl-n2-methyl-" "(2-(diethylamino)ethyl)methylamine" "[2-(diethylamino)ethyl]methylamine" "diethyl(2-methylaminoethyl)amine" "mkdyqljyebwuig-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -66810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     485.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=208230.0
+    phase     gas;
+}

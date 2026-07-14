@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trans-2-hexen-1-ol  (C6H12O, CAS 928-95-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trans2Hexen1Ol;
+formula     C6H12O;
+CAS         928-95-0;
+InChIKey    ZCHHRLHTBGRGOT-UHFFFAOYSA-N;
+MW          100.161;      // g/mol [origin=calculated method=formula-sum]
+Tc          602.04;      // K   [origin=predictive method=joback]
+Pc          36.731;      // bar [origin=predictive method=joback]
+omega       0.7265;      // -   [origin=predictive method=lee-kesler]
+Tb          433.22;      // K   [origin=predictive method=joback]
+HvapTb      45587.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.457 0.62782 -0.0004168 1.174e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH=CH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hex-2-en-1-ol" "2-hexen-1-ol, (2z)-" "2-hexen-1-ol, (2e)-" "cis-1-hydroxy-2-hexene" );
+gibbsFormation
+{
+    dHf_298   -202180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     434.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-56960.0
+    phase     gas;
+}

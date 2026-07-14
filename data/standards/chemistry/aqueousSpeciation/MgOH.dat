@@ -1,0 +1,6 @@
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species MgOH; ion "MgOH+"; z +1; masters ( { ion Mg; nu 1; } { ion H; nu -1; } ); nuWater 1;
+      logK25 -11.44; dH 66743.2; source "USGS PHREEQC phreeqc.dat (public domain)";
+

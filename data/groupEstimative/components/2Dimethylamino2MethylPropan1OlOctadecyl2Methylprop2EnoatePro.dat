@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(dimethylamino)-2-methyl-propan-1-ol;octadecyl 2-methylprop-2-enoate;prop-2-enoic acid  (C31H61NO5, CAS 167078-16-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Dimethylamino2MethylPropan1OlOctadecyl2Methylprop2EnoatePro;
+formula     C31H61NO5;
+CAS         167078-16-2;
+InChIKey    MJEOVPWQDYAZOJ-UHFFFAOYSA-N;
+MW          527.831;      // g/mol [origin=calculated method=formula-sum]
+Tc          1569.77;      // K   [origin=predictive method=joback]
+Pc          6.013;      // bar [origin=predictive method=joback]
+omega       0.1132;      // -   [origin=predictive method=lee-kesler]
+Tb          1210.04;      // K   [origin=predictive method=joback]
+HvapTb      125925.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (50.808 2.77612 -0.0011739 4.99e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 18; } { group C; count 1; } { group CH2=CH; count 1; } { group CH2=C; count 1; } { group OH; count 1; } { group CH3N; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 18; } { group C; count 1; } { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group OH; count 1; } { group COOH; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-propenoic acid, 2-methyl-, octadecyl ester, polymer with 2-propenoic acid, compd. with 2-(dimethylamino)-2-methyl-1-propanol" );
+gibbsFormation
+{
+    dHf_298   -1426340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1698.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-509730.0
+    phase     gas;
+}

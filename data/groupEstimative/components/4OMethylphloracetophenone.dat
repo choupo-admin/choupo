@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-o-methylphloracetophenone  (C9H10O4, CAS 7507-89-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4OMethylphloracetophenone;
+formula     C9H10O4;
+CAS         7507-89-3;
+InChIKey    GKSGTWUNURZTKD-UHFFFAOYSA-N;
+MW          182.175;      // g/mol [origin=calculated method=formula-sum]
+Tc          912.29;      // K   [origin=predictive method=joback]
+Pc          49.454;      // bar [origin=predictive method=joback]
+omega       1.0900;      // -   [origin=predictive method=lee-kesler]
+Tb          674.71;      // K   [origin=predictive method=joback]
+HvapTb      73750.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.88 0.93844 -0.00081298 2.9886e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 2; } { group ACOH; count 2; } { group CH3CO; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 2; } { group O; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[4-methoxy-2,6-bis(oxidanyl)phenyl]ethanone" "1-(2,6-dihydroxy-4-methoxyphenyl)ethanone" "ethanone, 1-(2,6-dihydroxy-4-methoxyphenyl)-" "2,6-dihydroxy-4-methoxyacetophenone" "acetophenone, 2',6'-dihydroxy-4'-methoxy-" "desaspidinol-a" "acetophenone,6'-dihydroxy-4'-methoxy-" "ethanone,6-dihydroxy-4-methoxyphenyl)-" "2',6'-dihydroxy-4'-methoxyacetophenone" "1-acetyl-2,6-dihydroxy-4-methoxybenzene" "acetophenone, 2',6'-dihydroxy-4'-methoxy- (8ci)" "ethanone, 1-(2,6-dihydroxy-4-methoxyphenyl)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -603450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     484.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-415480.0
+    phase     gas;
+}

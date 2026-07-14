@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-caproylaziridine  (C8H15NO, CAS 45776-10-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Caproylaziridine;
+formula     C8H15NO;
+CAS         45776-10-1;
+InChIKey    KFUCFNVEDNPNRD-UHFFFAOYSA-N;
+MW          141.214;      // g/mol [origin=calculated method=formula-sum]
+Tc          637.22;      // K   [origin=predictive method=joback]
+Pc          31.315;      // bar [origin=predictive method=joback]
+omega       0.6157;      // -   [origin=predictive method=lee-kesler]
+Tb          456.09;      // K   [origin=predictive method=joback]
+HvapTb      42241.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-58.776 1.04672 -0.0008273 2.6976e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH2_ring; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(aziridin-1-yl)hexan-1-one" "1-hexanoylaziridine" "caproylethyleneimine" "hexanoylethyleneimine" "aziridine, 1-caproyl-" "aziridine, 1-hexanoyl-" );
+gibbsFormation
+{
+    dHf_298   -154200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     442.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=78900.0
+    phase     gas;
+}

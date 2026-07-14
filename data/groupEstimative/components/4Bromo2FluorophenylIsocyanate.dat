@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-bromo-2-fluorophenyl isocyanate  (C7H3BrFNO, CAS 88112-75-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Bromo2FluorophenylIsocyanate;
+formula     C7H3BrFNO;
+CAS         88112-75-8;
+InChIKey    LXTYHGYKFYTBGJ-UHFFFAOYSA-N;
+MW          216.009;      // g/mol [origin=calculated method=formula-sum]
+Tc          759.82;      // K   [origin=predictive method=joback]
+Pc          44.983;      // bar [origin=predictive method=joback]
+omega       0.6108;      // -   [origin=predictive method=lee-kesler]
+Tb          528.50;      // K   [origin=predictive method=joback]
+HvapTb      49926.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group Br; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group dCd; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Br; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-bromanyl-2-fluoranyl-1-isocyanato-benzene" "4-bromo-2-fluoro-1-isocyanatobenzene" "4-bromo-2-fluorobenzenisocyanate" "benzene,4-bromo-2-fluoro-1-isocyanato-" "2-fluoro-4-bromophenylisocyanate; 4-bromo-2-fluorophenyl isocyanate" );
+// formation datum unavailable (element entropy missing): dHf_298=-149410.0 dGf_298=None

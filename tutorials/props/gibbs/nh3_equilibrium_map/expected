@@ -1,0 +1,8 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    haber_map              metric_T400C_P10atm 0.0409234          1e-4
+diag    haber_map              metric_T400C_P50atm 0.157785           1e-4
+diag    haber_map              metric_T450C_P10atm 0.0221983          1e-4
+diag    haber_map              metric_T500C_P100atm 0.104969           1e-4
+diag    haber_map              n_cells          625                1e-4
+diag    haber_map              n_unconverged    0                  1e-4

@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-methyl-2-butenyl  (C5H9, CAS 51685-67-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        1Methyl2Butenyl;
+formula     C5H9;
+CAS         51685-67-7;
+InChIKey    GSMCDXGKZOUAET-UHFFFAOYSA-N;
+role        radical;
+MW          69.127;      // g/mol [origin=calculated method=formula-sum]
+Tc          497.20;      // K   [origin=predictive method=joback]
+Pc          38.104;      // bar [origin=predictive method=joback]
+omega       0.2123;      // -   [origin=predictive method=lee-kesler]
+Tb          320.24;      // K   [origin=predictive method=joback]
+HvapTb      26661.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.93 0.50884 -0.0003739 1.194e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 2; } { group dCH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pent-2-ene" "1-methyl-2-buten-1-yl" "1-methylbut-2-en-1-yl" "pent-2-en-4-yl" );
+gibbsFormation
+{
+    dHf_298   29300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     340.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=111550.0
+    phase     gas;
+}

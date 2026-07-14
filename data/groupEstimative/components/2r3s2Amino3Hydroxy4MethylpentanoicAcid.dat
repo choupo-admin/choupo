@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2r,3s)-2-amino-3-hydroxy-4-methylpentanoic acid  (C6H13NO3, CAS 87421-23-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2r3s2Amino3Hydroxy4MethylpentanoicAcid;
+formula     C6H13NO3;
+CAS         87421-23-6;
+InChIKey    ZAYJDMWJYCTABM-UHNVWZDZSA-N;
+MW          147.174;      // g/mol [origin=calculated method=formula-sum]
+Tc          844.15;      // K   [origin=predictive method=joback]
+Pc          42.607;      // bar [origin=predictive method=joback]
+omega       1.3320;      // -   [origin=predictive method=lee-kesler]
+Tb          645.78;      // K   [origin=predictive method=joback]
+HvapTb      72270.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.77 0.73824 -0.0004586 1.075e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 2; } { group OH; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 3; } { group OH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r,3s)-2-azanyl-4-methyl-3-oxidanyl-pentanoic acid" "(2r,3s)-(-)-2-amino-3-hydroxy-4-methylpentanoic acid" "d-threo-hydroxyleucine" "d-threo-" "a-hydroxyleucine" "threo-3-hydroxy-d-leucine" "(3s)-3-hydroxy-d-leucine" "(2r,3s)-" "a-hydroxyleucine" "d-leucine, 3-hydroxy-,(3s)-" "q390" );
+gibbsFormation
+{
+    dHf_298   -651720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     516.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-421960.0
+    phase     gas;
+}

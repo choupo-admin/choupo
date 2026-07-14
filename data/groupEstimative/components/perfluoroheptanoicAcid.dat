@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluoroheptanoic acid  (C7HF13O2, CAS 375-85-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluoroheptanoicAcid;
+formula     C7HF13O2;
+CAS         375-85-9;
+InChIKey    ZWBAMYVPMDSJGQ-UHFFFAOYSA-N;
+MW          364.057;      // g/mol [origin=calculated method=formula-sum]
+Tc          619.60;      // K   [origin=predictive method=joback]
+Pc          19.372;      // bar [origin=predictive method=joback]
+omega       0.8699;      // -   [origin=predictive method=lee-kesler]
+Tb          476.40;      // K   [origin=predictive method=joback]
+HvapTb      29943.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-66.53 1.6278 -0.0016736 6.043e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 1; } { group CF3; count 1; } { group CF2; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 6; } { group F; count 13; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,5,5,6,6,7,7,7-tridecakis(fluoranyl)heptanoic acid" "tridecafluoroheptanoic acid" "perfluoro-n-heptanoic acid" "perfluoroenanthic acid" "tridecafluoro-1-heptanoic acid" "2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoroheptanoic acid" "heptanoic acid, 2,2,3,3,4,4,5,5,6,6,7,7,7-tridecafluoro-" "n-perfluoroheptanoic acid" "tridecafluoroenanthic acid" "ipc-pffa-7" "ipc-pffa-7 hg" "heptanoic acid, tridecafluoro-" );
+gibbsFormation
+{
+    dHf_298   -3140010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     660.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2851340.0
+    phase     gas;
+}

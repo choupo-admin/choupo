@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: naltropine  (C19H25NO3, CAS 22235-85-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        naltropine;
+formula     C19H25NO3;
+CAS         22235-85-4;
+InChIKey    LSNYUHIYIPLFNS-UHFFFAOYSA-N;
+MW          315.413;      // g/mol [origin=calculated method=formula-sum]
+Tc          1042.64;      // K   [origin=predictive method=joback]
+Pc          18.676;      // bar [origin=predictive method=joback]
+omega       1.2411;      // -   [origin=predictive method=lee-kesler]
+Tb          833.16;      // K   [origin=predictive method=joback]
+HvapTb      84924.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-132.618 2.0846 -0.0014541 3.879e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH; count 3; } { group CH2=CH; count 1; } { group ACH; count 5; } { group ACCH; count 1; } { group OH; count 1; } { group CH2N; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(8-prop-2-enyl-8-azabicyclo[3.2.1]octan-3-yl) 3-oxidanyl-2-phenyl-propanoate" "n-allylnoratropine" "noratropine, n-allyl-" "8-allylnortropine tropate" "1-alpha-h,5-alpha-h-nortropan-3-alpha-ol, 8-allyl-, (+-)-" "8-(2-propenyl)-8-azabicyclo(3.2.1)oct-3-yl alpha-(hydroxymethyl)benzeneacetate endo-" "benzeneacetic acid, alpha-(hydroxymethyl)-, 8-(2-propenyl)-8-azabicyclo(3.2.1)oct-3-yl ester, endo-" "(8-prop-2-enyl-8-azabicyclo[3.2.1]octan-3-yl) 3-hydroxy-2-phenylpropanoate" "1-alpha-h,5-alpha-h-nortropan-3-alpha-ol, 8-allyl-, (+-)-tropate (ester)" "1-alpha-h,5-alpha-h-nortropan-3-alpha-ol, 8-allyl-, (+-)-tropate (ester) (8ci)" );
+gibbsFormation
+{
+    dHf_298   -361690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     690.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=72190.0
+    phase     gas;
+}

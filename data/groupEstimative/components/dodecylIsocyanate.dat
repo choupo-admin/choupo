@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dodecyl isocyanate  (C13H25NO, CAS 4202-38-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dodecylIsocyanate;
+formula     C13H25NO;
+CAS         4202-38-4;
+InChIKey    YIDSTEJLDQMWBR-UHFFFAOYSA-N;
+MW          211.349;      // g/mol [origin=calculated method=formula-sum]
+Tc          732.82;      // K   [origin=predictive method=joback]
+Pc          17.477;      // bar [origin=predictive method=joback]
+omega       0.8060;      // -   [origin=predictive method=lee-kesler]
+Tb          563.71;      // K   [origin=predictive method=joback]
+HvapTb      54064.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCd; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-isocyanatododecane" "dodecane, 1-isocyanato-" "isocyanic acid dodecyl ester" "dodecyl isocyanate , 99 %" "o555" "isocyanicacid, dodecyl ester (6ci,7ci,8ci);1-dodecyl isocyanate;1-isocyanatododecane;dodecyl isocyanate;lauryl isocyanate;" );
+// formation datum unavailable (element entropy missing): dHf_298=-317060.0 dGf_298=None

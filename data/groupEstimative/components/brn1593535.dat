@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 1593535  (C22H29NO2, CAS 35133-55-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn1593535;
+formula     C22H29NO2;
+CAS         35133-55-2;
+InChIKey    DARNSYDCMZJMSF-UHFFFAOYSA-N;
+MW          339.479;      // g/mol [origin=calculated method=formula-sum]
+Tc          1127.08;      // K   [origin=predictive method=joback]
+Pc          17.160;      // bar [origin=predictive method=joback]
+omega       1.2008;      // -   [origin=predictive method=lee-kesler]
+Tb          902.74;      // K   [origin=predictive method=joback]
+HvapTb      90393.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-114.369 2.11474 -0.00133416 3.076e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 2; } { group ACH; count 9; } { group AC; count 1; } { group ACCH2; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group CH3O; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-methoxyphenyl)-2-[4-(phenylmethyl)piperidin-1-yl]propan-1-ol" "4-benzyl-alpha-(4-methoxyphenyl)-beta-methyl-1-piperidineethanol" "1-piperidineethanol, 4-benzyl-alpha-(4-methoxyphenyl)-beta-methyl-" );
+gibbsFormation
+{
+    dHf_298   -202820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     802.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=250180.0
+    phase     gas;
+}

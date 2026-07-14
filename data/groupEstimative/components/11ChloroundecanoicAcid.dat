@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 11-chloroundecanoic acid  (C11H21ClO2, CAS 1860-44-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11ChloroundecanoicAcid;
+formula     C11H21ClO2;
+CAS         1860-44-2;
+InChIKey    GVZXFVFTBUYBJD-UHFFFAOYSA-N;
+MW          220.737;      // g/mol [origin=calculated method=formula-sum]
+Tc          818.10;      // K   [origin=predictive method=joback]
+Pc          20.254;      // bar [origin=predictive method=joback]
+omega       0.9750;      // -   [origin=predictive method=lee-kesler]
+Tb          634.22;      // K   [origin=predictive method=joback]
+HvapTb      61629.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.38 1.1064 -0.0006676 1.567e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group COOH; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 10; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "11-chloranylundecanoic acid" "undecanoic acid, 11-chloro-" "11-chloroundecanoicacid" "kyselina 11-chlorundekanova" "undecanoic acid,11-chloro-" );
+gibbsFormation
+{
+    dHf_298   -636380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     671.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-314100.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl n,n-dimethyloxamate  (C6H11NO3, CAS 16703-52-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylNNDimethyloxamate;
+formula     C6H11NO3;
+CAS         16703-52-9;
+InChIKey    HMALWDVRMHVUAW-UHFFFAOYSA-N;
+MW          145.158;      // g/mol [origin=calculated method=formula-sum]
+Tc          644.89;      // K   [origin=predictive method=joback]
+Pc          33.490;      // bar [origin=predictive method=joback]
+omega       0.6455;      // -   [origin=predictive method=lee-kesler]
+Tb          461.41;      // K   [origin=predictive method=joback]
+HvapTb      45146.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.511 0.61496 -0.0003019 3.146e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group COO; count 1; } { group CON_CH3_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CdO; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-(dimethylamino)-2-oxidanylidene-ethanoate" "ethyl nn-dimethyloxamate" "acetic acid, (dimethylamino)oxo-, ethyl ester" "n,n-dimethyl ethyl oxamate" "ethyl 2-(dimethylamino)-2-oxoacetate" "acetic acid, 2-(dimethylamino)-2-oxo-, ethyl ester" "ethyl (dimethylamino)oxoacetate" "agn-pc-0d1hxq" "ethyl (dimethylcarbamoyl)formate" "ethyl (n,n-dimethylcarbamoyl)formate" "oxamic acid, dimethyl-, ethyl ester" "acetic acid,2-(dimethylamino)-2-oxo-, ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -529500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     483.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-328870.0
+    phase     gas;
+}

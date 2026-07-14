@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-dichlorobenzyl chloride  (C7H5Cl3, CAS 94-99-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24DichlorobenzylChloride;
+formula     C7H5Cl3;
+CAS         94-99-5;
+InChIKey    IRSVDHPYXFLLDS-UHFFFAOYSA-N;
+MW          195.467;      // g/mol [origin=calculated method=formula-sum]
+Tc          743.84;      // K   [origin=predictive method=joback]
+Pc          34.602;      // bar [origin=predictive method=joback]
+omega       0.4162;      // -   [origin=predictive method=lee-kesler]
+Tb          508.69;      // K   [origin=predictive method=joback]
+HvapTb      47931.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (29.891 0.4913 -0.00031532 7.48e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group CH2Cl; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4-bis(chloranyl)-1-(chloromethyl)benzene" "2,4-dichloro-1-(chloromethyl)benzene" "alpha,2,4-trichlorotoluene" "2,4-dichlorobenzylchloride" "benzene, 2,4-dichloro-1-(chloromethyl)-" "2,4-dichloro-1-chloromethyl-benzene" "toluene, .alpha.2,4-trichloro-" "toluene,4-trichloro-" "alpha2,4-trichlorotoluene" ".alpha.2,4-trichlorotoluene" "2,4-dcbc" "2,4,a-trichlorotoluene" );
+gibbsFormation
+{
+    dHf_298   -21440.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     410.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=65420.0
+    phase     gas;
+}

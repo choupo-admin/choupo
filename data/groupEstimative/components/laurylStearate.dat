@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lauryl stearate  (C30H60O2, CAS 5303-25-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        laurylStearate;
+formula     C30H60O2;
+CAS         5303-25-3;
+InChIKey    JRTVEUGOGWTHTR-UHFFFAOYSA-N;
+MW          452.808;      // g/mol [origin=calculated method=formula-sum]
+Tc          1171.53;      // K   [origin=predictive method=joback]
+Pc          5.969;      // bar [origin=predictive method=joback]
+omega       0.3883;      // -   [origin=predictive method=lee-kesler]
+Tb          944.22;      // K   [origin=predictive method=joback]
+HvapTb      89781.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.027 2.79904 -0.0015136 2.887e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 26; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 27; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodecyl octadecanoate" "dodecyl stearate" "octadecanoic acid, dodecyl ester" "c12-14-alkyl stearates" "dodecanyl octadecanoate" "octadecanoic acid, c12-14-alkyl esters" "stearic acid lauryl ester" "stearic acid dodecyl ester" "stearic acid, dodecyl ester" "octadecanoic acid,dodecyl ester" "we(12:0/18:0)" "stearicacid, dodecyl ester (7ci,8ci); dodecyl octadecanoate; dodecyl stearate; laurylstearate" );
+gibbsFormation
+{
+    dHf_298   -979810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1375.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-108650.0
+    phase     gas;
+}

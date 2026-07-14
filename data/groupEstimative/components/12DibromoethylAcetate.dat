@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-dibromoethyl acetate  (C4H6Br2O2, CAS 24442-57-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12DibromoethylAcetate;
+formula     C4H6Br2O2;
+CAS         24442-57-7;
+InChIKey    UXPDRIMBYCEVCO-UHFFFAOYSA-N;
+MW          245.898;      // g/mol [origin=calculated method=formula-sum]
+Tc          699.09;      // K   [origin=predictive method=joback]
+Pc          47.497;      // bar [origin=predictive method=joback]
+omega       0.5760;      // -   [origin=predictive method=lee-kesler]
+Tb          481.22;      // K   [origin=predictive method=joback]
+HvapTb      44387.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (39.361 0.41132 -0.0002452 4.7e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 1; } { group CH3COO; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group Br; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-bis(bromanyl)ethyl ethanoate" "ethanol, 1,2-dibromo-, 1-acetate" "alpha,beta-dibromoethyl acetate" "1,2-dibromoethanol acetate" "ethanol, 1,2-dibromo-, acetate" "ethanol, 1,2-dibromo-,1-acetate" "acetic acid 1,2-dibromoethyl ester" "acetic acid 1,2-dibromo-ethyl ester" "acetic acid, 1,2-dibromoethyl ester" "ethanol,1,2-dibromo-, acetate (6ci,7ci,8ci,9ci); 1,2-dibromoethanol acetate;1,2-dibromoethyl acetate; 1-acetoxy-1,2-dibromoethane; a,b-dibromoethyl acetate" );
+gibbsFormation
+{
+    dHf_298   -395790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     455.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-301370.0
+    phase     gas;
+}

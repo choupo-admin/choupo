@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sexiphenyl  (C36H26, CAS 18631-82-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sexiphenyl;
+formula     C36H26;
+CAS         18631-82-8;
+InChIKey    JULFJTZPJNNMQK-UHFFFAOYSA-N;
+MW          458.604;      // g/mol [origin=calculated method=formula-sum]
+Tc          1502.50;      // K   [origin=predictive method=joback]
+Pc          13.242;      // bar [origin=predictive method=joback]
+omega       0.9886;      // -   [origin=predictive method=lee-kesler]
+Tb          1203.28;      // K   [origin=predictive method=joback]
+HvapTb      112034.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-176.07 2.7124 -0.00185364 4.706e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 26; } { group AC; count 10; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 26; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5-pentakis-phenylbenzene" "pentaphenyl benzene" "1,2,3,4,5-pentaphenylbenzene" "1,1''-terphenyl, 3',4',5'-triphenyl-" );
+gibbsFormation
+{
+    dHf_298   586930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     895.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=888180.0
+    phase     gas;
+}

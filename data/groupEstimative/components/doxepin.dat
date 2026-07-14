@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: doxepin  (C19H21NO, CAS 1668-19-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        doxepin;
+formula     C19H21NO;
+CAS         1668-19-5;
+InChIKey    ODQWQRRAPPTVAG-GZTJUZNOSA-N;
+MW          279.383;      // g/mol [origin=calculated method=formula-sum]
+Tc          988.33;      // K   [origin=predictive method=joback]
+Pc          20.127;      // bar [origin=predictive method=joback]
+omega       0.8396;      // -   [origin=predictive method=lee-kesler]
+Tb          755.08;      // K   [origin=predictive method=joback]
+HvapTb      71326.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-92.048 1.75284 -0.00128092 3.732e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH=C; count 1; } { group ACH; count 8; } { group AC; count 4; } { group FCH2O; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH; count 1; } { group CH2_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 5; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3e)-3-(6h-benzo[c][1]benzoxepin-11-ylidene)-n,n-dimethyl-propan-1-amine" "doxepine" "zonalon" "doxepinum [inn-latin]" "quitaxon" "cidoxepina" "cidoxepinum" "cidoxepin" "doxepina" "doxepinum" "triadapin" "cidoxepin [inn]" );
+gibbsFormation
+{
+    dHf_298   119330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     559.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=453240.0
+    phase     gas;
+}

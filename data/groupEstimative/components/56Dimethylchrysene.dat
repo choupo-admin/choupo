@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5,6-dimethylchrysene  (C20H16, CAS 3697-27-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        56Dimethylchrysene;
+formula     C20H16;
+CAS         3697-27-6;
+InChIKey    SDOJHDGZFOGOFD-UHFFFAOYSA-N;
+MW          256.348;      // g/mol [origin=calculated method=formula-sum]
+Tc          1013.92;      // K   [origin=predictive method=joback]
+Pc          22.000;      // bar [origin=predictive method=joback]
+omega       0.7492;      // -   [origin=predictive method=lee-kesler]
+Tb          760.74;      // K   [origin=predictive method=joback]
+HvapTb      69958.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-86.33 1.57584 -0.0012374 3.96e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 6; } { group ACCH3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "chrysene, 5,6-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   307730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     477.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=511360.0
+    phase     gas;
+}

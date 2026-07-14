@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-formyl-2-methylthiopyridine  (C7H7NOS, CAS 62658-92-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H7NOS (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        3Formyl2Methylthiopyridine;
+formula     C7H7NOS;
+CAS         62658-92-8;
+InChIKey    RJYDOQHVQNRLFR-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          153.199;      // g/mol [origin=calculated method=formula-sum]
+Tc          741.85;      // K   [origin=predictive method=joback]
+Pc          43.742;      // bar [origin=predictive method=joback]
+omega       0.3542;      // -   [origin=predictive method=lee-kesler]
+Tb          490.32;      // K   [origin=predictive method=joback]
+HvapTb      44768.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.92 0.56667 -0.00044322 1.436e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CHO; count 1; } { group C5H3N; count 1; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Nd_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylsulfanylpyridine-3-carbaldehyde" "2-(methylthio)nicotinaldehyde" "2-(methylsulfanyl)pyridine-3-carbaldehyde" );
+gibbsFormation
+{
+    dHf_298   188360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     471.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=264970.0
+    phase     gas;
+}

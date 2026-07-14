@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl-chlorhydrinether  (C7H15ClO2, CAS 16224-33-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butylChlorhydrinether;
+formula     C7H15ClO2;
+CAS         16224-33-2;
+InChIKey    IZHGMMBZJWHGND-UHFFFAOYSA-N;
+MW          166.645;      // g/mol [origin=calculated method=formula-sum]
+Tc          680.69;      // K   [origin=predictive method=joback]
+Pc          29.409;      // bar [origin=predictive method=joback]
+omega       0.9294;      // -   [origin=predictive method=lee-kesler]
+Tb          511.35;      // K   [origin=predictive method=joback]
+HvapTb      54262.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (38.525 0.65232 -0.0003 3.56e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH2Cl; count 1; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 1; } { group Cl; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-butoxy-3-chloranyl-propan-2-ol" "2-propanol, 1-butoxy-3-chloro-" "1-butoxy-3-chloropropan-2-ol" "butyl 3-chloro-2-hydroxypropyl ether" "1-butoxy-3-chloro-2-propanol" "ether, butyl (3-chloro-2-hydroxypropyl)" "3-butoxy-1-chloropropan-2-ol" );
+gibbsFormation
+{
+    dHf_298   -493280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     514.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-248130.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: carboprost methyl  (C22H38O5, CAS 35700-21-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        carboprostMethyl;
+formula     C22H38O5;
+CAS         35700-21-1;
+InChIKey    QQCOAAFKJZXJFP-XAYIDPIISA-N;
+MW          382.541;      // g/mol [origin=calculated method=formula-sum]
+Tc          1293.61;      // K   [origin=predictive method=joback]
+Pc          12.355;      // bar [origin=predictive method=joback]
+omega       1.0170;      // -   [origin=predictive method=lee-kesler]
+Tb          1044.08;      // K   [origin=predictive method=joback]
+HvapTb      119960.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-71.332 2.35906 -0.0014702 3.445e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 8; } { group CH; count 4; } { group C; count 1; } { group CH=CH; count 2; } { group OH; count 3; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 8; } { group C; count 1; } { group dCH; count 4; } { group CH2_ring; count 1; } { group CH_ring; count 4; } { group OH; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl (z)-7-[(1r,2r,3r,5s)-2-[(e,3s)-3-methyl-3-oxidanyl-oct-1-enyl]-3,5-bis(oxidanyl)cyclopentyl]hept-5-enoate" "carboprost methyl (usan)" "carboprost methyl [usan]" "methyl carboprost" "15m-pgf2-alpha" "carboprost methyl ester" "15-methyl-pgf2-alpha methyl ester" "15(s)15-methyl-pgf2-alpha methyl ester" "15-methyl-prostaglandin f2-alpha methyl ester" "(15s)-15-methylprostaglandin f2alpha methyl ester" "15(s)15 methyl prostaglandin f2-alpha methyl ester" "15(s)15-methyl-prostaglandin f2-alpha methyl ester" );
+gibbsFormation
+{
+    dHf_298   -1046230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     987.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-409770.0
+    phase     gas;
+}

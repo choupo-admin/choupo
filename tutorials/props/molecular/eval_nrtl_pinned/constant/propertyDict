@@ -1,0 +1,21 @@
+/*---------------------------------------------------------------------------*\
+  INLINE scaffold, and it says so.  A pinned what-if writes into dict paths
+  (activityModel.pairs[0].a_ij), so the pair must EXIST in the dict -- a
+  catalogue-resolved pair has no dict slot to pin.  These values are
+  TRANSCRIBED from data/standards/binaryPairs/NRTL/ethanol-water.dat; the case
+  that scores the genuine catalogue entry is the sibling eval_nrtl_catalogue.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water );
+
+activityModel
+{
+    model  NRTL;
+    pairs
+    (
+        { i ethanol; j water;
+          a_ij -0.8009; b_ij 246.18; a_ji 3.4578; b_ji -586.0809; alpha 0.30; }
+    );
+}
+
+equationOfState  { model  idealGas; }

@@ -59,6 +59,15 @@ public:
     static bool has(const std::string& name);
 
     static std::vector<std::string> availableNames();
+
+    // The ONE allocation rule (moved from the steady utilityAllocation
+    // report so the batch campaign pass speaks the same policy): the
+    // lowest-grade catalogue utility that can serve a duty of the given
+    // sign at process temperature T -- tightest feasible margin wins
+    // (heating needs T_in >= T + dTmin; cooling needs T_in <= T - dTmin).
+    // Returns nullptr when no catalogue utility is adequate (the caller
+    // reports "(none adequate)", never silently drops the duty).
+    static const Utility* pickForDuty(bool heating, scalar T, scalar dTmin);
 };
 
 } // namespace Choupo

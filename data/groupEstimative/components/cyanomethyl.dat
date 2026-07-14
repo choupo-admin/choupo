@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyanomethyl  (C2H2N, CAS 2932-82-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        cyanomethyl;
+formula     C2H2N;
+CAS         2932-82-3;
+InChIKey    XSTKDMFTWATIQP-UHFFFAOYSA-N;
+role        radical;
+MW          40.045;      // g/mol [origin=calculated method=formula-sum]
+Tc          535.22;      // K   [origin=predictive method=joback]
+Pc          49.663;      // bar [origin=predictive method=joback]
+omega       0.2684;      // -   [origin=predictive method=lee-kesler]
+Tb          342.04;      // K   [origin=predictive method=joback]
+HvapTb      29875.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (22.17 0.0986 -3.5e-05 0.0);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group dCH2; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ch2cn" "ethanenitrile" "cyanomethyl radical" );
+gibbsFormation
+{
+    dHf_298   147090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     238.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=146870.0
+    phase     gas;
+}

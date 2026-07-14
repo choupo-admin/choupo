@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-oxo-4-phenylbutanenitrile  (C10H9NO, CAS 5343-98-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Oxo4Phenylbutanenitrile;
+formula     C10H9NO;
+CAS         5343-98-6;
+InChIKey    OSPRTYTUQJCKFF-UHFFFAOYSA-N;
+MW          159.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          841.96;      // K   [origin=predictive method=joback]
+Pc          30.558;      // bar [origin=predictive method=joback]
+omega       0.6917;      // -   [origin=predictive method=lee-kesler]
+Tb          611.03;      // K   [origin=predictive method=joback]
+HvapTb      57354.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.748 0.7817 -0.0005017 1.1796e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 1; } { group CH2CO; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-oxidanylidene-4-phenyl-butanenitrile" "3-benzoylpropionitrile" "beta-cyanopropiophenone" "2-cyanoethyl phenyl ketone" "3-cyano-1-phenylpropan-1-one" "a-cyanopropiophenone" "a-benzoylpropionitrile" "beta-benzoylpropionitrile" ".beta.-cyanopropiophenone" "benzenebutanenitrile, g-oxo-" "4-oxo-4-phenyl-butyronitrile" "(" "a-oxo)-benzenebutanenitrile" );
+gibbsFormation
+{
+    dHf_298   39100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     471.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=149990.0
+    phase     gas;
+}

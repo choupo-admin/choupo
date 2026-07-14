@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(perfluoro-3-methylbutyl)-2-hydroxypropyl methacrylate  (C12H11F11O3, CAS 16083-79-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Perfluoro3Methylbutyl2HydroxypropylMethacrylate;
+formula     C12H11F11O3;
+CAS         16083-79-7;
+InChIKey    LZKRGSPBGVICLV-UHFFFAOYSA-N;
+MW          412.195;      // g/mol [origin=calculated method=formula-sum]
+Tc          741.96;      // K   [origin=predictive method=joback]
+Pc          14.590;      // bar [origin=predictive method=joback]
+omega       1.1116;      // -   [origin=predictive method=lee-kesler]
+Tb          596.50;      // K   [origin=predictive method=joback]
+HvapTb      49947.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.048 1.86762 -0.0016326 5.241e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group CH2=C; count 1; } { group OH; count 1; } { group CF3; count 2; } { group CF2; count 2; } { group CF; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group C; count 5; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 11; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[4,4,5,5,6,7,7,7-octakis(fluoranyl)-2-oxidanyl-6-(trifluoromethyl)heptyl] 2-methylprop-2-enoate" "4,4,5,5,6,7,7,7-octafluoro-2-hydroxy-6-(trifluoromethyl)heptyl methacrylate" "[4,4,5,5,6,7,7,7-octafluoro-2-hydroxy-6-(trifluoromethyl)heptyl] 2-methylprop-2-enoate" "1h,1h,2h,3h,3h-perfluoro(2-hydroxy-6-methylhept-1-yl) methacrylate" "2-hydroxy-4,4,5,5,6,7,7,7-octafluoro-6-(trifluoromethyl)hept-1-yl 2-methylprop-2-enoate" "4,4,5,5,6,7,7,7-octafluoro-2-hydroxy-6-(trifluoromethyl)heptyl 2-methylprop-2-enoate" "2-methyl-2-propenoic acid [4,4,5,5,6,7,7,7-octafluoro-2-hydroxy-6-(trifluoromethyl)heptyl] ester" "2-propenoic acid,2-methyl-, 4,4,5,5,6,7,7,7-octafluoro-2-hydroxy-6-(trifluoromethyl)heptyl ester" "methacrylicacid, 4,4,5,5,6,7,7,7-octafluoro-2-hydroxy-6-(trifluoromethyl)heptyl ester(8ci);1,2-heptanediol, 4,4,5,5,6,7,7,7-octafluoro-6-(trifluoromethyl)-,1-methacrylate (8ci);" );
+gibbsFormation
+{
+    dHf_298   -2851120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     861.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2448890.0
+    phase     gas;
+}

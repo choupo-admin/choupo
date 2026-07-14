@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-bromo-2-methoxybenzaldehyde  (C8H7BrO2, CAS 25016-01-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H7BrO2 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        5Bromo2Methoxybenzaldehyde;
+formula     C8H7BrO2;
+CAS         25016-01-7;
+InChIKey    IJIBRSFAXRFPPN-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          215.046;      // g/mol [origin=calculated method=formula-sum]
+Tc          712.90;      // K   [origin=predictive method=joback]
+Pc          39.605;      // bar [origin=predictive method=joback]
+omega       0.4377;      // -   [origin=predictive method=lee-kesler]
+Tb          484.28;      // K   [origin=predictive method=joback]
+HvapTb      43474.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.5 0.54902 -0.00042192 1.357e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group CHO; count 1; } { group CH3O; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-bromanyl-2-methoxy-benzaldehyde" "5-bromo-o-anisaldehyde" "5-bromo-2-anisaldehyde" "benzaldehyde, 5-bromo-2-methoxy-" "o-anisaldehyde, 5-bromo-" "ijibrsfaxrfppn-uhfffaoysa-" "l801" "5-bromo-2-anisaldehyde(5-bromo-2-methoxybenzaldehyde)" );
+gibbsFormation
+{
+    dHf_298   -24300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     492.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=62910.0
+    phase     gas;
+}

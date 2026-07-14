@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: behenyl stearate  (C40H80O2, CAS 22413-03-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        behenylStearate;
+formula     C40H80O2;
+CAS         22413-03-2;
+InChIKey    SRKUMCYSWLWLLS-UHFFFAOYSA-N;
+MW          593.078;      // g/mol [origin=calculated method=formula-sum]
+Tc          1604.90;      // K   [origin=predictive method=joback]
+Pc          3.917;      // bar [origin=predictive method=joback]
+omega       -0.3289;      // -   [origin=predictive method=lee-kesler]
+Tb          1173.02;      // K   [origin=predictive method=joback]
+HvapTb      112041.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.063 3.74904 -0.0020576 4.077e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 36; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 37; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "docosyl octadecanoate" "docosyl stearate" "docosanyl octadecanoate" "octadecanoic acid, docosyl ester" "stearic acid behenyl ester" "stearic acid, docosyl ester" "octadecanoic acid,docosyl ester" "octadecanoic acid docosyl ester" "we(22:0/18:0)" );
+gibbsFormation
+{
+    dHf_298   -1186210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1765.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-24450.0
+    phase     gas;
+}

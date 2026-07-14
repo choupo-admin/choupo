@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octanedioic acid, 2-butyl-  (C12H22O4, CAS 50905-10-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octanedioicAcid2Butyl;
+formula     C12H22O4;
+CAS         50905-10-7;
+InChIKey    OWCLRJQYKBAMOL-UHFFFAOYSA-N;
+MW          230.304;      // g/mol [origin=calculated method=formula-sum]
+Tc          960.16;      // K   [origin=predictive method=joback]
+Pc          20.965;      // bar [origin=predictive method=joback]
+omega       1.2931;      // -   [origin=predictive method=lee-kesler]
+Tb          764.74;      // K   [origin=predictive method=joback]
+HvapTb      76246.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.502 1.25132 -0.0007774 1.871e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CH; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group CH; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-butyloctanedioic acid" );
+gibbsFormation
+{
+    dHf_298   -996830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     720.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-640100.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-pentadienoic acid  (C5H6O2, CAS 626-99-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24PentadienoicAcid;
+formula     C5H6O2;
+CAS         626-99-3;
+InChIKey    SDVVLIIVFBKBMG-ONEGZZNKSA-N;
+MW          98.101;      // g/mol [origin=calculated method=formula-sum]
+Tc          665.33;      // K   [origin=predictive method=joback]
+Pc          43.569;      // bar [origin=predictive method=joback]
+omega       0.5683;      // -   [origin=predictive method=lee-kesler]
+Tb          460.35;      // K   [origin=predictive method=joback]
+HvapTb      43176.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.23 0.5296 -0.0004275 1.411e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group CH=CH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group dCH; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2e)-penta-2,4-dienoic acid" "penta-2,4-dienoic acid" "1,3-butadiene-1-carboxylic acid" "(e)-2,4-pentadienoic acid" "trans-2,4-pentadienoic acid" "beta-vinyl acrylic acid" "vynilacrylic acid" "trans-1-carboxybutadiene" "penta-2,4-dienoic acids" "1,3-butadiene-1-carboxylic acids" "but-1,3-diene-1-carboxylic acid" "but-1,3-diene-1-carboxylic acids" );
+gibbsFormation
+{
+    dHf_298   -254150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     392.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-184630.0
+    phase     gas;
+}

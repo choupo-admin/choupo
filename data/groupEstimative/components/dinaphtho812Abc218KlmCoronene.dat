@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dinaphtho[8,1,2-abc:2',1',8'-klm]coronene  (C36H16, CAS 53086-28-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dinaphtho812Abc218KlmCoronene;
+formula     C36H16;
+CAS         53086-28-5;
+InChIKey    KETCSTBYNQMJQQ-UHFFFAOYSA-N;
+MW          448.524;      // g/mol [origin=calculated method=formula-sum]
+Tc          1533.56;      // K   [origin=predictive method=joback]
+Pc          16.551;      // bar [origin=predictive method=joback]
+omega       1.3539;      // -   [origin=predictive method=lee-kesler]
+Tb          1246.08;      // K   [origin=predictive method=joback]
+HvapTb      117184.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-237.17 3.1484 -0.00325724 1.3076e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 16; } { group AC; count 20; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 16; } { group dC_ring; count 20; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dinaphtho(8,1,2-abc:2',1',8'-klm)coronene" );
+gibbsFormation
+{
+    dHf_298   1030330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     295.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1315680.0
+    phase     gas;
+}

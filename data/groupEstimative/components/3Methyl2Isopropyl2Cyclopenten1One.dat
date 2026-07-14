@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methyl-2-isopropyl-2-cyclopenten-1-one  (C9H14O, CAS 31089-24-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Methyl2Isopropyl2Cyclopenten1One;
+formula     C9H14O;
+CAS         31089-24-4;
+InChIKey    MZTOBWCRJYWMLL-UHFFFAOYSA-N;
+MW          138.21;      // g/mol [origin=calculated method=formula-sum]
+Tc          720.67;      // K   [origin=predictive method=joback]
+Pc          30.190;      // bar [origin=predictive method=joback]
+omega       0.4489;      // -   [origin=predictive method=lee-kesler]
+Tb          501.97;      // K   [origin=predictive method=joback]
+HvapTb      41669.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.59 0.67966 -0.000261 4.5e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group CH2CO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group CH2_ring; count 2; } { group dC_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methyl-2-propan-2-yl-cyclopent-2-en-1-one" "2-isopropyl-3-methylcyclopent-2-en-1-one" "3-methyl-2-propan-2-ylcyclopent-2-en-1-one" "2-cyclopenten-1-one, 3-methyl-2-(1-methylethyl)-" "2-cyclopenten-1-one,3-methyl-2-(1-methylethyl)-" "2-cyclopenten-1-one,2-isopropyl-3-methyl- (7ci,8ci); 2-isopropyl-3-methyl-2-cyclopentenone" );
+gibbsFormation
+{
+    dHf_298   -256410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     360.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-45170.0
+    phase     gas;
+}

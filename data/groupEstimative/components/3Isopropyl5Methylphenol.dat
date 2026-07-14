@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-Isopropyl-5-methylphenol  (C10H14O, CAS 3228-03-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Isopropyl5Methylphenol;
+formula     C10H14O;
+CAS         3228-03-3;
+InChIKey    ZDUIHRJGDMTBEX-UHFFFAOYSA-N;
+MW          150.221;      // g/mol [origin=calculated method=formula-sum]
+Tc          764.80;      // K   [origin=predictive method=joback]
+Pc          34.399;      // bar [origin=predictive method=joback]
+omega       0.5814;      // -   [origin=predictive method=lee-kesler]
+Tb          540.24;      // K   [origin=predictive method=joback]
+HvapTb      53418.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-36.41 0.97596 -0.00074392 2.41e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group ACH; count 3; } { group ACCH3; count 1; } { group ACCH; count 1; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methyl-5-propan-2-ylphenol" "3-Methyl-5-(1-methylethyl)phenol" "3-methyl-5-(propan-2-yl)phenol" "3-methyl-5-isopropylphenol" "5-isopropyl-3-methylphenol" "5-isopropyl-m-cresol" "Phenol, 3-methyl-5-(1-methylethyl)-" "m-cresol, 5-isopropyl-" "m-cymen-5-ol" "3-isopropyl-5-methyl-phenol" "m-cymen-5-ol; 3-isopropyl-5-methylphenol; 3-methyl-5-isopropylphenol; 5-isopropyl-m-cresol" "carvacrol derivative, 7" );
+gibbsFormation
+{
+    dHf_298   -207260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     449.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-20960.0
+    phase     gas;
+}

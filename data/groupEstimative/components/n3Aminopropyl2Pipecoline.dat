@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-(3-aminopropyl)-2-pipecoline  (C9H20N2, CAS 25560-00-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        n3Aminopropyl2Pipecoline;
+formula     C9H20N2;
+CAS         25560-00-3;
+InChIKey    YYAYTNPNFKPFNG-UHFFFAOYSA-N;
+MW          156.273;      // g/mol [origin=calculated method=formula-sum]
+Tc          706.88;      // K   [origin=predictive method=joback]
+Pc          29.313;      // bar [origin=predictive method=joback]
+omega       0.5822;      // -   [origin=predictive method=lee-kesler]
+Tb          505.77;      // K   [origin=predictive method=joback]
+HvapTb      48569.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.977 1.17632 -0.0007492 1.838e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 1; } { group CH2NH2; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(2-methylpiperidin-1-yl)propan-1-amine" "1-(3-aminopropyl)-2-methylpiperidine" "1-(3-aminopropyl)-2-pipecoline" "1-(3-aminopropyl)-2-methyl piperidine" "yyaytnpnfkpfng-uhfffaoysa-" "3-(2-methylpiperidyl)propylamine" "1-(3-aminopropyl)-2-methylhexahydropyridine" );
+gibbsFormation
+{
+    dHf_298   -67290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     523.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=238680.0
+    phase     gas;
+}

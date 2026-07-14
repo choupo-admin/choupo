@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (perfluorohexyl)ethylene  (C8H3F13, CAS 25291-17-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluorohexylEthylene;
+formula     C8H3F13;
+CAS         25291-17-2;
+InChIKey    FYQFWFHDPNXORA-UHFFFAOYSA-N;
+MW          346.086;      // g/mol [origin=calculated method=formula-sum]
+Tc          472.41;      // K   [origin=predictive method=joback]
+Pc          17.146;      // bar [origin=predictive method=joback]
+omega       0.5284;      // -   [origin=predictive method=lee-kesler]
+Tb          350.45;      // K   [origin=predictive method=joback]
+HvapTb      14335.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-75.03 1.652 -0.0016783 6.056e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group CF3; count 1; } { group CF2; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 6; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 13; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3,4,4,5,5,6,6,7,7,8,8,8-tridecakis(fluoranyl)oct-1-ene" "(tridecafluorohexyl)ethylene" "1h,1h,2h-perfluoro-1-octene" "3,3,4,4,5,5,6,6,7,7,8,8,8-tridecafluorooct-1-ene" "1h,1h,2h-perfluorooct-1-ene" "3,3,4,4,5,5,6,6,7,7,8,8,8-tridecafluoro-1-octene" "1-octene, 3,3,4,4,5,5,6,6,7,7,8,8,8-tridecafluoro-" );
+gibbsFormation
+{
+    dHf_298   -2684950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     641.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2411170.0
+    phase     gas;
+}

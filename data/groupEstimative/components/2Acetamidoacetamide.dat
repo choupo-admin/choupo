@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-acetamidoacetamide  (C4H8N2O2, CAS 2620-63-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Acetamidoacetamide;
+formula     C4H8N2O2;
+CAS         2620-63-5;
+InChIKey    WQELDIQOHGAHEM-UHFFFAOYSA-N;
+MW          116.12;      // g/mol [origin=calculated method=formula-sum]
+Tc          729.86;      // K   [origin=predictive method=joback]
+Pc          50.586;      // bar [origin=predictive method=joback]
+omega       0.8327;      // -   [origin=predictive method=lee-kesler]
+Tb          521.56;      // K   [origin=predictive method=joback]
+HvapTb      55067.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.251 0.46592 -0.0002484 3.982e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CONH2; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CdO; count 2; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-acetamidoethanamide" "n-acetylglycine amide" "n-.alpha.-acetylglycinamide" "ethanimidic acid, n-(2-amino-2-oxoethyl)-" "n" "a-acetylglycinamide" "nalpha-acetylglycinamide" "wqeldiqohgahem-uhfffaoysa-" "h845" );
+gibbsFormation
+{
+    dHf_298   -263790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     457.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-119200.0
+    phase     gas;
+}

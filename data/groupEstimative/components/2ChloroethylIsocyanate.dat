@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloroethyl isocyanate  (C3H4ClNO, CAS 1943-83-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2ChloroethylIsocyanate;
+formula     C3H4ClNO;
+CAS         1943-83-5;
+InChIKey    BCMYXYHEMGPZJN-UHFFFAOYSA-N;
+MW          105.521;      // g/mol [origin=calculated method=formula-sum]
+Tc          561.35;      // K   [origin=predictive method=joback]
+Pc          46.340;      // bar [origin=predictive method=joback]
+omega       0.3893;      // -   [origin=predictive method=lee-kesler]
+Tb          372.34;      // K   [origin=predictive method=joback]
+HvapTb      36189.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH2; count 2; } { group dCd; count 1; } { group Cl; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-2-isocyanato-ethane" "2-chloroethylisocyanate" "chloroethylisocyanate" "1-chloro-2-isocyanatoethane" "ethane, 1-chloro-2-isocyanato-" "isocyanic acid, 2-chloroethyl ester" "isocyanic acid 2-chloroethyl ester" "2-chlorethylisokyanat" "2-chloroethanisocyanate" "2-chloro ethyl isocyanate" ".beta.-chloroethylisocyanate" "1-chloro-2-isocyanato-ethane" );
+// formation datum unavailable (element entropy missing): dHf_298=-126400.0 dGf_298=None

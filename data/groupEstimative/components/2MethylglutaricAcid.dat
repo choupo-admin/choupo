@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methylglutaric acid  (C6H10O4, CAS 18069-17-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2MethylglutaricAcid;
+formula     C6H10O4;
+CAS         18069-17-5;
+InChIKey    AQYCMVICBNBXNA-UHFFFAOYSA-N;
+MW          146.142;      // g/mol [origin=calculated method=formula-sum]
+Tc          835.20;      // K   [origin=predictive method=joback]
+Pc          38.675;      // bar [origin=predictive method=joback]
+omega       1.0913;      // -   [origin=predictive method=lee-kesler]
+Tb          627.46;      // K   [origin=predictive method=joback]
+HvapTb      62890.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.952 0.68132 -0.000451 1.157e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylpentanedioic acid" "pentanedioic acid, 2-methyl-" "alpha-methylglutaric acid" ".alpha.-methylglutaric acid" "glutaric acid, 2-methyl-" "2-methylpentanedioate" "a-methylglutarate" "2-methylglutarate" "alpha-methylglutarate" "a-methylglutaric acid" "a-methylglutaric acid" "2-methyl glutaric acid" );
+gibbsFormation
+{
+    dHf_298   -872990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     486.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-690620.0
+    phase     gas;
+}

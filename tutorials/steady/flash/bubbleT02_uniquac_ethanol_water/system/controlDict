@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
-  Meta-control for this case.
+  bubbleT02_uniquac_ethanol_water -- meta-control
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: kaolizer 8  (C9H21N3, CAS 104-19-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        kaolizer8;
+formula     C9H21N3;
+CAS         104-19-8;
+InChIKey    XFLSMWXCZBIXLV-UHFFFAOYSA-N;
+MW          171.288;      // g/mol [origin=calculated method=formula-sum]
+Tc          637.14;      // K   [origin=predictive method=joback]
+Pc          27.701;      // bar [origin=predictive method=joback]
+omega       0.5897;      // -   [origin=predictive method=lee-kesler]
+Tb          458.52;      // K   [origin=predictive method=joback]
+HvapTb      42151.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-98.668 1.39836 -0.0010328 3.057e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH3N; count 2; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH2_ring; count 4; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethyl-2-(4-methylpiperazin-1-yl)ethanamine" "1-piperazineethanamine, n,n,4-trimethyl-" "toyocat np" "1-(2-dimethylaminoethyl)-4-methylpiperazine" "n-methyl-n'-(.beta.-dimethylaminoethyl)piperazine" "n,n,4-trimethylpiperazine-1-ethylamine" "1-(2-(dimethylamino)ethyl)-4-methylpiperazine" "n-methyl-n'-(beta-dimethylaminoethyl)piperazine" "piperazine, 1-(2-(dimethylamino)ethyl)-4-methyl-" "1-(2-(n,n-dimethylamino)ethyl)-4-methylpiperazine" "1-[2-(dimethylamino)ethyl]-4-methylpiperazine" "piperazine, 1-[2-(dimethylamino)ethyl]-4-methyl-" );
+gibbsFormation
+{
+    dHf_298   60480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     526.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=413600.0
+    phase     gas;
+}

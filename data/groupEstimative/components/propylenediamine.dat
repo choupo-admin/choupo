@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propylenediamine  (C3H10N2, CAS 78-90-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        propylenediamine;
+formula     C3H10N2;
+CAS         78-90-0;
+InChIKey    AOHJOMMDDJHIJH-UHFFFAOYSA-N;
+MW          74.127;      // g/mol [origin=calculated method=formula-sum]
+Tc          617.16;      // K   [origin=predictive method=joback]
+Pc          52.207;      // bar [origin=predictive method=joback]
+omega       0.4699;      // -   [origin=predictive method=lee-kesler]
+Tb          412.86;      // K   [origin=predictive method=joback]
+HvapTb      43166.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.461 0.41852 -0.0002294 4.6e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2NH2; count 1; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propane-1,2-diamine" "1,2-diaminopropane" "1,2-propanediamine" "propylene diamine" "2,3-diaminopropane" "1,2-propylenediamine" "(r)-1,2-propanediamine" "2-aminopropylamine" "1,2 diaminopropane" "1,2-trimethylenediamine" "1,2-diamino-n-propane" "propane, 1,2-diamino-" );
+gibbsFormation
+{
+    dHf_298   -42950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     366.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=104840.0
+    phase     gas;
+}

@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Component: Polystyrene (atactic)
+
+  A commodity polymer as a NONVOLATILE pseudo-component (Pareto over the Polymer
+  Handbook): one repeat-unit molar mass + the handful of properties conceptual
+  design actually uses, NOT a molecular-weight distribution and NOT segment-based
+  PC-SAFT (the commercial polymer-simulator 95%, deliberately skipped).
+
+  CURATION: representative grade values from group-contribution tables; many are
+  GRADE-dependent -- atactic = fully amorphous (no Tm); Tg is Mw-dependent (Fox-Flory). Isotactic PS would melt ~513 K but is not commodity. Re-source the primary for a design number.
+\*-----------------------------------------------------------------------------*/
+
+identity
+{
+    name        polystyrene;
+    formula     "C8H8 (-[CH2-CH(C6H5)]-)";
+    MW          104.15;            // g/mol of the REPEAT UNIT (not the chain)
+}
+
+nonvolatile    true;             // a solid polymer: never in the vapour (K = 0)
+
+polymer        // polymer-specific reference properties (glass-box; not VLE data)
+{
+    Tg            373;          // K, glass-transition temperature
+    // Tm         (amorphous polymer -- no crystalline melting point)
+    Cp_solid      1220;          // J/(kg K) at 298 K, solid
+    k_thermal     0.15;          // W/(m K)
+    crystallinity 0.00;       // typical mass fraction (grade-dependent)
+    provenance
+    {
+        Tg            { origin literature; method "Brandrup, Immergut & Grulke, Polymer Handbook, 4th ed. (Wiley, 1999)"; }
+        Cp_solid      { origin literature; method "Van Krevelen & Te Nijenhuis, Properties of Polymers, 4th ed. (Elsevier, 2009)"; }
+        k_thermal     { origin literature; method "Van Krevelen & Te Nijenhuis, Properties of Polymers, 4th ed. (Elsevier, 2009)"; }
+        crystallinity { origin literature; method "Brandrup, Immergut & Grulke, Polymer Handbook, 4th ed. (Wiley, 1999)"; }
+    }
+}
+
+solid          // the engine's solid slot (density feeds sizing / hold-up)
+{
+    rho_p       1050;           // kg/m3, bulk density (see grade note)
+    provenance
+    {
+        rho_p { origin literature; method "Van Krevelen & Te Nijenhuis, Properties of Polymers, 4th ed. (Elsevier, 2009) (amorphous) + handbook bulk value for the named grade"; }
+    }
+}
+
+transport
+{
+    // Solid polymer: no gas/liquid transport correlations apply (empty by design).
+}

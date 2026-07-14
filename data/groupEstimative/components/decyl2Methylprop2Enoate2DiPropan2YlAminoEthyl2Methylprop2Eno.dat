@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: decyl 2-methylprop-2-enoate;2-[di(propan-2-yl)amino]ethyl 2-methylprop-2-enoate  (C26H49NO4, CAS 30398-61-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        decyl2Methylprop2Enoate2DiPropan2YlAminoEthyl2Methylprop2Eno;
+formula     C26H49NO4;
+CAS         30398-61-9;
+InChIKey    DVWIKDCYRKRCQU-UHFFFAOYSA-N;
+MW          439.681;      // g/mol [origin=calculated method=formula-sum]
+Tc          1123.02;      // K   [origin=predictive method=joback]
+Pc          7.368;      // bar [origin=predictive method=joback]
+omega       0.6872;      // -   [origin=predictive method=lee-kesler]
+Tb          917.00;      // K   [origin=predictive method=joback]
+HvapTb      88665.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (51.471 2.25364 -0.000956 4.16e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 7; } { group CH2; count 10; } { group CH; count 2; } { group CH2=C; count 2; } { group CH2N; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 7; } { group CH2; count 11; } { group CH; count 2; } { group dCH2; count 2; } { group dC; count 2; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(dipropan-2-ylamino)ethyl 2-methylprop-2-enoate- decyl 2-methylprop-2-enoate(1:1)" "2-propenoic acid, 2-methyl-, 2-(bis(1-methylethyl)amino)ethyl ester, polymer with decyl 2-methyl-2-propenoate" "2-(dipropan-2-ylamino)ethyl 2-methylprop-2-enoate - decyl 2-methylprop-2-enoate (1:1)" "decyl 2-methylprop-2-enoate; 2-[di(propan-2-yl)amino]ethyl 2-methylprop-2-enoate" );
+gibbsFormation
+{
+    dHf_298   -1037900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1358.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-292980.0
+    phase     gas;
+}

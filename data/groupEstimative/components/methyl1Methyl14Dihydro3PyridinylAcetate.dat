@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl (1-methyl-1,4-dihydro-3-pyridinyl)acetate  (C9H13NO2, CAS 39998-23-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl1Methyl14Dihydro3PyridinylAcetate;
+formula     C9H13NO2;
+CAS         39998-23-7;
+InChIKey    YMGFECXAXAXEOP-UHFFFAOYSA-N;
+MW          167.208;      // g/mol [origin=calculated method=formula-sum]
+Tc          700.03;      // K   [origin=predictive method=joback]
+Pc          30.558;      // bar [origin=predictive method=joback]
+omega       0.5849;      // -   [origin=predictive method=lee-kesler]
+Tb          499.43;      // K   [origin=predictive method=joback]
+HvapTb      46890.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.139 0.91464 -0.00057412 1.274e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH=CH; count 1; } { group CH=C; count 1; } { group CH2COO; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-(1-methyl-4h-pyridin-3-yl)ethanoate" "3-pyridineacetic acid, 1,4-dihydro-1-methyl-, methyl ester" "methyl 2-(1-methyl-4h-pyridin-3-yl)acetate" "methyl (1-methyl-1,4-dihydropyridin-3-yl)acetate" );
+gibbsFormation
+{
+    dHf_298   -293930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     484.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-80140.0
+    phase     gas;
+}

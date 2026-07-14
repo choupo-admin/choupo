@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethenol  (C2H4O, CAS 9002-89-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethenol;
+formula     C2H4O;
+CAS         9002-89-5;
+InChIKey    IMROMDMJAWUWLK-UHFFFAOYSA-N;
+MW          44.053;      // g/mol [origin=calculated method=formula-sum]
+Tc          499.43;      // K   [origin=predictive method=joback]
+Pc          61.418;      // bar [origin=predictive method=joback]
+omega       0.5308;      // -   [origin=predictive method=lee-kesler]
+Tb          334.22;      // K   [origin=predictive method=joback]
+HvapTb      36055.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.37 0.2078 -0.0001383 3.98e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "polyvinyl alcohol" "hydroxyethene" "hydroxyethylene" "vinyl alcohol" "elvanol" "ethenol, homopolymer" "polyviol" "alkenols" "enol" "enols" "vinylalcohol" "alkotex" );
+gibbsFormation
+{
+    dHf_298   -111410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     280.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-83020.0
+    phase     gas;
+}

@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-chloroadamantane-1-carboxylic acid  (C11H15ClO2, CAS 34859-74-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Chloroadamantane1CarboxylicAcid;
+formula     C11H15ClO2;
+CAS         34859-74-0;
+InChIKey    GMOBHRQSNDDZAD-UHFFFAOYSA-N;
+MW          214.689;      // g/mol [origin=calculated method=formula-sum]
+Tc          900.62;      // K   [origin=predictive method=joback]
+Pc          32.653;      // bar [origin=predictive method=joback]
+omega       0.7348;      // -   [origin=predictive method=lee-kesler]
+Tb          654.52;      // K   [origin=predictive method=joback]
+HvapTb      58929.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-239.51 2.1068 -0.0022916 9.925e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 2; } { group C; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:1
+    joback ( { group CH2_ring; count 6; } { group CH_ring; count 2; } { group C_ring; count 2; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-chloranyladamantane-1-carboxylic acid" "3-chloroadamantanecarboxylic acid" "1-chloro-3-adamantanecarboxylic acid" "3-adamantanecarboxylic acid, 1-chloro-" "(1r,3s,5r,7s)-3-chloroadamantane-1-carboxylic acid" "3-chlorotricyclo[3.3.1.1~3,7~]decane-1-carboxylic acid" "1-adamantanecarboxylicacid, 3-chloro- (7ci);1-chloro-3-adamantanecarboxylic acid;3-chloro-1-adamantanecarboxylic acid;tricyclo[3.3.1.13,7]decane-1-carboxylicacid, 3-chloro-;" );
+gibbsFormation
+{
+    dHf_298   -414000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     516.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-162640.0
+    phase     gas;
+}

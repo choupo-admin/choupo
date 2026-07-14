@@ -1,0 +1,28 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  bottoms                F                0.0138888888889  1e-4
+stream  distillate             F                0.0138888888889  1e-4
+stream  feed                   F                0.0277777777778  1e-4
+kpi     column10               B                0.0138888888889  1e-4
+kpi     column10               D                0.0138888888889  1e-4
+kpi     column10               L_rect           0.0277777777778  1e-4
+kpi     column10               L_strip          0.0555555555556  1e-4
+kpi     column10               Q_condenser_kW   -1281.04348002   1e-4
+kpi     column10               Q_reboiler_kW    1279.30480005    1e-4
+kpi     column10               R                2                1e-4
+kpi     column10               T_bottom         382.893530951    1e-4
+kpi     column10               T_top            354.21089412     1e-4
+kpi     column10               V_rect           0.0416666666667  1e-4
+kpi     column10               V_strip          0.0416666666667  1e-4
+kpi     column10               dP_column_kPa    17.8810676705    1e-4
+kpi     column10               diameter         1.1              1e-4
+kpi     column10               downcomerBackup_max_mm 271.249718293    1e-4
+kpi     column10               downcomerFloodStages 0                1e-4
+kpi     column10               feedStage        8                1e-4
+kpi     column10               floodApproach_max 1.1561139509     1e-4
+kpi     column10               floodStage       14               1e-4
+kpi     column10               nStages          15               1e-4
+kpi     column10               weepingStages    0                1e-4
+kpi     column10               x_B_HK           0.981245183716   1e-4
+kpi     column10               x_D_LK           0.981245045999   1e-4

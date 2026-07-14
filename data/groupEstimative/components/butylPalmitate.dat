@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl palmitate  (C20H40O2, CAS 111-06-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butylPalmitate;
+formula     C20H40O2;
+CAS         111-06-8;
+InChIKey    GLYJVQDYLFAUFC-UHFFFAOYSA-N;
+MW          312.538;      // g/mol [origin=calculated method=formula-sum]
+Tc          883.67;      // K   [origin=predictive method=joback]
+Pc          10.188;      // bar [origin=predictive method=joback]
+omega       0.8858;      // -   [origin=predictive method=lee-kesler]
+Tb          715.42;      // K   [origin=predictive method=joback]
+HvapTb      67521.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.117 1.84904 -0.0009696 1.697e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 16; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 17; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butyl hexadecanoate" "hexadecanoic acid, butyl ester" "n-butyl palmitate" "palmitic acid, butyl ester" "n-butyl hexadecanoate" "palmitic acid butyl ester" "hexadecanoic acid,butyl ester" "palmitic acid n-butyl ester" "palmitic acid, butyl ester (8ci)" );
+gibbsFormation
+{
+    dHf_298   -773410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     986.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-192850.0
+    phase     gas;
+}

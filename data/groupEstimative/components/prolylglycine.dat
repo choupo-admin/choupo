@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: prolylglycine  (C7H12N2O3, CAS 2578-57-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        prolylglycine;
+formula     C7H12N2O3;
+CAS         2578-57-6;
+InChIKey    RNKSNIBMTUYWSH-UHFFFAOYSA-N;
+MW          172.184;      // g/mol [origin=calculated method=formula-sum]
+Tc          899.60;      // K   [origin=predictive method=joback]
+Pc          43.283;      // bar [origin=predictive method=joback]
+omega       1.1201;      // -   [origin=predictive method=lee-kesler]
+Tb          673.14;      // K   [origin=predictive method=joback]
+HvapTb      68537.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-36.289 0.8861 -0.0005263 1.0816e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group CH2NH; count 1; } { group COOH; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(pyrrolidin-2-ylcarbonylamino)ethanoic acid" "pro-gly" "l-prolylglycine" "l-prolylgycine" "l-prolyl-l-glycine" "glycine, n-l-prolyl-" "(pyrrolidin-2-ylformamido)acetic acid" "glycine, n-l-prolyl- (8ci)(9ci)" "2-(pyrrolidin-2-ylcarbonylamino)acetic acid" );
+gibbsFormation
+{
+    dHf_298   -498900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     492.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-251120.0
+    phase     gas;
+}

@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methylethyl  (C3H7, CAS 2025-55-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        methylethyl;
+formula     C3H7;
+CAS         2025-55-0;
+InChIKey    HNUALPPJLMYHDK-UHFFFAOYSA-N;
+role        radical;
+MW          43.089;      // g/mol [origin=calculated method=formula-sum]
+Tc          434.62;      // K   [origin=predictive method=joback]
+Pc          45.654;      // bar [origin=predictive method=joback]
+omega       0.1564;      // -   [origin=predictive method=lee-kesler]
+Tb          270.32;      // K   [origin=predictive method=joback]
+HvapTb      22251.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.93 0.29884 -0.0001813 4.82e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 2; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propane isopropyl radical" "i-propyl" "iso-c3h7" "methyl-ethyl" "propan-2-yl" );
+gibbsFormation
+{
+    dHf_298   -46640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     269.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=14490.0
+    phase     gas;
+}

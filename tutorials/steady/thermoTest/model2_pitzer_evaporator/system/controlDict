@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "thermoTest model 2 -- NaCl as a PITZER electrolyte (Na+ + Cl-, aqueous-inf-dilution reference): the boiling-point elevation comes from the real water activity a_w, BPE ~ 5.07 K vs the ideal 2.11 K of model1.";
+verbosity     3;

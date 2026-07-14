@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-benzyloxyphenylacetic acid  (C15H14O3, CAS 22047-88-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2BenzyloxyphenylaceticAcid;
+formula     C15H14O3;
+CAS         22047-88-7;
+InChIKey    VFYKRBZHJFJOGQ-UHFFFAOYSA-N;
+MW          242.274;      // g/mol [origin=calculated method=formula-sum]
+Tc          1008.04;      // K   [origin=predictive method=joback]
+Pc          26.598;      // bar [origin=predictive method=joback]
+omega       1.0045;      // -   [origin=predictive method=lee-kesler]
+Tb          769.07;      // K   [origin=predictive method=joback]
+HvapTb      73772.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-34.158 1.1991 -0.00074916 1.666e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 2; } { group ACCH2; count 1; } { group CH2O; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-phenylmethoxyphenyl)ethanoic acid" "o-benzyloxyphenylacetic acid" "[2-(benzyloxy)phenyl]acetic acid" "2-[2-(phenylmethoxy)phenyl]acetic acid" "2-benzyl-oxyphenylacetic acid" "2-(2-phenylmethoxyphenyl)acetic acid" "benzeneacetic acid,2-(phenylmethoxy)-" "aceticacid, [o-(benzyloxy)phenyl]- (8ci);2-(benzyloxy)phenylacetic acid;2-phenylmethoxybenzeneacetic acid;o-(benzyloxy)phenylacetic acid;" );
+gibbsFormation
+{
+    dHf_298   -373830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     585.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-158300.0
+    phase     gas;
+}

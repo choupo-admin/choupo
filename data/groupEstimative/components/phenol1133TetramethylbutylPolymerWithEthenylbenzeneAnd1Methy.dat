@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenol, (1,1,3,3-tetramethylbutyl)-, polymer with ethenylbenzene and (1-methylethenyl)benzene  (C31H40O, CAS 77986-14-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenol1133TetramethylbutylPolymerWithEthenylbenzeneAnd1Methy;
+formula     C31H40O;
+CAS         77986-14-2;
+InChIKey    YCIZJRGOOZAING-UHFFFAOYSA-N;
+MW          428.66;      // g/mol [origin=calculated method=formula-sum]
+Tc          1320.89;      // K   [origin=predictive method=joback]
+Pc          10.399;      // bar [origin=predictive method=joback]
+omega       0.8039;      // -   [origin=predictive method=lee-kesler]
+Tb          1059.12;      // K   [origin=predictive method=joback]
+HvapTb      101178.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-108.909 2.66592 -0.00157466 3.133e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 1; } { group C; count 2; } { group CH2=CH; count 1; } { group CH2=C; count 1; } { group ACH; count 14; } { group AC; count 3; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 1; } { group C; count 2; } { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 14; } { group dC_ring; count 4; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethenylbenzene;prop-1-en-2-ylbenzene;2-(2,4,4-trimethylpentan-2-yl)phenol" );
+gibbsFormation
+{
+    dHf_298   -150560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1194.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=356040.0
+    phase     gas;
+}

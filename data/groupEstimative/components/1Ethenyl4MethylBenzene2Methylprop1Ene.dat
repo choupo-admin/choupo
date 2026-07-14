@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-ethenyl-4-methyl-benzene;2-methylprop-1-ene  (C13H18, CAS 61128-14-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Ethenyl4MethylBenzene2Methylprop1Ene;
+formula     C13H18;
+CAS         61128-14-1;
+InChIKey    JBAUPCNQUQGXJT-UHFFFAOYSA-N;
+MW          174.287;      // g/mol [origin=calculated method=formula-sum]
+Tc          740.39;      // K   [origin=predictive method=joback]
+Pc          21.653;      // bar [origin=predictive method=joback]
+omega       0.3761;      // -   [origin=predictive method=lee-kesler]
+Tb          523.34;      // K   [origin=predictive method=joback]
+HvapTb      46504.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.61 0.85416 -0.00028086 -3.65e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2=CH; count 1; } { group CH2=C; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzene, 1-ethenyl-4-methyl-, polymer with 2-methyl-1-propene" "1-ethenyl-4-methylbenzene; 2-methylprop-1-ene" "1-ethenyl-4-methyl-benzene; 2-methylprop-1-ene" "isobutylene-p-methylstyrene copolymer;benzene, 1-ethenyl-4-methyl-, polymer with 2-methyl-1-propene;isobutylene-4-methylstyrene copolymer" );
+gibbsFormation
+{
+    dHf_298   42860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     644.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=223730.0
+    phase     gas;
+}

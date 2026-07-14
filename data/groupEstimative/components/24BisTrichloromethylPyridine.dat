@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-bis(trichloromethyl)pyridine  (C7H3Cl6N, CAS 6969-52-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24BisTrichloromethylPyridine;
+formula     C7H3Cl6N;
+CAS         6969-52-4;
+InChIKey    AWCIKBIGEVDMCI-UHFFFAOYSA-N;
+MW          313.808;      // g/mol [origin=calculated method=formula-sum]
+Tc          949.94;      // K   [origin=predictive method=joback]
+Pc          32.393;      // bar [origin=predictive method=joback]
+omega       0.4912;      // -   [origin=predictive method=lee-kesler]
+Tb          663.24;      // K   [origin=predictive method=joback]
+HvapTb      64042.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.38 0.85656 -0.00079642 2.723e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C5H3N; count 1; } { group CCl3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Cl; count 6; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pyridine,2,4-bis(trichloromethyl)-" );
+gibbsFormation
+{
+    dHf_298   -41900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     451.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=121990.0
+    phase     gas;
+}

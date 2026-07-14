@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-bromoethanamine  (C2H6BrN, CAS 107-09-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Bromoethanamine;
+formula     C2H6BrN;
+CAS         107-09-5;
+InChIKey    IZQAUUVBKYXMET-UHFFFAOYSA-N;
+MW          123.981;      // g/mol [origin=calculated method=formula-sum]
+Tc          589.87;      // K   [origin=predictive method=joback]
+Pc          60.655;      // bar [origin=predictive method=joback]
+omega       0.4033;      // -   [origin=predictive method=lee-kesler]
+Tb          384.05;      // K   [origin=predictive method=joback]
+HvapTb      37122.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.752 0.2939 -0.0001998 5.77e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2NH2; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group Br; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanylethanamine" "ethanamine, 2-bromo-" "2-bromoethylamine" "beta-bromoethylamine" "ethylamine, 2-bromo-" "2-aminoethyl bromide" "2-bromoethan-1-amine hydrobromide" "2-bromoethyl-amine" "bromoethanamine" "agn-pc-0cvo0q" "2576-47-8 (hydrobromide)" "2-aminoethyl hydrobromide" );
+gibbsFormation
+{
+    dHf_298   -24490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     336.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=46730.0
+    phase     gas;
+}

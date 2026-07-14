@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-butoxybenzaldehyde  (C11H14O2, CAS 5736-88-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C11H14O2 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        4Butoxybenzaldehyde;
+formula     C11H14O2;
+CAS         5736-88-9;
+InChIKey    XHWMNHADTZZHGI-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          178.231;      // g/mol [origin=calculated method=formula-sum]
+Tc          682.81;      // K   [origin=predictive method=joback]
+Pc          26.819;      // bar [origin=predictive method=joback]
+omega       0.4633;      // -   [origin=predictive method=lee-kesler]
+Tb          481.78;      // K   [origin=predictive method=joback]
+HvapTb      43055.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.717 0.85532 -0.00058076 1.622e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group ACH; count 4; } { group AC; count 2; } { group CHO; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "p-butoxybenzaldehyde" "benzaldehyde, 4-butoxy-" "4-n-butoxybenzaldehyde" "4-butoxy-benzaldehyde" "p-n-butoxybenzaldehyde" "4-n-butyloxybenzaldehyde" "benzaldehyde, p-butoxy-" );
+gibbsFormation
+{
+    dHf_298   -101080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     564.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83480.0
+    phase     gas;
+}

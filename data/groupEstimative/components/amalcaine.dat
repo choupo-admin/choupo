@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: amalcaine  (C14H22N2O2, CAS 2188-67-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        amalcaine;
+formula     C14H22N2O2;
+CAS         2188-67-2;
+InChIKey    UYXHCVFXDBNRQW-UHFFFAOYSA-N;
+MW          250.342;      // g/mol [origin=calculated method=formula-sum]
+Tc          939.03;      // K   [origin=predictive method=joback]
+Pc          21.217;      // bar [origin=predictive method=joback]
+omega       1.0687;      // -   [origin=predictive method=lee-kesler]
+Tb          732.50;      // K   [origin=predictive method=joback]
+HvapTb      74180.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.246 1.27872 -0.00069936 1.204e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group ACH; count 4; } { group AC; count 1; } { group CH2NH; count 1; } { group ACNH2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 6; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(pentylamino)ethyl 4-azanylbenzoate" "amylcain" "amylcaine" "amylsin" "amylsine" "naepaine" "naopaine" "2-n-amylaminoethyl p-aminobenzoate" "2-n-pentylaminoethyl p-aminobenzoate" "2-(pentylamino)ethyl 4-aminobenzoate" "p-aminobenzoic acid 2-n-amylaminoethyl ester" "p-aminobenzoic acid 2-n-pentylaminoethyl ester" );
+gibbsFormation
+{
+    dHf_298   -337250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     732.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=15250.0
+    phase     gas;
+}

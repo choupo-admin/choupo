@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 3-hydroxybenzoate  (C8H8O3, CAS 19438-10-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl3Hydroxybenzoate;
+formula     C8H8O3;
+CAS         19438-10-9;
+InChIKey    YKUCHDXIBAQWSF-UHFFFAOYSA-N;
+MW          152.149;      // g/mol [origin=calculated method=formula-sum]
+Tc          777.92;      // K   [origin=predictive method=joback]
+Pc          44.385;      // bar [origin=predictive method=joback]
+omega       0.6811;      // -   [origin=predictive method=lee-kesler]
+Tb          548.16;      // K   [origin=predictive method=joback]
+HvapTb      56099.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-21.8 0.78472 -0.00060436 1.855e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 3-oxidanylbenzoate" "methyl m-hydroxybenzoate" "m-hydroxybenzoic acid methyl ester" "3-hydroxybenzoic acid methyl ester" "m-carbomethoxyphenol" "methyl m-oxybenzoate" "benzoic acid, 3-hydroxy-, methyl ester" "3-hydroxy-benzoic acid methyl ester" "benzoic acid, m-hydroxy-, methyl ester" "agn-pc-0cxpbc" "3-(methoxycarbonyl)phenol" "benzoic acid,3-hydroxy,methyl ester" );
+gibbsFormation
+{
+    dHf_298   -466510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     438.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-336100.0
+    phase     gas;
+}

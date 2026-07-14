@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexadecylamine  (C16H35N, CAS 143-27-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexadecylamine;
+formula     C16H35N;
+CAS         143-27-1;
+InChIKey    FJLUATLTXUNBOT-UHFFFAOYSA-N;
+MW          241.463;      // g/mol [origin=calculated method=formula-sum]
+Tc          806.83;      // K   [origin=predictive method=joback]
+Pc          13.748;      // bar [origin=predictive method=joback]
+omega       0.8906;      // -   [origin=predictive method=lee-kesler]
+Tb          638.21;      // K   [origin=predictive method=joback]
+HvapTb      61851.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.165 1.58572 -0.00089 1.902e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 14; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 15; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexadecan-1-amine" "1-hexadecanamine" "1-hexadecylamine" "cetylamine" "1-aminohexadecane" "n-hexadecylamine" "hexyldecylamine" "palmitamine" "palmitylamine" "palmityl amine" "n-cetylamine" "alamine 6" );
+gibbsFormation
+{
+    dHf_298   -339780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     830.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=150290.0
+    phase     gas;
+}

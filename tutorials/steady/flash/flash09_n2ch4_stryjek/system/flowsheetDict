@@ -1,0 +1,20 @@
+/*---------------------------------------------------------------------------*\
+  flash09_n2ch4_stryjek -- the phi-phi world pinned to a MEASURED isotherm
+  ======================================================================
+  Nitrogen-methane at 149.82 K (-190.00 F), 20.616 bar (299 psia) -- a point
+  of Stryjek, Chappelear & Kobayashi (1974), J. Chem. Eng. Data 19:334, Table
+  III (DOI 10.1021/je60063a023).  MEASURED there:
+        x_N2 = 0.1503     y_N2 = 0.4579     K_N2 = 3.047     K_CH4 = 0.638
+  The feed z_N2 = 0.30 sits inside the envelope, so the flash must split into
+  exactly those phases if the thermodynamics is right.  The K-values come from
+  K = phi_L/phi_V -- the SAME SRK cubic evaluated at its liquid and vapour
+  roots, with kij(N2,CH4) = 0.0289 -- a small MEASURED correction to the cubic mixing rule, from the Knapp/DECHEMA VLE data compilation (announced in
+  this log).  Neighbouring measured points bracket the model: K_N2 = 3.047 at
+  299 psia and 2.241 at 396.5 psia -- the engine interpolates between them
+  consistently (try P 22 bar in this dict: K_N2 ~ 2.9).  This is the quantitative anchor
+  of the phi-phi world, the same standard as Wiebe-1934 for the Henry world.
+\*---------------------------------------------------------------------------*/
+type isothermalFlash;
+operation { T 149.82 K;  P 20.616 bar; }
+boundary  { inlets ( feed );  outlets ( liq  vap ); }
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

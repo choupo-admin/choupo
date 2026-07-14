@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: fluroxene  (C4H5F3O, CAS 406-90-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        fluroxene;
+formula     C4H5F3O;
+CAS         406-90-6;
+InChIKey    DLEGDLSLRSOURQ-UHFFFAOYSA-N;
+MW          126.077;      // g/mol [origin=calculated method=formula-sum]
+Tc          454.64;      // K   [origin=predictive method=joback]
+Pc          34.889;      // bar [origin=predictive method=joback]
+omega       0.3319;      // -   [origin=predictive method=lee-kesler]
+Tb          304.80;      // K   [origin=predictive method=joback]
+HvapTb      22491.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.561 0.4618 -0.0003267 8.77e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group CH2O; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethenoxy-1,1,1-tris(fluoranyl)ethane" "2,2,2-trifluoroethyl vinyl ether" "(2,2,2-trifluoroethoxy)ethene" "fluoromar" "flurossene [dcit]" "fluroxenum [inn-latin]" "ethene, (2,2,2-trifluoroethoxy)-" "2-ethenoxy-1,1,1-trifluoroethane" "fluroxene [anaesthetics, volatile]" "ether, 2,2,2-trifluoroethyl vinyl" "flurossene" "fluroxenum" );
+gibbsFormation
+{
+    dHf_298   -729760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     374.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-615950.0
+    phase     gas;
+}

@@ -21,24 +21,7 @@
   Self-contained: components + ion/tau catalogue + kinetics all under constant/.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    brine
-    {
-        F            100.0 kmol/h;
-        T            298.15 K;
-        P              1.0 bar;
-        molarComposition  { water 0.9003;  NaCl 0.0997; }   // saturated aqueous NaCl
-    }
-
-    ethanol
-    {
-        F             60.0 kmol/h;
-        T            298.15 K;
-        P              1.0 bar;
-        molarComposition  { ethanol 1.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: citric acid  (C6H8O7, CAS 77-92-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        citricAcid;
+formula     C6H8O7;
+CAS         77-92-9;
+InChIKey    KRKNYBCHXYNGOX-UHFFFAOYSA-N;
+MW          192.123;      // g/mol [origin=calculated method=formula-sum]
+Tc          1076.90;      // K   [origin=predictive method=joback]
+Pc          49.874;      // bar [origin=predictive method=joback]
+omega       2.0652;      // -   [origin=predictive method=lee-kesler]
+Tb          862.36;      // K   [origin=predictive method=joback]
+HvapTb      95825.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.948 0.886 -0.0007226 2.259e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group C; count 1; } { group OH; count 1; } { group COOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group C; count 1; } { group OH; count 1; } { group COOH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-oxidanylpropane-1,2,3-tricarboxylic acid" "citro" "citrate" "aciletten" "citretten" "citric acid, anhydrous" "anhydrous citric acid" "chemfill" "2-hydroxypropane-1,2,3-tricarboxylic acid" "hydrocerol a" "2-hydroxytricarballylic acid" "1,2,3-propanetricarboxylic acid, 2-hydroxy-" );
+gibbsFormation
+{
+    dHf_298   -1378960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     561.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1166070.0
+    phase     gas;
+}

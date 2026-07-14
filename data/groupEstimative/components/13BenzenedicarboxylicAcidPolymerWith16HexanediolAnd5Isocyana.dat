@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-benzenedicarboxylic acid, polymer with 1,6-hexanediol and 5-isocyanato-1-(isocyanatomethyl)-1,3,3-trimethylcyclohexane  (C26H38N2O8, CAS 81506-60-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13BenzenedicarboxylicAcidPolymerWith16HexanediolAnd5Isocyana;
+formula     C26H38N2O8;
+CAS         81506-60-7;
+InChIKey    HIXDSGXVTGTDLM-UHFFFAOYSA-N;
+MW          506.596;      // g/mol [origin=calculated method=formula-sum]
+Tc          1860.04;      // K   [origin=predictive method=joback]
+Pc          12.442;      // bar [origin=predictive method=joback]
+omega       0.6766;      // -   [origin=predictive method=lee-kesler]
+Tb          1448.35;      // K   [origin=predictive method=joback]
+HvapTb      161255.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 10; } { group CH; count 1; } { group C; count 2; } { group ACH; count 4; } { group AC; count 2; } { group OH; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:2
+    joback ( { group CH3; count 3; } { group CH2; count 7; } { group dCd; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 2; } { group COOH; count 2; } { group dO_oth; count 2; } { group Nd; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzene-1,3-dicarboxylic acid;hexane-1,6-diol;5-isocyanato-1-(isocyanatomethyl)-1,3,3-trimethyl-cyclohexane" "isophthalic acid, 1,6-hexanediol, isophorone diisocyanate polymer" );
+// formation datum unavailable (element entropy missing): dHf_298=-1549850.0 dGf_298=None

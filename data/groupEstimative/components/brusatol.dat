@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brusatol  (C26H32O11, CAS 14907-98-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brusatol;
+formula     C26H32O11;
+CAS         14907-98-3;
+InChIKey    ZZZYHIMVKOHVIH-VILODJCFSA-N;
+MW          520.531;      // g/mol [origin=calculated method=formula-sum]
+Tc          1745.92;      // K   [origin=predictive method=joback]
+Pc          14.091;      // bar [origin=predictive method=joback]
+omega       0.8544;      // -   [origin=predictive method=lee-kesler]
+Tb          1373.22;      // K   [origin=predictive method=joback]
+HvapTb      151050.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-234.12 3.5636 -0.0032084 1.2279e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 1; } { group CH; count 7; } { group C; count 3; } { group CH=C; count 1; } { group OH; count 3; } { group CH2CO; count 1; } { group FCH2O; count 1; } { group C=C; count 1; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 7; } { group C_ring; count 3; } { group dC_ring; count 2; } { group OH; count 3; } { group O_ring; count 1; } { group CdO_ring; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "yatansin" "(11beta,12alpha,15beta)-13,20-epoxy-3,11,12-trihydroxy-15-((3-methyl-1-oxo-2-butenyl)oxy)-2,16-dioxopicras-3-en-21-oic acid, methyl ester" "2h-3,11c-beta-(epoxymethano)phenanthro(10,1-bc)pyran-3-alpha(3a-beta-h)-carboxylic acid, 1,4,5,6a-beta,7,7a-alpha,10,11,11a,11b-alpha-decahydro-8,11a-beta-dimethyl-5,10-dioxo-1-beta,2-alpha,4-beta,9-tetrahydroxy-, methyl ester, 4-(3-methylcrotonate)" "methyl 13,20-epoxy-3,11,12-trihydroxy-15-((3-methyl-1-oxo-2-butenyl)oxy)-2,16-dioxopicras-3-en-21-oate (11beta,12alpha,15beta)-" "picras-3-en-21-oic acid, 13,20-epoxy-3,11,12-trihydroxy-15-((3-methyl-1-oxo-2-butenyl)oxy)-2,16-dioxo-, methyl ester, (11beta,12alpha,15beta)-" "methyl(11" "a,12" "a,15" "a)-3,11,12-trihydroxy-15-[(3-methylbut-2-enoyl)oxy]-2,16-dioxo-13,20-epoxypicras-3-en-21-oate" "picras-3-en-21-oicacid,13,20-epoxy-3,11,12-trihydroxy-15-[(3-methyl-1-oxo-2-buten-1-yl)oxy]-2,16-dioxo-,methyl ester, (11b,12a,15b)-" );
+gibbsFormation
+{
+    dHf_298   -1820230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     870.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1075340.0
+    phase     gas;
+}

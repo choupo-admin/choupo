@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-cyclopropylethenylcyclopropane  (C8H12, CAS 10359-44-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Cyclopropylethenylcyclopropane;
+formula     C8H12;
+CAS         10359-44-1;
+InChIKey    WOUFKYXLNUWBJY-UHFFFAOYSA-N;
+MW          108.184;      // g/mol [origin=calculated method=formula-sum]
+Tc          603.83;      // K   [origin=predictive method=joback]
+Pc          35.685;      // bar [origin=predictive method=joback]
+omega       0.2947;      // -   [origin=predictive method=lee-kesler]
+Tb          400.28;      // K   [origin=predictive method=joback]
+HvapTb      33186.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-119.05 1.0856 -0.0009356 3.3e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 2; } { group CH=CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclopropane, 1,1'-(1,2-ethenediyl)bis-" "cyclopropane,1,1'-(1z)-1,2-ethenediylbis-" "cyclopropane,1,1'-(1,2-ethenediyl)bis-, (e)- (9ci)" "cyclopropane,1,1'-(1,2-ethenediyl)bis-, (z)-; ethylene, 1,2-dicyclopropyl-, (z)- (8ci);(z)-1,2-dicyclopropylethene; cis-1,2-dicyclopropylethylene" "ethylene,1,2-dicyclopropyl-, (e)- (8ci); (e)-1,2-dicyclopropylethene;trans-1,2-dicyclopropylethylene" );
+gibbsFormation
+{
+    dHf_298   54370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     280.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=218200.0
+    phase     gas;
+}

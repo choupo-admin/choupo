@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (dodecyloxy)(trimethyl)silane  (C15H34OSi, CAS 6221-88-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C15H34OSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        dodecyloxyTrimethylSilane;
+formula     C15H34OSi;
+CAS         6221-88-1;
+InChIKey    ASWTVWBPXCLXKJ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          258.521;      // g/mol [origin=calculated method=formula-sum]
+Tc          729.95;      // K   [origin=predictive method=joback]
+Pc          12.801;      // bar [origin=predictive method=joback]
+omega       0.6711;      // -   [origin=predictive method=lee-kesler]
+Tb          566.62;      // K   [origin=predictive method=joback]
+HvapTb      51688.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (55.571 1.15948 -0.0002664 -1.047e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 10; } { group CH2O; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 11; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodecoxy(trimethyl)silane" "silane, (dodecyloxy)trimethyl-" "(dodecyloxy)trimethylsilane" );
+gibbsFormation
+{
+    dHf_298   -596770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     878.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134340.0
+    phase     gas;
+}

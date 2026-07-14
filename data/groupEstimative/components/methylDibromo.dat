@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl, dibromo-  (CHBr2, CAS 14362-13-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        methylDibromo;
+formula     CHBr2;
+CAS         14362-13-1;
+InChIKey    HFPGRVHMFSJMOL-UHFFFAOYSA-N;
+role        radical;
+MW          172.827;      // g/mol [origin=calculated method=formula-sum]
+Tc          575.10;      // K   [origin=predictive method=joback]
+Pc          75.614;      // bar [origin=predictive method=joback]
+omega       0.2909;      // -   [origin=predictive method=lee-kesler]
+Tb          356.88;      // K   [origin=predictive method=joback]
+HvapTb      30669.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.27 0.1852 -0.0002153 9.26e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group dCH; count 1; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "chbr2" "bis(bromanyl)methane" "dibromomethyl radical" );
+gibbsFormation
+{
+    dHf_298   47300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     293.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=26290.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethanethiol  (C2H6S, CAS 75-08-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethanethiol;
+formula     C2H6S;
+CAS         75-08-1;
+InChIKey    DNJIEGIFACGWOD-UHFFFAOYSA-N;
+MW          62.13;      // g/mol [origin=calculated method=formula-sum]
+Tc          499.11;      // K   [origin=predictive method=joback]
+Pc          55.196;      // bar [origin=predictive method=joback]
+omega       0.1880;      // -   [origin=predictive method=lee-kesler]
+Tb          308.22;      // K   [origin=predictive method=joback]
+HvapTb      26783.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.961 0.22112 -0.0001074 1.82e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl mercaptan" "ethyl hydrosulfide" "mercaptoethane" "thioethanol" "1-mercaptoethane" "ethyl sulfhydrate" "ethyl thioalcohol" "thioethyl alcohol" "aethanethiol" "aethylmercaptan" "ethaanthiol" "ethylmercaptaan" );
+gibbsFormation
+{
+    dHf_298   -46130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     296.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4650.0
+    phase     gas;
+}

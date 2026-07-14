@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-cyclohexene-1-carboxylic acid  (C7H10O2, CAS 4771-80-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Cyclohexene1CarboxylicAcid;
+formula     C7H10O2;
+CAS         4771-80-6;
+InChIKey    VUSWCWPCANWBFG-UHFFFAOYSA-N;
+MW          126.155;      // g/mol [origin=calculated method=formula-sum]
+Tc          750.77;      // K   [origin=predictive method=joback]
+Pc          41.091;      // bar [origin=predictive method=joback]
+omega       0.5912;      // -   [origin=predictive method=lee-kesler]
+Tb          523.98;      // K   [origin=predictive method=joback]
+HvapTb      49061.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-56.7 0.7857 -0.00049788 1.139e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group CH=CH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclohex-3-ene-1-carboxylic acid" "3-cyclohexenecarboxylic acid" "cyclohex-3-enecarboxylic acid" "1,2,3,6-tetrahydrobenzoic acid" "1-cyclohexene-4-carboxylic acid" "delta3-cyclohexenylcarboxylic acid" ".delta.(sup3)-cyclohexenecarboxylic acid" "(s)-3-naphthenic acid" ".delta.3-cyclohexenecarboxylic acid" ".delta.3-cyclohexenylcarboxylic acid" "(r)-3-cyclohexenecarboxylic acid" "3-cyclohexene carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -425980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     413.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-281440.0
+    phase     gas;
+}

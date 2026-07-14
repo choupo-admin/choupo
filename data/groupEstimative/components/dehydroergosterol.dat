@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dehydroergosterol  (C28H42O, CAS 516-85-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dehydroergosterol;
+formula     C28H42O;
+CAS         516-85-8;
+InChIKey    QSVJYFLQYMVBDR-CMNOFMQQSA-N;
+MW          394.643;      // g/mol [origin=calculated method=formula-sum]
+Tc          1222.96;      // K   [origin=predictive method=joback]
+Pc          11.314;      // bar [origin=predictive method=joback]
+omega       0.9959;      // -   [origin=predictive method=lee-kesler]
+Tb          991.80;      // K   [origin=predictive method=joback]
+HvapTb      94158.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-290.88 3.50202 -0.00304252 1.1311e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 6; } { group CH; count 6; } { group C; count 2; } { group CH=CH; count 1; } { group CH=C; count 3; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH; count 3; } { group dCH; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,10s,13r,14r,17r)-17-[(e,2r,5r)-5,6-dimethylhept-3-en-2-yl]-10,13-dimethyl-2,3,4,12,14,15,16,17-octahydro-1h-cyclopenta[a]phenanthren-3-ol" "ergosta-5,7,9(11),22-tetraen-3beta-ol" "delta(5,7,9(11)22)-ergostatetraen-3-ol" "ergosta-5,7,9(11),22-tetraen-3" "a-ol" "(22e)-ergosta-5,7,9(11),22-tetraen-3beta-ol" "(3beta,22e)-ergosta-5,7,9(11),22-tetraen-3-ol" "ergosta-5,7,9(11),22-tetraen-3-ol, (3beta,22e)-" );
+gibbsFormation
+{
+    dHf_298   -262630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     967.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=345760.0
+    phase     gas;
+}

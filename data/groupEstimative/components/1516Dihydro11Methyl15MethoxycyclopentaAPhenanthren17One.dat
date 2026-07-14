@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 15,16-dihydro-11-methyl-15-methoxycyclopenta(a)phenanthren-17-one  (C19H16O2, CAS 83053-62-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1516Dihydro11Methyl15MethoxycyclopentaAPhenanthren17One;
+formula     C19H16O2;
+CAS         83053-62-7;
+InChIKey    HCIMZCRMCWYEKE-UHFFFAOYSA-N;
+MW          276.335;      // g/mol [origin=calculated method=formula-sum]
+Tc          1067.63;      // K   [origin=predictive method=joback]
+Pc          21.980;      // bar [origin=predictive method=joback]
+omega       0.8979;      // -   [origin=predictive method=lee-kesler]
+Tb          815.86;      // K   [origin=predictive method=joback]
+HvapTb      72662.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-42.29 1.40394 -0.00091148 2.345e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 7; } { group AC; count 5; } { group ACCH3; count 1; } { group ACCH; count 1; } { group CH2CO; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 7; } { group O; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "15-methoxy-11-methyl-15,16-dihydrocyclopenta[a]phenanthren-17-one" "17h-cyclopenta(a)phenanthren-17-one, 15,16-dihydro-11-methyl-15-methoxy-" "15,16-dihydro-11-methyl-15-methoxycyclopenta[a]phenanthren-17-one" "17h-cyclopenta[a]phenanthren-17-one,15,16-dihydro-15-methoxy-11-methyl- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -59820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     389.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=229450.0
+    phase     gas;
+}

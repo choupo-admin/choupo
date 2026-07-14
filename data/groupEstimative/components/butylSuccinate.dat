@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl succinate  (C8H14O4, CAS 5150-93-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butylSuccinate;
+formula     C8H14O4;
+CAS         5150-93-6;
+InChIKey    OGYSYXDNLPNNPW-UHFFFAOYSA-N;
+MW          174.196;      // g/mol [origin=calculated method=formula-sum]
+Tc          775.68;      // K   [origin=predictive method=joback]
+Pc          27.936;      // bar [origin=predictive method=joback]
+omega       0.9525;      // -   [origin=predictive method=lee-kesler]
+Tb          586.37;      // K   [origin=predictive method=joback]
+HvapTb      57973.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.625 0.75982 -0.0003894 5.49e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH2COO; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-butoxy-4-oxidanylidene-butanoic acid" "monobutyl succinate" "succinic acid monobutyl ester" "succinic acid, monobutyl ester" "butanedioic acid, monobutyl ester" "succinic acid, butyl ester" "4-butoxy-4-oxobutanoic acid" "butanedioic acid, 1-butyl ester" "butanedioic acid,1-butyl ester" "butanedioicacid, monobutyl ester (9ci); succinic acid, butyl ester (7ci); succinic acid,monobutyl ester (8ci); butyl succinate; monobutyl succinate" );
+gibbsFormation
+{
+    dHf_298   -876000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     572.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-637800.0
+    phase     gas;
+}

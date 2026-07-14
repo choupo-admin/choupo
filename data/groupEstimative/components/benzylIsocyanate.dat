@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzyl isocyanate  (C8H7NO, CAS 3173-56-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzylIsocyanate;
+formula     C8H7NO;
+CAS         3173-56-6;
+InChIKey    YDNLNVZZTACNJX-UHFFFAOYSA-N;
+MW          133.15;      // g/mol [origin=calculated method=formula-sum]
+Tc          696.99;      // K   [origin=predictive method=joback]
+Pc          40.007;      // bar [origin=predictive method=joback]
+omega       0.4669;      // -   [origin=predictive method=lee-kesler]
+Tb          475.99;      // K   [origin=predictive method=joback]
+HvapTb      45210.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group ACCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH2; count 1; } { group dCd; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "isocyanatomethylbenzene" "(isocyanatomethyl)benzene" "benzene, (isocyanatomethyl)-" "isocyanic acid benzyl ester" "phenylmethanisocyanate" "benzylisocyanate" "benzyl-isocyanate" "benzene, isocyanatomethyl-" "isocyanate on merrifield resin" "benzyl isocyanate on polystyrene" "u747" "methyl isocyanate, polymer-supported, 1.5-1.9 mmol/g on polystyrene" );
+// formation datum unavailable (element entropy missing): dHf_298=22670.0 dGf_298=None

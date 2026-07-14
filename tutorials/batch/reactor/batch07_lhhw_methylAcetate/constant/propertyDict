@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  The activity model is NOT a free choice here.  A rate constant is meaningless
+  without the activity model it was regressed with: Popken, Gotze & Gmehling
+  fitted their kinetics on UNIQUAC activities, with the binary parameters they
+  themselves regressed against DDB vapour-liquid, gamma-infinity and heat-of-
+  mixing data.  Those exact parameters (Delta u = a + b T + c T^2) live in the
+  standard catalogue under binaryPairs/UNIQUAC/, cited to Table 3 of the paper,
+  and the r/q in each component's `uniquac {}` block come from its Table 2.
+
+  Swap this for UNIFAC and the numbers below stop being the authors' numbers.
+\*---------------------------------------------------------------------------*/
+
+components      ( methanol  aceticAcid  methylAcetate  water );
+activityModel   { model UNIQUAC; }
+equationOfState { model idealGas; }

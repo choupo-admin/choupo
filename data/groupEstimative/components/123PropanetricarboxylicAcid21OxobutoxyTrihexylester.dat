@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,3-propanetricarboxylic acid, 2-(1-oxobutoxy)-, trihexylester  (C28H50O8, CAS 82469-79-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        123PropanetricarboxylicAcid21OxobutoxyTrihexylester;
+formula     C28H50O8;
+CAS         82469-79-2;
+InChIKey    GWVUTNGDMGTPFE-UHFFFAOYSA-N;
+MW          514.7;      // g/mol [origin=calculated method=formula-sum]
+Tc          1338.44;      // K   [origin=predictive method=joback]
+Pc          6.687;      // bar [origin=predictive method=joback]
+omega       0.4186;      // -   [origin=predictive method=lee-kesler]
+Tb          1069.89;      // K   [origin=predictive method=joback]
+HvapTb      106254.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (54.599 2.57048 -0.0012928 1.655e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 16; } { group C; count 1; } { group CH2COO; count 3; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 19; } { group C; count 1; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trihexyl 2-butanoyloxypropane-1,2,3-tricarboxylate" "1,2,3-propanetricarboxylic acid, 2-(1-oxobutoxy)-, trihexyl ester" "1,2,3-propanetricarboxylic acid, 2-(1-oxobutoxy)-, 1,2,3-trihexyl ester" "butyryl-n-trihexylcitrate" "butyryl trihexyl citrate" "n-butyryl tri-n-hexyl citrate" );
+gibbsFormation
+{
+    dHf_298   -1899120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1412.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1053760.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: u-21240  (C25H32O4, CAS 2919-66-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        u21240;
+formula     C25H32O4;
+CAS         2919-66-6;
+InChIKey    UDKABVSQKJNZBH-UHFFFAOYSA-N;
+MW          396.527;      // g/mol [origin=calculated method=formula-sum]
+Tc          1247.52;      // K   [origin=predictive method=joback]
+Pc          13.320;      // bar [origin=predictive method=joback]
+omega       0.9885;      // -   [origin=predictive method=lee-kesler]
+Tb          998.64;      // K   [origin=predictive method=joback]
+HvapTb      88152.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-248.86 3.1576 -0.00286278 1.12196e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 3; } { group C; count 3; } { group CH2=C; count 1; } { group CH=C; count 2; } { group CH3CO; count 1; } { group CH2CO; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group dCH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 3; } { group C_ring; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 3; } { group CdO; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(17-ethanoyl-6,10,13-trimethyl-16-methylidene-3-oxidanylidene-1,2,8,9,11,12,14,15-octahydrocyclopenta[a]phenanthren-17-yl) ethanoate" "mga, veterinary" "mga (veterinary)" "malengestrol acetate" "mga 100 (steroid)" "mga" "agn-pc-01lvnk" "6-dehydro-16-methylene-6-methyl-17-acetoxyprogesterone" "melengestrol acetate [usan]" "17-(acetyloxy)-6-methyl-16-methylenepregna-4,6-diene-3,20-dione" "pregna-4,6-diene-3,20-dione, 17-(acetyloxy)-6-methyl-16-methylene-" "pregna-4,6-diene-3,20-dione, 17-hydroxy-6-methyl-16-methylene-, acetate" );
+gibbsFormation
+{
+    dHf_298   -684590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     878.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-157910.0
+    phase     gas;
+}

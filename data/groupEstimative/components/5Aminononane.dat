@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-aminononane  (C9H21N, CAS 2198-45-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Aminononane;
+formula     C9H21N;
+CAS         2198-45-0;
+InChIKey    BKEVGGILGWUWSB-UHFFFAOYSA-N;
+MW          143.274;      // g/mol [origin=calculated method=formula-sum]
+Tc          657.24;      // K   [origin=predictive method=joback]
+Pc          24.580;      // bar [origin=predictive method=joback]
+omega       0.5901;      // -   [origin=predictive method=lee-kesler]
+Tb          477.61;      // K   [origin=predictive method=joback]
+HvapTb      45881.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.484 0.92664 -0.0005124 1.064e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "nonan-5-amine" "5-nonylamine" "5-nonanamine" "pentylamine,1-butyl- (7ci,8ci); 1-butylpentylamine; 1-pentanamine, 1-butyl-; 5-aminononane;5-nonylamine" );
+gibbsFormation
+{
+    dHf_298   -200580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     548.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=88910.0
+    phase     gas;
+}

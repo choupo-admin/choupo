@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: thiodi-2,1-ethanediyl bismethacrylate  (C12H18O4S, CAS 35411-32-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        thiodi21EthanediylBismethacrylate;
+formula     C12H18O4S;
+CAS         35411-32-6;
+InChIKey    AXXUFOMEPPBIHV-UHFFFAOYSA-N;
+MW          258.332;      // g/mol [origin=calculated method=formula-sum]
+Tc          851.43;      // K   [origin=predictive method=joback]
+Pc          19.771;      // bar [origin=predictive method=joback]
+omega       0.8545;      // -   [origin=predictive method=lee-kesler]
+Tb          652.50;      // K   [origin=predictive method=joback]
+HvapTb      62757.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (57.034 0.98843 -0.00045 2.82e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH2=C; count 2; } { group COO; count 2; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH2; count 2; } { group dC; count 2; } { group COO; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-(2-methylprop-2-enoyloxy)ethylsulfanyl]ethyl 2-methylprop-2-enoate" "sulfanediyldiethane-2,1-diyl bis(2-methylprop-2-enoate)" "2-propenoic acid, 2-methyl-, thiodi-2,1-ethanediyl ester" "2-propenoic acid, 2-methyl-, 1,1'-(thiodi-2,1-ethanediyl) ester" "2-propenoic acid, 2-methyl-, thiodi-2,1-ethanediyl ester, homopolymer" "2-propenoic acid, 2-methyl-, 1,1'-(thiodi-2,1-ethanediyl) ester, homopolymer" );
+gibbsFormation
+{
+    dHf_298   -652420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     769.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-378880.0
+    phase     gas;
+}

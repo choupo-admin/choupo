@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-propanamine, 3-(isodecyloxy)-  (C13H29NO, CAS 30113-45-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Propanamine3Isodecyloxy;
+formula     C13H29NO;
+CAS         30113-45-2;
+InChIKey    DHIBIUNZWFPELU-UHFFFAOYSA-N;
+MW          215.381;      // g/mol [origin=calculated method=formula-sum]
+Tc          764.65;      // K   [origin=predictive method=joback]
+Pc          17.104;      // bar [origin=predictive method=joback]
+omega       0.8407;      // -   [origin=predictive method=lee-kesler]
+Tb          591.55;      // K   [origin=predictive method=joback]
+HvapTb      57195.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.38 1.24344 -0.000619 9.92e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 1; } { group CH2O; count 1; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 10; } { group CH; count 1; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(8-methylnonoxy)propan-1-amine" "3-(isodecyloxy)propylamine" "propylamine, 3-isodecoxy-" "3-[(8-methylnonyl)oxy]propan-1-amine" "1-propanamine, 3-(c9-11-isoalkyloxy) derivs., c10-rich" "isodecyloxypropylamine" "3-isodecyloxypropylamine" "3-isodecyloxy propylamine" "1-propanamine,3-(isodecyloxy)-" "propylamine,3-(isodecyloxy)- (7ci); 3-(isodecyloxy)-1-propanamine; isodecyloxypropylamine;sa 14,3; tomamine pa 14" );
+gibbsFormation
+{
+    dHf_298   -415360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     715.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=17590.0
+    phase     gas;
+}

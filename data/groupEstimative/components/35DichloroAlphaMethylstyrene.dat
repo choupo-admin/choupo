@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-dichloro-alpha-methylstyrene  (C9H8Cl2, CAS 68575-36-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35DichloroAlphaMethylstyrene;
+formula     C9H8Cl2;
+CAS         68575-36-0;
+InChIKey    CSXMJJOTTRDXHY-UHFFFAOYSA-N;
+MW          187.063;      // g/mol [origin=calculated method=formula-sum]
+Tc          744.94;      // K   [origin=predictive method=joback]
+Pc          30.592;      // bar [origin=predictive method=joback]
+omega       0.4045;      // -   [origin=predictive method=lee-kesler]
+Tb          513.58;      // K   [origin=predictive method=joback]
+HvapTb      47408.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.5 0.65442 -0.00042892 1.088e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2=C; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-bis(chloranyl)-5-prop-1-en-2-yl-benzene" "1,3-dichloro-5-(prop-1-en-2-yl)benzene" "2-(3,5-dichlorophenyl)propene" "benzene, 1,3-dichloro-5-(1-methylethenyl)-" "3,5-dichloro-.alpha.-methylstyrene" "1,3-dichloro-5-prop-1-en-2-ylbenzene" "1,3-dichloro-5-prop-1-en-2-yl-benzene" );
+gibbsFormation
+{
+    dHf_298   68660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     445.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=173480.0
+    phase     gas;
+}

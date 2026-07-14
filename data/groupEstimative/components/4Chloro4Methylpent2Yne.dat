@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-chloro-4-methylpent-2-yne  (C6H9Cl, CAS 999-79-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Chloro4Methylpent2Yne;
+formula     C6H9Cl;
+CAS         999-79-1;
+InChIKey    NSISWGKYJIDLAQ-UHFFFAOYSA-N;
+MW          116.588;      // g/mol [origin=calculated method=formula-sum]
+Tc          592.72;      // K   [origin=predictive method=joback]
+Pc          36.642;      // bar [origin=predictive method=joback]
+omega       0.1853;      // -   [origin=predictive method=lee-kesler]
+Tb          380.08;      // K   [origin=predictive method=joback]
+HvapTb      34191.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.41 0.55666 -0.00040266 1.2008e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:1
+    joback ( { group CH3; count 3; } { group C; count 1; } { group tC; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-chloranyl-4-methyl-pent-2-yne" "2-pentyne, 4-chloro-4-methyl-" );
+gibbsFormation
+{
+    dHf_298   80640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     356.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=193350.0
+    phase     gas;
+}

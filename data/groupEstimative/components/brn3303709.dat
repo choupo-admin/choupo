@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 3303709  (C22H20, CAS 63019-70-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn3303709;
+formula     C22H20;
+CAS         63019-70-5;
+InChIKey    DESKSYWHCHZQSH-UHFFFAOYSA-N;
+MW          284.402;      // g/mol [origin=calculated method=formula-sum]
+Tc          1061.03;      // K   [origin=predictive method=joback]
+Pc          18.046;      // bar [origin=predictive method=joback]
+omega       0.8300;      // -   [origin=predictive method=lee-kesler]
+Tb          816.46;      // K   [origin=predictive method=joback]
+HvapTb      75734.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-59.55 1.64688 -0.00121212 3.7e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 6; } { group ACCH3; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH_ring; count 8; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7,9,10,12-tetramethylbenzo[a]anthracene" "6,7,9,10-tetramethyl-1,2-benzanthracene" "benz(a)anthracene, 7,9,10,12-tetramethyl-" );
+gibbsFormation
+{
+    dHf_298   243510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     542.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=508940.0
+    phase     gas;
+}

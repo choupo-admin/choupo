@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,3,4-tetrahydroquinaldine  (C10H13N, CAS 1780-19-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1234Tetrahydroquinaldine;
+formula     C10H13N;
+CAS         1780-19-4;
+InChIKey    JZICUKPOZUKZLL-UHFFFAOYSA-N;
+MW          147.221;      // g/mol [origin=calculated method=formula-sum]
+Tc          757.57;      // K   [origin=predictive method=joback]
+Pc          35.347;      // bar [origin=predictive method=joback]
+omega       0.4387;      // -   [origin=predictive method=lee-kesler]
+Tb          519.62;      // K   [origin=predictive method=joback]
+HvapTb      47635.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-64.25 0.94332 -0.00059756 1.449e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group CHNH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-1,2,3,4-tetrahydroquinoline" "1,2,3,4-tetrahydro-2-methylquinoline" "1.2.3.4-tetrahydro-quinaldine" "quinoline, tetrahydro-2-methyl-" "quinaldine, 1,2,3,4-tetrahydro-" "quinoline, 1,2,3,4-tetrahydro-2-methyl-" "1,2,3,4-tetrahydro quinaldine" "tetrahydro-2-methylquinoline" "(2r)-2-methyl-1,2,3,4-tetrahydroquinoline" "(2s)-2-methyl-1,2,3,4-tetrahydroquinoline" "1,3,4-tetrahydroquinaldine" "1,2,3,4-tetra-quinaldine" );
+gibbsFormation
+{
+    dHf_298   79780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     356.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=272460.0
+    phase     gas;
+}

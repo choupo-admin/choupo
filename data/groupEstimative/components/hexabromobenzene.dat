@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexabromobenzene  (C6Br6, CAS 87-82-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexabromobenzene;
+formula     C6Br6;
+CAS         87-82-1;
+InChIKey    CAYGQBVSOZLICD-UHFFFAOYSA-N;
+MW          551.49;      // g/mol [origin=calculated method=formula-sum]
+Tc          1096.37;      // K   [origin=predictive method=joback]
+Pc          79.153;      // bar [origin=predictive method=joback]
+omega       1.0639;      // -   [origin=predictive method=lee-kesler]
+Tb          785.42;      // K   [origin=predictive method=joback]
+HvapTb      73146.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (84.17 0.4266 -0.000427 1.658e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 6; } { group Br; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 6; } { group Br; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5,6-hexakis(bromanyl)benzene" "benzene, hexabromo-" "perbromobenzene" "1,2,3,4,5,6-hexabromobenzene" "benzene, 1,2,3,4,5,6-hexabromo-" );
+gibbsFormation
+{
+    dHf_298   169990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     558.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=149820.0
+    phase     gas;
+}

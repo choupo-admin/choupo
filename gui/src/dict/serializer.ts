@@ -73,7 +73,11 @@ function emitEntry(key: string,
 ): void {
   switch (value.kind) {
     case "scalar":
-      if (value.unit !== undefined && value.originalValue !== undefined) {
+      if (value.dimensions !== undefined) {
+        out.push(
+          `${indent}${key}    [${value.dimensions.map(fmtNumber).join(" ")}] ${fmtNumber(value.value)};\n`,
+        );
+      } else if (value.unit !== undefined && value.originalValue !== undefined) {
         out.push(
           `${indent}${key}    ${fmtNumber(value.originalValue)} ${value.unit};\n`,
         );

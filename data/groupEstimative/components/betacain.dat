@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: betacain  (C15H21NO2, CAS 500-34-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        betacain;
+formula     C15H21NO2;
+CAS         500-34-5;
+InChIKey    ZYHGIAPHLSTGMX-UHFFFAOYSA-N;
+MW          247.338;      // g/mol [origin=calculated method=formula-sum]
+Tc          926.63;      // K   [origin=predictive method=joback]
+Pc          22.398;      // bar [origin=predictive method=joback]
+omega       0.6697;      // -   [origin=predictive method=lee-kesler]
+Tb          686.70;      // K   [origin=predictive method=joback]
+HvapTb      64085.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-106.04 1.64276 -0.001171 3.54e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CHNH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2,2,6-trimethylpiperidin-4-yl) benzoate" "eucaine" "eucaine b" "eucain b" ".beta.-eucaine" "beta-eucaine" "eukain b" "2,2,6-trimethylpiperidin-4-yl benzoate" "2,2,6-trimethyl-4-piperidinol benzoate (ester)" "4-piperidinol, 2,2,6-trimethyl-, benzoate (ester)" "b-eucaine" "4-piperidinol,2,2,6-trimethyl-, 4-benzoate" );
+gibbsFormation
+{
+    dHf_298   -366990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     633.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-31290.0
+    phase     gas;
+}

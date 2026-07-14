@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9,12-dimethyl-2,5,8,11-tetraoxatridecan-13-ol  (C11H24O5, CAS 66271-91-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        912Dimethyl25811Tetraoxatridecan13Ol;
+formula     C11H24O5;
+CAS         66271-91-8;
+InChIKey    SYIGFFSZORSQQE-UHFFFAOYSA-N;
+MW          236.308;      // g/mol [origin=calculated method=formula-sum]
+Tc          796.81;      // K   [origin=predictive method=joback]
+Pc          20.037;      // bar [origin=predictive method=joback]
+omega       1.2129;      // -   [origin=predictive method=lee-kesler]
+Tb          632.26;      // K   [origin=predictive method=joback]
+HvapTb      65623.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (96.816 0.84186 -0.0001674 -9.07e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group CH3O; count 1; } { group CH2O; count 2; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 2; } { group OH; count 1; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-(2-methoxyethoxy)ethoxy]propoxy]propan-1-ol" "2,5,8,11-tetraoxatridecan-13-ol, 9,12(9,13-,10,12 or 10,13)-dimethyl-" "propylene oxide, methyl carbitol adduct" "2,5(1,5-,2,4 or 1,4)-dimethyl-3,6,9,12-tetraoxatridecan-1-ol" );
+gibbsFormation
+{
+    dHf_298   -962040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     661.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-519960.0
+    phase     gas;
+}

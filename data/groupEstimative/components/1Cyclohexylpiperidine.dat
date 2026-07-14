@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-cyclohexylpiperidine  (C11H21N, CAS 3319-01-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Cyclohexylpiperidine;
+formula     C11H21N;
+CAS         3319-01-5;
+InChIKey    DSSKLTAHHALFRW-UHFFFAOYSA-N;
+MW          167.296;      // g/mol [origin=calculated method=formula-sum]
+Tc          727.29;      // K   [origin=predictive method=joback]
+Pc          28.967;      // bar [origin=predictive method=joback]
+omega       0.3991;      // -   [origin=predictive method=lee-kesler]
+Tb          503.22;      // K   [origin=predictive method=joback]
+HvapTb      43118.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-149.83 1.453 -0.000951 2.344e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group CH; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 10; } { group CH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclohexylpiperidine" "piperidine, 1-cyclohexyl-" "n-cyclohexylpiperidine" "1-piperidinocyclohexane" "1-cyclohexyl-piperidine" "cyclohexyl piperidine" );
+gibbsFormation
+{
+    dHf_298   -67700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     562.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=221230.0
+    phase     gas;
+}

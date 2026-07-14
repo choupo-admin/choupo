@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(methylsulfanyl)-3-pyridinyl acetate  (C8H9NO2S, CAS 42715-30-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methylsulfanyl3PyridinylAcetate;
+formula     C8H9NO2S;
+CAS         42715-30-0;
+InChIKey    ROICIIOLSQXXLP-UHFFFAOYSA-N;
+MW          183.225;      // g/mol [origin=calculated method=formula-sum]
+Tc          842.56;      // K   [origin=predictive method=joback]
+Pc          36.865;      // bar [origin=predictive method=joback]
+omega       0.6110;      // -   [origin=predictive method=lee-kesler]
+Tb          595.00;      // K   [origin=predictive method=joback]
+HvapTb      56774.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (31.08 0.59879 -0.00025002 1.7e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3COO; count 1; } { group C5H3N; count 1; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group COO; count 1; } { group Nd_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2-methylsulfanylpyridin-3-yl) ethanoate" "3-pyridinol, 2-(methylthio)-, acetate (ester)" "(2-methylsulfanylpyridin-3-yl) acetate" );
+gibbsFormation
+{
+    dHf_298   -226010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     480.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-80940.0
+    phase     gas;
+}

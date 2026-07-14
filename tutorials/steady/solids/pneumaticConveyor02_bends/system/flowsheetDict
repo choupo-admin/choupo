@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------*\
+  pneumaticConveyor02_bends -- a fitting adds pressure drop without adding length
+  ============================================================
+  The same sand-in-N2 service as pneumaticConveyor01 (loading ~2), on a
+  SHORTER line: 100 mm, 8 m, 2 m rise, routed through 6 long-radius bends.
+  (Case 01 runs 30 m / 6 m rise, bend-free -- compare dP PER METRE, not totals.)  Each bend decelerates
+  the solids to ~0.75 u_p; the gas re-accelerates them downstream -- the same
+  momentum work as the line entry, once per bend:
+        dP_bend = mDotS (u_p - u_p,bend) / A.
+  Run both cases and compare the dP breakdown: the bends add ~10% (long-radius) to ~25% (blind tees) of the dP while adding NO length.  Swap a bend `type longRadius;`
+  for `type blindTee;` and watch its re-acceleration cost jump (ratio 0.75 ->
+  0.25) -- the blind tee trades pressure for near-zero erosion.
+  Solids friction: Yang (1974); particle velocity: force balance; Rizk saltation.
+\*---------------------------------------------------------------------------*/
+type        pneumaticConveyor;
+operation
+{
+    geometry
+    {
+        D 0.1 m;  L 8 m;  dz 2 m;
+        bends
+        (
+            { RoverD 8; type longRadius; }
+            { RoverD 8; type longRadius; }
+            { RoverD 8; type longRadius; }
+            { RoverD 8; type longRadius; }
+            { RoverD 8; type longRadius; }
+            { RoverD 8; type longRadius; }
+        );
+    }
+}
+boundary    { inlets ( Feed );  outlets ( conveyed ); }
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

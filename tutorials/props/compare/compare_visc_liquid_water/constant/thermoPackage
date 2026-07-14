@@ -1,8 +1,0 @@
-components       ( water );
-
-activityModel    { model ideal; }
-equationOfState  { model idealGas; }
-
-// No baseline transport model here on purpose: each op declares its own
-// liquidViscosity via the `thermo {}` per-op override.  Required when
-// the property `viscosity_liquid` is evaluated.

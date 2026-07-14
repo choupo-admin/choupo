@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: l-lysine acetate  (C8H18N2O4, CAS 57282-49-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lLysineAcetate;
+formula     C8H18N2O4;
+CAS         57282-49-2;
+InChIKey    RRNJROHIFSLGRA-JEDNCBNOSA-N;
+MW          206.242;      // g/mol [origin=calculated method=formula-sum]
+Tc          1040.15;      // K   [origin=predictive method=joback]
+Pc          31.776;      // bar [origin=predictive method=joback]
+omega       1.4787;      // -   [origin=predictive method=lee-kesler]
+Tb          819.68;      // K   [origin=predictive method=joback]
+HvapTb      88918.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (56.934 0.78892 -0.0002318 -5.57e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH2NH2; count 1; } { group CHNH2; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 1; } { group COOH; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-2,6-bis(azanyl)hexanoic acid;ethanoic acid" "l-lysine, acetate" "l-lysine acetate salt" "l-lysine monoacetate" "lysine acetate (usp)" "lysine acetate [usp]" "l-lysine, monoacetate" "56-87-1 (parent)" "lysine monoacetate" "l-lysine, acetate (1:1)" "lysine acetate salt" "l-lysine acetate (jp16)" );
+gibbsFormation
+{
+    dHf_298   -958310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     775.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-645640.0
+    phase     gas;
+}

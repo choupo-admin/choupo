@@ -35,6 +35,9 @@ License
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <set>
+#include <sstream>
+#include <string>
 #include <vector>
 
 namespace Choupo {
@@ -201,6 +204,16 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
           << e.hIn << "," << e.hOut << "," << dH << ","
           << items << "," << std::setprecision(2) << closure << ","
           << "elements" << "\n";
+        // pass-12 (student): a ~1% first-law gap sat silently in the CSV while
+        // every default announces aloud -- the ledger now SPEAKS when a unit's
+        // closure leaves 100 +- 0.5%.
+        if (declares && std::abs(closure - 100.0) > 0.5)
+            std::cout << "  [energy] " << u.name << ": closure "
+                      << std::fixed << std::setprecision(2) << closure
+                      << "% (dH = " << std::setprecision(2) << dH
+                      << " kW vs declared items " << items << " kW) -- an"
+                         " UNEXPLAINED first-law residual; inspect the unit's"
+                         " enthalpy paths (reports/balances has the ledger).\n";
     }
 
     // Breakdown: each unit's individual declared energy items.
@@ -236,16 +249,98 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         scalar Hfeeds = 0.0, Hprods = 0.0;
         const scalar Qext = globalQext;
         int    nFeed = 0, nProd = 0, nGap = 0;
+        // No-silent-crutch: a boundary stream that genuinely CARRIES a species
+        // with no elements-datum enthalpy (z_i > 0 but no gibbsFormation / no
+        // aqueous-ion reference) cannot be placed on the datum.  Dropping it
+        // and still printing a closure % is the silent hole this report used to
+        // have -- so we collect the offenders and REFUSE the global number
+        // below (the energy balance only; the mass balance needs no enthalpy).
+        // A composition-absent species (z_i = 0) is NOT a gap and stays silent.
+        std::vector<std::string> gapStreams;
+        std::set<std::string>    gapComponents;
+        std::vector<std::string> gapOther;     // datum present but a Cp leg gone
         auto sumStream = [&](const std::string& name, scalar& acc, int& cnt)
         {
             auto it = ctx.result.streams.find(name);
             if (it == ctx.result.streams.end()) return;
+            const auto miss = reporting::missingEnthalpyData(it->second,
+                                                             ctx.thermo);
+            if (!miss.empty())
+            {
+                gapStreams.push_back(name);
+                for (const auto& m : miss) gapComponents.insert(m);
+                ++nGap;
+                return;
+            }
             try { acc += reporting::streamH_elements(it->second, ctx.thermo);
                   ++cnt; }
-            catch (const std::exception&) { ++nGap; }
+            catch (const std::exception& ex)
+            {
+                // The formation datum exists but a downstream leg (a Cp block)
+                // is absent -- still a real gap, named from the kernel message.
+                gapStreams.push_back(name);
+                gapOther.emplace_back(ex.what());
+                ++nGap;
+            }
         };
         for (const auto& s : topo.feeds)    sumStream(s, Hfeeds, nFeed);
         for (const auto& s : topo.products) sumStream(s, Hprods, nProd);
+
+        // ---- REFUSAL --------------------------------------------------------
+        // One or more boundary streams could not be placed on the elements
+        // datum because a PRESENT component has no enthalpy datum.  Present a
+        // NO number (no misleading residual_pct); name the culprits loudly.
+        if (nGap > 0)
+        {
+            auto join = [](const auto& cont, const std::string& sep)
+            {
+                std::string out; bool first = true;
+                for (const auto& v : cont)
+                { if (!first) out += sep; out += v; first = false; }
+                return out;
+            };
+            std::ostringstream msg;
+            msg << "energy balance cannot close: ";
+            if (!gapComponents.empty())
+                msg << "component(s) '" << join(gapComponents, "', '")
+                    << "' have no enthalpy datum (no gibbsFormation, no "
+                       "aqueous-ion reference)";
+            else
+                msg << join(gapOther, "; ");
+            msg << " -- present in boundary stream(s) '"
+                << join(gapStreams, "', '") << "'.  "
+                << "Add gibbsFormation{ dHf_298; s_298; phase; } to the "
+                   "component .dat, or configure it as an electrolyte "
+                   "(electrolyte{ cation; anion; } + ions in the catalogue).  "
+                << "The ENERGY balance is REFUSED; the mass balance is "
+                   "unaffected (it needs no enthalpy datum).";
+
+            std::cerr << "ERROR: energyBalance: " << msg.str() << "\n";
+
+            const std::filesystem::path gpath = dir / "globalEnergyBoundary.csv";
+            std::ofstream g(gpath);
+            if (g.is_open())
+            {
+                // A REFUSED record -- deliberately NO residual_pct.  A reader
+                // (the GUI, the regression) sees status=REFUSED, never a
+                // closure number computed from a partial sum.
+                std::string reason = msg.str();
+                std::replace(reason.begin(), reason.end(), ',', ';');
+                std::replace(reason.begin(), reason.end(), '\n', ' ');
+                g << "quantity,value\n"
+                  << "status,REFUSED\n"
+                  << "reason," << reason << "\n"
+                  << "n_gap," << nGap << "\n"
+                  << "gap_components," << join(gapComponents, " ") << "\n"
+                  << "gap_streams," << join(gapStreams, " ") << "\n";
+                g.close();
+            }
+            if (ctx.verbosity >= 1)
+                std::cout << "  [report] globalEnergyBoundary -> REFUSED ("
+                          << nGap << " boundary stream(s) with no enthalpy "
+                             "datum)\n";
+            return;
+        }
 
         const scalar residual = Hfeeds + Qext - Hprods;
         // Normalise the residual by the LARGEST energy magnitude in play, not by

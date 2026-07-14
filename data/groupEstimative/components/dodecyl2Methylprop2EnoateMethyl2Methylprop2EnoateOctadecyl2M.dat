@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dodecyl 2-methylprop-2-enoate;methyl 2-methylprop-2-enoate;octadecyl 2-methylprop-2-enoate  (C43H80O6, CAS 41227-38-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dodecyl2Methylprop2EnoateMethyl2Methylprop2EnoateOctadecyl2M;
+formula     C43H80O6;
+CAS         41227-38-7;
+InChIKey    ABBVGMHBOZOWPC-UHFFFAOYSA-N;
+MW          693.107;      // g/mol [origin=calculated method=formula-sum]
+Tc          1934.77;      // K   [origin=predictive method=joback]
+Pc          3.473;      // bar [origin=predictive method=joback]
+omega       -0.4689;      // -   [origin=predictive method=lee-kesler]
+Tb          1350.58;      // K   [origin=predictive method=joback]
+HvapTb      132351.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (113.618 3.45182 -0.0012776 -4.76e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 28; } { group CH2=C; count 3; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 28; } { group dCH2; count 3; } { group dC; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-propenoic acid, 2-methyl-, dodecyl ester, polymer with methyl 2-methyl-2-propenoate and octadecyl 2-methyl-2-propenoate" "dodecyl 2-methylprop-2-enoate; methyl 2-methylprop-2-enoate; octadecyl 2-methylprop-2-enoate" );
+gibbsFormation
+{
+    dHf_298   -1759010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     2173.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-591580.0
+    phase     gas;
+}

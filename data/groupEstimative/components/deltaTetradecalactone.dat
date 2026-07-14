@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: delta-tetradecalactone  (C14H26O2, CAS 2721-22-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        deltaTetradecalactone;
+formula     C14H26O2;
+CAS         2721-22-4;
+InChIKey    SKQYTJLYRIFFCO-UHFFFAOYSA-N;
+MW          226.36;      // g/mol [origin=calculated method=formula-sum]
+Tc          769.81;      // K   [origin=predictive method=joback]
+Pc          17.332;      // bar [origin=predictive method=joback]
+omega       0.7583;      // -   [origin=predictive method=lee-kesler]
+Tb          589.15;      // K   [origin=predictive method=joback]
+HvapTb      54250.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-39.792 1.42032 -0.000817 1.677e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-nonyloxan-2-one" "2h-pyran-2-one, tetrahydro-6-nonyl-" "5-tetradecanolide" "delta-tetradecanolide" "tetrahydro-6-nonyl-2h-pyran-2-one" ".delta.-nonyl-.delta.-valeralactone" "5-hydroxytetradecanoic acid delta-lactone" "delta-myristolactone" "a-tetradecalactone" "2h-pyran-2-one, tetrahydro-6-nonyl-, (s)-" "a-tetradecane lactone" "delta-tetradecanolactone" );
+gibbsFormation
+{
+    dHf_298   -582930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     682.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-194720.0
+    phase     gas;
+}

@@ -49,6 +49,11 @@ export type DictValue =
       value: number;
       unit?: string;
       originalValue?: number;
+      // Explicit physical dimensions from the bracket form
+      // `key [M L T Theta N] value;`.  These are already canonical SI;
+      // retaining the five exponents is essential when the AST crosses
+      // the GUI's JSON bridge before being serialized for the engine.
+      dimensions?: [number, number, number, number, number];
     }
   | { kind: "word"; value: string }
   | { kind: "scalarList"; value: number[] }

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-bromomesitylene  (C9H11Br, CAS 576-83-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Bromomesitylene;
+formula     C9H11Br;
+CAS         576-83-0;
+InChIKey    RRTLQRYOJOSPEA-UHFFFAOYSA-N;
+MW          199.091;      // g/mol [origin=calculated method=formula-sum]
+Tc          741.78;      // K   [origin=predictive method=joback]
+Pc          33.529;      // bar [origin=predictive method=joback]
+omega       0.4602;      // -   [origin=predictive method=lee-kesler]
+Tb          513.30;      // K   [origin=predictive method=joback]
+HvapTb      46325.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.89 0.63966 -0.00036728 8.08e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 1; } { group ACCH3; count 3; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanyl-1,3,5-trimethyl-benzene" "2,4,6-trimethylbromobenzene" "mesityl bromide" "2-bromo-1,3,5-trimethylbenzene" "benzene, 2-bromo-1,3,5-trimethyl-" "bromomesitylene" "mesitylene, 2-bromo-" "2,4,6-trimethybromombenzene" "2,6-trimethylbromobenzene" "2,6-trimethylphenyl bromide" "1-bromo-2,6-trimethylbenzene" "2,4,6-trimethyl bromobenzene" );
+gibbsFormation
+{
+    dHf_298   -640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     432.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=122740.0
+    phase     gas;
+}

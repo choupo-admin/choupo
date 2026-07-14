@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cetraxate  (C17H23NO4, CAS 34675-84-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cetraxate;
+formula     C17H23NO4;
+CAS         34675-84-8;
+InChIKey    FHRSHSOEWXUORL-UHFFFAOYSA-N;
+MW          305.374;      // g/mol [origin=calculated method=formula-sum]
+Tc          1146.72;      // K   [origin=predictive method=joback]
+Pc          20.456;      // bar [origin=predictive method=joback]
+omega       1.2477;      // -   [origin=predictive method=lee-kesler]
+Tb          911.36;      // K   [origin=predictive method=joback]
+HvapTb      91706.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-55.337 1.6339 -0.00091216 1.55e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH; count 2; } { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group CH2NH2; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COOH; count 1; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[4-[4-(aminomethyl)cyclohexyl]carbonyloxyphenyl]propanoic acid" "cetraxate [inn]" "cetraxatum [inn-latin]" "cetraxate (inn)" "3-[4-({[4-(aminomethyl)cyclohexyl]carbonyl}oxy)phenyl]propanoic acid" "p-hydroxyhydrocinnamic acid trans-(4-aminomethyl)cyclohexanecarboxylate" "trans-4-(((4-(aminomethyl)cyclohexyl)carbonyl)oxy)benzenepropanoic acid" "3-(4-(trans-4-(aminomethyl)cyclohexylcarbonyl)phenyl)propiosaeure" "3-(4-((trans-4-(aminomethyl)cyclohexanecarbonyl)oxy)phenyl)propanoic acid" "3-[4-({[trans-4-(aminomethyl)cyclohexyl]carbonyl}oxy)phenyl]propanoic acid" "benzenepropanoic acid, 4-(((4-(aminomethyl)cyclohexyl)carbonyl)oxy)-, trans-" "hydrocinnamic acid, p-hydroxy-, 4-(aminomethyl)cyclohexanecarboxylate, trans-" );
+gibbsFormation
+{
+    dHf_298   -768930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     788.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-376050.0
+    phase     gas;
+}

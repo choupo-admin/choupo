@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1-trifluoro-2-iodoethane  (C2H2F3I, CAS 353-83-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111Trifluoro2Iodoethane;
+formula     C2H2F3I;
+CAS         353-83-3;
+InChIKey    RKOUFQLNMRAACI-UHFFFAOYSA-N;
+MW          209.932;      // g/mol [origin=calculated method=formula-sum]
+Tc          517.94;      // K   [origin=predictive method=joback]
+Pc          41.731;      // bar [origin=predictive method=joback]
+omega       0.2358;      // -   [origin=predictive method=lee-kesler]
+Tb          333.08;      // K   [origin=predictive method=joback]
+HvapTb      25672.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.561 0.394 -0.0003874 1.412e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group I; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 1; } { group F; count 3; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1-tris(fluoranyl)-2-iodanyl-ethane" "2-iodo-1,1,1-trifluoroethane" "2,2,2-trifluoroethyl iodide" "trifluoroethyl iodide" "1-iodo-2,2,2-trifluoroethane" "2,2,2-trifluoroiodoethane" "1,1,1-trifluoroiodoethane" "trifluoro iodoethane" "2,2,2-trifluoroethyliodide" "1,1,1-trifluoro-2-iodo-ethane" "ethane, 1,1,1-trifluoro-2-iodo-" "1,1,1-trifluoro-2-iodoethane;1-iodo-2,2,2-trifluoroethane;2,2,2-trifluoro-1-iodoethane;2,2,2-trifluoroethyl iodide;" );
+gibbsFormation
+{
+    dHf_298   -604820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     345.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-557510.0
+    phase     gas;
+}

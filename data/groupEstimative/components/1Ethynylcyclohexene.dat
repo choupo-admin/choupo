@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-ethynylcyclohexene  (C8H10, CAS 931-49-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Ethynylcyclohexene;
+formula     C8H10;
+CAS         931-49-7;
+InChIKey    DKFHWNGVMWFBJE-UHFFFAOYSA-N;
+MW          106.168;      // g/mol [origin=calculated method=formula-sum]
+Tc          622.54;      // K   [origin=predictive method=joback]
+Pc          40.108;      // bar [origin=predictive method=joback]
+omega       0.2299;      // -   [origin=predictive method=lee-kesler]
+Tb          401.12;      // K   [origin=predictive method=joback]
+HvapTb      34952.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-40.07 0.703 -0.00046397 1.1949e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH=C; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 4; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclohexene, 1-ethynyl-" "cyclohexene,1-ethynyl-" "1-ethynylcyclohex-1-ene" "1-ethynyl-cyclohexene" "cyclohexenyl-acetylene" "cyclohexene, ethynyl-" );
+gibbsFormation
+{
+    dHf_298   204420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     405.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=292040.0
+    phase     gas;
+}

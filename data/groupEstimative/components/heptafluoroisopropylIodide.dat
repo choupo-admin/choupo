@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heptafluoroisopropyl iodide  (C3F7I, CAS 677-69-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heptafluoroisopropylIodide;
+formula     C3F7I;
+CAS         677-69-0;
+InChIKey    BBZVTTKMXRPMHZ-UHFFFAOYSA-N;
+MW          295.919;      // g/mol [origin=calculated method=formula-sum]
+Tc          514.22;      // K   [origin=predictive method=joback]
+Pc          31.350;      // bar [origin=predictive method=joback]
+omega       0.3142;      // -   [origin=predictive method=lee-kesler]
+Tb          346.58;      // K   [origin=predictive method=joback]
+HvapTb      22038.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.93 0.7878 -0.000851 3.193e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group I; count 1; } { group CF3; count 2; } { group CF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 3; } { group F; count 7; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,3,3,3-heptakis(fluoranyl)-2-iodanyl-propane" "perfluoroisopropyl iodide" "heptafluoro-2-iodopropane" "2-iodoheptafluoropropane" "2-iodoperfluoropropane" "1,1,1,2,3,3,3-heptafluoro-2-iodopropane" "propane, 1,1,1,2,3,3,3-heptafluoro-2-iodo-" "2-heptafluoroisopropyliodide" "propane, heptafluoro-2-iodo-" "perfluoro-2-iodopropane" "2-iodoheptafluoropropane;2-iodoperfluoropropane;bis(trifluoromethyl)fluoroiodomethane;fluoro(iodo)bis(trifluoromethyl)methane;heptafluoro-2-iodopropane;propane,1,1,1,2,3,3,3-heptafluoro-2-iodo-;isoheptafluoropropyliodide;perfluoro-2-iodopropane;perfluoroisopropyl iodide;propane,heptafluoro-2-iodo- (6ci,7ci,8ci);1,1,1,2,3,3,3-heptafluoro-2-iodopropane;" );
+gibbsFormation
+{
+    dHf_298   -1427400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     433.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1322650.0
+    phase     gas;
+}

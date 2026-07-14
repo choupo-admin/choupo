@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pseudopelletierine  (C9H15NO, CAS 552-70-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pseudopelletierine;
+formula     C9H15NO;
+CAS         552-70-5;
+InChIKey    RHWSKVCZXBAWLZ-UHFFFAOYSA-N;
+MW          153.225;      // g/mol [origin=calculated method=formula-sum]
+Tc          730.42;      // K   [origin=predictive method=joback]
+Pc          33.067;      // bar [origin=predictive method=joback]
+omega       0.4779;      // -   [origin=predictive method=lee-kesler]
+Tb          507.80;      // K   [origin=predictive method=joback]
+HvapTb      42088.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-90.28 1.09702 -0.000682 1.591e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 2; } { group CH2CO; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 2; } { group CdO_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9-methyl-9-azabicyclo[3.3.1]nonan-3-one" "pseudopunicine" "granatonine" "pseudopelletierin" "pseudopelletrierin" "granatan-3-one" "psi-pelletierine" "9-methyl-3-granatanone" "3-granataninone, 9-methyl-" "pseudo-pelletierine" "9-methyl-9-aza-bicyclo[3.3.1]nonan-3-one" "9-methyl-9-azabicyclo(3.3.1)nonan-3-one" );
+gibbsFormation
+{
+    dHf_298   -165980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     303.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=110390.0
+    phase     gas;
+}

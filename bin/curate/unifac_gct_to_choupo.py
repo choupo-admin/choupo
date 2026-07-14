@@ -13,9 +13,9 @@
 # aggregator.  We use the DATABASE tables only, never the ChemSep simulator code.
 #
 # WHAT it does:
-#   third_party/chemsep/ipd/unifacrq.gct  -> data/standards/unifac/groups.dat
+#   thirdParty/chemsep/ipd/unifacrq.gct  -> data/standards/unifac/groups.dat
 #       (subgroup -> name, mainGroup, R_k, Q_k;  111 subgroups)
-#   third_party/chemsep/ipd/unifacvl.gct  -> data/standards/unifac/interactions.dat
+#   thirdParty/chemsep/ipd/unifacvl.gct  -> data/standards/unifac/interactions.dat
 #       (main-group interaction matrix a_mn [K];  the full directed pair list)
 #
 # Subgroup/main names are emitted verbatim EXCEPT a tokenizer-safe sanitisation:
@@ -24,8 +24,8 @@
 # not read them as a list.  The mapping is applied consistently to groups.dat and
 # interactions.dat so the two stay self-consistent.
 #
-# >>> REQUIRES the real ChemSep .gct files on disk (see third_party/chemsep/
-#     README.md -- drop a ChemSep/DWSIM install's ipd/ there).  It does NOT
+# >>> REQUIRES the real ChemSep .gct files on disk (see thirdParty/chemsep/
+#     README.md -- drop a ChemSep install's ipd/ there).  It does NOT
 #     fabricate: a malformed line is skipped, never guessed.
 
 import re
@@ -33,7 +33,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SRC  = ROOT / 'third_party' / 'chemsep' / 'ipd'
+SRC  = ROOT / 'thirdParty' / 'chemsep' / 'ipd'
 DST  = ROOT / 'data' / 'standards' / 'unifac'
 RQ   = SRC / 'unifacrq.gct'      # subgroup R/Q table
 VL   = SRC / 'unifacvl.gct'      # original-UNIFAC (VLE) interaction matrix
@@ -106,8 +106,8 @@ def main():
     if not RQ.exists() or not VL.exists():
         print("unifac_gct_to_choupo: ChemSep UNIFAC .gct files not found.\n")
         print(f"  Looked for: {RQ}\n              {VL}")
-        print("  Drop a ChemSep/DWSIM install's ipd/ into third_party/chemsep/ipd/")
-        print("  (see third_party/chemsep/README.md) and re-run.  No fabrication.")
+        print("  Drop a ChemSep install's ipd/ into thirdParty/chemsep/ipd/")
+        print("  (see thirdParty/chemsep/README.md) and re-run.  No fabrication.")
         sys.exit(2)
     ns = import_groups()
     npair = import_interactions()

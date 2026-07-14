@@ -1,0 +1,12 @@
+/*---------------------------------------------------------------------------*\
+  Crystallizer09chatGPT / system/solverDict
+
+  Numerical properties of the solve -- NOT topology.  The recycle
+  `recoveredEthanol` (recovery -> cryst2) is one named edge in flowsheetDict;
+  that it is the TEAR (assumed + iterated) is a numerical fact, declared here.
+\*---------------------------------------------------------------------------*/
+
+tearStreams      ( recoveredEthanol );
+recycleSolver     Newton;
+recycleTol        1e-5;
+recycleMaxIter    150;

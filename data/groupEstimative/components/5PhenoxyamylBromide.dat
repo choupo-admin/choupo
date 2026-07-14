@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-phenoxyamyl bromide  (C11H15BrO, CAS 22921-72-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5PhenoxyamylBromide;
+formula     C11H15BrO;
+CAS         22921-72-8;
+InChIKey    WNGRHTGNGQSCTL-UHFFFAOYSA-N;
+MW          243.144;      // g/mol [origin=calculated method=formula-sum]
+Tc          781.18;      // K   [origin=predictive method=joback]
+Pc          27.965;      // bar [origin=predictive method=joback]
+omega       0.6427;      // -   [origin=predictive method=lee-kesler]
+Tb          566.54;      // K   [origin=predictive method=joback]
+HvapTb      51201.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.325 0.9449 -0.0005662 1.245e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group ACH; count 5; } { group AC; count 1; } { group CH2O; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 5; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-bromanylpentoxybenzene" "5-phenoxypentyl bromide" "benzene,[(5-bromopentyl)oxy]-" "5-bromopentoxybenzene" "5-bromoamyl phenyl ether" "5-bromopentyl phenyl ether" "benzene, ((5-bromopentyl)oxy)-" "ether,5-bromopentyl phenyl (6ci,7ci,8ci); 1-bromo-5-phenoxypentane; 5-bromopentylphenyl ether; 5-phenoxy-1-bromopentane; 5-phenoxypentyl bromide;[(5-bromopentyl)oxy]benzene" );
+gibbsFormation
+{
+    dHf_298   -139730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     540.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=63470.0
+    phase     gas;
+}

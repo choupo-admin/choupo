@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): succinic acid, dodecenyl-, triethanolamine salt (1:2)  (C28H58N2O10, CAS 65166-21-4)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           succinicAcidDodecenylTriethanolamineSalt12;
+formula        C28H58N2O10;
+CAS            65166-21-4;
+InChIKey       ZATZBEFPTDZRTF-YHPRVSEPSA-N;
+MW             582.776;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   3;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: succinic acid, dodecenyl-, triethanolamine salt (1:2)

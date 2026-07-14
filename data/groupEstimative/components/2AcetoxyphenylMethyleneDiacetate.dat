@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2-acetoxyphenyl)methylene diacetate  (C13H14O6, CAS 634-20-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2AcetoxyphenylMethyleneDiacetate;
+formula     C13H14O6;
+CAS         634-20-8;
+InChIKey    DURAGTHQRQBUTE-UHFFFAOYSA-N;
+MW          266.249;      // g/mol [origin=calculated method=formula-sum]
+Tc          913.79;      // K   [origin=predictive method=joback]
+Pc          22.104;      // bar [origin=predictive method=joback]
+omega       0.9608;      // -   [origin=predictive method=lee-kesler]
+Tb          702.92;      // K   [origin=predictive method=joback]
+HvapTb      69303.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (46.01 0.94196 -0.00036696 -2.77e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group ACCH; count 1; } { group CH3COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2-(diacetyloxymethyl)phenyl] ethanoate" "[2-(acetyloxy)phenyl]methanediyl diacetate" "methanediol, (2-(acetyloxy)phenyl)-, diacetate" "methanediol, [2-(acetyloxy)phenyl]-, diacetate" "methanediol, 1-(2-(acetyloxy)phenyl)-, 1,1-diacetate" "methanediol, 1-[2-(acetyloxy)phenyl]-, 1,1-diacetate" "[2-(diacetyloxymethyl)phenyl] acetate" "2-hydroxy-toluene-alpha,alpha-diol, triacetate" );
+gibbsFormation
+{
+    dHf_298   -1043710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     694.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-772190.0
+    phase     gas;
+}

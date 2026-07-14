@@ -76,6 +76,7 @@ export interface MccabeSpec {
   q: number;             // feed quality (the knob): 1 sat-liq, 0 sat-vap, …
   totalCondenser: boolean; // total → distillate vapour-of-comp = xD; partial → 1 stage
   partialReboiler: boolean; // a partial reboiler is an equilibrium stage (default true)
+  efficiency?: number;     // Murphree tray efficiency E_MV in (0,1]; default 1 (ideal stages)
 }
 
 export interface Pt { x: number; y: number; }
@@ -100,6 +101,8 @@ export interface MccabeResult {
   pinched: boolean;          // R ≤ R_min(q) → trapped, infinite stages
   azeotrope: Pt | null;      // y*(x) crosses y = x between xW and xD → halt
   capped: boolean;           // staircase hit the safety step cap (treat as ∞)
+  pseudoCurve: Pt[] | null;  // Murphree pseudo-equilibrium curve walked (null when E≈1)
+  efficiency: number;        // the Murphree tray efficiency E_MV actually used
 }
 
 const STEP_CAP = 400;        // honest ∞ guard: a real column never needs this many
@@ -311,6 +314,24 @@ export function minimumStages(curve: EqCurve, xD: number, xW: number, partialReb
   return n;
 }
 
+/** Murphree TRAY EFFICIENCY (E_MV): the vapour leaving a tray reaches only a
+ *  fraction E of the way from the entering vapour (on the operating line) to the
+ *  equilibrium value.  Geometrically this is a PSEUDO-equilibrium curve pulled
+ *  toward the active operating line: y_eff(x) = y_op(x) + E·(y*(x) − y_op(x)).
+ *  Walking the ordinary staircase on it counts ACTUAL trays — more than ideal,
+ *  the lower E is.  (Overall column efficiency is the famous O'Connell
+ *  correlation, E_o ≈ 0.49·(α·μ_L)^−0.245; this is the per-tray sister.) */
+function pseudoEqCurve(curve: EqCurve, E: number, opLineAt: (x: number) => Line): EqCurve {
+  const xs: number[] = [], ys: number[] = [];
+  for (const p of curve.pts) {
+    const L = opLineAt(p.x);
+    const yop = L.m * p.x + L.b;
+    xs.push(p.x);
+    ys.push(yop + E * (p.y - yop));
+  }
+  return eqCurveFromPoints(xs, ys) ?? curve;
+}
+
 /*---------------------------------------------------------------------------*\
   THE STAIRCASE.  From (xD,xD): step horizontally to y*(x) (invert), then
   vertically down to the ACTIVE operating line; switch ROL → SOL once the step
@@ -336,6 +357,13 @@ export function buildMccabe(curve: EqCurve, spec: MccabeSpec): MccabeResult {
   // active op-line at a given x: ROL right of the feed abscissa, SOL left.
   const activeLine = (x: number): Line => (x >= feedInt.x - 1e-9 ? rol : sol);
 
+  // Murphree tray efficiency: walk the staircase on a pseudo-equilibrium curve
+  // pulled toward the active operating line (E_MV < 1 → more, shorter steps, so
+  // the count is ACTUAL trays).  Limits (rMin, nMin, azeotrope) stay on the real
+  // curve — they are ideal-stage references.
+  const E = Math.min(1, Math.max(0.05, spec.efficiency ?? 1));
+  const eqWalk = E >= 0.999 ? curve : pseudoEqCurve(curve, E, activeLine);
+
   const staircase: Pt[] = [];
   let nStages = 0;
   let feedStage = 0;
@@ -352,7 +380,7 @@ export function buildMccabe(curve: EqCurve, spec: MccabeSpec): MccabeResult {
     let xPrev = xD;
 
     while (x > xW + 1e-6 && nStages < STEP_CAP) {
-      const xEq = xForY(curve, y);             // horizontal step to the curve
+      const xEq = xForY(eqWalk, y);            // horizontal step to the (pseudo-)curve
       staircase.push({ x: xEq, y });
       xPrev = x;
       x = xEq;
@@ -395,6 +423,8 @@ export function buildMccabe(curve: EqCurve, spec: MccabeSpec): MccabeResult {
     pinched,
     azeotrope,
     capped,
+    pseudoCurve: E >= 0.999 ? null : eqWalk.pts.map((p) => ({ x: p.x, y: p.y })),
+    efficiency: E,
   };
 }
 

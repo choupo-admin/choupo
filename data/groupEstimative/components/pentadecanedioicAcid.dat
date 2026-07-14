@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentadecanedioic acid  (C15H28O4, CAS 1460-18-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentadecanedioicAcid;
+formula     C15H28O4;
+CAS         1460-18-0;
+InChIKey    BTZVDPWKGXMQFW-UHFFFAOYSA-N;
+MW          272.385;      // g/mol [origin=calculated method=formula-sum]
+Tc          1028.61;      // K   [origin=predictive method=joback]
+Pc          16.259;      // bar [origin=predictive method=joback]
+omega       1.3066;      // -   [origin=predictive method=lee-kesler]
+Tb          833.82;      // K   [origin=predictive method=joback]
+HvapTb      83312.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.547 1.5304 -0.0009374 2.233e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 13; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 13; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,15-pentadecanedioic acid" "m805" "1,13-tridecamethylenedicarboxylicacid;1,13-tridecanedicarboxylic acid;1,15-pentadecanedioic acid;" );
+gibbsFormation
+{
+    dHf_298   -1053470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     846.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-612400.0
+    phase     gas;
+}

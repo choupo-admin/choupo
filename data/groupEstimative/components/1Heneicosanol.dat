@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-heneicosanol  (C21H44O, CAS 15594-90-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Heneicosanol;
+formula     C21H44O;
+CAS         15594-90-8;
+InChIKey    FIPPFBHCBUDBRR-UHFFFAOYSA-N;
+MW          312.582;      // g/mol [origin=calculated method=formula-sum]
+Tc          945.77;      // K   [origin=predictive method=joback]
+Pc          10.129;      // bar [origin=predictive method=joback]
+omega       0.9763;      // -   [origin=predictive method=lee-kesler]
+Tb          772.26;      // K   [origin=predictive method=joback]
+HvapTb      79019.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.91 2.03282 -0.001149 2.485e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 20; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 20; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "henicosan-1-ol" "1-henicosanol" "heneicosanol" "henicosanol" "heneicosan-1-ol" "heneicosyl alcohol" "n-heneicosanol" );
+gibbsFormation
+{
+    dHf_298   -629000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1024.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-10880.0
+    phase     gas;
+}

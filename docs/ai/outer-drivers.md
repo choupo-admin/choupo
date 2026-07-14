@@ -11,7 +11,7 @@ One driver per case; `type` selects it.  Registered types
 | `sweep` | vary ONE dict scalar over a range, record responses → CSV |
 | `designSpec` | Newton-ND on case `$variables` until named targets are met |
 | `optimization` | Nelder-Mead min/max of a KPI / stream field / cost |
-| `fitBinaryPair` | LEGACY pair regression — superseded by `fitParameters` (see §5) |
+| `fitBinaryPair` | **RETIRED** — the factory throws with a pointer to `fitParameters` (choupoProps), the canonical fit engine |
 
 ## Which driver for which question
 
@@ -196,24 +196,18 @@ report  { file optimization_history.csv; }
 ## 4. Parameter estimation
 
 **Canonical: `fitParameters` under choupoProps** — a `propsDict` operation,
-NOT an outerDict.  Levenberg-Marquardt on dotted thermoPackage parameters
+NOT an outerDict.  Levenberg-Marquardt on dotted property-package parameters
 vs experimental data, with identifiability statistics and an opt-in
 promote-proposal writer.  Full recipe + the identifiability lesson:
 `patterns.md` §4; tutorial `tutorials/props/old/fitNRTL01_ethanol_water`.
 
-**Legacy `fitBinaryPair`** (outerDict, tutorial
-`tutorials/steady/optimisation/fitNRTL01_ethanol_water`):
-
-```
-type      fitBinaryPair;
-pair      ethanol-water;                          // pair name in thermoPackage
-data      constant/experiments/ethanol-water-101kPa;
-unit      bt01;                                   // the bubbleT unit it drives
-// maxIter 30;  tolerance 1.0e-6;  fdStep 1.0e-4;  lambda0 1.0e-3;
-```
+**RETIRED `fitBinaryPair`** — the factory throws, naming `fitParameters`
+(choupoProps) as the replacement; `fitNRTL01_ethanol_water` was migrated to
+fitParameters keeping its golden.  There is no runnable grammar to document
+(historical note only).
 
 Known limitation (CLAUDE.md §14): it requires the `pairs` INLINE in
-`constant/thermoPackage` (it mutates them in-memory) — a case using
+`constant/propertyDict` (it mutates them in-memory) — a case using
 external pair files (`constant/binaryPairs/...`) will not fit.  It is
 slated for retirement; prefer `fitParameters` for anything new.
 

@@ -1,0 +1,61 @@
+# Reference KPIs (golden master; recorded via runTests --record, then curated).
+#
+# fit_jaschik      pins the THREE regressed parameters +/- their standard
+#                  errors, s2 and the identifiability verdict on the REAL
+#                  Jaschik 2020 CC-BY dataset (132 pts, 293/313/333 K).
+# recovery_multiT  the 1e-6 RECOVERY gate: zero-noise synthetic from
+#                  q_max 4.6 / b_ref 3.0e-4 / dH_ads -38000 -- the fitted
+#                  values are pinned at 1e-6 rel.  (Its chi2 ~ 1e-30 is
+#                  machine noise and is deliberately NOT pinned relative.)
+# gate_singleT     identifiability case (i): dH_ads REFUSED (dH_identifiable
+#                  = 0, no fit.dH_ads.value emitted), q_max + b(T_data) exact.
+# gate_henry       identifiability case (ii): henry_regime = 1, only the
+#                  PRODUCT (henry slope) reported; factors flagged 0.
+#
+# kind   name      key         expected        reltol
+diag    fit_jaschik            converged        1.00000e+00        1e-6
+diag    fit_jaschik            identifiable     1.00000e+00        1e-6
+diag    fit_jaschik            n_data           1.32000e+02        1e-6
+diag    fit_jaschik            n_params         3.00000e+00        1e-6
+diag    fit_jaschik            dof              1.29000e+02        1e-6
+diag    fit_jaschik            single_T         0.00000e+00        1e-6
+diag    fit_jaschik            henry_regime     0.00000e+00        1e-6
+diag    fit_jaschik            endothermic_suspicious 0.00000e+00        1e-6
+diag    fit_jaschik            fit.q_max.value  4.31448e+00        1e-4
+diag    fit_jaschik            fit.q_max.stderr 5.17246e-02        1e-3
+diag    fit_jaschik            fit.b_ref.value  4.06758e-04        1e-4
+diag    fit_jaschik            fit.b_ref.stderr 2.90989e-05        1e-3
+diag    fit_jaschik            fit.dH_ads.value -3.73835e+04       1e-4
+diag    fit_jaschik            fit.dH_ads.stderr 1.90453e+03        1e-3
+diag    fit_jaschik            chi2             1.11109e+01        1e-4
+diag    fit_jaschik            chi2_reduced     8.61313e-02        1e-4
+diag    fit_jaschik            rms              2.90127e-01        1e-4
+diag    fit_jaschik            cond_scaledJ     1.02015e+01        1e-3
+diag    fit_jaschik            max_abs_corr     6.56050e-01        1e-3
+diag    fit_jaschik            corr.q_max.b_ref -6.28719e-01       1e-3
+diag    fit_jaschik            corr.q_max.dH_ads 1.25069e-01        1e-3
+diag    fit_jaschik            corr.b_ref.dH_ads -6.56050e-01       1e-3
+diag    recovery_multiT        converged        1.00000e+00        1e-6
+diag    recovery_multiT        identifiable     1.00000e+00        1e-6
+diag    recovery_multiT        fit.q_max.value  4.60000e+00        1e-6
+diag    recovery_multiT        fit.b_ref.value  3.00000e-04        1e-6
+diag    recovery_multiT        fit.dH_ads.value -3.80000e+04       1e-6
+diag    recovery_multiT        single_T         0.00000e+00        1e-6
+diag    recovery_multiT        henry_regime     0.00000e+00        1e-6
+diag    gate_singleT           converged        1.00000e+00        1e-6
+diag    gate_singleT           single_T         1.00000e+00        1e-6
+diag    gate_singleT           dH_identifiable  0.00000e+00        1e-6
+diag    gate_singleT           T_data           3.13150e+02        1e-6
+diag    gate_singleT           fit.q_max.value  4.60000e+00        1e-6
+diag    gate_singleT           fit.b_at_T.value 1.43957e-04        1e-5
+diag    gate_singleT           n_params         2.00000e+00        1e-6
+diag    gate_henry             converged        1.00000e+00        1e-6
+diag    gate_henry             henry_regime     1.00000e+00        1e-6
+diag    gate_henry             bp_max           3.89645e-02        1e-4
+diag    gate_henry             q_max_identifiable 0.00000e+00        1e-6
+diag    gate_henry             b_ref_identifiable 0.00000e+00        1e-6
+diag    gate_henry             dH_identifiable  1.00000e+00        1e-6
+diag    gate_henry             fit.henry_slope.value 1.34151e-03        1e-4
+diag    gate_henry             fit.henry_slope.stderr 3.35543e-06        1e-3
+diag    gate_henry             fit.dH_ads.value -3.72966e+04       1e-4
+diag    gate_henry             fit.dH_ads.stderr 2.23797e+02        1e-3

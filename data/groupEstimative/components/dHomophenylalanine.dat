@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: d-homophenylalanine  (C10H13NO2, CAS 82795-51-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dHomophenylalanine;
+formula     C10H13NO2;
+CAS         82795-51-5;
+InChIKey    JTTHKOPSMAVJFE-SECBINFHSA-N;
+MW          179.219;      // g/mol [origin=calculated method=formula-sum]
+Tc          903.99;      // K   [origin=predictive method=joback]
+Pc          34.889;      // bar [origin=predictive method=joback]
+omega       0.9484;      // -   [origin=predictive method=lee-kesler]
+Tb          672.68;      // K   [origin=predictive method=joback]
+HvapTb      67547.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.698 0.9935 -0.0006706 1.718e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r)-2-azanyl-4-phenyl-butanoic acid" "h-d-hophe-oh" "(2r)-2-amino-4-phenylbutanoic acid" "(r)-2-amino-4-phenylbutyric acid" "(r)-2-amino-4-phenylbutanoic acid" "(r)-alpha-amino-benzenebutanoic acid" "homophenylalanine" "d-homophe" "d-homophenyl-ala" "h-d-homophe-oh" "h-d-hfe-oh" "h-d-hph-oh" );
+gibbsFormation
+{
+    dHf_298   -334960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     534.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134170.0
+    phase     gas;
+}

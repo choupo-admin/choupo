@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methylvaleronitrile  (C6H11N, CAS 21101-88-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Methylvaleronitrile;
+formula     C6H11N;
+CAS         21101-88-2;
+InChIKey    MMRQLDRBAXLMRH-UHFFFAOYSA-N;
+MW          97.161;      // g/mol [origin=calculated method=formula-sum]
+Tc          631.91;      // K   [origin=predictive method=joback]
+Pc          30.490;      // bar [origin=predictive method=joback]
+omega       0.4347;      // -   [origin=predictive method=lee-kesler]
+Tb          438.52;      // K   [origin=predictive method=joback]
+HvapTb      39040.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.752 0.51454 -0.0002748 5.34e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylpentanenitrile" "pentanenitrile, 3-methyl-" "agn-pc-00h0nd" );
+gibbsFormation
+{
+    dHf_298   -7570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     386.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=130380.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5,7-nonatrien-1-yne, (e,e,e)-  (C9H10, CAS 1743-34-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        357Nonatrien1YneEEE;
+formula     C9H10;
+CAS         1743-34-6;
+InChIKey    XDZLQHLDDCOFTD-SFYXYOTASA-N;
+MW          118.179;      // g/mol [origin=calculated method=formula-sum]
+Tc          611.34;      // K   [origin=predictive method=joback]
+Pc          31.633;      // bar [origin=predictive method=joback]
+omega       0.2791;      // -   [origin=predictive method=lee-kesler]
+Tb          408.12;      // K   [origin=predictive method=joback]
+HvapTb      35360.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-34.06 0.82492 -0.00071313 2.5649e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH=CH; count 3; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH; count 6; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3e,5e,7e)-nona-3,5,7-trien-1-yne" );
+gibbsFormation
+{
+    dHf_298   414470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     456.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=488630.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: metenolone acetate  (C22H32O3, CAS 434-05-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        metenoloneAcetate;
+formula     C22H32O3;
+CAS         434-05-9;
+InChIKey    PGAUJQOPTMSERF-UHFFFAOYSA-N;
+MW          344.495;      // g/mol [origin=calculated method=formula-sum]
+Tc          1110.48;      // K   [origin=predictive method=joback]
+Pc          14.424;      // bar [origin=predictive method=joback]
+omega       0.8132;      // -   [origin=predictive method=lee-kesler]
+Tb          867.92;      // K   [origin=predictive method=joback]
+HvapTb      74457.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-241.93 2.81518 -0.00230244 8.189e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 5; } { group C; count 2; } { group CH=C; count 1; } { group CH2CO; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 7; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1,10,13-trimethyl-3-oxidanylidene-4,5,6,7,8,9,11,12,14,15,16,17-dodecahydrocyclopenta[a]phenanthren-17-yl) ethanoate" "1-methyl-3-oxoandrost-1-en-17-yl acetate" "primobolan" "nibal" "methenolone 17-acetate" "agn-pc-02lrvc" "17beta-hydroxy-1-methyl-5alpha-androst-1-en-3-one acetate" "17-beta-hydroxy-1-methyl-5-alpha-androst-1-en-3-one acetate" "5alpha-androst-1-en-3-one, 17beta-hydroxy-1-methyl-, acetate" "testosterone, 1-dehydro-4,5alpha-dihydro-1-methyl-, acetate" "androst-1-en-3-one, 17-(acetyloxy)-1-methyl-, (5alpha,17beta)-" "5-alpha-androst-1-en-3-one, 17-beta-hydroxy-1-methyl-, acetate" );
+gibbsFormation
+{
+    dHf_298   -676220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     692.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-129880.0
+    phase     gas;
+}

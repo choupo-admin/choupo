@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrachlorocyclopropene  (C3Cl4, CAS 6262-42-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrachlorocyclopropene;
+formula     C3Cl4;
+CAS         6262-42-6;
+InChIKey    BLZOHTXDDOAASQ-UHFFFAOYSA-N;
+MW          177.833;      // g/mol [origin=calculated method=formula-sum]
+Tc          667.18;      // K   [origin=predictive method=joback]
+Pc          46.089;      // bar [origin=predictive method=joback]
+omega       0.3098;      // -   [origin=predictive method=lee-kesler]
+Tb          434.06;      // K   [origin=predictive method=joback]
+HvapTb      40190.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.13 0.5838 -0.000827 4.122e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CCl2; count 1; } { group Cl_C=C_; count 2; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C_ring; count 1; } { group dC_ring; count 2; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,3-tetrakis(chloranyl)cyclopropene" "cyclopropene, tetrachloro-" "1,2,3,3-tetrachlorocyclopropene" "1,2,3,3-tetrachloro-cyclopropene" "cyclopropene,1,2,3,3-tetrachloro-" "1,2,3,3-tetrachlorocycloprop-1-ene" );
+gibbsFormation
+{
+    dHf_298   -45330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     336.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-7380.0
+    phase     gas;
+}

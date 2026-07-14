@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tert-butyl pivalate  (C9H18O2, CAS 16474-43-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tertButylPivalate;
+formula     C9H18O2;
+CAS         16474-43-4;
+InChIKey    VXHFNALHLRWIIU-UHFFFAOYSA-N;
+MW          158.241;      // g/mol [origin=calculated method=formula-sum]
+Tc          649.88;      // K   [origin=predictive method=joback]
+Pc          24.053;      // bar [origin=predictive method=joback]
+omega       0.4007;      // -   [origin=predictive method=lee-kesler]
+Tb          457.28;      // K   [origin=predictive method=joback]
+HvapTb      40443.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.83 1.05572 -0.0007148 1.826e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group C; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group C; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tert-butyl 2,2-dimethylpropanoate" "tert-butyl trimethylacetate" "propanoic acid, 2,2-dimethyl, 1,1-dimethylethyl ester" "2,2-dimethylpropanoic acid tert-butyl ester" "2,2-dimethyl-propionic acid tert-butyl ester" "propanoic acid, 2,2-dimethyl-, 1,1-dimethylethyl ester" "propanoic acid,2,2-dimethyl-, 1,1-dimethylethyl ester" "pivalicacid, tert-butyl ester (6ci,7ci,8ci);tert-butyl pivalate;" );
+gibbsFormation
+{
+    dHf_298   -563870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     480.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-279790.0
+    phase     gas;
+}

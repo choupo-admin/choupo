@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4'-methylbutyrophenone  (C11H14O, CAS 4160-52-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Methylbutyrophenone;
+formula     C11H14O;
+CAS         4160-52-5;
+InChIKey    CIYAESDXUTVTAL-UHFFFAOYSA-N;
+MW          162.232;      // g/mol [origin=calculated method=formula-sum]
+Tc          749.47;      // K   [origin=predictive method=joback]
+Pc          27.847;      // bar [origin=predictive method=joback]
+omega       0.5640;      // -   [origin=predictive method=lee-kesler]
+Tb          536.81;      // K   [origin=predictive method=joback]
+HvapTb      49764.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.358 0.88244 -0.00052006 1.1126e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH3; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-methylphenyl)butan-1-one" "4-methylbutyrophenone" "p-methylbutyrophenone" "p-methyl butyrophenone" "4-methyl-butyrophenone" "1-p-tolyl-butan-1-one" "1-(p-tolyl)butan-1-one" "butyrophenone, 4'-methyl-" "1-butanone, 1-(4-methylphenyl)-" );
+gibbsFormation
+{
+    dHf_298   -157890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     498.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=15600.0
+    phase     gas;
+}

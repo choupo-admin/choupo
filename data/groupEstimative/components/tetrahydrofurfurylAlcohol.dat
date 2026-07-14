@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrahydrofurfuryl alcohol  (C5H10O2, CAS 97-99-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrahydrofurfurylAlcohol;
+formula     C5H10O2;
+CAS         97-99-4;
+InChIKey    BSYVTEYKTMYBMK-UHFFFAOYSA-N;
+MW          102.133;      // g/mol [origin=calculated method=formula-sum]
+Tc          637.94;      // K   [origin=predictive method=joback]
+Pc          48.562;      // bar [origin=predictive method=joback]
+omega       0.7058;      // -   [origin=predictive method=lee-kesler]
+Tb          448.41;      // K   [origin=predictive method=joback]
+HvapTb      48170.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-39.529 0.6415 -0.0003921 8.89e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group OH; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group OH; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oxolan-2-ylmethanol" "2-furanmethanol, tetrahydro-" "tetrahydro-2-furanmethanol" "tetrahydro-2-furanylmethanol" "furfuryl alcohol, tetrahydro-" "qo thfa" "thfa" "tetrahydro-2-furancarbinol" "tetrahydro-2-furylmethanol" "tetrahydro-2-furfuryl alcohol" "tetrahydrofurylalkohol" "(tetrahydrofuran-2-yl)methanol" );
+gibbsFormation
+{
+    dHf_298   -370280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     299.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-195170.0
+    phase     gas;
+}

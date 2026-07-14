@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-ethoxy-1-naphthaldehyde  (C13H12O2, CAS 19523-57-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C13H12O2 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2Ethoxy1Naphthaldehyde;
+formula     C13H12O2;
+CAS         19523-57-0;
+InChIKey    IMNKQTWVJHODOS-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          200.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          776.39;      // K   [origin=predictive method=joback]
+Pc          27.906;      // bar [origin=predictive method=joback]
+omega       0.5176;      // -   [origin=predictive method=lee-kesler]
+Tb          551.50;      // K   [origin=predictive method=joback]
+HvapTb      49809.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-39.679 0.98212 -0.00075924 2.422e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 6; } { group AC; count 4; } { group CHO; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethoxynaphthalene-1-carbaldehyde" "1-naphthalenecarboxaldehyde, 2-ethoxy-" "2-ethoxy-1-naphthalenecarboxaldehyde" "2-ethoxynaphthalenecarbaldehyde" "1-naphthaldehyde, 2-ethoxy-" "1-naphthalenecarboxaldehyde,2-ethoxy-" "2-ethoxy-1-naphthaldehyde, 98%" );
+gibbsFormation
+{
+    dHf_298   37240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     526.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=197340.0
+    phase     gas;
+}

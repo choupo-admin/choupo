@@ -1,0 +1,16 @@
+/*---------------------------------------------------------------------------*\
+  pneumaticConveyor01_sand / constant/thermoPackage
+
+  N2 is the conveying gas, silica the sand it carries as a solid stream --
+  a gas-plus-suspended-particles problem with no vapour-liquid equilibrium.
+  Ideal gas gives the gas density behind every velocity, the suspended
+  density and the dP terms (3 bar N2 is essentially ideal); Chung supplies
+  the gas viscosity the friction/drag Reynolds numbers need.  The ideal
+  activity model sits unused.
+\*---------------------------------------------------------------------------*/
+
+components ( N2 silica );           // N2 = carrier gas; silica = conveyed sand (solid)
+phase           { type vle; }
+activityModel   { model ideal; }
+equationOfState { model idealGas; }
+transport       { viscosity           { model Chung; } }    // gas viscosity for the friction Reynolds numbers

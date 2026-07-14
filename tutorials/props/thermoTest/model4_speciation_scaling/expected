@@ -1,0 +1,29 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    brine                  I                3.26782          1e-4
+diag    brine                  SI_anhydrite     -0.22134         1e-4
+diag    brine                  SI_gypsum        -0.0221674       1e-4
+diag    brine                  SI_halite        -0.910511        1e-4
+diag    brine                  SI_mirabilite    -2.13799         1e-4
+diag    brine                  SI_thenardite    -2.98985         1e-4
+diag    brine                  aw               0.890402         1e-4
+diag    brine                  gamma_CaSO4aq    1                1e-4
+diag    brine                  m_CaSO4aq        0.00466294       1e-4
+diag    brine                  pH               7                1e-4
+diag    concentrate            I_r0             3.26782          1e-4
+diag    concentrate            I_rmax           15.6285          1e-4
+diag    concentrate            SI_anhydrite_r0  -0.22134         1e-4
+diag    concentrate            SI_anhydrite_rmax 1.39807          1e-4
+diag    concentrate            SI_gypsum_r0     -0.0221674       1e-4
+diag    concentrate            SI_gypsum_rmax   0.650471         1e-4
+diag    concentrate            SI_halite_r0     -0.910511        1e-4
+diag    concentrate            SI_halite_rmax   2.09357          1e-4
+diag    concentrate            SI_mirabilite_r0 -2.13799         1e-4
+diag    concentrate            SI_mirabilite_rmax -4.80427         1e-4
+diag    concentrate            SI_thenardite_r0 -2.98985         1e-4
+diag    concentrate            SI_thenardite_rmax -0.922272        1e-4
+diag    concentrate            pH_r0            7                1e-4
+diag    concentrate            pH_rmax          7                1e-4
+diag    concentrate            recovery_at_anhydrite_onset 0.240444         1e-4
+diag    concentrate            recovery_at_gypsum_onset 0.0347075        1e-4
+diag    concentrate            recovery_at_halite_onset 0.501988         1e-4

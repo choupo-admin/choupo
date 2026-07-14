@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methylbut-2-yl radical  (C5H11, CAS 4348-35-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        2Methylbut2YlRadical;
+formula     C5H11;
+CAS         4348-35-0;
+InChIKey    CGERYHYIVJQVLJ-UHFFFAOYSA-N;
+role        radical;
+MW          71.143;      // g/mol [origin=calculated method=formula-sum]
+Tc          486.82;      // K   [origin=predictive method=joback]
+Pc          35.986;      // bar [origin=predictive method=joback]
+omega       0.2200;      // -   [origin=predictive method=lee-kesler]
+Tb          315.96;      // K   [origin=predictive method=joback]
+HvapTb      26783.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.439 0.48876 -0.0002924 7.38e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylbutane" "dimethylpropyl" "tert-amyl" "2-methylbut-2-yl" "(ch3)2cch2ch3" );
+gibbsFormation
+{
+    dHf_298   -97710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     343.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=22780.0
+    phase     gas;
+}

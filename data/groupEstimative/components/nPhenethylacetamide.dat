@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-phenethylacetamide  (C10H13NO, CAS 877-95-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nPhenethylacetamide;
+formula     C10H13NO;
+CAS         877-95-2;
+InChIKey    MODKMHXGCGKTLE-UHFFFAOYSA-N;
+MW          163.22;      // g/mol [origin=calculated method=formula-sum]
+Tc          774.33;      // K   [origin=predictive method=joback]
+Pc          31.883;      // bar [origin=predictive method=joback]
+omega       0.6797;      // -   [origin=predictive method=lee-kesler]
+Tb          559.12;      // K   [origin=predictive method=joback]
+HvapTb      53312.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-33.958 0.92312 -0.0005813 1.3476e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-(2-phenylethyl)ethanamide" "n-(2-phenylethyl)acetamide" "acetamide, n-(2-phenylethyl)-" "n-acetyl-2-phenylethylamine" "n-acetylphenethylamine" "acetamide, n-phenethyl-" "n-beta-phenylethylacetamide" "n-(2-phenylethyl)-acetamide" "acetamide, n-phenethyl- (6ci,7ci,8ci)" "n-phenethyl-acetamide" "n-(2-phenethyl)acetamide" );
+gibbsFormation
+{
+    dHf_298   -72310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     506.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=106200.0
+    phase     gas;
+}

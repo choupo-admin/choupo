@@ -22,13 +22,4 @@ operation
 
 boundary    { inlets ( feed );  outlets ( magma ); }
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            353.15 K;            // 80 C hot near-saturated syrup
-        P              1.0 bar;
-        molarComposition  { water 0.85;  sucrose 0.15; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

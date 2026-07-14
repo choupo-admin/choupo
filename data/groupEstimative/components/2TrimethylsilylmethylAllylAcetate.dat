@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(trimethylsilylmethyl)allyl acetate  (C9H18O2Si, CAS 72047-94-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H18O2Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2TrimethylsilylmethylAllylAcetate;
+formula     C9H18O2Si;
+CAS         72047-94-0;
+InChIKey    IKQWABMHZKGCLX-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          186.326;      // g/mol [origin=calculated method=formula-sum]
+Tc          644.66;      // K   [origin=predictive method=joback]
+Pc          21.633;      // bar [origin=predictive method=joback]
+omega       0.4431;      // -   [origin=predictive method=lee-kesler]
+Tb          461.70;      // K   [origin=predictive method=joback]
+HvapTb      42739.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (58.252 0.57778 1.84e-05 -1.592e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH2=C; count 1; } { group CH3COO; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(trimethylsilylmethyl)prop-2-enyl ethanoate" "2-[(acetoxymethyl)allyl]trimethylsilane" "2-acetoxymethyl-3-(trimethylsilyl)propene" "2-(trimethylsilylmethyl)-2-propen-1-yl acetate" "2-(trimethylsilylmethyl)prop-2-enyl acetate" "2-((trimethylsilyl)methyl)allyl acetate" "acetic acid 2-(trimethylsilylmethyl)prop-2-enyl ester" "2-(trimethylsilylmethyl)-2-propen-1-yl acetate; 2-(trimethylsilylmethyl)allyl acetate; 2-acetoxymethyl-3-(trimethylsilyl)propene" "2-propen-1-ol,2-[(trimethylsilyl)methyl]-, acetate (9ci);2-(trimethylsilylmethyl)allylacetate;2-acetoxymethyl-3-trimethylsilylpropene;2-[(trimethylsilyl)methyl]-2-propen-1-yl acetate;2-[(trimethylsilyl)methyl]-2-propenyl acetate;3-acetoxy-2-(trimethylsilylmethyl)-1-propene;acetic acid2-[(trimethylsilyl)methyl]-2-propenyl ester;[2-(acetoxymethyl)allyl]trimethylsilane;" );
+gibbsFormation
+{
+    dHf_298   -542350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     675.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-310940.0
+    phase     gas;
+}

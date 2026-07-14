@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-benzenedicarboxylic acid, mixed 2-phenoxyethyl and tridecyl esters  (C29H40O5, CAS 94214-54-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12BenzenedicarboxylicAcidMixed2PhenoxyethylAndTridecylEsters;
+formula     C29H40O5;
+CAS         94214-54-7;
+InChIKey    MCYXQPXHORCQOQ-UHFFFAOYSA-N;
+MW          468.634;      // g/mol [origin=calculated method=formula-sum]
+Tc          1299.20;      // K   [origin=predictive method=joback]
+Pc          8.847;      // bar [origin=predictive method=joback]
+omega       0.8479;      // -   [origin=predictive method=lee-kesler]
+Tb          1060.32;      // K   [origin=predictive method=joback]
+HvapTb      102586.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.666 2.36872 -0.00124896 1.91e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 13; } { group ACH; count 9; } { group AC; count 3; } { group CH2O; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 14; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "o2-(2-phenoxyethyl) o1-tridecyl benzene-1,2-dicarboxylate" "phthalic acid mixed 2-phenoxyethyl and tridecyl esters" "phenoxyethyl tridecyl phthalate ester" "2-o-(2-phenoxyethyl) 1-o-tridecyl benzene-1,2-dicarboxylate" );
+gibbsFormation
+{
+    dHf_298   -947080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1180.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-317250.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-diphenoxyethane  (C14H14O2, CAS 104-66-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Diphenoxyethane;
+formula     C14H14O2;
+CAS         104-66-5;
+InChIKey    XCSGHNKDXGYELG-UHFFFAOYSA-N;
+MW          214.264;      // g/mol [origin=calculated method=formula-sum]
+Tc          850.81;      // K   [origin=predictive method=joback]
+Pc          26.735;      // bar [origin=predictive method=joback]
+omega       0.6311;      // -   [origin=predictive method=lee-kesler]
+Tb          618.12;      // K   [origin=predictive method=joback]
+HvapTb      56130.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.648 1.0496 -0.0005782 9.68e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 2; } { group CH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenoxyethoxybenzene" "ethylene glycol diphenyl ether" "ethane, 1,2-diphenoxy-" "1,1'-[ethane-1,2-diylbis(oxy)]dibenzene" "(2-phenoxyethoxy)benzene" "benzene, 1,1'-[1,2-ethanediylbis(oxy)]bis-" "2-phenoxyethyl phenyl ether" "benzene, 1,1'-(1,2-ethanediylbis(oxy))bis-" "diphenyl glycol" "diphenyl cellosolve" "ethane,2-diphenoxy-" "2-(phenoxy)ethoxybenzene" );
+gibbsFormation
+{
+    dHf_298   -123670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     511.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=81820.0
+    phase     gas;
+}

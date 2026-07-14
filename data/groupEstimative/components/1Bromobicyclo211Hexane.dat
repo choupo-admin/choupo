@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-bromobicyclo[2.1.1]hexane  (C6H9Br, CAS 77379-00-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Bromobicyclo211Hexane;
+formula     C6H9Br;
+CAS         77379-00-1;
+InChIKey    YOXNNQDDJHZMMU-UHFFFAOYSA-N;
+MW          161.042;      // g/mol [origin=calculated method=formula-sum]
+Tc          644.74;      // K   [origin=predictive method=joback]
+Pc          49.593;      // bar [origin=predictive method=joback]
+omega       0.3093;      // -   [origin=predictive method=lee-kesler]
+Tb          416.76;      // K   [origin=predictive method=joback]
+HvapTb      34060.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-144.85 1.2057 -0.001347 5.909e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group CH_ring; count 1; } { group C_ring; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-bromanylbicyclo[2.1.1]hexane" "bicyclo(2.1.1) hexane, 1-bromo-" "bicyclo[2.1.1] hexane, 1-bromo-" "4-bromobicyclo[2.1.1]hexane" );
+gibbsFormation
+{
+    dHf_298   20000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     329.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=129970.0
+    phase     gas;
+}

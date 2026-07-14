@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pagodane  (C20H20, CAS 89683-62-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pagodane;
+formula     C20H20;
+CAS         89683-62-5;
+InChIKey    HRQVTWFSLAASTF-UHFFFAOYSA-N;
+MW          260.38;      // g/mol [origin=calculated method=formula-sum]
+Tc          884.46;      // K   [origin=predictive method=joback]
+Pc          24.556;      // bar [origin=predictive method=joback]
+omega       0.6988;      // -   [origin=predictive method=lee-kesler]
+Tb          653.44;      // K   [origin=predictive method=joback]
+HvapTb      50772.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-671.65 4.7236 -0.005943 2.7588e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 12; } { group C; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group CH_ring; count 12; } { group C_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,7,8b,3,4b,6-ethanediylidene dipentaleno(1,6-ab:1',6'-ef)pentalene, hexadecahydro-" );
+gibbsFormation
+{
+    dHf_298   384010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     -250.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=882560.0
+    phase     gas;
+}

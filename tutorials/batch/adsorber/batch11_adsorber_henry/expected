@@ -1,0 +1,28 @@
+# Reference KPIs (golden master).  REVIEWED against the CLOSED-FORM solution
+# of the linear (Henry) vessel (A2 spec G1a): k_eff = 0.09957914059 1/s,
+# q_inf = 0.4978868094 mol/kg, q(60 s) = 0.4966211107 mol/kg,
+# p(60 s) = 124785.4636 Pa.  Spec pins, not run ulps.
+# kind   name      key         expected        reltol
+kpi     adsorber               P_final          124785.4636        1e-4
+kpi     adsorber               Q_ads_isosteric_kJ -9.93242221329     1e-4
+kpi     adsorber               T_final          298.15             1e-4
+kpi     adsorber               closure_worst_rel 0                  1e-3
+kpi     adsorber               n_CO2_final      5.033788893e-04    1e-4
+kpi     adsorber               q_CO2_final      0.4966211107       1e-6
+kpi     adsorber               t_end            60                 1e-4
+kpi     adsorber               totalMoles_final 5.033788893e-04    1e-4
+kpi     adsorber               uptake_CO2_mol   0.4966211107       1e-6
+kpi     campaign               element_C_closure_rel 0                  1e-3
+kpi     campaign               element_O_closure_rel 0                  1e-3
+kpi     campaign               element_worst_closure_rel 0                  1e-3
+kpi     campaign               energy_balance_available 0                  1e-4
+kpi     campaign               energy_records_invalid 0                  1e-4
+kpi     campaign               energy_records_valid 0                  1e-4
+kpi     campaign               mass_closure_rel 0                  1e-3
+kpi     campaign               mass_kg_external_out 0                  1e-4
+kpi     campaign               mass_kg_final    0.04401            1e-4
+kpi     campaign               mass_kg_initial  0.04401            1e-4
+kpi     campaign               mass_residual_kg 0                  1e-3
+kpi     campaign               transfers_H_invalid 0                  1e-4
+kpi     campaign               transfers_H_valid 0                  1e-4
+kpi     campaign               transfers_logged 0                  1e-4

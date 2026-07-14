@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methionol  (C4H10OS, CAS 505-10-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methionol;
+formula     C4H10OS;
+CAS         505-10-2;
+InChIKey    CZUGFKJYCPYHHV-UHFFFAOYSA-N;
+MW          106.183;      // g/mol [origin=calculated method=formula-sum]
+Tc          636.08;      // K   [origin=predictive method=joback]
+Pc          44.862;      // bar [origin=predictive method=joback]
+omega       0.7400;      // -   [origin=predictive method=lee-kesler]
+Tb          452.08;      // K   [origin=predictive method=joback]
+HvapTb      47994.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.143 0.41221 -0.000184 1.86e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group OH; count 1; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group OH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylsulfanylpropan-1-ol" "3-methylthiopropanol" "3-(methylthio)-1-propanol" "3-hydroxypropyl methyl sulfide" "3-methylmercapto-1-propanol" "1-propanol, 3-(methylthio)-" "3-methylthio-1-propanol" "3-(methylthio)propanol" "gamma-methylmercaptopropyl alcohol" ".gamma.-methylmercaptopropyl alcohol" "3-(methylthio)propyl alcohol" "3-(methylsulfanyl)-1-propanol" );
+gibbsFormation
+{
+    dHf_298   -236250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     424.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-120900.0
+    phase     gas;
+}

@@ -1,0 +1,58 @@
+/*---------------------------------------------------------------------------*\
+  batch11_adsorber_henry  --  the EXACT-solution gate (G1a of the A2 spec).
+
+  1 mol of CO2 in a 0.01 m3 ideal-gas headspace over 1 kg of a SYNTHETIC
+  Henry-limit sorbent (linear isotherm q* = K_H p, K_H = 0.4 mol/(kg bar)
+  at 298.15 K -- a teaching record, vendored case-local).  With a linear
+  isotherm and one species the coupled vessel is LINEAR and closes in
+  analytic form:
+
+      alpha = K_H[mol/(kg Pa)] * R*T/V  = 0.9915828118  1/kg
+      k_eff = k * (1 + alpha*m_ads)     = 0.09957914059 1/s
+      q_inf = alpha*n0 / (1 + alpha*m)  = 0.4978868094  mol/kg
+      q(t)  = q_inf * (1 - exp(-k_eff*t))          (q0 = 0)
+
+      q(5)  = 0.1952670621   q(10) = 0.3139520079
+      q(30) = 0.4727835287   q(60) = 0.4966211107   mol/kg
+
+  The pedagogical point the closed vessel adds over the fixed-q* packet
+  formula: k_eff > k -- gas depletion ACCELERATES the approach to
+  equilibrium (the packet's q* = const law is the V_gas -> infinity limit
+  of this same solution).  The trajectory rows at t = 5/10/30/60 s must
+  match the table above to 1e-8 mol/kg (RK4 dt = 0.01 s); the golden pins
+  the t = 60 s state.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        adsorber;
+        type        batchAdsorber;
+
+        initial
+        {
+            T            298.15 K;
+            V            0.01;             // m3 -- the GAS headspace volume
+            totalMoles   0.001;            // kmol = 1 mol CO2
+            molarComposition { CO2 1.0; }
+        }
+
+        operation
+        {
+            adsorbent    henrySorbent;     // case-local synthetic record
+            m_ads        1.0 kg;
+            T_setpoint   298.15 K;
+
+            kLDF
+            {
+                basis    solidFilm;        // dq/dt = k*(q* - q)
+                scope    "synthetic Henry-limit teaching sorbent (linear-gate case)";
+                source   "k chosen so k_eff*t_end ~ 6; not a measured sample";
+                k
+                {
+                    CO2  [0 0 -1 0 0]  0.05;   // 1/s
+                }
+            }
+        }
+    }
+);

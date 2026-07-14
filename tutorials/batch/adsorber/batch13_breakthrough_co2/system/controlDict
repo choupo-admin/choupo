@@ -1,0 +1,27 @@
+/*---------------------------------------------------------------------------*\
+  batch13_breakthrough_co2 / system/controlDict
+
+  Time control for the CO2/He breakthrough on the zeolite-13X fixed bed.
+  The stoichiometric front sits at t_st = 3040.512509 s (printed by the
+  unit BEFORE the run); endTime 4200 s > t_st + the mass-transfer zone, so
+  the bed SATURATES (c_out/c_in -> 0.99999999) and the integral anchor
+  INT(1 - c_out/c_in)dt = t_st can be checked to 1e-6 (gate G5).
+
+  timeStepping adaptive selects the L-stable Rosenbrock23: the local LDF
+  eigenvalue is |lambda| = 89.25 1/s (printed term by term with the
+  Gershgorin bound), i.e. t_st*|lambda| ~ 2.7e5 -- intrinsically stiff, an
+  explicit RK4 would need ~540k steps of 7.75 ms.  deltaT only matters in
+  `timeStepping fixed`, where the unit REFUSES any deltaT above the bound.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "CO2 15%/He breakthrough on zeolite 13X -- 1-D isothermal fixed bed (A3): t_st = 3040.5 s announced pre-run, t_b(5%) = 2890.7 s, ledger closure at machine level";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         4200;     // s   (> t_st + MTZ: saturates, gate G5)
+deltaT          0.05;     // s   (only relevant in timeStepping fixed)
+writeInterval   100;      // s   (trajectory row + <t>/bed.profile each 100 s)
+timeStepping    adaptive; // Rosenbrock23 (fixed => RK4, Gershgorin-refused)

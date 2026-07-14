@@ -33,6 +33,7 @@ License
 #include "solver/ActiveSetQP.H"
 #include "solver/NelderMead.H"
 #include "solver/SQP.H"
+#include "streams/StreamOverrides.H"
 
 #include <cmath>
 #include <fstream>
@@ -113,6 +114,7 @@ scalar extractObjective(const SimulationResult& r,
 } // anonymous namespace
 
 OptimizationDriver::OptimizationDriver(const DictPtr& d)
+  : outerDict_(d)
 {
     const std::string method = d->lookupWordOrDefault("method", "nelderMead");
     if      (method == "nelderMead") method_ = Method::NelderMead;
@@ -130,16 +132,25 @@ OptimizationDriver::OptimizationDriver(const DictPtr& d)
     for (const auto& v : varList)
     {
         Var var;
-        var.path = v->lookupWord("path");
-        var.lo   = v->lookupScalar("min");
-        var.hi   = v->lookupScalar("max");
-        var.x0   = v->lookupScalar("initial");
+        var.path  = v->lookupWord("path");
+        var.isInt = v->found("integer")
+                 && v->lookupWordOrDefault("integer", "true") == "true";
+        var.lo    = v->lookupScalar("min");
+        var.hi    = v->lookupScalar("max");
+        // An integer variable is ENUMERATED (every value runs), so it needs
+        // no starting guess; a declared one is still validated.
+        var.x0    = var.isInt ? v->lookupScalarOrDefault("initial", var.lo)
+                              : v->lookupScalar("initial");
         if (var.lo >= var.hi)
             throw std::runtime_error("OptimizationDriver: variable '"
                 + var.path + "': min must be < max");
         if (var.x0 < var.lo || var.x0 > var.hi)
             throw std::runtime_error("OptimizationDriver: variable '"
                 + var.path + "': initial value out of [min, max]");
+        if (var.isInt
+            && (var.lo != std::floor(var.lo) || var.hi != std::floor(var.hi)))
+            throw std::runtime_error("OptimizationDriver: integer variable '"
+                + var.path + "': min/max must be whole numbers");
         vars_.push_back(var);
     }
 
@@ -190,40 +201,9 @@ OptimizationDriver::OptimizationDriver(const DictPtr& d)
     //   has none.  Keywords are atLeast/atMost/equals, NOT min/max -- those
     //   collide with objective.sense.)
     // -----------------------------------------------------------------
-    if (d->found("constraints"))
-    {
-        auto cl = d->lookupDictList("constraints");
-        for (const auto& c : cl)
-        {
-            Constraint con;
-            con.path = c->lookupWord("kpi");
-            int nForm = 0;
-            if (c->found("atMost"))
-            {
-                con.op = Constraint::Op::AtMost;
-                con.rhs = c->lookupScalar("atMost");   // canonical SI (unit-aware)
-                ++nForm;
-            }
-            if (c->found("atLeast"))
-            {
-                con.op = Constraint::Op::AtLeast;
-                con.rhs = c->lookupScalar("atLeast");
-                ++nForm;
-            }
-            if (c->found("equals"))
-            {
-                con.op = Constraint::Op::Equals;
-                con.rhs = c->lookupScalar("equals");
-                ++nForm;
-            }
-            if (nForm != 1)
-                throw std::runtime_error("OptimizationDriver: each constraint"
-                    " needs EXACTLY one of atMost / atLeast / equals (on '"
-                    + con.path + "')");
-            con.tol = c->lookupScalarOrDefault("tol", 1.0e-4);
-            constraints_.push_back(std::move(con));
-        }
-    }
+    // Parsed by the SHARED grammar (ConstraintSpec.H) -- identical block,
+    // identical refusals, shared with the sweep's feasibility map.
+    constraints_ = parseConstraints(d, "OptimizationDriver");
     if (!constraints_.empty() && method_ != Method::Sqp)
         throw std::runtime_error("OptimizationDriver: `constraints` require"
             " method 'sqp' (Nelder-Mead is unconstrained; add a penalty term"
@@ -239,6 +219,36 @@ OptimizationDriver::OptimizationDriver(const DictPtr& d)
     }
 }
 
+void OptimizationDriver::setInitialX(const std::vector<scalar>& x0)
+{
+    if (x0.size() != vars_.size())
+        throw std::runtime_error("OptimizationDriver::setInitialX: "
+            + std::to_string(x0.size()) + " values for "
+            + std::to_string(vars_.size()) + " variables");
+    for (std::size_t i = 0; i < vars_.size(); ++i)
+    {
+        if (x0[i] < vars_[i].lo || x0[i] > vars_[i].hi)
+            throw std::runtime_error("OptimizationDriver::setInitialX: value "
+                + std::to_string(x0[i]) + " for '" + vars_[i].path
+                + "' outside [" + std::to_string(vars_[i].lo) + ", "
+                + std::to_string(vars_[i].hi) + "]");
+        vars_[i].x0 = x0[i];
+    }
+}
+
+void OptimizationDriver::fixVariable(const std::string& path, scalar v)
+{
+    for (std::size_t i = 0; i < vars_.size(); ++i)
+        if (vars_[i].path == path)
+        {
+            vars_.erase(vars_.begin() + static_cast<std::ptrdiff_t>(i));
+            fixedVars_.emplace_back(path, v);
+            return;
+        }
+    throw std::runtime_error("OptimizationDriver::fixVariable: no declared"
+        " variable '" + path + "'");
+}
+
 int OptimizationDriver::run()
 {
     if (!simulator_)
@@ -246,6 +256,8 @@ int OptimizationDriver::run()
     if (!flowsheetDict_)
         throw std::runtime_error("OptimizationDriver: flowsheetDict not set");
 
+    for (const auto& v : vars_)
+        if (v.isInt) return runIntegerEnumeration();
     return (method_ == Method::Sqp) ? runSqp() : runNelderMead();
 }
 
@@ -308,8 +320,16 @@ int OptimizationDriver::runNelderMead()
 
         // Clone fresh flowsheet from source so each evaluation is hermetic.
         auto clone = Dictionary::fromFile(flowsheetDict_->sourceName());
+        StreamOverrides ov;
+        for (const auto& [fp, fv] : fixedVars_)
+            if (fp.rfind("streams.", 0) == 0)
+                 ov.set(StreamOverrides::fromDictPath(fp), fv);
+            else clone->setScalarAtPath(fp, fv);
         for (std::size_t i = 0; i < vars_.size(); ++i)
-            clone->setScalarAtPath(vars_[i].path, x[i]);
+            if (vars_[i].path.rfind("streams.", 0) == 0)
+                ov.set(StreamOverrides::fromDictPath(vars_[i].path), x[i]);
+            else
+                clone->setScalarAtPath(vars_[i].path, x[i]);
 
         // Silence inner simulator chatter -- ~200 evaluations would
         // otherwise flood the log.  We restore the buffer afterwards.
@@ -318,7 +338,7 @@ int OptimizationDriver::runNelderMead()
 
         scalar fval = std::numeric_limits<scalar>::infinity();
         try {
-            auto result = simulator_(clone);
+            auto result = simulator_(clone, ov);
             if (needPost) {
                 auto chain = PostProcessor::buildChain(postDict_);
                 for (auto& pp : chain) pp->run(result);
@@ -423,15 +443,23 @@ int OptimizationDriver::runNelderMead()
     // -----------------------------------------------------------------
     std::cout << "\n[replaying simulator at optimum]\n";
     auto clone = Dictionary::fromFile(flowsheetDict_->sourceName());
+    StreamOverrides ov;
+    for (const auto& [fp, fv] : fixedVars_)
+        if (fp.rfind("streams.", 0) == 0)
+             ov.set(StreamOverrides::fromDictPath(fp), fv);
+        else clone->setScalarAtPath(fp, fv);
     for (std::size_t i = 0; i < vars_.size(); ++i)
-        clone->setScalarAtPath(vars_[i].path, R.x[i]);
-    auto finalResult = simulator_(clone);
+        if (vars_[i].path.rfind("streams.", 0) == 0)
+            ov.set(StreamOverrides::fromDictPath(vars_[i].path), R.x[i]);
+        else
+            clone->setScalarAtPath(vars_[i].path, R.x[i]);
+    auto finalResult = simulator_(clone, ov);
     if (needPost) {
         auto chain = PostProcessor::buildChain(postDict_);
         for (auto& pp : chain) pp->run(finalResult);
     }
     setFinalResult(finalResult);          // expose for the reports{} chain
-    emitResultJson(std::cout, finalResult);
+    if (emitJson_) emitResultJson(std::cout, finalResult);
 
     return R.converged ? 0 : 1;
 }
@@ -559,14 +587,22 @@ int OptimizationDriver::runSqp()
         out.g.assign(nIneq, 0.0);
 
         auto clone = Dictionary::fromFile(flowsheetDict_->sourceName());
+        StreamOverrides ov;
+        for (const auto& [fp, fv] : fixedVars_)
+            if (fp.rfind("streams.", 0) == 0)
+                 ov.set(StreamOverrides::fromDictPath(fp), fv);
+            else clone->setScalarAtPath(fp, fv);
         for (std::size_t i = 0; i < n; ++i)
-            clone->setScalarAtPath(vars_[i].path, xs[i] * s[i]);   // unscale
+            if (vars_[i].path.rfind("streams.", 0) == 0)
+                ov.set(StreamOverrides::fromDictPath(vars_[i].path), xs[i] * s[i]);
+            else
+                clone->setScalarAtPath(vars_[i].path, xs[i] * s[i]);
 
         auto* coutBuf = std::cout.rdbuf(sink.rdbuf());
         auto* cerrBuf = std::cerr.rdbuf(sink.rdbuf());
         try
         {
-            auto result = simulator_(clone);
+            auto result = simulator_(clone, ov);
             if (needPost)
             {
                 auto chain = PostProcessor::buildChain(postDict_);
@@ -781,23 +817,153 @@ int OptimizationDriver::runSqp()
     std::cout << "  history:       " << reportFile_
               << "\n====================================================================\n";
 
+    // Publish the solution for programmatic consumers (paretoSweep): x in
+    // USER units, f in the USER sense, plus the solver's own verdicts.
+    lastX_.assign(n, 0.0);
+    for (std::size_t i = 0; i < n; ++i) lastX_[i] = R.x[i] * s[i];
+    lastF_         = sensed(R.f);
+    lastConverged_ = R.converged;
+    lastFeasible_  = R.feasible;
+
     // ----------------------------------------------------------------------
     //  Replay at the optimum so the case ends with the converged state.
     // ----------------------------------------------------------------------
     std::cout << "\n[replaying simulator at optimum]\n";
     auto clone = Dictionary::fromFile(flowsheetDict_->sourceName());
+    StreamOverrides ov;
+    for (const auto& [fp, fv] : fixedVars_)
+        if (fp.rfind("streams.", 0) == 0)
+             ov.set(StreamOverrides::fromDictPath(fp), fv);
+        else clone->setScalarAtPath(fp, fv);
     for (std::size_t i = 0; i < n; ++i)
-        clone->setScalarAtPath(vars_[i].path, R.x[i] * s[i]);   // unscale
-    auto finalResult = simulator_(clone);
+        if (vars_[i].path.rfind("streams.", 0) == 0)
+            ov.set(StreamOverrides::fromDictPath(vars_[i].path), R.x[i] * s[i]);
+        else
+            clone->setScalarAtPath(vars_[i].path, R.x[i] * s[i]);
+    auto finalResult = simulator_(clone, ov);
     if (needPost)
     {
         auto chain = PostProcessor::buildChain(postDict_);
         for (auto& pp : chain) pp->run(finalResult);
     }
     setFinalResult(finalResult);
-    emitResultJson(std::cout, finalResult);
+    if (emitJson_) emitResultJson(std::cout, finalResult);
 
     return R.converged ? 0 : 1;
+}
+
+// ---------------------------------------------------------------------------
+//  Integer enumeration (Front 4c, forum #102.6/#103): the glass-box choice.
+//  Every integer value is a NEW run -- a fresh child driver with the value
+//  BAKED into every flowsheet clone (a changed nStages rebuilds the unit;
+//  a late parameter mutation on a sized object would lie).  The FULL table
+//  is emitted, failures and infeasible values included; the best
+//  converged-feasible value is replayed as the final result.
+// ---------------------------------------------------------------------------
+int OptimizationDriver::runIntegerEnumeration()
+{
+    std::size_t intIdx = vars_.size();
+    for (std::size_t i = 0; i < vars_.size(); ++i)
+        if (vars_[i].isInt)
+        {
+            if (intIdx != vars_.size())
+                throw std::runtime_error("OptimizationDriver: more than one"
+                    " `integer;` variable ('" + vars_[intIdx].path + "' and '"
+                    + vars_[i].path + "') -- the exhaustive product is not"
+                    " supported yet; enumerate one and sweep the other, or"
+                    " ask the design forum for the cartesian version");
+            intIdx = i;
+        }
+    const Var iv = vars_[intIdx];
+    const long lo = static_cast<long>(iv.lo), hi = static_cast<long>(iv.hi);
+
+    std::cout << "\n==================  Integer enumeration  ==================\n"
+              << "  " << iv.path << " in {" << lo << " .. " << hi << "} -- one"
+                 " FULL run per value (fresh unit each time), best kept.\n"
+              << "===========================================================\n";
+
+    std::ofstream csv("integer_enumeration.csv");
+    csv << iv.path << ",objective,converged,feasible\n";
+
+    struct Row { long v; scalar f; bool conv, feas; };
+    std::vector<Row> rows;
+    std::unique_ptr<OptimizationDriver> best;
+    long bestV = lo;
+
+    for (long v = lo; v <= hi; ++v)
+    {
+        std::cout << "\n---- " << iv.path << " = " << v << " ----\n";
+        std::unique_ptr<OptimizationDriver> drv;
+        try
+        {
+            drv = std::make_unique<OptimizationDriver>(outerDict_);
+            drv->setSimulator(simulator_);
+            drv->setFlowsheetDict(flowsheetDict_);
+            if (postDict_) drv->setPostDict(postDict_);
+            for (const auto& [fp, fv] : fixedVars_) drv->fixVariable(fp, fv);
+            drv->fixVariable(iv.path, static_cast<scalar>(v));
+            drv->suppressResultJson();
+            drv->setReportFile("integer_point_history.csv");
+            drv->run();
+        }
+        catch (const std::exception& e)
+        {
+            std::cout << "  [enumeration] " << iv.path << " = " << v
+                      << " FAILED (" << e.what() << ")\n";
+            drv.reset();
+        }
+        Row r{v, std::numeric_limits<scalar>::quiet_NaN(), false, false};
+        if (drv)
+        {
+            r.f = drv->solutionF();
+            r.conv = drv->solutionConverged();
+            r.feas = drv->solutionFeasible();
+        }
+        rows.push_back(r);
+        csv << v << "," << r.f << "," << (r.conv ? 1 : 0)
+            << "," << (r.feas ? 1 : 0) << "\n";
+        if (r.conv && r.feas)
+        {
+            const bool better = !best
+                || (objSense_ == Sense::Minimise ? r.f < best->solutionF()
+                                                 : r.f > best->solutionF());
+            if (better) { best = std::move(drv); bestV = v; }
+        }
+    }
+    csv.close();
+
+    std::cout << "\n  " << std::setw(10) << iv.path << "   objective"
+                 "   converged feasible\n";
+    for (const auto& r : rows)
+        std::cout << "  " << std::setw(10) << r.v << "   "
+                  << std::scientific << std::setprecision(5) << r.f
+                  << "   " << (r.conv ? "yes" : "NO ")
+                  << "        " << (r.feas ? "yes" : "NO")
+                  << (best && r.v == bestV ? "   <-- BEST" : "") << "\n";
+
+    if (!best)
+    {
+        std::cout << "\n  Integer enumeration: NO converged-feasible value --"
+                     " the table above is the honest answer.\n";
+        return 1;
+    }
+    std::cout << "\n  Best: " << iv.path << " = " << bestV
+              << "  (objective " << best->solutionF() << ")\n"
+              << "  Full table: integer_enumeration.csv\n";
+
+    if (best->hasFinalResult())
+    {
+        SimulationResult rep = best->finalResult();
+        auto& ek = rep.kpis["enumeration"];
+        ek["best_value"]  = static_cast<scalar>(bestV);
+        ek["values_total"] = static_cast<scalar>(rows.size());
+        std::size_t nOk = 0;
+        for (const auto& r : rows) if (r.conv && r.feas) ++nOk;
+        ek["values_converged_feasible"] = static_cast<scalar>(nOk);
+        setFinalResult(rep);
+        if (emitJson_) emitResultJson(std::cout, rep);
+    }
+    return 0;
 }
 
 } // namespace Choupo

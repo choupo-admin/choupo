@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5'-chloro-2'-hydroxyacetophenone  (C8H7ClO2, CAS 1450-74-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Chloro2Hydroxyacetophenone;
+formula     C8H7ClO2;
+CAS         1450-74-4;
+InChIKey    XTGCUDZCCIRWHL-UHFFFAOYSA-N;
+MW          170.592;      // g/mol [origin=calculated method=formula-sum]
+Tc          826.87;      // K   [origin=predictive method=joback]
+Pc          44.742;      // bar [origin=predictive method=joback]
+omega       0.7228;      // -   [origin=predictive method=lee-kesler]
+Tb          586.22;      // K   [origin=predictive method=joback]
+HvapTb      60485.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.66 0.75882 -0.00063362 2.1766e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACOH; count 1; } { group CH3CO; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group OH_phenol; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(5-chloranyl-2-oxidanyl-phenyl)ethanone" "1-(5-chloro-2-hydroxyphenyl)ethanone" "5-chloro-2-hydroxyacetophenone" "2-acetyl-4-chlorophenol" "1-(5-chloro-2-hydroxyphenyl)ethan-1-one" "acetophenone, 5'-chloro-2'-hydroxy-" "ethanone, 1-(5-chloro-2-hydroxyphenyl)-" "2'-hydroxy-5'-chloroacetophenone" "1-acetyl-5-chloro-2-hydroxybenzene" "5'-chloro-2'-hydroxy acetophenone" "2-hydroxy-5-chloro acetophenone" "ethanone,1-(5-chloro-2-hydroxyphenyl)-" );
+gibbsFormation
+{
+    dHf_298   -289020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     441.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-176210.0
+    phase     gas;
+}

@@ -1,0 +1,16 @@
+/*--- the isothermal flash.  The NRTL pair resolves from the sector's own
+  constant/binaryPairs by walk-up; ethanol-water comes from the standard library. */
+
+name        flash;
+type        isothermalFlash;
+
+operation
+{
+    T   355 K;
+    P   1.01325 bar;
+}
+
+thermo      { activityModel { model NRTL; } }
+
+inputs   ( reactorOut );
+outputs  ( liquid vapor );

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dodec-7-en-9-yn-1-ol  (C12H20O, CAS 58763-68-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dodec7En9Yn1Ol;
+formula     C12H20O;
+CAS         58763-68-1;
+InChIKey    HICLTGHACDQHFL-UHFFFAOYSA-N;
+MW          180.291;      // g/mol [origin=calculated method=formula-sum]
+Tc          759.61;      // K   [origin=predictive method=joback]
+Pc          23.428;      // bar [origin=predictive method=joback]
+omega       0.9236;      // -   [origin=predictive method=lee-kesler]
+Tb          579.50;      // K   [origin=predictive method=joback]
+HvapTb      61095.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.647 1.04802 -0.00065106 1.6778e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group CH=CH; count 1; } { group OH; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group dCH; count 2; } { group tC; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e)-dodec-7-en-9-ynol" "7-dodecen-9-yn-1-ol, (7e)-" );
+gibbsFormation
+{
+    dHf_298   -53720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     639.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=196360.0
+    phase     gas;
+}

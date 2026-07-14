@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopropane, 1,1-diethenyl-  (C7H10, CAS 17085-84-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopropane11Diethenyl;
+formula     C7H10;
+CAS         17085-84-6;
+InChIKey    UDKCHWVGPNQSQK-UHFFFAOYSA-N;
+MW          94.157;      // g/mol [origin=calculated method=formula-sum]
+Tc          555.03;      // K   [origin=predictive method=joback]
+Pc          37.592;      // bar [origin=predictive method=joback]
+omega       0.2329;      // -   [origin=predictive method=lee-kesler]
+Tb          360.10;      // K   [origin=predictive method=joback]
+HvapTb      28598.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-109.69 1.0716 -0.0011556 5.042e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group C; count 1; } { group CH2=CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 2; } { group dCH; count 2; } { group CH2_ring; count 2; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1-bis(ethenyl)cyclopropane" );
+gibbsFormation
+{
+    dHf_298   151090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     398.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=239000.0
+    phase     gas;
+}

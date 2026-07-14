@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-di(tert-amyl)phenoxyacetic acid  (C18H28O3, CAS 13402-96-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24DiTertAmylPhenoxyaceticAcid;
+formula     C18H28O3;
+CAS         13402-96-5;
+InChIKey    QXQMENSTZKYZCE-UHFFFAOYSA-N;
+MW          292.419;      // g/mol [origin=calculated method=formula-sum]
+Tc          1025.03;      // K   [origin=predictive method=joback]
+Pc          15.561;      // bar [origin=predictive method=joback]
+omega       0.9688;      // -   [origin=predictive method=lee-kesler]
+Tb          809.55;      // K   [origin=predictive method=joback]
+HvapTb      76244.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.627 1.75522 -0.00115772 2.957e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 2; } { group C; count 2; } { group ACH; count 3; } { group AC; count 3; } { group CH2O; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 3; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2,4-bis(2-methylbutan-2-yl)phenoxy]ethanoic acid" "2-(2,4-di-tert-pentylphenoxy)acetic acid" "[2,4-bis(2-methylbutan-2-yl)phenoxy]acetic acid" "(2,4-bis(1,1-dimethylpropyl)phenoxy)acetic acid" "2-[2,4-bis(1,1-dimethylpropyl)phenoxy]acetic acid" "acetic acid, (2,4-bis(1,1-dimethylpropyl)phenoxy)-" "acetic acid, [2,4-bis(1,1-dimethylpropyl)phenoxy]-" "acetic acid, 2-(2,4-bis(1,1-dimethylpropyl)phenoxy)-" "acetic acid, 2-[2,4-bis(1,1-dimethylpropyl)phenoxy]-" "2,4-di-tert-pentylphenoxy acetic acid" "(2,4-di-tert-pentylphenoxy)acetic acid" "p347" );
+gibbsFormation
+{
+    dHf_298   -701250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     725.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-249400.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(phenylthio)butane  (C10H14S, CAS 14905-79-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PhenylthioButane;
+formula     C10H14S;
+CAS         14905-79-4;
+InChIKey    YKLUJQMOFAXHHI-UHFFFAOYSA-N;
+MW          166.282;      // g/mol [origin=calculated method=formula-sum]
+Tc          755.25;      // K   [origin=predictive method=joback]
+Pc          30.123;      // bar [origin=predictive method=joback]
+omega       0.4232;      // -   [origin=predictive method=lee-kesler]
+Tb          523.42;      // K   [origin=predictive method=joback]
+HvapTb      46559.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.189 0.87523 -0.0005144 1.052e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CHS; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butan-2-ylsulfanylbenzene" "sulfide, sec-butyl phenyl" "benzene, [(1-methylpropyl)thio]-" "(butan-2-ylsulfanyl)benzene" "sec-butyl phenyl sulfide" "(sec-butylthio)benzene" "phenyl sec-butyl sulfide" "(2-methyl-1-thiabutyl)benzene" "2-methyl-1-(1-thiabutyl)benzene" );
+gibbsFormation
+{
+    dHf_298   23390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     490.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=176410.0
+    phase     gas;
+}

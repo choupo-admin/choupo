@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7-formylbenz[a]anthracene  (C19H12O, CAS 7505-62-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C19H12O (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        7FormylbenzAAnthracene;
+formula     C19H12O;
+CAS         7505-62-6;
+InChIKey    PNJAZYMJSFCLFD-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          256.304;      // g/mol [origin=calculated method=formula-sum]
+Tc          969.75;      // K   [origin=predictive method=joback]
+Pc          25.585;      // bar [origin=predictive method=joback]
+omega       0.6524;      // -   [origin=predictive method=lee-kesler]
+Tb          709.30;      // K   [origin=predictive method=joback]
+HvapTb      64697.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-119.22 1.5484 -0.00140304 5.057e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 11; } { group AC; count 7; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 11; } { group dC_ring; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzo[a]anthracene-7-carbaldehyde" "1,2-benzanthracene-10-aldehyde" "7-formylbenz(a)anthracene" "7-formylbenzo[a]anthracene" "benz(a)anthracene-7-carboxaldehyde" "benz[a]anthracene-7-carboxaldehyde" );
+gibbsFormation
+{
+    dHf_298   416290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     525.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=556530.0
+    phase     gas;
+}

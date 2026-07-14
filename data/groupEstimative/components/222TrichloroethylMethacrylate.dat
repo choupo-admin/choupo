@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,2-trichloroethyl methacrylate  (C6H7Cl3O2, CAS 50601-47-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        222TrichloroethylMethacrylate;
+formula     C6H7Cl3O2;
+CAS         50601-47-3;
+InChIKey    IUGNCEABJSRDPG-UHFFFAOYSA-N;
+MW          217.47;      // g/mol [origin=calculated method=formula-sum]
+Tc          714.22;      // K   [origin=predictive method=joback]
+Pc          29.730;      // bar [origin=predictive method=joback]
+omega       0.4754;      // -   [origin=predictive method=lee-kesler]
+Tb          500.72;      // K   [origin=predictive method=joback]
+HvapTb      47626.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (34.361 0.64512 -0.0004662 1.212e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2=C; count 1; } { group CCl3; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group Cl; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,2-tris(chloranyl)ethyl 2-methylprop-2-enoate" "trichloroethyl methacrylate" "2-propenoic acid, 2-methyl-, 2,2,2-trichloroethyl ester, homopolymer" "2,2,2-trichloroethyl 2-methylprop-2-enoate" "methacrylic acid 2,2,2-trichloroethyl ester" );
+gibbsFormation
+{
+    dHf_298   -424780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     493.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-264390.0
+    phase     gas;
+}

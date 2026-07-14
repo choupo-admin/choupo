@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (1s,5s)-6,6-dimethyl-2-methylidenebicyclo[3.1.1]heptan-3-ol  (C10H16O, CAS 547-61-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1s5s66Dimethyl2Methylidenebicyclo311Heptan3Ol;
+formula     C10H16O;
+CAS         547-61-5;
+InChIKey    LCYXQUJDODZYIJ-ZQTLJVIJSA-N;
+MW          152.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          723.34;      // K   [origin=predictive method=joback]
+Pc          30.762;      // bar [origin=predictive method=joback]
+omega       0.7396;      // -   [origin=predictive method=lee-kesler]
+Tb          528.39;      // K   [origin=predictive method=joback]
+HvapTb      52921.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-122.34 1.40144 -0.001274 4.988e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 3; } { group C; count 1; } { group CH2=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1s,5s)-6,6-dimethyl-4-methylidene-bicyclo[3.1.1]heptan-3-ol" "l-pinocarveol" "(1s-(1alpha,3alpha,5alpha))-6,6-dimethyl-2-methylenebicyclo(3.1.1)heptan-3-ol" "bicyclo(3.1.1)heptan-3-ol, 6,6-dimethyl-2-methylene-, (1s-(1alpha,3alpha,5alpha))-" );
+gibbsFormation
+{
+    dHf_298   -203720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     394.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=38070.0
+    phase     gas;
+}

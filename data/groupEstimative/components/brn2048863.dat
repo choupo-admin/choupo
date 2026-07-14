@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 2048863  (C10H15Cl3O2, CAS 142226-75-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn2048863;
+formula     C10H15Cl3O2;
+CAS         142226-75-3;
+InChIKey    PIUGWHOPZWEXQQ-UHFFFAOYSA-N;
+MW          273.578;      // g/mol [origin=calculated method=formula-sum]
+Tc          808.61;      // K   [origin=predictive method=joback]
+Pc          20.661;      // bar [origin=predictive method=joback]
+omega       0.6255;      // -   [origin=predictive method=lee-kesler]
+Tb          599.28;      // K   [origin=predictive method=joback]
+HvapTb      56770.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.852 1.07106 -0.0007479 1.983e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group CH=C; count 1; } { group CH2COO; count 1; } { group CHCl; count 1; } { group Cl_C=C_; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group dCH; count 1; } { group dC; count 1; } { group Cl; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 4,6,6-tris(chloranyl)-3,3-dimethyl-hex-5-enoate" "hexanoic acid,4,6,6-trichloro-3,3-dimethyl-, ethyl ester" "3,3-dimethyl-4,6,6-trichloro-5-hexenic acid ethyl ester" "5-hexenoic acid, 3,3-dimethyl-4,6,6-trichloro-, ethyl ester" "ethyl 4,6,6-trichloro-3,3-dimethylhex-5-enoate" );
+gibbsFormation
+{
+    dHf_298   -520830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     637.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-240770.0
+    phase     gas;
+}

@@ -87,7 +87,7 @@ int Mixer::solve(const DictPtr& dict,
 
     auto hInlet = [&](scalar T, scalar P, scalar vf, const sVector& z) -> scalar
     {
-        return useFormation ? thermo.H_stream(T, P, vf, z)
+        return useFormation ? thermo.H_stream_formation(T, P, vf, z)
                             : thermo.Hliquid(T, z, Tref);
     };
 
@@ -183,7 +183,7 @@ int Mixer::solve(const DictPtr& dict,
     {
         // Energy balance on the dominant phase --- smooth, monotonic, robust.
         auto f  = [&](scalar T) {
-            const scalar h = useFormation ? thermo.H_stream(T, P_out, vfFix, z_out)
+            const scalar h = useFormation ? thermo.H_stream_formation(T, P_out, vfFix, z_out)
                                           : thermo.Hliquid(T, z_out, Tref);
             return h - h_req;
         };

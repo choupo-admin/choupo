@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluoroeicosane  (C20F42, CAS 37589-57-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluoroeicosane;
+formula     C20F42;
+CAS         37589-57-4;
+InChIKey    WSXNCJNDCDTRSA-UHFFFAOYSA-N;
+MW          1038.136;      // g/mol [origin=calculated method=formula-sum]
+Tc          699.84;      // K   [origin=predictive method=joback]
+Pc          4.629;      // bar [origin=predictive method=joback]
+omega       0.1501;      // -   [origin=predictive method=lee-kesler]
+Tb          561.94;      // K   [origin=predictive method=joback]
+HvapTb      -120.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-248.93 4.9154 -0.005189 1.9e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CF3; count 2; } { group CF2; count 18; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 20; } { group F; count 42; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,20-dotetracontakis(fluoranyl)icosane" "eicosane, dotetracontafluoro-" "perfluoroeicosane 97%" "dotetracontafluoroicosane" "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,20-dotetracontafluoroeicosane" "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,20-dotetracontafluoroicosane" "eicosane,1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,20-dotetracontafluoro-" );
+gibbsFormation
+{
+    dHf_298   -8867750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1488.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-8007700.0
+    phase     gas;
+}

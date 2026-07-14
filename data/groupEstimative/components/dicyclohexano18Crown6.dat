@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dicyclohexano-18-crown-6  (C20H36O6, CAS 16069-36-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dicyclohexano18Crown6;
+formula     C20H36O6;
+CAS         16069-36-6;
+InChIKey    BBGKDYHZQOSNMU-UHFFFAOYSA-N;
+MW          372.502;      // g/mol [origin=calculated method=formula-sum]
+Tc          1177.02;      // K   [origin=predictive method=joback]
+Pc          17.217;      // bar [origin=predictive method=joback]
+omega       0.8114;      // -   [origin=predictive method=lee-kesler]
+Tb          907.04;      // K   [origin=predictive method=joback]
+HvapTb      89528.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-143.21 2.1488 -0.0007972 -6.4e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group CH; count 4; } { group FCH2O; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 16; } { group CH_ring; count 4; } { group O_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dicyclohexyl-18-crown-6" "cis-dicyclohexano-18-crown-6" "dicyclohexo-18-crown-6" "perhydrodibenzo-18-crown-6" "dicyclohexyl-18-crown-6 ether" "dch-18-crown-6" "dicyclohexyl 18-crown-6" "icosahydrodibenzo[b,k][1,4,7,10,13,16]hexaoxacyclooctadecine" "dicyclohexano-18-crown 6-ether" "dibenzo[b,k][1,4,7,10,13,16]hexaoxacyclooctadecin, eicosahydro-" "d2-06" "perhydro-dibenzo-18-crown-6" );
+gibbsFormation
+{
+    dHf_298   -1154790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     652.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-430360.0
+    phase     gas;
+}

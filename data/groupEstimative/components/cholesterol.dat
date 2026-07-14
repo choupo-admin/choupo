@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cholesterol  (C27H46O, CAS 57-88-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cholesterol;
+formula     C27H46O;
+CAS         57-88-5;
+InChIKey    HVYWMOMLDIMFJA-DPAQBDIFSA-N;
+MW          386.664;      // g/mol [origin=calculated method=formula-sum]
+Tc          1168.48;      // K   [origin=predictive method=joback]
+Pc          10.785;      // bar [origin=predictive method=joback]
+omega       0.9537;      // -   [origin=predictive method=lee-kesler]
+Tb          947.58;      // K   [origin=predictive method=joback]
+HvapTb      89836.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-306.387 3.5591 -0.00294984 1.0573e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 11; } { group CH; count 7; } { group C; count 2; } { group CH=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3S,8S,9S,10R,13R,14S,17R)-10,13-dimethyl-17-[(2R)-6-methylheptan-2-yl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1H-cyclopenta[a]phenanthren-3-ol" "(-)-Cholesterol" "(3β)-Cholest-5-en-3-ol" "3β-hydroxycholest-5-ene" "5:6-cholesten-3β-ol" "Cholest-5-en-3-ol (3β)-" "cholest-5-en-3β-ol" "cholesterin" "cholesteryl alcohol" "dythol" "lidinit" "lidinite" );
+gibbsFormation
+{
+    dHf_298   -487230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     946.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=203480.0
+    phase     gas;
+}

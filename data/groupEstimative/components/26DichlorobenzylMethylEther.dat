@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,6-dichlorobenzyl methyl ether  (C8H8Cl2O, CAS 33486-90-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        26DichlorobenzylMethylEther;
+formula     C8H8Cl2O;
+CAS         33486-90-7;
+InChIKey    QBKBHXIQLAMKOB-UHFFFAOYSA-N;
+MW          191.051;      // g/mol [origin=calculated method=formula-sum]
+Tc          739.70;      // K   [origin=predictive method=joback]
+Pc          31.704;      // bar [origin=predictive method=joback]
+omega       0.4830;      // -   [origin=predictive method=lee-kesler]
+Tb          516.56;      // K   [origin=predictive method=joback]
+HvapTb      48182.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (41.591 0.51632 -0.00023832 2.29e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACCH2; count 1; } { group CH3O; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-bis(chloranyl)-2-(methoxymethyl)benzene" "1,3-dichloro-2-(methoxymethyl)benzene" "benzene, 1,3-dichloro-2-(methoxymethyl)-" "qbkbhxiqlamkob-uhfffaoysa-" "2,6-dichloro-alpha-methoxytoluene" "(2,6-dichlorophenyl)methoxymethane" "1,3-dichloro-2-(methoxymethyl)-benzene" );
+gibbsFormation
+{
+    dHf_298   -158560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     426.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-19230.0
+    phase     gas;
+}

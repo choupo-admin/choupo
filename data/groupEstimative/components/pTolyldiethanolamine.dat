@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: p-tolyldiethanolamine  (C11H17NO2, CAS 3077-12-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pTolyldiethanolamine;
+formula     C11H17NO2;
+CAS         3077-12-1;
+InChIKey    JUVSRZCUMWZBFK-UHFFFAOYSA-N;
+MW          195.262;      // g/mol [origin=calculated method=formula-sum]
+Tc          861.36;      // K   [origin=predictive method=joback]
+Pc          31.704;      // bar [origin=predictive method=joback]
+omega       1.4951;      // -   [origin=predictive method=lee-kesler]
+Tb          679.74;      // K   [origin=predictive method=joback]
+HvapTb      78419.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.826 1.10232 -0.00071216 1.773e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group ACH; count 4; } { group AC; count 1; } { group ACCH3; count 1; } { group OH; count 2; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-hydroxyethyl-(4-methylphenyl)amino]ethanol" "n,n-bis(2-hydroxyethyl)-p-toluidine" "2,2'-(p-tolylimino)diethanol" "diethylol-p-toluidine" "n,n-diethanol-p-toluidine" "n-(4-methylphenyl)diethanolamine" "n-(p-tolyl)diethanolamine" "n,n-di(2-hydroxyethyl)-para-toluidine" "n-(4-methylphenyl)-n,n-diethanolamine" "2,2'-[(4-methylphenyl)imino]diethanol" "2,2'-(p-tolylazanediyl)diethanol" "n,n-(2-hydroxyethyl)-p-toluidine" );
+gibbsFormation
+{
+    dHf_298   -282240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     589.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-18340.0
+    phase     gas;
+}

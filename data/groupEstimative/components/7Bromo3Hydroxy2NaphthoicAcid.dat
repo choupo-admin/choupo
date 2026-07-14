@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7-bromo-3-hydroxy-2-naphthoic acid  (C11H7BrO3, CAS 1779-11-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        7Bromo3Hydroxy2NaphthoicAcid;
+formula     C11H7BrO3;
+CAS         1779-11-9;
+InChIKey    XZWXQSGFZHRDNB-UHFFFAOYSA-N;
+MW          267.078;      // g/mol [origin=calculated method=formula-sum]
+Tc          1062.06;      // K   [origin=predictive method=joback]
+Pc          49.524;      // bar [origin=predictive method=joback]
+omega       1.2530;      // -   [origin=predictive method=lee-kesler]
+Tb          799.19;      // K   [origin=predictive method=joback]
+HvapTb      81933.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-39.99 1.0908 -0.0010088 3.717e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 4; } { group ACOH; count 1; } { group COOH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 5; } { group dC_ring; count 5; } { group Br; count 1; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-bromanyl-3-oxidanyl-naphthalene-2-carboxylic acid" "7-bromo-3-hydroxy-naphthalene-2-carboxylic acid" "7-bromo-3-hydroxynaphthalene-2-carboxylic acid" "6-bromo-2-naphthol-3-carboxylic acid" "2-naphthalenecarboxylic acid, 7-bromo-3-hydroxy-" "7-bromo-3-hydroxy-naphthalene-2-carboxylicacid" "6-bromo-2-hydroxy naphthalene-3-carboxylic acid" "2-naphthoic acid, 7-bromo-3-hydroxy-" "7-bromo-3-hydroxy-2-naphthalenecarboxylic acid" "2-naphthalenecarboxylicacid, 7-bromo-3-hydroxy-" "2-naphthoicacid, 7-bromo-3-hydroxy- (6ci,7ci,8ci);7-bromo-3-hydroxy-2-naphthoic acid;" );
+gibbsFormation
+{
+    dHf_298   -366960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     487.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-242670.0
+    phase     gas;
+}

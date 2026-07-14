@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(2-hydroxyethylthio)methane  (C5H12O2S2, CAS 44860-68-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis2HydroxyethylthioMethane;
+formula     C5H12O2S2;
+CAS         44860-68-6;
+InChIKey    GAECBAMNQFGJIM-UHFFFAOYSA-N;
+MW          168.269;      // g/mol [origin=calculated method=formula-sum]
+Tc          825.71;      // K   [origin=predictive method=joback]
+Pc          45.654;      // bar [origin=predictive method=joback]
+omega       1.4527;      // -   [origin=predictive method=lee-kesler]
+Tb          635.92;      // K   [origin=predictive method=joback]
+HvapTb      73716.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (48.125 0.53558 -0.0002286 1.27e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group OH; count 2; } { group CH2S; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 5; } { group OH; count 2; } { group S; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-hydroxyethylsulfanylmethylsulfanyl)ethanol" "ethanol, 2,2'-[methylenebis(thio)]bis-" "3,5-dithia-1,7-heptanediol" "3,5-dithiaheptane-1,7-diol" "2,2'-(methylenebis(thio))bisethanol" "2,2'-[methylenebis(thio)]bisethanol" "3,7-diol" "ethanol, 2,2'-(methylenebis(thio))bis-" "ethanol,2'-[methylenebis(thio)]bis-" "2,2'-(methanediyldisulfanediyl)diethanol" "ethanol,2,2'-[methylenebis(thio)]bis-" );
+gibbsFormation
+{
+    dHf_298   -367250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     575.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-216180.0
+    phase     gas;
+}

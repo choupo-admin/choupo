@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: o-benzyl-l-serine  (C10H13NO3, CAS 4726-96-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oBenzylLSerine;
+formula     C10H13NO3;
+CAS         4726-96-9;
+InChIKey    IDGQXGPQOGUGIX-VIFPVBQESA-N;
+MW          195.218;      // g/mol [origin=calculated method=formula-sum]
+Tc          923.23;      // K   [origin=predictive method=joback]
+Pc          34.199;      // bar [origin=predictive method=joback]
+omega       1.0382;      // -   [origin=predictive method=lee-kesler]
+Tb          695.10;      // K   [origin=predictive method=joback]
+HvapTb      69957.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.198 0.9303 -0.0005596 1.17e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group ACCH2; count 1; } { group CH2O; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-2-azanyl-3-phenylmethoxy-propanoic acid" "h-ser(bzl)-oh" "(s)-2-amino-3-(benzyloxy)propanoic acid" "(s)-2-amino-3-benzyloxypropionic acid" "(2s)-2-amino-3-(benzyloxy)propanoic acid" "o-(phenylmethyl)-l-serine" "benzylserine" "z-o-benzyl-l-serine" "h-ser(bzl)-oh.hcl" "(2s)-2-amino-3-phenylmethoxypropanoic acid" "(s)-2- degrees +/->>u-3-uethno>>u+/-uea" "alanine,3-(benzyloxy)-, l- (8ci);3-(benzyloxy)-l-alanine;l-o-benzylserine;o-(phenylmethyl)-l-serine;o-benzylserine;h-ser(bzl)-oh;" );
+gibbsFormation
+{
+    dHf_298   -467180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     545.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-239170.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethanone,2,3,4,5,6,7,8-octahydro-8,8-dimethyl-2-naphthalenyl)-  (C14H22O, CAS 67746-27-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethanone2345678Octahydro88Dimethyl2Naphthalenyl;
+formula     C14H22O;
+CAS         67746-27-4;
+InChIKey    OUKQZIZZUWSLMY-UHFFFAOYSA-N;
+MW          206.329;      // g/mol [origin=calculated method=formula-sum]
+Tc          842.45;      // K   [origin=predictive method=joback]
+Pc          22.937;      // bar [origin=predictive method=joback]
+omega       0.5701;      // -   [origin=predictive method=lee-kesler]
+Tb          613.71;      // K   [origin=predictive method=joback]
+HvapTb      54483.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-137.06 1.68616 -0.0013597 4.7776e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 1; } { group C; count 1; } { group CH3CO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 6; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dC_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(8,8-dimethyl-2,3,4,5,6,7-hexahydro-1h-naphthalen-2-yl)ethanone" "1-(8,8-dimethyl-1,2,3,4,5,6,7,8-octahydronaphthalen-2-yl)ethanone" "ethanone, 1-(1,2,3,4,5,6,7,8-octahydro-8,8-dimethyl-2-naphthalenyl)-" "1-(1,2,3,4,5,6,7,8-octahydro-8,8-dimethyl-2-naphthyl)ethan-1-one" );
+gibbsFormation
+{
+    dHf_298   -273830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     647.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=16390.0
+    phase     gas;
+}

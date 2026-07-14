@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentacosane, 13-phenyl-  (C31H56, CAS 6006-90-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentacosane13Phenyl;
+formula     C31H56;
+CAS         6006-90-2;
+InChIKey    FARZSOUCOJBKMW-UHFFFAOYSA-N;
+MW          428.789;      // g/mol [origin=calculated method=formula-sum]
+Tc          1146.40;      // K   [origin=predictive method=joback]
+Pc          6.729;      // bar [origin=predictive method=joback]
+omega       0.5950;      // -   [origin=predictive method=lee-kesler]
+Tb          935.12;      // K   [origin=predictive method=joback]
+HvapTb      86488.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-60.878 2.87584 -0.001697 3.827e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 22; } { group ACH; count 5; } { group ACCH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 22; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentacosan-13-ylbenzene" "benzene, (1-dodecyltridecyl)-" "13-phenylpentacosane" );
+gibbsFormation
+{
+    dHf_298   -451920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1247.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=320110.0
+    phase     gas;
+}

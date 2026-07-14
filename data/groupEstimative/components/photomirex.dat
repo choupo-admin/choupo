@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: photomirex  (C10HCl11, CAS 39801-14-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        photomirex;
+formula     C10HCl11;
+CAS         39801-14-4;
+InChIKey    KFDNXHKRTQRVGV-UHFFFAOYSA-N;
+MW          511.068;      // g/mol [origin=calculated method=formula-sum]
+Tc          1160.51;      // K   [origin=predictive method=joback]
+Pc          30.190;      // bar [origin=predictive method=joback]
+omega       0.6031;      // -   [origin=predictive method=lee-kesler]
+Tb          831.29;      // K   [origin=predictive method=joback]
+HvapTb      72890.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-510.23 4.3257 -0.006594 3.3938e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group CCl2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:7
+    joback ( { group CH_ring; count 1; } { group C_ring; count 9; } { group Cl; count 11; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hydromirex" "mirex photoproduct" "mirex, photo-" "8-monohydro mirex" "1,2,3,4,5,5,6,7,9,10,10- undecachloropentacyclo(5.3.0.0.0.0)decane" "1,1a,2,2,3,3a,4,5,5,5a,5b-undecachlorooctahydro-1h-1,3,4-(methanetriyl)cyclobuta[cd]pentalene" "8-monohydromirex" "1,3,4-metheno-1h-cyclobuta(cd)pentalene, 1,1a,2,2,3,3a,4,5,5,5a,5-undecachlorooctahydro-" "1,2,3,4,5,5,6,7,9,10,10-undecachloropentacyclo(5.3.0.0(sup 2,6).0(sup 3,9).0(sup 4,8))decane" "8-hydromirex" "1,3,4-metheno-1h-cyclobuta(cd)pentalene, 1,1a,2,2,3,3a,4,5,5,5a,5b-undecachlorooctahydro-" "1,3,4-metheno-1h-cyclobuta[cd]pentalene, 1,1a,2,2,3,3a,4,5,5,5a,5b-undecachlorooctahydro-" );
+gibbsFormation
+{
+    dHf_298   7390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     776.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=178380.0
+    phase     gas;
+}

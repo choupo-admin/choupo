@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,6-dimethyl-2,5-octadiene  (C10H18, CAS 116668-48-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        26Dimethyl25Octadiene;
+formula     C10H18;
+CAS         116668-48-5;
+InChIKey    LQJJRPLOVQYMPJ-UHFFFAOYSA-N;
+MW          138.254;      // g/mol [origin=calculated method=formula-sum]
+Tc          621.93;      // K   [origin=predictive method=joback]
+Pc          23.474;      // bar [origin=predictive method=joback]
+omega       0.3773;      // -   [origin=predictive method=lee-kesler]
+Tb          436.48;      // K   [origin=predictive method=joback]
+HvapTb      37930.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-33.948 0.99368 -0.0006924 2.062e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group CH=C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group dCH; count 2; } { group dC; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6-dimethylocta-2,5-diene" "agn-pc-03mlsv" "(5e)-2,6-dimethylocta-2,5-diene" );
+gibbsFormation
+{
+    dHf_298   -34870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     524.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=176660.0
+    phase     gas;
+}

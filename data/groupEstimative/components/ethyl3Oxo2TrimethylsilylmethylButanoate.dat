@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 3-oxo-2-(trimethylsilylmethyl)butanoate  (C10H20O3Si, CAS 17906-77-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C10H20O3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        ethyl3Oxo2TrimethylsilylmethylButanoate;
+formula     C10H20O3Si;
+CAS         17906-77-3;
+InChIKey    GITWIISZAZCPJE-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          216.352;      // g/mol [origin=calculated method=formula-sum]
+Tc          728.75;      // K   [origin=predictive method=joback]
+Pc          20.254;      // bar [origin=predictive method=joback]
+omega       0.6315;      // -   [origin=predictive method=lee-kesler]
+Tb          541.45;      // K   [origin=predictive method=joback]
+HvapTb      51913.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (65.702 0.6708 4.7e-06 -1.7604e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 1; } { group CH3CO; count 1; } { group COO; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 2; } { group CH; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 3-oxidanylidene-2-(trimethylsilylmethyl)butanoate" "butanoic acid,3-oxo-2-[(trimethylsilyl)methyl]-, ethyl ester" "acetoaceticacid, 2-[(trimethylsilyl)methyl]-, ethyl ester (8ci); ethyl2-(trimethylsilylmethyl)acetoacetate" );
+gibbsFormation
+{
+    dHf_298   -796490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     740.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-513170.0
+    phase     gas;
+}

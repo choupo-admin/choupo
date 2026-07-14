@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-dimethylpentan-3-one  (C7H14O, CAS 564-04-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Dimethylpentan3One;
+formula     C7H14O;
+CAS         564-04-5;
+InChIKey    VLNUTKMHYLQCQB-UHFFFAOYSA-N;
+MW          114.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          598.77;      // K   [origin=predictive method=joback]
+Pc          30.592;      // bar [origin=predictive method=joback]
+omega       0.3774;      // -   [origin=predictive method=lee-kesler]
+Tb          410.40;      // K   [origin=predictive method=joback]
+HvapTb      36626.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.589 0.76668 -0.0005101 1.3496e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group C; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tert-butyl ethyl ketone" "3-pentanone, 2,2-dimethyl-" "2,2-dimethyl-3-pentanone" "ethyl tert-butyl ketone" "3-pentanone,2-dimethyl-" "2,2-dimethyl-3-oxopentane" "3-pentanone,2,2-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -309140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     416.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-118020.0
+    phase     gas;
+}

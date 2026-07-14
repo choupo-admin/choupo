@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  compare_vle_etoh_water / constant/thermoPackage
+
+  Ethanol + water T-x-y at 1 atm: model curves overlaid on measured VLE data.
+  The global activity model is ideal (Raoult) ON PURPOSE -- it is one of the
+  curves under comparison (the smooth lens with no azeotrope); the other
+  scans override it per op (NRTL, UNIFAC) via thermo {}.  Ideal gas is fine
+  for the vapour at 1 atm: this binary's non-ideality lives in the liquid.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water );
+
+activityModel    { model ideal; }      // global default; each scan overrides it
+equationOfState  { model idealGas; }

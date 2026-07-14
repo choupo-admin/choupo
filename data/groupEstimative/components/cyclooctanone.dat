@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclooctanone  (C8H14O, CAS 502-49-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclooctanone;
+formula     C8H14O;
+CAS         502-49-8;
+InChIKey    IIRFCWANHMSDCG-UHFFFAOYSA-N;
+MW          126.199;      // g/mol [origin=calculated method=formula-sum]
+Tc          722.01;      // K   [origin=predictive method=joback]
+Pc          36.159;      // bar [origin=predictive method=joback]
+omega       0.3379;      // -   [origin=predictive method=lee-kesler]
+Tb          483.22;      // K   [origin=predictive method=joback]
+HvapTb      38731.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-49.74 0.7249 -0.000211 -5.1e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 7; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclooctyloxy" "cyclooctan-1-one" "cyclooctanon" "oxocyclooctane" "m223" );
+gibbsFormation
+{
+    dHf_298   -283810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     440.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-98150.0
+    phase     gas;
+}

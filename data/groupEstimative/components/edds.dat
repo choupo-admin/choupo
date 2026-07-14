@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: edds  (C10H16N2O8, CAS 20846-91-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        edds;
+formula     C10H16N2O8;
+CAS         20846-91-7;
+InChIKey    VKZRWSNIWNFCIQ-UHFFFAOYSA-N;
+MW          292.244;      // g/mol [origin=calculated method=formula-sum]
+Tc          1358.83;      // K   [origin=predictive method=joback]
+Pc          31.562;      // bar [origin=predictive method=joback]
+omega       2.0146;      // -   [origin=predictive method=lee-kesler]
+Tb          1109.90;      // K   [origin=predictive method=joback]
+HvapTb      118606.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.414 1.3212 -0.0009142 2.398e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 2; } { group CH2NH; count 2; } { group COOH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group CH; count 2; } { group COOH; count 4; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[[1,4-bis(oxidanyl)-1,4-bis(oxidanylidene)butan-2-yl]amino]ethylamino]butanedioic acid" "edss" "n,n'-ethylenediaspartic acid" "l-aspartic acid, n,n'-1,2-ethanediylbis-" "l-ethylenediaminedisuccinic acid" "n,n'-ethylenedi-l-aspartic acid" "n,n'-ethylenediamine disuccinic acid" "ambotz20846-91-7" "aspartic acid, n,n'-ethylenedi-" "ethylenediamine-n,n'-disuccinic acid" "aspartic acid, n,n'-ethylenedi- (7ci)" "aspartic acid, n,n'-ethylenedi-, l,l-" );
+gibbsFormation
+{
+    dHf_298   -1554430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     820.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1168420.0
+    phase     gas;
+}

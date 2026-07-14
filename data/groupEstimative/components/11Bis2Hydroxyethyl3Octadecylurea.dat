@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1-bis(2-hydroxyethyl)-3-octadecylurea  (C23H48N2O3, CAS 36837-80-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Bis2Hydroxyethyl3Octadecylurea;
+formula     C23H48N2O3;
+CAS         36837-80-6;
+InChIKey    PWTLFNDBSYUVAY-UHFFFAOYSA-N;
+MW          400.648;      // g/mol [origin=calculated method=formula-sum]
+Tc          1298.19;      // K   [origin=predictive method=joback]
+Pc          9.964;      // bar [origin=predictive method=joback]
+omega       0.6441;      // -   [origin=predictive method=lee-kesler]
+Tb          1026.68;      // K   [origin=predictive method=joback]
+HvapTb      115375.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.979 2.42892 -0.0014307 3.2096e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 18; } { group OH; count 2; } { group CH2NH; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 21; } { group OH; count 2; } { group CdO; count 1; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1-bis(2-hydroxyethyl)-3-octadecyl-urea" "n,n-bis(2-hydroxyethyl)-n'-stearylurea" "urea, n,n-bis(2-hydroxyethyl)-n'-octadecyl-" "urea,n,n-bis(2-hydroxyethyl)-n'-octadecyl-" "1-(((bis(2-hydroxyethyl)amino)carbonyl)amino)octadecane" "n,n-bis(2-hydroxyethyl)-n'-stearylurea;n-stearyl-n',n'-bis(2-hydroxyethyl)urea" );
+gibbsFormation
+{
+    dHf_298   -814090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1237.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-59610.0
+    phase     gas;
+}

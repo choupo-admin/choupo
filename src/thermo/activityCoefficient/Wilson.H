@@ -73,13 +73,10 @@ namespace Choupo {
 class Wilson : public ActivityModel
 {
 public:
-    // Needs both the component-name map (to resolve `i`,`j`) and the
-    // pure-component liquid molar volumes (m³/mol).  The latter come
-    // from the ThermoPackage via a separate setter, since the factory
-    // signature is the standard one.
-    Wilson(const DictPtr& dict, const std::vector<std::string>& names);
-
-    void setMolarVolumes(const sVector& Vliq);
+    // Takes the resolved components: the name map (to resolve `i`,`j`) AND the
+    // pure-component liquid molar volumes (m³/mol) come from them, set in the
+    // constructor -- no post-construction setMolarVolumes dance.
+    Wilson(const DictPtr& dict, const std::vector<Component>& comps);
 
     std::size_t n() const override { return n_; }
     sVector gamma(scalar T_K, const sVector& x) const override;

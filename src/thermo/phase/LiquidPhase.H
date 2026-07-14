@@ -70,6 +70,10 @@ public:
 
     const ActivityModel& activity() const { return *activity_; }
 
+    // Borrowed-pointer re-bind after the owning ThermoPackage is moved.
+    void rebindComponents(const std::vector<Component>* comps) override
+    { components_ = comps; }
+
 private:
     std::string name_;
     inline static const std::string typeName_ = "liquid";

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzoylsarcosine  (C10H11NO3, CAS 2568-34-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzoylsarcosine;
+formula     C10H11NO3;
+CAS         2568-34-5;
+InChIKey    PKCSYDDSNIJRIX-UHFFFAOYSA-N;
+MW          193.202;      // g/mol [origin=calculated method=formula-sum]
+Tc          890.27;      // K   [origin=predictive method=joback]
+Pc          34.725;      // bar [origin=predictive method=joback]
+omega       1.0024;      // -   [origin=predictive method=lee-kesler]
+Tb          666.90;      // K   [origin=predictive method=joback]
+HvapTb      66083.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.839 1.02162 -0.0007179 1.8966e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 1; } { group COOH; count 1; } { group CONCH3CH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[methyl(phenylcarbonyl)amino]ethanoic acid" "n-methylhippuric acid" "n-benzoyl-n-methylglycine" "n-benzoylsarcosine" "glycine, n-benzoyl-n-methyl-" "sarcosine, n-benzoyl-" "[benzoyl(methyl)amino]acetic acid" "n-methyl hippuric acid" "glycine,n-benzoyl-n-methyl-" "hippuric acid, .beta.-methyl-" "2-(n-methylbenzamido)acetic acid" "(benzoyl-methyl-amino)-acetic acid" );
+gibbsFormation
+{
+    dHf_298   -408520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     535.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-216320.0
+    phase     gas;
+}

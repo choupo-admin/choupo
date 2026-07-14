@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lauryl propionate  (C15H30O2, CAS 6221-93-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        laurylPropionate;
+formula     C15H30O2;
+CAS         6221-93-8;
+InChIKey    FVGJPCFYGPKBKJ-UHFFFAOYSA-N;
+MW          242.403;      // g/mol [origin=calculated method=formula-sum]
+Tc          766.00;      // K   [origin=predictive method=joback]
+Pc          14.208;      // bar [origin=predictive method=joback]
+omega       0.8378;      // -   [origin=predictive method=lee-kesler]
+Tb          601.02;      // K   [origin=predictive method=joback]
+HvapTb      56391.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.662 1.37404 -0.0006976 1.102e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 11; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 12; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodecyl propanoate" "propanoic acid, dodecyl ester" "n-dodecyl propanoate" "propionic acid, laurinyl ester" "propanoic acid dodecyl ester" "dodecyl propionate" "propionic acid, dodecyl ester (8ci)" );
+gibbsFormation
+{
+    dHf_298   -670210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     791.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-234950.0
+    phase     gas;
+}

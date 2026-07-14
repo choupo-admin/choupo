@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-[4-[3-(3,5-ditert-butyl-4-hydroxyphenyl)propanoyloxy]-2,2,6,6-tetramethylpiperidin-1-yl]ethyl 3-(3,5-ditert-butyl-4-hydroxyphenyl)propanoate  (C45H71NO6, CAS 73754-27-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24335DitertButyl4HydroxyphenylPropanoyloxy2266Tetramethylpip;
+formula     C45H71NO6;
+CAS         73754-27-5;
+InChIKey    SKMNWICOBCDSSQ-UHFFFAOYSA-N;
+MW          722.064;      // g/mol [origin=calculated method=formula-sum]
+Tc          2079.07;      // K   [origin=predictive method=joback]
+Pc          5.285;      // bar [origin=predictive method=joback]
+omega       -0.0192;      // -   [origin=predictive method=lee-kesler]
+Tb          1586.10;      // K   [origin=predictive method=joback]
+HvapTb      158002.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-272.824 5.37252 -0.00442356 1.5318e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 16; } { group CH2; count 3; } { group CH; count 1; } { group C; count 6; } { group ACH; count 4; } { group AC; count 4; } { group ACCH2; count 2; } { group ACOH; count 2; } { group CH2COO; count 2; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 16; } { group CH2; count 6; } { group C; count 4; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 8; } { group OH_phenol; count 2; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[4-[3-(3,5-ditert-butyl-4-oxidanyl-phenyl)propanoyloxy]-2,2,6,6-tetramethyl-piperidin-1-yl]ethyl 3-(3,5-ditert-butyl-4-oxidanyl-phenyl)propanoate" "benzenepropanoic acid, 3,5-bis(1,1-dimethylethyl)-4-hydroxy-, 1-(2-(3-(3,5-bis(1,1-dimethylethyl)-4-hydroxyphenyl)-1-oxopropoxy)ethyl)-2,2,6,6-tetramethyl-4-piperidinyl ester" "benzenepropanoic acid, 3,5-bis(1,1-dimethylethyl)-4-hydroxy-, 1-[2-[3-[3,5-bis(1,1-dimethylethyl)-4-hydroxyphenyl]-1-oxopropoxy]ethyl]-2,2,6,6-tetramethyl-4-piperidinyl ester" );
+gibbsFormation
+{
+    dHf_298   -1451320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1691.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-283370.0
+    phase     gas;
+}

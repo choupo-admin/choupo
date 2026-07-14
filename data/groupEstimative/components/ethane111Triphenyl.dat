@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethane, 1,1,1-triphenyl-  (C20H18, CAS 5271-39-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethane111Triphenyl;
+formula     C20H18;
+CAS         5271-39-6;
+InChIKey    QIDUHGHFWAMMPV-UHFFFAOYSA-N;
+MW          258.364;      // g/mol [origin=calculated method=formula-sum]
+Tc          1006.45;      // K   [origin=predictive method=joback]
+Pc          22.125;      // bar [origin=predictive method=joback]
+omega       0.5585;      // -   [origin=predictive method=lee-kesler]
+Tb          734.01;      // K   [origin=predictive method=joback]
+HvapTb      65646.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-141.48 1.79292 -0.0013296 3.752e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group C; count 1; } { group ACH; count 15; } { group AC; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 1; } { group dCH_ring; count 15; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1-diphenylethylbenzene" "1,1,1-triphenylethane" "benzene, 1,1',1''-ethylidynetris-" "1,1-triphenylethane" "ethane,1,1-triphenyl-" "agn-pc-00fydv" "(1,1-diphenylethyl)benzene" "benzene,1',1''-ethylidynetris-" "ethane, 1,1,1-triphenyl- (8ci)" "benzene, 1,1',1''-ethanetriyltris-" "triphenylmethyl-containing compound, 16" "benzene, 1,1',1''-ethylidynetris- (9ci)" );
+gibbsFormation
+{
+    dHf_298   244710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     576.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=457590.0
+    phase     gas;
+}

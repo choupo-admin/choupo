@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tridecanedioic acid  (C13H24O4, CAS 505-52-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tridecanedioicAcid;
+formula     C13H24O4;
+CAS         505-52-2;
+InChIKey    DXNCZXXFRKPEPY-UHFFFAOYSA-N;
+MW          244.331;      // g/mol [origin=calculated method=formula-sum]
+Tc          981.08;      // K   [origin=predictive method=joback]
+Pc          19.102;      // bar [origin=predictive method=joback]
+omega       1.3244;      // -   [origin=predictive method=lee-kesler]
+Tb          788.06;      // K   [origin=predictive method=joback]
+HvapTb      78860.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.271 1.3404 -0.0008286 1.995e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 11; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 11; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "brassylic acid" "brassilic acid" "1,11-undecanedicarboxylic acid" "1,13-tridecanedioic acid" "brassylate" "1,11-undecanedicarboxylicacid" "undecane-1,11-dicarboxylic acid" "tridecanedioate" "brassilate" "1,13-tridecanedioate" "1,11-undecanedicarboxylate" "undecane-1,11-dicarboxylate" );
+gibbsFormation
+{
+    dHf_298   -1012190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     768.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-629240.0
+    phase     gas;
+}

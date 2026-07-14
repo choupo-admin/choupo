@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chitosamine  (C6H13NO5, CAS 2351-15-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chitosamine;
+formula     C6H13NO5;
+CAS         2351-15-7;
+InChIKey    MSWZFWKMSRAUBD-GQNBSWLHSA-N;
+MW          179.172;      // g/mol [origin=calculated method=formula-sum]
+Tc          993.03;      // K   [origin=predictive method=joback]
+Pc          58.719;      // bar [origin=predictive method=joback]
+omega       2.4487;      // -   [origin=predictive method=lee-kesler]
+Tb          805.95;      // K   [origin=predictive method=joback]
+HvapTb      110010.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.561 0.7848 -0.0003131 -1.5e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 3; } { group OH; count 4; } { group CH-O; count 1; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH_ring; count 5; } { group OH; count 4; } { group O_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s,5r)-3-azanyl-6-(hydroxymethyl)oxane-2,4,5-triol" "glucosamine" "d-glucosamine" "2-amino-2-deoxyglucose" "glucosaminum [inn-latin]" "2-amino-2-deoxy-d-glucose" "glucosamina" "glucosaminum" "viartril-s" "d-glucose, 2-amino-2-deoxy-" "galactosamine" "glucosamine [usan:inn]" );
+gibbsFormation
+{
+    dHf_298   -901340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     393.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-573700.0
+    phase     gas;
+}

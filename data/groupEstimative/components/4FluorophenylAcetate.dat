@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-fluorophenyl acetate  (C8H7FO2, CAS 405-51-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4FluorophenylAcetate;
+formula     C8H7FO2;
+CAS         405-51-6;
+InChIKey    ZNOREXRHKZXVPC-UHFFFAOYSA-N;
+MW          154.14;      // g/mol [origin=calculated method=formula-sum]
+Tc          678.01;      // K   [origin=predictive method=joback]
+Pc          34.199;      // bar [origin=predictive method=joback]
+omega       0.4968;      // -   [origin=predictive method=lee-kesler]
+Tb          471.79;      // K   [origin=predictive method=joback]
+HvapTb      42930.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.51 0.58242 -0.00029736 3.31e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group CH3COO; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4-fluorophenyl) ethanoate" "1-acetoxy-4-fluorobenzene" "p-fluorophenyl acetate" "acetic acid 4-fluorophenyl ester" "(4-fluorophenyl) acetate" "phenol,4-fluoro-,acetate" "phenol, 4-fluoro-, acetate" "znorexrhkzxvpc-uhfffaoysa-" "1-acetoxy-4-fluorobenzene; acetic acid 4-fluorophenyl ester" "phenol,4-fluoro-, acetate (9ci);phenol, p-fluoro-, acetate (6ci,7ci,8ci);p-fluorophenyl acetate;" );
+gibbsFormation
+{
+    dHf_298   -496780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     438.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-385920.0
+    phase     gas;
+}

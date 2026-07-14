@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propenoic acid, 2-methyl-, 2,4,6-trichlorophenyl ester  (C10H7Cl3O2, CAS 18967-27-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropenoicAcid2Methyl246TrichlorophenylEster;
+formula     C10H7Cl3O2;
+CAS         18967-27-6;
+InChIKey    DGZZQOZXBPFEIY-UHFFFAOYSA-N;
+MW          265.514;      // g/mol [origin=calculated method=formula-sum]
+Tc          871.03;      // K   [origin=predictive method=joback]
+Pc          26.272;      // bar [origin=predictive method=joback]
+omega       0.6662;      // -   [origin=predictive method=lee-kesler]
+Tb          637.09;      // K   [origin=predictive method=joback]
+HvapTb      62088.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (64.19 0.64192 -0.00034208 4.77e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2=C; count 1; } { group ACH; count 2; } { group AC; count 1; } { group ACCl; count 3; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2,4,6-tris(chloranyl)phenyl] 2-methylprop-2-enoate" "methacrylic acid, 2,4,6-trichlorophenyl ester" "agn-pc-0d8zr5" "(2,4,6-trichlorophenyl) 2-methylprop-2-enoate" );
+gibbsFormation
+{
+    dHf_298   -296470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     563.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-150030.0
+    phase     gas;
+}

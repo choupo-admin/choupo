@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octadecyl formate  (C19H38O2, CAS 5451-75-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C19H38O2 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        octadecylFormate;
+formula     C19H38O2;
+CAS         5451-75-2;
+InChIKey    NOPZJEGEHWRZSE-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          298.511;      // g/mol [origin=calculated method=formula-sum]
+Tc          768.06;      // K   [origin=predictive method=joback]
+Pc          10.892;      // bar [origin=predictive method=joback]
+omega       0.7611;      // -   [origin=predictive method=lee-kesler]
+Tb          610.74;      // K   [origin=predictive method=joback]
+HvapTb      55515.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-33.883 1.81692 -0.0011628 3.116e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 17; } { group HCOO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 17; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "octadecyl methanoate" "1-octadecanol, formate" );
+gibbsFormation
+{
+    dHf_298   -359040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1079.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=153060.0
+    phase     gas;
+}

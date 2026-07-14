@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-tert-amylphenol  (C11H16O, CAS 3279-27-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2TertAmylphenol;
+formula     C11H16O;
+CAS         3279-27-4;
+InChIKey    BGRKGHSKCFAPCL-UHFFFAOYSA-N;
+MW          164.248;      // g/mol [origin=calculated method=formula-sum]
+Tc          783.91;      // K   [origin=predictive method=joback]
+Pc          31.740;      // bar [origin=predictive method=joback]
+omega       0.5615;      // -   [origin=predictive method=lee-kesler]
+Tb          555.35;      // K   [origin=predictive method=joback]
+HvapTb      54074.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-74.409 1.25036 -0.00103396 3.502e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-methylbutan-2-yl)phenol" "2-(1,1-dimethylpropyl)phenol" "o-tert-amylphenol" "phenol, 2-(1,1-dimethylpropyl)-" "2-tert-pentylphenol" "phenol,2-(1,1-dimethylpropyl)-" "phenol,o-(1,1-dimethylpropyl)- (5ci);phenol, o-tert-pentyl- (6ci,7ci,8ci);2-(1,1-dimethylpropyl)phenol;2-tert-amylphenol;2-tert-pentylphenol;o-tert-amylphenol;o-tert-pentylphenol;" );
+gibbsFormation
+{
+    dHf_298   -219900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     465.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=2370.0
+    phase     gas;
+}

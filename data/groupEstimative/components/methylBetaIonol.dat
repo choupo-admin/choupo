@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl-beta-ionol  (C14H24O, CAS 51595-91-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylBetaIonol;
+formula     C14H24O;
+CAS         51595-91-6;
+InChIKey    RGCSRKQFSSXYRE-UHFFFAOYSA-N;
+MW          208.345;      // g/mol [origin=calculated method=formula-sum]
+Tc          845.94;      // K   [origin=predictive method=joback]
+Pc          21.653;      // bar [origin=predictive method=joback]
+omega       0.8638;      // -   [origin=predictive method=lee-kesler]
+Tb          644.61;      // K   [origin=predictive method=joback]
+HvapTb      63981.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-99.32 1.6327 -0.0013243 4.759e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group CH=C; count 1; } { group OH; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dC_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methyl-4-(2,6,6-trimethylcyclohexen-1-yl)but-3-en-2-ol" "3-methyl-4-(2,6,6-trimethyl-1-cyclohexen-1-yl)-3-buten-2-ol" "3-buten-2-ol, 3-methyl-4-(2,6,6-trimethyl-1-cyclohexen-1-yl)-" "iso-methyl ionol alpha" );
+gibbsFormation
+{
+    dHf_298   -277970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     721.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=29070.0
+    phase     gas;
+}

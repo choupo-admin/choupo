@@ -1,0 +1,75 @@
+/*---------------------------------------------------------------------------*\
+  still05_rectifier_constant_xD -- the SECOND classical reflux policy
+  (design forum #85-3/4): hold the distillate composition constant by
+  RAISING the reflux as the pot strips, and STOP when the declared ceiling
+  can no longer reach the target.
+
+  Same pot and column as still04 (1 mol equimolar benzene/toluene, V =
+  1.5e-6 kmol/s, 3 ideal stages + total condenser), but instead of a fixed
+  R the policy solves R(t) each step -- a BRACKETED solve over [0,
+  refluxMax] on a feasibility map, never a bare Newton -- so that
+  x_D[benzene] = 0.93 exactly.  As benzene depletes, R climbs (~2 at the
+  start); when even refluxMax = 8 cannot reach the target the run
+  announces `onRefluxLimit stopDistillation`: D = 0, the pot stops losing
+  mass, and the campaign idles VISIBLY to endTime with
+  still.refluxLimitReached = 1 in the trajectory -- never a magic
+  termination.
+
+  What to watch (trajectory.csv):
+    * still.xD_benzene pinned at 0.9300 while R climbs -- the mirror image
+      of still04, which held R and let purity drift;
+    * still.R rising 2.0 -> 8 (the ceiling), then the limit event;
+    * the receiver's accumulated composition ~0.93 (the whole cut is
+      on-spec -- THE selling point of this policy);
+    * pot inventory constant after t_refluxLimit.
+
+  Declared refusals (each with its own diagnostic, try them):
+    * x_D_target 0.5 -> BELOW the R=0 floor (even zero reflux over-purifies);
+    * x_D_target 0.995 with refluxMax 5 -> UNREACHABLE from the charge;
+    * ethanol/water NRTL with x_D_target 0.95 -> the 0.894 azeotrope caps
+      the cascade at ANY reflux (the barrier is real VLE, not a message).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        still;
+        type        batchStill;
+        model       rectifier;
+        dischargeTo  receiver;
+
+        initial
+        {
+            T            365.0 K;
+            P            1.013 bar;
+            V            1.0e-4;
+            totalMoles   1.0e-3;
+            molarComposition  { benzene 0.5;  toluene 0.5; }
+        }
+
+        operation
+        {
+            P             1.013 bar;
+            F_vap         1.5e-6;          // boilup V, kmol/s
+            nStages       3;
+            refluxPolicy  constantComposition;
+            lightKey      benzene;
+            x_D_target    0.93;
+            refluxMax     8;
+            onRefluxLimit stopDistillation;
+        }
+    }
+
+    {
+        name        receiver;
+        type        batchAccumulator;
+
+        initial
+        {
+            T            350.0 K;
+            P            1.013 bar;
+            V            1.0e-4;
+            totalMoles   0.0;
+        }
+    }
+);

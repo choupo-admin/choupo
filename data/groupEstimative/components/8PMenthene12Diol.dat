@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-p-menthene-1,2-diol  (C10H18O2, CAS 1946-00-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8PMenthene12Diol;
+formula     C10H18O2;
+CAS         1946-00-5;
+InChIKey    WKZWTZTZWGWEGE-UHFFFAOYSA-N;
+MW          170.252;      // g/mol [origin=calculated method=formula-sum]
+Tc          808.67;      // K   [origin=predictive method=joback]
+Pc          32.173;      // bar [origin=predictive method=joback]
+omega       1.1703;      // -   [origin=predictive method=lee-kesler]
+Tb          619.77;      // K   [origin=predictive method=joback]
+HvapTb      69282.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-102.02 1.36274 -0.001109 3.978e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 2; } { group C; count 1; } { group CH2=C; count 1; } { group OH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methyl-4-prop-1-en-2-yl-cyclohexane-1,2-diol" "p-menth-8-ene-1,2-diol" "1,2-cyclohexanediol, 1-methyl-4-(1-methylethenyl)-" "p-menth-8(9)-ene-1,2-diol" "1-methyl-4-(1-methylvinyl)cyclohexane-1,2-diol" "1-methyl-4-(1-methylethenyl)-1,2-cyclohexanediol" "1-methyl-4-(prop-1-en-2-yl)cyclohexane-1,2-diol" "menth-8-ene-1,2-diol" "4-isopropenyl-1-methyl-1,2-cyclohexanediol" "1-methyl-4-prop-1-en-2-ylcyclohexane-1,2-diol" );
+gibbsFormation
+{
+    dHf_298   -409670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     592.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-157490.0
+    phase     gas;
+}

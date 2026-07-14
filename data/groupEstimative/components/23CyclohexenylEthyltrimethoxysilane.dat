@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(3-cyclohexenyl)ethyltrimethoxysilane  (C11H22O3Si, CAS 67592-36-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C11H22O3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        23CyclohexenylEthyltrimethoxysilane;
+formula     C11H22O3Si;
+CAS         67592-36-3;
+InChIKey    LJNFZEBTNPLCMG-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          230.379;      // g/mol [origin=calculated method=formula-sum]
+Tc          737.15;      // K   [origin=predictive method=joback]
+Pc          20.586;      // bar [origin=predictive method=joback]
+omega       0.5331;      // -   [origin=predictive method=lee-kesler]
+Tb          538.65;      // K   [origin=predictive method=joback]
+HvapTb      48325.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (52.382 0.71916 0.00010492 -2.481e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH; count 1; } { group CH=CH; count 1; } { group CH3O; count 3; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-cyclohex-3-en-1-ylethyl(trimethoxy)silane" "silane, (2-(3-cyclohexen-1-yl)ethyl)trimethoxy-" "silane, [2-(3-cyclohexen-1-yl)ethyl]trimethoxy-" "(2-(3-cyclohexenyl)ethyl)trimethoxysilane" "(2-(3-cyclohexen-1-yl)ethyl)trimethoxysilane" "2-(1-cyclohex-3-enyl)ethyl-trimethoxy-silane;(2-(3-cyclohexen-1-yl)ethyl)trimethoxysilane;(2-(3-cyclohexenyl)ethyl)trimethoxysilane;silane, (2-(3-cyclohexen-1-yl)ethyl)trimethoxy-;cyclohexene, 4-[2-(trimethoxysilyl)ethyl]-;" );
+gibbsFormation
+{
+    dHf_298   -666550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     676.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-323610.0
+    phase     gas;
+}

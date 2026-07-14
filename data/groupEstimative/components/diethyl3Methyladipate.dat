@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethyl 3-methyladipate  (C11H20O4, CAS 55877-01-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diethyl3Methyladipate;
+formula     C11H20O4;
+CAS         55877-01-5;
+InChIKey    FDSUGAPGCDNQAR-UHFFFAOYSA-N;
+MW          216.277;      // g/mol [origin=calculated method=formula-sum]
+Tc          744.00;      // K   [origin=predictive method=joback]
+Pc          19.648;      // bar [origin=predictive method=joback]
+omega       0.8076;      // -   [origin=predictive method=lee-kesler]
+Tb          567.28;      // K   [origin=predictive method=joback]
+HvapTb      54506.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (42.025 0.94516 -0.0003886 5e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "diethyl 3-methylhexanedioate" "hexanedioic acid, 3-methyl-, diethyl ester" );
+gibbsFormation
+{
+    dHf_298   -910210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     677.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-581440.0
+    phase     gas;
+}

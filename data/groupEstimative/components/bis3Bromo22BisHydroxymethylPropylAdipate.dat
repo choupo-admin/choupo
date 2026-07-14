@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis[3-bromo-2,2-bis(hydroxymethyl)propyl] adipate  (C16H28Br2O8, CAS 70776-31-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis3Bromo22BisHydroxymethylPropylAdipate;
+formula     C16H28Br2O8;
+CAS         70776-31-7;
+InChIKey    YWPGGFNXFNQBEJ-UHFFFAOYSA-N;
+MW          508.2;      // g/mol [origin=calculated method=formula-sum]
+Tc          1498.00;      // K   [origin=predictive method=joback]
+Pc          20.661;      // bar [origin=predictive method=joback]
+omega       1.1228;      // -   [origin=predictive method=lee-kesler]
+Tb          1176.70;      // K   [origin=predictive method=joback]
+HvapTb      143018.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (27.762 1.8782 -0.0012654 3.162e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group C; count 2; } { group OH; count 4; } { group CH2COO; count 2; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 12; } { group C; count 2; } { group Br; count 2; } { group OH; count 4; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis[2-(bromomethyl)-2-(hydroxymethyl)-3-oxidanyl-propyl] hexanedioate" "hexanedioic acid bis[3-bromo-2,2-bis(hydroxymethyl)propyl] ester" "hexanedioic acid, bis(3-bromo-2,2-bis(hydroxymethyl)propyl) ester" "hexanedioic acid, bis[3-bromo-2,2-bis(hydroxymethyl)propyl] ester" "hexanedioic acid, 1,6-bis(3-bromo-2,2-bis(hydroxymethyl)propyl) ester" "hexanedioic acid, 1,6-bis[3-bromo-2,2-bis(hydroxymethyl)propyl] ester" "hexanedioic acid, bis(2,2-di(hydroxymethyl)-3-bromopropyl) ester" "bis[3-bromo-2,2-bis(hydroxymethyl)propyl] hexanedioate" "bis[2-(bromomethyl)-3-hydroxy-2-(hydroxymethyl)propyl] hexanedioate" );
+gibbsFormation
+{
+    dHf_298   -1581890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1109.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1049860.0
+    phase     gas;
+}

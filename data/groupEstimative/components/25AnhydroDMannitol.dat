@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,5-anhydro-d-mannitol  (C6H12O5, CAS 41107-82-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        25AnhydroDMannitol;
+formula     C6H12O5;
+CAS         41107-82-8;
+InChIKey    MCHWWJLLPNDHGL-UHFFFAOYSA-N;
+MW          164.157;      // g/mol [origin=calculated method=formula-sum]
+Tc          907.34;      // K   [origin=predictive method=joback]
+Pc          54.546;      // bar [origin=predictive method=joback]
+omega       2.3166;      // -   [origin=predictive method=lee-kesler]
+Tb          733.82;      // K   [origin=predictive method=joback]
+HvapTb      99506.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.748 0.759 -0.0003715 4.56e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 3; } { group OH; count 4; } { group CH-O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH_ring; count 4; } { group OH; count 4; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,5-bis(hydroxymethyl)oxolane-3,4-diol" "2,5-bis(hydroxymethyl)tetrahydrofuran-3,4-diol(non-preferred name)" "d-mannitol,5-anhydro-" "2,5-anhydro-l-glucitol" "agn-pc-00h0xb" "(2s,3s,4s,5s)-2,5-bis(hydroxymethyl)oxolane-3,4-diol" );
+gibbsFormation
+{
+    dHf_298   -908630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     364.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-620340.0
+    phase     gas;
+}

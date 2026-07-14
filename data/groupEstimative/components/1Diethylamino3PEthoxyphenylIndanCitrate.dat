@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-diethylamino-3-(p-ethoxyphenyl)indan citrate  (C27H35NO8, CAS 101692-44-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Diethylamino3PEthoxyphenylIndanCitrate;
+formula     C27H35NO8;
+CAS         101692-44-8;
+InChIKey    BGMSIQVBWBKDKM-UHFFFAOYSA-N;
+MW          501.576;      // g/mol [origin=calculated method=formula-sum]
+Tc          1828.15;      // K   [origin=predictive method=joback]
+Pc          12.664;      // bar [origin=predictive method=joback]
+omega       0.8177;      // -   [origin=predictive method=lee-kesler]
+Tb          1444.49;      // K   [origin=predictive method=joback]
+HvapTb      152798.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-54.925 2.58316 -0.00154492 3.135e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group C; count 1; } { group ACH; count 8; } { group AC; count 2; } { group ACCH; count 2; } { group OH; count 1; } { group CH2O; count 1; } { group CH2N; count 1; } { group COOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group C; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group OH; count 1; } { group O; count 1; } { group COOH; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(4-ethoxyphenyl)-n,n-diethyl-2,3-dihydro-1h-inden-1-amine;2-oxidanylpropane-1,2,3-tricarboxylic acid" "indan, 1-(diethylamino)-3-(p-ethoxyphenyl)-, citrate" "1-p-aethoxyphenyl-3-diaethylamino-indan citrat [german]" "1-p-aethoxyphenyl-3-diaethylamino-indan citrat" "3-(4-ethoxyphenyl)-n,n-diethyl-2,3-dihydro-1h-inden-1-amine; 2-hydroxypropane-1,2,3-tricarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -1486130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1156.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-829630.0
+    phase     gas;
+}

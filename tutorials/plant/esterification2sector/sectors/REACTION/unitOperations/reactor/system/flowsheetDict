@@ -1,0 +1,15 @@
+/*--- the esterification CSTR.  Kinetics (esterification_etac) resolve from
+  sectors/REACTION/constant/reactions by the walk-up cascade. */
+
+name        reactor;
+type        cstr;
+
+operation
+{
+    V_R   0.5;          // m^3 (SI; a bare number is canonical SI)
+}
+
+reactions   ( esterification_etac );
+
+inputs   ( Feed );
+outputs  ( reactorOut );

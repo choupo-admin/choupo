@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-butenyl, 2-methyl-  (C5H9, CAS 52898-42-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        3Butenyl2Methyl;
+formula     C5H9;
+CAS         52898-42-7;
+InChIKey    VLBIFNCUKNKYMD-UHFFFAOYSA-N;
+role        radical;
+MW          69.127;      // g/mol [origin=calculated method=formula-sum]
+Tc          473.84;      // K   [origin=predictive method=joback]
+Pc          37.546;      // bar [origin=predictive method=joback]
+omega       0.2037;      // -   [origin=predictive method=lee-kesler]
+Tb          304.84;      // K   [origin=predictive method=joback]
+HvapTb      25017.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.23 0.43472 -0.0002553 5.89e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH2; count 2; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylbut-1-ene" "3-methylbut-1-en-4-yl" );
+gibbsFormation
+{
+    dHf_298   40440.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     335.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=124350.0
+    phase     gas;
+}

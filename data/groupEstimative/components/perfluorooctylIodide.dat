@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluorooctyl iodide  (C8F17I, CAS 507-63-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluorooctylIodide;
+formula     C8F17I;
+CAS         507-63-1;
+InChIKey    KWXGJTSJUKTDQU-UHFFFAOYSA-N;
+MW          545.954;      // g/mol [origin=calculated method=formula-sum]
+Tc          573.94;      // K   [origin=predictive method=joback]
+Pc          14.557;      // bar [origin=predictive method=joback]
+omega       0.6169;      // -   [origin=predictive method=lee-kesler]
+Tb          437.53;      // K   [origin=predictive method=joback]
+HvapTb      18518.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-84.93 2.0098 -0.002146 7.943e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group I; count 1; } { group CF3; count 1; } { group CF2; count 7; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 8; } { group F; count 17; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8-heptadecakis(fluoranyl)-8-iodanyl-octane" "1-iodoperfluorooctane" "perfluoro-n-octyl iodide" "heptadecafluoro-1-iodooctane" "heptadecafluoro-n-octyl iodide" "perfluoro-1-iodooctane" "1-iodoheptadecafluorooctane" "heptadecafluorooctyl iodide" "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8-heptadecafluoro-8-iodooctane" "octane, 1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8-heptadecafluoro-8-iodo-" "perfluorooctyliodide" "m812" );
+gibbsFormation
+{
+    dHf_298   -3535450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     751.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3214450.0
+    phase     gas;
+}

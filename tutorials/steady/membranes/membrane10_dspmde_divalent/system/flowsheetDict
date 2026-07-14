@@ -25,32 +25,7 @@
   `transport solutionDiffusion;`) to compare against the baseline.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed_NaCl
-    {
-        F            200.0 kmol/h;
-        T            298.15 K;
-        P            10.0 bar;
-        // 5 mM NaCl: c_NaCl = 5 mol/m3 = 5e-3 kmol/m3; in a ~55.5 kmol/m3
-        // aqueous basis z_NaCl ~ 5e-3 / 55.5 = 9.0e-5.
-        molarComposition  { water 0.99991;  NaCl 0.00009; }
-    }
-    feed_CaCl2
-    {
-        F            200.0 kmol/h;
-        T            298.15 K;
-        P            10.0 bar;
-        molarComposition  { water 0.99991;  CaCl2 0.00009; }
-    }
-    feed_MgSO4
-    {
-        F            200.0 kmol/h;
-        T            298.15 K;
-        P            10.0 bar;
-        molarComposition  { water 0.99991;  MgSO4 0.00009; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

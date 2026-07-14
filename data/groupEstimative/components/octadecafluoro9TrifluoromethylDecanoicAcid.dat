@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octadecafluoro-9-(trifluoromethyl)decanoic acid  (C11HF21O2, CAS 16486-94-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octadecafluoro9TrifluoromethylDecanoicAcid;
+formula     C11HF21O2;
+CAS         16486-94-5;
+InChIKey    FTUYMACVNWCLNM-UHFFFAOYSA-N;
+MW          564.085;      // g/mol [origin=calculated method=formula-sum]
+Tc          681.23;      // K   [origin=predictive method=joback]
+Pc          11.569;      // bar [origin=predictive method=joback]
+omega       0.9481;      // -   [origin=predictive method=lee-kesler]
+Tb          549.16;      // K   [origin=predictive method=joback]
+HvapTb      27127.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-119.33 2.6054 -0.0027096 9.843e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 1; } { group CF3; count 2; } { group CF2; count 7; } { group CF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 10; } { group F; count 21; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,10,10,10-octadecakis(fluoranyl)-9-(trifluoromethyl)decanoic acid" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,10,10,10-octadecafluoro-9-(trifluoromethyl)decanoic acid" "decanoic acid, 2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,10,10,10-octadecafluoro-9-(trifluoromethyl)-" "decanoic acid, octadecafluoro-9-(trifluoromethyl)-" );
+gibbsFormation
+{
+    dHf_298   -4826450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     914.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4364780.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-trimethoxysilylpropyl-n,n-dimethylamine, acetate  (C10H25NO5Si, CAS 35141-35-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C10H25NO5Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        3TrimethoxysilylpropylNNDimethylamineAcetate;
+formula     C10H25NO5Si;
+CAS         35141-35-6;
+InChIKey    KXFOCRJDQLJMAZ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          267.397;      // g/mol [origin=calculated method=formula-sum]
+Tc          842.78;      // K   [origin=predictive method=joback]
+Pc          18.108;      // bar [origin=predictive method=joback]
+omega       0.9419;      // -   [origin=predictive method=lee-kesler]
+Tb          656.41;      // K   [origin=predictive method=joback]
+HvapTb      64879.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (145.843 0.52662 0.0004572 -4.256e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH3O; count 3; } { group CH3N; count 1; } { group COOH; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 3; } { group O; count 3; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethyl-3-trimethoxysilyl-propan-1-amine;ethanoic acid" "1-propanamine, n,n-dimethyl-3-(trimethoxysilyl)-, acetate" "1-propanamine, n,n-dimethyl-3-(trimethoxysilyl)-, acetate (1:1)" "(dimethyl)(3-(trimethoxysilyl)propyl)ammonium acetate" "acetic acid; n,n-dimethyl-3-trimethoxysilyl-propan-1-amine" "acetic acid; n,n-dimethyl-3-trimethoxysilylpropan-1-amine" "n,n-dimethyl-3-(trimethoxysilyl)propan-1-amine acetate (1:1)" );
+gibbsFormation
+{
+    dHf_298   -1152370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     882.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-724330.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-ethylhexyl 2-ethylhexanoate  (C16H32O2, CAS 7425-14-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Ethylhexyl2Ethylhexanoate;
+formula     C16H32O2;
+CAS         7425-14-1;
+InChIKey    OUCGJMIVSYHBEC-UHFFFAOYSA-N;
+MW          256.43;      // g/mol [origin=calculated method=formula-sum]
+Tc          792.50;      // K   [origin=predictive method=joback]
+Pc          13.388;      // bar [origin=predictive method=joback]
+omega       0.8122;      // -   [origin=predictive method=lee-kesler]
+Tb          623.02;      // K   [origin=predictive method=joback]
+HvapTb      57841.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.389 1.48088 -0.0007584 1.211e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 9; } { group CH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 9; } { group CH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexanoic acid, 2-ethyl-, 2-ethylhexyl ester" "2-ethylhexyl-2-ethylhexanoate" "2-ethylhexanoic acid, 2-ethylhexyl ester" "2-ethylhexylester kyseliny 2-ethylkapronove" "hexanoic acid,2-ethyl-, 2-ethylhexyl ester" "caproicacid, a-ethyl-, 2-ethylhexyl ester(4ci); 2-ethylhexyl 2-ethylhexanoate; 2-ethylhexyl 2-ethylhexanonate; dragoxateh; hatco 2976; ooe; octyl octanoate; petrofree lv; tegosoft ee" );
+gibbsFormation
+{
+    dHf_298   -701410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     811.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-231410.0
+    phase     gas;
+}

@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Sieve-tray hydraulics: the column that separates, sized so its trays do not flood";
+verbosity     3;

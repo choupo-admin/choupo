@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethyl sulfide  (C2H6S, CAS 75-18-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethylSulfide;
+formula     C2H6S;
+CAS         75-18-3;
+InChIKey    QMMFVYPAHWMCMS-UHFFFAOYSA-N;
+MW          62.13;      // g/mol [origin=calculated method=formula-sum]
+Tc          505.79;      // K   [origin=predictive method=joback]
+Pc          51.534;      // bar [origin=predictive method=joback]
+omega       0.1862;      // -   [origin=predictive method=lee-kesler]
+Tb          314.14;      // K   [origin=predictive method=joback]
+HvapTb      26863.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.67 0.18823 -4.48e-05 -1.5e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methylsulfanylmethane" "methyl sulfide" "methane, thiobis-" "dimethylsulphide" "methyl thioether" "2-thiapropane" "methylthiomethane" "dimethyl sulphide" "dimethylsulfide" "(methylsulfanyl)methane" "methanethiomethane" "dimethyl thioether" );
+gibbsFormation
+{
+    dHf_298   -42740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     295.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-920.0
+    phase     gas;
+}

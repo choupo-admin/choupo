@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methoxyethyl octadec-9-enoate  (C21H40O3, CAS 111-10-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2MethoxyethylOctadec9Enoate;
+formula     C21H40O3;
+CAS         111-10-4;
+InChIKey    UFARNTYYPHYLGN-UHFFFAOYSA-N;
+MW          340.548;      // g/mol [origin=calculated method=formula-sum]
+Tc          940.74;      // K   [origin=predictive method=joback]
+Pc          9.802;      // bar [origin=predictive method=joback]
+omega       0.8984;      // -   [origin=predictive method=lee-kesler]
+Tb          764.88;      // K   [origin=predictive method=joback]
+HvapTb      72115.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.526 1.90084 -0.0009968 1.742e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 15; } { group CH=CH; count 1; } { group CH2COO; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 16; } { group dCH; count 2; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -809050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1029.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-209210.0
+    phase     gas;
+}

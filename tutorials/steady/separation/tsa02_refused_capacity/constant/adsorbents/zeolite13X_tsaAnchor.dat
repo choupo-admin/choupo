@@ -1,0 +1,11 @@
+adsorbent
+{
+    name        zeolite13X_tsaAnchor;
+    type        "synthetic 13X-like TSA anchor";
+    rho_bulk    640 kg/m3;
+    cpSolid     [0 2 -2 -1 0] 920;   // J/(kg.K)
+}
+provenance
+{
+    identity { origin assumed; method "case-local numerical acceptance anchor; not design data"; }
+}

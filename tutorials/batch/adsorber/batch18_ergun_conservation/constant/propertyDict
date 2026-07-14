@@ -1,0 +1,4 @@
+components ( CO2 He );
+activityModel { model ideal; }
+equationOfState { model idealGas; }
+transport { viscosity { model Chung; } }

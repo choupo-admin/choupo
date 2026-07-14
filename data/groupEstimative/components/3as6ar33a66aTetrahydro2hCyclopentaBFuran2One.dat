@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (3as,6ar)-3,3a,6,6a-tetrahydro-2h-cyclopenta[b]furan-2-one  (C7H8O2, CAS 26054-46-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3as6ar33a66aTetrahydro2hCyclopentaBFuran2One;
+formula     C7H8O2;
+CAS         26054-46-6;
+InChIKey    RYBPGUMSFWGGLP-PHDIDXHHSA-N;
+MW          124.139;      // g/mol [origin=calculated method=formula-sum]
+Tc          635.86;      // K   [origin=predictive method=joback]
+Pc          39.605;      // bar [origin=predictive method=joback]
+omega       0.4235;      // -   [origin=predictive method=lee-kesler]
+Tb          430.62;      // K   [origin=predictive method=joback]
+HvapTb      38701.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-70.77 0.8598 -0.00069008 2.178e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 2; } { group CH=CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3as,6ar)-3,3a,6,6a-tetrahydrocyclopenta[b]furan-2-one" "(1r,5s)-2-oxabicyclo[3.3.0]oct-6-en-3-one" "(1r,5s)-2-oxabicyclo(3.3.0)oct-6-en-3-one" "(1r,5s)-oxabicyclooctenone" "(1r,5s)-(+)-2-oxabicyclo[3.3.0]oct-6-en-3-one" "(3as,6ar)-3,3a,6,6a-tetrahydro-2h-1-oxapentalen-2-one" "2h-cyclopenta[b]furan-2-one,3,3a,6,6a-tetrahydro-, (3ar,6as)-rel-" "2h-cyclopenta[b]furan-2-one,3,3a,6,6a-tetrahydro-, cis-; 2h-cyclopenta[b]furan-2-one, 3,3ab,6,6ab-tetrahydro- (8ci);(3ar,6as)-rel-3,3a,6,6a-tetrahydro-2h-cyclopenta[b]furan-2-one;cis-2-hydroxy-4-cyclopentene-1-acetic acid lactone" );
+gibbsFormation
+{
+    dHf_298   -301710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     262.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-150850.0
+    phase     gas;
+}

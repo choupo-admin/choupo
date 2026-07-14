@@ -84,10 +84,10 @@ scalar streamEnthalpy(const ThermoPackage& thermo, const FlashSolution& sol,
                       scalar T, scalar P, const sVector& z)
 {
     const scalar bV = sol.V_over_F;
-    if (bV <= 1.0e-9)  return thermo.H_stream(T, P, 0.0, z);
-    if (bV >= 1.0 - 1.0e-9) return thermo.H_stream(T, P, 1.0, z);
-    return (1.0 - bV) * thermo.H_stream(T, P, 0.0, sol.x)
-         +        bV  * thermo.H_stream(T, P, 1.0, sol.y);
+    if (bV <= 1.0e-9)  return thermo.H_stream_formation(T, P, 0.0, z);
+    if (bV >= 1.0 - 1.0e-9) return thermo.H_stream_formation(T, P, 1.0, z);
+    return (1.0 - bV) * thermo.H_stream_formation(T, P, 0.0, sol.x)
+         +        bV  * thermo.H_stream_formation(T, P, 1.0, sol.y);
 }
 
 } // anonymous namespace
@@ -223,8 +223,8 @@ int PhaseChanger::solve(const DictPtr& dict,
             // heat.  The linear extrapolation back to vf = 0 / 1 recovers the
             // true endpoints.
             const scalar eps  = 1.0e-4;
-            const scalar h_lo = thermo.H_stream(Tsat, P_out, eps,       z);
-            const scalar h_hi = thermo.H_stream(Tsat, P_out, 1.0 - eps, z);
+            const scalar h_lo = thermo.H_stream_formation(Tsat, P_out, eps,       z);
+            const scalar h_hi = thermo.H_stream_formation(Tsat, P_out, 1.0 - eps, z);
             const scalar h_f  = (h_lo - eps * h_hi) / (1.0 - 2.0 * eps);
             const scalar h_g  = (h_hi - eps * h_lo) / (1.0 - 2.0 * eps);
             if (H_target >= h_f - 1.0e-3 && H_target <= h_g + 1.0e-3)
@@ -379,7 +379,7 @@ int PhaseChanger::solve(const DictPtr& dict,
         // mixture enthalpy from the dome-aware H_stream (h = (1-vf)h_f + vf h_g,
         // which the IF97 / generic two-phase route handles internally).
         vf_out = std::clamp(vf_forced, 0.0, 1.0);
-        H_out  = thermo.H_stream(T_out, P_out, vf_out, z);
+        H_out  = thermo.H_stream_formation(T_out, P_out, vf_out, z);
     }
     else
     {
@@ -408,8 +408,8 @@ int PhaseChanger::solve(const DictPtr& dict,
     scalar latent_kW = 0.0;
     {
         const scalar eps  = 1.0e-4;
-        const scalar h_lo = thermo.H_stream(Tsat, P_out, eps,       z);
-        const scalar h_hi = thermo.H_stream(Tsat, P_out, 1.0 - eps, z);
+        const scalar h_lo = thermo.H_stream_formation(Tsat, P_out, eps,       z);
+        const scalar h_hi = thermo.H_stream_formation(Tsat, P_out, 1.0 - eps, z);
         const scalar latent_molar = (h_hi - h_lo) / (1.0 - 2.0 * eps);
         const scalar dvf = vf_out - vf_in_eff;
         latent_kW = F * 1000.0 * dvf * latent_molar / 1000.0;
@@ -615,10 +615,12 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
     // cylindrical form when an inner diameter is known, the flat-plate form
     // otherwise.
     scalar R_wall = 0.0;
+    bool haveTubeGeom = false; scalar r_o_saved = 0.0, r_i_saved = 1.0;
     if (tubeOD > 0.0 && tubeID > 0.0 && tubeID < tubeOD)
     {
         const scalar r_o = 0.5 * tubeOD, r_i = 0.5 * tubeID;
         R_wall = r_o * std::log(r_o / r_i) / k_wall;     // on outside area
+        haveTubeGeom = true; r_o_saved = r_o; r_i_saved = r_i;
     }
     else if (g->found("wallThickness"))
         R_wall = g->lookupScalar("wallThickness", Dims::length) / k_wall;
@@ -629,7 +631,12 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
     const scalar h_cool   = cool->lookupScalar("h", Dims::heatTransfer_h);
     if (h_cool <= 0.0)
         throw std::runtime_error("phaseChanger(geometry): coolant `h` must be > 0.");
-    const scalar R_cool   = 1.0 / h_cool;
+    // pass-9 (student): R_wall was outside-area-referenced but R_cool was not
+    // -- two conventions under one 'Resistances (outside area)' label.  The
+    // coolant film is INSIDE the tubes (a Dittus-Boelter-class h), so on the
+    // outside area it carries A_o/A_i = r_o/r_i.
+    scalar R_cool = 1.0 / h_cool;
+    if (haveTubeGeom) R_cool *= r_o_saved / r_i_saved;
     const scalar U_rest   = 1.0 / (R_cool + R_wall);     // everything but the film
 
     // -- condensation model -------------------------------------------------
@@ -662,8 +669,8 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
     scalar h_fg_mass = 0.0;
     {
         const scalar eps  = 1.0e-4;
-        const scalar h_lo = thermo.H_stream(Tsat, P_out, eps,       z);
-        const scalar h_hi = thermo.H_stream(Tsat, P_out, 1.0 - eps, z);
+        const scalar h_lo = thermo.H_stream_formation(Tsat, P_out, eps,       z);
+        const scalar h_hi = thermo.H_stream_formation(Tsat, P_out, 1.0 - eps, z);
         const scalar latent_molar = (h_hi - h_lo) / (1.0 - 2.0 * eps); // J/mol
         h_fg_mass = latent_molar / M_kg_per_mol;          // J/kg
     }
@@ -793,15 +800,15 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
     bool resolved = false;
     {
         const scalar eps  = 1.0e-4;
-        const scalar h_lo = thermo.H_stream(Tsat, P_out, eps,       z);
-        const scalar h_hi = thermo.H_stream(Tsat, P_out, 1.0 - eps, z);
+        const scalar h_lo = thermo.H_stream_formation(Tsat, P_out, eps,       z);
+        const scalar h_hi = thermo.H_stream_formation(Tsat, P_out, 1.0 - eps, z);
         const scalar h_f  = (h_lo - eps * h_hi) / (1.0 - 2.0 * eps);
         const scalar h_g  = (h_hi - eps * h_lo) / (1.0 - 2.0 * eps);
         if (pureDome && H_target >= h_f - 1.0e-3 && H_target <= h_g + 1.0e-3)
         {
             T_out  = Tsat;
             vf_out = std::clamp((H_target - h_f) / (h_g - h_f), 0.0, 1.0);
-            H_out  = thermo.H_stream(T_out, P_out, vf_out, z);
+            H_out  = thermo.H_stream_formation(T_out, P_out, vf_out, z);
             resolved = true;
         }
     }
@@ -919,7 +926,7 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
     kpis_["R_wall"]           = R_wall;
     kpis_["R_coolant"]        = R_cool;
     // controllingResistance numeric code: 0 = film, 1 = coolant, 2 = wall.
-    kpis_["controllingResistance"] =
+    kpis_["controllingResistanceCode"] =   // categorical: 0=condensing film, 1=wall, 2=coolant (renamed pass-5: a bare 0 beside real resistances read as zero ohms)
           (controlling == "condensing film") ? 0.0
         : (controlling == "coolant-side")    ? 1.0 : 2.0;
     kpis_["area"]             = area;
@@ -1108,8 +1115,8 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
     scalar h_fg_mass = 0.0;
     {
         const scalar eps  = 1.0e-4;
-        const scalar h_lo = thermo.H_stream(Tsat, P_out, eps,       z);
-        const scalar h_hi = thermo.H_stream(Tsat, P_out, 1.0 - eps, z);
+        const scalar h_lo = thermo.H_stream_formation(Tsat, P_out, eps,       z);
+        const scalar h_hi = thermo.H_stream_formation(Tsat, P_out, 1.0 - eps, z);
         const scalar latent_molar = (h_hi - h_lo) / (1.0 - 2.0 * eps);
         h_fg_mass = latent_molar / M_kg_per_mol;
     }
@@ -1277,15 +1284,15 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
     bool resolved = false;
     {
         const scalar eps  = 1.0e-4;
-        const scalar h_lo = thermo.H_stream(Tsat, P_out, eps,       z);
-        const scalar h_hi = thermo.H_stream(Tsat, P_out, 1.0 - eps, z);
+        const scalar h_lo = thermo.H_stream_formation(Tsat, P_out, eps,       z);
+        const scalar h_hi = thermo.H_stream_formation(Tsat, P_out, 1.0 - eps, z);
         const scalar h_f  = (h_lo - eps * h_hi) / (1.0 - 2.0 * eps);
         const scalar h_g  = (h_hi - eps * h_lo) / (1.0 - 2.0 * eps);
         if (pureDome && H_target >= h_f - 1.0e-3 && H_target <= h_g + 1.0e-3)
         {
             T_out  = Tsat;
             vf_out = std::clamp((H_target - h_f) / (h_g - h_f), 0.0, 1.0);
-            H_out  = thermo.H_stream(T_out, P_out, vf_out, z);
+            H_out  = thermo.H_stream_formation(T_out, P_out, vf_out, z);
             resolved = true;
         }
     }

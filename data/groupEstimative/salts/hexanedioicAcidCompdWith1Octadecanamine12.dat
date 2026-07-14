@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): hexanedioic acid, compd. with 1-octadecanamine (1:2)  (C42H88N2O4, CAS 102900-04-9)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           hexanedioicAcidCompdWith1Octadecanamine12;
+formula        C42H88N2O4;
+CAS            102900-04-9;
+InChIKey       AWVLILUZOUWLLR-UHFFFAOYSA-N;
+MW             685.176;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   3;              // van't Hoff factor for pi = nu R T c
+dissociatesTo  { hexanedioic acid 1; 1-octadecanamine 2; }   // DRAFT constituents from the name -- verify & map to real components/ions

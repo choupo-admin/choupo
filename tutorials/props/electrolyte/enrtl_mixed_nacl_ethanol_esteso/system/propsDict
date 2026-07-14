@@ -1,0 +1,92 @@
+/*---------------------------------------------------------------------------*\
+  enrtl_mixed_nacl_ethanol_esteso --- can eNRTL predict a salt's activity in
+  the antisolvent mixture?
+
+  The SAME physics the antisolvent crystalliser leans on -- gamma_pm of NaCl
+  as ethanol pushes the water out -- validated against the PRIMARY dataset:
+
+    MODEL   Chen & Song, "Generalized electrolyte-NRTL model for mixed-solvent
+            electrolyte systems", AIChE J 50(8):1928-1941 (2004),
+            DOI 10.1002/aic.10151.  Ethanol = 1.811 (-C2H4-) + 0.609 (-OH)
+            segments (Table 4); ion<->OH taus = the aqueous NaCl pair
+            (Table 2); ion<->C2H4 taus from Table 7.  ZERO refit here.
+    DATA    Esteso, Gonzalez-Diaz, Hernandez-Luis & Fernandez-Merida,
+            "Activity coefficients for NaCl in ethanol-water mixtures at
+            25 C", J. Solution Chem. 18(3):277-288 (1989).  Table I (emf,
+            molal scale, per-solvent reference).  A_phi per composition =
+            Esteso Table II (measured dielectric + density).
+            0 wt% gate: Robinson & Stokes, Electrolyte Solutions, 2nd ed.
+            (1959), NaCl appendix table; A_phi(water, 25 C) = 0.391.
+
+  WHAT THE NUMBERS SAY (locked by the golden):
+    total AAD ~4.3% over 47 points; pure water ~1.0%; 70 wt% ethanol ~1.2%.
+    80/90 wt% sit +8% systematically -- Esteso's own chemical-model fit finds
+    ion-pair association K_A = 30-46 there (Table V), physics a complete-
+    dissociation model cannot represent.  Declared, not tuned away.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name     esteso;
+        type     enrtlMixedSolvent;
+
+        // defaults are the published water-ethanol-NaCl parameters; spelled
+        // out here so the case READS as its own citation.
+        salt     { tau_OH_ca 8.886; tau_ca_OH -4.549;    // Table 2 (aqueous)
+                   tau_C2_ca 15.526; tau_ca_C2 0.759; }  // Table 7
+        alcohol  { X 1.811; Z 0.609; MW 46.069; }        // ethanol, Table 4
+
+        systems
+        (
+            {   // pure water -- the aqueous gate (Robinson & Stokes)
+                wtAlcohol 0;  Aphi 0.3910;
+                data ( { m 0.1; gamma 0.778; } { m 0.2; gamma 0.735; }
+                       { m 0.5; gamma 0.681; } { m 1.0; gamma 0.657; }
+                       { m 1.5; gamma 0.656; } { m 2.0; gamma 0.668; } );
+            }
+            {   // Esteso Table I, 20 wt% ethanol; Aphi = Esteso Table II
+                wtAlcohol 20; Aphi 0.4878;
+                data ( { m 0.01030; gamma 0.875; } { m 0.04005; gamma 0.788; }
+                       { m 0.1005;  gamma 0.730; } { m 0.1999;  gamma 0.668; }
+                       { m 0.3997;  gamma 0.617; } { m 0.5972;  gamma 0.592; }
+                       { m 1.002;   gamma 0.570; } { m 1.600;   gamma 0.574; }
+                       { m 2.000;   gamma 0.580; } );
+            }
+            {
+                wtAlcohol 40; Aphi 0.6434;
+                data ( { m 0.01997; gamma 0.804; } { m 0.05001; gamma 0.716; }
+                       { m 0.1998;  gamma 0.600; } { m 0.4001;  gamma 0.538; }
+                       { m 0.6016;  gamma 0.508; } { m 0.8998;  gamma 0.481; }
+                       { m 1.210;   gamma 0.464; } { m 1.498;   gamma 0.465; } );
+            }
+            {
+                wtAlcohol 60; Aphi 0.8962;
+                data ( { m 0.02000; gamma 0.726; } { m 0.05000; gamma 0.635; }
+                       { m 0.2000;  gamma 0.492; } { m 0.4000;  gamma 0.429; }
+                       { m 0.5997;  gamma 0.399; } { m 0.7999;  gamma 0.382; }
+                       { m 0.9996;  gamma 0.375; } { m 1.027;   gamma 0.368; } );
+            }
+            {
+                wtAlcohol 70; Aphi 1.079;
+                data ( { m 0.01000; gamma 0.754; } { m 0.04998; gamma 0.578; }
+                       { m 0.1889;  gamma 0.438; } { m 0.3000;  gamma 0.396; }
+                       { m 0.3997;  gamma 0.372; } { m 0.5044;  gamma 0.356; } );
+            }
+            {   // ion pairing territory (K_A ~ 30, Esteso Table V) -- expect +8%
+                wtAlcohol 80; Aphi 1.327;
+                data ( { m 0.003001; gamma 0.791; } { m 0.01000; gamma 0.659; }
+                       { m 0.03999;  gamma 0.503; } { m 0.07000; gamma 0.455; }
+                       { m 0.1000;   gamma 0.411; } );
+            }
+            {   // K_A ~ 46 here
+                wtAlcohol 90; Aphi 1.647;
+                data ( { m 0.003500; gamma 0.739; } { m 0.01005; gamma 0.609; }
+                       { m 0.02000;  gamma 0.531; } { m 0.03000; gamma 0.483; }
+                       { m 0.03999;  gamma 0.448; } );
+            }
+        );
+
+        output   { file enrtl_esteso.csv; }
+    }
+);

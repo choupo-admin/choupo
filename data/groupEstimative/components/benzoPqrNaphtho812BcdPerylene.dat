@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzo[pqr]naphtho[8,1,2-bcd]perylene  (C28H14, CAS 190-71-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzoPqrNaphtho812BcdPerylene;
+formula     C28H14;
+CAS         190-71-6;
+InChIKey    VEABCKAXWWRBAF-UHFFFAOYSA-N;
+MW          350.42;      // g/mol [origin=calculated method=formula-sum]
+Tc          1276.15;      // K   [origin=predictive method=joback]
+Pc          20.512;      // bar [origin=predictive method=joback]
+omega       1.1625;      // -   [origin=predictive method=lee-kesler]
+Tb          1006.56;      // K   [origin=predictive method=joback]
+HvapTb      93742.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-183.39 2.4276 -0.00240196 9.326e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 14; } { group AC; count 14; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 14; } { group dC_ring; count 14; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzo(pqr)naphtho(8,1,2-bcd)perylene" "benzo[ghi]naphtho[8,1,2-cde]perylene" );
+gibbsFormation
+{
+    dHf_298   747570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     333.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=968780.0
+    phase     gas;
+}

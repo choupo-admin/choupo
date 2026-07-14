@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2'-dichlorobenzidine  (C12H10Cl2N2, CAS 84-68-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Dichlorobenzidine;
+formula     C12H10Cl2N2;
+CAS         84-68-4;
+InChIKey    XKXPBJBODVHDAW-UHFFFAOYSA-N;
+MW          253.126;      // g/mol [origin=calculated method=formula-sum]
+Tc          1037.56;      // K   [origin=predictive method=joback]
+Pc          33.490;      // bar [origin=predictive method=joback]
+omega       0.8763;      // -   [origin=predictive method=lee-kesler]
+Tb          767.36;      // K   [origin=predictive method=joback]
+HvapTb      79558.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.13 0.8854 -0.00055084 1.23e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 2; } { group ACNH2; count 2; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 6; } { group dC_ring; count 6; } { group Cl; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(4-azanyl-2-chloranyl-phenyl)-3-chloranyl-aniline" "o-dichlorobenzidine" "benzidine, 2,2'-dichloro-" "2,2'-dichloro[1,1'-biphenyl]-4,4'-diamine" "2,2'-dichloro(1,1'-biphenyl)-4,4'-diamine" "2,2'-dichloro-(1,1'-biphenyl)-4,4'-diamine" "2,2'-dichlorobiphenyl-4,4'-diamine" "4-(4-amino-2-chlorophenyl)-3-chloroaniline" "2,2'-dichloro-1,1'-biphenyl-4,4'-diamine" "[1,1'-biphenyl]-4,4'-diamine,2,2'-dichloro-" "(1,1'-biphenyl)-4,4'-diamine, 2,2'-dichloro-" "(1,1'-biphenyl)-4,4'-diamine, 2,2'-dichloro- (9ci)" );
+gibbsFormation
+{
+    dHf_298   172270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     555.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=345500.0
+    phase     gas;
+}

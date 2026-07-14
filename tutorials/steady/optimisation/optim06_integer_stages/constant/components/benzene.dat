@@ -1,0 +1,67 @@
+// --- vendored for self-containment (2026-06-07) ---------------------
+// origin   standard
+// source   data/standards/components/benzene.dat
+// sha256   d5fc6187fa89257f3f0333b5f39273f43755499ff1010dc9eb06ef1124030828
+// note     byte-copy of the FROZEN reference at vendoring time. This case
+//          is now self-contained + reproducible even if the standard evolves.
+//          Verify-vs-standard / re-sync is a deliberate curation act.
+// ----------------------------------------------------------------------
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Benzene  (C6H6, CAS 71-43-2)
+  Sources:   Poling, Prausnitz, O'Connell (5th ed.), Appendix A
+             NIST WebBook (latent heat at Tb)
+\*---------------------------------------------------------------------------*/
+
+name        benzene;
+formula     C6H6;
+CAS         71-43-2;
+
+MW          78.114;        // kg/kmol
+Tc          562.05;        // K
+Pc          48.95;         // bar
+omega       0.2103;        // [-]   acentric factor
+Tb          353.24;        // K     normal boiling point
+HvapTb      30720;         // J/mol latent heat at Tb
+Vliq        8.943e-5;      // m³/mol liquid molar volume at 25 °C  (= 89.43 cm³/mol)
+
+
+gibbsFormation
+{
+    dHf_298   82930.0;        // J/mol  -- ideal-gas reference
+    s_298     269.310;         // J/(mol·K)  -- third-law absolute
+    phase     gas;            // ideal-gas Hf reference (NIST/JANAF convention)
+}
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    coefficients  (4.01814   1203.835   -53.226);
+    Trange        (287.7  354.07);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3
+    coefficients  (-31.368   0.4746   -3.117e-4   8.523e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Approximate average over 280–370 K  (Poling A.2)
+    coefficients  (135.4);
+    Trange        (278  350);
+}
+
+// Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
+// liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
+// fitted to literature mu(T) over ~10-100 degC.
+associationFactor  1.0;
+liquidViscosity
+{
+    andrade { A -11.5804; B 1243.3; }
+    vogel   { A -10.7929; B 794.4; C 63.0; }
+}

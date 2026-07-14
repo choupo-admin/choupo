@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-diiodosalicylaldehyde  (C7H4I2O2, CAS 2631-77-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H4I2O2 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        35Diiodosalicylaldehyde;
+formula     C7H4I2O2;
+CAS         2631-77-8;
+InChIKey    MYWSBJKVOUZCIA-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          373.907;      // g/mol [origin=calculated method=formula-sum]
+Tc          942.23;      // K   [origin=predictive method=joback]
+Pc          48.225;      // bar [origin=predictive method=joback]
+omega       0.5111;      // -   [origin=predictive method=lee-kesler]
+Tb          639.72;      // K   [origin=predictive method=joback]
+HvapTb      64163.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.82 0.7116 -0.00082628 3.574e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 3; } { group ACOH; count 1; } { group CHO; count 1; } { group I; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group I; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,5-bis(iodanyl)-2-oxidanyl-benzaldehyde" "2-hydroxy-3,5-diiodobenzaldehyde" "3,5-diiodo-2-hydroxybenzaldehyde" "benzaldehyde, 2-hydroxy-3,5-diiodo-" "2,4-diiodo-6-formylphenol" "benzaldehyde,2-hydroxy-3,5-diiodo-" "salicylaldehyde,3,5-diiodo- (7ci,8ci);2-hydroxy-3,5-diiodobenzaldehyde;3,5-diiodo-2-hydroxybenzaldehyde;3,5-diiodosalicylaldehyde;" );
+gibbsFormation
+{
+    dHf_298   78660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     528.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=106790.0
+    phase     gas;
+}

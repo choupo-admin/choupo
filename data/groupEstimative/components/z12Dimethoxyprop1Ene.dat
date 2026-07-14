@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (z)-1,2-dimethoxyprop-1-ene  (C5H10O2, CAS 61860-68-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        z12Dimethoxyprop1Ene;
+formula     C5H10O2;
+CAS         61860-68-2;
+InChIKey    GEUKUKFVTNEWIR-UHFFFAOYSA-N;
+MW          102.133;      // g/mol [origin=calculated method=formula-sum]
+Tc          540.90;      // K   [origin=predictive method=joback]
+Pc          35.643;      // bar [origin=predictive method=joback]
+omega       0.3427;      // -   [origin=predictive method=lee-kesler]
+Tb          362.88;      // K   [origin=predictive method=joback]
+HvapTb      31582.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (35.47 0.37236 -0.0001123 -1.21e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH=C; count 1; } { group CH3O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH; count 1; } { group dC; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-dimethoxyprop-1-ene" "agn-pc-03e762" "1-propene, 1,2-dimethoxy-, (e)-" "1-propene, 1,2-dimethoxy-, (z)-" );
+gibbsFormation
+{
+    dHf_298   -303540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     362.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-147110.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3,6,6-tetramethoxy-1,4-cyclohexadiene  (C10H16O4, CAS 15791-03-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3366Tetramethoxy14Cyclohexadiene;
+formula     C10H16O4;
+CAS         15791-03-4;
+InChIKey    LJAWVXAZDYVFNU-UHFFFAOYSA-N;
+MW          200.234;      // g/mol [origin=calculated method=formula-sum]
+Tc          742.81;      // K   [origin=predictive method=joback]
+Pc          27.354;      // bar [origin=predictive method=joback]
+omega       0.5524;      // -   [origin=predictive method=lee-kesler]
+Tb          531.76;      // K   [origin=predictive method=joback]
+HvapTb      45896.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-48.29 1.26848 -0.00114156 4.744e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 2; } { group CH=CH; count 2; } { group CH3O; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group C_ring; count 2; } { group dCH_ring; count 4; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3,6,6-tetramethoxycyclohexa-1,4-diene" "1,4-cyclohexadiene,3,3,6,6-tetramethoxy-" "3,3,6,6-tetramethoxy-cyclohexa-1,4-diene" "p-benzoquinone,bis(dimethyl acetal) (7ci,8ci);1,1,4,4-tetramethoxy-2,5-cyclohexadiene;2,5-cyclohexadiene-1,4-dione bis(dimethyl acetal);3,3,6,6-tetramethoxy-1,4-cyclohexadiene;benzoquinone bis(dimethyl ketal);p-benzoquinone tetramethyl acetal;p-benzoquinone tetramethyl diacetal;p-benzoquinone tetramethyl diketal;p-benzoquinone tetramethyl ketal;" );
+gibbsFormation
+{
+    dHf_298   -598590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     582.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-321000.0
+    phase     gas;
+}

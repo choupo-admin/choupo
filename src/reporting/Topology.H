@@ -60,7 +60,7 @@ struct Topology
     std::vector<UnitIO>    units;
     std::set<std::string>  consumed;   // any stream that is some unit's input
     std::set<std::string>  produced;   // any stream that is some unit's output
-    std::set<std::string>  feeds;      // declared in `streams` AND not produced
+    std::set<std::string>  feeds;      // consumed AND not produced (or legacy-declared)
     std::set<std::string>  products;   // produced AND not consumed
 };
 
@@ -78,7 +78,10 @@ inline Topology readTopology(const DictPtr& flowsheetDict)
         for (const auto& k : streamsDict->keys()) declared.insert(k);
     }
 
-    if (flowsheetDict->found("units"))
+    // INLINE units only (a flat case).  A composite lists folder members under
+    // `units`/`sectors` as WORDS -- skip that here (the flattened topology is
+    // reported elsewhere), exactly as an absent `units` was skipped.
+    if (flowsheetDict->hasDictList("units"))
     {
         for (const auto& u : flowsheetDict->lookupDictList("units"))
         {
@@ -114,7 +117,7 @@ inline Topology readTopology(const DictPtr& flowsheetDict)
         for (const auto& s : io.outs) topo.produced.insert(s);
         topo.units.push_back(std::move(io));
     }
-    else if (flowsheetDict->found("children"))
+    else if (flowsheetDict->found("sectors"))
     {
         // Composite node (fractal step 2): the system boundary IS the node's
         // `boundary` --- feeds = inlets, products = outlets.  The global mass
@@ -131,7 +134,13 @@ inline Topology readTopology(const DictPtr& flowsheetDict)
         return topo;   // skip the generic derivation below
     }
 
-    // Feeds: declared sources that nobody produces (true system inlets).
+    // Feeds: graph inputs that nobody produces (true system inlets).  Current
+    // cases keep source state in 0/, not in a legacy flowsheetDict streams{}
+    // block, so consumed-minus-produced is the canonical topology rule.
+    for (const auto& s : topo.consumed)
+        if (!topo.produced.count(s)) topo.feeds.insert(s);
+    // Preserve legacy declared sources, including an intentionally unconsumed
+    // boundary feed used by a report-only case.
     for (const auto& s : declared)
         if (!topo.produced.count(s)) topo.feeds.insert(s);
     // Products: produced but consumed by nobody (true system outlets).

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1-dimethyl-6-(1,1-dimethylethyl)indane  (C15H22, CAS 3605-31-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Dimethyl611DimethylethylIndane;
+formula     C15H22;
+CAS         3605-31-0;
+InChIKey    ZGPWHILODVHWKJ-UHFFFAOYSA-N;
+MW          202.341;      // g/mol [origin=calculated method=formula-sum]
+Tc          811.72;      // K   [origin=predictive method=joback]
+Pc          21.374;      // bar [origin=predictive method=joback]
+omega       0.4544;      // -   [origin=predictive method=lee-kesler]
+Tb          583.19;      // K   [origin=predictive method=joback]
+HvapTb      50050.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-140.76 1.7996 -0.00161392 6.122e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 1; } { group C; count 2; } { group ACH; count 3; } { group AC; count 2; } { group ACCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group C; count 1; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-tert-butyl-3,3-dimethyl-1,2-dihydroindene" "1,1-dimethyl-6-tert-butylindan" "1h-indene, 6-(1,1-dimethylethyl)-2,3-dihydro-1,1-dimethyl-" "6-tert-butyl-1,1-dimethylindane" "6-(tert-butyl)-1,1-dimethylindan" "indan, 6-tert-butyl-1,1-dimethyl-" "1h-indene, 2,3-dihydro-1,1-dimethyl-6-(1,1-dimethylethyl)-" "2,3-dihydro-1,1-dimethyl-6-(1,1-dimethylethyl)-1h-indene" "6-(1,1-dimethylethyl)-2,3-dihydro-1,1-dimethyl-1h-indene" "6-tert-butyl-1,1-dimethylindan" "1h-indene,6-(1,1-dimethylethyl)-2,3-dihydro-1,1-dimethyl-" "indan,6-tert-butyl-1,1-dimethyl- (6ci,7ci,8ci); 1,1-dimethyl-6-tert-butylindan" );
+gibbsFormation
+{
+    dHf_298   -60050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     561.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=226670.0
+    phase     gas;
+}

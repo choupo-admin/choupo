@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: silane, (1,2-dichloro-1,2-ethenediyl)bis[trimethyl-  (C8H18Cl2Si2, CAS 65411-94-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H18Cl2Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        silane12Dichloro12EthenediylBisTrimethyl;
+formula     C8H18Cl2Si2;
+CAS         65411-94-1;
+InChIKey    CKKGTFTWEBRKGB-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          241.302;      // g/mol [origin=calculated method=formula-sum]
+Tc          670.99;      // K   [origin=predictive method=joback]
+Pc          19.965;      // bar [origin=predictive method=joback]
+omega       0.2443;      // -   [origin=predictive method=lee-kesler]
+Tb          464.22;      // K   [origin=predictive method=joback]
+HvapTb      42878.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (89.47 0.38492 0.000289 -2.814e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group Cl_C=C_; count 2; } { group C=C; count 1; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group dC; count 2; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[1,2-bis(chloranyl)-2-trimethylsilyl-ethenyl]-trimethyl-silane" "[(e)-1,2-dichloro-2-trimethylsilyl-ethenyl]-trimethyl-silane" );
+gibbsFormation
+{
+    dHf_298   -365530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     772.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-153780.0
+    phase     gas;
+}

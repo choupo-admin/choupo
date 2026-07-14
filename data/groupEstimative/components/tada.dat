@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tada  (C5H7NO4, CAS 161596-63-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tada;
+formula     C5H7NO4;
+CAS         161596-63-0;
+InChIKey    JMVIGOFRIJJUAW-PWNYCUMCSA-N;
+MW          145.114;      // g/mol [origin=calculated method=formula-sum]
+Tc          891.61;      // K   [origin=predictive method=joback]
+Pc          53.047;      // bar [origin=predictive method=joback]
+omega       1.1352;      // -   [origin=predictive method=lee-kesler]
+Tb          659.91;      // K   [origin=predictive method=joback]
+HvapTb      67586.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-24.96 0.6818 -0.0004512 1.126e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 1; } { group CHNH; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group COOH; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r,4r)-azetidine-2,4-dicarboxylic acid" "azetidine-2,4-dicarboxylic acid" "ad-2,4-dc" "2,4-azetidinedicarboxylicacid, (2r,4r)-" "trans-(+-)-2,4-azetidinedicarboxylic acid" "2,4-azetidinedicarboxylicacid, (2r-trans)-" "2,4-azetidinedicarboxylic acid, trans-(+-)-" "(2r,4r)-(+)-azetidine-2,4-dicarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -762960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     338.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-567950.0
+    phase     gas;
+}

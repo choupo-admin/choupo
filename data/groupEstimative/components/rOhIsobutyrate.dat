@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: r-oh isobutyrate  (C5H10O3, CAS 72657-23-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        rOhIsobutyrate;
+formula     C5H10O3;
+CAS         72657-23-9;
+InChIKey    ATCCIZURPPEVIZ-SCSAIBSYSA-N;
+MW          118.132;      // g/mol [origin=calculated method=formula-sum]
+Tc          636.68;      // K   [origin=predictive method=joback]
+Pc          39.407;      // bar [origin=predictive method=joback]
+omega       0.8500;      // -   [origin=predictive method=lee-kesler]
+Tb          463.96;      // K   [origin=predictive method=joback]
+HvapTb      50422.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (27.361 0.46394 -0.0001872 5e-10);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl (2r)-2-methyl-3-oxidanyl-propanoate" "(r)-methyl 3-hydroxy-2-methylpropanoate" "(r)-(-)-3-hydroxy-2-methylpropionic acid methyl ester" "methyl (r)-(-)-3-hydroxy-2-methylpropionate" "methyl (r)-(-)-3-hydroxyisobutyrate" "methyl (r)-3-hydroxy-2-methylpropionate" "(-)-methyl d-beta-hydroxyisobutyrate" "r-(-)-roche ester" "(r)-3-hydroxyisobutyric acid methyl ester" "(-)-methyl " "a-hydroxyisobutyrate" "(-)-methyl d-" "a-hydroxyisobutyrate" "methyl (2r)-3-hydroxy-2-methylpropanoate" );
+gibbsFormation
+{
+    dHf_298   -621320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     443.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-458410.0
+    phase     gas;
+}

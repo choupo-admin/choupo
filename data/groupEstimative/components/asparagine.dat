@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: asparagine  (C4H8N2O3, CAS 3130-87-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        asparagine;
+formula     C4H8N2O3;
+CAS         3130-87-8;
+InChIKey    DCXYFEDJOCDNAF-UHFFFAOYSA-N;
+MW          132.119;      // g/mol [origin=calculated method=formula-sum]
+Tc          861.10;      // K   [origin=predictive method=joback]
+Pc          56.703;      // bar [origin=predictive method=joback]
+omega       1.1404;      // -   [origin=predictive method=lee-kesler]
+Tb          635.12;      // K   [origin=predictive method=joback]
+HvapTb      69302.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (22.511 0.5363 -0.0003377 7.686e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4-bis(azanyl)-4-oxidanylidene-butanoic acid" "dl-asparagine" "asparagine, dl-" "asparagin" "dl-asparagine monohydrate" "dl-aspartic acid 4-amide" "2,4-diamino-4-oxobutanoic acid" "asparagine d-form" "l(+)-asparagine monohydrate" "d-(-)-asparagine monohydrate" "(+/-)-2-aminosuccinic acid 4-amide" "asparagina" );
+gibbsFormation
+{
+    dHf_298   -526440.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     485.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-359570.0
+    phase     gas;
+}

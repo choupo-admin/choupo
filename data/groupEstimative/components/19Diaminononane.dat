@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,9-diaminononane  (C9H22N2, CAS 646-24-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        19Diaminononane;
+formula     C9H22N2;
+CAS         646-24-2;
+InChIKey    SXJVFQLYZSNZBT-UHFFFAOYSA-N;
+MW          158.289;      // g/mol [origin=calculated method=formula-sum]
+Tc          736.84;      // K   [origin=predictive method=joback]
+Pc          25.820;      // bar [origin=predictive method=joback]
+omega       0.8105;      // -   [origin=predictive method=lee-kesler]
+Tb          550.58;      // K   [origin=predictive method=joback]
+HvapTb      56910.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.689 0.9826 -0.0005526 1.179e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group CH2NH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 9; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "nonane-1,9-diamine" "nonamethylenediamine" "1,9-nonanediamine" "1,9-diaminonane" "nonan-1,9-diamin" "1,9-diaminononane;1,9-nonamethylenediamine; nonamethylenediamine" );
+gibbsFormation
+{
+    dHf_298   -161510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     609.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=157800.0
+    phase     gas;
+}

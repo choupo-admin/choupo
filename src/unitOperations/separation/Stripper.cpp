@@ -279,7 +279,7 @@ int Stripper::solve(const DictPtr& dict,
     if (verbosity >= 2)
     {
         std::cout << "\n========================  Stripper (Kremser)  ====================\n"
-                  << "  Stages (theoretical, HARDWARE):  N = " << N << "\n"
+                  << "  Stages: N = " << N << "   (THEORETICAL equilibrium stages -- the case-declared hardware count)\n"
                   << "  Rich liquid  L = " << std::scientific << std::setprecision(4) << L_in
                   << " kmol/s  (top, " << std::fixed << std::setprecision(1) << T_liq << " K)\n"
                   << "  Stripping gas V = " << std::scientific << std::setprecision(4) << V_in
@@ -301,8 +301,16 @@ int Stripper::solve(const DictPtr& dict,
             const scalar Si = (L_in > 0.0) ? Kref[i] * V_in / L_in : 0.0;
             std::cout << "    " << std::setw(10) << thermo.comp(i).name()
                       << "   K(feed) = " << std::scientific << std::setprecision(3) << Kref[i]
-                      << "   S = " << std::fixed << std::setprecision(3) << Si
-                      << "   stripped = " << std::setprecision(1) << (100.0 * frac[i]) << " %\n";
+                      << "   S = " << std::fixed << std::setprecision(3) << Si;
+            // pass-6 (student): the SOLVENT row printed a bare 0.0 % beside a
+            // Kremser S that would predict ~17 % -- because the 0 comes from
+            // the held-in-liquid assumption, not the formula.  Say so.
+            if (frac[i] <= 0.0 && Si > 0.0)
+                std::cout << "   stripped = 0.0 %  (solvent -- held in the"
+                             " liquid by assumption, NOT by Kremser)\n";
+            else
+                std::cout << "   stripped = " << std::setprecision(1)
+                          << (100.0 * frac[i]) << " %\n";
         }
         std::cout << "  Assumptions: counter-current, constant L/V (dilute),\n"
                   << "               lean gas, solvent stays in the liquid.\n"

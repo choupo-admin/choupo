@@ -1,0 +1,16 @@
+name settler01;
+type isothermalFlash;
+
+operation
+{
+    T 298.15 K;
+    P 1.0 bar;
+    phaseSet LL;
+    alphaRich water;
+    betaRich kerosene_C12cut;
+}
+
+// The streams this operation consumes and produces (sequential-modular:
+// a unit is defined by its streams; the sector wires them, the unit names them).
+inputs   ( emulsion );
+outputs  ( raffinate loadedOrganic );

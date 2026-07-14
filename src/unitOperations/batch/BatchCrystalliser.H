@@ -83,7 +83,42 @@ public:
 
     const BatchState& state() const override { return state_; }
 
+    // ALL-phase inventory (forum #88): state_.n carries the DISSOLVED solute
+    // only (the ODE drains it as crystals grow); the crystal magma
+    // V*rho_c*k_v*mu3 lives in the moments.  The campaign mass balance sums
+    // both -- without this override, crystallisation looked like mass loss.
+    sVector materialInventory() const override
+    {
+        sVector inv = state_.n;
+        if (MW_sol_ > 0.0)
+            inv[iSolute_] += V_ * rho_c_ * k_v_ * mu3_ / MW_sol_;   // kmol
+        return inv;
+    }
+
     std::vector<std::pair<std::string, scalar>> trajectoryExtras() const override;
+
+    // ---- Energy ledger (phase (d)) ----------------------------------------
+    //  The isothermal crystallisation duty is an EXACT state difference on
+    //  the crystal inventory: Q = -dH_cryst * dn_cryst with n_cryst =
+    //  V*rho_c*k_v*mu3/MW (mu3 is state), and dH_cryst from the SAME shared
+    //  resolver the steady crystalliser reads (crystallisationHeatPerMol:
+    //  ion-derived dissolutionEnthalpy / solution tier / declared constant
+    //  -- the source travels in the record basis).  The vessel-enthalpy
+    //  half stays a NAMED gap: the campaign balance prices inventories as
+    //  one liquid, and this vessel's crystal belongs on the solid rung.
+    void noteTimeAdvanced(scalar t) override;
+    std::vector<SimulationResult::EnergyRecord>
+         energyRecords(scalar tEnd) override;
+    std::string energyLedgerGap() const override { return ""; }
+
+    // The magma prices PER RUNG: the dissolved inventory as liquid (the
+    // aqueous/solution tier -- the same rung the material ledger uses) and
+    // the crystal mass n_cryst = V*rho_c*k_v*mu3/M on the SOLID rung,
+    // h_formation(T, "solid") = Hf298(solid) + Int cp_solid.  This is what
+    // makes the campaign balance close against the latent duty: the duty's
+    // dH_cryst = dHsoln + (cp_aq - cp_solid)(T-298) is EXACTLY the rung
+    // difference per mole moved.
+    scalar vesselEnthalpy(bool& ok, std::string& why) const override;
 
 protected:
     BatchState& mutableState() override { return state_; }
@@ -110,6 +145,16 @@ private:
 
     // Derivatives of the packed state (mu0, mu1, mu2, mu3, n_solute).
     sVector derivatives_(const sVector& packed) const;
+
+    // ---- Energy-ledger segment bookkeeping (phase (d)) --------------------
+    scalar      lastTime_   = 0.0;
+    bool        timeSeen_   = false;
+    scalar      segStart_   = 0.0;
+    scalar      segMu3Start_ = 0.0;
+    scalar      dHcrystPerMol_ = 0.0;   // J/mol, dissolution sign; resolved once
+    std::string dHcrystSource_;         // which path spoke (travels in basis)
+    std::vector<SimulationResult::EnergyRecord> energyLog_;
+    void closeSegment_(scalar t);
 };
 
 } // namespace Choupo

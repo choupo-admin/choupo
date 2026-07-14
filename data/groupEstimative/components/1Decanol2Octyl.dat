@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-decanol, 2-octyl-  (C18H38O, CAS 45235-48-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Decanol2Octyl;
+formula     C18H38O;
+CAS         45235-48-1;
+InChIKey    JYZLSYFPFQTNNO-UHFFFAOYSA-N;
+MW          270.501;      // g/mol [origin=calculated method=formula-sum]
+Tc          867.74;      // K   [origin=predictive method=joback]
+Pc          12.346;      // bar [origin=predictive method=joback]
+omega       1.0629;      // -   [origin=predictive method=lee-kesler]
+Tb          703.18;      // K   [origin=predictive method=joback]
+HvapTb      71953.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.865 1.75374 -0.000989 2.123e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 15; } { group CH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 15; } { group CH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-octyldecan-1-ol" "2-octyl-1-decanol;2-octyldecanol; 2-octyldecyl alcohol" );
+gibbsFormation
+{
+    dHf_298   -572360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     898.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-38580.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: agn-pc-030n9a  (C39H76N2O, CAS 17081-40-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        agnPc030n9a;
+formula     C39H76N2O;
+CAS         17081-40-2;
+InChIKey    QJRZJHNKYKBDSN-UHFFFAOYSA-N;
+MW          589.05;      // g/mol [origin=calculated method=formula-sum]
+Tc          1724.70;      // K   [origin=predictive method=joback]
+Pc          4.397;      // bar [origin=predictive method=joback]
+omega       -0.2810;      // -   [origin=predictive method=lee-kesler]
+Tb          1254.45;      // K   [origin=predictive method=joback]
+HvapTb      121942.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-55.988 3.87324 -0.0023439 5.5966e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 30; } { group CH=CH; count 2; } { group CH2NH; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 32; } { group dCH; count 4; } { group CdO; count 1; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-[3-(octadec-9-enylamino)propyl]octadec-9-enamide" "9-octadecenamide, n-[3-[(9z)-9-octadecen-1-ylamino]propyl]-, (9z)-" "(z)-n-[3-[[(e)-octadec-9-enyl]amino]propyl]octadec-9-enamide" );
+gibbsFormation
+{
+    dHf_298   -619490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1770.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=487800.0
+    phase     gas;
+}

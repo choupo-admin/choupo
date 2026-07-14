@@ -1,0 +1,6 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral rhodochrosite; formula "MnCO3"; masters ( { ion Mn; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
+      logK25 -0.801; dH -20882.3; source "USGS PHREEQC phreeqc.dat (public domain)";
+

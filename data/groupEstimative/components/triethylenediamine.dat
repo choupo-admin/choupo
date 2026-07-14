@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethylenediamine  (C6H12N2, CAS 280-57-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethylenediamine;
+formula     C6H12N2;
+CAS         280-57-9;
+InChIKey    IMNIMPAHZVJRPE-UHFFFAOYSA-N;
+MW          112.176;      // g/mol [origin=calculated method=formula-sum]
+Tc          577.69;      // K   [origin=predictive method=joback]
+Pc          46.151;      // bar [origin=predictive method=joback]
+omega       0.4035;      // -   [origin=predictive method=lee-kesler]
+Tb          384.58;      // K   [origin=predictive method=joback]
+HvapTb      33480.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-136.31 1.1764 -0.001079 3.9e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2N; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 6; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-diazabicyclo[2.2.2]octane" "dabco" "dabco 33lv" "1,4-ethylenepiperazine" "dabco crystal" "1,4-diazabicyclo-octane" "dabco eg" "n,n'-endo-ethylenepiperazine" "teda" "thancat td 33" "d 33lv" "1,4-diazabicyclo(2.2.2)octane" );
+gibbsFormation
+{
+    dHf_298   154170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     326.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=358120.0
+    phase     gas;
+}

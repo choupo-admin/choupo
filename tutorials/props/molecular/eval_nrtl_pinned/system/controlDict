@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "EVALUATE pinned what-if + the leakage sentinel: a pinned run mutates NOTHING (forum #63-7)";
+verbosity     3;

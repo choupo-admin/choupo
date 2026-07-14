@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: calycotomine  (C12H17NO3, CAS 4356-47-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        calycotomine;
+formula     C12H17NO3;
+CAS         4356-47-2;
+InChIKey    JVLGDDNDVOSMSI-UHFFFAOYSA-N;
+MW          223.272;      // g/mol [origin=calculated method=formula-sum]
+Tc          921.35;      // K   [origin=predictive method=joback]
+Pc          29.345;      // bar [origin=predictive method=joback]
+omega       1.2005;      // -   [origin=predictive method=lee-kesler]
+Tb          712.36;      // K   [origin=predictive method=joback]
+HvapTb      74910.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.821 0.92194 -0.00038068 1.91e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 2; } { group AC; count 2; } { group ACCH2; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group CH3O; count 2; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH; count 1; } { group O; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(6,7-dimethoxy-1,2,3,4-tetrahydroisoquinolin-1-yl)methanol" "(6,7-dimethoxy-1,2,3,4-tetrahydro-isoquinolin-1-yl)-methanol" "(+)-calycotomine" "aa277" "(6,7-dimethoxy-1,2,3,4-tetrahydroisoquinolyl)methan-1-ol" "1,2,3,4-tetrahydro-6,7-dimethoxy-1-isoquinolinemethanol" );
+gibbsFormation
+{
+    dHf_298   -401110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     495.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76780.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 3-oxooctadecanoate  (C20H38O3, CAS 62625-23-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl3Oxooctadecanoate;
+formula     C20H38O3;
+CAS         62625-23-4;
+InChIKey    SRIODMROVCTKJW-UHFFFAOYSA-N;
+MW          326.521;      // g/mol [origin=calculated method=formula-sum]
+Tc          946.85;      // K   [origin=predictive method=joback]
+Pc          10.610;      // bar [origin=predictive method=joback]
+omega       0.9604;      // -   [origin=predictive method=lee-kesler]
+Tb          769.29;      // K   [origin=predictive method=joback]
+HvapTb      74267.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.476 1.82104 -0.0009509 1.6066e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 14; } { group CH2CO; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 16; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 3-oxidanylideneoctadecanoate" "octadecanoic acid, 3-oxo-, ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -885990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1013.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-321770.0
+    phase     gas;
+}

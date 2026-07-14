@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,5,8,11,14,17-Hexaoxaoctadecane  (C12H26O6, CAS 1191-87-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        258111417Hexaoxaoctadecane;
+formula     C12H26O6;
+CAS         1191-87-3;
+InChIKey    DMDPGPKXQDIQQG-UHFFFAOYSA-N;
+MW          266.334;      // g/mol [origin=calculated method=formula-sum]
+Tc          770.73;      // K   [origin=predictive method=joback]
+Pc          16.365;      // bar [origin=predictive method=joback]
+omega       1.0063;      // -   [origin=predictive method=lee-kesler]
+Tb          608.68;      // K   [origin=predictive method=joback]
+HvapTb      56766.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (144.98 0.76464 3.7e-05 -1.972e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH3O; count 2; } { group CH2O; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 10; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methoxy-2-[2-[2-[2-(2-methoxyethoxy)ethoxy]ethoxy]ethoxy]ethane" "Ethane, 1,2-bis[2-(2-methoxyethoxy)ethoxy]-" "pentaethylene glycol, dimethyl ether" "pentaglyme" "pentaethyleneglycol dimethyl ether" "1-(2-METHOXY-ETHOXY)-2-{2-[2-(2-METHOXY-ETHOXY]-ETHOXY}-ETHANE" "1-(2-METHOXY-ETHOXY)-2-(2-(2-(2-METHOXY-ETHOXY)-ETHOXY)-ETHANE" "1,14-dimethoxy-3,6,9,12-tetraoxa-tetradecane" "2,8,11,14,17-hexaoxaoctadecane" "NSC244990" "DB02580" "AS-76354" );
+gibbsFormation
+{
+    dHf_298   -1084330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     691.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-579840.0
+    phase     gas;
+}

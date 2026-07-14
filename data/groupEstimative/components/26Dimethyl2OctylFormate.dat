@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,6-dimethyl-2-octyl formate  (C11H22O2, CAS 72785-17-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C11H22O2 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        26Dimethyl2OctylFormate;
+formula     C11H22O2;
+CAS         72785-17-2;
+InChIKey    KQZSQDZXBHFWGC-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          186.295;      // g/mol [origin=calculated method=formula-sum]
+Tc          597.55;      // K   [origin=predictive method=joback]
+Pc          20.019;      // bar [origin=predictive method=joback]
+omega       0.3595;      // -   [origin=predictive method=lee-kesler]
+Tb          424.03;      // K   [origin=predictive method=joback]
+HvapTb      36023.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-52.766 1.18868 -0.0009026 2.878e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group HCOO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6-dimethyloctan-2-yl methanoate" "2,6-dimethyloctan-2-yl formate" "2-octanol, 2,6-dimethyl-, formate" "2-octanol, 2,6-dimethyl-, 2-formate" "2-octanol,2,6-dimethyl-, 2-formate" "2-octanol,2,6-dimethyl-, formate (9ci)" );
+gibbsFormation
+{
+    dHf_298   -207950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     719.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=86100.0
+    phase     gas;
+}

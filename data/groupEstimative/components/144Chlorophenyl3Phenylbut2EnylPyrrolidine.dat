@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(4-(4-chlorophenyl)-3-phenylbut-2-enyl)pyrrolidine  (C20H22ClN, CAS 91-82-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        144Chlorophenyl3Phenylbut2EnylPyrrolidine;
+formula     C20H22ClN;
+CAS         91-82-7;
+InChIKey    WDYYVNNRTDZKAZ-UHFFFAOYSA-N;
+MW          311.853;      // g/mol [origin=calculated method=formula-sum]
+Tc          1031.56;      // K   [origin=predictive method=joback]
+Pc          19.153;      // bar [origin=predictive method=joback]
+omega       0.7770;      // -   [origin=predictive method=lee-kesler]
+Tb          785.13;      // K   [origin=predictive method=joback]
+HvapTb      72188.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-141.778 2.0049 -0.00150786 4.461e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH=C; count 1; } { group ACH; count 9; } { group AC; count 1; } { group ACCH2; count 1; } { group CH2N; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 4; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group Cl; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[4-(4-chlorophenyl)-3-phenyl-but-2-enyl]pyrrolidine" "1-[4-(4-chlorophenyl)-3-phenylbut-2-enyl]pyrrolidine" );
+gibbsFormation
+{
+    dHf_298   251660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     726.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=559590.0
+    phase     gas;
+}

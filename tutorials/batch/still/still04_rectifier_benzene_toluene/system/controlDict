@@ -1,0 +1,9 @@
+application   choupoBatch;
+description   "batch rectification: 3 stages + total condenser, R=3, with receiver tank (dischargeTo accumulator)";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         600;      // s
+deltaT          1.0;      // s
+writeInterval   20;       // s

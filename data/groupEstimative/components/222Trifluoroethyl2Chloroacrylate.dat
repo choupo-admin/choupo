@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,2-trifluoroethyl 2-chloroacrylate  (C5H4ClF3O2, CAS 74359-02-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        222Trifluoroethyl2Chloroacrylate;
+formula     C5H4ClF3O2;
+CAS         74359-02-7;
+InChIKey    BOASSOYETJYEJF-UHFFFAOYSA-N;
+MW          188.529;      // g/mol [origin=calculated method=formula-sum]
+Tc          572.69;      // K   [origin=predictive method=joback]
+Pc          30.899;      // bar [origin=predictive method=joback]
+omega       0.4831;      // -   [origin=predictive method=lee-kesler]
+Tb          400.79;      // K   [origin=predictive method=joback]
+HvapTb      34179.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (27.761 0.5719 -0.0004202 1.081e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2=C; count 1; } { group Cl_C=C_; count 1; } { group CF3; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 3; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,2-tris(fluoranyl)ethyl 2-chloranylprop-2-enoate" "2-propenoic acid, 2-chloro-, 2,2,2-trifluoroethyl ester, homopolymer" "2,2,2-trifluoroethyla-chloroacrylate" "2,2,2-trifluoroethyl 2-chloroprop-2-enoate" "2-propenoic acid,2-chloro-, 2,2,2-trifluoroethyl ester" );
+gibbsFormation
+{
+    dHf_298   -960990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     482.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-833380.0
+    phase     gas;
+}

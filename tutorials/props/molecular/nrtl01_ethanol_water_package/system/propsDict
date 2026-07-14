@@ -1,0 +1,10 @@
+operations
+(
+    {
+        name        g_nrtl;
+        type        activityCoefficients;
+        temperature 298.15;
+        composition { ethanol 0.5; water 0.5; }
+        output      { file gamma_nrtl.csv; }
+    }
+);

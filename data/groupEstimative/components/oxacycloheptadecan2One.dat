@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxacycloheptadecan-2-one  (C16H30O2, CAS 109-29-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oxacycloheptadecan2One;
+formula     C16H30O2;
+CAS         109-29-5;
+InChIKey    LOKPJYNMYCVCRM-UHFFFAOYSA-N;
+MW          254.414;      // g/mol [origin=calculated method=formula-sum]
+Tc          932.91;      // K   [origin=predictive method=joback]
+Pc          19.136;      // bar [origin=predictive method=joback]
+omega       0.5381;      // -   [origin=predictive method=lee-kesler]
+Tb          686.55;      // K   [origin=predictive method=joback]
+HvapTb      60903.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-103.88 1.5312 -0.0004708 -1.092e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 14; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 15; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-oxacycloheptadecan-2-one" "hexadecanolide" "cyclohexadecanolide" "16-hexadecanolactone" "dihydroambrettolide" "1,16-hexadecanolide" "juniperic acid lactone" "1,16-hexadecalactone" "1,16-hexadecanolactone" "16-hydroxyhexadecanoic acid lactone" "hexadecanoic acid, 16-hydroxy-, omicron-lactone" "ambap109-29-5" );
+gibbsFormation
+{
+    dHf_298   -671630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1021.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-303270.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n'-dimethyloxamide  (C4H8N2O2, CAS 615-35-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDimethyloxamide;
+formula     C4H8N2O2;
+CAS         615-35-0;
+InChIKey    IPZCJUOJSODZNK-UHFFFAOYSA-N;
+MW          116.12;      // g/mol [origin=calculated method=formula-sum]
+Tc          698.32;      // K   [origin=predictive method=joback]
+Pc          47.562;      // bar [origin=predictive method=joback]
+omega       0.8060;      // -   [origin=predictive method=lee-kesler]
+Tb          499.20;      // K   [origin=predictive method=joback]
+HvapTb      50862.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.55 0.48024 -0.0002536 3.932e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CONHCH3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CdO; count 2; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n'-dimethylethanediamide" "nn'-dimethyloxamide" "n,n'-dimethyloxalamide" "n1,n2-dimethyloxalamide" "ethanediamide,n'-dimethyl-" "ethanediamide, n,n'-dimethyl-" "n1,n2-dimethylethanediamide" "n-methyl-n'-methylethane-1,2-diamide" "r814" );
+gibbsFormation
+{
+    dHf_298   -244110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     446.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-96260.0
+    phase     gas;
+}

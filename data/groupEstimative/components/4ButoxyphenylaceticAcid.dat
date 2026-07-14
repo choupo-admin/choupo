@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-butoxyphenylacetic acid  (C12H16O3, CAS 4547-57-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4ButoxyphenylaceticAcid;
+formula     C12H16O3;
+CAS         4547-57-3;
+InChIKey    KLJMYYFCWBVKEE-UHFFFAOYSA-N;
+MW          208.257;      // g/mol [origin=calculated method=formula-sum]
+Tc          884.95;      // K   [origin=predictive method=joback]
+Pc          25.456;      // bar [origin=predictive method=joback]
+omega       0.9579;      // -   [origin=predictive method=lee-kesler]
+Tb          673.75;      // K   [origin=predictive method=joback]
+HvapTb      64818.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (2.474 0.99302 -0.00055476 1.054e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group CH2O; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-butoxyphenyl)ethanoic acid" "4-n-butoxyphenylacetic acid" "2-(4-butoxyphenyl)acetic acid" "4-butoxybenzeneacetic acid" "(p-butoxyphenyl)acetic acid" "4-(n-butoxyphenyl)acetic acid" "acetic acid, (p-butoxyphenyl)-" "(4-butoxyphenyl)acetic acid" "p-butoxyphenylacetic acid" "benzeneacetic acid, 4-butoxy-" "(4-butoxy-phenyl)-acetic acid" "benzeneacetic acid, 4-butoxy- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -548440.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     575.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-295970.0
+    phase     gas;
+}

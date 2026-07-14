@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrakis(2-ethylbutoxy)silane  (C24H52O4Si, CAS 78-13-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C24H52O4Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        tetrakis2EthylbutoxySilane;
+formula     C24H52O4Si;
+CAS         78-13-7;
+InChIKey    SWQWONXMUXCEDF-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          432.761;      // g/mol [origin=calculated method=formula-sum]
+Tc          1026.12;      // K   [origin=predictive method=joback]
+Pc          7.392;      // bar [origin=predictive method=joback]
+omega       0.6921;      // -   [origin=predictive method=lee-kesler]
+Tb          838.04;      // K   [origin=predictive method=joback]
+HvapTb      77400.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (117.162 1.84856 -0.0004358 -1.64e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 8; } { group CH2; count 8; } { group CH; count 4; } { group CH2O; count 4; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2; count 12; } { group CH; count 4; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetrakis(2-ethylbutyl) silicate" "coolanol 25" "silane, tetrakis(2-ethylbutoxy)-" "2-ethylbutyl orthosilicate" "tetra(2-ethylbutoxy) silane" "silicic acid (h4sio4), tetrakis(2-ethylbutyl) ester" "2-ethyl-1-butanol, silicate" "tetra (2-ethylbutyl) orthosilicate" "tetrakis(2-ethylbutyl) orthosilicate" "1-butanol, 2-ethyl-, silicate (6ci,7ci)" "silicic acid, tetra(2-ethylbutyl) ester" "silicic acid (h4sio4),tetrakis(2-ethylbutyl) ester" );
+gibbsFormation
+{
+    dHf_298   -1200310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1224.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-383320.0
+    phase     gas;
+}

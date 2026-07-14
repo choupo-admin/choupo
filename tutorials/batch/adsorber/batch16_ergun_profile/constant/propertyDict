@@ -1,0 +1,3 @@
+components       ( He );
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

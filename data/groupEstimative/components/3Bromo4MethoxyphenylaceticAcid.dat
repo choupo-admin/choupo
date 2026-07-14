@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-bromo-4-methoxyphenylacetic acid  (C9H9BrO3, CAS 774-81-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Bromo4MethoxyphenylaceticAcid;
+formula     C9H9BrO3;
+CAS         774-81-2;
+InChIKey    POTVGQUUEQTPNA-UHFFFAOYSA-N;
+MW          245.072;      // g/mol [origin=calculated method=formula-sum]
+Tc          910.91;      // K   [origin=predictive method=joback]
+Pc          37.180;      // bar [origin=predictive method=joback]
+omega       0.9647;      // -   [origin=predictive method=lee-kesler]
+Tb          676.25;      // K   [origin=predictive method=joback]
+HvapTb      65237.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (27.691 0.68672 -0.00039592 7.89e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACCH2; count 1; } { group CH3O; count 1; } { group COOH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(3-bromanyl-4-methoxy-phenyl)ethanoic acid" "2-(3-bromo-4-methoxyphenyl)acetic acid" "(3-bromo-4-methoxyphenyl)acetic acid" "3-bromo-4-methoxy-phenyl acetic acid" "(3-bromo-4-methoxy-phenyl)-acetic acid" "3-bromo-4-methoxyphenylaceticacid" "3-bromo-4-methyloxyphenylacetic acid" "2-(3-bromo-4-methoxyphenyl)acetic acid;2-(3-bromo-4-methoxy-phenyl)acetic acid" "aceticacid, (3-bromo-4-methoxyphenyl)- (6ci,7ci,8ci);2-(3-bromo-4-methoxyphenyl)acetic acid;3-bromo-4-methoxyphenylacetic acid;" );
+gibbsFormation
+{
+    dHf_298   -471660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     503.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-316540.0
+    phase     gas;
+}

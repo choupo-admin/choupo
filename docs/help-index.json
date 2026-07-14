@@ -38,7 +38,11 @@
     "propertyPoint":    { "guide": "theory", "anchor": "ch:criticals",     "title": "Property evaluation" },
     "propertyScan1D":   { "guide": "theory", "anchor": "ch:criticals",     "title": "Property evaluation" },
     "propertyScan2D":   { "guide": "theory", "anchor": "ch:criticals",     "title": "Property evaluation" },
-    "fitParameters":    { "guide": "props",  "anchor": "ch:pairs",         "title": "Fit binary-pair parameters" }
+    "fitParameters":    { "guide": "props",  "anchor": "ch:pairs",         "title": "Fit binary-pair parameters" },
+    "psa":              { "guide": "theory", "anchor": "ch:adsorption",    "title": "Adsorption (isotherms, LDF, fixed bed; twin-bed PSA shortcut)" },
+    "batchAdsorber":    { "guide": "theory", "anchor": "ch:adsorption",    "title": "Adsorption (isotherms, LDF uptake vessel)" },
+    "fixedBedAdsorber": { "guide": "theory", "anchor": "ch:adsorption",    "title": "Adsorption (fixed-bed breakthrough)" },
+    "isothermEval":     { "guide": "theory", "anchor": "ch:adsorption",    "title": "Adsorption isotherm bench (Henry / Langmuir gates)" }
   },
   "workspaces": {
     "explore":   { "guide": "theory", "anchor": "ch:criticals",        "title": "Property explorer" },

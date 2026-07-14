@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-butyne, 3-methyl  (C5H7, CAS 56897-57-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        1Butyne3Methyl;
+formula     C5H7;
+CAS         56897-57-5;
+InChIKey    UBVYXPFZHYUPRW-UHFFFAOYSA-N;
+role        radical;
+MW          67.111;      // g/mol [origin=calculated method=formula-sum]
+Tc          489.69;      // K   [origin=predictive method=joback]
+Pc          43.340;      // bar [origin=predictive method=joback]
+omega       0.1562;      // -   [origin=predictive method=lee-kesler]
+Tb          306.08;      // K   [origin=predictive method=joback]
+HvapTb      26641.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.34 0.39484 -0.00028833 9.219e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 2; } { group dC; count 1; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylbut-1-yne" "2-methyl-3-butyn-2-yl" "hc.equiv.cc(ch3)2" "3-methylbut-1-yn-3-yl" );
+gibbsFormation
+{
+    dHf_298   194190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     312.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=245850.0
+    phase     gas;
+}

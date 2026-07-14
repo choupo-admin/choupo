@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-amino-4,5-dimethylphenol  (C8H11NO, CAS 6623-41-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Amino45Dimethylphenol;
+formula     C8H11NO;
+CAS         6623-41-2;
+InChIKey    JEASLLCHQHBBGM-UHFFFAOYSA-N;
+MW          137.182;      // g/mol [origin=calculated method=formula-sum]
+Tc          810.44;      // K   [origin=predictive method=joback]
+Pc          45.716;      // bar [origin=predictive method=joback]
+omega       0.7090;      // -   [origin=predictive method=lee-kesler]
+Tb          572.43;      // K   [origin=predictive method=joback]
+HvapTb      60657.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.12 0.78244 -0.00060828 2.038e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group ACCH3; count 2; } { group ACOH; count 1; } { group ACNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-4,5-dimethyl-phenol" "2-amino-4,5-xylenol" "4,5-dimethyl-2-aminophenol" "2-amino-4,5-dimethyl-phenol" "phenol, 2-amino-4,5-dimethyl-" "4,5-xylenol, 2-amino-" "3, 6-amino-" "3,4-xylenol, 6-amino-" "4,5-dimethyl-2-hydroxyaniline" "phenol,2-amino-4,5-dimethyl-" "3,4-xylenol, 6-amino- (8ci)" );
+gibbsFormation
+{
+    dHf_298   -138380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     426.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=21460.0
+    phase     gas;
+}

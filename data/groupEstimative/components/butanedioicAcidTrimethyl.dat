@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butanedioic acid, trimethyl-  (C7H12O4, CAS 2103-16-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butanedioicAcidTrimethyl;
+formula     C7H12O4;
+CAS         2103-16-4;
+InChIKey    KJDGGLOKWHMBOX-UHFFFAOYSA-N;
+MW          160.169;      // g/mol [origin=calculated method=formula-sum]
+Tc          863.07;      // K   [origin=predictive method=joback]
+Pc          35.221;      // bar [origin=predictive method=joback]
+omega       1.0185;      // -   [origin=predictive method=lee-kesler]
+Tb          647.11;      // K   [origin=predictive method=joback]
+HvapTb      63820.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.43 0.90216 -0.0006772 1.995e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH; count 1; } { group C; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group C; count 1; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3-trimethylbutanedioic acid" "trimethyl butanedioic acid" "agn-pc-03vopm" "benzenepropanoic acid,.beta.-dicyano-.beta.-phenyl-.alpha.-(phenylmethyl)-" "benzenepropanoic acid, .alpha., .beta.-dicyano-.beta.-phenyl-.alpha.-(phenylmethyl)-" "benzenepropanoic acid, .alpha.,.beta.-dicyano-.beta.-phenyl-.alpha.-(phenylmethyl)-" "2,2,3-trimethylsuccinic acid; 2,3-butanedicarboxylic acid, 2-methyl-; benzenepropanoic acid, .alpha., .beta.-dicyano-.beta.-phenyl-.alpha.-(phenylmethyl)-" );
+gibbsFormation
+{
+    dHf_298   -902380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     486.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-679360.0
+    phase     gas;
+}

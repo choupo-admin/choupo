@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n'-(3-((3-aminopropyl)amino)propyl)-n,n-dimethylpropane-1,3-diamine  (C11H28N4, CAS 19475-69-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        n33AminopropylAminoPropylNNDimethylpropane13Diamine;
+formula     C11H28N4;
+CAS         19475-69-5;
+InChIKey    OYEMOASLKDSYHR-UHFFFAOYSA-N;
+MW          216.373;      // g/mol [origin=calculated method=formula-sum]
+Tc          813.07;      // K   [origin=predictive method=joback]
+Pc          20.793;      // bar [origin=predictive method=joback]
+omega       1.0927;      // -   [origin=predictive method=lee-kesler]
+Tb          636.59;      // K   [origin=predictive method=joback]
+HvapTb      65636.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.731 1.38704 -0.0008278 1.891e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CH2NH2; count 1; } { group CH2NH; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 9; } { group NH2; count 1; } { group NH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n'-[3-[3-(dimethylamino)propylamino]propyl]propane-1,3-diamine" "1,3-propanediamine, n'-(3-((3-aminopropyl)amino)propyl)-n,n-dimethyl-" "1,3-propanediamine, n'-[3-[(3-aminopropyl)amino]propyl]-n,n-dimethyl-" "1,3-propanediamine, n3-(3-((3-aminopropyl)amino)propyl)-n1,n1-dimethyl-" "1,3-propanediamine, n3-[3-[(3-aminopropyl)amino]propyl]-n1,n1-dimethyl-" "n'-[3-[(3-aminopropyl)amino]propyl]-n,n-dimethylpropane-1,3-diamine" );
+gibbsFormation
+{
+    dHf_298   -62110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     733.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=397750.0
+    phase     gas;
+}

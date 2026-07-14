@@ -72,3 +72,32 @@ nacl    // Phi_L [cal/mol], 25 C   (m [mol/kg]) -- the smoke-test oracle:
     { m 5.0000;   phiL -449; } { m 5.5506;   phiL -469; } { m 5.8427;  phiL -476; }
     { m 6.0000;   phiL -479; } { m 6.1674;   phiL -480; }
 );
+
+// KCl(aq) -- Parker NSRDS-NBS 2 (1965), Table XV A (printed pp. 58-59),
+// transcribed by visual read 2026-07-02 (same protocol as the series above;
+// SPOT-CHECK before design use).  Saturation 4.803 mol/kg; the 5.0 row is
+// Parker's supersaturated entry, kept for completeness.
+kcl
+(
+    { m 0.1;    phiL 80; }
+    { m 0.1388; phiL 84; }
+    { m 0.185;  phiL 85; }
+    { m 0.2775; phiL 81; }
+    { m 0.37;   phiL 72; }
+    { m 0.5;    phiL 57; }
+    { m 0.7401; phiL 23; }
+    { m 1.0;    phiL -15; }
+    { m 1.1101; phiL -32; }
+    { m 1.3877; phiL -73; }
+    { m 1.5;    phiL -89; }
+    { m 1.8502; phiL -139; }
+    { m 2.0;    phiL -162; }
+    { m 2.2202; phiL -190; }
+    { m 2.5;    phiL -228; }
+    { m 2.7753; phiL -263; }
+    { m 3.0;    phiL -289; }
+    { m 3.5;    phiL -344; }
+    { m 4.0;    phiL -395; }
+    { m 4.5;    phiL -440; }
+    { m 5.0;    phiL -480; }
+);

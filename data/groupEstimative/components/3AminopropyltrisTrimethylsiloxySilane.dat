@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-aminopropyltris(trimethylsiloxy)silane  (C12H35NO3Si4, CAS 25357-81-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C12H35NO3Si4 (delta Si+4; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        3AminopropyltrisTrimethylsiloxySilane;
+formula     C12H35NO3Si4;
+CAS         25357-81-7;
+InChIKey    KCJAIHQXOQUWTI-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          353.756;      // g/mol [origin=calculated method=formula-sum]
+Tc          808.24;      // K   [origin=predictive method=joback]
+Pc          12.363;      // bar [origin=predictive method=joback]
+omega       0.5523;      // -   [origin=predictive method=lee-kesler]
+Tb          619.55;      // K   [origin=predictive method=joback]
+HvapTb      61353.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (238.243 0.19148 0.0013198 -8.906e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 9; } { group CH2; count 2; } { group CH2NH2; count 1; } { group Si; count 1; } { group SiO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 9; } { group CH2; count 3; } { group O; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-tris(trimethylsilyloxy)silylpropan-1-amine" "(3-aminopropyl)tris(trimethylsiloxy)silane" "3-(1,1,1,5,5,5-hexamethyl-3-((trimethylsilyl)oxy)trisiloxan-3-yl)propan-1-amine" "3-[tris(trimethylsiloxy)silyl]propylamine" "1-propanamine, 3-[3,3,3-trimethyl-1,1-bis[(trimethylsilyl)oxy]-1-disiloxanyl]-" "1-propanamine, 3-[3,3,3-trimethyl-1,1-bis[(trimethylsilyl)oxy]disiloxanyl]-" "1-propanamine,3-[3,3,3-trimethyl-1,1-bis[(trimethylsilyl)oxy]-1-disiloxanyl]-" "propylamine, 3-[3,3,3-trimethyl-1,1-bis(trimethylsiloxy)disiloxanyl]- (8ci);3-tris[(trimethylsilyl)oxy]silyl]propylamine;a 0805;tris(trimethylsiloxy)(3-aminopropyl)silane;" );
+gibbsFormation
+{
+    dHf_298   -1100360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1214.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-617430.0
+    phase     gas;
+}

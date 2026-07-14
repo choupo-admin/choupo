@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hydroxycitronellal dimethyl acetal  (C12H26O3, CAS 141-92-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hydroxycitronellalDimethylAcetal;
+formula     C12H26O3;
+CAS         141-92-4;
+InChIKey    QCJVKUULZGKQDG-UHFFFAOYSA-N;
+MW          218.337;      // g/mol [origin=calculated method=formula-sum]
+Tc          777.29;      // K   [origin=predictive method=joback]
+Pc          19.287;      // bar [origin=predictive method=joback]
+omega       1.0134;      // -   [origin=predictive method=lee-kesler]
+Tb          607.07;      // K   [origin=predictive method=joback]
+HvapTb      61733.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.434 1.1891 -0.0006156 1.027e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 2; } { group C; count 1; } { group OH; count 1; } { group CH3O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 4; } { group CH; count 2; } { group C; count 1; } { group OH; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8,8-dimethoxy-2,6-dimethyl-octan-2-ol" "8,8-dimethoxy-2,6-dimethyloctan-2-ol" "laurine dimethyl acetal" "2-octanol, 8,8-dimethoxy-2,6-dimethyl-" "8,8-dimethoxy-2,6-dimethyl-2-octanol" "hydroxycitronellal dma" "octanal, 7-hydroxy-3,7-dimethyl-, dimethyl acetal" "1,1-dimethoxy-3,7-dimethyl-7-octanol" "7-hydroxy-3,7-dimethyloctanal dimethyl acetal" "7-hydroxy-3, dimethyl acetal" "hydroxycitronella dimethyl acetal" "citronellal hydrate dimethylacetal" );
+gibbsFormation
+{
+    dHf_298   -726990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     638.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-298700.0
+    phase     gas;
+}

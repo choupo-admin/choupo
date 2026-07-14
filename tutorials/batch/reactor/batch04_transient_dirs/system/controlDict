@@ -1,5 +1,5 @@
 application   choupoBatch;
-description   "Adiabatic batch esterification with OpenFOAM-style REAL-TIME instant dirs: watch conversion climb 0 -> ~0.9 and T runaway 320 -> ~445 K by scrubbing 0/ 30/ 60/ ... s";
+description   "Adiabatic batch esterification with OpenFOAM-style REAL-TIME instant dirs: watch conversion climb 0 -> 1 and T runaway 320 -> ~428 K by scrubbing 0/ 30/ 60/ ... s";
 
 verbosity     3;
 

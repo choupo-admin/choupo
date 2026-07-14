@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(4-amino-3-methylcyclohexyl)methane  (C15H30N2, CAS 6864-37-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis4Amino3MethylcyclohexylMethane;
+formula     C15H30N2;
+CAS         6864-37-5;
+InChIKey    IGSBHTZEJMPDSZ-UHFFFAOYSA-N;
+MW          238.419;      // g/mol [origin=calculated method=formula-sum]
+Tc          941.24;      // K   [origin=predictive method=joback]
+Pc          19.475;      // bar [origin=predictive method=joback]
+omega       0.6993;      // -   [origin=predictive method=lee-kesler]
+Tb          708.28;      // K   [origin=predictive method=joback]
+HvapTb      69888.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-105.219 1.69084 -0.0008194 9.57e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 7; } { group CH; count 4; } { group CHNH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 6; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[(4-azanyl-3-methyl-cyclohexyl)methyl]-2-methyl-cyclohexan-1-amine" "4,4'-methylenebis(2-methylcyclohexanamine)" "cyclohexanamine, 4,4'-methylenebis[2-methyl-" "cyclohexanamine, 4,4'-methylenebis(2-methyl-" "3,3'-dimethyl-4,4'-diaminodicyclohexylmethane" "2,2'-dimethyl-4,4'-methylenebis(cyclohexylamine)" "4-[(4-amino-3-methylcyclohexyl)methyl]-2-methylcyclohexan-1-amine" "4,4'-methylenebis(2-methylcyclohexylamine)" "cyclohexanamine,4,4'-methylenebis[2-methyl-" "4,4'-diamino-3,3'-dimethyldicyclohexylmethane" "4,4'-methylenebis(1-amino-2-methylcyclohexane)" "4,4'-methylenebis(2-methylcyclohexylamine), mixture of isomers" );
+gibbsFormation
+{
+    dHf_298   -258070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     613.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=226380.0
+    phase     gas;
+}

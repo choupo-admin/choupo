@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopropane, hexamethyl-  (C9H18, CAS 2570-81-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopropaneHexamethyl;
+formula     C9H18;
+CAS         2570-81-2;
+InChIKey    LYCXQUUVVUQJKZ-UHFFFAOYSA-N;
+MW          126.243;      // g/mol [origin=calculated method=formula-sum]
+Tc          603.93;      // K   [origin=predictive method=joback]
+Pc          28.203;      // bar [origin=predictive method=joback]
+omega       0.2420;      // -   [origin=predictive method=lee-kesler]
+Tb          403.64;      // K   [origin=predictive method=joback]
+HvapTb      31470.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-193.63 1.83252 -0.002173 1.0328e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group C; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group C_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2,2,3,3-hexamethylcyclopropane" );
+gibbsFormation
+{
+    dHf_298   -151250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     540.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=53760.0
+    phase     gas;
+}

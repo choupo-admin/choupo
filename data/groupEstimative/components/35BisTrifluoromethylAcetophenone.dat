@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3',5'-bis(trifluoromethyl)acetophenone  (C10H6F6O, CAS 30071-93-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35BisTrifluoromethylAcetophenone;
+formula     C10H6F6O;
+CAS         30071-93-3;
+InChIKey    MCYCSIKSZLARBD-UHFFFAOYSA-N;
+MW          256.145;      // g/mol [origin=calculated method=formula-sum]
+Tc          689.59;      // K   [origin=predictive method=joback]
+Pc          23.888;      // bar [origin=predictive method=joback]
+omega       0.6649;      // -   [origin=predictive method=lee-kesler]
+Tb          508.07;      // K   [origin=predictive method=joback]
+HvapTb      40706.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.55 1.05032 -0.00084062 2.5186e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group CH3CO; count 1; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 6; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[3,5-bis(trifluoromethyl)phenyl]ethanone" "3,5-bis(trifluoromethyl)acetophenone" "mbt-ac" "1-[3,5-bis(trifluoromethyl)phenyl]ethan-1-one" "1-[3,5-di(trifluoromethyl)phenyl]ethan-1-one" "1-acetyl-3,5-bis(trifluoromethyl)benzene" "3',5'-bis(triftuaromethyl) acetophenone" "3,5-bis(trifluoromethyl) acetophenone" "3',5'-bis(triftuaromethyl)acetophenone" "1-(3,5-bis(trifluoromethyl)phenyl)ethanone" "3,5-bis(trifluoromethyl)phenylmethylketone" "1-(3,5-bis(trifluoromethyl)phenyl)ethan-1-one" );
+gibbsFormation
+{
+    dHf_298   -1342880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     565.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1165630.0
+    phase     gas;
+}

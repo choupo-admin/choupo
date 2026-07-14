@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chondrillasterol  (C29H48O, CAS 481-17-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chondrillasterol;
+formula     C29H48O;
+CAS         481-17-4;
+InChIKey    JZVFJDZBLUFKCA-INYURWPISA-N;
+MW          412.702;      // g/mol [origin=calculated method=formula-sum]
+Tc          1225.73;      // K   [origin=predictive method=joback]
+Pc          9.908;      // bar [origin=predictive method=joback]
+omega       0.9131;      // -   [origin=predictive method=lee-kesler]
+Tb          997.06;      // K   [origin=predictive method=joback]
+HvapTb      93858.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-324.069 3.77502 -0.00314564 1.128e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 9; } { group CH; count 8; } { group C; count 2; } { group CH=CH; count 1; } { group CH=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 1; } { group CH; count 3; } { group dCH; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,5s,9r,10s,13r,14r,17r)-17-[(e,2r,5r)-5-ethyl-6-methyl-hept-3-en-2-yl]-10,13-dimethyl-2,3,4,5,6,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-ol" "chondryllasterol" "chondrillasterol [mi]" "poriferasta-7,22e-dien-3beta-ol" "trans-delta22-24beta-ethyllathosterol" "24beta-ethylcholesta-7,22-dien-3beta-ol" "24s-ethyl-5alpha-cholesta-7,22e-dien-3beta-ol" "5alpha-stigmasta-7,22-dien-3beta-ol, (24r)-" "stigmasta-7,22-dien-3-ol, (3beta,5alpha,22e,24r)-" "(3s,5s,9r,10s,13r,14r,17r)-17-[(e,2r,5r)-5-ethyl-6-methylhept-3-en-2-yl]-10,13-dimethyl-2,3,4,5,6,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-ol" );
+gibbsFormation
+{
+    dHf_298   -416570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1008.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=298100.0
+    phase     gas;
+}

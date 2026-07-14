@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hyrcanin  (C19H24Cl2O7, CAS 37006-36-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hyrcanin;
+formula     C19H24Cl2O7;
+CAS         37006-36-3;
+InChIKey    NUVAJKJDTZTFLK-JZEHSGLZSA-N;
+MW          435.294;      // g/mol [origin=calculated method=formula-sum]
+Tc          1362.85;      // K   [origin=predictive method=joback]
+Pc          17.075;      // bar [origin=predictive method=joback]
+omega       1.3838;      // -   [origin=predictive method=lee-kesler]
+Tb          1107.57;      // K   [origin=predictive method=joback]
+HvapTb      128227.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-89.008 2.32502 -0.0018184 5.851e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 6; } { group C; count 2; } { group CH2=C; count 2; } { group OH; count 3; } { group CH2Cl; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 1; } { group dCH2; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 6; } { group C_ring; count 1; } { group dC_ring; count 2; } { group Cl; count 2; } { group OH; count 3; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(3ar,4s,6ar,8s,9s,9as)-9-(chloromethyl)-3,6-dimethylidene-8,9-bis(oxidanyl)-2-oxidanylidene-3a,4,5,6a,7,8,9a,9b-octahydroazuleno[4,5-b]furan-4-yl] (2r)-3-chloranyl-2-methyl-2-oxidanyl-propanoate" "centaurepensin" "chlorohyssopiflobin a" "chlorohyssopifolin a" "(3ar,4s,6ar,8s,9s,9as)-9-(chloromethyl)-8,9-dihydroxy-3,6-dimethylidene-2-oxododecahydroazuleno[4,5-b]furan-4-yl(2r)-3-chloro-2-hydroxy-2-methylpropanoate" "propanoic acid, 3-chloro-2-hydroxy-2-methyl-, 9-(chloromethyl)dodecahydro-8,9-dihydroxy-3,6-bis(methylene)-2-oxoazuleno(4,5-b)furan-4-yl ester, (3ar-(3a-alpha,4-alpha(s*),6a-alpha,8-beta,9-alpha,9a-alpha,9b-beta))-" "[(3ar,4s,6ar,8s,9s,9as)-9-(chloromethyl)-8,9-dihydroxy-3,6-dimethylidene-2-oxo-3a,4,5,6a,7,8,9a,9b-octahydroazuleno[4,5-b]furan-4-yl] (2r)-3-chloro-2-hydroxy-2-methylpropanoate" );
+gibbsFormation
+{
+    dHf_298   -1258530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     796.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-715240.0
+    phase     gas;
+}

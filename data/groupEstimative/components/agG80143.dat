@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ag-g-80143  (C28H42O2, CAS 67634-02-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        agG80143;
+formula     C28H42O2;
+CAS         67634-02-0;
+InChIKey    KJTMVMCIPAJMOH-UHFFFAOYSA-N;
+MW          410.642;      // g/mol [origin=calculated method=formula-sum]
+Tc          1140.85;      // K   [origin=predictive method=joback]
+Pc          8.790;      // bar [origin=predictive method=joback]
+omega       0.8007;      // -   [origin=predictive method=lee-kesler]
+Tb          927.48;      // K   [origin=predictive method=joback]
+HvapTb      84782.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-62.643 2.54412 -0.0016562 4.342e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 4; } { group CH; count 1; } { group CH=C; count 4; } { group ACH; count 5; } { group ACCH2; count 1; } { group CH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 7; } { group CH; count 1; } { group dCH; count 4; } { group dC; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-bis(3,7-dimethylocta-2,6-dienoxy)ethylbenzene" "benzene, [2,2-bis[(3,7-dimethyl-2,6-octadienyl)oxy]ethyl]-" "benzene, [2,2-bis[(3,7-dimethyl-2,6-octadien-1-yl)oxy]ethyl]-" "benzene, [2,2-bis[[(2e)-3,7-dimethyl-2,6-octadienyl]oxy]ethyl]-" "benzene, [2,2-bis[[(2e)-3,7-dimethyl-2,6-octadien-1-yl]oxy]ethyl]-" );
+gibbsFormation
+{
+    dHf_298   -224720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1110.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=371530.0
+    phase     gas;
+}

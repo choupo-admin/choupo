@@ -40,26 +40,7 @@
   SI0_module_calcite = -1), vs +0.27 / crossing at module 3 in membrane07.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            700.0 kmol/h;        // ~12.6 m3/h of brackish water
-        T            298.15 K;
-        P            13.0 bar;            // brackish RO operating head
-        molarComposition
-        {
-            water    0.99929269;
-            Ca       3.773117e-5;
-            Mg       1.999839e-5;
-            Na       2.842462e-4;
-            K        5.525272e-6;
-            Cl       2.589668e-4;
-            SO4      4.685160e-5;
-            HCO3     5.398907e-5;
-        }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: i-cholesterol methyl ether  (C28H48O, CAS 2867-93-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        iCholesterolMethylEther;
+formula     C28H48O;
+CAS         2867-93-8;
+InChIKey    DSVYQBSADVVKNY-HHZNOXSWSA-N;
+MW          400.691;      // g/mol [origin=calculated method=formula-sum]
+Tc          1106.22;      // K   [origin=predictive method=joback]
+Pc          9.741;      // bar [origin=predictive method=joback]
+omega       0.7404;      // -   [origin=predictive method=lee-kesler]
+Tb          886.06;      // K   [origin=predictive method=joback]
+HvapTb      74776.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-388.097 4.11752 -0.0037792 1.4841e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 11; } { group CH; count 8; } { group C; count 3; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 3; } { group CH; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 6; } { group C_ring; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6beta-methoxy-i-cholesterol" "3,5-cyclocholestane, 6-methoxy-" "i-cholesteryl methyl ether" "(3" "a,5" "a,6" "a)-6-methoxy-3,5-cyclocholestane" "6-beta-methoxy-3-alpha,5-cyclo-5-alpha-cholestane" "3-alpha,5-cyclo-5-alpha-cholestane, 6-beta-methoxy-" "3,5-cyclocholestane, 6-methoxy-, (3beta,5alpha,6beta)-" "3,5-cyclocholestane, 6-methoxy-, (3-beta,5-alpha,6-beta)-" "3-alpha,5-cyclo-5-alpha-cholestane, 6-beta-methoxy- (8ci)" "3,5-cyclocholestane, 6-methoxy-, (3-beta,5-alpha,6-beta)- (9ci)" "3,5-cyclocholestane, 6-methoxy-, (3beta,5alpha,6beta)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -447990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     866.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=307240.0
+    phase     gas;
+}

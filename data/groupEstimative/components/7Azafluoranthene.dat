@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7-azafluoranthene  (C15H9N, CAS 206-49-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        7Azafluoranthene;
+formula     C15H9N;
+CAS         206-49-5;
+InChIKey    XJWJTIKXJYAHBE-UHFFFAOYSA-N;
+MW          203.244;      // g/mol [origin=calculated method=formula-sum]
+Tc          950.44;      // K   [origin=predictive method=joback]
+Pc          34.319;      // bar [origin=predictive method=joback]
+omega       0.6788;      // -   [origin=predictive method=lee-kesler]
+Tb          682.38;      // K   [origin=predictive method=joback]
+HvapTb      63078.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-97.86 1.32876 -0.00121426 4.437e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 4; } { group C5H3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 9; } { group dC_ring; count 6; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "acenaphtho(1,2-b)pyridine" "acenaphtho[1,2-b]pyridine" "acenaphtho[1,2-b]pyridine(6ci,7ci,8ci,9ci)" );
+gibbsFormation
+{
+    dHf_298   421200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     305.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=559810.0
+    phase     gas;
+}

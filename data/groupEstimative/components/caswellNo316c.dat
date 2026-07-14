@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: caswell no. 316c  (C12H17Cl2NO3, CAS 2758-42-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        caswellNo316c;
+formula     C12H17Cl2NO3;
+CAS         2758-42-1;
+InChIKey    KEIXJOCOXNOKHI-UHFFFAOYSA-N;
+MW          294.172;      // g/mol [origin=calculated method=formula-sum]
+Tc          1028.22;      // K   [origin=predictive method=joback]
+Pc          21.714;      // bar [origin=predictive method=joback]
+omega       1.1254;      // -   [origin=predictive method=lee-kesler]
+Tb          805.16;      // K   [origin=predictive method=joback]
+HvapTb      80980.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (82.163 0.81714 -0.00016232 -1.082e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group ACH; count 3; } { group AC; count 1; } { group CH2O; count 1; } { group CH3NH; count 1; } { group COOH; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group O; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[2,4-bis(chloranyl)phenoxy]butanoic acid;n-methylmethanamine" "2,4-db-dimethylammonium [iso]" "dimethylamine 4-(2,4-dichlorophenoxy)butyrate" "4-(2,4-dichlorophenoxy)butyric acid dimethylamine salt" "butyric acid, 4-(2,4-dichlorophenoxy)-, dimethylamine salt" "2,4-db dimethylamine salt" "4-(2,4-dichlorophenoxy)butyric acid, compound with dimethylamine (1:1)" "butanoic acid, 4-(2,4-dichlorophenoxy)-, compd. with n-methylmethanamine (1:1)" "4-(2,4-dichlorophenoxy)butanoic acid; n-methylmethanamine" "4-(2,4-dichlorophenoxy)butanoic acid - n-methylmethanamine (1:1)" );
+gibbsFormation
+{
+    dHf_298   -649540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     784.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-344830.0
+    phase     gas;
+}

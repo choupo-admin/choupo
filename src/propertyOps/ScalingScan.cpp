@@ -156,7 +156,14 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
     std::vector<std::string> gammaCols;
     if (dict->found("diagSpecies"))
     {
-        if (activityModel != "pitzer" && activityModel != "davies")
+        // `pitzerHMW` is the per-ION Pitzer-Harvie-Moller-Weare engine.  The bare
+        // `pitzer` key was RENAMED to it (the salt-level VLE adapter kept the old
+        // name), and this guard was left behind pointing at a key the speciation
+        // path can no longer be given -- so the flagship scan died on its own
+        // diagnostics.  Accept both: the old name still reaches a per-ion engine
+        // wherever it is still legal.
+        if (activityModel != "pitzerHMW" && activityModel != "pitzer"
+            && activityModel != "davies")
             throw std::runtime_error("scalingScan: `diagSpecies` (per-ion gamma "
                 "columns) is only meaningful for a per-ION activity model "
                 "(activityModel pitzer | davies); the active model is '"

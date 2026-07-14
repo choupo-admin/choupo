@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-dimethylpentane  (C7H16, CAS 590-35-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Dimethylpentane;
+formula     C7H16;
+CAS         590-35-2;
+InChIKey    CXOWYJMDMMMMJO-UHFFFAOYSA-N;
+MW          100.205;      // g/mol [origin=calculated method=formula-sum]
+Tc          531.19;      // K   [origin=predictive method=joback]
+Pc          28.566;      // bar [origin=predictive method=joback]
+omega       0.2629;      // -   [origin=predictive method=lee-kesler]
+Tb          356.53;      // K   [origin=predictive method=joback]
+HvapTb      29880.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.948 0.79468 -0.0005288 1.44e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentane, 2,2-dimethyl-" "2,2-dimethylpentane;" );
+gibbsFormation
+{
+    dHf_298   -196560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     389.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=10900.0
+    phase     gas;
+}

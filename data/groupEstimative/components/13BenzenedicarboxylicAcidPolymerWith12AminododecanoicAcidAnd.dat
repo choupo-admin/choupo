@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-benzenedicarboxylic acid, polymer with 12-aminododecanoic acid and 1,4-butanediol  (C24H41NO8, CAS 73003-20-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13BenzenedicarboxylicAcidPolymerWith12AminododecanoicAcidAnd;
+formula     C24H41NO8;
+CAS         73003-20-0;
+InChIKey    GXHBEWHPHQUPKU-UHFFFAOYSA-N;
+MW          471.591;      // g/mol [origin=calculated method=formula-sum]
+Tc          1988.12;      // K   [origin=predictive method=joback]
+Pc          12.107;      // bar [origin=predictive method=joback]
+omega       0.3414;      // -   [origin=predictive method=lee-kesler]
+Tb          1476.60;      // K   [origin=predictive method=joback]
+HvapTb      168035.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (73.975 2.0153 -0.00073836 -4.48e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 14; } { group ACH; count 4; } { group AC; count 2; } { group OH; count 2; } { group CH2NH2; count 1; } { group COOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 15; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 2; } { group COOH; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "12-azanyldodecanoic acid;benzene-1,3-dicarboxylic acid;butane-1,4-diol" "12-aminododecanoic, 1,4-butanediol, 1,3-benzenedicarboxylic acid polymer" );
+gibbsFormation
+{
+    dHf_298   -1858350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1506.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1194460.0
+    phase     gas;
+}

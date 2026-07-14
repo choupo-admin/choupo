@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer binary ion-interaction parameters --- K(+) / Cl(-) in aqueous
+  solution.
+  Role: the beta0 / beta1 / Cphi set (alpha1 2.0) of the Pitzer virial
+  expansion -- the cation-anion second and third virial coefficients behind
+  the mean activity and osmotic coefficients of the K-Cl pair, consumed by
+  the pitzer (single-salt VLE) and pitzerHMW (multi-ion speciation) activity
+  engines.
+  Temperature: linear calorimetric T-slots (dbeta0/dT, dbeta1/dT, dCphi/dT)
+  fitted to Parker NSRDS-NBS 2 apparent relative molal enthalpies -- see the
+  in-file comments.
+  Source: Appelo, Appl. Geochem. 55 (2015) 62 -- full provenance string in
+  the source entry below.
+\*-----------------------------------------------------------------------------*/
+recordType electrolytePairParameters;
+schemaVersion 1;
+
+model pitzer;
+tCorrelationForm linearSlopes;   // DECLARED (forum #101/#103/#105): typed T-correlation contract
+
+pair { cation K; anion Cl; }
+
+parameters
+{
+    beta0 0.04808;
+    beta1 0.2168;
+    beta2 0.0;
+    Cphi -0.000788;
+    alpha1 2.0;
+    alpha2 12.0;
+    // Silvester-Pitzer linear T-slots, CALORIMETRIC fit to Parker Phi_L(m,25 C)
+    // (rel-AAD 0.97 %, m 0.1-5, |PhiL|>=50 cal/mol band; bin/curate/fit_lphi_pitzer.py).
+    // Validity capped at saturation (4.803 mol/kg); the 25 C surface is untouched.
+    dbeta0_dT 6.818632e-04;
+    dbeta1_dT 8.794310e-04;
+    dCphi_dT -8.359673e-05;
+    lphiValidityMax 4.8;
+    calorimetricFit true;
+}
+
+source "Appelo, Appl. Geochem. 55 (2015) 62; T-slots (refit 2026-07-02, A_phi(T) curated vs SP77 Table II): Parker NSRDS-NBS 2 (1965) Table XV A, curation fit 2026-07-02";

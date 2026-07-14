@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: thiepane  (C6H12S, CAS 4753-80-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        thiepane;
+formula     C6H12S;
+CAS         4753-80-4;
+InChIKey    JWCVYQRPINPYQJ-UHFFFAOYSA-N;
+MW          116.222;      // g/mol [origin=calculated method=formula-sum]
+Tc          645.72;      // K   [origin=predictive method=joback]
+Pc          42.330;      // bar [origin=predictive method=joback]
+omega       0.2234;      // -   [origin=predictive method=lee-kesler]
+Tb          413.20;      // K   [origin=predictive method=joback]
+HvapTb      35672.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-57.41 0.72721 -0.0004113 7.69e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 6; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexamethylene sulfide" "thiepan" "perhydrothiepine" "hexahydrothiepin" "thiacycloheptane" "hexahydrothiepin;hexamethylene sulfide; thiacycloheptane; thiepin, hexahydro-" );
+gibbsFormation
+{
+    dHf_298   -53410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     471.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=59560.0
+    phase     gas;
+}

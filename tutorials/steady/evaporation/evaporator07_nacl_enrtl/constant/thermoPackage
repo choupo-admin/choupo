@@ -1,7 +1,0 @@
-/* NaCl brine.  The liquid-activity slot is the electrolyte model -- selected
-   like any activity model (one word: pitzer).  The salt's ions + solubility live
-   in NaCl.dat (called by name); nothing chemical is re-typed here.  Self-contained:
-   components copied into constant/components/. */
-components       ( water NaCl );
-activityModel    { model eNRTL; }
-equationOfState  { model idealGas; }

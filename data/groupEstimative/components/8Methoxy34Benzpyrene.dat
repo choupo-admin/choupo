@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-methoxy-3,4-benzpyrene  (C21H14O, CAS 63059-68-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8Methoxy34Benzpyrene;
+formula     C21H14O;
+CAS         63059-68-7;
+InChIKey    YVMDKKLTTOBGIC-UHFFFAOYSA-N;
+MW          282.342;      // g/mol [origin=calculated method=formula-sum]
+Tc          1071.67;      // K   [origin=predictive method=joback]
+Pc          22.981;      // bar [origin=predictive method=joback]
+omega       0.9087;      // -   [origin=predictive method=lee-kesler]
+Tb          817.32;      // K   [origin=predictive method=joback]
+HvapTb      75598.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-90.72 1.67912 -0.00142304 4.898e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 11; } { group AC; count 9; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 11; } { group dC_ring; count 9; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methoxybenzo[a]pyrene" "benzo(a)pyrene, 3-methoxy-" "3-methoxy benzopyrene" "3-methoxy benzo[a]pyrene" "3-methoxybenzo[pqr]tetraphene" );
+gibbsFormation
+{
+    dHf_298   300480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     416.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=515670.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: etta  (C10H14O8S4, CAS 10003-69-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        etta;
+formula     C10H14O8S4;
+CAS         10003-69-7;
+InChIKey    AWLPPBSWOMXWGA-UHFFFAOYSA-N;
+MW          390.454;      // g/mol [origin=calculated method=formula-sum]
+Tc          1573.01;      // K   [origin=predictive method=joback]
+Pc          33.106;      // bar [origin=predictive method=joback]
+omega       2.0558;      // -   [origin=predictive method=lee-kesler]
+Tb          1284.68;      // K   [origin=predictive method=joback]
+HvapTb      133002.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (87.234 1.14636 -0.0006562 1.084e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 2; } { group COOH; count 4; } { group CH2S; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group CH; count 2; } { group COOH; count 4; } { group S; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[1,2,2-tris(2-hydroxy-2-oxoethylsulfanyl)ethylsulfanyl]ethanoic acid" "2,2',2'',2'''-[1,2-ethanediylidenetetrakis(thio)]tetrakisacetic acid" "acetic acid, 2,2',2'',2'''-(1,2-ethanediylidenetetrakis(thio))tetrakis-" "acetic acid, 2,2',2'',2'''-[1,2-ethanediylidenetetrakis(thio)]tetrakis-" "2,2',2'',2'''-(1,2-ethanediylidenetetrakis(thio))tetraacetic acid" "2-[1,2,2-tris(carboxymethylsulfanyl)ethylsulfanyl]acetic acid" "({1,2,2-tris[(carboxymethyl)sulfanyl]ethyl}sulfanyl)acetic acid" "2,2`,2``2```-(1,2-ethanediylidene- tetrakis(thio))-tetrakis-acetic acid" "2,2',2''2'''-(1,2-ethanediylidene-tetrakis[thio])-tetrakis-acetic acid" "aceticacid, (ethanediylidenetetrathio)tetra- (7ci,8ci);(ethanediylidenetetrathio)tetraacetic acid;1,1,2,2-tetrakis(carboxymethylthio)ethane;2,2',2'',2'''-[1,2-ethanediylidenetetrakis(thio)]tetraacetic acid; etta;ethylidenetetrathiotetraacetic acid" );
+gibbsFormation
+{
+    dHf_298   -1493890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     984.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1214720.0
+    phase     gas;
+}

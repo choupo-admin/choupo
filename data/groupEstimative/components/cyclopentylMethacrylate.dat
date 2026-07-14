@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopentyl methacrylate  (C9H14O2, CAS 16868-14-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopentylMethacrylate;
+formula     C9H14O2;
+CAS         16868-14-7;
+InChIKey    WRAABIJFUKKEJQ-UHFFFAOYSA-N;
+MW          154.209;      // g/mol [origin=calculated method=formula-sum]
+Tc          681.63;      // K   [origin=predictive method=joback]
+Pc          29.218;      // bar [origin=predictive method=joback]
+omega       0.4434;      // -   [origin=predictive method=lee-kesler]
+Tb          475.58;      // K   [origin=predictive method=joback]
+HvapTb      42702.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-43.05 0.91562 -0.0005238 9.75e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 1; } { group CH2=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclopentyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, cyclopentyl ester" "2-methyl-acrylic acid cyclopentyl ester" "2-propenoic acid,2-methyl-, cyclopentyl ester" "methacrylicacid, cyclopentyl ester (6ci,8ci); cyclopentyl methacrylate" );
+gibbsFormation
+{
+    dHf_298   -370250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     498.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-169630.0
+    phase     gas;
+}

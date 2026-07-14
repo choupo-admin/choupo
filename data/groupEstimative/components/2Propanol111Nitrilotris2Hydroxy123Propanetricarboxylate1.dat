@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propanol, 1,1',1''-nitrilotris-, 2-hydroxy-1,2,3-propanetricarboxylate (1:?)  (C15H29NO10, CAS 67952-34-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Propanol111Nitrilotris2Hydroxy123Propanetricarboxylate1;
+formula     C15H29NO10;
+CAS         67952-34-5;
+InChIKey    KFVFBANFJZNBFW-UHFFFAOYSA-N;
+MW          383.394;      // g/mol [origin=calculated method=formula-sum]
+Tc          1812.71;      // K   [origin=predictive method=joback]
+Pc          23.338;      // bar [origin=predictive method=joback]
+omega       0.7683;      // -   [origin=predictive method=lee-kesler]
+Tb          1357.34;      // K   [origin=predictive method=joback]
+HvapTb      167069.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.825 1.77846 -0.0010108 1.811e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 3; } { group C; count 1; } { group OH; count 4; } { group CH2N; count 1; } { group COOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 3; } { group C; count 1; } { group OH; count 4; } { group COOH; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[bis(2-oxidanylpropyl)amino]propan-2-ol;2-oxidanylpropane-1,2,3-tricarboxylic acid" "2-propanol, 1,1',1''-nitrilotris-, 2-hydroxy-1,2,3-propanetricarboxylate (salt)" "citric acid, triisopropanolamine salt" "tris(2-hydroxypropyl)ammonium citrate" "1-[bis(2-hydroxypropyl)amino]propan-2-ol; 2-hydroxypropane-1,2,3-tricarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -2081340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1159.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1502050.0
+    phase     gas;
+}

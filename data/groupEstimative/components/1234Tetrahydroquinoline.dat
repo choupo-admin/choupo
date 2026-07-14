@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,3,4-tetrahydroquinoline  (C9H11N, CAS 635-46-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1234Tetrahydroquinoline;
+formula     C9H11N;
+CAS         635-46-1;
+InChIKey    LBUJPTNKIBCYBY-UHFFFAOYSA-N;
+MW          133.194;      // g/mol [origin=calculated method=formula-sum]
+Tc          744.10;      // K   [origin=predictive method=joback]
+Pc          41.463;      // bar [origin=predictive method=joback]
+omega       0.4180;      // -   [origin=predictive method=lee-kesler]
+Tb          501.41;      // K   [origin=predictive method=joback]
+HvapTb      45718.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.28 0.8748 -0.00059856 1.612e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "kusol" "tetrahydroquinoline" "1,2,3,4-tetrahydro-quinoline" "quinoline, 1,2,3,4-tetrahydro-" "benzopiperidine" "1,3,4-tetrahydroquinoline" "1,2,3,4-tetrahydrochinoline" "1,2,3,4,-tetrahydroquinoline" "k846" "kusol;1.2.3.4-tetra-hydroquinoline;quinoline, 1,2,3,4-tetrahydro-;1,2,3,4-hydroquinoline;1.2.3.4-tetra- hydroquinoline;1,2,3,4a'a pounda'a-tetrahydroquinolines;1,2,3,4-tetrahydro-quinoline;" );
+gibbsFormation
+{
+    dHf_298   120760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     359.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=271750.0
+    phase     gas;
+}

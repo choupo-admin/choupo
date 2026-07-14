@@ -1,0 +1,22 @@
+recordType modelSpecies;   // model species — summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+
+name    Ca;
+ion     "Ca+2";
+charge  +2;
+
+MW { value 40.078; unit g/mol;}
+
+aqueousThermo
+{
+    hfAq { value -542830; unit J/mol;}
+    sAq  { value -53.1;  unit J/mol/K;}
+}
+
+transport
+{
+    radius { value 4.12e-10; unit m;}
+    D0     { value 7.92e-10;     unit m2/s;}
+}
+
+source "Wagman 1982 (cpAq pending); radius+D0 Nightingale 1959 (lambda0 119.0 molar)";

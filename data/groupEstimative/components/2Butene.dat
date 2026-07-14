@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-butene  (C4H8, CAS 107-01-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Butene;
+formula     C4H8;
+CAS         107-01-7;
+InChIKey    IAQRGUVFOMOMEM-UHFFFAOYSA-N;
+MW          56.108;      // g/mol [origin=calculated method=formula-sum]
+Tc          466.33;      // K   [origin=predictive method=joback]
+Pc          41.623;      // bar [origin=predictive method=joback]
+omega       0.1840;      // -   [origin=predictive method=lee-kesler]
+Tb          295.28;      // K   [origin=predictive method=joback]
+HvapTb      24456.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.93 0.40384 -0.0002776 8.38e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH=CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "but-2-ene" "2-butene, mixture of cis and trans" "1,2-dimethylethylene" "2-butene, (2e)-" "2-butene, (2z)-" ".beta.-butene" "1-propene, methyl-" "pseudobutylene;b-butene; b-butylene" "2-butene, (z)-;high-boiling butene-2;cis-1,2-dimethylethylene;beta-cis-butylene;beta-cis-butylene;" );
+gibbsFormation
+{
+    dHf_298   -8670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     305.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=63020.0
+    phase     gas;
+}

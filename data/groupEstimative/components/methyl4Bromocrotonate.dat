@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 4-bromocrotonate  (C5H7BrO2, CAS 1117-71-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl4Bromocrotonate;
+formula     C5H7BrO2;
+CAS         1117-71-1;
+InChIKey    RWIKCBHOVNDESJ-NSCUHMNNSA-N;
+MW          179.013;      // g/mol [origin=calculated method=formula-sum]
+Tc          645.53;      // K   [origin=predictive method=joback]
+Pc          40.466;      // bar [origin=predictive method=joback]
+omega       0.4903;      // -   [origin=predictive method=lee-kesler]
+Tb          442.54;      // K   [origin=predictive method=joback]
+HvapTb      40524.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.761 0.48222 -0.0003088 7.27e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH=CH; count 1; } { group Br; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH; count 2; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl (e)-4-bromanylbut-2-enoate" "2-butenoic acid, 4-bromo-, methyl ester" "methyl (2e)-4-bromobut-2-enoate" "methyl gamma-bromocrotonate" "methyl 4-bromo-2-butenoate" "methyl (e)-4-bromobut-2-enoate" "(e)-methyl 4-bromobut-2-enoate" "methyl trans-4-bromo-2-butenoate" "4-bromocrotonic acid methyl ester" "4-bromo-2-butenoic acid methyl ester" "crotonic acid, 4-bromo-, methyl ester" "methyl 4-bromobut-2-enoate" );
+gibbsFormation
+{
+    dHf_298   -320260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     446.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-224610.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2-propenyloxy)propanol  (C6H12O2, CAS 1331-17-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropenyloxyPropanol;
+formula     C6H12O2;
+CAS         1331-17-5;
+InChIKey    BQKZEKVKJUIRGH-UHFFFAOYSA-N;
+MW          116.16;      // g/mol [origin=calculated method=formula-sum]
+Tc          615.55;      // K   [origin=predictive method=joback]
+Pc          35.899;      // bar [origin=predictive method=joback]
+omega       0.7887;      // -   [origin=predictive method=lee-kesler]
+Tb          447.72;      // K   [origin=predictive method=joback]
+HvapTb      46981.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.552 0.53052 -0.0002481 3.21e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2=CH; count 1; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-prop-2-enoxypropan-1-ol" "dowanol pa-t" "propanol, allyloxy-" "propanol, (allyloxy)-" "propylene glycol, allyl ether" "propylene glycol allyl ether" "propanol, (2-propenyloxy)-" "1,2-propanediol, allyl ether" "allyl ether of propylene glycol" "propylene glycol monoallyl ether" "1-propanol, 2-(2-propenyloxy)-" "propanol, 1(or 2)-(2-propenyloxy)-" );
+gibbsFormation
+{
+    dHf_298   -331470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     437.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-156780.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,6-diphenylthian-4-one  (C17H16OS, CAS 37014-01-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        26Diphenylthian4One;
+formula     C17H16OS;
+CAS         37014-01-0;
+InChIKey    PPJHHCQGZVIWAR-UHFFFAOYSA-N;
+MW          268.374;      // g/mol [origin=calculated method=formula-sum]
+Tc          1060.36;      // K   [origin=predictive method=joback]
+Pc          25.328;      // bar [origin=predictive method=joback]
+omega       0.6209;      // -   [origin=predictive method=lee-kesler]
+Tb          772.45;      // K   [origin=predictive method=joback]
+HvapTb      68167.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-81.79 1.40271 -0.0007637 1.193e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 10; } { group AC; count 1; } { group ACCH; count 1; } { group CH2CO; count 1; } { group CHS; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group CdO_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6-diphenyl-thiacyclohexanone-4" "2,6-diphenyl-tetrahydro-thiopyran-4-one" "cis-2,6-diphenyl-4-tetrahydrothiopyranone" "2,6-diphenyltetrahydro-4h-thiopyran-4-one" "2,6-diphenyldihydro-2h-thiopyran-4(3h)-one" "4h-thiopyran-4-one,tetrahydro-2,6-diphenyl-" "4h-thiopyran-4-one, tetrahydro-, 2,6-diphenyl-(trans)" "2,6-diphenyl-1-thiacyclohexan-4-one;2,6-diphenyltetrahydrothiopyran-4-one; tetrahydro-2,6-diphenyl-4h-thiopyran-4-one" );
+gibbsFormation
+{
+    dHf_298   20390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     503.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=251090.0
+    phase     gas;
+}

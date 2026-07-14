@@ -1,0 +1,4 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    g_nrtl                 gamma_ethanol    1.26245            1e-4
+diag    g_nrtl                 gamma_water      1.4349             1e-4

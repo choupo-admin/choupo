@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 16-azatricyclo[9.2.2.14,8]hexadeca-2,4,6,8(16),9,11,13,14-octaene,12,13,14,15-tetramethyl-  (C19H19N, CAS 64000-98-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        16Azatricyclo922148Hexadeca2468169111314Octaene12131415Tetra;
+formula     C19H19N;
+CAS         64000-98-2;
+InChIKey    IEKCGBVSQNFNDH-WGEIWTTOSA-N;
+MW          261.368;      // g/mol [origin=calculated method=formula-sum]
+Tc          1038.17;      // K   [origin=predictive method=joback]
+Pc          20.493;      // bar [origin=predictive method=joback]
+omega       0.7693;      // -   [origin=predictive method=lee-kesler]
+Tb          785.26;      // K   [origin=predictive method=joback]
+HvapTb      73600.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.08 1.38364 -0.00088298 2.243e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 2; } { group AC; count 2; } { group ACCH3; count 4; } { group C5H3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH_ring; count 7; } { group dC_ring; count 8; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "16-azatricyclo(9.2.2.14,8)hexadeca-2,4,6,8(16),9,11,13,14-octaene,12,13,14,15-tetramethyl-" );
+gibbsFormation
+{
+    dHf_298   204080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     556.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=469470.0
+    phase     gas;
+}

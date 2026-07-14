@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1,2,3,3,4,4,5,5,6,6-dodecafluoro-6-iodo-2-(trifluoromethyl)hexane  (C7F15I, CAS 3486-08-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111233445566Dodecafluoro6Iodo2TrifluoromethylHexane;
+formula     C7F15I;
+CAS         3486-08-6;
+InChIKey    OUFXTVSYOAPUKM-UHFFFAOYSA-N;
+MW          495.947;      // g/mol [origin=calculated method=formula-sum]
+Tc          560.61;      // K   [origin=predictive method=joback]
+Pc          16.605;      // bar [origin=predictive method=joback]
+omega       0.5640;      // -   [origin=predictive method=lee-kesler]
+Tb          419.34;      // K   [origin=predictive method=joback]
+HvapTb      19222.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-71.73 1.7654 -0.001887 6.993e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group I; count 1; } { group CF3; count 2; } { group CF2; count 4; } { group CF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 7; } { group F; count 15; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,3,3,4,4,5,5,6,6-dodecakis(fluoranyl)-6-iodanyl-2-(trifluoromethyl)hexane" "hexane, 1,1,1,2,3,3,4,4,5,5,6,6-dodecafluoro-6-iodo-2-(trifluoromethyl)-" "perfluoroisoheptyl iodide" "1-iodoperfluoro(5-methylhexane)" "hexane,1,1,1,2,3,3,4,4,5,5,6,6-dodecafluoro-6-iodo-2-(trifluoromethyl)-" "hexane,dodecafluoro-1-iodo-5-(trifluoromethyl)- (7ci,8ci);1-iodo-5-(trifluoromethyl)perfluorohexane;1-iodo-perfluoro-5-methylhexane;pentadecafluoro-1-iodo-5-methylhexane;" );
+gibbsFormation
+{
+    dHf_298   -3113840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     687.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2836090.0
+    phase     gas;
+}

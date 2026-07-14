@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 11-heneicosanol  (C21H44O, CAS 3381-26-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Heneicosanol;
+formula     C21H44O;
+CAS         3381-26-8;
+InChIKey    BCNCKKYOXRHQGT-UHFFFAOYSA-N;
+MW          312.582;      // g/mol [origin=calculated method=formula-sum]
+Tc          945.57;      // K   [origin=predictive method=joback]
+Pc          10.181;      // bar [origin=predictive method=joback]
+omega       0.9767;      // -   [origin=predictive method=lee-kesler]
+Tb          771.82;      // K   [origin=predictive method=joback]
+HvapTb      78631.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.592 2.03874 -0.0011522 2.48e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 18; } { group CH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 18; } { group CH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "henicosan-11-ol" "henicosan-11-ol;di-n-decyl carbinol;" );
+gibbsFormation
+{
+    dHf_298   -634280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1015.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-13320.0
+    phase     gas;
+}

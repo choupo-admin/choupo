@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: toluene-d8  (C7D8, CAS 2037-26-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7D8 (delta D+8H-8; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        tolueneD8;
+formula     C7D8;
+CAS         2037-26-5;
+InChIKey    YXFVVABEGXRONW-JGUCLWPXSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          100.189;      // g/mol [origin=calculated method=formula-sum]
+Tc          598.06;      // K   [origin=predictive method=joback]
+Pc          41.144;      // bar [origin=predictive method=joback]
+omega       0.2479;      // -   [origin=predictive method=lee-kesler]
+Tb          386.44;      // K   [origin=predictive method=joback]
+HvapTb      33452.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.38 0.58992 -0.0003882 9.76e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group ACCH3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5-pentadeuterio-6-(trideuteriomethyl)benzene" "benzene-d5, methyl-d3-" "benzene-d5-, methyl-d3-" "perdeuteriotoluene" "perdeuterated toluene" "(2h8)toluene" "octadeuterotoluene" "de92" "1-(2h3)methyl(2h5)benzene" "toluene-d8 >99.80 atom % d" );
+gibbsFormation
+{
+    dHf_298   48720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     322.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=120470.0
+    phase     gas;
+}

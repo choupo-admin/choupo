@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7-isopropyl-1,1,4a-trimethyl-1,2,3,4,4a,9,10,10a-octahydrophenanthrene  (C20H30, CAS 19407-28-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        7Isopropyl114aTrimethyl12344a91010aOctahydrophenanthrene;
+formula     C20H30;
+CAS         19407-28-4;
+InChIKey    QUUCYKKMFLJLFS-UHFFFAOYSA-N;
+MW          270.46;      // g/mol [origin=calculated method=formula-sum]
+Tc          947.67;      // K   [origin=predictive method=joback]
+Pc          16.498;      // bar [origin=predictive method=joback]
+omega       0.5826;      // -   [origin=predictive method=lee-kesler]
+Tb          711.23;      // K   [origin=predictive method=joback]
+HvapTb      60885.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-227.05 2.5518 -0.00232192 9.086e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 4; } { group CH; count 1; } { group C; count 2; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group ACCH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,4a-trimethyl-7-propan-2-yl-2,3,4,9,10,10a-hexahydrophenanthrene" "phenanthrene, 1,2,3,4,4a,9,10,10a-octahydro-1,1,4a-trimethyl-7-(1-methylethyl)-, (4as-trans)-" "podocarpa-8,11,13-triene, 13-isopropyl-" "abieta-8,11,13-triene" "agn-pc-00po2t" "(4as)-1,1,4a-trimethyl-7-propan-2-yl-2,3,4,9,10,10a-hexahydrophenanthrene" );
+gibbsFormation
+{
+    dHf_298   -104400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     762.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=286840.0
+    phase     gas;
+}

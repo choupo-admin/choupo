@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,4-Dibromohexane  (C6H12Br2, CAS 89583-12-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34Dibromohexane;
+formula     C6H12Br2;
+CAS         89583-12-0;
+InChIKey    VCQBYNRFLHNSKA-UHFFFAOYSA-N;
+MW          243.97;      // g/mol [origin=calculated method=formula-sum]
+Tc          679.43;      // K   [origin=predictive method=joback]
+Pc          37.180;      // bar [origin=predictive method=joback]
+omega       0.4832;      // -   [origin=predictive method=lee-kesler]
+Tb          468.32;      // K   [origin=predictive method=joback]
+HvapTb      41044.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.452 0.66204 -0.0004518 1.274e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexane, 3,4-dibromo-" "dl-3,4-dibromohexane" "3,4-dibrom-hexan" "3,4-dibromohexane, 98%" "j-009920" );
+gibbsFormation
+{
+    dHf_298   -125070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     472.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=23400.0
+    phase     gas;
+}

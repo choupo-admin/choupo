@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dihexadecyl 3,3'-sulfanediyldipropanoate  (C38H74O4S, CAS 3287-12-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dihexadecyl33Sulfanediyldipropanoate;
+formula     C38H74O4S;
+CAS         3287-12-5;
+InChIKey    IXDBUVCZCLQKJF-UHFFFAOYSA-N;
+MW          627.066;      // g/mol [origin=calculated method=formula-sum]
+Tc          1720.63;      // K   [origin=predictive method=joback]
+Pc          4.271;      // bar [origin=predictive method=joback]
+omega       -0.2905;      // -   [origin=predictive method=lee-kesler]
+Tb          1254.26;      // K   [origin=predictive method=joback]
+HvapTb      121813.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (38.764 3.49863 -0.001814 2.992e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 31; } { group CH2COO; count 2; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 34; } { group COO; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexadecyl 3-(3-hexadecoxy-3-oxidanylidene-propyl)sulfanylpropanoate" "propanoic acid, 3,3'-thiobis-, dihexadecyl ester" "propanoic acid, 3,3'-thiobis-, 1,1'-dihexadecyl ester" "dicetyl thiodipropionate" "3,3'-thiobispropanoic acid, dihexadecyl ester" "dihexadecyl 3,3'-thiobispropionate" "hexadecyl 3-(3-hexadecoxy-3-oxopropyl)sulfanylpropanoate" "propanoic acid,3,3'-thiobis-, 1,1'-dihexadecyl ester" "propanoicacid, 3,3'-thiobis-, dihexadecyl ester (9ci); propionic acid, 3,3'-thiodi-,dihexadecyl ester (7ci,8ci); 1-hexadecanol, 3,3'-thiodipropionate (2:1) (8ci);1-hexadecanol diester with 3,3'-thiodipropionic acid; dicetyl thiodipropionate;dihexadecyl thiodipropionate; dipalmityl 3,3'-thiodipropionate" );
+gibbsFormation
+{
+    dHf_298   -1420340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1800.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-318540.0
+    phase     gas;
+}

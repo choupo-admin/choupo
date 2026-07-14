@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4'-propylbiphenyl-4-yl 4-butylbenzoate  (C26H28O2, CAS 59748-32-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Propylbiphenyl4Yl4Butylbenzoate;
+formula     C26H28O2;
+CAS         59748-32-2;
+InChIKey    SUHTWRQMBLXNFP-UHFFFAOYSA-N;
+MW          372.508;      // g/mol [origin=calculated method=formula-sum]
+Tc          1183.79;      // K   [origin=predictive method=joback]
+Pc          13.118;      // bar [origin=predictive method=joback]
+omega       0.9768;      // -   [origin=predictive method=lee-kesler]
+Tb          947.68;      // K   [origin=predictive method=joback]
+HvapTb      89691.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-54.155 2.00384 -0.00118848 2.429e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group ACH; count 12; } { group AC; count 4; } { group ACCH2; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[4-(4-propylphenyl)phenyl] 4-butylbenzoate" "benzoic acid, 4-butyl-, 4'-propyl(1,1'-biphenyl)-4-yl ester" "benzoic acid, 4-butyl-, 4'-propyl[1,1'-biphenyl]-4-yl ester" "4'-propyl(1,1'-biphenyl)-4-yl 4-butylbenzoate" "4-n-propyl-4'-(4-n-butylbenzyloxy)biphenyl" "4-(4-n-butylbenzoyloxy)-4'-n-propylbiphenyl" );
+gibbsFormation
+{
+    dHf_298   -222070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     882.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=166010.0
+    phase     gas;
+}

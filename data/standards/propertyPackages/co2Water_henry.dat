@@ -1,0 +1,31 @@
+/*---------------------------------------------------------------------------*\
+  propertyPackage co2Water_henry -- THE minimal dilute-solution manifest.
+  The one-sentence declaration the 2026-07-04 grammar forum ratified: WHO
+  dissolves in WHAT is stated HERE, next to the methods, with the pair file
+  DECLARED and verified at assembly.  No role overlays, no folklore keys.
+\*---------------------------------------------------------------------------*/
+recordType propertyPackage;
+schemaVersion 1;
+name co2Water_henry;
+components ( water CO2 );
+propertyMethods
+{
+    liquid solution.henryDilute;
+    vapour builtin.idealGas;
+}
+solution
+{
+    solvent water;
+    solutes ( CO2 );
+}
+parameters
+{
+    henryPairs
+    {
+        CO2-water "data/standards/henrysLaw/CO2-water.dat";
+    }
+}
+notes
+{
+    purpose "Minimal solution-family package: CO2 dissolves in water by the unsymmetric Henry convention (KK/KI-capable), water stays on the Raoult rung. The grammar-consolidation exercise case.";
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methylhomopiperazine  (C6H14N2, CAS 4318-37-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethylhomopiperazine;
+formula     C6H14N2;
+CAS         4318-37-0;
+InChIKey    FXHRAKUEZPSMLJ-UHFFFAOYSA-N;
+MW          114.192;      // g/mol [origin=calculated method=formula-sum]
+Tc          633.89;      // K   [origin=predictive method=joback]
+Pc          42.552;      // bar [origin=predictive method=joback]
+omega       0.3754;      // -   [origin=predictive method=lee-kesler]
+Tb          422.09;      // K   [origin=predictive method=joback]
+HvapTb      38489.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-67.88 0.83292 -0.000491 1.025e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2NH; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group NH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methyl-1,4-diazepane" "n-methyl homopiperazine" "1-methylhomopiperazine" "1h-1,4-diazepine, hexahydro-1-methyl-" "hexahydro-1-methyl-1h-1,4-diazepine" "1-methyl-1,4-diazaperhydroepine" "agn-pc-0cq738" "ht471" "4318-37-0 1-methyl-1,4-diazepane" "1-methyl-1,4-diazepane;n-methyl-homopiperazine;1-methylhomopiperazine;n-methylhomopiperazinen-methyl-1,4-diazacycloheptane;hexahydro-1-methyl-1h-1,4-diazepine;" );
+gibbsFormation
+{
+    dHf_298   12830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     411.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=230290.0
+    phase     gas;
+}

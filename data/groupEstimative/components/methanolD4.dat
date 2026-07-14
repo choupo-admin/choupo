@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methanol-d4  (CD4O, CAS 811-98-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula CD4O (delta D+4H-4; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        methanolD4;
+formula     CD4O;
+CAS         811-98-3;
+InChIKey    OKKJLVBELUTLKV-MZCSYVLQSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          36.066;      // g/mol [origin=calculated method=formula-sum]
+Tc          475.80;      // K   [origin=predictive method=joback]
+Pc          66.966;      // bar [origin=predictive method=joback]
+omega       0.5055;      // -   [origin=predictive method=lee-kesler]
+Tb          314.66;      // K   [origin=predictive method=joback]
+HvapTb      34499.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.27 0.13282 -6.1e-05 1.05e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trideuterio(deuteriooxy)methane" "tetradeuteromethanol" "methanol-12c,d4" "methyl-d3 alcohol d" "methyl-12c-d3 alcohol-d" "methyl alcohol-d4" "methan-d3-ol-d" "perdeuteromethanol" "deuterated methanol" "(2h4)methanol" "methanol-d4 >99.8 atom % d 0.03% tms" );
+gibbsFormation
+{
+    dHf_298   -216200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     245.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-179280.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 2-acetylcaprylate  (C12H22O3, CAS 29214-60-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl2Acetylcaprylate;
+formula     C12H22O3;
+CAS         29214-60-6;
+InChIKey    BRGRZPQESQKATK-UHFFFAOYSA-N;
+MW          214.305;      // g/mol [origin=calculated method=formula-sum]
+Tc          764.27;      // K   [origin=predictive method=joback]
+Pc          19.003;      // bar [origin=predictive method=joback]
+omega       0.8304;      // -   [origin=predictive method=lee-kesler]
+Tb          585.81;      // K   [origin=predictive method=joback]
+HvapTb      56071.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.066 1.06696 -0.0005189 6.496e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH; count 1; } { group CH3CO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-ethanoyloctanoate" "ethyl 2-acetyloctanoate" "ethyl 2-hexylacetoacetate" "octanoic acid, 2-acetyl-, ethyl ester" "n-hexylethyl acetaoacetate" "ethyl-2-hexyl acetoacetate" "ethyl-2-hexyl acetaoacetate" "ethyl alpha-hexylacetoacetate" "n-hexylacetoacetic acid ethyl ester" "ethyl-2-n-hexylacetoacetate" "ethyl 2-acetyl-n-octanoate" "2-acetyloctanoic acid ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -726150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     691.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-391570.0
+    phase     gas;
+}

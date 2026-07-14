@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 2-formylcyclopropanecarboxylate  (C7H10O3, CAS 20417-61-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl2Formylcyclopropanecarboxylate;
+formula     C7H10O3;
+CAS         20417-61-2;
+InChIKey    MDWXTLNIZCHBJE-UHFFFAOYSA-N;
+MW          142.154;      // g/mol [origin=calculated method=formula-sum]
+Tc          661.55;      // K   [origin=predictive method=joback]
+Pc          34.039;      // bar [origin=predictive method=joback]
+omega       0.5940;      // -   [origin=predictive method=lee-kesler]
+Tb          468.71;      // K   [origin=predictive method=joback]
+HvapTb      44907.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.969 0.71292 -0.0004202 8.4e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 2; } { group CHO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group OdCH_al; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-methanoylcyclopropane-1-carboxylate" "ethyl 2-formyl-1-cyclopropanecarboxylate" "ethyl-2-formyl-1-cyclopropanecarboxylate" "ethyl 2-formyl-1-cyclopropanecarboxylate, predominantly trans" "cyclopropanecarboxylic acid, 2-formyl-, ethyl ester" "agn-pc-0d2uld" "ethyl 2-formylcyclopropane-1-carboxylate" "ethyl 2-formyl-1-cyclopropanecarboxylate, trans" "cyclopropanecarboxylicacid, 2-formyl-, ethyl ester" "2-formylcyclopropanecarboxylicacid ethyl ester;ethyl 2-formyl-1-cyclopropanecarboxylate;ethyl2-formylcyclopropanecarboxylate;" );
+gibbsFormation
+{
+    dHf_298   -538210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     365.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-348790.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (1-methylethylidene)bis(4,1-phenyleneoxy(1-methyl-2,1-ethanediyl))diacrylate  (C27H32O6, CAS 67952-50-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1MethylethylideneBis41Phenyleneoxy1Methyl21EthanediylDiacryl;
+formula     C27H32O6;
+CAS         67952-50-5;
+InChIKey    WQMJBYIEWDAFJE-UHFFFAOYSA-N;
+MW          452.547;      // g/mol [origin=calculated method=formula-sum]
+Tc          1266.03;      // K   [origin=predictive method=joback]
+Pc          10.521;      // bar [origin=predictive method=joback]
+omega       0.9817;      // -   [origin=predictive method=lee-kesler]
+Tb          1031.21;      // K   [origin=predictive method=joback]
+HvapTb      97794.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.132 2.15368 -0.00118612 1.932e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH; count 2; } { group C; count 1; } { group CH2=CH; count 2; } { group ACH; count 8; } { group AC; count 4; } { group CH2O; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group C; count 1; } { group dCH2; count 2; } { group dCH; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group O; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[4-[2-[4-(2-prop-2-enoyloxypropoxy)phenyl]propan-2-yl]phenoxy]propan-2-yl prop-2-enoate" "(1-methylethylidene)bis(4,1-phenyleneoxy(1-methyl-2,1-ethanediyl)) diacrylate" "(1-methylethylidene)bis[4,1-phenyleneoxy(1-methyl-2,1-ethanediyl)] diacrylate" "2-propenoic acid, 1,1'-((1-methylethylidene)bis(4,1-phenyleneoxy(1-methyl-2,1-ethanediyl))) ester" "2-propenoic acid, 1,1'-[(1-methylethylidene)bis[4,1-phenyleneoxy(1-methyl-2,1-ethanediyl)]] ester" "(1-methylethylidene)bis(4,1-phenyleneoxy)(1-methyl-2,1-ethanediyl) diacrylate" "2-propenoic acid, (1-methylethylidene)bis(4,1-phenyleneoxy(1-methyl-2,1-ethanediyl)) ester" );
+gibbsFormation
+{
+    dHf_298   -817940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1040.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-275080.0
+    phase     gas;
+}

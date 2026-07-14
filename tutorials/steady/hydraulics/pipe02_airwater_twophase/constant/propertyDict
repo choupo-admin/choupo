@@ -1,0 +1,16 @@
+/* Air-water two-phase flow: N2 (~air, the gas) + water (the liquid).  The pipe's
+   gas-liquid models (Layer 1: homogeneous / Lockhart-Martinelli) need BOTH phase
+   viscosities and densities:
+     * gas viscosity   -> transport { viscosity           { model Chung; } }   (N2, from Tc/Pc/omega)
+     * liquid viscosity-> transport { liquidViscosity { model Vogel; } }  (water)
+     * phase densities -> idealGas (vapour) + Rackett (liquid) branch of density()
+   Self-contained: N2.dat + water.dat vendored under constant/components/. */
+components       ( N2 water );
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }
+transport
+{
+    model            Chung;              // gas viscosity (N2)
+    liquidViscosity  { model Vogel; }    // liquid viscosity (water)
+    surfaceTension   { model BrockBird; } // sigma for Friedel / Beggs-Brill (Layer 2)
+}

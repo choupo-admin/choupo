@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1-trifluoro-2-propanol  (C3H5F3O, CAS 374-01-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111Trifluoro2Propanol;
+formula     C3H5F3O;
+CAS         374-01-6;
+InChIKey    GILIYJDBJZWGBG-UHFFFAOYSA-N;
+MW          114.066;      // g/mol [origin=calculated method=formula-sum]
+Tc          504.62;      // K   [origin=predictive method=joback]
+Pc          43.169;      // bar [origin=predictive method=joback]
+omega       0.6515;      // -   [origin=predictive method=lee-kesler]
+Tb          354.56;      // K   [origin=predictive method=joback]
+HvapTb      34816.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.43 0.48992 -0.000394 1.225e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group OH; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group C; count 1; } { group F; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1-tris(fluoranyl)propan-2-ol" "1,1,1-trifluoropropan-2-ol" "1,1,1-trifluoroisopropanol" "1,1,1-trifluoropropanol-2" "2-propanol, 1,1,1-trifluoro-" "(s)-1,1,1-trifluoro-2-propanol" "1,1-trifluoro-2-propanol" "2-propanol,1,1-trifluoro-" "1,1,1-trifluoro-iso-propanol" "1-methyl-2,2-trifluoroethanol" "1-methyl-2,2,2-trifluoroethanol" "2-hydroxy-1,1,1-trifluoropropane" );
+gibbsFormation
+{
+    dHf_298   -859840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     370.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-746470.0
+    phase     gas;
+}

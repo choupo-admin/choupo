@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetyl tributyl citrate  (C20H34O8, CAS 77-90-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acetylTributylCitrate;
+formula     C20H34O8;
+CAS         77-90-7;
+InChIKey    QZCLKYGREBVARF-UHFFFAOYSA-N;
+MW          402.484;      // g/mol [origin=calculated method=formula-sum]
+Tc          1086.24;      // K   [origin=predictive method=joback]
+Pc          10.413;      // bar [origin=predictive method=joback]
+omega       0.9999;      // -   [origin=predictive method=lee-kesler]
+Tb          886.85;      // K   [origin=predictive method=joback]
+HvapTb      88446.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (61.871 1.81048 -0.0008576 7.03e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 9; } { group C; count 1; } { group CH3COO; count 1; } { group CH2COO; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 11; } { group C; count 1; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tributyl 2-acetyloxypropane-1,2,3-tricarboxylate" "citroflex a" "tributyl o-acetylcitrate" "blo-trol" "citroflex a 4" "2-acetyltributylcitrate" "tributyl citrate acetate" "acetyltributyl citrate" "tributyl acetyl citrate" "1,2,3-propanetricarboxylic acid, 2-(acetyloxy)-, tributyl ester" "acetylcitric acid, tributyl ester" "tributyl 2-acetoxypropane-1,2,3-tricarboxylate" );
+gibbsFormation
+{
+    dHf_298   -1734000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1101.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1121120.0
+    phase     gas;
+}

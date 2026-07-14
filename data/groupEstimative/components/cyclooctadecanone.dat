@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclooctadecanone  (C18H34O, CAS 6907-37-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclooctadecanone;
+formula     C18H34O;
+CAS         6907-37-5;
+InChIKey    WXAYGJXNCLBUDJ-UHFFFAOYSA-N;
+MW          266.469;      // g/mol [origin=calculated method=formula-sum]
+Tc          1025.30;      // K   [origin=predictive method=joback]
+Pc          17.758;      // bar [origin=predictive method=joback]
+omega       0.4994;      // -   [origin=predictive method=lee-kesler]
+Tb          754.72;      // K   [origin=predictive method=joback]
+HvapTb      62711.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-110.04 1.5789 -0.000291 -2.31e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 16; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 17; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -551810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1029.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-134950.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl glycolate  (C6H12O3, CAS 7397-62-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butylGlycolate;
+formula     C6H12O3;
+CAS         7397-62-8;
+InChIKey    VFGRALUHHHDIQI-UHFFFAOYSA-N;
+MW          132.159;      // g/mol [origin=calculated method=formula-sum]
+Tc          655.31;      // K   [origin=predictive method=joback]
+Pc          34.725;      // bar [origin=predictive method=joback]
+omega       0.9398;      // -   [origin=predictive method=lee-kesler]
+Tb          487.28;      // K   [origin=predictive method=joback]
+HvapTb      53036.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.134 0.55302 -0.0002384 1.29e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group OH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butyl 2-oxidanylethanoate" "butyl hydroxyacetate" "acetic acid, hydroxy-, butyl ester" "acetic acid, 2-hydroxy-, butyl ester" "butyl glycollate" "polysolvan 0" "butyl 2-hydroxyacetate" "aceticacid, hydroxy-, butyl ester (9ci);glycolic acid, butyl ester (6ci,7ci,8ci);butoxycarbonylmethanol;butyl hydroxyacetate;polysolvan o;n-butyl glycolate;" );
+gibbsFormation
+{
+    dHf_298   -636680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     491.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-447550.0
+    phase     gas;
+}

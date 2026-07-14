@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pseudoionone  (C13H20O, CAS 141-10-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pseudoionone;
+formula     C13H20O;
+CAS         141-10-6;
+InChIKey    JXJIQCXXJGRKRJ-KOOBJXAQSA-N;
+MW          192.302;      // g/mol [origin=calculated method=formula-sum]
+Tc          759.97;      // K   [origin=predictive method=joback]
+Pc          19.983;      // bar [origin=predictive method=joback]
+omega       0.6061;      // -   [origin=predictive method=lee-kesler]
+Tb          563.15;      // K   [origin=predictive method=joback]
+HvapTb      51312.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-43.498 1.27068 -0.0009207 2.8026e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH=CH; count 1; } { group CH=C; count 2; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group dCH; count 4; } { group dC; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3e,5e)-6,10-dimethylundeca-3,5,9-trien-2-one" "citrylideneacetone" "pseudoionones" "3,5,9-undecatrien-2-one, 6,10-dimethyl-" "6,10-dimethylundeca-3,5,9-trien-2-one" ".psi.-ionone" "trans-.psi.-ionone" "6,10-dimethyl-3,5,9-undecatrien-2-one" "psi-ionone" "2,6-dimethylundeca-2,6,8-triene-10-one" "6,10-dimethyl-3,5,9-undecatriene-2-one" "3,5,9-undecatrien-2-one, 6,10-dimethyl-, (e,e)-" );
+gibbsFormation
+{
+    dHf_298   -92150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     661.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=153220.0
+    phase     gas;
+}

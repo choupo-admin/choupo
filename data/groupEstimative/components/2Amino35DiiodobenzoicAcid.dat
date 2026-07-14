@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-amino-3,5-diiodobenzoic acid  (C7H5I2NO2, CAS 609-86-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Amino35DiiodobenzoicAcid;
+formula     C7H5I2NO2;
+CAS         609-86-9;
+InChIKey    RFIBDMCPIREZKC-UHFFFAOYSA-N;
+MW          388.922;      // g/mol [origin=calculated method=formula-sum]
+Tc          1101.28;      // K   [origin=predictive method=joback]
+Pc          44.326;      // bar [origin=predictive method=joback]
+omega       0.9412;      // -   [origin=predictive method=lee-kesler]
+Tb          805.70;      // K   [origin=predictive method=joback]
+HvapTb      81989.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (39.99 0.6021 -0.00046588 1.417e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 3; } { group ACNH2; count 1; } { group COOH; count 1; } { group I; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group I; count 2; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-3,5-bis(iodanyl)benzoic acid" "3,5-diiodoanthranilic acid" "benzoic acid, 2-amino-3,5-diiodo-" "anthranilic acid, 3,5-diiodo-" "anthranilic acid,5-diiodo-" "2-amino-3,5-diiodo-benzoic acid" "3,5-diiodoanthranillic acid" "benzoic acid,2-amino-3,5-diiodo-" "3,5-diiodo-2-aminobenzoic acid" );
+gibbsFormation
+{
+    dHf_298   -148430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     519.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-69640.0
+    phase     gas;
+}

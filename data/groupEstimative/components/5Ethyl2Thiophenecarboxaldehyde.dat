@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-ethyl-2-thiophenecarboxaldehyde  (C7H8OS, CAS 36880-33-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H8OS (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        5Ethyl2Thiophenecarboxaldehyde;
+formula     C7H8OS;
+CAS         36880-33-8;
+InChIKey    CLQXZICUPGZTPE-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          140.2;      // g/mol [origin=calculated method=formula-sum]
+Tc          629.64;      // K   [origin=predictive method=joback]
+Pc          39.209;      // bar [origin=predictive method=joback]
+omega       0.2798;      // -   [origin=predictive method=lee-kesler]
+Tb          412.24;      // K   [origin=predictive method=joback]
+HvapTb      37089.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.419 0.61853 -0.00055198 2.039e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CHO; count 1; } { group C4H2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-ethylthiophene-2-carbaldehyde" "5-ethyl-2-thiophenecarbaldehyde" "5-ethyl-2-thiophene carboxaldehyde" "2-thiophenecarboxaldehyde, 5-ethyl-" "2-ethyl-5-formylthiophene" "5-ethyl-thiophene-2-carbaldehyde" "5-ethylthiophene-2-carbaldehyde;" "5-ethylthiophene-2-carboxaldehyde" );
+gibbsFormation
+{
+    dHf_298   107340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     464.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=176800.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,4,5,6-pentafluorobenzyl alcohol  (C7H3F5O, CAS 440-60-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23456PentafluorobenzylAlcohol;
+formula     C7H3F5O;
+CAS         440-60-8;
+InChIKey    PGJYYCIOYBZTPU-UHFFFAOYSA-N;
+MW          198.09;      // g/mol [origin=calculated method=formula-sum]
+Tc          661.90;      // K   [origin=predictive method=joback]
+Pc          32.028;      // bar [origin=predictive method=joback]
+omega       1.0264;      // -   [origin=predictive method=lee-kesler]
+Tb          499.87;      // K   [origin=predictive method=joback]
+HvapTb      49356.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (69.861 0.3854 -0.0001654 1.09e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACCH2; count 1; } { group OH; count 1; } { group ACF; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dC_ring; count 6; } { group F; count 5; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2,3,4,5,6-pentakis(fluoranyl)phenyl]methanol" "pentafluorobenzyl alcohol" "(pentafluorphenyl)methanol" "(pentafluorophenyl)methanol" "2,3,4,5,6-pentafluorobenzenemethanol" "(2,3,4,5,6-pentafluorophenyl)methanol" "(hydroxymethyl)pentafluorobenzene" "2,3,4,5,6-pentafluorobenzylic alcohol" "2, 3, 4, 5, 6-pentafluorobenzyl alcohol" "benzyl alcohol, 2,3,4,5,6-pentafluoro-" "pfb" "(2,3,4,5,6-pentafluorophenyl)methan-1-ol" );
+gibbsFormation
+{
+    dHf_298   -1141410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     500.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1038550.0
+    phase     gas;
+}

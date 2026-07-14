@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 3-oxocyclopentanecarboxylate  (C7H10O3, CAS 32811-75-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl3Oxocyclopentanecarboxylate;
+formula     C7H10O3;
+CAS         32811-75-9;
+InChIKey    KTGCFXSELRVRFH-UHFFFAOYSA-N;
+MW          142.154;      // g/mol [origin=calculated method=formula-sum]
+Tc          721.48;      // K   [origin=predictive method=joback]
+Pc          35.856;      // bar [origin=predictive method=joback]
+omega       0.5069;      // -   [origin=predictive method=lee-kesler]
+Tb          501.08;      // K   [origin=predictive method=joback]
+HvapTb      43087.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.12 0.57742 -0.0001458 -5.85e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group CH2CO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 3-oxidanylidenecyclopentane-1-carboxylate" "methyl 3-oxocyclopentane-1-carboxylate" "cyclopentanecarboxylic acid, 3-oxo-, methyl ester" "3-oxo-cyclopentanecarboxylic acid methyl ester" "3-(methoxycarbonyl)cyclopentan-1-one" "3-(methoxycarbonyl)-1-oxocyclopentane" "agn-pc-00g715" "3-oxo-1-cyclopentanecarboxylic acid methyl ester" "3-oxo-cyclopentane-1-carboxylic acid methyl ester" );
+gibbsFormation
+{
+    dHf_298   -582310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     350.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-388350.0
+    phase     gas;
+}

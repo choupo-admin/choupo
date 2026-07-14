@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bicyclobutylidene  (C8H12, CAS 6708-14-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bicyclobutylidene;
+formula     C8H12;
+CAS         6708-14-1;
+InChIKey    ANQVAFUCYRTKOQ-UHFFFAOYSA-N;
+MW          108.184;      // g/mol [origin=calculated method=formula-sum]
+Tc          639.49;      // K   [origin=predictive method=joback]
+Pc          38.868;      // bar [origin=predictive method=joback]
+omega       0.3173;      // -   [origin=predictive method=lee-kesler]
+Tb          423.12;      // K   [origin=predictive method=joback]
+HvapTb      35806.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-90.61 0.9244 -0.000723 2.336e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 6; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclobutylidenecyclobutane" "dicyclobutylidene" "bicyclobutylidine" "cyclobutylidinecyclobutane" "delta-1,1'-bicyclobutyl" "1,1'-bi(cyclobutylidene)" ".delta.-1,1'-bicyclobutyl" "cyclobutane, cyclobutylidine-" "cyclobutane, cyclobutylidine- (9ci)" );
+gibbsFormation
+{
+    dHf_298   350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     361.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=139900.0
+    phase     gas;
+}

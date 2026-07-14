@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-tert-butylcalix[4]arene  (C44H56O4, CAS 60705-62-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4TertButylcalix4Arene;
+formula     C44H56O4;
+CAS         60705-62-6;
+InChIKey    NVKLTRSBZLYZHK-UHFFFAOYSA-N;
+MW          648.928;      // g/mol [origin=calculated method=formula-sum]
+Tc          2107.93;      // K   [origin=predictive method=joback]
+Pc          8.764;      // bar [origin=predictive method=joback]
+omega       0.6009;      // -   [origin=predictive method=lee-kesler]
+Tb          1678.12;      // K   [origin=predictive method=joback]
+HvapTb      175204.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-253.21 4.68184 -0.00390012 1.3328e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 12; } { group C; count 4; } { group ACH; count 8; } { group AC; count 8; } { group ACCH2; count 4; } { group ACOH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 12; } { group C; count 4; } { group CH2_ring; count 4; } { group dCH_ring; count 8; } { group dC_ring; count 16; } { group OH_phenol; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-t-butylcalix[4]arene,95%" "tetra-tert-butyl(tetrahydroxy)calix[4]arene" "5,11,17,23-tetrakis(tert-butyl)pentacyclo[19.3.1.1<3,7>.1<9,13>.1<15,19>]octac osa-1(24),3(26),4,6,9(27),10,12,15(28),16,18,21(25),22-dodecaene-25,26,27,28-t etraol" "5,11,17,23-tetrakis(tert-butyl)pentacyclo[19.3.1.1<3,7>.1<9,13>.1<15,19>]octac osa-1(25),3,5,7(26),9(27),10,12,15,17,19(28),21,23-dodecaene-25,26,27,28-tetra ol" "5,11,17,23-tetratert-butylpentacyclo(19.3.1.1(3,7).1(9,13).1(15,19))octacosa-1(25),3(28),4,6,9(27),10,12,15(26),16,18,21,23-dodecaene-25,26,27,28-tetrol" "5,11,17,23-tetratert-butylpentacyclo[19.3.1.1~3,7~.1~9,13~.1~15,19~]octacosa-1(25),3(28),4,6,9(27),10,12,15(26),16,18,21,23-dodecaene-25,26,27,28-tetrol" "ethyl 2-{[5,11,17,23-tetra(tert-butyl)-26,27,28-tris(2-ethoxy-2-oxyethoxy)pentacyclo[19.3.1.1~3,7~.1~9,13~.1~15@19~]octacosa-1(25),3(28),4,6,9(27),10,12,15,17,19,(26),21,23-dodecaen-25-yl]oxy}acetate" "pentacyclo[19.3.1.1(3,7).1(9,13).1(15,19)]octacosa-1(25),3,5,7(28),9,11,13(27),15,17,19(26),21,23-dodecaene-25,26,27,28-tetrol, 5,11,17,23-tetrakis(1,1-dimethylethyl)" );
+gibbsFormation
+{
+    dHf_298   -754390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1317.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=141440.0
+    phase     gas;
+}

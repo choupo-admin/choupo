@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: d-glucitol, hexaacetate  (C18H26O12, CAS 5346-77-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dGlucitolHexaacetate;
+formula     C18H26O12;
+CAS         5346-77-0;
+InChIKey    NJVBTKVPPOFGAT-UHFFFAOYSA-N;
+MW          434.394;      // g/mol [origin=calculated method=formula-sum]
+Tc          1174.14;      // K   [origin=predictive method=joback]
+Pc          12.023;      // bar [origin=predictive method=joback]
+omega       1.1355;      // -   [origin=predictive method=lee-kesler]
+Tb          959.00;      // K   [origin=predictive method=joback]
+HvapTb      98552.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (132.252 1.40872 -0.0004006 -1.416e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 4; } { group CH3COO; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 4; } { group COO; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,4,5,6-pentaacetyloxyhexyl ethanoate" "hexa-o-acetylglucitol" "d-glucitol hexaacetate" "galactitol, hexaacetate" "d-mannitol, hexaacetate" "glucitol, hexaacetate, d-" "mannitol hexaacetate" "sorbitol hexaacetate" "2,3,4,5,6-pentaacetyloxyhexyl acetate" "d-glucitol, 1,2,3,4,5,6-hexaacetate" "1,2,3,4,5,6-hexa-o-acetylhexitol" "mannitol, hexaacetate" );
+gibbsFormation
+{
+    dHf_298   -2339650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1126.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1771300.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: kryptofix 222  (C18H36N2O6, CAS 23978-09-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        kryptofix222;
+formula     C18H36N2O6;
+CAS         23978-09-8;
+InChIKey    AUFVJZSDSXXFOI-UHFFFAOYSA-N;
+MW          376.494;      // g/mol [origin=calculated method=formula-sum]
+Tc          1161.70;      // K   [origin=predictive method=joback]
+Pc          20.145;      // bar [origin=predictive method=joback]
+omega       0.9411;      // -   [origin=predictive method=lee-kesler]
+Tb          897.70;      // K   [origin=predictive method=joback]
+HvapTb      90348.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-135.47 2.1256 -0.0008132 -5.76e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group FCH2O; count 6; } { group CH2N; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 18; } { group O_ring; count 6; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,7,13,16,21,24-hexaoxa-1,10-diazabicyclo[8.8.8]hexacosane" "crypt-2,2,2" "13,16,21,24-hexaoxa-1,10-diazabicyclo-(8,8,8)-hexacosane" "4,7,13,16,21,24-hexaoxa-1,10-diazabicyclo(8.8.8)hexacosane" "4,7,13,16,21,24-hexaoxa-1,10-diazabicyclo[8.8.8.]hexacosane" "4,7,13,16,21,24-hexaoxa-1,10-diazabicyclo[8.8.8]-hexacosane (kryptofix 2.2.2)" "2,2-cryptand" "2.2.2-cryptand" "cryptand 2.2.2" "4,13,16,21,24-hexaoxa-1,10-diazabicyclo[8.8.8]hexacosane" );
+gibbsFormation
+{
+    dHf_298   -996390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     844.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-275360.0
+    phase     gas;
+}

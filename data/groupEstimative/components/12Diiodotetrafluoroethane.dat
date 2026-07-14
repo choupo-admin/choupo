@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-diiodotetrafluoroethane  (C2F4I2, CAS 354-65-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Diiodotetrafluoroethane;
+formula     C2F4I2;
+CAS         354-65-4;
+InChIKey    NZXVPCQHQVWOFD-UHFFFAOYSA-N;
+MW          353.814;      // g/mol [origin=calculated method=formula-sum]
+Tc          651.83;      // K   [origin=predictive method=joback]
+Pc          39.259;      // bar [origin=predictive method=joback]
+omega       0.2417;      // -   [origin=predictive method=lee-kesler]
+Tb          422.26;      // K   [origin=predictive method=joback]
+HvapTb      32932.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.13 0.5706 -0.000657 2.586e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group I; count 2; } { group CF2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group F; count 4; } { group I; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2,2-tetrakis(fluoranyl)-1,2-bis(iodanyl)ethane" "1,2-diiodoperfluoroethane" "1,1,2,2-tetrafluoro-1,2-diiodoethane" "1,2-diiodo-1,1,2,2-tetrafluoroethane" "ethane, 1,1,2,2-tetrafluoro-1,2-diiodo-" "ethane,tetrafluoro-1,2-diiodo- (7ci,8ci);1,1,2,2-tetrafluoro-1,2-diiodoethane;1,2-diiodo-1,1,2,2-tetrafluoroethane;ethane,1,1,2,2-tetrafluoro-1,2-diiodo-;1,2-diiodotetrafluoroethane;tetrafluoro-1,2-diiodoethane;a,w-diiodoperfluoroethane;" );
+gibbsFormation
+{
+    dHf_298   -732810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     394.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-691360.0
+    phase     gas;
+}

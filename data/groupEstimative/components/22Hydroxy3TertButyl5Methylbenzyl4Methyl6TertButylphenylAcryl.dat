@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(2-hydroxy-3-tert-butyl-5-methylbenzyl)-4-methyl-6-tert-butylphenyl acrylate  (C26H34O3, CAS 61167-58-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Hydroxy3TertButyl5Methylbenzyl4Methyl6TertButylphenylAcryl;
+formula     C26H34O3;
+CAS         61167-58-6;
+InChIKey    IORUEKDKNHHQAL-UHFFFAOYSA-N;
+MW          394.555;      // g/mol [origin=calculated method=formula-sum]
+Tc          1239.87;      // K   [origin=predictive method=joback]
+Pc          11.948;      // bar [origin=predictive method=joback]
+omega       1.0009;      // -   [origin=predictive method=lee-kesler]
+Tb          1001.80;      // K   [origin=predictive method=joback]
+HvapTb      98491.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-52.509 2.35006 -0.00164606 4.619e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group C; count 2; } { group CH2=CH; count 1; } { group ACH; count 4; } { group AC; count 4; } { group ACCH3; count 2; } { group ACCH2; count 1; } { group ACOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2; count 1; } { group C; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 8; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2-tert-butyl-6-[(3-tert-butyl-5-methyl-2-oxidanyl-phenyl)methyl]-4-methyl-phenyl] prop-2-enoate" "2-tert-butyl-6-(3-tert-butyl-2-hydroxy-5-methylbenzyl)-4-methylphenyl acrylate" "sumilizer gm" "2-propenoic acid, 2-(1,1-dimethylethyl)-6-[[3-(1,1-dimethylethyl)-2-hydroxy-5-methylphenyl]methyl]-4-methylphenyl ester" "2-propenoic acid, 2-(1,1-dimethylethyl)-6-((3-(1,1-dimethylethyl)-2-hydroxy-5-methylphenyl)methyl)-4-methylphenyl ester" "[2-tert-butyl-6-[(3-tert-butyl-2-hydroxy-5-methylphenyl)methyl]-4-methylphenyl] prop-2-enoate" "2,2'-methylenebis(4-methyl-6-tert-butylphenol)monoacrylate; 2,2'-methylenebis(6-tert-butyl-4-methylphenol) monoacrylate;2-(2-hydroxy-3-tert-butyl-5-methylbenzyl)-4-methyl-6-tert-butylphenyl acrylate;2-tert-butyl-6-(3-tert-butyl-2-hydroxy-5-methylbenzyl)-4-methylphenyl acrylate;2-tert-butyl-6-(3-tert-butyl-5-methyl-2-hydroxybenzyl)-4-methylphenyl acrylate;bis(2-hydroxy-3-tert-butyl-5-methyl)phenylmethane monoacrylate; gm; irganox3052; irganox 3052ff; sumilizer gm" "2-(1,1-dimethylethyl)-6-((3-(1,1-dimethylethyl)-2-hydroxy-5-methylphenyl)methyl)-4-methylphenyl acrylate" "2-propenoic acid,2-(1,1-dimethylethyl)-6-[[3-(1,1-dimethylethyl)-2-hydroxy-5-methylphenyl]methyl]-4-methylphenylester" );
+gibbsFormation
+{
+    dHf_298   -550920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     920.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-26760.0
+    phase     gas;
+}

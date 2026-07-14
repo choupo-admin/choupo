@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-chlorobutanal  (C4H7ClO, CAS 195835-96-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Chlorobutanal;
+formula     C4H7ClO;
+CAS         195835-96-2;
+InChIKey    DOQLCJMCQWQQHK-UHFFFAOYSA-N;
+MW          106.549;      // g/mol [origin=calculated method=formula-sum]
+Tc          559.35;      // K   [origin=predictive method=joback]
+Pc          40.829;      // bar [origin=predictive method=joback]
+omega       0.4158;      // -   [origin=predictive method=lee-kesler]
+Tb          377.21;      // K   [origin=predictive method=joback]
+HvapTb      35603.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.543 0.3651 -0.0002072 4.33e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CHO; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group Cl; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-chloranylbutanal" "butanal, 4-chloro-" );
+gibbsFormation
+{
+    dHf_298   -227210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     363.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-128650.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-hexacosanol  (C26H54O, CAS 506-52-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Hexacosanol;
+formula     C26H54O;
+CAS         506-52-5;
+InChIKey    IRHTZOCLLONTOC-UHFFFAOYSA-N;
+MW          382.717;      // g/mol [origin=calculated method=formula-sum]
+Tc          1093.71;      // K   [origin=predictive method=joback]
+Pc          7.623;      // bar [origin=predictive method=joback]
+omega       0.6477;      // -   [origin=predictive method=lee-kesler]
+Tb          886.66;      // K   [origin=predictive method=joback]
+HvapTb      90149.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.455 2.50782 -0.001421 3.08e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 25; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 25; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexacosan-1-ol" "n-hexacosanol" "ceryl alcohol" "hexacosyl alcohol" "cerylic alcohol" "hexacosanol" "67905-28-6 (aluminum[1:3] salt)" );
+gibbsFormation
+{
+    dHf_298   -732200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1219.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=31220.0
+    phase     gas;
+}

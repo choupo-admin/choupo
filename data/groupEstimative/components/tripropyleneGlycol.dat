@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tripropylene glycol  (C9H20O4, CAS 24800-44-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tripropyleneGlycol;
+formula     C9H20O4;
+CAS         24800-44-0;
+InChIKey    LCZVSXRMYJUNFX-UHFFFAOYSA-N;
+MW          192.255;      // g/mol [origin=calculated method=formula-sum]
+Tc          798.19;      // K   [origin=predictive method=joback]
+Pc          27.469;      // bar [origin=predictive method=joback]
+omega       1.4578;      // -   [origin=predictive method=lee-kesler]
+Tb          633.40;      // K   [origin=predictive method=joback]
+HvapTb      72642.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (51.243 0.81816 -0.0003142 4.4e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group C2H4O2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 3; } { group OH; count 2; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-(2-oxidanylpropoxy)propoxy]propan-1-ol" "((methylethylene)bis(oxy))dipropanol" "tripropylene glycolmixture of isomers" "2-(2-(2-hydroxypropoxy)propoxy)-1-propanol" "propanol, ((1-methyl-1,2-ethanediyl)bis(oxy))bis-" "propanol, [(1-methyl-1,2-ethanediyl)bis(oxy)]bis-" "tripropylene glycol  (mixture of isomers)" "2-[2-(2-hydroxypropoxy)propoxy]propan-1-ol" );
+gibbsFormation
+{
+    dHf_298   -813830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     602.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-466060.0
+    phase     gas;
+}

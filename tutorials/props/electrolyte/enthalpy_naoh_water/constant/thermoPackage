@@ -1,3 +1,0 @@
-components       ( water  NaOH );
-activityModel    { model pitzer; }
-equationOfState  { model idealGas; }

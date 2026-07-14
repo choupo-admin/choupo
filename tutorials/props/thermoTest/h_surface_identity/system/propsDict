@@ -1,0 +1,27 @@
+/*---------------------------------------------------------------------------*\
+  h_surface_identity  --  thermodynamics as a REGRESSION TEST.
+
+  A surface that anchors each phase leg on the 298.15 K formation datum
+  and integrates the TARGET phase's own Cp obeys, by construction:
+
+      (1)  dh_liq/dT  = Cp_liquid(T)
+      (2)  dh_gas/dT  = Cp_idealGas(T)
+      (3)  h_g(298.15) - h_liq(298.15) = Hvap(298.15)   (the anchor)
+      (4)  d[h_g - h_liq]/dT = Cp_g - Cp_liq            (Kirchhoff)
+
+  This op checks all four by central finite difference for benzene,
+  toluene, water and ethanol at 350 K and REFUSES above 1e-6 relative
+  error -- so no future "convenient" leg (a Watson-slope liquid, a
+  mixed-datum gas) can re-enter the balances unnoticed.  The golden
+  pins every per-species error.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        h_identity;
+        type        hConsistency;
+        components  ( benzene  toluene  water  ethanol );
+        temperature 350;
+    }
+);

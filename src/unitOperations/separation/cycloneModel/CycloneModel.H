@@ -77,6 +77,15 @@ struct CycloneContext
     scalar rho_p = 0.0;    // particle density [kg/m^3]
     scalar T     = 298.15; // temperature [K]
     scalar loading = 0.0;  // inlet solids loading [kg solid / kg gas]
+
+    // Full standard-cyclone geometry (Iozia-Leith flow-pattern model); defaulted
+    // to the Stairmand high-efficiency ratios x Dc when a case gives only Dc.
+    scalar a  = 0.0, b = 0.0;  // inlet height, width [m]  (0.5 Dc, 0.2 Dc)
+    scalar De = 0.0;           // gas exit (vortex finder) diameter [m]  (0.5 Dc)
+    scalar S  = 0.0;           // vortex-finder length into body [m]     (0.5 Dc)
+    scalar h  = 0.0;           // cylinder (barrel) height [m]           (1.5 Dc)
+    scalar H  = 0.0;           // total cyclone height [m]               (4.0 Dc)
+    scalar B  = 0.0;           // dust-outlet (cone bottom) diameter [m] (0.375 Dc)
 };
 
 class CycloneModel
@@ -103,6 +112,14 @@ public:
     // N_H = 8 velocity heads for the Lapple standard geometry); models with
     // their own ΔP correlation (Barth) override this.
     virtual scalar pressureDrop(const CycloneContext& c) const;
+
+    // Name of the ΔP correlation actually in use, for the run log (the log
+    // states what WAS used, never "unless the model overrides").  A model
+    // that overrides pressureDrop() MUST override this too.
+    virtual std::string pressureDropName() const
+    {
+        return "Shepherd-Lapple N_H = 8";
+    }
 
     // ---- Factory ----
     static void registerType(const std::string& name, Factory f);

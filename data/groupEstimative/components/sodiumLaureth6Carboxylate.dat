@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sodium laureth-6 carboxylate  (C16H32O4, CAS 33939-64-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sodiumLaureth6Carboxylate;
+formula     C16H32O4;
+CAS         33939-64-9;
+InChIKey    OUNZARDETXBPIX-UHFFFAOYSA-N;
+MW          288.428;      // g/mol [origin=calculated method=formula-sum]
+Tc          935.09;      // K   [origin=predictive method=joback]
+Pc          13.728;      // bar [origin=predictive method=joback]
+omega       1.1273;      // -   [origin=predictive method=lee-kesler]
+Tb          756.03;      // K   [origin=predictive method=joback]
+HvapTb      73194.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (43.944 1.44822 -0.0006972 9.76e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 12; } { group CH2O; count 2; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 14; } { group O; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-dodecoxyethoxy)ethanoic acid" "sodium laureth-11 carboxylate" "sodium laureth-13 carboxylate" "sodium laureth-14 carboxylate" "sodium laureth-17 carboxylate" "2-(2-dodecoxyethoxy)acetic acid" "polyethylene glycol (5) lauryl ether carboxylic acid, sodium salt" "laureth-5 carboxylic acid, sodium salt" "laureth-6 carboxylic acid, sodium salt" "laureth-11 carboxylic acid, sodium salt" "laureth-13 carboxylic acid, sodium salt" "laureth-14 carboxylic acid, sodium salt" );
+gibbsFormation
+{
+    dHf_298   -988280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     854.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-470070.0
+    phase     gas;
+}

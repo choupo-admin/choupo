@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: p-methylbenzyl p-toluate  (C16H16O2, CAS 21086-87-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pMethylbenzylPToluate;
+formula     C16H16O2;
+CAS         21086-87-3;
+InChIKey    JSMHXVURHYHQGT-UHFFFAOYSA-N;
+MW          240.302;      // g/mol [origin=calculated method=formula-sum]
+Tc          920.16;      // K   [origin=predictive method=joback]
+Pc          22.313;      // bar [origin=predictive method=joback]
+omega       0.7230;      // -   [origin=predictive method=lee-kesler]
+Tb          687.22;      // K   [origin=predictive method=joback]
+HvapTb      64493.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-25.459 1.19224 -0.00068032 1.233e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 1; } { group ACCH3; count 2; } { group ACCH2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4-methylphenyl)methyl 4-methylbenzoate" "benzoic acid, 4-methyl-, (4-methylphenyl)methyl ester" "(4-methylphenyl)methyl p-toluate" "p-toluic acid, p-methylbenzyl ester" "4-methylbenzyl 4-methylbenzoate" "4-methylbenzoic acid (4-methylphenyl)methyl ester" );
+gibbsFormation
+{
+    dHf_298   -240730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     605.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-20970.0
+    phase     gas;
+}

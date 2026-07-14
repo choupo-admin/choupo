@@ -1,0 +1,5 @@
+application choupoBatch;
+description "A4 F3: 15 percent CO2 with explicit carrier continuity and Ergun velocity";
+verbosity 2;
+startTime 0; endTime 4200; deltaT 0.05; writeInterval 100;
+timeStepping adaptive;

@@ -1,17 +1,22 @@
 /*---------------------------------------------------------------------------*\
   recycle_autoinit_tear  --  same Reactor-Separator-Recycle as
-  process03_recycle, but the tear stream `recycle` is deliberately NOT given
-  an initial guess in the `streams {}` block.  The solver then AUTO-SEEDS it
-  from the feed aggregate (a physically-defensible guess derived from the
-  actual feeds, never a magic constant), ANNOUNCES it on the log
+  process03_recycle; this case's LESSON is the TEAR-SEED CONTRACT of the
+  stream-state architecture:
 
-      [init] tear 'recycle': no guess supplied -- seeded from the feed
-             aggregate (F=... kmol/h, T=... K).  An explicit guess ...
+    * the tear `recycle` has an AUTHORED state file, 0/recycle -- the seed
+      is a first-class case file, owned by the author;
+    * completeness is FATAL before the solve: delete 0/recycle and
+      choupoSolve REFUSES (MISSING, zero iterations run);
+    * `bin/choupo-init0` refuses to INVENT a recycle seed (propagation is
+      only honest on an acyclic graph) -- it names the missing file and
+      leaves the decision to you.
 
-  and converges to the SAME fixed point as process03_recycle (the solution is
-  unique).  Demonstrates the "no silent crutch" auto-init: the crutch exists,
-  but it is honest (feed-propagation) and loud (announced + nudges the student
-  to write an explicit guess).  See CLAUDE.md "No silent crutch".
+  Compare the seed in 0/recycle with process03_recycle's: a recycle seed is
+  a NUMERICAL aid the student owns, honest and visible ("no silent crutch",
+  CLAUDE.md).  (Historical note, marked legacy: on the retired `streams {}`
+  reader path a missing tear guess was auto-seeded from the feed aggregate,
+  announced on the log; the 0/ contract replaced that with the authored,
+  refuse-if-missing seed above.)
 
          freshFeed ──┐                                       ┌──► vapProd (product)
                      │                                       │
@@ -34,17 +39,7 @@
   ethanol conversion approaches 100% at steady state.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    freshFeed
-    {
-        F            1.0 kmol/h;           // equimolar ethanol + acetic acid (esterification feed)
-        T            350.0 K;
-        P            1.01325 bar;
-        molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
-    }
-
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 tearStreams           ( recycle );
 recycleSolver          Newton;        // Newton on the tear variables (default);

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 2,3-dichloropropionate  (C5H8Cl2O2, CAS 6628-21-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl23Dichloropropionate;
+formula     C5H8Cl2O2;
+CAS         6628-21-3;
+InChIKey    RNZPQAZETZXKCQ-UHFFFAOYSA-N;
+MW          171.017;      // g/mol [origin=calculated method=formula-sum]
+Tc          640.15;      // K   [origin=predictive method=joback]
+Pc          32.320;      // bar [origin=predictive method=joback]
+omega       0.4866;      // -   [origin=predictive method=lee-kesler]
+Tb          446.64;      // K   [origin=predictive method=joback]
+HvapTb      42513.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (47.852 0.44352 -0.0001976 8.7e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2Cl; count 1; } { group CHCl; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group Cl; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2,3-bis(chloranyl)propanoate" "ethyl 2,3-dichloropropanoate" "ethyl-2,3-dichloropropionate" "2,3-dichloropropionic acid ethyl ester" "propanoic acid, 2,3-dichloro-, ethyl ester" "ethyl alpha,beta-dichloropropionate" "2,2-dichloropropionic acid ethyl ester" "ethyl .alpha.,.beta.-dichloropropionate" "propanoic acid,3-dichloro-, ethyl ester" "propionic acid,3-dichloro-, ethyl ester" "propanoic acid,2,3-dichloro-, ethyl ester" "propionic acid, 2,3-dichloro-, ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -500570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     459.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-345450.0
+    phase     gas;
+}

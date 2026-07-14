@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-mercaptoethyl heptanoate  (C9H18O2S, CAS 22909-87-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2MercaptoethylHeptanoate;
+formula     C9H18O2S;
+CAS         22909-87-1;
+InChIKey    RAQXZZCIQKGGNI-UHFFFAOYSA-N;
+MW          190.301;      // g/mol [origin=calculated method=formula-sum]
+Tc          715.84;      // K   [origin=predictive method=joback]
+Pc          24.678;      // bar [origin=predictive method=joback]
+omega       0.6719;      // -   [origin=predictive method=lee-kesler]
+Tb          526.60;      // K   [origin=predictive method=joback]
+HvapTb      49772.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (35.007 0.83132 -0.0003936 4.44e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH2COO; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group COO; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-sulfanylethyl heptanoate" "heptanoic acid, 2-mercaptoethyl ester" "2-mercaptoethylheptanoate" "heptanoic acid,2-mercaptoethyl ester" );
+gibbsFormation
+{
+    dHf_298   -507890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     620.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-256080.0
+    phase     gas;
+}

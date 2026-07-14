@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: terallethrin  (C17H24O3, CAS 15589-31-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        terallethrin;
+formula     C17H24O3;
+CAS         15589-31-8;
+InChIKey    MIZYPRIEDMSCAC-UHFFFAOYSA-N;
+MW          276.376;      // g/mol [origin=calculated method=formula-sum]
+Tc          955.20;      // K   [origin=predictive method=joback]
+Pc          16.963;      // bar [origin=predictive method=joback]
+omega       0.7725;      // -   [origin=predictive method=lee-kesler]
+Tb          733.56;      // K   [origin=predictive method=joback]
+HvapTb      63286.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-116.169 2.0142 -0.0017405 6.712e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 1; } { group CH; count 2; } { group C; count 2; } { group CH2=CH; count 1; } { group CH2CO; count 1; } { group C=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group C_ring; count 2; } { group dC_ring; count 2; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2-methyl-4-oxidanylidene-3-prop-2-enyl-cyclopent-2-en-1-yl) 2,2,3,3-tetramethylcyclopropane-1-carboxylate" "knockthrin" "terallethrin [iso]" "(+-)-3-allyl-2-methyl-4-oxo-2-cyclopentenyl 2,2,3,3-tetramethylcyclopropanecarboxylate" "2-methyl-4-oxo-3-(2-propenyl)-2-cyclopenten-1-yl 2,2,3,3-tetramethylcyclopropanecarboxylate" "3-allyl-2-methyl-4-oxocyclopent-2-en-1-yl 2,2,3,3-tetramethylcyclopropanecarboxylate" "cyclopropanecarboxylic acid, 2,2,3,3-tetramethyl-, 2-methyl-4-oxo-3-(2-propenyl)-2-cyclopenten-1-yl ester" "cyclopropanecarboxylic acid, 2,2,3,3-tetramethyl-, 2-methyl-4-oxo-3-(2-propenyl)-2-cyclopenten-1-yl ester, (+-)-" "cyclopropanecarboxylic acid, 2,2,3,3-tetramethyl-, ester with 2-allyl-4-hydroxy-3-methyl-2-cyclopenten-1-one" "o950" "(2-methyl-4-oxo-3-prop-2-enylcyclopent-2-en-1-yl) 2,2,3,3-tetramethylcyclopropane-1-carboxylate" "2,2,3,3-tetramethyl-1-cyclopropanecarboxylic acid (2-methyl-4-oxo-3-prop-2-enyl-1-cyclopent-2-enyl) ester" );
+gibbsFormation
+{
+    dHf_298   -565840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     650.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-171260.0
+    phase     gas;
+}

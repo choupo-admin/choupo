@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tert-butyl (e)-pent-3-enoate  (C9H16O2, CAS 81643-01-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tertButylEPent3Enoate;
+formula     C9H16O2;
+CAS         81643-01-8;
+InChIKey    DBRXZYVHEWAOFR-UHFFFAOYSA-N;
+MW          156.225;      // g/mol [origin=calculated method=formula-sum]
+Tc          654.34;      // K   [origin=predictive method=joback]
+Pc          24.851;      // bar [origin=predictive method=joback]
+omega       0.4627;      // -   [origin=predictive method=lee-kesler]
+Tb          464.67;      // K   [origin=predictive method=joback]
+HvapTb      41697.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.539 0.94988 -0.0006268 1.581e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group C; count 1; } { group CH=CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tert-butyl pent-3-enoate" );
+gibbsFormation
+{
+    dHf_298   -437900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     512.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-202410.0
+    phase     gas;
+}

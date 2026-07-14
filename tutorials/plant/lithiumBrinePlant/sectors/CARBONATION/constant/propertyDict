@@ -1,0 +1,17 @@
+/*---------------------------------------------------------------------------*\
+  CARBONATION property context.
+\*---------------------------------------------------------------------------*/
+
+recordType    propertyDict;
+schemaVersion 1;
+
+inherits "../../../constant";
+
+components ( water Li2CO3 );
+
+propertyMethods
+{
+    liquid activity.ideal;
+    vapour builtin.idealGas;
+    solid  builtin.saltEquilibrium;
+}

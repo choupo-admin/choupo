@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-acetyl-4-piperidone  (C7H11NO2, CAS 32161-06-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Acetyl4Piperidone;
+formula     C7H11NO2;
+CAS         32161-06-1;
+InChIKey    NNFOVLFUGLWWCL-UHFFFAOYSA-N;
+MW          141.17;      // g/mol [origin=calculated method=formula-sum]
+Tc          736.46;      // K   [origin=predictive method=joback]
+Pc          40.007;      // bar [origin=predictive method=joback]
+omega       0.5781;      // -   [origin=predictive method=lee-kesler]
+Tb          513.84;      // K   [origin=predictive method=joback]
+HvapTb      44778.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-36.8 0.75462 -0.0003897 5.516e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2CO; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 4; } { group CdO; count 1; } { group CdO_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethanoylpiperidin-4-one" "n-acetyl-4-piperidone" "1-acetyl-4-piperidinone" "1-acetylpiperidin-4-one" "4-piperidinone, 1-acetyl-" "1-acetyl-4-oxopiperidine" "n-acetylpiperidin-4-one" "1-acetyl-piperidin-4-one" "n-acetyl-4-piperidinone" "1-acetyl-4-piperidinone;4-piperidinone, 1-acetyl-;n-acetylpiperidone;1-acetyl-4-oxopiperidine" );
+gibbsFormation
+{
+    dHf_298   -289740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     384.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-88410.0
+    phase     gas;
+}

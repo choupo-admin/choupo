@@ -77,17 +77,34 @@ export function buildLedger(
 
   // Binary-interaction pairs (foundation).
   for (const p of pairs) {
-    const placeholder = p.provSource === "placeholder";
+    // POLICY by the typed origin (forum #79-3); provSource is the legacy
+    // fallback for results emitted before the field existed.
+    const cls = p.origin && p.origin !== "unattributed" ? p.origin : p.provSource;
     const ideal = p.status === "idealDefault";
+    const placeholder = cls === "placeholder";
+    const predictive = cls === "predictive";
+    const assumed = cls === "assumed";
+    const estimated = cls === "estimated";
+    const overridden = !!p.promotedDespite;
+    const warn = ideal || placeholder || predictive || assumed || estimated || overridden;
     rows.push({
       decision: "binary pair",
       what: `${p.i}–${p.j}  (${p.model})`,
       source: ideal ? "ideal-default (no params)"
-        : p.provSource && p.provSource !== "inline" ? `${p.status} · ${p.provSource}`
+        : cls && cls !== "inline" ? `${p.status} · ${cls}`
         : p.status,
-      evidence: ideal ? "no interaction" : placeholder ? "placeholder values" : "—",
-      flag: ideal || placeholder ? "warn" : "ok",
+      evidence: ideal ? "no interaction"
+        : placeholder ? "placeholder values"
+        : predictive ? "model-derived surrogate, not data"
+        : assumed ? "engineering assumption"
+        : estimated ? "group-contribution estimate"
+        : overridden ? `promoted despite identifiable:${p.promotedDespite!.identifiable} — "${p.promotedDespite!.reason}" (${p.promotedDespite!.by}, ${p.promotedDespite!.date})`
+        : "—",
+      flag: warn ? "warn" : "ok",
     });
+    if (overridden && !placeholder && !predictive) {
+      // an override on an otherwise-ok pair still carries its own warning row
+    }
   }
 
   for (const op of ops) {

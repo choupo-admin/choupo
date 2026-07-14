@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopentamine  (C9H19N, CAS 102-45-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopentamine;
+formula     C9H19N;
+CAS         102-45-4;
+InChIKey    HFXKQSZZZPGLKQ-UHFFFAOYSA-N;
+MW          141.258;      // g/mol [origin=calculated method=formula-sum]
+Tc          669.28;      // K   [origin=predictive method=joback]
+Pc          28.263;      // bar [origin=predictive method=joback]
+omega       0.4678;      // -   [origin=predictive method=lee-kesler]
+Tb          470.53;      // K   [origin=predictive method=joback]
+HvapTb      41933.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-68.669 1.07264 -0.000645 1.454e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 2; } { group CH3NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-cyclopentyl-n-methyl-propan-2-amine" "cyclopentadrin" "cyclonarol" "cyclopentamin" "cyklosan" "sinos" "cyclopentaminum [inn-latin]" "cyclopentamine (pharmacetical)" "1-cyclopentyl-n-methylpropan-2-amine" "2-cyclopentyl-n,1-dimethylethylamine" "n,alpha-dimethylcyclopentaneethylamine" "cyclopentaneethanamine, n,.alpha.-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -120420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     487.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=148400.0
+    phase     gas;
+}

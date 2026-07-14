@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methoxy-dmba  (C21H18O, CAS 66240-02-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3MethoxyDmba;
+formula     C21H18O;
+CAS         66240-02-6;
+InChIKey    KBWBVQMLOPIGCK-UHFFFAOYSA-N;
+MW          286.374;      // g/mol [origin=calculated method=formula-sum]
+Tc          1056.00;      // K   [origin=predictive method=joback]
+Pc          19.579;      // bar [origin=predictive method=joback]
+omega       0.8668;      // -   [origin=predictive method=lee-kesler]
+Tb          811.02;      // K   [origin=predictive method=joback]
+HvapTb      75256.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.44 1.54816 -0.00111376 3.282e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 7; } { group ACCH3; count 2; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH_ring; count 9; } { group dC_ring; count 9; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methoxy-7,12-dimethyl-benzo[a]anthracene" "benz(a)anthracene, 7,12-dimethyl-3-methoxy-" "3-methoxy-7,12-dimethyltetraphene" "3-methoxy-7,12-dimethylbenz(a)anthracene" "3-methoxy-7,12-dimethylbenzo[a]anthracene" "benz(a)anthracene, 3-methoxy-7,12-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   143400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     521.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=405150.0
+    phase     gas;
+}

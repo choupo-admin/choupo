@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4'-bis(2-hydroxyhexafluoroisopropyl)diphenyl  (C18H10F12O2, CAS 2180-30-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44Bis2HydroxyhexafluoroisopropylDiphenyl;
+formula     C18H10F12O2;
+CAS         2180-30-5;
+InChIKey    JCNFGVSJUHFARO-UHFFFAOYSA-N;
+MW          486.252;      // g/mol [origin=calculated method=formula-sum]
+Tc          1019.16;      // K   [origin=predictive method=joback]
+Pc          15.307;      // bar [origin=predictive method=joback]
+omega       1.3313;      // -   [origin=predictive method=lee-kesler]
+Tb          830.98;      // K   [origin=predictive method=joback]
+HvapTb      77316.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-115.85 2.4014 -0.00217212 7.224e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 2; } { group ACH; count 8; } { group AC; count 4; } { group OH; count 2; } { group CF3; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 6; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group F; count 12; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,3,3,3-hexakis(fluoranyl)-2-[4-[4-[1,1,1,3,3,3-hexakis(fluoranyl)-2-oxidanyl-propan-2-yl]phenyl]phenyl]propan-2-ol" "4,4'-bis(2-hydroxyhexafluoroisopropyl)biphenyl" "1,1,1,3,3,3-hexafluoro-2-[4-[4-(1,1,1,3,3,3-hexafluoro-2-hydroxypropan-2-yl)phenyl]phenyl]propan-2-ol" "1,1,1,3,3,3-hexafluoro-2-{4-[4-(1,1,1,3,3,3-hexafluoro-2-hydroxypropan-2-yl)phenyl]phenyl}propan-2-ol" "4,4'-bis-(2-hydroxyhexafluoroisopropyl)diphenyl" "4,4'-bis(2-hydroxyhexafluoro-iso-propyl)diphenyl" "4,4'-bis[perfluoro(2-hydroxyprop-2-yl)]biphenyl" "4,4'-bis(1,1,1,3,3,3-hexafluoro-2-hydroxyprop-2-yl)biphenyl" "1,1,1,3,3,3-hexafluoro-2-(4-{4-[2,2,2-trifluoro-1-hydroxy-1-(trifluoromethyl)e thyl]phenyl}phenyl)propan-2-ol" "4,4'-biphenyldimethanol,a,a,a',a'-tetrakis(trifluoromethyl)-(7ci,8ci); [1,1'-biphenyl]-4,4'-dimethanol, a,a,a',a'-tetrakis(trifluoromethyl)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -2675010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     880.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2288080.0
+    phase     gas;
+}

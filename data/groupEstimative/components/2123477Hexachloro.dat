@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2, 1,2,3,4,7,7-hexachloro-  (C7H2Cl6, CAS 3389-71-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2123477Hexachloro;
+formula     C7H2Cl6;
+CAS         3389-71-7;
+InChIKey    IHAXIFZOERJWDF-UHFFFAOYSA-N;
+MW          298.793;      // g/mol [origin=calculated method=formula-sum]
+Tc          884.21;      // K   [origin=predictive method=joback]
+Pc          35.305;      // bar [origin=predictive method=joback]
+omega       0.4377;      // -   [origin=predictive method=lee-kesler]
+Tb          606.42;      // K   [origin=predictive method=joback]
+HvapTb      55630.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-131.61 1.62 -0.00225628 1.1192e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group CCl2; count 1; } { group Cl_C=C_; count 2; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:2
+    joback ( { group C_ring; count 3; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group Cl; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,7,7-hexakis(chloranyl)bicyclo[2.2.1]hepta-2,5-diene" "1,2,3,4,7,7-hexachloronorbornadiene" "2,5-norbornadiene, 1,2,3,4,7,7-hexachloro-" "1,2,3,4,7,7-hexachlorobicyclo[2.2.1]hepta-2,5-diene" "bicyclo[2.2.1]hepta-2,5-diene, 1,2,3,4,7,7-hexachloro-" "1,2,3,4,7,7-hexachlorobicyclo(2.2.1)hepta-2,5-diene" "bicyclo(2.2.1)hepta-2,5-diene, 1,2,3,4,7,7-hexachloro-" "1,3,4,7,7-hexachloronorbornadiene" "1,3,4,7,7-hexachloro-2,5-norbornadiene" "1,2,3,4,7,7-hexachloro-2,5-norbornadiene" "1,3,4,7,7-hexachlorobicyclo[2.2.1]hepta-2,5-diene" "2,5-norbornadiene, 1,2,3,4,7,7-hexachloro- (8ci)" );
+gibbsFormation
+{
+    dHf_298   -24810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     547.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=62360.0
+    phase     gas;
+}

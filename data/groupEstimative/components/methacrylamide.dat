@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methacrylamide  (C4H7NO, CAS 79-39-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methacrylamide;
+formula     C4H7NO;
+CAS         79-39-0;
+InChIKey    FQPSGWSUVKBHSU-UHFFFAOYSA-N;
+MW          85.106;      // g/mol [origin=calculated method=formula-sum]
+Tc          617.99;      // K   [origin=predictive method=joback]
+Pc          48.562;      // bar [origin=predictive method=joback]
+omega       0.4508;      // -   [origin=predictive method=lee-kesler]
+Tb          414.08;      // K   [origin=predictive method=joback]
+HvapTb      41295.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.42 0.39762 -0.0002437 5.756e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2=C; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylprop-2-enamide" "2-methylacrylamide" "2-propenamide, 2-methyl-" "methacrylic amide" "methacrylic acid amide" "2-methylpropenamide" "methacryamide" "methylacrylic amide" "alpha-methyl acrylic amide" "usaf rh-1" "2-methyl-acrylamide" "mhoromer bm801" );
+gibbsFormation
+{
+    dHf_298   -89040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     381.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-380.0
+    phase     gas;
+}

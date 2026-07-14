@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pargyline  (C11H13N, CAS 555-57-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pargyline;
+formula     C11H13N;
+CAS         555-57-7;
+InChIKey    DPWPWRLQFGFJFI-UHFFFAOYSA-N;
+MW          159.232;      // g/mol [origin=calculated method=formula-sum]
+Tc          694.69;      // K   [origin=predictive method=joback]
+Pc          30.967;      // bar [origin=predictive method=joback]
+omega       0.4253;      // -   [origin=predictive method=lee-kesler]
+Tb          480.52;      // K   [origin=predictive method=joback]
+HvapTb      44257.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.928 0.99992 -0.00071433 2.0099e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group CH3N; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-methyl-n-(phenylmethyl)prop-2-yn-1-amine" "eudatin" "n-methyl-n-propargylbenzylamine" "paragyline" "pargylamine" "supirdyl" "eutonyl" "benzenemethanamine, n-methyl-n-2-propynyl-" "pargylinum" "pargilina" "pargylin" "eutron" );
+gibbsFormation
+{
+    dHf_298   325590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     463.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=488000.0
+    phase     gas;
+}

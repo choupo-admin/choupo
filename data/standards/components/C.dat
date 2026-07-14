@@ -13,6 +13,7 @@ CAS            7440-44-0;
 
 MW             12.011;       // kg/kmol
 nonvolatile    true;
+tags           ( radical gasPhase combustion );
 
 gibbsFormation
 {

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: citronellyloxyacetaldehyde  (C12H22O2, CAS 7492-67-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        citronellyloxyacetaldehyde;
+formula     C12H22O2;
+CAS         7492-67-3;
+InChIKey    LMETVDMCIJNNKH-UHFFFAOYSA-N;
+MW          198.306;      // g/mol [origin=calculated method=formula-sum]
+Tc          727.61;      // K   [origin=predictive method=joback]
+Pc          19.788;      // bar [origin=predictive method=joback]
+omega       0.7268;      // -   [origin=predictive method=lee-kesler]
+Tb          548.84;      // K   [origin=predictive method=joback]
+HvapTb      51086.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (13.325 1.08096 -0.0006003 1.234e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group CH=C; count 1; } { group CHO; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group O; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(3,7-dimethyloct-6-enoxy)ethanal" "muget aldehyde" "citronelloxyacetaldehyde" "6,10-dimethyl-3-oxa-9-undecenal" "((3,7-dimethyl-6-octenyl)oxy)acetaldehyde" "acetaldehyde, ((3,7-dimethyl-6-octenyl)oxy)-" "acetaldehyde, [(3,7-dimethyl-6-octenyl)oxy]-" "acetaldehyde, 2-((3,7-dimethyl-6-octen-1-yl)oxy)-" "acetaldehyde, 2-[(3,7-dimethyl-6-octen-1-yl)oxy]-" "acetaldehyde,7-dimethyl-6-octenyl)oxy]-" "2-(3,7-dimethyloct-6-enoxy)acetaldehyde" "[(3,7-dimethyloct-6-en-1-yl)oxy]acetaldehyde" );
+gibbsFormation
+{
+    dHf_298   -406660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     633.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-85130.0
+    phase     gas;
+}

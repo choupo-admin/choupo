@@ -8,6 +8,11 @@
   is substantially higher because of the divalent charge --- a
   point membrane data captures through the per-component
   permeability B_s rather than through bulk thermo.
+  Sources: only MW (standard atomic weights) and the dissociation
+           stoichiometry are stored here.  The per-ion formation tier
+           (Mg+2, SO4-2) is to be sourced from Wagman et al., NBS Tables
+           (1982) -- flagged follow-up in the body; until curated, MgSO4
+           stays dissolved-only (NF rejection via the membrane B_s).
 \*---------------------------------------------------------------------------*/
 
 name           MgSO4;

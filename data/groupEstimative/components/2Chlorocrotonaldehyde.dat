@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chlorocrotonaldehyde  (C4H5ClO, CAS 53175-28-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chlorocrotonaldehyde;
+formula     C4H5ClO;
+CAS         53175-28-3;
+InChIKey    GMUIHGWBQIUCST-RQOWECAXSA-N;
+MW          104.533;      // g/mol [origin=calculated method=formula-sum]
+Tc          577.24;      // K   [origin=predictive method=joback]
+Pc          43.974;      // bar [origin=predictive method=joback]
+omega       0.3531;      // -   [origin=predictive method=lee-kesler]
+Tb          381.25;      // K   [origin=predictive method=joback]
+HvapTb      35641.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.67 0.38502 -0.0002933 9.25e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH=C; count 1; } { group CHO; count 1; } { group Cl_C=C_; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH; count 1; } { group dC; count 1; } { group Cl; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z)-2-chloranylbut-2-enal" "2-chloro-2-butenal" "2-butenal, 2-chloro-" "alpha-chlorocrotonaldehyde" "crotonaldehyde, 2-chloro-" "(2z)-2-chloro-2-butenal" "(z)-2-chloro-2-butenal" "(z)-2-chlorobut-2-enal" "(z)-2-chlorocrotonaldehyde" ".alpha.-chlorocrotonaldehyde" "(z)-2-chloro-but-2-enal" "2-butenal, 2-chloro- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -119780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     353.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-56980.0
+    phase     gas;
+}

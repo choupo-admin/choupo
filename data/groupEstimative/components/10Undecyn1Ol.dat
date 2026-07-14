@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 10-undecyn-1-ol  (C11H20O, CAS 2774-84-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        10Undecyn1Ol;
+formula     C11H20O;
+CAS         2774-84-7;
+InChIKey    YUQZOUNRPZBQJK-UHFFFAOYSA-N;
+MW          168.28;      // g/mol [origin=calculated method=formula-sum]
+Tc          700.02;      // K   [origin=predictive method=joback]
+Pc          24.171;      // bar [origin=predictive method=joback]
+omega       0.9358;      // -   [origin=predictive method=lee-kesler]
+Tb          533.58;      // K   [origin=predictive method=joback]
+HvapTb      56617.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.959 0.9889 -0.00060093 1.4789e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group OH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 9; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "undec-10-yn-1-ol" "11-hydroxy-1-undecyne" "1-undecyn-11-ol;11-hydroxy-1-undecyne;undec-10-yn-1-ol;" );
+gibbsFormation
+{
+    dHf_298   -130700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     604.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=127990.0
+    phase     gas;
+}

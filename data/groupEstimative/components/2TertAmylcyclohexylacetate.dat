@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-tert-amylcyclohexylacetate  (C13H24O2, CAS 67874-72-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2TertAmylcyclohexylacetate;
+formula     C13H24O2;
+CAS         67874-72-0;
+InChIKey    YEVACTAGDANHRH-UHFFFAOYSA-N;
+MW          212.333;      // g/mol [origin=calculated method=formula-sum]
+Tc          772.50;      // K   [origin=predictive method=joback]
+Pc          19.407;      // bar [origin=predictive method=joback]
+omega       0.5283;      // -   [origin=predictive method=lee-kesler]
+Tb          566.91;      // K   [origin=predictive method=joback]
+HvapTb      50763.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-67.659 1.40548 -0.0007862 1.397e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 2; } { group C; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2-(2-methylbutan-2-yl)cyclohexyl] ethanoate" "2-tert-pentylcyclohexyl acetate" "2-(1,1-dimethylpropyl)cyclohexyl acetate" "cyclohexanol, 2-(1,1-dimethylpropyl)-, 1-acetate" "cyclohexanol, 2-(1,1-dimethylpropyl)-, acetate" "coniferan" "amylcyclohexyl acetate (mixed isomers)" "cyclohexanol, 2-tert-pentyl-, acetate" "2-(2-methylbutan-2-yl)cyclohexyl acetate" "[2-(2-methylbutan-2-yl)cyclohexyl] acetate" "amylcyclohexyl acetate (mixed isomers);2-tert-amylcyclohexylacetate;coniferan;cyclohexanol,2-(1,1-dimethylpropyl)-,acetate;2-tert-pentylcyclohexyl acetate;[2-(2-methylbutan-2-yl)cyclohexyl] acetate;cyclohexanol, 2-tert-pentyl-, acetate;" );
+gibbsFormation
+{
+    dHf_298   -603700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     601.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-232210.0
+    phase     gas;
+}

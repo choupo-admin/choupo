@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  HOTAIR sector: adiabatic combustion subdomain.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    burner
+);
+
+connections
+{
+    fuelAir { to burner/fuelAir; }
+    hotAir  { from burner/hotAir; }
+}

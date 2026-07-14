@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-heptylcyclopentanone  (C12H22O, CAS 137-03-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Heptylcyclopentanone;
+formula     C12H22O;
+CAS         137-03-1;
+InChIKey    PJXHBTZLHITWFX-UHFFFAOYSA-N;
+MW          182.307;      // g/mol [origin=calculated method=formula-sum]
+Tc          757.23;      // K   [origin=predictive method=joback]
+Pc          21.533;      // bar [origin=predictive method=joback]
+omega       0.6014;      // -   [origin=predictive method=lee-kesler]
+Tb          557.26;      // K   [origin=predictive method=joback]
+HvapTb      46810.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.074 1.10722 -0.0005124 5.81e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CH; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 6; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-heptylcyclopentan-1-one" "cyclopentanone, 2-heptyl-" "alismone" "heptylcyclopentan-1-one" "alpha-heptyl cyclopentanone" "cyclopentanone, 2-n-heptyl-" "alpha-heptylcyclopentanone" "2-n-heptyl cyclopentanone" "cyclopentanone, heptyl-" "2-(n-heptyl)cyclopentanone" ".alpha.-heptylcyclopentanone" "(2s)-2-heptylcyclopentanone" );
+gibbsFormation
+{
+    dHf_298   -368230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     494.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-35880.0
+    phase     gas;
+}

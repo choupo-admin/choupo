@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chrysanthemol  (C10H18O, CAS 5617-92-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chrysanthemol;
+formula     C10H18O;
+CAS         5617-92-5;
+InChIKey    HIPIENNKVJCMAP-UHFFFAOYSA-N;
+MW          154.253;      // g/mol [origin=calculated method=formula-sum]
+Tc          707.23;      // K   [origin=predictive method=joback]
+Pc          27.127;      // bar [origin=predictive method=joback]
+omega       0.7498;      // -   [origin=predictive method=lee-kesler]
+Tb          522.26;      // K   [origin=predictive method=joback]
+HvapTb      52715.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-103.139 1.39758 -0.0012787 5.077e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 2; } { group C; count 1; } { group CH=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH_ring; count 2; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2,2-dimethyl-3-(2-methylprop-1-enyl)cyclopropyl]methanol" "cis-chrysanthemol" "chrysanthemyl alcohol" "2,2-dimethyl-3-(2-methylpropenyl)cyclopropanemethanol" "chrysanthemyl alcohol, mixture of cis and trans" "[2,2-dimethyl-3-(2-methyl-1-propenyl)cyclopropyl]methanol" "trans-chrysanthemol" "sdccgmls-0066572.p001" "[2,2-dimethyl-3-(2-methylprop-1-enyl)cyclopropyl]methan-1-ol" "cyclopropanemethanol, 2,2-dimethyl-3-(2-methyl-1-propenyl)-" "cyclopropanemethanol, 2,2-dimethyl-3-(2-methyl-1-propenyl)-, (cis,trans-(+/-))-" );
+gibbsFormation
+{
+    dHf_298   -247170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     480.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=8010.0
+    phase     gas;
+}

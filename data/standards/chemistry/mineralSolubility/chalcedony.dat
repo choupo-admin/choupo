@@ -1,0 +1,6 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral chalcedony; formula "SiO2"; masters ( { ion H4SiO4; nu 1; } ); nuWater -2;
+      logK25 -3.55; dH 19748.5; analytic ( -0.09 0 -1032 ); source "USGS PHREEQC phreeqc.dat (public domain)";
+

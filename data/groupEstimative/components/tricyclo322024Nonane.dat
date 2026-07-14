@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tricyclo[3.2.2.02,4]nonane  (C9H14, CAS 278-80-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tricyclo322024Nonane;
+formula     C9H14;
+CAS         278-80-8;
+InChIKey    WNYJJKBPJRYWNZ-UHFFFAOYSA-N;
+MW          122.211;      // g/mol [origin=calculated method=formula-sum]
+Tc          628.86;      // K   [origin=predictive method=joback]
+Pc          33.606;      // bar [origin=predictive method=joback]
+omega       0.3131;      // -   [origin=predictive method=lee-kesler]
+Tb          421.07;      // K   [origin=predictive method=joback]
+HvapTb      35058.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-150.08 1.285 -0.001071 3.656e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 5; } { group CH_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tricyclo(3.2.2.02,4)nonane" );
+gibbsFormation
+{
+    dHf_298   -31030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     193.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=199440.0
+    phase     gas;
+}

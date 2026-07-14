@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n,3,5-tetramethylaniline  (C10H15N, CAS 4913-13-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nN35Tetramethylaniline;
+formula     C10H15N;
+CAS         4913-13-7;
+InChIKey    NBFRQCOZERNGEX-UHFFFAOYSA-N;
+MW          149.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          682.07;      // K   [origin=predictive method=joback]
+Pc          28.323;      // bar [origin=predictive method=joback]
+omega       0.4468;      // -   [origin=predictive method=lee-kesler]
+Tb          477.48;      // K   [origin=predictive method=joback]
+HvapTb      43497.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.2 0.87988 -0.00052992 1.209e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH3; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzenamine, n,n,3,5-tetramethyl-" "5-(dimethylamino)-m-xylene" "n,n-dimethyl-3,5-xylidine" "3,5-xylidine, n,n-dimethyl-" "n,n-dimethyl-sym.-xylidene" "3,5,n,n-tetramethylaniline" "(3,5-dimethylphenyl)dimethylamine" "nbfrqcozerngex-uhfffaoysa-" "(3,5-dimethyl-phenyl)-dimethyl-amine" "3,5-xylidine,n,n-dimethyl- (6ci,7ci,8ci);(3,5-dimethylphenyl)dimethylamine;3,5,n,n-tetramethylaniline;3,5-dimethyl-n,n-dimethylaniline;d 7924;n,n,3,5-tetramethylaniline;" );
+gibbsFormation
+{
+    dHf_298   31390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     442.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=237250.0
+    phase     gas;
+}

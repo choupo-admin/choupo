@@ -16,11 +16,14 @@ are the source of truth.
 │   ├── propsDict            REQUIRED for choupoProps INSTEAD of
 │   │                                   flowsheetDict
 │   ├── solverDict           OPTIONAL  per-unit-op solver options
-│   └── outerDict            OPTIONAL  outer driver (SweepDriver /
-│                                       OptimizationDriver / DesignSpec
-│                                       / FitBinaryPair)
+│   └── outerDict            OPTIONAL  outer driver (sweep /
+│                                       optimization / DesignSpec)
 ├── constant/
-│   ├── thermoPackage        REQUIRED  components + activity/EoS/transport
+│   ├── propertyDict         REQUIRED; the ONE property-package file.
+│   │                          It is either a flat model declaration, an
+│   │                          inline `recordType propertyPackage` manifest,
+│   │                          or `package <name>;` selecting a record under
+│   │                          data/standards/propertyPackages/<name>.dat
 │   ├── reactions            OPTIONAL  named-reaction library
 │   ├── crystallisation      OPTIONAL  per-kinetic-pair library
 │   ├── dryingKinetics       OPTIONAL  drying-curve library
@@ -28,6 +31,8 @@ are the source of truth.
 │   │   └── <name>.dat       partial overlay over standards (axiom 4)
 │   └── binaryPairs/         OPTIONAL  case-local NRTL/Wilson pair files
 │       └── <model>/<pair>.dat
+├── 0/                      REQUIRED for solve/batch/ctrl; one COMPLETE
+│   └── <stream>          state file for every graph stream
 ├── code/                    OPTIONAL (case-local user unit op)
 │   ├── MyUnit.{H,cpp}       compiled by bin/buildCode into a per-case binary
 │   ├── registerUserTypes.cpp explicit factory registration
@@ -140,22 +145,23 @@ tooltips.  Decided 2026-05-27.
 | **Stream** (process stream between units) | `PascalCase` | `RawJuice`, `Magma`, `Cond1`, `EvapVapour` |
 | **Plant / case root folder** | `PascalCase` | `ChemicalPlantTutorial`, `EthyleneOxidation` |
 | **Component** (chemical species) | as-shipped (lowercase / chemical symbol) | `water`, `sucrose`, `N2`, `ethanol`, `CO2` |
-| **Dict keys** (`controlDict`, `flowsheetDict`, `boundary`, `connections`, `children`, `streams`, `composition`,...) | `camelCase` | unchanged |
+| **Dict keys** (`controlDict`, `flowsheetDict`, `connections`, `operation`, `composition`,...) | `camelCase` | unchanged |
 
 Reading any flowsheetDict, the eye picks up three sharp levels:
 
 ```
-children    ( CONCENTRATION  DRYING );     // sectors -- the buildings
+sectors     ( CONCENTRATION  DRYING );      // members -- the buildings
 
 operation   { area 60 m2;  U 2200 W/m2/K; } // hardware values
 
-streams { RawJuice { F 100 kmol/h; ... } } // streams entering
+// stream STATE is never in this dict: the domain inlet rawJuice is an
+// authored 0/CONCENTRATION/rawJuice file (componentMolarFlows + T + P)
 
-connections (
-    { from RawJuice;             to CONCENTRATION/DilutedJuice; }
-    { from CONCENTRATION/Magma;  to DRYING/Magma; }
-    { from Evap1/Vap1;           to Evap2/Steam; }
-);
+connections {                               // NAMED edges: key = stream id
+    rawJuice  { to CONCENTRATION/dilutedJuice; }
+    magma     { from CONCENTRATION/magma;  to DRYING/magma; }
+    vap1      { from evap1/vap1;           to evap2/steam; }
+}
 ```
 
 No special characters in identifiers: only letters, digits, and
@@ -175,10 +181,10 @@ one of:
 
 ```
 tutorials/
-├── steady/       runs with choupoSolve  (the most common -- 70+ tutorials)
-├── batch/        runs with choupoBatch   (~6 tutorials)
-├── ctrl/         runs with choupoCtrl    (~2 tutorials)
-├── props/        runs with choupoProps   (~10 tutorials)
+├── steady/       runs with choupoSolve  (the largest collection)
+├── batch/        runs with choupoBatch
+├── ctrl/         runs with choupoCtrl
+├── props/        runs with choupoProps
 └── plant/        nested-folder plant tutorials (composite + leaf nodes)
 ```
 
@@ -191,13 +197,15 @@ runCase tutorials/batch/reactor/batch05_crystalliser
 runCase tutorials/props/propertyScan01_psat_ethanol
 ```
 
-100+ shipped tutorials are listed in the userGuide PDF.  Common
+The shipped tutorials are indexed in `docs/tutorials-catalogue.md`.  Common
 starters to compare against when answering "write me a case for X":
 
 | If user wants | Quote this tutorial |
 |---|---|
 | Vapour-liquid flash | `flash01_benzene_toluene` |
 | NRTL flash + Wegstein | `flash02_ethanol_water` |
+| Dissolved gas / Henry world (inline property manifest) | `flash08_co2_water_package` |
+| φ-φ world (`eos.SRK` both phases + kijPairs) | `flash09_n2ch4_stryjek` |
 | Bubble-T point | `bubbleT01_ethanol_water` |
 | Adiabatic CSTR | `cstr01_first_order` |
 | PFR | `pfr01_first_order` |
@@ -250,8 +258,32 @@ case/
 │   ├── controlDict
 │   └── flowsheetDict     (or propsDict)
 └── constant/
-    └── thermoPackage
+    └── propertyDict      (flat declaration, inline manifest, or selector)
+└── 0/
+    └── <stream>          (one complete state file per graph stream)
 ```
 
 Don't add `solverDict` / `outerDict` / `reactions` unless you need
-them.  Don't write empty stubs.
+them.  Don't write empty stubs — and, more generally, **no juice-less
+files**: every file must carry its own explanatory content.  A bare
+one-line `package <name>;` selector in `propertyDict` without its
+required header (which manifest, what it declares — methods, pairs +
+sources — and a pointer to the run log's assembly story) is forbidden,
+exactly like an empty role overlay or a content-free placeholder.
+
+## Materialising `0/` — `bin/choupo-init0`
+
+You author the DOMAIN INLETS (and any recycle-tear seed, `solverDict
+tearStreams`); the tool writes every remaining stream file by explicit
+propagation, announced and inspectable:
+
+```
+bin/choupo-init0 <caseDir>            # writes the missing 0/ files
+bin/choupo-init0 <caseDir> --force    # regenerates existing internal/outlet estimates
+```
+
+Rules: an inlet file is never touched; an unseeded recycle is a hard error
+naming the file to author; `incomplete 0/ + choupoSolve` stays FATAL — this tool
+is the sanctioned way out.  A legacy `streams{}` case migrates in one shot,
+unless its streams carry `$variable` references (an outer driver's handle —
+migration would sever it; the tool refuses and says so).

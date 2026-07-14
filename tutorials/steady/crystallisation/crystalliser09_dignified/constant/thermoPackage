@@ -1,9 +1,0 @@
-/* Two salts, two saturation routes, ONE package:
-     - KCl                 -> the eNRTL electrolyte model (ion-activity Ksp; antisolvent).
-     - potassiumBitartrate -> its own solubility CURVE c_sat(T) (no ion params needed).
-   The activityModel slot selects eNRTL; the crystalliser that targets KHT falls back to
-   its curve automatically (useElec is per-solute).  Self-contained: components + ion/tau
-   catalogue under constant/. */
-components       ( water ethanol KCl potassiumBitartrate );
-activityModel    { model eNRTL; }
-equationOfState  { model idealGas; }

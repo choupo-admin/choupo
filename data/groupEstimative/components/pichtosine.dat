@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pichtosine  (C12H20O2, CAS 125-12-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pichtosine;
+formula     C12H20O2;
+CAS         125-12-2;
+InChIKey    KGEKLUUHTZCSIP-UMNHJUIQSA-N;
+MW          196.29;      // g/mol [origin=calculated method=formula-sum]
+Tc          754.43;      // K   [origin=predictive method=joback]
+Pc          23.657;      // bar [origin=predictive method=joback]
+omega       0.4956;      // -   [origin=predictive method=lee-kesler]
+Tb          541.27;      // K   [origin=predictive method=joback]
+HvapTb      46791.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-176.32 1.91208 -0.0018828 7.828e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 2; } { group C; count 2; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(1s,3r,4r)-4,7,7-trimethyl-3-bicyclo[2.2.1]heptanyl] ethanoate" "isobomyl acetate" "isobornyl ethanoate" "isoborneol, acetate" "isobornyl acetate" "2-bornyl acetate, exo-" "2-camphanyl acetate, exo-" "acetic acid, isobornyl ester" "pichtosin" "exo-1,7,7-trimethylbicyclo(2.2.1)hept-2-yl acetate" "1,7,7-trimethylbicyclo(2.2.1)heptan-2-yl acetate, exo-" "bicyclo(2.2.1)heptan-2-ol, 1,7,7-trimethyl-, acetate, (1r,2r,4r)-rel-" );
+gibbsFormation
+{
+    dHf_298   -479050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     568.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-177210.0
+    phase     gas;
+}

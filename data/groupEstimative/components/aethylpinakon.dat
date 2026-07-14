@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: aethylpinakon  (C10H22O2, CAS 6931-71-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        aethylpinakon;
+formula     C10H22O2;
+CAS         6931-71-1;
+InChIKey    HDXDBVSPBNTNNA-UHFFFAOYSA-N;
+MW          174.284;      // g/mol [origin=calculated method=formula-sum]
+Tc          776.19;      // K   [origin=predictive method=joback]
+Pc          26.137;      // bar [origin=predictive method=joback]
+omega       1.2312;      // -   [origin=predictive method=lee-kesler]
+Tb          606.30;      // K   [origin=predictive method=joback]
+HvapTb      68620.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-44.566 1.27348 -0.0009246 2.712e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group C; count 2; } { group OH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 4; } { group C; count 2; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4-diethylhexane-3,4-diol" "aethylpinakon [german]" "propiopinacol" "3,4-diethyl-3,4-hexanediol" "propiopinakon [german]" "3,4-hexanediol, 3,4-diethyl-" "propiopinakon" );
+gibbsFormation
+{
+    dHf_298   -571690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     569.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-234640.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 4-acetyl-5-hydroxy-2-methylfuran-3-carboxylate  (C10H12O5, CAS 62409-40-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl4Acetyl5Hydroxy2Methylfuran3Carboxylate;
+formula     C10H12O5;
+CAS         62409-40-9;
+InChIKey    AHIIYYOECDXXPF-UHFFFAOYSA-N;
+MW          212.201;      // g/mol [origin=calculated method=formula-sum]
+Tc          853.30;      // K   [origin=predictive method=joback]
+Pc          28.505;      // bar [origin=predictive method=joback]
+omega       1.2513;      // -   [origin=predictive method=lee-kesler]
+Tb          664.07;      // K   [origin=predictive method=joback]
+HvapTb      72052.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (41.511 0.80306 -0.000461 8.8e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group OH; count 1; } { group C=C; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group dC; count 1; } { group dC_ring; count 3; } { group OH; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-methyl-4-(1-oxidanylethylidene)-5-oxidanylidene-furan-3-carboxylate" "3-furancarboxylic acid, 4,5-dihydro-4-(1-hydroxyethylidene)-2-methyl-5-oxo-, ethyl ester" "ethyl 4-acetyl-5-hydroxy-2-methyl-furan-3-carboxylate" "4,5-dihydro-4-(1-hydroxyethylidene)-2-methyl-5-oxo-3-furancarboxylic acid ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -842300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     569.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-608170.0
+    phase     gas;
+}

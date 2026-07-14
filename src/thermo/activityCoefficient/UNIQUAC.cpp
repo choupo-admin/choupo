@@ -29,6 +29,8 @@ License
 #include "UNIQUAC.H"
 #include "core/Advisory.H"
 #include "thermo/Database.H"
+#include "core/ThermoResolution.H"
+#include "thermo/PairAudit.H"
 
 #include <cmath>
 #include <filesystem>
@@ -67,11 +69,25 @@ fs::path locatePairFile(const std::string& pairName, const std::string& nodeBase
     fs::path caseFile = fs::current_path() / "constant" / "binaryPairs" / "UNIQUAC" / pairName;
     if (fs::exists(caseFile)) return caseFile;
 
+    // Case snapshot: propertyData/parameters/ is the CANONICAL param home (sealed
+    // self-containment, F2) -- per-node then case root, before the catalogue.
+    if (!nodeBase.empty())
+    {
+        fs::path nodeSnap = fs::path(nodeBase) / "constant" / "propertyData"
+                          / "parameters" / "activity" / "UNIQUAC" / pairName;
+        if (fs::exists(nodeSnap)) return nodeSnap;
+    }
+    fs::path caseSnap = fs::current_path() / "constant" / "propertyData"
+                      / "parameters" / "activity" / "UNIQUAC" / pairName;
+    if (fs::exists(caseSnap)) return caseSnap;
+
     const auto& root = Database::currentRoot();
     if (!root.empty())
     {
         fs::path stdFile = fs::path(root) / "standards" / "binaryPairs" / "UNIQUAC" / pairName;
         if (fs::exists(stdFile)) return stdFile;
+        fs::path proposedFile = fs::path(root) / "local" / "binaryPairs" / "UNIQUAC" / pairName;
+        if (fs::exists(proposedFile)) return proposedFile;
     }
     return {};
 }
@@ -135,7 +151,12 @@ UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
     // Phase 1: inline pairs in the thermoPackage dict.
     if (dict->found("pairs"))
         for (const auto& p : dict->lookupDictList("pairs"))
+        {
             applyPair(p, "inline");
+            PairResolution r{ "UNIQUAC", p->lookupWord("i"), p->lookupWord("j"),
+                              "inline", "inline", "" };
+            ThermoResolutionLog::instance().add(std::move(r));
+        }
 
     // Phase 2: file lookup for any pair not yet covered.
     const std::string pairBase = dict->lookupWordOrDefault("binaryPairsBase", "");
@@ -151,10 +172,25 @@ UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
             {
                 idealDefaulted.push_back(names[i] + "-" + names[j]);
                 covered[i*n_ + j] = covered[j*n_ + i] = true;
+                ThermoResolutionLog::instance().add(PairResolution{
+                    "UNIQUAC", names[i], names[j],
+                    "idealDefault", "ideal-default", "" });
                 continue;   // a_ij = a_ji = 0 -> tau = 1 (ideal contribution)
             }
 
             auto fd = Dictionary::fromFile(file.string());
+            const bool isProposed =
+                file.string().find("/proposed/binaryPairs/") != std::string::npos;
+            if (isProposed)
+            {
+                const bool isNew = AdvisoryLog::instance().add(
+                    "provenance", "warning", "UNIQUAC " + names[i] + "-" + names[j],
+                    "loaded from data/local/binaryPairs -- UNVERIFIED");
+                if (isNew)
+                    std::cout << "  [local] UNIQUAC binary pair " << names[i]
+                              << "-" << names[j]
+                              << ": UNVERIFIED local (imported/licensed) data\n";
+            }
             if (fd->found("model"))
             {
                 const std::string m = fd->lookupWord("model");
@@ -166,6 +202,25 @@ UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
                 throw std::runtime_error("UNIQUAC: " + file.string()
                     + " missing 'parameters' block");
             applyPair(fd->subDict("parameters"), file.string());
+            {
+                // Audit path (forum #77-4): UNIQUAC joins the SAME contract as
+                // NRTL and Wilson -- one parser, typed origin, validity, override.
+                std::string provSource;
+                DictPtr provDict;
+                if (fd->found("provenance"))
+                {
+                    provDict   = fd->subDict("provenance");
+                    provSource = provDict->lookupWordOrDefault("source", "");
+                }
+                const std::string tier = isProposed ? "local" :
+                    (file.string().find("/standards/") != std::string::npos)
+                    ? "standard" : "caseLocal";
+                PairResolution r{ "UNIQUAC", names[i], names[j],
+                                  tier, file.string(), provSource };
+                fillPairAudit(r, provDict, names[i] + "-" + names[j],
+                              tier == "standard");
+                ThermoResolutionLog::instance().add(std::move(r));
+            }
         }
 
     // No silent crutch: announce the ideal-defaulted pairs.
@@ -247,6 +302,28 @@ sVector UNIQUAC::gamma(scalar T, const sVector& x) const
         gam[i] = std::exp(lnGammaC + lnGammaR);
     }
     return gam;
+}
+
+void injectUniquacRQ(const DictPtr& activityDict,
+                     const std::vector<std::string>& names,
+                     const std::vector<Component>& comps)
+{
+    if (!activityDict) return;
+    if (activityDict->lookupWordOrDefault("model", "") != "UNIQUAC") return;
+
+    const bool hadRQ = activityDict->found("rq");
+    DictPtr rq = hadRQ ? activityDict->subDict("rq")
+                       : std::make_shared<Dictionary>("rq");
+    for (std::size_t i = 0; i < names.size() && i < comps.size(); ++i)
+    {
+        if (rq->found(names[i])) continue;            // inline declaration wins
+        if (!comps[i].hasUniquac()) continue;         // component .dat has none
+        auto cd = std::make_shared<Dictionary>();
+        cd->insert("r", comps[i].rUniquac());
+        cd->insert("q", comps[i].qUniquac());
+        rq->insert(names[i], cd);
+    }
+    if (!hadRQ) activityDict->insert("rq", rq);
 }
 
 } // namespace Choupo

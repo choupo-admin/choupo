@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexanate d  (C26H52O2, CAS 67749-11-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexanateD;
+formula     C26H52O2;
+CAS         67749-11-5;
+InChIKey    NKVQUYDKWMXNNW-UHFFFAOYSA-N;
+MW          396.7;      // g/mol [origin=calculated method=formula-sum]
+Tc          1040.05;      // K   [origin=predictive method=joback]
+Pc          7.344;      // bar [origin=predictive method=joback]
+omega       0.6868;      // -   [origin=predictive method=lee-kesler]
+Tb          849.47;      // K   [origin=predictive method=joback]
+HvapTb      79581.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.81 2.54488 -0.0014678 3.13e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 20; } { group C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 20; } { group C; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexadecyl 2,2-dimethyloctanoate" "hexadecyl neodecanoate" "neodecanoic acid, hexadecyl ester" "octanoic acid, 2,2-dimethyl-, hexadecyl ester" "octanoic acid, dimethyl-, hexadecyl ester" );
+gibbsFormation
+{
+    dHf_298   -906000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1181.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-139490.0
+    phase     gas;
+}

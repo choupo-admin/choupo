@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-chlorobenzylmethylamine  (C8H10ClN, CAS 104-11-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Chlorobenzylmethylamine;
+formula     C8H10ClN;
+CAS         104-11-0;
+InChIKey    LMBUJNXYGGNSAH-UHFFFAOYSA-N;
+MW          155.625;      // g/mol [origin=calculated method=formula-sum]
+Tc          721.50;      // K   [origin=predictive method=joback]
+Pc          34.848;      // bar [origin=predictive method=joback]
+omega       0.5032;      // -   [origin=predictive method=lee-kesler]
+Tb          501.90;      // K   [origin=predictive method=joback]
+HvapTb      47161.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.309 0.70842 -0.00044456 1.041e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group ACCH2; count 1; } { group CH3NH; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-chlorophenyl)-n-methyl-methanamine" "n-(4-chlorobenzyl)-n-methylamine" "(4-chlorobenzyl)methylamine" "1-(4-chlorophenyl)-n-methylmethanamine" "(4-chloro-benzyl)-methyl-amine" "benzenemethanamine, 4-chloro-n-methyl-" "4-chloro-n-methylbenzylamine" "n-methyl-4-chlorobenzylamine" "[(4-chlorophenyl)methyl](methyl)amine" "[(4-chlorophenyl)methyl]methylamine" "(4-chlorophenyl)-n-methylmethylamine" );
+gibbsFormation
+{
+    dHf_298   54340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     429.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=196720.0
+    phase     gas;
+}

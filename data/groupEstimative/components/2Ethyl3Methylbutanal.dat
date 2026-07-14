@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-ethyl-3-methylbutanal  (C7H14O, CAS 26254-92-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Ethyl3Methylbutanal;
+formula     C7H14O;
+CAS         26254-92-2;
+InChIKey    SHGPBDQRELYPLO-UHFFFAOYSA-N;
+MW          114.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          587.33;      // K   [origin=predictive method=joback]
+Pc          30.864;      // bar [origin=predictive method=joback]
+omega       0.4393;      // -   [origin=predictive method=lee-kesler]
+Tb          407.54;      // K   [origin=predictive method=joback]
+HvapTb      37120.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.561 0.65516 -0.0003564 6.9e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 2; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethyl-3-methyl-butanal" "butanal, 2-ethyl-3-methyl-" "2-isopropylbutanal" "(ch3)2chch(c2h5)cho" "2-ethylisovaleraldehyde" "butanal,2-ethyl-3-methyl-" "2-ethyl-3-methylbutyraldehyde" "butyraldehyde,2-ethyl-3-methyl- (6ci,7ci,8ci);(?a'a a'a currency)-2-isopropylbutyraldehyde;2-ethyl-3-methylbutanal;2-ethyl-3-methylbutyraldehyde;2-isopropylbutanal;" );
+gibbsFormation
+{
+    dHf_298   -283950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     428.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-96340.0
+    phase     gas;
+}

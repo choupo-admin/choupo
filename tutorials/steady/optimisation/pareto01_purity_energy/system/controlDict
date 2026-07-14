@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  sensitivity01_column_reflux -- meta-control
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "The purity-energy PARETO FRONT by epsilon-constraint: minimise V_strip subject to x_D_LK >= eps, eps swept 0.96..0.994 -- each front point one auditable SQP run";
+
+verbosity     1;

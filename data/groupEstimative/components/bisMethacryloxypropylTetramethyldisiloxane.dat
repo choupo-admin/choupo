@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(methacryloxypropyl)tetramethyldisiloxane  (C18H34O5Si2, CAS 18547-93-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C18H34O5Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        bisMethacryloxypropylTetramethyldisiloxane;
+formula     C18H34O5Si2;
+CAS         18547-93-8;
+InChIKey    ZIFLDVXQTMSDJE-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          386.635;      // g/mol [origin=calculated method=formula-sum]
+Tc          931.55;      // K   [origin=predictive method=joback]
+Pc          10.413;      // bar [origin=predictive method=joback]
+omega       0.7955;      // -   [origin=predictive method=lee-kesler]
+Tb          746.22;      // K   [origin=predictive method=joback]
+HvapTb      72294.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (139.116 1.08852 0.000124 -3.62e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 6; } { group CH2=C; count 2; } { group COO; count 2; } { group Si; count 1; } { group SiO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 6; } { group dCH2; count 2; } { group dC; count 2; } { group O; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[[dimethyl-[3-(2-methylprop-2-enoyloxy)propyl]silyl]oxy-dimethyl-silyl]propyl 2-methylprop-2-enoate" "1,3-bis(3-methacryloxypropyl)tetramethyldisiloxane" "(1,1,3,3-tetramethyldisiloxane-1,3-diyl)dipropane-3,1-diyl bis(2-methylacrylate)" "1,3-bis(3-methacryloyloxypropyl)tetramethyldisiloxane" "2-propenoic acid, 2-methyl-, 1,1'-((1,1,3,3-tetramethyl-1,3-disiloxanediyl)di-3,1-propanediyl) ester" "2-propenoic acid, 2-methyl-, 1,1'-[(1,1,3,3-tetramethyl-1,3-disiloxanediyl)di-3,1-propanediyl] ester" "bis(3-methacryloxypropyl) tetramethyldisiloxane" "(1,1,3,3-tetramethyldisiloxane-1,3-diyl)dipropane-1,3-diyl dimethacrylate" "2-methyl-2-propenoic acid 3-[[dimethyl-[3-(2-methyl-1-oxoprop-2-enoxy)propyl]silyl]oxy-dimethylsilyl]propyl ester" "2-propenoic acid, 2-methyl-, (1,1,3,3-tetramethyl-1,3-disiloxanediyl)di-3,1-propanediyl ester" "2-propenoic acid,2-methyl-, 1,1'-[(1,1,3,3-tetramethyl-1,3-disiloxanediyl)di-3,1-propanediyl]ester" "3-[[dimethyl-[3-(2-methylprop-2-enoyloxy)propyl]silyl]oxy-dimethylsilyl]propyl 2-methylprop-2-enoate" );
+gibbsFormation
+{
+    dHf_298   -1173590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1206.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-676000.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,5,7-trihydroxycoumarin  (C9H6O5, CAS 17575-26-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        457Trihydroxycoumarin;
+formula     C9H6O5;
+CAS         17575-26-7;
+InChIKey    HPNWGYCBCHLEMW-UHFFFAOYSA-N;
+MW          194.142;      // g/mol [origin=calculated method=formula-sum]
+Tc          996.88;      // K   [origin=predictive method=joback]
+Pc          76.947;      // bar [origin=predictive method=joback]
+omega       1.4189;      // -   [origin=predictive method=lee-kesler]
+Tb          743.56;      // K   [origin=predictive method=joback]
+HvapTb      85357.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.53 1.2604 -0.00141372 6.003e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=C; count 1; } { group ACH; count 2; } { group AC; count 2; } { group OH; count 1; } { group ACOH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 5; } { group OH_phenol; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,5,7-tris(oxidanyl)chromen-2-one" "4,5,7-trihydroxy-2h-chromen-2-one" "4,5,7-trihydroxy coumarin" "coumarin, 4,5,7-trihydroxy-" "2h-1-benzopyran-2-one, 4,5,7-trihydroxy-" "2h-1-benzopyran-2-one, 4,5-7-trihydroxy-" "4,5,7-trihydroxychromen-2-one" "2,5,7-trihydroxychromen-4-one" "2,5,7-tris(oxidanyl)chromen-4-one" "2,5,7-trihydroxy-1-benzopyran-4-one" "2h-1-benzopyran-2-one,4,5,7-trihydroxy-" );
+gibbsFormation
+{
+    dHf_298   -696160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     419.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-536030.0
+    phase     gas;
+}

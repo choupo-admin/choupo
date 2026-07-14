@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methionine, propylene glycol reaction product  (C8H19NO4S, CAS 68937-32-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methioninePropyleneGlycolReactionProduct;
+formula     C8H19NO4S;
+CAS         68937-32-6;
+InChIKey    AXVZCEWAISMWBC-WCCKRBBISA-N;
+MW          225.303;      // g/mol [origin=calculated method=formula-sum]
+Tc          1059.26;      // K   [origin=predictive method=joback]
+Pc          34.159;      // bar [origin=predictive method=joback]
+omega       1.8695;      // -   [origin=predictive method=lee-kesler]
+Tb          854.34;      // K   [origin=predictive method=joback]
+HvapTb      100900.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (74.343 0.74453 -0.0001396 -1.032e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group OH; count 2; } { group CHNH2; count 1; } { group COOH; count 1; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 2; } { group OH; count 2; } { group COOH; count 1; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-2-azanyl-4-methylsulfanyl-butanoic acid;propane-1,2-diol" "l-methionine, reaction products with propylene glycol" "(2s)-2-amino-4-methylsulfanylbutanoic acid; propane-1,2-diol" );
+gibbsFormation
+{
+    dHf_298   -909700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     824.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-611140.0
+    phase     gas;
+}

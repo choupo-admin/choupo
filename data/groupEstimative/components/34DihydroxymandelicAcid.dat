@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,4-dihydroxymandelic acid  (C8H8O5, CAS 775-01-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34DihydroxymandelicAcid;
+formula     C8H8O5;
+CAS         775-01-9;
+InChIKey    RGHMISIYKIHAJW-UHFFFAOYSA-N;
+MW          184.147;      // g/mol [origin=calculated method=formula-sum]
+Tc          1038.53;      // K   [origin=predictive method=joback]
+Pc          73.302;      // bar [origin=predictive method=joback]
+omega       1.9038;      // -   [origin=predictive method=lee-kesler]
+Tb          807.81;      // K   [origin=predictive method=joback]
+HvapTb      95161.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.92 1.0848 -0.00106152 4.13e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACCH; count 1; } { group OH; count 1; } { group ACOH; count 2; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[3,4-bis(oxidanyl)phenyl]-2-oxidanyl-ethanoic acid" "dihydroxymandelic acid" "3,4-dihydroxymandelate" "dl-3,4-dihydroxymandelic acid" "dhma" "2-(3,4-dihydroxyphenyl)-2-hydroxyacetic acid" "mandelic acid, 3,4-dihydroxy-" "3,4-dihydroxyphenylglycolic acid" "3,4 dihydroxymandelic acid" "(3,4-dihydroxyphenyl)(hydroxy)acetic acid" "benzeneacetic acid, .alpha.,3,4-trihydroxy-" "dihydroxymandelate" );
+gibbsFormation
+{
+    dHf_298   -834320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     508.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-663520.0
+    phase     gas;
+}

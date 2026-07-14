@@ -21,16 +21,7 @@ variables
     W_shaft   10.0  kW;       // initial guess; DesignSpec iterates it
 }
 
-streams
-{
-    feed
-    {
-        F             3.6 kmol/h;
-        T           298.15 K;
-        P             1.0  bar;
-        molarComposition  { N2 0.79;  O2 0.21; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

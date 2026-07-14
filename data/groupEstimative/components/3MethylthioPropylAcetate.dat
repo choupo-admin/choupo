@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(methylthio)propyl acetate  (C6H12O2S, CAS 16630-55-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3MethylthioPropylAcetate;
+formula     C6H12O2S;
+CAS         16630-55-0;
+InChIKey    LPZQTNIAYMRVMF-UHFFFAOYSA-N;
+MW          148.22;      // g/mol [origin=calculated method=formula-sum]
+Tc          660.02;      // K   [origin=predictive method=joback]
+Pc          31.847;      // bar [origin=predictive method=joback]
+omega       0.5190;      // -   [origin=predictive method=lee-kesler]
+Tb          463.88;      // K   [origin=predictive method=joback]
+HvapTb      43174.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (42.443 0.51343 -0.0001678 -2.45e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH3COO; count 1; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group COO; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylsulfanylpropyl ethanoate" "1-propanol, 3-(methylthio)-, acetate" "3-(methylsulfanyl)propyl acetate" "3-methylthiopropyl acetate" "3-methylsulfanylpropyl acetate" "3-(methylthio)-1-propanol acetate" "r583" "1-propanol,3-(methylthio)-, acetate (8ci,9ci);3-acetoxypropyl methyl sulfide;acetic acid 3-(methylthio)propyl ester;methionyl acetate;3-(methylthio)-propyl acetate;" );
+gibbsFormation
+{
+    dHf_298   -442580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     502.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-277610.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-bromo-3,5-dihydroxybenzoic acid  (C7H5BrO4, CAS 16534-12-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Bromo35DihydroxybenzoicAcid;
+formula     C7H5BrO4;
+CAS         16534-12-6;
+InChIKey    NUTRHYYFCDEALP-UHFFFAOYSA-N;
+MW          233.017;      // g/mol [origin=calculated method=formula-sum]
+Tc          1026.34;      // K   [origin=predictive method=joback]
+Pc          80.005;      // bar [origin=predictive method=joback]
+omega       1.4244;      // -   [origin=predictive method=lee-kesler]
+Tb          764.33;      // K   [origin=predictive method=joback]
+HvapTb      83741.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.13 0.9286 -0.00097788 4.01e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 2; } { group ACOH; count 2; } { group COOH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Br; count 1; } { group OH_phenol; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-bromanyl-3,5-bis(oxidanyl)benzoic acid" "benzoic acid, 4-bromo-3,5-dihydroxy-" "4-bromo-3,5-resorcylic acid" "4-bromo-alpha-resorcylic acid" "alpha-resorcylic acid, 4-bromo-" "4-bromo-3,5-dihydroxybenzic acid" "am780" ".alpha.-resorcylic acid, 4-bromo-" "benzoicacid, 4-bromo-3,5-dihydroxy-" );
+gibbsFormation
+{
+    dHf_298   -641310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     473.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-527990.0
+    phase     gas;
+}

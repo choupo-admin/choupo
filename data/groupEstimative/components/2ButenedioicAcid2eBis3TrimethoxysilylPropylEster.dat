@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-butenedioic acid (2e)-, bis[3-(trimethoxysilyl)propyl] ester  (C16H32O10Si2, CAS 3090-21-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C16H32O10Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2ButenedioicAcid2eBis3TrimethoxysilylPropylEster;
+formula     C16H32O10Si2;
+CAS         3090-21-9;
+InChIKey    GPWPWELMLCKXRP-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          440.592;      // g/mol [origin=calculated method=formula-sum]
+Tc          1013.04;      // K   [origin=predictive method=joback]
+Pc          10.863;      // bar [origin=predictive method=joback]
+omega       0.9886;      // -   [origin=predictive method=lee-kesler]
+Tb          823.60;      // K   [origin=predictive method=joback]
+HvapTb      81030.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (259.616 0.64272 0.0007544 -6.508e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH=CH; count 1; } { group CH3O; count 6; } { group COO; count 2; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 6; } { group dCH; count 2; } { group O; count 6; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(3-trimethoxysilylpropyl) but-2-enedioate" "2-butenedioic acid (2z)-, bis[3-(trimethoxysilyl)propyl] ester" "2-butenedioic acid (2e)-, 1,4-bis[3-(trimethoxysilyl)propyl] ester" "2-butenedioic acid (2z)-, 1,4-bis[3-(trimethoxysilyl)propyl] ester" );
+gibbsFormation
+{
+    dHf_298   -1907470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1195.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1296200.0
+    phase     gas;
+}

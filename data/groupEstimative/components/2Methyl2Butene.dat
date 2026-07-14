@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methyl-2-butene  (C5H10, CAS 513-35-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methyl2Butene;
+formula     C5H10;
+CAS         513-35-9;
+InChIKey    BKOOMYPCSUNDGP-UHFFFAOYSA-N;
+MW          70.135;      // g/mol [origin=calculated method=formula-sum]
+Tc          493.79;      // K   [origin=predictive method=joback]
+Pc          37.135;      // bar [origin=predictive method=joback]
+omega       0.2041;      // -   [origin=predictive method=lee-kesler]
+Tb          318.04;      // K   [origin=predictive method=joback]
+HvapTb      26762.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.53 0.49876 -0.0003343 9.75e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH; count 1; } { group dC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylbut-2-ene" "trimethylethylene" "2-butene, 2-methyl-" "amylene" "n-amylene" "beta-isoamylene" "3-methyl-2-butene" "ethylene, trimethyl-" "dimethylpropylene" "b-isoamylene" "methyl butene" "a-isoamylene" );
+gibbsFormation
+{
+    dHf_298   -39100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     340.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=62890.0
+    phase     gas;
+}

@@ -37,64 +37,24 @@ License
 
 namespace Choupo {
 
-void ElectrolyteActivity::configure(const std::vector<Component>& comps)
+// BUILDER ctor: the ThermoPackageBuilder hands us a FULLY-RESOLVED assembly
+// (kernel + Ksp + enthalpy state, all resolved from the new-format records via the
+// SaltFromCatalogue helpers).  Set EVERY member explicitly -- no silent header
+// default -- so the package path is byte-identical to the legacy configure() tail.
+ElectrolyteActivity::ElectrolyteActivity(std::vector<std::string> names,
+                                         ElectrolyteAssembly a)
+:   n_(names.size()), names_(std::move(names)),
+    model_(a.isENRTL ? "eNRTL" : "pitzer"), isENRTL_(a.isENRTL),
+    salt_(std::move(a.pitzer)), enrtl_(std::move(a.enrtl)),
+    soluteIdx_(a.soluteIdx), solventIdx_(a.solventIdx),
+    solventMW_(a.solventMW), solubility_(a.solubility),
+    calorimetricFit_(a.calorimetricFit), hasAqRef_(a.hasAqRef),
+    hfAqSum_(a.hfAqSum), cpAqSum_(a.cpAqSum), lphiValidityMax_(a.lphiValidityMax),
+    ccAvail_(a.ccAvail),
+    dHsolution_(a.dHsolution), soluteName_(std::move(a.soluteName))
 {
-    // The salt = the component carrying an electrolyte{} block; the solvent =
-    // the volatile carrier (water).  Loud failure (no silent crutch) if either
-    // is missing -- a salt with no electrolyte{} block under model pitzer is a
-    // mis-specified package.
-    //  The REFERENCE solvent is water -- the volatile WITHOUT a declared
-    //  relativePermittivity.  Antisolvents (ethanol, ...) carry one and are NOT
-    //  the reference (the eNRTL tau / the molality basis are anchored on water);
-    //  picking the last volatile would wrongly make ethanol the solvent (its Mw
-    //  46 vs water 18) and corrupt the molality scale.
-    const std::size_t N = comps.size();
-    std::size_t salt = N, solv = N;
-    for (std::size_t i = 0; i < N; ++i)
-    {
-        if (comps[i].hasElectrolyteSpec()) { if (salt == N) salt = i; }
-        else if (comps[i].hasVaporPressure())
-        {
-            if (solv == N
-             || (comps[solv].relativePermittivity() > 0.0 && comps[i].relativePermittivity() == 0.0))
-                solv = i;          // prefer the zero-permittivity reference (water)
-        }
-    }
-    if (salt == comps.size())
-        throw std::runtime_error("activityModel pitzer: no component carries an "
-            "electrolyte{} block (the salt's cation/anion/solubility).");
-    if (solv == comps.size())
-        throw std::runtime_error("activityModel pitzer: no solvent (a volatile "
-            "component, e.g. water) in the package.");
-
-    const std::string cat = comps[salt].electrolyteCation();
-    const std::string an  = comps[salt].electrolyteAnion();
-    soluteIdx_  = salt;
-    solventIdx_ = solv;
-    soluteName_ = comps[salt].name();
-    solventMW_  = comps[solv].MW();
-    solubility_ = comps[salt].electrolyteSolubility();
-    dHsolution_ = comps[salt].electrolyteDissolutionEnthalpy();   // J/mol; 0 -> Ksp flat in T
-    if (isENRTL_) { enrtl_ = electrolyte::loadENRTL(cat, an); enrtl_.Mw = solventMW_; }
-    else            salt_  = electrolyte::loadSalt(cat, an);
-    // Calorimetric-fit flag (slice 3): true only when the pair row carries
-    // T-slots regressed against measured heats of dilution.  Gates L_phi.
-    // The calorimetric fit is per-KERNEL: the pairs.dat T-slots were regressed
-    // for the Pitzer surface, so an eNRTL package must NOT inherit the flag --
-    // its tau(T) is still the anchored (uncalibrated) form.  An eNRTL/mixed-
-    // solvent calorimetric row is its own future curation act.
-    calorimetricFit_ = !isENRTL_ && electrolyte::pairCalorimetricFit(cat, an);
-    // Slice-4 enthalpy branch inputs: the ions' aqueous infinite-dilution
-    // reference (slice-2 tier) + the fitted-data molality window.
-    {
-        const double nuC = isENRTL_ ? enrtl_.nu_c : salt_.nu_c;
-        const double nuA = isENRTL_ ? enrtl_.nu_a : salt_.nu_a;
-        double hf = 0.0, cp = 0.0;
-        hasAqRef_ = electrolyte::ionAqReference(cat, an, nuC, nuA, hf, cp);
-        hfAqSum_ = hf; cpAqSum_ = cp;
-        auto pr = electrolyte::findPair("pairs.dat", "pairs", cat, an);
-        lphiValidityMax_ = pr ? pr->lookupScalarOrDefault("lphiValidityMax", 0.0) : 0.0;
-    }
+    for (int k = 0; k < 5; ++k) ccNodes_[k] = a.ccNodes[k];
+    if (isENRTL_) enrtl_.Mw = solventMW_;
     configured_ = true;
 }
 

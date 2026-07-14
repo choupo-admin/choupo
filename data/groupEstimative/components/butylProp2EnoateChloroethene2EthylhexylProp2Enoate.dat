@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl prop-2-enoate; chloroethene; 2-ethylhexyl prop-2-enoate  (C20H35ClO4, CAS 56848-61-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butylProp2EnoateChloroethene2EthylhexylProp2Enoate;
+formula     C20H35ClO4;
+CAS         56848-61-4;
+InChIKey    OBWQDKYZXZJWLF-UHFFFAOYSA-N;
+MW          374.946;      // g/mol [origin=calculated method=formula-sum]
+Tc          994.27;      // K   [origin=predictive method=joback]
+Pc          9.723;      // bar [origin=predictive method=joback]
+omega       0.8262;      // -   [origin=predictive method=lee-kesler]
+Tb          803.47;      // K   [origin=predictive method=joback]
+HvapTb      77503.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (119.398 1.33456 -0.0001377 -2.611e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 8; } { group CH; count 1; } { group CH2=CH; count 3; } { group Cl_C=C_; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 8; } { group CH; count 1; } { group dCH2; count 3; } { group dCH; count 3; } { group Cl; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butyl prop-2-enoate;chloranylethene;2-ethylhexyl prop-2-enoate" "vinyl chloride, butyl acrylate, 2-ethylhexyl acrylate polymer" "2-propenoic acid, butyl ester, polymer with chloroethene and 2-ethylhexyl 2-propenoate" );
+gibbsFormation
+{
+    dHf_298   -958660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1263.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-463590.0
+    phase     gas;
+}

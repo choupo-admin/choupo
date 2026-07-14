@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9-eicosenedioic acid, (9z)-  (C20H36O4, CAS 253687-69-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        9EicosenedioicAcid9z;
+formula     C20H36O4;
+CAS         253687-69-3;
+InChIKey    NZLFRLCYQVOISV-IWQZZHSRSA-N;
+MW          340.504;      // g/mol [origin=calculated method=formula-sum]
+Tc          1166.00;      // K   [origin=predictive method=joback]
+Pc          11.825;      // bar [origin=predictive method=joback]
+omega       1.1207;      // -   [origin=predictive method=lee-kesler]
+Tb          952.38;      // K   [origin=predictive method=joback]
+HvapTb      94400.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.274 2.0254 -0.0012932 3.302e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 16; } { group CH=CH; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 16; } { group dCH; count 2; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z)-icos-9-enedioic acid" );
+gibbsFormation
+{
+    dHf_298   -1039450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1034.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-490080.0
+    phase     gas;
+}

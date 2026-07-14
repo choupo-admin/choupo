@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,8-bis(1-propynyl)naphthalene  (C16H12, CAS 22360-77-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        18Bis1PropynylNaphthalene;
+formula     C16H12;
+CAS         22360-77-6;
+InChIKey    GJRLHJRIHBWMNG-UHFFFAOYSA-N;
+MW          204.272;      // g/mol [origin=calculated method=formula-sum]
+Tc          911.63;      // K   [origin=predictive method=joback]
+Pc          28.054;      // bar [origin=predictive method=joback]
+omega       0.4515;      // -   [origin=predictive method=lee-kesler]
+Tb          639.30;      // K   [origin=predictive method=joback]
+HvapTb      60754.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.29 1.02264 -0.00069616 1.9396e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group ACH; count 6; } { group AC; count 4; } { group C_C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group tC; count 4; } { group dCH_ring; count 6; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,8-bis(prop-1-ynyl)naphthalene" "naphthalene, 1,8-di-1-propynyl-" );
+gibbsFormation
+{
+    dHf_298   575690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     495.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=689240.0
+    phase     gas;
+}

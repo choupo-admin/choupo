@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-hydroxy-5-methoxybenzaldehyde  (C8H8O3, CAS 57179-35-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H8O3 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        3Hydroxy5Methoxybenzaldehyde;
+formula     C8H8O3;
+CAS         57179-35-8;
+InChIKey    FGQOOHJZONJGDT-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          152.149;      // g/mol [origin=calculated method=formula-sum]
+Tc          718.58;      // K   [origin=predictive method=joback]
+Pc          44.802;      // bar [origin=predictive method=joback]
+omega       0.5430;      // -   [origin=predictive method=lee-kesler]
+Tb          493.76;      // K   [origin=predictive method=joback]
+HvapTb      49391.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.91 0.72492 -0.00067392 2.596e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACOH; count 1; } { group CHO; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methoxy-5-oxidanyl-benzaldehyde" "ghl.pd_mitscher_leg0.685" "benzaldehyde, 3-hydroxy-5-methoxy-" "5-hydroxy-3-methoxybenzaldehyde" );
+gibbsFormation
+{
+    dHf_298   -216470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     473.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-96400.0
+    phase     gas;
+}

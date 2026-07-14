@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-acetoxypropanal  (C5H8O3, CAS 22094-23-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Acetoxypropanal;
+formula     C5H8O3;
+CAS         22094-23-1;
+InChIKey    FXPPNKAYSGWCQG-UHFFFAOYSA-N;
+MW          116.116;      // g/mol [origin=calculated method=formula-sum]
+Tc          606.72;      // K   [origin=predictive method=joback]
+Pc          38.531;      // bar [origin=predictive method=joback]
+omega       0.5254;      // -   [origin=predictive method=lee-kesler]
+Tb          420.44;      // K   [origin=predictive method=joback]
+HvapTb      40463.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (33.47 0.40444 -0.0001498 -1.14e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group CHO; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group OdCH_al; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-oxidanylidenepropan-2-yl ethanoate" "1-formylethyl acetate" "propanal,2-(acetyloxy)-" "1-oxopropan-2-yl acetate" "propanal, 2-(acetyloxy)-" "lactaldehyde,acetate (6ci,7ci,8ci); (?a'a a'a currency)-2-acetoxypropanal; 1-methyl-2-oxoethyl acetate; 2-acetoxypropanal;2-acetoxypropionaldehyde; a-acetoxypropanal; a-acetoxypropionaldehyde" );
+gibbsFormation
+{
+    dHf_298   -554670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     411.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-421110.0
+    phase     gas;
+}

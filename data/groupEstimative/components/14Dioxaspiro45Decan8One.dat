@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-dioxaspiro[4.5]decan-8-one  (C8H12O3, CAS 4746-97-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14Dioxaspiro45Decan8One;
+formula     C8H12O3;
+CAS         4746-97-8;
+InChIKey    VKRKCBWIVLSRBJ-UHFFFAOYSA-N;
+MW          156.181;      // g/mol [origin=calculated method=formula-sum]
+Tc          794.24;      // K   [origin=predictive method=joback]
+Pc          42.663;      // bar [origin=predictive method=joback]
+omega       0.4691;      // -   [origin=predictive method=lee-kesler]
+Tb          539.83;      // K   [origin=predictive method=joback]
+HvapTb      46341.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-110.21 1.1713 -0.0009824 3.588e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group C; count 1; } { group CH2CO; count 1; } { group FCH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 6; } { group C_ring; count 1; } { group O_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-cyclohexanedione monoethylene acetal" "1,4-cyclohexanedione monoethylene ketal" "vkrkcbwivlsrbj-uhfffaoysa-" "1,4-dioxaspiro[4.5]decan-8-on" "1,4-cyclohexanedione monoethyleneketal" "1,4-cyclohexanedion monoethylene acetal" "cyclohexane-1,4-dione monoethylene ketal" "cyclohexane-1,4-dione monoethylene acetal" "1,4-cyclohexanedione monoethyl ene acetal" "1,4-dioxa-spiro[4.5]decan-8-one" "1,4-cyclohexanedione, cyclic 1,2-ethanediyl acetal" "1,4-cyclohexanedionecyclic ethylene monoketal;1,4-cyclohexanedione mono(ethylene ketal);1,4-cyclohexanedione, cyclic1,2-ethanediyl acetal;1,4-dioxaspiro[4.5]decane-8-one;4-(ethylenedioxy)cyclohexanone;cyclohexane-1,4-dione mono(ethylene glycolketal);1,4-cyclohexanedione mono-ethylene ketal;1,4-cyclohexanedione monoethylene acetal;" );
+gibbsFormation
+{
+    dHf_298   -453610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     297.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-203030.0
+    phase     gas;
+}

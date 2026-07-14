@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1-trifluoro-2-(trifluoromethyl)pent-4-en-2-ol  (C6H6F6O, CAS 646-97-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111Trifluoro2TrifluoromethylPent4En2Ol;
+formula     C6H6F6O;
+CAS         646-97-9;
+InChIKey    VHSCQANAKTXZTG-UHFFFAOYSA-N;
+MW          208.101;      // g/mol [origin=calculated method=formula-sum]
+Tc          556.92;      // K   [origin=predictive method=joback]
+Pc          28.505;      // bar [origin=predictive method=joback]
+omega       0.7841;      // -   [origin=predictive method=lee-kesler]
+Tb          411.67;      // K   [origin=predictive method=joback]
+HvapTb      36169.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.139 1.036 -0.0009697 3.367e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group C; count 1; } { group CH2=CH; count 1; } { group OH; count 1; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group F; count 6; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1-tris(fluoranyl)-2-(trifluoromethyl)pent-4-en-2-ol" "2-(allyl)hexafluoroisopropanol" "2-allylhexafluoroisopropanol" "1,1,1-trifluoro-2-(trifluoromethyl)-4-penten-2-ol" "4-penten-2-ol, 1,1,1-trifluoro-2-(trifluoromethyl)-" "allyl hexafluoroisopropanol" "2-allylhexafluoroisopropanol 97%" "1,1,1-trifluoro-2-trifluoromethyl-pent-4-ene-2-ol" "4-penten-2-ol,1,1-trifluoro-2-(trifluoromethyl)-" );
+gibbsFormation
+{
+    dHf_298   -1396880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     509.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1209680.0
+    phase     gas;
+}

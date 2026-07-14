@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloro-6-fluorobenzylamine  (C7H7ClFN, CAS 15205-15-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chloro6Fluorobenzylamine;
+formula     C7H7ClFN;
+CAS         15205-15-9;
+InChIKey    GVULSXIBCHPJEH-UHFFFAOYSA-N;
+MW          159.588;      // g/mol [origin=calculated method=formula-sum]
+Tc          728.40;      // K   [origin=predictive method=joback]
+Pc          38.388;      // bar [origin=predictive method=joback]
+omega       0.5329;      // -   [origin=predictive method=lee-kesler]
+Tb          505.63;      // K   [origin=predictive method=joback]
+HvapTb      48985.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (16.691 0.5514 -0.00033432 7.34e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group CH2NH2; count 1; } { group ACCl; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2-chloranyl-6-fluoranyl-phenyl)methanamine" "6-chloro-2-fluorobenzylamine" "(2-chloro-6-fluorophenyl)methanamine" "2-chloro-6-fluorobenzyl amine" "(6-chloro-2-fluorophenyl)methylamine" "z1r bg ff" "2-chloro-6-fluoro-benzylamine" "2-fluoro-6-chloro benzylamine" "2-fluoro-6-chlorobenzylamine" "benzenemethanamine,2-chloro-6-fluoro-" "benzylamine, 2-chloro-6-fluoro-" "(2-chloro-6-fluoro-phenyl)methanamine" );
+gibbsFormation
+{
+    dHf_298   -152280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     426.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-39080.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(trimethylsilyl)cyclopentadiene  (C11H22Si2, CAS 33630-76-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C11H22Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        bisTrimethylsilylCyclopentadiene;
+formula     C11H22Si2;
+CAS         33630-76-1;
+InChIKey    WKPCFWUTZIBSRW-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          210.467;      // g/mol [origin=calculated method=formula-sum]
+Tc          681.55;      // K   [origin=predictive method=joback]
+Pc          20.346;      // bar [origin=predictive method=joback]
+omega       0.2210;      // -   [origin=predictive method=lee-kesler]
+Tb          467.92;      // K   [origin=predictive method=joback]
+HvapTb      40358.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.39 0.94812 -0.00037956 3.12e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group C; count 1; } { group CH=CH; count 2; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group C_ring; count 1; } { group dCH_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl-(1-trimethylsilylcyclopenta-2,4-dien-1-yl)silane" "silane, 2,4-cyclopentadien-1-ylidenebis(trimethyl-" );
+gibbsFormation
+{
+    dHf_298   -302330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     781.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76800.0
+    phase     gas;
+}

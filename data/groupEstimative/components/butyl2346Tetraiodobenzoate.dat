@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl 2,3,4,6-tetraiodobenzoate  (C11H10I4O2, CAS 34869-32-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butyl2346Tetraiodobenzoate;
+formula     C11H10I4O2;
+CAS         34869-32-4;
+InChIKey    DMTBZBBVYHFVLH-UHFFFAOYSA-N;
+MW          681.799;      // g/mol [origin=calculated method=formula-sum]
+Tc          1236.71;      // K   [origin=predictive method=joback]
+Pc          22.981;      // bar [origin=predictive method=joback]
+omega       0.7811;      // -   [origin=predictive method=lee-kesler]
+Tb          928.66;      // K   [origin=predictive method=joback]
+HvapTb      89903.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (88.353 0.83312 -0.00056864 1.481e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group ACH; count 1; } { group AC; count 5; } { group I; count 4; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group I; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butyl 2,3,4,6-tetrakis(iodanyl)benzoate" "benzoic acid, 2,3,4,6-tetraiodo-, butyl ester" );
+gibbsFormation
+{
+    dHf_298   -89520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     727.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37740.0
+    phase     gas;
+}

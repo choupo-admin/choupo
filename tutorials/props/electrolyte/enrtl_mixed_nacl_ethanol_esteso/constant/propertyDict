@@ -1,0 +1,5 @@
+// Minimal package: the enrtlMixedSolvent op is self-contained (published taus
+// + inline measured data); the thermo package is not consulted.
+components ( water );
+activityModel { model ideal; }
+equationOfState { model idealGas; }

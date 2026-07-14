@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-ethylpyrrolidine  (C6H13N, CAS 7335-06-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Ethylpyrrolidine;
+formula     C6H13N;
+CAS         7335-06-0;
+InChIKey    ONQBOTKLCMXPOF-UHFFFAOYSA-N;
+MW          99.177;      // g/mol [origin=calculated method=formula-sum]
+Tc          550.80;      // K   [origin=predictive method=joback]
+Pc          38.675;      // bar [origin=predictive method=joback]
+omega       0.3217;      // -   [origin=predictive method=lee-kesler]
+Tb          365.00;      // K   [origin=predictive method=joback]
+HvapTb      31387.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-74.559 0.86552 -0.0006444 1.952e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 4; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-ethylpyrrolidine" "pyrrolidine, 1-ethyl-" "n-ethyl-tetrahydropyrrole" );
+gibbsFormation
+{
+    dHf_298   -12660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     377.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=166780.0
+    phase     gas;
+}

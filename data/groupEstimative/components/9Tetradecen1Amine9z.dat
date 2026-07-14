@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9-tetradecen-1-amine, (9z)-  (C14H29N, CAS 40853-87-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        9Tetradecen1Amine9z;
+formula     C14H29N;
+CAS         40853-87-0;
+InChIKey    SYBPSIUVPQXFOU-UHFFFAOYSA-N;
+MW          211.393;      // g/mol [origin=calculated method=formula-sum]
+Tc          772.27;      // K   [origin=predictive method=joback]
+Pc          16.619;      // bar [origin=predictive method=joback]
+omega       0.8090;      // -   [origin=predictive method=lee-kesler]
+Tb          596.61;      // K   [origin=predictive method=joback]
+HvapTb      57357.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.529 1.41572 -0.000865 2.138e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group CH=CH; count 1; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetradec-9-en-1-amine" "agn-pc-02kyrn" "(e)-tetradec-9-en-1-amine" );
+gibbsFormation
+{
+    dHf_298   -181280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     746.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=213670.0
+    phase     gas;
+}

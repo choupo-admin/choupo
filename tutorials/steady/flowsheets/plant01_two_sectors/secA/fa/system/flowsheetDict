@@ -2,4 +2,3 @@
 name        fa;
 type        isothermalFlash;
 operation   { T 370.0 K;  P 1.0 bar; }
-boundary    { inlets ( feed );  outlets ( liquid  vapor ); }

@@ -27,7 +27,10 @@ type         designSpec;
 manipulate
 (
     { variable A;        initial 17.0   m2;     min 5.0   m2;       max 60.0   m2;     }
-    { variable F_steam;  initial 100.0  kmol/h; min 30.0  kmol/h;   max 800.0  kmol/h; }
+    { variable streams.liveSteam.F;   // the driver's hand on the live-steam INLET (liveSteam)
+                                    //   (forum #53: the value lands on the seeded
+                                    //   registry; the 0/ file is the base state)
+      initial 100.0  kmol/h; min 30.0  kmol/h;   max 800.0  kmol/h; }
 );
 
 targets

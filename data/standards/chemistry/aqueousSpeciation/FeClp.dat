@@ -1,0 +1,6 @@
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species FeClp; ion "FeCl+"; z +1; masters ( { ion Fe; nu 1; } { ion Cl; nu 1; } );
+      logK25 0.14; source "USGS PHREEQC phreeqc.dat (public domain)";
+

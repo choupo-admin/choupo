@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9-anthraldehyde  (C15H10O, CAS 642-31-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C15H10O (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        9Anthraldehyde;
+formula     C15H10O;
+CAS         642-31-9;
+InChIKey    YMNKUHIVVMFOFO-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          206.244;      // g/mol [origin=calculated method=formula-sum]
+Tc          844.57;      // K   [origin=predictive method=joback]
+Pc          30.090;      // bar [origin=predictive method=joback]
+omega       0.4959;      // -   [origin=predictive method=lee-kesler]
+Tb          593.82;      // K   [origin=predictive method=joback]
+HvapTb      53491.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-98.44 1.2316 -0.00111576 4.019e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 5; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 9; } { group dC_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "anthracene-9-carbaldehyde" "9-anthracenecarboxaldehyde" "9-anthrylaldehyde" "9-formylanthracene" "9-anthrylcarboxaldehyde" "anthracen-9-carbaldehyd" "9-anthraldehyde (8ci)" "anthracene-10-carbaldehyde" "ymnkuhivvmfofo-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   319250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     484.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=425830.0
+    phase     gas;
+}

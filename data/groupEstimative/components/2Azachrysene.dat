@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-azachrysene  (C17H11N, CAS 218-02-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Azachrysene;
+formula     C17H11N;
+CAS         218-02-0;
+InChIKey    ACIUFBMENRNYHI-UHFFFAOYSA-N;
+MW          229.282;      // g/mol [origin=calculated method=formula-sum]
+Tc          1010.77;      // K   [origin=predictive method=joback]
+Pc          30.423;      // bar [origin=predictive method=joback]
+omega       0.7105;      // -   [origin=predictive method=lee-kesler]
+Tb          735.84;      // K   [origin=predictive method=joback]
+HvapTb      68166.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-102.14 1.44356 -0.00121754 4.119e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 4; } { group C5H3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 11; } { group dC_ring; count 6; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "naphtho[2,1-f]isoquinoline" "naphth(2,1-f)isoquinoline" "naphth[2,1-f]isoquinoline" );
+gibbsFormation
+{
+    dHf_298   425380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     385.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=582410.0
+    phase     gas;
+}

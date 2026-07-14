@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-dibromo-4-hydroxybenzaldehyde  (C7H4Br2O2, CAS 2973-77-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H4Br2O2 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        35Dibromo4Hydroxybenzaldehyde;
+formula     C7H4Br2O2;
+CAS         2973-77-5;
+InChIKey    SXRHGLQCOLNZPT-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          279.915;      // g/mol [origin=calculated method=formula-sum]
+Tc          850.87;      // K   [origin=predictive method=joback]
+Pc          63.189;      // bar [origin=predictive method=joback]
+omega       0.6926;      // -   [origin=predictive method=lee-kesler]
+Tb          585.76;      // K   [origin=predictive method=joback]
+HvapTb      58287.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.82 0.71 -0.00080628 3.458e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 3; } { group ACOH; count 1; } { group CHO; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Br; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,5-bis(bromanyl)-4-oxidanyl-benzaldehyde" "benzaldehyde, 3,5-dibromo-4-hydroxy-" );
+gibbsFormation
+{
+    dHf_298   -22420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     519.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=19190.0
+    phase     gas;
+}

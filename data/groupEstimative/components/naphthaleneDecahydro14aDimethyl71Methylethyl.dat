@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: naphthalene, decahydro-1,4a-dimethyl-7-(1-methylethyl)-  (C15H28, CAS 473-11-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        naphthaleneDecahydro14aDimethyl71Methylethyl;
+formula     C15H28;
+CAS         473-11-0;
+InChIKey    DYEQPYSFRWUNNV-UHFFFAOYSA-N;
+MW          208.389;      // g/mol [origin=calculated method=formula-sum]
+Tc          781.58;      // K   [origin=predictive method=joback]
+Pc          18.724;      // bar [origin=predictive method=joback]
+omega       0.4118;      // -   [origin=predictive method=lee-kesler]
+Tb          563.82;      // K   [origin=predictive method=joback]
+HvapTb      47341.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-171.51 1.93708 -0.001472 4.874e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 6; } { group CH; count 4; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5,8a-dimethyl-3-propan-2-yl-2,3,4,4a,5,6,7,8-octahydro-1h-naphthalene" "4.alpha.h-eudesmane" "selinan" "agn-pc-00fssu" "(1r,4ar,7r,8as)-1,4a-dimethyl-7-(propan-2-yl)decahydronaphthalene" "naphthalene, decahydro-1,4a-dimethyl-7-(1-methylethyl)-, [1s-(1.alpha.,4a.alpha.,7.alpha.,8a.beta.)]-" );
+gibbsFormation
+{
+    dHf_298   -262690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     614.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=125170.0
+    phase     gas;
+}

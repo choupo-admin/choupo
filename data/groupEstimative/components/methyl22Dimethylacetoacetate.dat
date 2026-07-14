@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 2,2-dimethylacetoacetate  (C7H12O3, CAS 38923-57-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl22Dimethylacetoacetate;
+formula     C7H12O3;
+CAS         38923-57-8;
+InChIKey    LVSDLZIEHYYLTC-UHFFFAOYSA-N;
+MW          144.17;      // g/mol [origin=calculated method=formula-sum]
+Tc          664.03;      // K   [origin=predictive method=joback]
+Pc          30.762;      // bar [origin=predictive method=joback]
+omega       0.5259;      // -   [origin=predictive method=lee-kesler]
+Tb          468.62;      // K   [origin=predictive method=joback]
+HvapTb      44033.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.82 0.71188 -0.0004155 7.786e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group CH3CO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group C; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2,2-dimethyl-3-oxidanylidene-butanoate" "methyl 2,2-dimethyl-3-oxobutanoate" "2,2-dimethyl-3-oxobutyric acid, methyl ester" "butanoic acid, 2,2-dimethyl-3-oxo-, methyl ester" "2,2-dimethylacetoacetic acid methyl ester" "2,2-dimethyl-3-oxo-butyric acid methyl ester" "2,2-dimethyl-3-oxobutanoic acid methyl ester" "butanoic acid,2,2-dimethyl-3-oxo-,methyl ester" "2,2-dimethyl-3-oxobutanoic acid methyl ester;methyl 2,2-dimethyl-3-oxobutanoate;" );
+gibbsFormation
+{
+    dHf_298   -626420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     467.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-428390.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-nonanoylmorpholine  (C13H25NO2, CAS 5299-64-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNonanoylmorpholine;
+formula     C13H25NO2;
+CAS         5299-64-9;
+InChIKey    NBRDJXSTGSUITP-UHFFFAOYSA-N;
+MW          227.348;      // g/mol [origin=calculated method=formula-sum]
+Tc          799.53;      // K   [origin=predictive method=joback]
+Pc          20.642;      // bar [origin=predictive method=joback]
+omega       0.8475;      // -   [origin=predictive method=lee-kesler]
+Tb          610.25;      // K   [origin=predictive method=joback]
+HvapTb      58397.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-61.363 1.48992 -0.0009462 2.3086e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group FCH2O; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group CH2_ring; count 4; } { group O_ring; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-morpholin-4-ylnonan-1-one" "4-nonanoylmorpholine" "pelargonic morpholide" "n-morpholino nonanamide" "n-pelargonyl morpholide" "4-morpholinenonylic acid" "morpholine, 4-nonanoyl-" "pelargonic acid morpholide" "4-(1-oxononyl)morpholine" "morpholine, 4-(1-oxononyl)-" "1-nonanone, 1-(4-morpholino)-" "4-morpholinenonylic acie" );
+gibbsFormation
+{
+    dHf_298   -407880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     645.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1420.0
+    phase     gas;
+}

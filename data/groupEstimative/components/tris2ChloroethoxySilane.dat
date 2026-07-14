@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tris(2-chloroethoxy)silane  (C6H12Cl3O3Si, CAS 10138-79-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C6H12Cl3O3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        tris2ChloroethoxySilane;
+formula     C6H12Cl3O3Si;
+CAS         10138-79-1;
+InChIKey    QILVDQLVCPVRCN-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+role        radical;
+MW          266.594;      // g/mol [origin=calculated method=formula-sum]
+Tc          704.23;      // K   [origin=predictive method=joback]
+Pc          24.219;      // bar [origin=predictive method=joback]
+omega       0.6498;      // -   [origin=predictive method=lee-kesler]
+Tb          517.13;      // K   [origin=predictive method=joback]
+HvapTb      49482.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (133.016 0.3015 0.0001766 -1.858e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH2; count 6; } { group Cl; count 3; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tris(2-chloroethyloxy)silicon" "silane, tris(2-chloroethoxy)-" "tris(2-chloroethoxy)silicon" );
+gibbsFormation
+{
+    dHf_298   -666860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     596.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-403530.0
+    phase     gas;
+}

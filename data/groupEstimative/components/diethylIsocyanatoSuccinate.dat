@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethyl isocyanato succinate  (C9H13NO5, CAS 17046-24-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diethylIsocyanatoSuccinate;
+formula     C9H13NO5;
+CAS         17046-24-1;
+InChIKey    GQPSHLZKDVRQFJ-UHFFFAOYSA-N;
+MW          215.205;      // g/mol [origin=calculated method=formula-sum]
+Tc          776.03;      // K   [origin=predictive method=joback]
+Pc          25.252;      // bar [origin=predictive method=joback]
+omega       0.9138;      // -   [origin=predictive method=lee-kesler]
+Tb          588.19;      // K   [origin=predictive method=joback]
+HvapTb      59586.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group CH2COO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group dCd; count 1; } { group COO; count 2; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "diethyl 2-isocyanatobutanedioate" );
+// formation datum unavailable (element entropy missing): dHf_298=-874340.0 dGf_298=None

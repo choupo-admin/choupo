@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): tetradecanoic acid, 2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,14,14,14-hexacosafluoro-13-(trifluoromethyl)-,compd. with ethanamine(1:1)  (C17H8F29NO2, CAS 68052-68-6)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           tetradecanoicAcid223344556677889910101111121213141414Hexacos;
+formula        C17H8F29NO2;
+CAS            68052-68-6;
+InChIKey       VIZSCVXDHHKCBQ-UHFFFAOYSA-N;
+MW             809.198;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: tetradecanoic acid, 2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,14,14,14-hexacosafluoro-13-(trifluoromethyl)-,compd. with ethanamine(1:1)

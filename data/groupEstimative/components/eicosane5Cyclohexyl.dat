@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: eicosane, 5-cyclohexyl-  (C26H52, CAS 4443-59-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        eicosane5Cyclohexyl;
+formula     C26H52;
+CAS         4443-59-8;
+InChIKey    MBXKQVDZISXAHH-UHFFFAOYSA-N;
+MW          364.702;      // g/mol [origin=calculated method=formula-sum]
+Tc          999.68;      // K   [origin=predictive method=joback]
+Pc          8.159;      // bar [origin=predictive method=joback]
+omega       0.7456;      // -   [origin=predictive method=lee-kesler]
+Tb          813.59;      // K   [origin=predictive method=joback]
+HvapTb      73511.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-88.033 2.60184 -0.0014748 3.073e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 22; } { group CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 17; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "icosan-5-ylcyclohexane" "cyclohexane, (1-butylhexadecyl)-" "5-cyclohexyleicosane" );
+gibbsFormation
+{
+    dHf_298   -530930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1128.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=190050.0
+    phase     gas;
+}

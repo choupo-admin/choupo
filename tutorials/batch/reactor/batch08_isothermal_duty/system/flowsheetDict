@@ -1,0 +1,31 @@
+/*---------------------------------------------------------------------------*\
+  batch08_isothermal_duty  --  one isothermal batch reactor, one declared
+  dH_rxn, one hand-checkable jacket duty.  See system/controlDict for what
+  this case tests and constant/reactions for the analytic anchor
+  (E = -50 kJ/mol x 0.9975 mol = -49.88 kJ over 600 s).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        initial
+        {
+            T            350.0 K;
+            P            1.013 bar;
+            V            0.001;            // m³
+            totalMoles   1.0e-3;           // kmol  (1 mol of A)
+            molarComposition  { compA 1.0;  compB 0.0; }
+        }
+
+        operation
+        {
+            mode         isothermal;
+            T_setpoint   350.0 K;
+        }
+
+        reaction    A_to_B;
+    }
+);

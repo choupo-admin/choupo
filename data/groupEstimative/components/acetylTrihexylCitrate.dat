@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetyl trihexyl citrate  (C26H46O8, CAS 24817-92-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acetylTrihexylCitrate;
+formula     C26H46O8;
+CAS         24817-92-3;
+InChIKey    TUUQISRYLMFKOG-UHFFFAOYSA-N;
+MW          486.646;      // g/mol [origin=calculated method=formula-sum]
+Tc          1267.62;      // K   [origin=predictive method=joback]
+Pc          7.404;      // bar [origin=predictive method=joback]
+omega       0.5911;      // -   [origin=predictive method=lee-kesler]
+Tb          1024.13;      // K   [origin=predictive method=joback]
+HvapTb      101802.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (56.417 2.38048 -0.001184 1.417e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 15; } { group C; count 1; } { group CH3COO; count 1; } { group CH2COO; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 17; } { group C; count 1; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trihexyl 2-acetyloxypropane-1,2,3-tricarboxylate" "trihexyl o-acetylcitrate" "1,2,3-propanetricarboxylic acid, 2-(acetyloxy)-, trihexyl ester" "2-(acetyloxy)-1,2,3-propanetricarboxylic acid, trihexyl ester" "1,2,3-propanetricarboxylic acid, 2-(acetyloxy)-, 1,2,3-trihexyl ester" "o322" "trihexyl 2-(acetyloxy)propane-1,2,3-tricarboxylate" "2-acetyloxypropane-1,2,3-tricarboxylic acid trihexyl ester" );
+gibbsFormation
+{
+    dHf_298   -1857840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1335.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1070600.0
+    phase     gas;
+}

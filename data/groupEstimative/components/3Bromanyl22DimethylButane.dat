@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-bromanyl-2,2-dimethyl-butane  (C6H13Br, CAS 26356-06-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Bromanyl22DimethylButane;
+formula     C6H13Br;
+CAS         26356-06-9;
+InChIKey    DGTGXWOFOTZORM-UHFFFAOYSA-N;
+MW          165.074;      // g/mol [origin=calculated method=formula-sum]
+Tc          600.61;      // K   [origin=predictive method=joback]
+Pc          34.684;      // bar [origin=predictive method=joback]
+omega       0.2967;      // -   [origin=predictive method=lee-kesler]
+Tb          399.37;      // K   [origin=predictive method=joback]
+HvapTb      33701.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.53 0.74378 -0.000549 1.657e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH; count 1; } { group C; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 1; } { group C; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -154870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     392.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=14360.0
+    phase     gas;
+}

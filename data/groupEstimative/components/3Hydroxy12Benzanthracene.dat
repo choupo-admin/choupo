@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-hydroxy-1,2-benzanthracene  (C18H12O, CAS 960-92-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Hydroxy12Benzanthracene;
+formula     C18H12O;
+CAS         960-92-9;
+InChIKey    VHASKISXNNMXRM-UHFFFAOYSA-N;
+MW          244.293;      // g/mol [origin=calculated method=formula-sum]
+Tc          1054.73;      // K   [origin=predictive method=joback]
+Pc          32.246;      // bar [origin=predictive method=joback]
+omega       0.9122;      // -   [origin=predictive method=lee-kesler]
+Tb          785.64;      // K   [origin=predictive method=joback]
+HvapTb      77196.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-122.03 1.6594 -0.00151904 5.551e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 11; } { group AC; count 6; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 11; } { group dC_ring; count 7; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzo[a]anthracen-5-ol" "benz(a)anthracen-5-ol" "benz[a]anthracen-5-ol" "5-hydroxybenz(a)anthracene" "5-hydroxybenz[a]anthracene" );
+gibbsFormation
+{
+    dHf_298   194640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     438.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=359160.0
+    phase     gas;
+}

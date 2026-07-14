@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (s)-(+)-alpha-methoxyphenylacetic acid  (C9H10O3, CAS 26164-26-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sAlphaMethoxyphenylaceticAcid;
+formula     C9H10O3;
+CAS         26164-26-1;
+InChIKey    DIWVBIXQCNRCFE-QMMMGPOBSA-N;
+MW          166.176;      // g/mol [origin=calculated method=formula-sum]
+Tc          825.65;      // K   [origin=predictive method=joback]
+Pc          35.814;      // bar [origin=predictive method=joback]
+omega       0.7776;      // -   [origin=predictive method=lee-kesler]
+Tb          599.69;      // K   [origin=predictive method=joback]
+HvapTb      57090.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.78 0.77342 -0.0004618 9.41e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group ACCH; count 1; } { group CH3O; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-2-methoxy-2-phenyl-ethanoic acid" "o-methyl-l-mandelic acid" "(2s)-2-methoxy-2-phenylacetic acid" "benzeneacetic acid, alpha-methoxy-" "a-methoxy-benzeneacetic acid" "l-" "a-methoxyphenylacetic acid" "(s)-(+)-o-methylmandelic acid" "(s)-2-methoxy-2-phenylacetic acid" "(s)-(+)-" "a-methoxyphenylacetic acid" "(s)-2-methoxy-2-(phenyl)ethanoic acid" );
+gibbsFormation
+{
+    dHf_298   -480330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     455.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-314040.0
+    phase     gas;
+}

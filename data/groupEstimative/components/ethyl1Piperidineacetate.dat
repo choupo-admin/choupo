@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 1-piperidineacetate  (C9H17NO2, CAS 23853-10-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl1Piperidineacetate;
+formula     C9H17NO2;
+CAS         23853-10-3;
+InChIKey    LXZHLNWWDDNIOJ-UHFFFAOYSA-N;
+MW          171.24;      // g/mol [origin=calculated method=formula-sum]
+Tc          691.76;      // K   [origin=predictive method=joback]
+Pc          28.719;      // bar [origin=predictive method=joback]
+omega       0.5867;      // -   [origin=predictive method=lee-kesler]
+Tb          496.13;      // K   [origin=predictive method=joback]
+HvapTb      45644.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-56.998 1.08612 -0.0006666 1.439e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH2COO; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 5; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-piperidin-1-ylethanoate" "ethyl piperidine-1-acetate" "ethyl 2-piperidylacetate" "ethyl piperidin-1-ylacetate" "ethyl 2-piperidin-1-ylacetate" "ethyl (piperidin-1-yl)acetate" "ethyl 2-(piperidin-1-yl)acetate" "1-[(ethoxycarbonyl)methyl]piperidine" "1-piperidineacetic acid, ethyl ester" "ethyl1-piperidineacetate; ethyl n-piperidinylacetate; ethyl piperidinoacetate;piperidin-1-ylacetic acid ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -398020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     565.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-130430.0
+    phase     gas;
+}

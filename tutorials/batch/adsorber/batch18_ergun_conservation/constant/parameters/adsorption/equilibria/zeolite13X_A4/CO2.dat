@@ -1,0 +1,11 @@
+recordType adsorptionIsotherm;
+schemaVersion 1;
+adsorbent zeolite13X_A4;
+adsorbate CO2;
+model langmuir;
+parameters { q_max 5.0; b_298 9.0; dH_ads -45000; }
+tRef 298.15;
+loadingBasis molPerKgAdsorbent;
+pressureBasis partialPressureBar;
+quality teachingOnly;
+provenance { origin assumed; method "case-local historical teaching anchor"; }

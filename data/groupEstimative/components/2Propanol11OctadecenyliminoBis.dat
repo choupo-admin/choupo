@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propanol, 1,1'-(octadecenylimino)bis-  (C24H49NO2, CAS 65086-71-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Propanol11OctadecenyliminoBis;
+formula     C24H49NO2;
+CAS         65086-71-7;
+InChIKey    XAIZPOWRIVCNAG-UHFFFAOYSA-N;
+MW          383.661;      // g/mol [origin=calculated method=formula-sum]
+Tc          1177.43;      // K   [origin=predictive method=joback]
+Pc          9.341;      // bar [origin=predictive method=joback]
+omega       0.7638;      // -   [origin=predictive method=lee-kesler]
+Tb          948.80;      // K   [origin=predictive method=joback]
+HvapTb      103601.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-36.583 2.50756 -0.0015454 3.778e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 16; } { group CH; count 2; } { group CH=CH; count 1; } { group OH; count 2; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 17; } { group CH; count 2; } { group dCH; count 2; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[octadec-7-enyl(2-oxidanylpropyl)amino]propan-2-ol" "1-[2-hydroxypropyl-[(e)-octadec-7-enyl]amino]propan-2-ol" "2-propanol, 1,1'-(octadecen-1-ylimino)bis-" "1,1a'a inverted exclamation marka'a -(octadecenylimino)bispropan-2-ol" );
+gibbsFormation
+{
+    dHf_298   -668960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1183.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=63680.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(dicyclopropylmethoxy)-4-methoxybenzene  (C14H18O2, CAS 54929-11-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Dicyclopropylmethoxy4Methoxybenzene;
+formula     C14H18O2;
+CAS         54929-11-2;
+InChIKey    KAUOFJVBXWEDLC-UHFFFAOYSA-N;
+MW          218.296;      // g/mol [origin=calculated method=formula-sum]
+Tc          833.52;      // K   [origin=predictive method=joback]
+Pc          24.703;      // bar [origin=predictive method=joback]
+omega       0.6320;      // -   [origin=predictive method=lee-kesler]
+Tb          609.46;      // K   [origin=predictive method=joback]
+HvapTb      53954.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-80.61 1.37672 -0.00092356 2.445e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 2; } { group ACH; count 4; } { group AC; count 2; } { group CH3O; count 1; } { group CH-O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(dicyclopropylmethoxy)-4-methoxy-benzene" "benzene, 1-(dicyclopropylmethoxy)-4-methoxy-" "benzene,4-dicyclopropylmethoxy,1-methoxy" "benzene,1-(dicyclopropylmethoxy)-4-methoxy-" );
+gibbsFormation
+{
+    dHf_298   -231350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     421.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=78840.0
+    phase     gas;
+}

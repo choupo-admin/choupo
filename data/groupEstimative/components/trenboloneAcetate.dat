@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trenbolone acetate  (C20H24O3, CAS 10161-34-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trenboloneAcetate;
+formula     C20H24O3;
+CAS         10161-34-9;
+InChIKey    CMRJPMODSSEAPL-FYQPLNBISA-N;
+MW          312.409;      // g/mol [origin=calculated method=formula-sum]
+Tc          1092.24;      // K   [origin=predictive method=joback]
+Pc          18.185;      // bar [origin=predictive method=joback]
+omega       0.8740;      // -   [origin=predictive method=lee-kesler]
+Tb          844.21;      // K   [origin=predictive method=joback]
+HvapTb      73991.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-163.78 2.18174 -0.00166772 5.403e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 3; } { group C; count 1; } { group CH=CH; count 1; } { group CH=C; count 1; } { group CH2CO; count 1; } { group CH3COO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(8s,13s,14s,17s)-13-methyl-3-oxidanylidene-2,6,7,8,14,15,16,17-octahydro-1h-cyclopenta[a]phenanthren-17-yl] ethanoate" "finaplix" "component t-s" "17-beta-(acetyloxy)estra-4,9,11-trien-3-one" "3-oxo-17beta-acetoxyestra-4,9,11-triene" "17-beta-acetoxy-delta-4,9,11-estratrien-3-one" "17-beta-hydroxyestra-4,9,11-trien-3-one acetate" "17beta-hydroxyestra-4,9,11-trien-3-one 17-acetate" "finaplix h" "estra-4,9,11-trien-3-one, 17-beta-hydroxy-, acetate" "estra-4,9,11-trien-3-one, 17-(acetyloxy)-, (17beta)-" "trenbolone 17-acetate" );
+gibbsFormation
+{
+    dHf_298   -496540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     585.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-77440.0
+    phase     gas;
+}

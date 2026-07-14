@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: linalyl 2-methylbutyrate  (C15H26O2, CAS 69070-61-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        linalyl2Methylbutyrate;
+formula     C15H26O2;
+CAS         69070-61-7;
+InChIKey    MLJNGBGMEMFTPV-UHFFFAOYSA-N;
+MW          238.371;      // g/mol [origin=calculated method=formula-sum]
+Tc          785.45;      // K   [origin=predictive method=joback]
+Pc          15.660;      // bar [origin=predictive method=joback]
+omega       0.6542;      // -   [origin=predictive method=lee-kesler]
+Tb          598.07;      // K   [origin=predictive method=joback]
+HvapTb      54075.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.357 1.5057 -0.0009816 2.482e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group CH2=CH; count 1; } { group CH=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7-dimethylocta-1,6-dien-3-yl 2-methylbutanoate" "butanoic acid, 2-methyl-, 1-ethenyl-1,5-dimethyl-4-hexen-1-yl ester" "butanoic acid, 2-methyl-, 1-ethenyl-1,5-dimethyl-4-hexenyl ester" "2-methylbutyric acid 1-ethenyl-1,5-dimethyl-4-hexenyl ester" );
+gibbsFormation
+{
+    dHf_298   -451380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     727.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-75040.0
+    phase     gas;
+}

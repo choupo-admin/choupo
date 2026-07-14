@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-methyl-1-heptyn-3-ol  (C8H14O, CAS 87777-46-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Methyl1Heptyn3Ol;
+formula     C8H14O;
+CAS         87777-46-6;
+InChIKey    WONUPNLSAKXVSN-UHFFFAOYSA-N;
+MW          126.199;      // g/mol [origin=calculated method=formula-sum]
+Tc          641.11;      // K   [origin=predictive method=joback]
+Pc          33.412;      // bar [origin=predictive method=joback]
+omega       0.7192;      // -   [origin=predictive method=lee-kesler]
+Tb          464.06;      // K   [origin=predictive method=joback]
+HvapTb      49163.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.322 0.71574 -0.00044413 1.1119e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group OH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-methylhept-1-yn-3-ol" "agn-pc-02tmye" "1-heptyn-3-ol,4-methyl-" "1-heptyn-3-ol, 4-methyl-" );
+gibbsFormation
+{
+    dHf_298   -79340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     468.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97850.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 25,26-diazapentacyclo(19.3.1.19,13.04,16.06,18)hexacosa-1(25),2,4,6(18),7,9,11,13(26),14,16,19,21,23-tridecaene  (C24H16N2, CAS 64031-65-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2526Diazapentacyclo1931191304160618Hexacosa12524618791113261;
+formula     C24H16N2;
+CAS         64031-65-8;
+InChIKey    OOIJMELXAYQWOH-UHFFFAOYSA-N;
+MW          332.406;      // g/mol [origin=calculated method=formula-sum]
+Tc          1287.08;      // K   [origin=predictive method=joback]
+Pc          23.070;      // bar [origin=predictive method=joback]
+omega       0.9794;      // -   [origin=predictive method=lee-kesler]
+Tb          989.06;      // K   [origin=predictive method=joback]
+HvapTb      93532.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-120.51 1.92872 -0.00146624 4.42e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 4; } { group ACH; count 2; } { group AC; count 4; } { group C5H3N; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 16; } { group dC_ring; count 8; } { group Nd_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "25,26-diazapentacyclo[19.3.1.19,13.04,16.06,18]hexacosa-1(25),2,4,6(18),7,9,11,13(26),14,16,19,21,23-tridecaene" "25,26-diazapentacyclo[19.3.1.19,13.04,16.06,18]hexacosa-1(25),2,4,6(18),7,9,11,13(26),14,16,19,21,23-tridecaene(9ci)" );
+gibbsFormation
+{
+    dHf_298   584210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     560.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=826940.0
+    phase     gas;
+}

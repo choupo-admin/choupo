@@ -1,0 +1,28 @@
+/*---------------------------------------------------------------------------*\
+  N2 + H2 + NH3 + Ar + water over SRK.  N2/H2/NH3/Ar are the synthesis-loop
+  species; WATER is here only as the cooling-water utility fluid for the
+  water-cooler exchanger (it never enters the process streams -- the reaction
+  species list excludes it, so it stays out of the equilibrium).  SRK gives the
+  real-gas fugacity the 200-bar reactor and separator need.
+\*---------------------------------------------------------------------------*/
+components       ( N2  H2  NH3  Ar  water );
+// activityModel ideal covers ONLY the SOLVENT's Raoult gamma -- and at ~98%
+// NH3 in the liquid, gamma_NH3 -> 1 is a THERMODYNAMIC LIMIT (Gibbs-Duhem),
+// not an assumption: any activity model would return ~1.000 here.  The
+// LIQUID NON-IDEALITY OF THE DISSOLVED GASES DOES NOT LIVE HERE -- it lives
+// in the Henry pairs below (reference fugacity + Krichevsky-Kasarnovsky
+// Poynting + the Krichevsky-Ilinskaya gamma* slot).  This dilute-solution
+// structure (solvent by Raoult, solutes by Henry) is exact as x_solute -> 0.
+// An NRTL-class model is only needed when TWO condensables mix across the
+// composition range (e.g. NH3-water liquid) -- not the case here.
+activityModel    { model ideal; }
+equationOfState  { model SRK; }
+// Henry solvent: components flagged role solute dissolve by the FULL
+// unsymmetric convention  K = gamma* H(T) Poynting/(phi_V P), constants from
+// data/standards/henrysLaw/<solute>-NH3.dat (announced [henry] in the log):
+//   H2-NH3:  H_ref 1.18e9 Pa, dH +13.6 kJ/mol, v_inf 24 cm3/mol  (Wiebe 1934)
+//   N2-NH3:  H_ref 8.5e8  Pa, dH +11.0 kJ/mol, v_inf 23 cm3/mol  (Larson 1925 / SDS 5-6)
+// NH3 itself has no NH3-NH3 pair -> falls back to Raoult (it IS the solvent).
+// Ar has NO measured Ar-NH3 pair yet -> Raoult-extrapolated (over-dissolves ~7x;
+// small stream, flagged in the flowsheet header).
+solvent          NH3;

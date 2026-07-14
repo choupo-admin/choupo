@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-propanediol, 2,2-bis[[3-(acetyloxy)-2,2-bis[(acetyloxy)methyl]propoxy]methyl]-, diacetate  (C31H48O18, CAS 68683-33-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13Propanediol22Bis3Acetyloxy22BisAcetyloxyMethylPropoxyMethy;
+formula     C31H48O18;
+CAS         68683-33-0;
+InChIKey    KIHWEJRBZHVCJV-UHFFFAOYSA-N;
+MW          708.707;      // g/mol [origin=calculated method=formula-sum]
+Tc          1932.74;      // K   [origin=predictive method=joback]
+Pc          5.860;      // bar [origin=predictive method=joback]
+omega       -0.1257;      // -   [origin=predictive method=lee-kesler]
+Tb          1409.79;      // K   [origin=predictive method=joback]
+HvapTb      144788.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (155.562 2.76156 -0.0011992 7e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group C; count 3; } { group CH3COO; count 8; } { group CH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2; count 12; } { group C; count 3; } { group O; count 2; } { group COO; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[3-acetyloxy-2,2-bis[[3-acetyloxy-2,2-bis(acetyloxymethyl)propoxy]methyl]propyl] ethanoate" "tripentaerythritol octaacetate" "1,3-propanediol, 2,2-bis((3-(acetyloxy)-2,2-bis((acetyloxy)methyl)propoxy)methyl)-, 1,3-diacetate" "1,3-propanediol, 2,2-bis((3-(acetyloxy)-2,2-bis((acetyloxy)methyl)propoxy)methyl)-, diacetate" "1,3-propanediol, 2,2-bis[[3-(acetyloxy)-2,2-bis[(acetyloxy)methyl]propoxy]methyl]-, 1,3-diacetate" "[3-acetyloxy-2,2-bis[[3-acetyloxy-2,2-bis(acetyloxymethyl)propoxy]methyl]propyl] acetate" );
+gibbsFormation
+{
+    dHf_298   -3512100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1679.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2474300.0
+    phase     gas;
+}

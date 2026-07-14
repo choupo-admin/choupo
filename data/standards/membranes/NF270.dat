@@ -21,6 +21,15 @@
       NaCl     ~ 2 × 10⁻⁶  m/s  →  obs rejection ~ 50-70 % at 2 g/L
       MgSO4    ~ 5 × 10⁻⁸  m/s  →  obs rejection ~ 98 %
       glucose  ~ 2 × 10⁻⁷  m/s  →  obs rejection ~ 50 %
+
+  Source (named public document):
+     DuPont Water Solutions, FilmTec NF270-400 Product Data Sheet
+     (public).  Standard test conditions there: 2000 ppm MgSO4,
+     4.8 bar (70 psi), 25 °C, 15 % recovery — stabilized MgSO4
+     rejection ≥ 97 %.  The permeabilities below are Choupo
+     solution-diffusion fits that reproduce that datasheet
+     performance (plus the typically published NaCl / glucose NF270
+     rejections); they are NOT vendor-tabulated coefficients.
 \*---------------------------------------------------------------------------*/
 
 name           NF270;

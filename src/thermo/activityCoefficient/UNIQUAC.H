@@ -113,4 +113,13 @@ private:
     scalar c(std::size_t i, std::size_t j) const { return cMat_[i*n_ + j]; }
 };
 
+// Fill the UNIQUAC `rq {}` block from each component's intrinsic `uniquac { r; q; }`
+// (Component::rUniquac/qUniquac) for any component not declared inline -- so the
+// van der Waals r, q live ONCE in the component .dat, never re-declared per case.
+// No-op unless the dict's model is UNIQUAC.  Inline `rq{}` entries always win.
+// Call before ActivityModel::New, at a site that has the Component objects.
+void injectUniquacRQ(const DictPtr& activityDict,
+                     const std::vector<std::string>& names,
+                     const std::vector<Component>& comps);
+
 } // namespace Choupo

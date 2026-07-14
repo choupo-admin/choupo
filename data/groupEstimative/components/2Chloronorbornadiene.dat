@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloronorbornadiene  (C7H7Cl, CAS 2294-41-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chloronorbornadiene;
+formula     C7H7Cl;
+CAS         2294-41-9;
+InChIKey    WPIUWSFJCBEPBF-UHFFFAOYSA-N;
+MW          126.583;      // g/mol [origin=calculated method=formula-sum]
+Tc          635.77;      // K   [origin=predictive method=joback]
+Pc          39.805;      // bar [origin=predictive method=joback]
+omega       0.3030;      // -   [origin=predictive method=lee-kesler]
+Tb          418.24;      // K   [origin=predictive method=joback]
+HvapTb      36805.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-66.33 0.7963 -0.00067892 2.333e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 2; } { group CH=CH; count 1; } { group CH=C; count 1; } { group Cl_C=C_; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-chloranylbicyclo[2.2.1]hepta-2,5-diene" "2-chlorobicyclo[2.2.1]hepta-2,5-diene" "3-chlorobicyclo[2.2.1]hepta-2,5-diene" );
+gibbsFormation
+{
+    dHf_298   39980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     220.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=155820.0
+    phase     gas;
+}

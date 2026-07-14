@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-butyne-1,4-diamine  (C4H8N2, CAS 53878-96-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Butyne14Diamine;
+formula     C4H8N2;
+CAS         53878-96-9;
+InChIKey    CSZGEDPWASKNHR-UHFFFAOYSA-N;
+MW          84.122;      // g/mol [origin=calculated method=formula-sum]
+Tc          671.40;      // K   [origin=predictive method=joback]
+Pc          56.703;      // bar [origin=predictive method=joback]
+omega       0.4590;      // -   [origin=predictive method=lee-kesler]
+Tb          445.18;      // K   [origin=predictive method=joback]
+HvapTb      47932.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (29.792 0.3578 -0.00018846 3.738e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2NH2; count 2; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group tC; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "but-2-yne-1,4-diamine" "1,4-diamino-2-butyne" "1,4-diamino-2-butyne;" );
+gibbsFormation
+{
+    dHf_298   213990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     386.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=318500.0
+    phase     gas;
+}

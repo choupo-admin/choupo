@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-(3-hydroxypropyl)hexanamide  (C9H19NO2, CAS 68475-65-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        n3HydroxypropylHexanamide;
+formula     C9H19NO2;
+CAS         68475-65-0;
+InChIKey    VGINVIDRIAPMME-UHFFFAOYSA-N;
+MW          173.256;      // g/mol [origin=calculated method=formula-sum]
+Tc          772.48;      // K   [origin=predictive method=joback]
+Pc          27.297;      // bar [origin=predictive method=joback]
+omega       1.2315;      // -   [origin=predictive method=lee-kesler]
+Tb          601.74;      // K   [origin=predictive method=joback]
+HvapTb      65489.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.147 0.94102 -0.0005261 1.0716e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group OH; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group OH; count 1; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-(3-oxidanylpropyl)hexanamide" "amides, c6-16, n-(hydroxypropyl)" );
+gibbsFormation
+{
+    dHf_298   -440430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     624.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-151450.0
+    phase     gas;
+}

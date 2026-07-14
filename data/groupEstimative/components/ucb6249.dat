@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ucb 6249  (C19H29NO2, CAS 14557-50-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ucb6249;
+formula     C19H29NO2;
+CAS         14557-50-7;
+InChIKey    QSZYQIVLOSDTSM-UHFFFAOYSA-N;
+MW          303.446;      // g/mol [origin=calculated method=formula-sum]
+Tc          922.57;      // K   [origin=predictive method=joback]
+Pc          14.272;      // bar [origin=predictive method=joback]
+omega       0.8571;      // -   [origin=predictive method=lee-kesler]
+Tb          725.11;      // K   [origin=predictive method=joback]
+HvapTb      67648.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-61.034 1.90486 -0.0012537 3.1e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group C; count 1; } { group CH2=CH; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH2N; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-[2-(diethylamino)ethyl]-2-phenyl-pent-4-enoate" "4-pentenoic acid, 2-(2-(diethylamino)ethyl)-2-phenyl-, ethyl ester" "ethyl 2-(2-diethylaminoethyl)-2-phenylpent-4-enoate" "ethyl 2-(2-diethylaminoethyl)-2-phenyl-pent-4-enoate" "benzeneacetic acid, a-[2-(diethylamino)ethyl]-a-2-propen-1-yl-, ethyl ester" "benzeneacetic acid, alpha-(2-(diethylamino)ethyl)-alpha-2-propenyl-, ethyl ester" "benzeneacetic acid, alpha-(2-(diethylamino)ethyl)-alpha-2-propenyl-, ethyl ester (9ci)" );
+gibbsFormation
+{
+    dHf_298   -332030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     813.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=112600.0
+    phase     gas;
+}

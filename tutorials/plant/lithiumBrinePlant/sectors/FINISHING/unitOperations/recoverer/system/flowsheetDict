@@ -1,0 +1,7 @@
+name recoverer; type cyclone; model Lapple;
+operation { bodyDiameter 0.6 m; numberOfTurns 5; }
+
+// The streams this operation consumes and produces (sequential-modular:
+// a unit is defined by its streams; the sector wires them, the unit names them).
+inputs   ( humidExhaust );
+outputs  ( cleanAir fines );

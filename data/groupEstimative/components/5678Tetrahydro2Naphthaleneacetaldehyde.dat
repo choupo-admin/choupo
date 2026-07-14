@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5,6,7,8-tetrahydro-2-naphthaleneacetaldehyde  (C12H14O, CAS 67801-18-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5678Tetrahydro2Naphthaleneacetaldehyde;
+formula     C12H14O;
+CAS         67801-18-7;
+InChIKey    FQLQZBMPYBYGRU-UHFFFAOYSA-N;
+MW          174.243;      // g/mol [origin=calculated method=formula-sum]
+Tc          803.77;      // K   [origin=predictive method=joback]
+Pc          30.626;      // bar [origin=predictive method=joback]
+omega       0.6035;      // -   [origin=predictive method=lee-kesler]
+Tb          575.14;      // K   [origin=predictive method=joback]
+HvapTb      53020.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-63.229 1.0882 -0.00074832 2.028e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 3; } { group ACCH2; count 3; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(5,6,7,8-tetrahydronaphthalen-2-yl)ethanal" "2-naphthaleneacetaldehyde, 5,6,7,8-tetrahydro-" "5,6,7,8-tetrahydronaphthalen-2-acetaldehyde" "5,6,7,8-tetrahydronaphthalen-2-ylacetaldehyde" "2-(5,6,7,8-tetrahydronaphthalen-2-yl)acetaldehyde" );
+gibbsFormation
+{
+    dHf_298   -76020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     495.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=100150.0
+    phase     gas;
+}

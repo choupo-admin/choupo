@@ -28,16 +28,7 @@
   a DesignSpec that manipulates $W_shaft until turbine.P_out hits it.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    hotAir
-    {
-        F             3.6 kmol/h;        // = 1 mol/s
-        T           900.0 K;
-        P            10.0 bar;
-        molarComposition  { N2 0.79;  O2 0.21; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

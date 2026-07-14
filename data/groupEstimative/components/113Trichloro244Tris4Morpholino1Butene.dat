@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,3-trichloro-2,4,4-tris(4-morpholino)-1-butene  (C16H26Cl3N3O3, CAS 68318-38-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        113Trichloro244Tris4Morpholino1Butene;
+formula     C16H26Cl3N3O3;
+CAS         68318-38-7;
+InChIKey    YVWFFAAZXOIGDJ-UHFFFAOYSA-N;
+MW          414.752;      // g/mol [origin=calculated method=formula-sum]
+Tc          1102.88;      // K   [origin=predictive method=joback]
+Pc          21.023;      // bar [origin=predictive method=joback]
+omega       1.0471;      // -   [origin=predictive method=lee-kesler]
+Tb          859.03;      // K   [origin=predictive method=joback]
+HvapTb      85064.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-169.29 2.4131 -0.0018471 5.454e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 1; } { group FCH2O; count 3; } { group CH2N; count 3; } { group CHCl; count 1; } { group Cl_C=C_; count 2; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 2; } { group dC; count 2; } { group CH2_ring; count 12; } { group Cl; count 3; } { group O_ring; count 3; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[1,1,3-tris(chloranyl)-4,4-dimorpholin-4-yl-but-1-en-2-yl]morpholine" "morpholine, 4,4',4''-(2-chloro-1-(dichloromethylene)-1-propanyl-3-ylidene)tris-" "morpholine, 4,4',4''-[2-chloro-1-(dichloromethylene)-1-propanyl-3-ylidene]tris-" "4,4',4''-(1,1,3-trichlorobut-1-ene-2,4,4-triyl)trimorpholine" "4-(1,1,3-trichloro-4,4-dimorpholin-4-ylbut-1-en-2-yl)morpholine" );
+gibbsFormation
+{
+    dHf_298   -284660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     715.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=313050.0
+    phase     gas;
+}

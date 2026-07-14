@@ -1,0 +1,161 @@
+#!/usr/bin/env python3
+# choupo-project -- materialise a VISIBLE, runnable local run of ONE unit operation
+# by PROJECTING the plant's converged solution onto that unit (ChatGPT/ClaudeChat
+# F3, s24-s26).  The unit becomes a local run domain: its inlet streams are FIXED
+# from the ancestor's converged sequence, its outlet streams are the ancestor values
+# as an initial guess to re-solve.  This is NOT a second source of truth -- runInfo
+# records the ancestor; the workspace is regenerable.
+#
+#   choupo-project <plant-case> <unit> [out-dir]
+#
+# Default out-dir: <plant>/.runs/unitOperations/<unit>/  (gitignored run artifact).
+import os, re, sys, shutil
+
+
+def parse_named_edges(fs_text):
+    m = re.search(r'\bconnections\s*\{', fs_text)
+    if not m:
+        return []
+    i = m.end() - 1
+    depth = 0
+    j = i
+    while j < len(fs_text):
+        if fs_text[j] == '{':
+            depth += 1
+        elif fs_text[j] == '}':
+            depth -= 1
+            if depth == 0:
+                break
+        j += 1
+    body = fs_text[i + 1:j]
+    edges = []
+    for em in re.finditer(r'(\w+)\s*\{([^}]*)\}', body):
+        inner = em.group(2)
+        fr = re.search(r'\bfrom\s+([^\s;]+)', inner)
+        to = re.search(r'\bto\s+([^\s;]+)', inner)
+        edges.append([em.group(1), fr.group(1) if fr else "", to.group(1) if to else ""])
+    return edges
+
+
+def child_of(port):
+    return port.split('/', 1)[0] if '/' in port else ""
+
+
+def brace_block(text, keyword):
+    """Return the `keyword { ... }` block body (with braces), or ''."""
+    m = re.search(r'\b' + keyword + r'\s*\{', text)
+    if not m:
+        return ""
+    i = m.end() - 1
+    depth = 0
+    j = i
+    while j < len(text):
+        if text[j] == '{':
+            depth += 1
+        elif text[j] == '}':
+            depth -= 1
+            if depth == 0:
+                break
+        j += 1
+    return text[m.start():j + 1]
+
+
+def word_value(text, keyword):
+    m = re.search(r'\b' + keyword + r'\s+([^\s;{}]+)\s*;', text)
+    return m.group(1) if m else ""
+
+
+def main():
+    if len(sys.argv) < 3:
+        print("Usage: choupo-project <plant-case> <unit> [out-dir]")
+        sys.exit(1)
+    plant = os.path.abspath(sys.argv[1].rstrip('/'))
+    unit = sys.argv[2]
+    out = (os.path.abspath(sys.argv[3]) if len(sys.argv) > 3
+           else os.path.join(plant, ".runs", "unitOperations", unit))
+
+    fs_text = open(os.path.join(plant, "system", "flowsheetDict")).read()
+    edges = parse_named_edges(fs_text)
+    inlets = [e[0] for e in edges if child_of(e[2]) == unit]   # `to unit/...`  -> inlet
+    outlets = [e[0] for e in edges if child_of(e[1]) == unit]  # `from unit/...` -> outlet
+    if not inlets and not outlets:
+        sys.exit(f"choupo-project: unit '{unit}' has no connections in the plant flowsheet")
+
+    udir = os.path.join(plant, "unitOperations", unit)
+    uleaf_path = os.path.join(udir, "system", "flowsheetDict")
+    if not os.path.isfile(uleaf_path):
+        sys.exit(f"choupo-project: no {uleaf_path}")
+    uleaf = open(uleaf_path).read()
+    utype = word_value(uleaf, "type")
+    umodel = word_value(uleaf, "model")
+    uop = brace_block(uleaf, "operation")
+
+    conv = os.path.join(plant, "converged")
+    if not os.path.isdir(conv):
+        sys.exit("choupo-project: no converged/ -- run the plant first (its solution is the ancestor)")
+
+    # ---- materialise ------------------------------------------------------
+    if os.path.exists(out):
+        shutil.rmtree(out)
+    os.makedirs(os.path.join(out, "system"))
+    os.makedirs(os.path.join(out, "0"))
+
+    shutil.copy(os.path.join(plant, "system", "controlDict"),
+                os.path.join(out, "system", "controlDict"))
+
+    # Synthesised flowsheetDict: the leaf wrapped as a 1-unit inline flat case, with
+    # its interface (in/outputs) taken from the plant's named edges.
+    with open(os.path.join(out, "system", "flowsheetDict"), "w") as f:
+        f.write(f"/*--- Local run of unit '{unit}', projected from "
+                f"{os.path.basename(plant)}/converged. ---*/\n\n")
+        f.write("units\n(\n    {\n")
+        f.write(f"        name        {unit};\n")
+        f.write(f"        type        {utype};\n")
+        if umodel:
+            f.write(f"        model       {umodel};\n")
+        if uop:
+            f.write("        " + uop.replace("\n", "\n        ").rstrip() + "\n")
+        f.write(f"        inputs   ( {' '.join(inlets)} );\n")
+        f.write(f"        outputs  ( {' '.join(outlets)} );\n")
+        f.write("    }\n);\n")
+
+    # Property context: a local override is carried (with its inherits path rewritten
+    # to the workspace); otherwise a pure `inherits` pointer to the plant context --
+    # NO property data is copied (ChatGPT s25).
+    plant_constant = os.path.join(plant, "constant")
+    os.makedirs(os.path.join(out, "constant"))
+    ulocal_pd = os.path.join(udir, "constant", "propertyDict")
+    rel_to_plant = os.path.relpath(plant_constant, os.path.join(out, "constant"))
+    if os.path.isfile(ulocal_pd):
+        # carry the unit's OWN override; rewrite its inherits to reach the plant here
+        txt = open(ulocal_pd).read()
+        txt = re.sub(r'(\binherits\s+")[^"]*(")', r'\1' + rel_to_plant + r'\2', txt)
+        open(os.path.join(out, "constant", "propertyDict"), "w").write(txt)
+    else:
+        with open(os.path.join(out, "constant", "propertyDict"), "w") as f:
+            f.write(f'/*--- inherits the plant property context; nothing is copied. ---*/\n'
+                    f'inherits "{rel_to_plant}";\n')
+
+    # 0/ = the unit's streams projected from the ancestor's converged solution.
+    # Inlets are FIXED cut edges; outlets are the ancestor values as initial guesses.
+    for s in inlets + outlets:
+        src = os.path.join(conv, s)
+        if os.path.isfile(src):
+            shutil.copy(src, os.path.join(out, "0", s))
+
+    with open(os.path.join(out, "runInfo"), "w") as f:
+        f.write(f"runDomain        unitOperation {unit};\n")
+        f.write(f"ancestorCase     {os.path.relpath(plant, out)};\n")
+        f.write(f"ancestorSnapshot {os.path.relpath(conv, out)};\n")
+        f.write("createdBy        projection;\n")
+
+    print(f"choupo-project: {unit} -> {os.path.relpath(out, os.getcwd()) if out.startswith(os.getcwd()) else out}")
+    print(f"  ancestor solution: {os.path.basename(plant)}/converged")
+    print(f"  inputs fixed from process:  {' '.join(inlets)}")
+    print(f"  outputs to calculate:       {' '.join(outlets)}")
+    print(f"  thermodynamics: {'local override + ' if os.path.isfile(ulocal_pd) else ''}inherits {rel_to_plant}")
+    print(f"  run it:  runCase {out}")
+
+
+if __name__ == "__main__":
+    main()

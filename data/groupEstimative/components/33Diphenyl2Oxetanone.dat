@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3-diphenyl-2-oxetanone  (C15H12O2, CAS 16230-71-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33Diphenyl2Oxetanone;
+formula     C15H12O2;
+CAS         16230-71-0;
+InChIKey    KPURDRXLOMYQAS-UHFFFAOYSA-N;
+MW          224.259;      // g/mol [origin=calculated method=formula-sum]
+Tc          911.42;      // K   [origin=predictive method=joback]
+Pc          29.505;      // bar [origin=predictive method=joback]
+omega       0.6317;      // -   [origin=predictive method=lee-kesler]
+Tb          657.09;      // K   [origin=predictive method=joback]
+HvapTb      59533.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-148.26 1.6686 -0.0015592 5.884e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group C; count 1; } { group ACH; count 10; } { group AC; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3-diphenyloxetan-2-one" "alpha,alpha-diphenyl-beta-propiolactone" "2-oxetanone, 3,3-diphenyl-" "2,2-diphenyl-3-hydroxypropionic acid lactone" "2-oxetanone,3-diphenyl-" "2-oxetanone,3,3-diphenyl-" ".alpha.,.alpha.-diphenyl-.beta.-propiolactone" );
+gibbsFormation
+{
+    dHf_298   -102950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     538.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=57230.0
+    phase     gas;
+}

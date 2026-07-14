@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: decahydro-2-naphthyl formate  (C11H18O2, CAS 10519-12-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C11H18O2 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        decahydro2NaphthylFormate;
+formula     C11H18O2;
+CAS         10519-12-7;
+InChIKey    NMFWOBQDDWFAAB-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          182.263;      // g/mol [origin=calculated method=formula-sum]
+Tc          671.48;      // K   [origin=predictive method=joback]
+Pc          26.708;      // bar [origin=predictive method=joback]
+omega       0.2629;      // -   [origin=predictive method=lee-kesler]
+Tb          453.59;      // K   [origin=predictive method=joback]
+HvapTb      37912.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-141.64 1.2938 -0.000927 2.672e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group CH; count 3; } { group HCOO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 7; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,4a,5,6,7,8,8a-decahydronaphthalen-2-yl methanoate" "decalinyl formate" "santalozone" "2-naphthalenol, decahydro-, formate" "decahydro-beta-naphthyl formate" "2-naphthalenol, decahydro-, 2-formate" "2-naphthol, decahydro-, formate" "decahydronaphthalen-2-yl formate" "formic acid decahydro-2-naphthyl ester" "1,2,3,4,4a,5,6,7,8,8a-decahydronaphthalen-2-yl formate" );
+gibbsFormation
+{
+    dHf_298   -93300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     624.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=151090.0
+    phase     gas;
+}

@@ -68,7 +68,7 @@ operations
     {
         name        reduction_nacl;
         type        speciate;
-        activityModel pitzer;
+        activityModel pitzerHMW;
         totals      { Na 1.0 mol/kg; Cl 1.0 mol/kg; }
         pH          7.0;
         diagSpecies ( Na Cl );          // gamma_Na, gamma_Cl pinned
@@ -79,7 +79,7 @@ operations
     {
         name        seawater;
         type        speciate;
-        activityModel pitzer;
+        activityModel pitzerHMW;
         totals      { Na 0.4861 mol/kg; Mg 0.0547 mol/kg; Ca 0.01065 mol/kg;
                       K 0.01058 mol/kg; Cl 0.5658 mol/kg; SO4 0.02926 mol/kg; }
         pH          8.1;                // typical surface seawater (given)

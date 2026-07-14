@@ -20,19 +20,7 @@
   "Composition basis" for the five accepted forms.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        T            370.0 K;
-        P              1.0 bar;
-        molarFlows
-        {
-            benzene   40.0 kmol/h;
-            toluene   60.0 kmol/h;
-        }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

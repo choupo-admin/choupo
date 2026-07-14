@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  pitzer_seawater_verify / constant/thermoPackage
+
+  Water only: the solvent basis for a props-bench speciation run.  This
+  package is a loader-satisfying stub -- the seawater physics (Na/Mg/Ca/K/
+  Cl/SO4 at I ~ 0.7, per-ion and mean activity coefficients) is computed
+  by the propsDict's speciation op with the multi-ion Pitzer-HMW engine
+  and its binary + ternary theta/psi pairs, not by the ideal models below.
+\*---------------------------------------------------------------------------*/
+
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }

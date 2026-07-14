@@ -1,0 +1,6 @@
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species MgFp; ion "MgF+"; z +1; masters ( { ion Mg; nu 1; } { ion F; nu 1; } );
+      logK25 1.82; dH 13388.8; source "USGS PHREEQC phreeqc.dat (public domain)";
+

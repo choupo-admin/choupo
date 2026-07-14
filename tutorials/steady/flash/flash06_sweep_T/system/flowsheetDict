@@ -1,17 +1,11 @@
 /*---------------------------------------------------------------------------*\
-  flowsheetDict  --  topology (streams + units + connections)
+  flash06_sweep_T  --  the SAME 40/60 benzene/toluene isothermal flash as
+  flash01 (100 kmol/h, 1 bar, Raoult); the T value below is only the BASE
+  point -- system/outerDict sweeps it 360 -> 385 K across the bubble->dew
+  window (~368..374 K) and reads the V/F S-curve + duty as responses.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            370.0 K;
-        P              1.0 bar;
-        molarComposition  { benzene 0.40;  toluene 0.60; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

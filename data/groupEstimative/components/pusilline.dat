@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pusilline  (C15H26N2, CAS 446-95-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pusilline;
+formula     C15H26N2;
+CAS         446-95-7;
+InChIKey    SLRCCWJSBJZJBV-AJNGGQMLSA-N;
+MW          234.387;      // g/mol [origin=calculated method=formula-sum]
+Tc          828.98;      // K   [origin=predictive method=joback]
+Pc          23.406;      // bar [origin=predictive method=joback]
+omega       0.6177;      // -   [origin=predictive method=lee-kesler]
+Tb          607.45;      // K   [origin=predictive method=joback]
+HvapTb      53238.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-248.46 2.2514 -0.001759 5.496e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 9; } { group CH; count 4; } { group CH2N; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 11; } { group CH_ring; count 4; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(-)-beta-isosparteine" "lupinidine" "sparteine" "beta-isosparteine" "esparteina" "sparteinum" "7,14-methano-2h,6h-dipyrido(1,2-a:1',2'-e)(1,5)diazocine, dodecahydro-, (7s-(7alpha,7abeta,14alpha,14abeta))-" "dodecahydro-7,14-methano-2h,6h-dipyrido(1,2-a:1',2'-e)(1,5)diazocine (7s-(7alpha,7abeta,14alpha,14abeta))-" "sparteinum sulfuricum" "7,14-methano-2h,6h-dipyrido[1,2-a:1',2'-e][1,5]diazocine, dodecahydro-" "sparteine, (7s-(7alpha,7abeta,14alpha,14abeta))-isomer" "(1s,2s,9s,10s)-7,15-diazatetracyclo[7.7.1.0^{2,7}.0^{10,15}]heptadecane" );
+gibbsFormation
+{
+    dHf_298   54850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     471.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=503680.0
+    phase     gas;
+}

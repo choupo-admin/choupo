@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (r)-2-amino-3-hydroxy-3-methylbutanoic acid  (C5H11NO3, CAS 2280-48-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        r2Amino3Hydroxy3MethylbutanoicAcid;
+formula     C5H11NO3;
+CAS         2280-48-0;
+InChIKey    LDRFQSZFVGJGGP-VKHMYHEASA-N;
+MW          133.147;      // g/mol [origin=calculated method=formula-sum]
+Tc          824.71;      // K   [origin=predictive method=joback]
+Pc          48.698;      // bar [origin=predictive method=joback]
+omega       1.2424;      // -   [origin=predictive method=lee-kesler]
+Tb          620.55;      // K   [origin=predictive method=joback]
+HvapTb      69524.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.43 0.75724 -0.0005696 1.685e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C; count 1; } { group OH; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group C; count 1; } { group OH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r)-2-azanyl-3-methyl-3-oxidanyl-butanoic acid" "(2r)-2-amino-3-hydroxy-3-methylbutanoic acid" "d-b-hydroxyvaline" "d-threonine, 3-methyl-" "(r)-(-)-2-amino-3-hydroxy-3-methylbutanoic acid" "(r)-2-amino-3-hydroxy-3-methylbutanoic acid;d-b-hydroxyvaline;d-valine,3-hydroxy- (9ci);valine, 3-hydroxy-, d- (8ci);" );
+gibbsFormation
+{
+    dHf_298   -629270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     457.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-422660.0
+    phase     gas;
+}

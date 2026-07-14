@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethylene glycol monohexyl ether  (C12H26O4, CAS 25961-89-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethyleneGlycolMonohexylEther;
+formula     C12H26O4;
+CAS         25961-89-1;
+InChIKey    RGICCULPCWNRAB-UHFFFAOYSA-N;
+MW          234.336;      // g/mol [origin=calculated method=formula-sum]
+Tc          793.68;      // K   [origin=predictive method=joback]
+Pc          18.436;      // bar [origin=predictive method=joback]
+omega       1.2190;      // -   [origin=predictive method=lee-kesler]
+Tb          633.60;      // K   [origin=predictive method=joback]
+HvapTb      66215.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (73.771 0.98822 -0.0003264 -2.3e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group CH2O; count 2; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 11; } { group OH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-(2-hexoxyethoxy)ethoxy]ethanol" "2-[2-[2-(Hexyloxy)ethoxy]ethoxy]ethanol" "Ethanol, 2-[2-[2-(hexyloxy)ethoxy]ethoxy]-" "sri 10163-71" "triethylene glycol hexyl ether" "triethylene glycol mono-n-hexyl ether" "triethylene glycol, monohexyl ether" "Ethanol, 2-(2-(2-(hexyloxy)ethoxy)ethoxy)-" "2-(2-(2-(Hexyloxy)ethoxy)ethoxy)ethanol" "2-{2-[2-(hexyloxy)ethoxy]ethoxy}ethanol" "2-{2-[2-(Hexyloxy)ethoxy]ethoxy}ethan-1-ol" "c6e3" );
+gibbsFormation
+{
+    dHf_298   -839900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     708.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-401660.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-isopropylidenetetrahydrofuran  (C7H12O, CAS 38614-14-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Isopropylidenetetrahydrofuran;
+formula     C7H12O;
+CAS         38614-14-1;
+InChIKey    UZXWDKGGOMPAEZ-UHFFFAOYSA-N;
+MW          112.172;      // g/mol [origin=calculated method=formula-sum]
+Tc          620.51;      // K   [origin=predictive method=joback]
+Pc          36.642;      // bar [origin=predictive method=joback]
+omega       0.3219;      // -   [origin=predictive method=lee-kesler]
+Tb          413.18;      // K   [origin=predictive method=joback]
+HvapTb      37119.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-41.17 0.74644 -0.0004967 1.338e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group FCH2O; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dC; count 1; } { group CH2_ring; count 3; } { group dC_ring; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-propan-2-ylideneoxolane" );
+gibbsFormation
+{
+    dHf_298   -172750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     336.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=3110.0
+    phase     gas;
+}

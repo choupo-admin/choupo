@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-di-t-butyl-4-hydroxybenzyl ether  (C30H46O3, CAS 6922-60-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35DiTButyl4HydroxybenzylEther;
+formula     C30H46O3;
+CAS         6922-60-7;
+InChIKey    HWCZIOQRLAPHDF-UHFFFAOYSA-N;
+MW          454.695;      // g/mol [origin=calculated method=formula-sum]
+Tc          1385.75;      // K   [origin=predictive method=joback]
+Pc          10.149;      // bar [origin=predictive method=joback]
+omega       0.9626;      // -   [origin=predictive method=lee-kesler]
+Tb          1130.02;      // K   [origin=predictive method=joback]
+HvapTb      112828.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-125.228 3.20744 -0.00249136 7.962e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 12; } { group C; count 4; } { group ACH; count 4; } { group AC; count 5; } { group ACCH2; count 1; } { group ACOH; count 2; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 12; } { group CH2; count 2; } { group C; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 8; } { group OH_phenol; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6-ditert-butyl-4-[(3,5-ditert-butyl-4-oxidanyl-phenyl)methoxymethyl]phenol" "3,5-di-tert-butyl-4-hydroxybenzyl ether" "phenol, 4,4'-(oxybis(methylene))bis(2,6-bis(1,1-dimethylethyl)-" "phenol, 4,4'-[oxybis(methylene)]bis[2,6-bis(1,1-dimethylethyl)-" "2,6-bis(tert-butyl)-4-({[3,5-bis(tert-butyl)-4-hydroxyphenyl]methoxy}methyl)ph enol" "di(3,5-di-tert-butyl-4-hydroxybenzyl) ether" "4,4'-(oxybis(methylene)bis(2,6-bis(1,1-dimethylethyl)phenol)" "phenol,4,4'-[oxybis(methylene)]bis[2,6-bis(1,1-dimethylethyl)-" "2,6-ditert-butyl-4-[(3,5-ditert-butyl-4-hydroxyphenyl)methoxymethyl]phenol" "p-cresol, a,a'-oxybis[2,6-di-tert-butyl- (7ci,8ci);3,5-di-tert-butyl-4-hydroxybenzylether; 4,4'-dihydroxy-3,3',5,5'-tetra-tert-butylbenzylether; bis(3,5-di-tert-butyl-4-hydroxybenzyl) ether;bis(4-hydroxy-3,5-di-tert-butylbenzyl) ether; ionox 201; a,a'-(3,5-di-tert-butyl-4-hydroxyphenyl)-dimethyl ether; a,a'-oxybis[2,6-di-tert-butyl-p-cresol]" );
+gibbsFormation
+{
+    dHf_298   -757190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     995.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-14860.0
+    phase     gas;
+}

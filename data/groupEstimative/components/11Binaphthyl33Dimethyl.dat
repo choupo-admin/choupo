@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1'-binaphthyl, 3,3'-dimethyl-  (C22H18, CAS 34042-82-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Binaphthyl33Dimethyl;
+formula     C22H18;
+CAS         34042-82-5;
+InChIKey    WSLHQYUWIBLCMQ-UHFFFAOYSA-N;
+MW          282.386;      // g/mol [origin=calculated method=formula-sum]
+Tc          1073.46;      // K   [origin=predictive method=joback]
+Pc          19.965;      // bar [origin=predictive method=joback]
+omega       0.7752;      // -   [origin=predictive method=lee-kesler]
+Tb          814.20;      // K   [origin=predictive method=joback]
+HvapTb      75046.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-90.61 1.69064 -0.00124068 3.642e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 6; } { group ACCH3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 12; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methyl-1-(3-methylnaphthalen-1-yl)naphthalene" "1,1'-binaphthalene, 3,3'-dimethyl-" "3,3'-dimethyl-1,1'-binaphthalene" );
+gibbsFormation
+{
+    dHf_298   311910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     557.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=533960.0
+    phase     gas;
+}

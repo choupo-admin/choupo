@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cedryl formate  (C16H26O2, CAS 39900-38-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C16H26O2 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        cedrylFormate;
+formula     C16H26O2;
+CAS         39900-38-4;
+InChIKey    AHZYNUWTBDLJHG-RHBQXOTJSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          250.382;      // g/mol [origin=calculated method=formula-sum]
+Tc          785.37;      // K   [origin=predictive method=joback]
+Pc          19.475;      // bar [origin=predictive method=joback]
+omega       0.3491;      // -   [origin=predictive method=lee-kesler]
+Tb          557.57;      // K   [origin=predictive method=joback]
+HvapTb      44540.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-324.28 2.76168 -0.002999 1.3234e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 3; } { group C; count 3; } { group HCOO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 5; } { group CH_ring; count 3; } { group C_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cedrol formate" "cedrenyl formate" "(8" "a)-cedran-8-yl formate" "1h-3a,7-methanoazulen-6-ol, octahydro-3,6,8,8-tetramethyl-, formate, (3r,3as,6r,7r,8as)-" "(3r-(3alpha,3abeta,6alpha,7beta,8aalpha))-octahydro-3,6,8,8-tetramethyl-1h-3a,7-methanoazulen-6-yl formate" "1h-3-alpha,7-methanoazulen-6-ol, octahydro-3,6,8,8-tetramethyl-, formate, (3r-(3-alpha,3a-beta,6-alpha,7-beta,8a-alpha))-" "1h-3a,7-methanoazulen-6-ol, octahydro-3,6,8,8-tetramethyl-, formate, (3r-(3alpha,3abeta,6alpha,7beta,8aalpha))-" "1h-3a,7-methanoazulen-6-ol, octahydro-3,6,8,8-tetramethyl-, 6-formate, (3r,3as,6r,7r,8as)-" );
+gibbsFormation
+{
+    dHf_298   -106340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     813.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=246250.0
+    phase     gas;
+}

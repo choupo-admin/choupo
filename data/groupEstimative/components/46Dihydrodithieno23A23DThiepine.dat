@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,6-dihydrodithieno[2,3-a:2',3'-d]thiepine  (C10H8S3, CAS 63286-55-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        46Dihydrodithieno23A23DThiepine;
+formula     C10H8S3;
+CAS         63286-55-5;
+InChIKey    POTDUEAYZFCUDS-UHFFFAOYSA-N;
+MW          224.354;      // g/mol [origin=calculated method=formula-sum]
+Tc          937.70;      // K   [origin=predictive method=joback]
+Pc          43.112;      // bar [origin=predictive method=joback]
+omega       0.4916;      // -   [origin=predictive method=lee-kesler]
+Tb          639.76;      // K   [origin=predictive method=joback]
+HvapTb      60460.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-41.45 1.02883 -0.00089846 3.143e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2S; count 1; } { group C4H2S; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 4; } { group S_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dithieno[2,3-c:3',2'-e]thiepin,4,6-dihydro-" "4,6-dihydrobisthieno[2,3-c:3',2'-e]thiepine" "dithieno(2,3-c:3',2'-e)thiepin, 4,6-dihydro-" );
+gibbsFormation
+{
+    dHf_298   326070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     457.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=391200.0
+    phase     gas;
+}

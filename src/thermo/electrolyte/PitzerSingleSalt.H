@@ -107,6 +107,39 @@ public:
     double dbeta1_dT = 0.0;  // [1/K]
     double dCphi_dT  = 0.0;  // [1/K]
 
+    // FULL T-functions, Silvester & Pitzer 1977 (J. Phys. Chem. 81, 1822,
+    // eqs 30-32; NaCl q's in their Table IV), applied as a DEVIATION from
+    // the catalogue's 25 C surface -- the same doctrine as the linear slots
+    // (the T-extension never touches the validated 25 C values):
+    //   beta0(T) = beta0_25 + [f0_SP(T) - f0_SP(298.15)]
+    // Present when the pair record carries a tFunction block; overrides the
+    // linear slots.  (Cross-check: the SP77 d beta0/dT at 25 C is 7.15e-4,
+    // the Parker-calorimetric linear fit gave 7.58e-4 -- 6 % apart, two
+    // independent data families.)
+    bool   spForm = false;
+    double spB0[5] = {0,0,0,0,0};    // q1,q2,q3,q4,q5   (eq 30)
+    double spB1[3] = {0,0,0};        // q6,q9,q10        (eq 31)
+    double spCp[4] = {0,0,0,0};      // q11,q12,q13,q14  (eq 32)
+    double TvalidLo = 273.15, TvalidHi = 573.15;
+
+    static double spEval30(const double q[5], double T)
+    {
+        constexpr double Tr = 298.15;
+        return q[0] + q[1]*(1.0/T - 1.0/Tr) + q[2]*std::log(T/Tr)
+             + q[3]*(T - Tr) + q[4]*(T*T - Tr*Tr);
+    }
+    static double spEval31(const double q[3], double T)
+    {
+        constexpr double Tr = 298.15;
+        return q[0] + q[1]*(T - Tr) + q[2]*(T*T - Tr*Tr);
+    }
+    static double spEval32(const double q[4], double T)
+    {
+        constexpr double Tr = 298.15;
+        return q[0] + q[1]*(1.0/T - 1.0/Tr) + q[2]*std::log(T/Tr)
+             + q[3]*(T - Tr);
+    }
+
     // Universal Pitzer constants (25 C).
     double alpha1 = 2.0;     // 2.0 for 1:1 / 1:2 / 2:1; use 1.4 for 2:2 salts
     double alpha2 = 12.0;    // second range parameter, only active when beta2 != 0
@@ -124,9 +157,21 @@ public:
     double aPhi(double T) const { return A_phi * SolventProperties::debyeHuckelFactor(T); }
 
     // Virial parameters at T (linear Silvester-Pitzer correction; see above).
-    double beta0T(double T) const { return beta0 + dbeta0_dT * (T - 298.15); }
-    double beta1T(double T) const { return beta1 + dbeta1_dT * (T - 298.15); }
-    double CphiT (double T) const { return Cphi  + dCphi_dT  * (T - 298.15); }
+    double beta0T(double T) const
+    {
+        if (spForm) return beta0 + (spEval30(spB0, T) - spEval30(spB0, 298.15));
+        return beta0 + dbeta0_dT * (T - 298.15);
+    }
+    double beta1T(double T) const
+    {
+        if (spForm) return beta1 + (spEval31(spB1, T) - spEval31(spB1, 298.15));
+        return beta1 + dbeta1_dT * (T - 298.15);
+    }
+    double CphiT (double T) const
+    {
+        if (spForm) return Cphi + (spEval32(spCp, T) - spEval32(spCp, 298.15));
+        return Cphi  + dCphi_dT  * (T - 298.15);
+    }
 
     // I = 1/2 (nu_c z_c^2 + nu_a z_a^2) m   [mol/kg]
     double ionicStrength(double m) const

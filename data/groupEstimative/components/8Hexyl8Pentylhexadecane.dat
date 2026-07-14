@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-hexyl-8-pentylhexadecane  (C27H56, CAS 55282-29-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8Hexyl8Pentylhexadecane;
+formula     C27H56;
+CAS         55282-29-6;
+InChIKey    RZBHZICXTQDTLO-UHFFFAOYSA-N;
+MW          380.745;      // g/mol [origin=calculated method=formula-sum]
+Tc          996.74;      // K   [origin=predictive method=joback]
+Pc          6.958;      // bar [origin=predictive method=joback]
+omega       0.6381;      // -   [origin=predictive method=lee-kesler]
+Tb          814.13;      // K   [origin=predictive method=joback]
+HvapTb      74400.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-46.128 2.69468 -0.0016168 3.82e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 22; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 22; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-hexyl-8-pentyl-hexadecane" "hexadecane, 8-hexyl-8-pentyl-" );
+gibbsFormation
+{
+    dHf_298   -609360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1168.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=179300.0
+    phase     gas;
+}

@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Model species: triborate ring anion B3O3(OH)4-  (charge -1)
+
+  Identity + charge record only (no thermo block yet) -- summoned by
+  the pitzerHMW borate system; its Pitzer interaction parameters live
+  in parameters/electrolyte/pitzer/pairs/ (Na-B3O3OH4, K-B3O3OH4).
+  Species lineage: the borate speciation set of Felmy & Weare (1986),
+  "The prediction of borate mineral equilibria in natural waters:
+  application to Searles Lake, California", Geochim. Cosmochim. Acta
+  50, 2771-2783 (the Harvie-Moller-Weare Pitzer extension), as carried
+  by USGS PHREEQC pitzer.dat (public domain; databank provenance
+  Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49).
+\*---------------------------------------------------------------------------*/
+
+recordType modelSpecies;   // model species — summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+
+name    B3O3OH4;
+ion     "B3O3(OH)4-";
+charge  -1;
+

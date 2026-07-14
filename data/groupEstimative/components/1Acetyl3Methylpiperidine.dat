@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-acetyl-3-methylpiperidine  (C8H15NO, CAS 4593-16-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Acetyl3Methylpiperidine;
+formula     C8H15NO;
+CAS         4593-16-2;
+InChIKey    XKFPNHDGLSYZRC-UHFFFAOYSA-N;
+MW          141.214;      // g/mol [origin=calculated method=formula-sum]
+Tc          666.75;      // K   [origin=predictive method=joback]
+Pc          32.840;      // bar [origin=predictive method=joback]
+omega       0.4827;      // -   [origin=predictive method=lee-kesler]
+Tb          464.23;      // K   [origin=predictive method=joback]
+HvapTb      42448.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-68.2 0.99144 -0.0006327 1.5186e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(3-methylpiperidin-1-yl)ethanone" "piperidine, 1-acetyl-3-methyl-" "ethanone, 1-(3-methyl-1-piperidinyl)-" "1-acetyl-3-pipecoline" "1-(3-methyl-1-piperidinyl)-ethanone" "ethanone,1-(3-methyl-1-piperidinyl)-" );
+gibbsFormation
+{
+    dHf_298   -193020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     459.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=34890.0
+    phase     gas;
+}

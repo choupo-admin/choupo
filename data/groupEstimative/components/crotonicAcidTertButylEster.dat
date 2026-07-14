@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: crotonic acid tert-butyl ester  (C8H14O2, CAS 3246-27-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        crotonicAcidTertButylEster;
+formula     C8H14O2;
+CAS         3246-27-3;
+InChIKey    QHSPZGZEUDEIQM-UHFFFAOYSA-N;
+MW          142.198;      // g/mol [origin=calculated method=formula-sum]
+Tc          633.45;      // K   [origin=predictive method=joback]
+Pc          27.412;      // bar [origin=predictive method=joback]
+omega       0.4141;      // -   [origin=predictive method=lee-kesler]
+Tb          441.79;      // K   [origin=predictive method=joback]
+HvapTb      39471.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.63 0.85488 -0.0005724 1.462e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group C; count 1; } { group CH=CH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group C; count 1; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tert-butyl but-2-enoate" "2-butenoic acid,1,1-dimethylethyl ester" "2-butenoic acid, 1,1-dimethylethyl ester, (z)-" "2-butenoic acid,1,1-dimethylethyl ester, (2e)-" "crotonicacid, tert-butyl ester (7ci,8ci); tert-butyl 2-butenoate; tert-butyl crotonate" "2-butenoicacid, 1,1-dimethylethyl ester, (e)-; (2e)-2-butenoic acid 1,1-dimethylethylester; (e)-1,1-dimethylethyl 2-butenoate; (e)-2-butenoic acid 1,1-dimethylethylester; tert-butyl (e)-crotonate; trans-tert-butyl crotonate" );
+gibbsFormation
+{
+    dHf_298   -417260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     473.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-210830.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,4,5,6-pentafluorobenzylchloride  (C7H2ClF5, CAS 653-35-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23456Pentafluorobenzylchloride;
+formula     C7H2ClF5;
+CAS         653-35-0;
+InChIKey    ZLNVRXFZTPRLIK-UHFFFAOYSA-N;
+MW          216.533;      // g/mol [origin=calculated method=formula-sum]
+Tc          618.58;      // K   [origin=predictive method=joback]
+Pc          27.818;      // bar [origin=predictive method=joback]
+omega       0.5912;      // -   [origin=predictive method=lee-kesler]
+Tb          445.12;      // K   [origin=predictive method=joback]
+HvapTb      37062.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (77.461 0.3582 -0.0001554 1.01e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 1; } { group CH2Cl; count 1; } { group ACF; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dC_ring; count 6; } { group F; count 5; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(chloromethyl)-2,3,4,5,6-pentakis(fluoranyl)benzene" "1-(chloromethyl)-2,3,4,5,6-pentafluorobenzene" "2,3,4,5,6-pentafluorobenzyl chloride" "benzene,(chloromethyl)pentafluoro-" "benzene, (chloromethyl)pentafluoro-" "2, 3, 4, 5, 6-pentafluorobenzylchloride" ".alpha.-chloro-2,3,4,5,6-pentafluorotoluene" "1-chloromethyl-2,3,4,5,6-pentafluoro-benzene" "pentafluorobenzylchloride" "(chloromethyl)pentafluorobenzene" "2,3,4,5,6-pentafluoro benzyl chloride" "2,3,4,5,6-penta fluoro benzyl chloride" );
+gibbsFormation
+{
+    dHf_298   -1004920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     483.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-913660.0
+    phase     gas;
+}

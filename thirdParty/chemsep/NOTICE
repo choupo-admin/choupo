@@ -1,0 +1,35 @@
+ChemSep Database
+================
+
+This directory is the drop-point for the PUBLIC ChemSep Database files (and any
+files derived from them by Choupo's offline importer).
+
+Original authors / copyright:
+    Harry Kooijman and Ross Taylor
+
+License:
+    Artistic License 2.0 (a.k.a. Perl Artistic License v2).
+    FSF-listed as GPL-compatible; aggregating Artistic-2.0 DATA alongside
+    Choupo's GPL-3.0 CODE is permitted (the data keeps its own licence -- it
+    is aggregation, not a derivative of the code).
+    Factual basis: the "ChemSep pure-component database" is published
+    crediting Kooijman & Taylor under Artistic License 2.0.
+
+Source:
+    https://www.chemsep.org/  (the free ChemSep "LITE" distribution ships the
+    database files).
+
+Scope (IMPORTANT):
+    Choupo uses ONLY the public ChemSep DATABASE files (component properties +
+    binary interaction parameters).  Choupo does NOT include, link, or
+    redistribute ChemSep SIMULATOR source code.
+
+Place the canonical licence text next to this NOTICE as:
+    thirdParty/chemsep/pcd/Artistic_license_2_0.txt
+(use the copy that ships WITH the ChemSep download, or the canonical text from
+https://opensource.org/license/artistic-2-0 -- do not paraphrase a licence).
+
+Every value imported into Choupo from these files carries per-value provenance
+(origin = ChemSep, authors, licence, source file/record) and is STAGED in
+data/proposed/ for human review -- nothing is silently promoted to
+data/standards/.

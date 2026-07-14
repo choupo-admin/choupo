@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-butoxy radical  (C4H9O, CAS 19062-98-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        nButoxyRadical;
+formula     C4H9O;
+CAS         19062-98-7;
+InChIKey    QOOQLKSEGVNYLA-UHFFFAOYSA-N;
+role        radical;
+MW          73.115;      // g/mol [origin=calculated method=formula-sum]
+Tc          424.84;      // K   [origin=predictive method=joback]
+Pc          45.104;      // bar [origin=predictive method=joback]
+omega       0.3521;      // -   [origin=predictive method=lee-kesler]
+Tb          279.92;      // K   [origin=predictive method=joback]
+HvapTb      30260.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.337 0.50652 -0.0003885 1.272e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dO_oth; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-$l^{1}-oxidanylbutane" "butoxy" "butyloxy" "n-butyloxy" "s-butoxy" "butyloxidanyl" "n-c4h9o" );
+gibbsFormation
+{
+    dHf_298   -317690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     371.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-215650.0
+    phase     gas;
+}

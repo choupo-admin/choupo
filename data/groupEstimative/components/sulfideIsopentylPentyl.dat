@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sulfide, isopentyl pentyl  (C10H22S, CAS 7352-01-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sulfideIsopentylPentyl;
+formula     C10H22S;
+CAS         7352-01-4;
+InChIKey    XUNPTYBWYTYKIS-UHFFFAOYSA-N;
+MW          174.346;      // g/mol [origin=calculated method=formula-sum]
+Tc          682.61;      // K   [origin=predictive method=joback]
+Pc          21.573;      // bar [origin=predictive method=joback]
+omega       0.5322;      // -   [origin=predictive method=lee-kesler]
+Tb          496.74;      // K   [origin=predictive method=joback]
+HvapTb      44283.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.716 0.95415 -0.0004832 7.97e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 6; } { group CH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(3-methylbutylsulfanyl)pentane" "pentane, 1-[(3-methylbutyl)thio]-" "1-[(3-methylbutyl)thio]pentane" );
+gibbsFormation
+{
+    dHf_298   -213140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     597.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=64000.0
+    phase     gas;
+}

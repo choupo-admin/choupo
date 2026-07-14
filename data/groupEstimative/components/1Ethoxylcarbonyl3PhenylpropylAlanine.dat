@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-ethoxylcarbonyl-3-phenylpropyl alanine  (C15H21NO4, CAS 82717-96-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Ethoxylcarbonyl3PhenylpropylAlanine;
+formula     C15H21NO4;
+CAS         82717-96-2;
+InChIKey    CEIWXEQZZZHLDM-AAEUAGOBSA-N;
+MW          279.336;      // g/mol [origin=calculated method=formula-sum]
+Tc          1036.60;      // K   [origin=predictive method=joback]
+Pc          20.586;      // bar [origin=predictive method=joback]
+omega       1.2334;      // -   [origin=predictive method=lee-kesler]
+Tb          822.50;      // K   [origin=predictive method=joback]
+HvapTb      81491.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.217 1.43394 -0.0008564 1.732e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group CHNH; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-2-[[(2s)-1-ethoxy-1-oxidanylidene-4-phenyl-butan-2-yl]amino]propanoic acid" "(s)-2-(((s)-1-ethoxy-1-oxo-4-phenylbutan-2-yl)amino)propanoic acid" "n-[(s)-1-ethoxycarbonyl-3-phenylpropyl]-l-alanine" "n-[(s)-(+)-1-(ethoxycarbonyl)-3-phenylpropyl]-l-alanine" "(s,s)-n-(ethoxy carbonyl-3-phenylpropyl)alanine" "n-[1-(s)-ethoxycarbonyl-3-phenylpropyl]-l-alanine" "n-[(s)-1-carboxyethyl]-l-homophenylalanine ethyl ester" "n-(1-(s)-ethoxycarbonyl-3-phenylpropyl)-l-alanine" "(2s)-2-[[(2s)-1-ethoxy-1-oxo-4-phenylbutan-2-yl]amino]propanoic acid" "(2s)-2-{[(1s)-1-(ethoxycarbonyl)-3-phenylpropyl]amino}propanoic acid" "(2s)-2-{[(2s)-1-ethoxy-1-oxo-4-phenylbutan-2-yl]amino}propanoic acid" "(2s)-2-([(1s)-1-(ethoxycarbonyl)-3-phenylpropyl]amino)propanoic acid" );
+gibbsFormation
+{
+    dHf_298   -741040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     759.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-381940.0
+    phase     gas;
+}

@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  cstr03_series_selectivity  --  a CSTR with a SERIES reaction network,
+                                 A -> B -> C, solved as ONE coupled system.
+
+  The multi-reaction grammar `reactions ( a_to_b b_to_c );` names both steps
+  from constant/reactions; the reactor solves the R coupled design equations
+      xi_j = r_j(xi) V_R
+  together by the multivariate Newton.  A single-reaction CSTR cannot express
+  this at all: the intermediate B is BOTH a product and a reactant, so its
+  yield peaks in residence time and SELECTIVITY becomes the design question.
+
+  Feed: pure A at 350 K.  Try sweeping V_R (an outerDict sweep) and watch the
+  B yield rise, peak, and fall as the over-reaction B -> C takes over.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        cstr;
+        in          feed;
+        outputs     ( product );
+        operation   { V_R 5.0e-3; }         // m^3
+        reactions   ( a_to_b b_to_c );      // names from constant/reactions
+    }
+);

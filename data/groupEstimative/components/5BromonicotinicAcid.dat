@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-bromonicotinic acid  (C6H4BrNO2, CAS 20826-04-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5BromonicotinicAcid;
+formula     C6H4BrNO2;
+CAS         20826-04-4;
+InChIKey    FQIUCPGDKPXSLL-UHFFFAOYSA-N;
+MW          202.007;      // g/mol [origin=calculated method=formula-sum]
+Tc          894.14;      // K   [origin=predictive method=joback]
+Pc          57.479;      // bar [origin=predictive method=joback]
+omega       0.8374;      // -   [origin=predictive method=lee-kesler]
+Tb          633.91;      // K   [origin=predictive method=joback]
+HvapTb      61697.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.68 0.55816 -0.00042002 1.247e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C5H3N; count 1; } { group COOH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 2; } { group Br; count 1; } { group COOH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-bromanylpyridine-3-carboxylic acid" "5-bromopyridine-3-carboxylic acid" "5-bromo-3-pyridinecarboxylic acid" "5-bromo nicotinic acid" "5-bromo-nicotinic acid" "3-pyridinecarboxylic acid, 5-bromo-" "nicotinic acid, 5-bromo-" "tpc-py044" "3-bromopyridine-5-carboxylic acid" "3-bromo pyridine-5-carboxylic acid" "3-bromo-5-pyridine carboxylic acid" "5-bromo-pyridine-3-carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -233260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     393.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-150120.0
+    phase     gas;
+}

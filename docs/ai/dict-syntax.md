@@ -19,12 +19,20 @@ operation
     operatingTemperature  293.15 K;
     volume                  5.0 m3;
 }
+```
 
-streams
+This is a generic dictionary block, not a complete case.  In a case,
+`system/flowsheetDict` contains topology and unit operations only.  Material
+states are separate files under `0/`; for example `0/feed`:
+
+```
+componentMolarFlows
 {
-    feed { F 100 kmol/h;  T 353.15 K;  P 1 bar;
-           molarComposition { water 0.85; sucrose 0.15; } }
+    water      85 kmol/h;
+    sucrose    15 kmol/h;
 }
+T    353.15 K;
+P    1 bar;
 ```
 
 ## Four primitive constructs
@@ -290,6 +298,14 @@ variables.A                          # a top-level $variable
 streams.feed.F                       # a feed flow
 ```
 
+A reaction sub-dict carries its `kinetics { … }` (Arrhenius); the **heat of
+reaction is computed from the species' `gibbsFormation`** (the one enthalpy base),
+not from the dict.  An optional `dH_rxn <J/mol>;` (negative = exothermic) is an
+**announced override**, honoured only when a reacting species lacks
+`gibbsFormation` (toy / lumped components); the steady reactors ignore it and
+cross-check it against the formation value when both are present (see
+`energy.md`).
+
 This is the language `Dictionary::setScalarAtPath(path, v)` reads.
 End-users don't write this in dict files; outer drivers do, on their
 behalf.
@@ -314,6 +330,50 @@ ordering:
 
 `name` and `type` are mandatory; the rest depend on the unit.  See
 `unit-ops.md` for per-op required fields.
+
+## How `inputs` and `outputs` map to streams — the ONE rule that bites
+
+Inputs and outputs are identified by **two DIFFERENT mechanisms**.  This is the
+single most common source of "why is my product mislabelled?" — learn it once.
+
+* **Inputs — by NAME.**  `in feed;` or `inputs ( hot cold );` name the streams the
+  unit CONSUMES.  Which physical role each plays is either the unit's own
+  convention (a `heatExchanger` reads `tubeStream` to say which named inlet is in
+  the tubes; a `distillationColumn` reads a `feeds ( { stream feed1; stage 10; }
+  ... )` block to place each named feed at a stage) or, for a two-inlet unit with a
+  symmetric role, positional.  The point: an input is wired by the name you gave it.
+
+* **Outputs — by POSITION.**  `outputs ( a b c )` does NOT match by name.  Every
+  unit produces its streams in a **FIXED internal order** (its `producedStreams()`),
+  and `outputs[k]` simply **RENAMES** `producedStreams()[k]` to your label.  The
+  engine does literally this:
+
+  ```cpp
+  for (k = 0; k < outputs.size(); ++k) { s = produced[k]; s.name = outputs[k]; }
+  ```
+
+  So the ORDER of your `outputs` list must match the unit's emission order:
+
+  | unit | `producedStreams()` order |
+  |---|---|
+  | `isothermalFlash` / `flash` | `vapor`, `liquid` |
+  | `isothermalFlash` in LL mode (the decanter) | `liquid_alpha`, `liquid_beta` |
+  | `extractor` | `extract`, `raffinate` |
+  | `crystalliser` | `crystals`, `motherLiquor` |
+  | `cyclone` | `overflow` (gas), `underflow` (solids) |
+  | `distillationColumn` | `distillate`, `bottoms`, then side draws by **ascending stage** |
+
+  Example — a 4-way column `outputs ( distillate bottoms drawC4 drawC5 )` with
+  side draws declared at stage 13 then 23: `drawC4` (position 2) binds to the
+  stage-13 draw, `drawC5` (position 3) to the stage-23 draw.  Swap the two names
+  and the labels stick to the WRONG physical stream — **the engine does not warn**
+  (the counts still match).  The only guard is arity: declaring MORE names than the
+  unit produces is a loud error (`produced N streams but M names declared`); you may
+  declare FEWER (a trailing product you don't wire is dropped).
+
+Rule of thumb: to know a unit's output order, read its `producedStreams()` in the
+source (glass-box) or the per-op entry in `unit-ops.md`.  Never assume the name you
+wrote selects the stream — position does.
 
 ## `heatExchanger` model slot: `epsNTU` (default) vs `geometry`
 
@@ -481,6 +541,39 @@ Transfer*, Ch. 10 (Table 10.1 `C_sf`, the nucleate worked example, the CHF
 anchor). Tutorial: `steady/heat/reboiler_water_copper`. **Not in v1:** film
 boiling (Bromley), flow boiling (Chen), any `C_sf` default or catalogue.
 
+## The `propertyPackage` record grammar (the MANIFEST form of constant/propertyDict)
+
+The modern alternative to the flat `thermoPackage` is a typed RECORD.  The
+file either IS the full manifest (it has `components (…)` — the inline,
+self-contained form, standard for tutorials) or is a one-line selector
+(`package <name>;` + a REQUIRED explanatory header) naming a record in
+`data/standards/propertyPackages/`.  The record keys:
+
+```
+recordType     propertyPackage;              // typed record marker
+schemaVersion  1;
+name           flash08_co2Water;
+components     ( water CO2 );                // inline form only — its presence
+                                             //   makes the file the manifest
+propertyMethods
+{
+    liquid  solution.henryDilute;   // the VLE world: activity.<Model> |
+    vapour  builtin.idealGas;       //   solution.henryDilute | eos.<Model>
+                                    //   (same cubic BOTH phases = phi-phi) |
+                                    //   electrolyte.pitzer | electrolyte.eNRTL
+    // transport <method>;          // optional transport slot
+}
+solution   { solvent water;  solutes ( CO2 ); }   // henryDilute world only
+parameters                                        // DECLARED files, verified
+{                                                 //   at assembly (refuse if
+    henryPairs { CO2-water "data/standards/henrysLaw/CO2-water.dat"; }
+    kijPairs   { N2-CH4    "data/standards/parameters/eos/kij/N2-CH4.dat"; }
+}
+```
+
+Semantics, worked examples and the four-VLE-worlds table:
+[`thermo.md`](thermo.md) → "propertyPackage — the declarative manifest".
+
 ## Per-unit `thermo {}` override
 
 A unit may carry an optional `thermo {... }` block that REPLACES the
@@ -502,6 +595,12 @@ model-dependent readout — the solver never silently nudges `T` to paper over
 the step.  Default is ONE consistent global model; the override is a
 deliberate advanced act.  See [`energy.md`](energy.md) §7 (model boundaries).
 
+Per-UNIT thermo is the fifth legal axis of the ratified heterogeneous-thermo
+grammar — models per PHASE, conventions per GROUP, correlations per
+COMPONENT, parameters per PAIR, **packages per UNIT** — and the model
+boundary it creates is auditable (the opt-in model-boundary AUDIT prints
+`ΔH = H_down − H_up` at fixed (T,P,z) into the first-law ledger).
+
 ## State keyword on a source stream
 
 A feed stream may carry `state saturatedVapour;` (or `saturatedLiquid`
@@ -514,6 +613,21 @@ composition is fixed by exactly two variables (Duhem's theorem): give `(T, P, z)
 and the phase (vf) is determined — you read it off, you don't type it.  Declaring
 `T`, `P` AND `vf` together is over-specification (three numbers on a two-variable
 state).  Prefer declaring only `(T, P, z)`.
+
+**When you DO pin the phase** (the two legitimate cases — never a decorative
+`vaporFraction 1`):
+
+* `vaporFraction 0.25;` — a **two-phase split** on the saturation manifold, where
+  `T` and `P` are *not* independent so the split is a genuine free variable.
+* `phase gas;` (or `phase liquid;`) — a **phase-intent boundary**: "this feed enters
+  as a gas".  Needed when the cheap screen cannot recover the phase — Choupo marks a
+  stream a permanent gas only when `T` exceeds *every* present component's critical
+  temperature `Tc` (Vítor's rule: you can only speak of *vapour* below `Tc`).  A gas
+  mixture holding a sub-critical species — steam in a water-gas-shift feed, `T` below
+  water's `Tc` — is all-vapour but the screen can't prove it, so you say `phase gas;`.
+
+The reader stores only these pins; the *permanent-gas* case (hot air, combustion gas)
+carries **nothing** — the engine's `Tc` screen recovers `vf = 1` on its own.
 
 `vf <0..1>;` and `state <...>;` remain available as a **deliberate override** —
 to assert a metastable / kinetically-frozen inlet, or to pin a phase a parser
@@ -615,11 +729,15 @@ recycle
   PHYSICAL value and WARNs if it lies outside the cage ("the bound excludes
   the physical solution") — it never fakes the answer.
 
-**Auto-initialisation.**  If a tear named in `tearStreams` has NO `streams {}`
-block, the solver seeds it from the **feed aggregate** (a physical guess
-derived from the actual feeds, not a magic constant) and says so:
-`[init] tear 'recycle': no guess supplied -- seeded from the feed aggregate
-(F=…, T=…).  An explicit guess … will converge faster.`
+**Tear seeds are authored `0/` files; `solverDict tearStreams` only NAMES
+them.**  The split of responsibilities: `tearStreams ( recycle );` in
+`solverDict` declares WHICH streams are torn (a numerical-strategy choice),
+while the seed VALUES live in the stream's own `0/<stream>` file like every
+other stream state.  A tear named in `tearStreams` MUST have its `0/` file
+(completeness is fatal before the solve), and `bin/choupo-init0` refuses to
+invent one — the seed is the author's.  (The old `streams {}` reader, which
+could auto-seed a missing tear from the feed aggregate, was REMOVED in the
+`0/` migration; there is no auto-seed path any more.)
 
 **Equipment ratings.**  A `spiralWoundModule` (membrane) WARNs if the feed
 P/T exceeds the element's catalogue `P_max`/`T_max`; vessel sizing WARNs (no

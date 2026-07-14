@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1'-biphenyl,pentachloro-  (C12H7Cl5, CAS 25429-29-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11BiphenylPentachloro;
+formula     C12H7Cl5;
+CAS         25429-29-2;
+InChIKey    MLOZCUCAJWIPOQ-UHFFFAOYSA-N;
+MW          328.438;      // g/mol [origin=calculated method=formula-sum]
+Tc          991.61;      // K   [origin=predictive method=joback]
+Pc          25.508;      // bar [origin=predictive method=joback]
+omega       0.5726;      // -   [origin=predictive method=lee-kesler]
+Tb          716.37;      // K   [origin=predictive method=joback]
+HvapTb      68046.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.67 1.1959 -0.00109384 4.152e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CHCl; count 1; } { group Cl_C=C_; count 3; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:1
+    joback ( { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group Cl; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,5,6-pentakis(chloranyl)-5-phenyl-cyclohexa-1,3-diene" "1,2,3,4,5-pentachlorobibenzene" "biphenyl,pentachloro- (6ci,7ci,8ci); apirolio 1476c; dp 5; diphenyl pentachloride;kanekrol 500; pentachlorobiphenyl; pentachlorodiphenyl; pyralene 1476; pyroclor5" );
+gibbsFormation
+{
+    dHf_298   -2810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     587.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=145200.0
+    phase     gas;
+}

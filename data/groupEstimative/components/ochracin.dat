@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ochracin  (C10H10O3, CAS 17397-85-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ochracin;
+formula     C10H10O3;
+CAS         17397-85-2;
+InChIKey    KWILGNNWGSNMPA-UHFFFAOYSA-N;
+MW          178.187;      // g/mol [origin=calculated method=formula-sum]
+Tc          832.00;      // K   [origin=predictive method=joback]
+Pc          38.916;      // bar [origin=predictive method=joback]
+omega       0.7852;      // -   [origin=predictive method=lee-kesler]
+Tb          601.37;      // K   [origin=predictive method=joback]
+HvapTb      60954.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-54.44 1.07572 -0.00091272 3.136e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group ACOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methyl-8-oxidanyl-3,4-dihydroisochromen-1-one" "mellein" "antibiotic ao-2" "antibiotic bv-1" "isocoumarin, 3,4-dihydro-8-hydroxy-3-methyl-" "3,4-dihydro-8-hydroxy-3-methylisocoumarin" "ao-2" "bv-1" "1h-2-benzopyran-1-one, 3,4-dihydro-8-hydroxy-3-methyl-" "8-hydroxy-3-methyl-3,4-dihydro-1h-isochromen-1-one" "3,4-dihydro-8-hydroxy-3-methyl-1h-2-benzopyran-1-one" "(3r)-8-hydroxy-3-methyl-isochroman-1-one" );
+gibbsFormation
+{
+    dHf_298   -440300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     400.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-256040.0
+    phase     gas;
+}

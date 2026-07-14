@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentaerythritol tetrabenzoate  (C33H28O8, CAS 4196-86-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentaerythritolTetrabenzoate;
+formula     C33H28O8;
+CAS         4196-86-5;
+InChIKey    MINJAOUGXYRTEI-UHFFFAOYSA-N;
+MW          552.579;      // g/mol [origin=calculated method=formula-sum]
+Tc          1580.91;      // K   [origin=predictive method=joback]
+Pc          10.943;      // bar [origin=predictive method=joback]
+omega       1.0477;      // -   [origin=predictive method=lee-kesler]
+Tb          1291.01;      // K   [origin=predictive method=joback]
+HvapTb      126488.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-85.566 2.7298 -0.0016896 3.27e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group C; count 1; } { group ACH; count 20; } { group AC; count 4; } { group COO; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group C; count 1; } { group dCH_ring; count 20; } { group dC_ring; count 4; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[3-(phenylcarbonyloxy)-2,2-bis(phenylcarbonyloxymethyl)propyl] benzoate" "2,2-bis((benzoyloxy)methyl)-1,3-propanediol dibenzoate" "propanediol (2,2-bis (benzoyloxy)methyl)-dibenzoate" "3-(benzoyloxy)-2,2-bis[(benzoyloxy)methyl]propyl benzoate" "1,3-propanediol, 2,2-bis((benzoyloxy)methyl)-, dibenzoate" "benzoic acid, tetraester with pentaerythritol" "2,2-bis((benzoyloxy)methyl)dibenzoate propanediol" "2,2-bis[(benzoyloxy)methyl]dibenzoate propanediol" "1,3-propanediol, 2,2-bis[(benzoyloxy)methyl]-, dibenzoate" "1,3-propanediol, 2,2-bis((benzoyloxy)methyl)-, 1,3-dibenzoate" "1,3-propanediol, 2,2-bis[(benzoyloxy)methyl]-, 1,3-dibenzoate" "3-[(phenylcarbonyl)oxy]-2,2-bis{[(phenylcarbonyl)oxy]methyl}propyl benzoate" );
+gibbsFormation
+{
+    dHf_298   -1056200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1182.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-562020.0
+    phase     gas;
+}

@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 10-methyl-1,4,7-trioxa-10-azacyclododecane  (C9H19NO3, CAS 69978-45-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        10Methyl147Trioxa10Azacyclododecane;
+formula     C9H19NO3;
+CAS         69978-45-6;
+InChIKey    CRKQPRYMKJWTCX-UHFFFAOYSA-N;
+MW          189.255;      // g/mol [origin=calculated method=formula-sum]
+Tc          777.94;      // K   [origin=predictive method=joback]
+Pc          32.728;      // bar [origin=predictive method=joback]
+omega       0.5075;      // -   [origin=predictive method=lee-kesler]
+Tb          544.38;      // K   [origin=predictive method=joback]
+HvapTb      52799.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-61.17 1.07432 -0.0004411 -4.5e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group FCH2O; count 3; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 8; } { group O_ring; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -513700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     480.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-151020.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trifluoroacetamide  (C2H2F3NO, CAS 354-38-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trifluoroacetamide;
+formula     C2H2F3NO;
+CAS         354-38-1;
+InChIKey    NRKYWOKHZRQRJR-UHFFFAOYSA-N;
+MW          113.038;      // g/mol [origin=calculated method=formula-sum]
+Tc          544.94;      // K   [origin=predictive method=joback]
+Pc          50.586;      // bar [origin=predictive method=joback]
+omega       0.4812;      // -   [origin=predictive method=lee-kesler]
+Tb          366.34;      // K   [origin=predictive method=joback]
+HvapTb      33686.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.72 0.3889 -0.0003307 1.0326e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CF3; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group F; count 3; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,2-tris(fluoranyl)ethanamide" "2,2,2-trifluoroacetamide" "acetamide, 2,2,2-trifluoro-" "2,2,2-trifluoro-acetamide" "n-trifluoroacetamide" "snylgqhjptadtaetp@" "2,2-trifluoroacetamide" "i135" );
+gibbsFormation
+{
+    dHf_298   -760480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     368.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-678100.0
+    phase     gas;
+}

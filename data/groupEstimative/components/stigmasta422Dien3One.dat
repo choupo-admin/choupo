@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: stigmasta-4,22-dien-3-one  (C29H46O, CAS 20817-72-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        stigmasta422Dien3One;
+formula     C29H46O;
+CAS         20817-72-5;
+InChIKey    MKGZDUKUQPPHFM-UHFFFAOYSA-N;
+MW          410.686;      // g/mol [origin=calculated method=formula-sum]
+Tc          1216.58;      // K   [origin=predictive method=joback]
+Pc          9.760;      // bar [origin=predictive method=joback]
+omega       0.7706;      // -   [origin=predictive method=lee-kesler]
+Tb          977.37;      // K   [origin=predictive method=joback]
+HvapTb      81735.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-298.869 3.59922 -0.00292664 1.0334e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 8; } { group CH; count 7; } { group C; count 2; } { group CH=CH; count 1; } { group CH=C; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 1; } { group CH; count 3; } { group dCH; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "17-(5-ethyl-6-methyl-hept-3-en-2-yl)-10,13-dimethyl-1,2,6,7,8,9,11,12,14,15,16,17-dodecahydrocyclopenta[a]phenanthren-3-one" "4,22-cholestadien-24-ethyl-3-one" "(10s,13s)-17-[(e)-5-ethyl-6-methylhept-3-en-2-yl]-10,13-dimethyl-1,2,6,7,8,9,11,12,14,15,16,17-dodecahydrocyclopenta[a]phenanthren-3-one" "17-(5-ethyl-6-methylhept-3-en-2-yl)-10,13-dimethyl-1,2,6,7,8,9,11,12,14,15,16,17-dodecahydrocyclopenta[a]phenanthren-3-one" );
+gibbsFormation
+{
+    dHf_298   -381700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     921.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=320040.0
+    phase     gas;
+}

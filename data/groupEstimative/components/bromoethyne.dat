@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bromoethyne  (C2HBr, CAS 593-61-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bromoethyne;
+formula     C2HBr;
+CAS         593-61-3;
+InChIKey    RUEKPBLTWGFBOD-UHFFFAOYSA-N;
+MW          104.934;      // g/mol [origin=calculated method=formula-sum]
+Tc          501.86;      // K   [origin=predictive method=joback]
+Pc          70.262;      // bar [origin=predictive method=joback]
+omega       0.1731;      // -   [origin=predictive method=lee-kesler]
+Tb          301.64;      // K   [origin=predictive method=joback]
+HvapTb      26339.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.04 0.1381 -0.00015233 6.509e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group Br; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tCH; count 1; } { group tC; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bromanylethyne" "2-bromoethenyl" "hc.equiv.cbr" "bromoacetylene" "ethyne, bromo-" "acetylene, bromo-" "ethyne, bromo- (9ci)" "acetylene,bromo- (6ci,7ci,8ci); 1-bromoethyne; bromoacetylene; bromoethyne; ethinylbromide; ethynyl bromide" );
+gibbsFormation
+{
+    dHf_298   233620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     254.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=203350.0
+    phase     gas;
+}

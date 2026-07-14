@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: mcpb methyl ester  (C12H15ClO3, CAS 57153-18-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        mcpbMethylEster;
+formula     C12H15ClO3;
+CAS         57153-18-1;
+InChIKey    FWDQLSHRVKQKBS-UHFFFAOYSA-N;
+MW          242.699;      // g/mol [origin=calculated method=formula-sum]
+Tc          836.34;      // K   [origin=predictive method=joback]
+Pc          22.292;      // bar [origin=predictive method=joback]
+omega       0.7736;      // -   [origin=predictive method=lee-kesler]
+Tb          628.87;      // K   [origin=predictive method=joback]
+HvapTb      60108.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (50.473 0.83474 -0.00034092 4.4e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH3; count 1; } { group CH2COO; count 1; } { group CH2O; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 4-(4-chloranyl-2-methyl-phenoxy)butanoate" "mcpb-methyl ester" "butanoic acid, 4-(2-methyl-4-chlorophenoxy)-, methyl ester" "mcpb-methyl" "mcpb-methyl [iso]" "methyl 4-(4-chloro-2-methylphenoxy)butyrate" "methyl 4-(4-chloro-2-methylphenoxy)butanoate" "butanoic acid, 4-(2-methyl-4-chlorophenoxy)-, methyl ester;methyl 4-(4-chloro-2-methylphenoxy)butanoate;mcpb methyl ester;4-(4-chloro-o-tolyloxy) butryric acid methylester;4-(4-chloro-o-tolyloxy)-butyric acid methylester;4-(4-chloro-2-methylphenoxy)-butyric acid, methyl ester;mcpb methyl ester, 500mg, neat;mcpb-methyl ester pestanal(methyl 4-(4-&" );
+gibbsFormation
+{
+    dHf_298   -542660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     600.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-283990.0
+    phase     gas;
+}

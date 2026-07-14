@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-phenylbenz(a)anthracene  (C24H16, CAS 19383-97-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8PhenylbenzAAnthracene;
+formula     C24H16;
+CAS         19383-97-2;
+InChIKey    GOBMRHJVTGESIC-UHFFFAOYSA-N;
+MW          304.392;      // g/mol [origin=calculated method=formula-sum]
+Tc          1148.91;      // K   [origin=predictive method=joback]
+Pc          21.236;      // bar [origin=predictive method=joback]
+omega       0.8370;      // -   [origin=predictive method=lee-kesler]
+Tb          873.96;      // K   [origin=predictive method=joback]
+HvapTb      80476.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-138.17 1.9364 -0.00155324 4.94e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 16; } { group AC; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 16; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-phenylbenzo[a]anthracene" "5-phenyl-1:2-benzanthracene" "benz(a)anthracene, 8-phenyl-" );
+gibbsFormation
+{
+    dHf_298   473170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     532.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=667080.0
+    phase     gas;
+}

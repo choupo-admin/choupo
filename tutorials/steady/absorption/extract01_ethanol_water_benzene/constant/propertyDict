@@ -1,0 +1,42 @@
+/*---------------------------------------------------------------------------*\
+  thermoPackage  --  water / ethanol / benzene ternary with predictive UNIFAC.
+
+  The two liquid phases (raffinate-side and extract-side) share the SAME
+  UNIFAC group model; the LL split is driven by the curvature of the
+  activity coefficients across the miscibility gap, NOT by different
+  parameters per phase.  Ethanol is the distributing solute: partly
+  miscible water + benzene each carry some ethanol, with the heavier
+  partition into the benzene-rich (extract) phase under the right
+  composition.
+
+  UNIFAC is PREDICTIVE (group-contribution): no fitted binary pairs are
+  needed, so this case is fully self-contained.  Same model as the LLE
+  ternary scan tutorial (props/scan/ternary03_lle_water_ethanol_benzene).
+\*---------------------------------------------------------------------------*/
+
+components ( water ethanol benzene );
+
+phases
+(
+    {
+        name      raffinate;        // water-rich liquid phase
+        type      liquid;
+        activity
+        {
+            model   UNIFAC;
+            // groups: resolved from each component's own data (`groups { unifac (...) }` in the .dat) -- ONE home
+
+        }
+    }
+
+    {
+        name      extract;          // benzene-rich liquid phase
+        type      liquid;
+        activity
+        {
+            model   UNIFAC;
+            // groups: resolved from each component's own data (`groups { unifac (...) }` in the .dat) -- ONE home
+
+        }
+    }
+);

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl perfluorodecanoate  (C11H3F19O2, CAS 307-79-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylPerfluorodecanoate;
+formula     C11H3F19O2;
+CAS         307-79-9;
+InChIKey    QJFHNYDPNSFJMR-UHFFFAOYSA-N;
+MW          528.105;      // g/mol [origin=calculated method=formula-sum]
+Tc          587.18;      // K   [origin=predictive method=joback]
+Pc          11.468;      // bar [origin=predictive method=joback]
+omega       0.7943;      // -   [origin=predictive method=lee-kesler]
+Tb          466.56;      // K   [origin=predictive method=joback]
+HvapTb      20300.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-86.23 2.35042 -0.0023378 8.161e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CF3; count 1; } { group CF2; count 8; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 9; } { group F; count 19; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecakis(fluoranyl)decanoate" "methyl nonadecafluorodecanoate" "methyl 2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecafluorodecanoate" "perfluorodecanoic acid methyl ester" "nonadecafluorodecanoic acid methyl ester" "decanoicacid, nonadecafluoro-, methyl ester (8ci,9ci)" "nonadecafluorodecanoic acid methyl ester; perfluorodecanoic acid methyl ester" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecafluorodecanoic acid methyl ester" "decanoic acid,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-nonadecafluoro-, methyl ester" );
+gibbsFormation
+{
+    dHf_298   -4392490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     888.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3944460.0
+    phase     gas;
+}

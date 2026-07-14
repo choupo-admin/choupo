@@ -1,0 +1,29 @@
+/*---------------------------------------------------------------------------*\
+  pfr03_series_selectivity  --  the SAME series network A -> B -> C as
+                                cstr03, now in a PFR.  Compare them.
+
+  Multi-reaction grammar `reactions ( a_to_b b_to_c );`; the PFR marches
+      dF_i/dV = SUM_j nu_ij r_j(F)
+  by RK4 -- an IVP, no Newton.  At the SAME residence time (tau = 225 s):
+
+      species        CSTR      PFR
+      compA (feed)   40.8 %    14.1 %
+      compB (want)   52.8 %    79.2 %      <-- the point
+      compC (over)    6.4 %     6.8 %
+
+  The PFR converts far more A AND keeps far more of the intermediate B: with no
+  back-mixing, the freshly made B is not held in a vessel at low A concentration
+  where the over-reaction B -> C dominates.  For positive-order kinetics the PFR
+  beats the CSTR -- the classic result a single-reaction reactor cannot show.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        reactor;
+        type        pfr;
+        in          feed;
+        outputs     ( product );
+        operation   { V_R 5.0e-3; nSteps 200; }   // m^3
+        reactions   ( a_to_b b_to_c );      // names from constant/reactions
+    }
+);

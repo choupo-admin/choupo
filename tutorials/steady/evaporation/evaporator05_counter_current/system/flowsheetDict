@@ -71,48 +71,8 @@ variables
     F_steam    80.0   kmol/h;   // initial guess close to expected
 }
 
-streams
-{
-    feed
-    {
-        T            294.0 K;
-        P            200.0 kPa;
-        massFlows
-        {
-            agua     1.125  kg/s;
-            solidos  0.125  kg/s;
-        }
-    }
-
-    liveSteam
-    {
-        F                $F_steam;
-        P                170.0  kPa;
-        state            saturatedVapour;       // -> T = T_sat(170 kPa) ~ 388 K
-        molarComposition  { agua 1.0; }
-        category         LP_steam_170kPa;
-    }
-
-    // -------------------------- TEAR STREAMS --------------------------
-    //  V_1: produced by effect 1, consumed by effect 2's chest.
-    //  V_2: produced by effect 2, consumed by effect 3's chest.
-    //  Initial guesses below; Wegstein refines them.
-    V1
-    {
-        F                0.017 kmol/s;          // ~ 61 kmol/h (1/3 of total V)
-        T                375.0 K;
-        P                100.0 kPa;
-        molarComposition  { agua 1.0; }
-    }
-
-    V2
-    {
-        F                0.017 kmol/s;
-        T                355.0 K;
-        P                 50.0 kPa;
-        molarComposition  { agua 1.0; }
-    }
-}
+// Stream STATE lives in 0/ (bin/choupo-init0); the designSpec knob is the
+// streams.<inlet>.F channel target declared in outerDict (forum #53).
 
 tearStreams            ( V1 V2 );
 recycleSolver          Wegstein;   // this case is tuned for damped Wegstein

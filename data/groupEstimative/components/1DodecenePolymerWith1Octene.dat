@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-dodecene, polymer with 1-octene  (C20H40, CAS 111256-18-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1DodecenePolymerWith1Octene;
+formula     C20H40;
+CAS         111256-18-9;
+InChIKey    UWLFCAUZOBRWNV-UHFFFAOYSA-N;
+MW          280.54;      // g/mol [origin=calculated method=formula-sum]
+Tc          818.18;      // K   [origin=predictive method=joback]
+Pc          10.129;      // bar [origin=predictive method=joback]
+omega       0.7234;      // -   [origin=predictive method=lee-kesler]
+Tb          651.96;      // K   [origin=predictive method=joback]
+HvapTb      59068.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.544 1.65764 -0.0006952 4.44e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 14; } { group CH2=CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 14; } { group dCH2; count 2; } { group dCH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodec-1-ene;oct-1-ene" );
+gibbsFormation
+{
+    dHf_298   -316890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1033.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=188440.0
+    phase     gas;
+}

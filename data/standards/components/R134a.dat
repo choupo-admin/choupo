@@ -53,7 +53,7 @@ sublimation
 
 gibbsFormation
 {
-    dHf_298   -877800;      // J/mol  ideal-gas [origin=estimated method=Joback uncertainty=~9kJ/mol]
+    dHf_298   -877800;      // J/mol ideal-gas -- provenance: see the structured dHf_298 block below
     dGf_298   -810440;      // J/mol  ideal-gas [Joback]
     s_298     321.833;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S; ~25 J/mol/K; biased ~R*ln(sigma) for symmetric species]
     phase     gas;
@@ -63,6 +63,16 @@ groups { joback ( { group CH2; count 1; } { group C; count 1; } { group F; count
 
 provenance
 {
+    dHf_298
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "C:1,CH2:1,F:4";
+        uncertainty      { status unquantified; reason "bulk-import band ~9 kJ/mol, primary basis not verified"; }
+    }
+
     constants      "CoolProp 7.2.0 -- TillnerRoth-JPCRD-1994";
     vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.52%";
     idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 0.47%";

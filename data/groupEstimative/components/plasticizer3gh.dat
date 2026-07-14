@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: plasticizer 3gh  (C18H34O6, CAS 95-08-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        plasticizer3gh;
+formula     C18H34O6;
+CAS         95-08-9;
+InChIKey    JEYLQCXBYFQJRO-UHFFFAOYSA-N;
+MW          346.464;      // g/mol [origin=calculated method=formula-sum]
+Tc          951.41;      // K   [origin=predictive method=joback]
+Pc          11.460;      // bar [origin=predictive method=joback]
+omega       1.0109;      // -   [origin=predictive method=lee-kesler]
+Tb          771.84;      // K   [origin=predictive method=joback]
+HvapTb      74520.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (84.98 1.48968 -0.0005506 -2.18e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 8; } { group CH; count 2; } { group CH2O; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 10; } { group CH; count 2; } { group O; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-(2-ethylbutanoyloxy)ethoxy]ethoxy]ethyl 2-ethylbutanoate" "triglycol dihexoate" "triglycol dicaproate" "flexol plasticizer 3gh" "triethylene glycol bis(2-ethylbutyrate)" "triethyleneglycol diethyl butyrate" "triethylene glycol di-2-ethylbutyrate" "butanoic acid, 2-ethyl-, 1,2-ethanediylbis(oxy-2,1-ethanediyl) ester" "triethylene glycol di(2-ethyl butyrate)" "triethylene glycol bis(2-ethyl butyrate)" "butyric acid, 2-ethyl-, diester with triethylene glycol" "triglycol di-(2-ethylbutyrate)" );
+gibbsFormation
+{
+    dHf_298   -1324410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     963.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-734940.0
+    phase     gas;
+}

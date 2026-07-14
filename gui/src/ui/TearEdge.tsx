@@ -47,11 +47,25 @@ License
   "this goes BACK" because no forward edge ever traces such a path.
 \*---------------------------------------------------------------------------*/
 
-import { BaseEdge, EdgeLabelRenderer, type EdgeProps } from "@xyflow/react";
+import { BaseEdge, EdgeLabelRenderer, useReactFlow, type EdgeProps } from "@xyflow/react";
+import { useRef, useState } from "react";
 
+import type { XY } from "../state/layout.js";
 import { ModelBoundaryBadge, type BoundaryBadgeData } from "./ModelBoundaryBadge.js";
 
+interface TearData {
+  center?: XY;
+  onCenterChange?: (id: string, xy: XY) => void;
+  onCommit?: () => void;
+  onReset?: (id: string) => void;
+  boundary?: BoundaryBadgeData;
+  showNumbers?: boolean;
+  num?: number;
+  [k: string]: unknown;
+}
+
 export function TearEdge({
+  id,
   sourceX, sourceY,
   targetX, targetY,
   style,
@@ -63,7 +77,11 @@ export function TearEdge({
   labelBgBorderRadius,
   data,
 }: EdgeProps) {
-  const boundary = (data as { boundary?: BoundaryBadgeData } | undefined)?.boundary;
+  const td = (data ?? {}) as TearData;
+  const boundary = td.boundary;
+  const { screenToFlowPosition } = useReactFlow();
+  const dragging = useRef(false);
+  const [hover, setHover] = useState(false);
   // U-turn DOWNWARD (below the row).  The drop and outset are tuned for
   // typical unit-node heights (~80 px) + node-to-node horizontal gap
   // (~120-220 px); the offsets keep the bus clear of the row regardless.
@@ -76,7 +94,14 @@ export function TearEdge({
   // The sign of `outset` flips so each side juts AWAY from its node.
   const sX = sourceX + outset;
   const tX = targetX - outset;
-  const busY = Math.max(sourceY, targetY) + drop;
+  // The underbus depth is draggable: a stored center.y overrides the default
+  // drop (persisted per case, same mechanism as a forward edge's bend).  Clamp
+  // so the bus can never rise ABOVE the row (it must stay a U-turn).
+  const defaultBusY = Math.max(sourceY, targetY) + drop;
+  // A dragged center.y positions the underbus directly (no clamp -- the earlier
+  // clamp pinned it near the row and read as "the center will not move").
+  const busY = td.center?.y ?? defaultBusY;
+  const moved = td.center !== undefined;
 
   // Build the SVG path with rounded corners at each turn.  Standard
   // SVG `Q` (quadratic Bezier) for the corners; the radius is small so
@@ -96,10 +121,84 @@ export function TearEdge({
 
   const labelX = (sX + tX) / 2;
   const labelY = busY;
+  // Lift the name chip ABOVE the underbus so the thick dashed recycle stroke can
+  // never run through the text (the model-boundary badge stays just below the bus,
+  // so name and badge sit on opposite sides of the line, both legible).
+  const labelTextY = busY - 15;
+
+  const strokeColor =
+    (style as { stroke?: string } | undefined)?.stroke ?? "var(--mantine-color-red-5)";
+
+  // Drag the handle on the underbus to raise / lower the whole recycle U-turn
+  // (only the depth moves; the connections stay fixed).  Persisted per case via
+  // the same center store a forward edge's bend uses.
+  const onPointerDown = (e: React.PointerEvent) => {
+    e.stopPropagation();
+    (e.target as Element).setPointerCapture(e.pointerId);
+    dragging.current = true;
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragging.current) return;
+    const p = screenToFlowPosition({ x: e.clientX, y: e.clientY });
+    td.onCenterChange?.(id, { x: labelX, y: p.y });   // only the bus depth (y) matters
+  };
+  const onPointerUp = (e: React.PointerEvent) => {
+    if (!dragging.current) return;
+    dragging.current = false;
+    (e.target as Element).releasePointerCapture(e.pointerId);
+    td.onCommit?.();
+  };
+  const onDoubleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    td.onReset?.(id);
+    td.onCommit?.();
+  };
+
+
+  // A DIV in EdgeLabelRenderer (a portal OUTSIDE React Flow's edge SVG -- the same
+  // trick the forward-edge handle uses, which is why THAT drags and an in-SVG path
+  // does not) spanning the FULL horizontal underbus, so the recycle line can be
+  // grabbed anywhere along it -- not only at the midpoint, which sits off-screen
+  // when a node is far to the side.
+  const busSpan = Math.max(48, Math.abs(tX - sX));
 
   return (
     <>
       <BaseEdge path={d} markerEnd={markerEnd} style={style} />
+      {/* Wide grab strip along the underbus + a visible move-point dot. */}
+      <EdgeLabelRenderer>
+        <div
+          className="nodrag nopan"
+          onPointerEnter={() => setHover(true)}
+          onPointerLeave={() => setHover(false)}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onClick={(e) => e.stopPropagation()}
+          onDoubleClick={onDoubleClick}
+          title="Drag to raise / lower this recycle line; double-click to reset"
+          style={{
+            position: "absolute",
+            transform: `translate(-50%, -50%) translate(${labelX}px, ${busY}px)`,
+            pointerEvents: "all",
+            width: busSpan, height: 18,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            cursor: "ns-resize",
+          }}
+        >
+          <div
+            style={{
+              width: hover ? 12 : 9,
+              height: hover ? 12 : 9,
+              borderRadius: "50%",
+              border: `2px solid ${strokeColor}`,
+              background: moved ? strokeColor : "light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))",
+              opacity: moved || hover ? 1 : 0.55,
+              transition: "opacity 120ms ease, width 120ms ease, height 120ms ease",
+            }}
+          />
+        </div>
+      </EdgeLabelRenderer>
       {/* Model-boundary audit chip, docked below the label on the underbus
           (badge only -- the stroke keeps its semantic phase colour). */}
       {boundary && (
@@ -110,7 +209,7 @@ export function TearEdge({
           <div
             style={{
               position: "absolute",
-              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelTextY}px)`,
               pointerEvents: "none",
               padding: labelBgPadding
                 ? `${labelBgPadding[1]}px ${labelBgPadding[0]}px`

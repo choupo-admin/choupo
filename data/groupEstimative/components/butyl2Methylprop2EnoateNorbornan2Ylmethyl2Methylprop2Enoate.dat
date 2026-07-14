@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl 2-methylprop-2-enoate; norbornan-2-ylmethyl 2-methylprop-2-enoate  (C20H32O4, CAS 66142-23-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butyl2Methylprop2EnoateNorbornan2Ylmethyl2Methylprop2Enoate;
+formula     C20H32O4;
+CAS         66142-23-2;
+InChIKey    VMCYQBWLQMBSTQ-UHFFFAOYSA-N;
+MW          336.472;      // g/mol [origin=calculated method=formula-sum]
+Tc          982.01;      // K   [origin=predictive method=joback]
+Pc          12.140;      // bar [origin=predictive method=joback]
+omega       0.8506;      // -   [origin=predictive method=lee-kesler]
+Tb          781.24;      // K   [origin=predictive method=joback]
+HvapTb      73731.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.686 1.81356 -0.0008492 7.43e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 8; } { group CH; count 3; } { group CH2=C; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group dCH2; count 2; } { group dC; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-bicyclo[2.2.1]heptanylmethyl 2-methylprop-2-enoate;butyl 2-methylprop-2-enoate" "3-bicyclo[2.2.1]heptanylmethyl 2-methylprop-2-enoate; butyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, bicyclo(2.2.1)hept-2-ylmethyl ester, polymer with butyl 2-methyl-2-propenoate" );
+gibbsFormation
+{
+    dHf_298   -851930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     924.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-347710.0
+    phase     gas;
+}

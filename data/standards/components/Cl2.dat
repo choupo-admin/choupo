@@ -49,3 +49,6 @@ idealGasHeatCapacity
     coefficients  (33.49   1.86e-2   -1.69e-5   5.9e-9);
     Trange        (250  1500);
 }
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( chlorine );

@@ -1,0 +1,22 @@
+/*---------------------------------------------------------------------------*\
+  thermoTest model1_lumped_evaporator / flowsheetDict
+  NaCl treated as a LUMPED molecular component: the boiling-point elevation is
+  the IDEAL van't Hoff K_b*m (~2.11 K).  Model 1 of the thermoTest ladder --
+  the deliberately-too-simple baseline the pitzer (model 2) and eNRTL rungs
+  correct.  Same evaporator, climbing thermo.
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+units
+(
+    {
+        name        evap;
+        type        evaporator;
+        inputs      ( feed  saturatedSteam130C );
+        outputs     ( concentrated  vapour  condensate );
+        operation
+        {
+            area        20.0 m2;
+            U         2000.0 W/m2/K;
+        }
+    }
+);

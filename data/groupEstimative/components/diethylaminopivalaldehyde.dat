@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethylaminopivalaldehyde  (C9H19NO, CAS 6343-47-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diethylaminopivalaldehyde;
+formula     C9H19NO;
+CAS         6343-47-1;
+InChIKey    AAHIYAKUVPMLMX-UHFFFAOYSA-N;
+MW          157.257;      // g/mol [origin=calculated method=formula-sum]
+Tc          641.81;      // K   [origin=predictive method=joback]
+Pc          25.227;      // bar [origin=predictive method=joback]
+omega       0.5636;      // -   [origin=predictive method=lee-kesler]
+Tb          463.39;      // K   [origin=predictive method=joback]
+HvapTb      43095.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.057 1.08308 -0.0007432 2.031e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 1; } { group CHO; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 1; } { group OdCH_al; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(diethylamino)-2,2-dimethyl-propanal" "3-(diethylamino)-2,2-dimethylpropanal" "3-diethylamino-2,2-dimethylpropionaldehyde" "3-diethylamino-2,2-dimethyl-propionaldehyde" "propanal,2-dimethyl-" "propanal, 3-(diethylamino)-2,2-dimethyl-" "3-(diethylamino)-2,2-dimethylpropionaldehyde" "propionaldehyde,2-dimethyl-" ".alpha.,.alpha.-dimethyl-.beta.-diethylaminopropionaldehyde" ".alpha.-dimethyl-.beta.-diethylaminopropionaldehyde" "propanal,3-(diethylamino)-2,2-dimethyl-" "alpha-dimethyl-beta-diethylaminopropionaldehyde" );
+gibbsFormation
+{
+    dHf_298   -255890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     502.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=39000.0
+    phase     gas;
+}

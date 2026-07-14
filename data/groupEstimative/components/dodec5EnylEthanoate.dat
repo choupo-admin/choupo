@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dodec-5-enyl ethanoate  (C14H26O2, CAS 16676-96-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dodec5EnylEthanoate;
+formula     C14H26O2;
+CAS         16676-96-3;
+InChIKey    FOEWNRTZASNZJY-UHFFFAOYSA-N;
+MW          226.36;      // g/mol [origin=calculated method=formula-sum]
+Tc          753.71;      // K   [origin=predictive method=joback]
+Pc          15.936;      // bar [origin=predictive method=joback]
+omega       0.7813;      // -   [origin=predictive method=lee-kesler]
+Tb          582.30;      // K   [origin=predictive method=joback]
+HvapTb      54123.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.389 1.29904 -0.000727 1.457e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 9; } { group CH=CH; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 9; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z)-5-dodecen-1-yl acetate" "5-dodecen-1-ol, acetate, (5e)-" "5-dodecen-1-ol, acetate, (5z)-" "5-dodecen-1-ol, 1-acetate, (5e)-" "5-dodecen-1-ol, 1-acetate, (5z)-" "5-dodecen-1-ol,1-acetate, (5z)-" "5-dodecen-1-ol,acetate, (5z)- (9ci); 5-dodecen-1-ol, acetate, (z)- (8ci); (z)-5-dodecen-1-olacetate; (z)-5-dodecenyl acetate; 5(z)-dodecenyl acetate; cis-5-dodecen-1-olacetate; cis-5-dodecen-1-yl acetate; cis-5-dodecenyl acetate" );
+gibbsFormation
+{
+    dHf_298   -532350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     746.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-163150.0
+    phase     gas;
+}

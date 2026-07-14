@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(hexan-3-yloxy)propan-1-ol  (C9H20O2, CAS 63716-41-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Hexan3YloxyPropan1Ol;
+formula     C9H20O2;
+CAS         63716-41-6;
+InChIKey    OUNGUQCWULFDFV-UHFFFAOYSA-N;
+MW          160.257;      // g/mol [origin=calculated method=formula-sum]
+Tc          684.31;      // K   [origin=predictive method=joback]
+Pc          25.227;      // bar [origin=predictive method=joback]
+omega       0.9225;      // -   [origin=predictive method=lee-kesler]
+Tb          519.24;      // K   [origin=predictive method=joback]
+HvapTb      53941.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (22.134 0.84146 -0.0003916 4.99e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 2; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-hexan-3-yloxypropan-1-ol" "2-ethylbutoxypropanol, mixed isomers" "propanol, 2-ethylbutoxy-, mixed isomers" );
+gibbsFormation
+{
+    dHf_298   -524100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     549.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-221800.0
+    phase     gas;
+}

@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  pitzer_vs_davies_ro_concentrate / constant/thermoPackage
+
+  Water, the solvent being recovered, is the package's only component: the
+  seawater major ions live in the two scalingScan ops' totals, and the two
+  rival activity models -- davies vs pitzerHMW -- are declared PER OP in the
+  propsDict (the controlled experiment: same feed, same recovery grid, only
+  the gamma model differs).  This package is only the solvent basis; nothing
+  in it decides the fork in SI_gypsum.
+\*---------------------------------------------------------------------------*/
+
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }

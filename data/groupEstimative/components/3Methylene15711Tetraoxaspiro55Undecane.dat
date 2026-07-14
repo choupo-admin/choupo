@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methylene-1,5,7,11-tetraoxaspiro[5.5]undecane  (C8H12O4, CAS 57516-73-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Methylene15711Tetraoxaspiro55Undecane;
+formula     C8H12O4;
+CAS         57516-73-1;
+InChIKey    OGWFRFMHFVZWTI-UHFFFAOYSA-N;
+MW          172.18;      // g/mol [origin=calculated method=formula-sum]
+Tc          773.13;      // K   [origin=predictive method=joback]
+Pc          42.166;      // bar [origin=predictive method=joback]
+omega       0.5003;      // -   [origin=predictive method=lee-kesler]
+Tb          529.34;      // K   [origin=predictive method=joback]
+HvapTb      51445.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-94.83 1.2065 -0.0010598 3.954e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group C; count 1; } { group CH2=C; count 1; } { group FCH2O; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group CH2_ring; count 5; } { group C_ring; count 1; } { group dC_ring; count 1; } { group O_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylidene-1,5,7,11-tetraoxaspiro[5.5]undecane" "1,5,7,11-tetraoxaspiro(5.5)undecane, 3-methylene-" "1,5,7,11-tetraoxaspiro[5.5]undecane, 3-methylene-" "3-methylene-1,5,7,11-tetraspiro(5.5)undecane" "9-methylidene-1,5,7,11-tetraoxaspiro[5.5]undecane" );
+gibbsFormation
+{
+    dHf_298   -501830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     267.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-211700.0
+    phase     gas;
+}

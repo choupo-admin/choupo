@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 3-(2-ethoxy-2-oxoethyl)-2,2-dimethylcyclobutanecarboxylate  (C13H22O4, CAS 28664-03-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl32Ethoxy2Oxoethyl22Dimethylcyclobutanecarboxylate;
+formula     C13H22O4;
+CAS         28664-03-1;
+InChIKey    FJYUJCOPVWAEOU-UHFFFAOYSA-N;
+MW          242.315;      // g/mol [origin=calculated method=formula-sum]
+Tc          807.84;      // K   [origin=predictive method=joback]
+Pc          18.547;      // bar [origin=predictive method=joback]
+omega       0.7638;      // -   [origin=predictive method=lee-kesler]
+Tb          615.39;      // K   [origin=predictive method=joback]
+HvapTb      57662.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-51.587 1.50948 -0.0010898 3.403e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 2; } { group C; count 1; } { group CH2COO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group C_ring; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 3-(2-ethoxy-2-oxidanylidene-ethyl)-2,2-dimethyl-cyclobutane-1-carboxylate" "cyclobutaneacetic acid,3-(ethoxycarbonyl)-2,2-dimethyl-, ethyl ester" "ethyl 3-(2-ethoxy-2-oxoethyl)-2,2-dimethylcyclobutane-1-carboxylate" "ethyl 3-(ethoxycarbonylmethyl)-2,2-dimethyl-cyclobutane-1-carboxylate" );
+gibbsFormation
+{
+    dHf_298   -905010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     679.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-534420.0
+    phase     gas;
+}

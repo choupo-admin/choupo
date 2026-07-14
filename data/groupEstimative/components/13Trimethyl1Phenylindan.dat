@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-trimethyl-1-phenylindan  (C18H20, CAS 3910-35-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13Trimethyl1Phenylindan;
+formula     C18H20;
+CAS         3910-35-8;
+InChIKey    ICLPNZMYHDVKKI-UHFFFAOYSA-N;
+MW          236.358;      // g/mol [origin=calculated method=formula-sum]
+Tc          928.99;      // K   [origin=predictive method=joback]
+Pc          22.419;      // bar [origin=predictive method=joback]
+omega       0.5191;      // -   [origin=predictive method=lee-kesler]
+Tb          672.33;      // K   [origin=predictive method=joback]
+HvapTb      58178.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-211.27 2.20476 -0.00218076 8.962e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 2; } { group ACH; count 9; } { group AC; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,3-trimethyl-3-phenyl-2h-indene" "1-phenyl-1,3,3-trimethylindan" "1h-indene, 2,3-dihydro-1,1,3-trimethyl-3-phenyl-" "indan, 1,1,3-trimethyl-3-phenyl-" "1,1,3-trimethyl-3-phenyl-2,3-dihydro-1h-indene" "1,3-trimethyl-3-phenylindan" "1-phenyl-1,3-trimethylindan" "1,3-trimethyl-3-phenylindane" "1-phenyl-1,3-trimethylindane" "indan,1,3-trimethyl-3-phenyl-" "2,1,3-trimethyl-3-phenyl-1h-indene" "1h-indene,3-dihydro-1,1,3-trimethyl-3-phenyl-" );
+gibbsFormation
+{
+    dHf_298   129680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     644.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=357930.0
+    phase     gas;
+}

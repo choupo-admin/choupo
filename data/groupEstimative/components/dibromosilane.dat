@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dibromosilane  (Br2H2Si, CAS 13768-94-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula Br2H2Si (delta H+2Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        dibromosilane;
+formula     Br2H2Si;
+CAS         13768-94-0;
+InChIKey    VJIYRPVGAZXYBD-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          189.909;      // g/mol [origin=calculated method=formula-sum]
+Tc          545.06;      // K   [origin=predictive method=joback]
+Pc          72.308;      // bar [origin=predictive method=joback]
+omega       0.2185;      // -   [origin=predictive method=lee-kesler]
+Tb          331.92;      // K   [origin=predictive method=joback]
+HvapTb      28464.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.27 0.0802 -0.000119 5.7e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group Br; count 2; } { group SiH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(bromanyl)silane" );
+gibbsFormation
+{
+    dHf_298   9330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     407.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-22240.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: piceatannol  (C14H12O4, CAS 10083-24-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        piceatannol;
+formula     C14H12O4;
+CAS         10083-24-6;
+InChIKey    CDRPUGZCRXZLFL-OWOJBTEDSA-N;
+MW          244.246;      // g/mol [origin=calculated method=formula-sum]
+Tc          1175.04;      // K   [origin=predictive method=joback]
+Pc          63.796;      // bar [origin=predictive method=joback]
+omega       1.6048;      // -   [origin=predictive method=lee-kesler]
+Tb          899.92;      // K   [origin=predictive method=joback]
+HvapTb      103324.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-127.51 1.8144 -0.00190944 7.862e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group ACH; count 6; } { group AC; count 2; } { group ACOH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group OH_phenol; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[(e)-2-[3,5-bis(oxidanyl)phenyl]ethenyl]benzene-1,2-diol" "astringinin" "3-hydroxyresveratol" "3,5,3',4'-tetrahydroxystilbene" "3,3',4'5-tetrahydroxystilbene" "3,3',4,5'-tetrahydroxystilbene" "3,3',4,5'-stilbenetetrol" "4-[(e)-2-(3,5-dihydroxyphenyl)ethenyl]benzene-1,2-diol" "3,3',4,5'-tetrahydroxy-trans-stilbene" "trans-3,3&prime;,4,5&prime;-tetrahydroxystilbene" "4-[2-(3,5-dihydroxyphenyl)ethenyl]benzene-1,2-diol" "1,2-benzenediol, 4-(2-(3,5-dihydroxyphenyl)ethenyl)-" );
+gibbsFormation
+{
+    dHf_298   -451250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     587.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-246440.0
+    phase     gas;
+}

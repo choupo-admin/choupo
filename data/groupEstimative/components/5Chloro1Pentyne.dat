@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-chloro-1-pentyne  (C5H7Cl, CAS 14267-92-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Chloro1Pentyne;
+formula     C5H7Cl;
+CAS         14267-92-6;
+InChIKey    UXFIKVWAAMKFQE-UHFFFAOYSA-N;
+MW          102.561;      // g/mol [origin=calculated method=formula-sum]
+Tc          526.91;      // K   [origin=predictive method=joback]
+Pc          39.705;      // bar [origin=predictive method=joback]
+omega       0.2476;      // -   [origin=predictive method=lee-kesler]
+Tb          341.55;      // K   [origin=predictive method=joback]
+HvapTb      30967.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.013 0.3917 -0.00026453 7.569e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2Cl; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group tCH; count 1; } { group tC; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-chloranylpent-1-yne" "5-chloropent-1-yne" "1-pentyne, 5-chloro-" "4-pentynyl chloride" "pent-4-ynyl chloride" "(3-chloropropyl)acetylene;1-chloro-4-pentyne;4-pentynyl chloride;" );
+gibbsFormation
+{
+    dHf_298   129630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     353.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=202360.0
+    phase     gas;
+}

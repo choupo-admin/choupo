@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isobornyl methyl ether  (C11H20O, CAS 5331-32-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isobornylMethylEther;
+formula     C11H20O;
+CAS         5331-32-8;
+InChIKey    ZRHVOKYSOWTPIG-UHFFFAOYSA-N;
+MW          168.28;      // g/mol [origin=calculated method=formula-sum]
+Tc          692.64;      // K   [origin=predictive method=joback]
+Pc          25.456;      // bar [origin=predictive method=joback]
+omega       0.3777;      // -   [origin=predictive method=lee-kesler]
+Tb          482.59;      // K   [origin=predictive method=joback]
+HvapTb      39568.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-175.32 1.80868 -0.001812 7.732e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 2; } { group C; count 2; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methoxy-4,7,7-trimethyl-bicyclo[2.2.1]heptane" "exo-2-methoxybornane" "isoborneol methyl ether" "ether, isobornyl methyl" "bornane, 2-methoxy-, exo-" "exo-2-methoxy-1,7,7-trimethylnorbornane" "bicyclo[2.2.1]heptane, 2-methoxy-1,7,7-trimethyl-" "exo-2-methoxy-1,7,7-trimethylbicyclo(2.2.1)heptane" "bicyclo(2.2.1)heptane, 2-methoxy-1,7,7-trimethyl-, exo-" "bicyclo(2.2.1)heptane, 2-methoxy-1,7,7-trimethyl-, (1r,2r,4r)-rel-" "exo-2-methoxy-1,7,7-trimethylbicyclo[2.2.1]heptane" "bicyclo[2.2.1]heptane, 2-methoxy-1,7,7-trimethyl-, (1r,2r,4r)-rel-" );
+gibbsFormation
+{
+    dHf_298   -273350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     489.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=19740.0
+    phase     gas;
+}

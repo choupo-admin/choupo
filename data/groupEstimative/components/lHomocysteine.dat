@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: l-homocysteine  (C4H9NO2S, CAS 6027-13-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lHomocysteine;
+formula     C4H9NO2S;
+CAS         6027-13-0;
+InChIKey    FFFHZYDWPBMWHY-VKHMYHEASA-N;
+MW          135.181;      // g/mol [origin=calculated method=formula-sum]
+Tc          801.37;      // K   [origin=predictive method=joback]
+Pc          52.207;      // bar [origin=predictive method=joback]
+omega       0.8344;      // -   [origin=predictive method=lee-kesler]
+Tb          571.58;      // K   [origin=predictive method=joback]
+HvapTb      58652.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.552 0.5297 -0.0003354 8.05e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-2-azanyl-4-sulfanyl-butanoic acid" "homocysteine" "(2s)-2-amino-4-sulfanylbutanoic acid" "2-amino-4-mercapto-butyric acid" "l-2-amino-4-mercaptobutyric acid" "hcs" "butyric acid, 2-amino-4-mercapto-" "hcy" "homocysteine (van)" "2-amino-4-mercaptobutyric acid (van)" "butyric acid, 2-amino-4-mercapto- (8ci)" "butanoic acid, 2-amino-4-mercapto- (van)" );
+gibbsFormation
+{
+    dHf_298   -409170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     469.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-267710.0
+    phase     gas;
+}

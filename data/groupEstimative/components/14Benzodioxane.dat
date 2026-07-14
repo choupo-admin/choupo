@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-benzodioxane  (C8H8O2, CAS 493-09-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14Benzodioxane;
+formula     C8H8O2;
+CAS         493-09-4;
+InChIKey    BNBQRQQYDMDJAH-UHFFFAOYSA-N;
+MW          136.15;      // g/mol [origin=calculated method=formula-sum]
+Tc          720.85;      // K   [origin=predictive method=joback]
+Pc          44.444;      // bar [origin=predictive method=joback]
+omega       0.4265;      // -   [origin=predictive method=lee-kesler]
+Tb          483.88;      // K   [origin=predictive method=joback]
+HvapTb      45754.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-50.65 0.7872 -0.00057696 1.648e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 2; } { group FCH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-dihydro-1,4-benzodioxine" "1,4-benzodioxan" "1,4-benzodioxin, 2,3-dihydro-" "pyrocatechol ethylene ether" "1, 4-benzdioxan" "1,2-(ethylenedioxy)benzene" "2,3-dihydro-1,4-benzodioxin" "1,4-benzodioxan(8ci)" "1,2-ethylenedioxybenzene" "2,3-dihydrobenzo[b][1,4]dioxine" "ethylene o-phenylene dioxide" "benzo-1,4-dioxane" );
+gibbsFormation
+{
+    dHf_298   -160410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     224.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=3380.0
+    phase     gas;
+}

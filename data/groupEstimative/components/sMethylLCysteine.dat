@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: s-methyl-l-cysteine  (C4H9NO2S, CAS 1187-84-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sMethylLCysteine;
+formula     C4H9NO2S;
+CAS         1187-84-4;
+InChIKey    IDIDJDIHTAOVLG-VKHMYHEASA-N;
+MW          135.181;      // g/mol [origin=calculated method=formula-sum]
+Tc          806.78;      // K   [origin=predictive method=joback]
+Pc          48.834;      // bar [origin=predictive method=joback]
+omega       0.8277;      // -   [origin=predictive method=lee-kesler]
+Tb          577.50;      // K   [origin=predictive method=joback]
+HvapTb      58732.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.261 0.49681 -0.0002728 4.73e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r)-2-azanyl-3-methylsulfanyl-propanoic acid" "s-methylcysteine" "h-cys(me)-oh" "s-methyl-dl-cysteine" "l-cysteine, s-methyl-" "(r)-2-amino-3-(methylthio)propanoic acid" "(r)-2-amino-3-(methylmercapto)propionic acid" "methylcysteine, l-" "(2r)-2-amino-3-methylthiopropanoic acid" "(2r)-2-amino-3-methylsulfanylpropanoic acid" "usaf cb-24" "methylcysteine" );
+gibbsFormation
+{
+    dHf_298   -405780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     468.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-263980.0
+    phase     gas;
+}

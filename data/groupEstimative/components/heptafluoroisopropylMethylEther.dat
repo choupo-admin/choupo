@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heptafluoroisopropyl methyl ether  (C4H3F7O, CAS 22052-84-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heptafluoroisopropylMethylEther;
+formula     C4H3F7O;
+CAS         22052-84-2;
+InChIKey    HRXXERHTOVVTQF-UHFFFAOYSA-N;
+MW          200.053;      // g/mol [origin=calculated method=formula-sum]
+Tc          431.94;      // K   [origin=predictive method=joback]
+Pc          28.384;      // bar [origin=predictive method=joback]
+omega       0.3887;      // -   [origin=predictive method=lee-kesler]
+Tb          298.74;      // K   [origin=predictive method=joback]
+HvapTb      17301.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.03 0.78062 -0.000713 2.365e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3O; count 1; } { group CF3; count 2; } { group CF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 3; } { group F; count 7; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,3,3,3-heptakis(fluoranyl)-2-methoxy-propane" "heptafluoroisopropyl methyl ether 99+%" "1,1,1,2,3,3,3-heptafluoro-2-methoxypropane" "propane,1,1,1,2,3,3,3-heptafluoro-2-methoxy-" "1,2,2,2-tetrafluoro-1-methoxy-1-(trifluoromethyl)ethane" "ether,methyl tetrafluoro-1-(trifluoromethyl)ethyl (8ci);1,1,1,2,3,3,3-heptafluoro-2-methoxypropane; hfe 347i; hfe 347mmy;heptafluoroisopropyl methyl ether; methyl perfluoroisopropyl ether;perfluoroisopropyl methyl ether" );
+gibbsFormation
+{
+    dHf_298   -1657130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     428.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1477350.0
+    phase     gas;
+}

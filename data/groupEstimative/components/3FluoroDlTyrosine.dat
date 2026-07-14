@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-fluoro-dl-tyrosine  (C9H10FNO3, CAS 403-90-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3FluoroDlTyrosine;
+formula     C9H10FNO3;
+CAS         403-90-7;
+InChIKey    VIIAUOZUUGXERI-UHFFFAOYSA-N;
+MW          199.181;      // g/mol [origin=calculated method=formula-sum]
+Tc          968.42;      // K   [origin=predictive method=joback]
+Pc          43.974;      // bar [origin=predictive method=joback]
+omega       1.2634;      // -   [origin=predictive method=lee-kesler]
+Tb          734.67;      // K   [origin=predictive method=joback]
+HvapTb      78180.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.319 1.0054 -0.00082192 2.737e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACCH2; count 1; } { group ACOH; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group OH_phenol; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-3-(3-fluoranyl-4-oxidanyl-phenyl)propanoic acid" "m-fluoro-dl-tyrosine" "3-fluorotyrosine" "3-fluorotyrosin" "m-ftyr" "dl-m-fluorotyrosine" "dl-3-fluorotyrosine" "fluorthyrin" "pardinon" "tyrosine, 3-fluoro-, dl-" "2-amino-3-(3-fluoro-4-hydroxyphenyl)propanoic acid" "tyrosine, 3-fluoro-" );
+gibbsFormation
+{
+    dHf_298   -699210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     547.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-501650.0
+    phase     gas;
+}

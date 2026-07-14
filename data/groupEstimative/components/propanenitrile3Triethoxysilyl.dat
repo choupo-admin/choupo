@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propanenitrile, 3-(triethoxysilyl)-  (C9H19NO3Si, CAS 919-31-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H19NO3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        propanenitrile3Triethoxysilyl;
+formula     C9H19NO3Si;
+CAS         919-31-3;
+InChIKey    GBQYMXVQHATSCC-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          217.34;      // g/mol [origin=calculated method=formula-sum]
+Tc          761.81;      // K   [origin=predictive method=joback]
+Pc          19.270;      // bar [origin=predictive method=joback]
+omega       0.7324;      // -   [origin=predictive method=lee-kesler]
+Tb          576.26;      // K   [origin=predictive method=joback]
+HvapTb      53630.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (129.025 0.39786 0.000313 -2.92e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH2O; count 3; } { group CH2CN; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group O; count 3; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-triethoxysilylpropanenitrile" "3-(triethoxysilyl)propionitrile" "(2-cyanoethyl)triethoxysilane" "beta-cyanoethyltriethoxysilane" "propionitrile, 3-(triethoxysilyl)-" "2-cyanoethyltriethoxysilane" "3-(triethoxysilyl)propanenitrile" "silane, (2-cyanoethyl)triethoxy-" "3-(triethoxysilyl)propiononitrile" "triethoxy-2-kyanethylsilan" "gbqymxvqhatscc-uhfffaoysa-" "(.beta.-cyanoethyl)triethoxysilane" );
+gibbsFormation
+{
+    dHf_298   -572490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     672.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-261680.0
+    phase     gas;
+}

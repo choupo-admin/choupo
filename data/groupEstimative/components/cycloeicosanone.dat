@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cycloeicosanone  (C20H38O, CAS 6907-39-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cycloeicosanone;
+formula     C20H38O;
+CAS         6907-39-7;
+InChIKey    NPEJHLDODKUWCF-UHFFFAOYSA-N;
+MW          294.523;      // g/mol [origin=calculated method=formula-sum]
+Tc          1082.94;      // K   [origin=predictive method=joback]
+Pc          15.810;      // bar [origin=predictive method=joback]
+omega       0.5274;      // -   [origin=predictive method=lee-kesler]
+Tb          809.02;      // K   [origin=predictive method=joback]
+HvapTb      67507.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-122.1 1.7497 -0.000307 -2.67e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 18; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 19; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cycloicosanone" );
+gibbsFormation
+{
+    dHf_298   -605410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1147.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-142310.0
+    phase     gas;
+}

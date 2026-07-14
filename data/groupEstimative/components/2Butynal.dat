@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-butynal  (C4H4O, CAS 1119-19-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Butynal;
+formula     C4H4O;
+CAS         1119-19-3;
+InChIKey    REJPDMLLCDXIOV-UHFFFAOYSA-N;
+MW          68.075;      // g/mol [origin=calculated method=formula-sum]
+Tc          549.34;      // K   [origin=predictive method=joback]
+Pc          53.435;      // bar [origin=predictive method=joback]
+omega       0.2681;      // -   [origin=predictive method=lee-kesler]
+Tb          348.78;      // K   [origin=predictive method=joback]
+HvapTb      33370.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.21 0.20852 -9.466e-05 1.328e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CHO; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group tC; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "but-2-ynal" "ch3c.equiv.ccho" "2-butynal (9ci)" "tetrolaldehyde(6ci,7ci,8ci)" );
+gibbsFormation
+{
+    dHf_298   60830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     302.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=86080.0
+    phase     gas;
+}

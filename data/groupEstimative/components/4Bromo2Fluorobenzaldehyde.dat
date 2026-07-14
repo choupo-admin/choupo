@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-bromo-2-fluorobenzaldehyde  (C7H4BrFO, CAS 57848-46-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H4BrFO (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        4Bromo2Fluorobenzaldehyde;
+formula     C7H4BrFO;
+CAS         57848-46-1;
+InChIKey    UPCARQPLANFGQJ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          203.01;      // g/mol [origin=calculated method=formula-sum]
+Tc          659.78;      // K   [origin=predictive method=joback]
+Pc          43.226;      // bar [origin=predictive method=joback]
+omega       0.3707;      // -   [origin=predictive method=lee-kesler]
+Tb          438.25;      // K   [origin=predictive method=joback]
+HvapTb      38021.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.0 0.529 -0.00049492 1.842e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group CHO; count 1; } { group Br; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-bromanyl-2-fluoranyl-benzaldehyde" "2-fluoro-4-bromobenzaldehyde" "benzaldehyde, 4-bromo-2-fluoro-" "4-bromo-2-fluoro-benzaldehyde" "upcarqplanfgqj-uhfffaoysa-" "b137" "57848-46-1 4-bromo-2-fluorobenzaldehyde" "4-bromo-2-fluoro-benzaldehyde;2-fluoro-4-bromobenzaldehyde;2-bromo-4-fluorobenzaldehyde;" );
+gibbsFormation
+{
+    dHf_298   -67550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     473.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-35320.0
+    phase     gas;
+}

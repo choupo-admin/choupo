@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (3r,4r)-1-benzylpyrrolidine-3,4-diol  (C11H15NO2, CAS 163439-82-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3r4r1Benzylpyrrolidine34Diol;
+formula     C11H15NO2;
+CAS         163439-82-5;
+InChIKey    QJRIUWQPJVPYSO-GHMZBOCLSA-N;
+MW          193.246;      // g/mol [origin=calculated method=formula-sum]
+Tc          876.26;      // K   [origin=predictive method=joback]
+Pc          37.226;      // bar [origin=predictive method=joback]
+omega       1.4231;      // -   [origin=predictive method=lee-kesler]
+Tb          681.10;      // K   [origin=predictive method=joback]
+HvapTb      77533.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-90.549 1.2766 -0.0008976 2.434e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 2; } { group ACH; count 5; } { group ACCH2; count 1; } { group OH; count 2; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3r,4r)-1-(phenylmethyl)pyrrolidine-3,4-diol" "(3r,4r)-(-)-1-benzyl-3,4-pyrrolidinediol" "(3r,4r)-(-)-1-benzyl-3,4-pyrrolidindiol" "3,4-pyrrolidinediol,1-(phenylmethyl)-, (3r,4r)-" "(3r,4r)-(-)-1-benzylpyrrolidine-3,4-diol" "(3r,4r)-(&#8722;)-1-benzyl-3,4-pyrrolidinediol" "3,4-pyrrolidinediol,1-(phenylmethyl)-, (3r-trans)-;(-)-(3r,4r)-1-(phenylmethyl)-3,4-pyrrolidinediol; (3r,4r)-1-benzylpyrrolidine-3,4-diol" );
+gibbsFormation
+{
+    dHf_298   -224470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     483.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=32230.0
+    phase     gas;
+}

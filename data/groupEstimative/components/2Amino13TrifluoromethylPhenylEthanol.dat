@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-amino-1-[3-(trifluoromethyl)phenyl]ethanol  (C9H10F3NO, CAS 21172-28-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Amino13TrifluoromethylPhenylEthanol;
+formula     C9H10F3NO;
+CAS         21172-28-1;
+InChIKey    RRBRWAPWPGAJMA-UHFFFAOYSA-N;
+MW          205.179;      // g/mol [origin=calculated method=formula-sum]
+Tc          788.82;      // K   [origin=predictive method=joback]
+Pc          33.606;      // bar [origin=predictive method=joback]
+omega       1.0603;      // -   [origin=predictive method=lee-kesler]
+Tb          596.03;      // K   [origin=predictive method=joback]
+HvapTb      61751.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.999 0.9834 -0.00072796 2.055e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group CH2NH2; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group OH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-1-[3-(trifluoromethyl)phenyl]ethanol" "alpha-aminomethyl-m-trifluoromethylbenzyl alcohol" "benzyl alcohol, alpha-aminomethyl-m-trifluoromethyl-" "3-trifluoromethylphenylethanolamine" "benzenemethanol, a-(aminomethyl)-3-(trifluoromethyl)-" "benzylalcohol, a-(aminomethyl)-m-(trifluoromethyl)-(8ci); 2-amino-1-[3-(trifluoromethyl)phenyl]ethanol" );
+gibbsFormation
+{
+    dHf_298   -724830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     543.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-526720.0
+    phase     gas;
+}

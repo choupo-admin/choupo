@@ -1,0 +1,58 @@
+/*---------------------------------------------------------------------------*\
+  thermoTest/model3_enrtl_antisolvent_crystalliser  --  step 3 of the
+  thermoTest arc (same {NaCl, CaSO4, ethanol, water} system, five property
+  models): here the package selects eNRTL MIXED-SOLVENT, the only model in
+  the arc that can reach the ethanol-lowered dielectric.  The flowsheet is
+  crystalliser06_nacl_antisolvent's, unchanged:
+
+  ANTISOLVENT (drowning-out) crystallisation
+
+      brine  ──┐
+               │
+            [cryst] ──┬──► crystals     (solid NaCl product)
+               │      │
+      ethanol ─┘      └──► motherLiquor (saturated supernatant:
+                                         water + ethanol + residual NaCl)
+
+  The crystalliser receives BOTH feeds directly -- a saturated aqueous NaCl
+  brine AND the ethanol antisolvent -- combines them internally, and discharges
+  its TWO natural products: the crystals and the saturated mother liquor.  No
+  separate mixer, no separate filter: an equilibrium crystalliser already KNOWS
+  how much solid forms and what the saturated liquor is.
+
+  The physics: ethanol's low dielectric (24.3 vs water's 78.5) lowers the
+  mixture permittivity, which RAISES the mean ionic activity gamma_pm (eNRTL
+  mixed-solvent + Born), so the saturation molality m_sat COLLAPSES (6.14 ->
+  ~1.3 mol/kg) and NaCl precipitates with NO cooling and NO boil-off.  The
+  saturation is the SAME ion-activity product Ksp = (gamma_pm * m_sat)^2
+  anchored in pure water, solved with the mixed-solvent gamma_pm at the feed's
+  salt-free ethanol fraction -- the physics the aqueous Pitzer model cannot
+  reach (the reason eNRTL exists).
+
+  Basis: 100 kmol/h saturated brine (x_water 0.900, x_NaCl 0.100; ~6.14 mol/kg)
+  + 60.0 kmol/h ethanol  ->  salt-free x_ethanol ~ 0.40.
+  Self-contained: components live in constant/components/.
+
+  (Want imperfect separation -- a wet cake with clinging liquor, fines loss,
+  washing?  Feed the single-output `magma` form to a downstream `filter`.)
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        cryst;
+        type        crystalliser;
+        inputs      ( brine  ethanol );         // two feeds, combined internally
+        outputs     ( crystals  motherLiquor ); // two products: solid + saturated liquor
+
+        operation
+        {
+            operatingTemperature 298.15 K;   // isothermal: the antisolvent does the work
+            cakeMoisture         0.10;       // kg mother liquor clinging per kg dry NaCl
+                                             //   -> crystals leave as a WET cake, not pure
+            solidsRecovery       1.0;        // all crystals to the cake (set <1 to lose fines)
+        }
+    }
+);

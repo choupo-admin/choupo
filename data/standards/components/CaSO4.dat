@@ -1,0 +1,59 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Calcium sulfate (CaSO4), ANHYDRITE.  CAS 7778-18-9.
+
+  A NON-VOLATILE crystalline mineral salt: never enters the vapour (K = 0).
+  THE canonical scaling species in membrane (NF/RO) and evaporator cases, the
+  precipitate of sulfuric-acid neutralisation with lime, and a gypsum / FGD
+  product.  Carries the solid-phase formation datum and a real solid heat
+  capacity.
+
+  This entry is the ANHYDRITE (anhydrous CaSO4) polymorph.  The dihydrate
+  GYPSUM (CaSO4.2H2O) and hemihydrate (plaster) are DISTINCT phases with their
+  own Hf -- add them as separate files when a hydrate yield is claimed.
+
+  PRIMARY: Wagman et al., NBS Tables of Chemical Thermodynamic Properties,
+  J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982) -- PUBLIC DOMAIN.
+\*---------------------------------------------------------------------------*/
+
+name        CaSO4;
+formula     CaSO4;
+CAS         7778-18-9;
+
+MW          136.141;           // kg/kmol  (anhydrite)
+
+nonvolatile true;       // never goes to the vapour (K = 0)
+
+solid
+{
+    rho_p   2960.0;            // anhydrite particle density [kg/m^3]
+}
+
+gibbsFormation
+{
+    dHf_298   -1434110;        // J/mol  anhydrite [Wagman et al. NBS Tables 1982]
+    s_298     106.7;           // J/(mol*K) [Wagman 1982]
+    phase     solid;
+}
+
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = a0  [J/(mol*K)], constant
+    coefficients  ( 99.66 );           // Cp(298) [Wagman et al. NBS Tables 1982]
+    Trange        ( 298  600 );        // constant-Cp validity flag (near ambient)
+}
+
+// liquid/dissolved Cp -- the solid Cp as a FLAGGED proxy, so the slurried/
+// dissolved solid carries sensible heat in an aqueous process stream.
+liquidHeatCapacity
+{
+    model         polynomial;          // Cp = a0  [J/(mol*K)], constant
+    coefficients  ( 99.66 );           // Cp(298) [Wagman et al. NBS Tables 1982]
+    Trange        ( 298  600 );        // constant-Cp validity flag (near ambient)
+}
+
+provenance
+{
+    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982 (anhydrite)"; }
+    solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
+    rho_p { origin literature; method "anhydrite mineralogical density ~2.96 g/cm3"; }
+}

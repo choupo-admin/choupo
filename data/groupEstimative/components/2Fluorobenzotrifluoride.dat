@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-fluorobenzotrifluoride  (C7H4F4, CAS 392-85-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Fluorobenzotrifluoride;
+formula     C7H4F4;
+CAS         392-85-8;
+InChIKey    BGVGHYOIWIALFF-UHFFFAOYSA-N;
+MW          164.101;      // g/mol [origin=calculated method=formula-sum]
+Tc          566.65;      // K   [origin=predictive method=joback]
+Pc          33.220;      // bar [origin=predictive method=joback]
+omega       0.3737;      // -   [origin=predictive method=lee-kesler]
+Tb          385.27;      // K   [origin=predictive method=joback]
+HvapTb      29550.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.19 0.7034 -0.00055856 1.67e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group ACF; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-fluoranyl-2-(trifluoromethyl)benzene" "o-fluorobenzotrifluoride" "1-fluoro-2-(trifluoromethyl)benzene" "benzene, 1-fluoro-2-(trifluoromethyl)-" "fxffr bf" "alpha,alpha,alpha,2-tetrafluorotoluene" "alpha,alpha,alpha,ar-tetrafluorotoluene" "1-fluoro-2-trifluoromethylbenzene" "a,a,a,2-tetrafluorotoluene" "2-(trifluoromethyl)fluorobenzene" "2-fluoro-1-(trifluoromethyl)benzene" "o-fluoro benzotrifluoride" );
+gibbsFormation
+{
+    dHf_298   -755940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     404.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-665560.0
+    phase     gas;
+}

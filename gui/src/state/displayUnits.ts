@@ -73,6 +73,12 @@ export interface DisplayPrefs {
   /** Molality-bearing axes / columns (speciation tables, scaling scans).
    *  Canonical is mol/kg water -- what the electrolyte ops emit. */
   concentration: ConcentrationUnit;
+  /** Pinch GRID diagram Pareto cutoff (percent): a thermal stream whose duty
+   *  is below this fraction of the TOTAL process heating+cooling duty is
+   *  omitted from the DRAWING -- announced in the diagram footer, never
+   *  silent -- while the pinch numbers (targets, curves, matches) keep
+   *  counting every stream.  0 = draw all; default 5. */
+  pinchParetoPct: number;
 }
 
 export const DEFAULT_PREFS: DisplayPrefs = {
@@ -85,6 +91,7 @@ export const DEFAULT_PREFS: DisplayPrefs = {
   colorMode: "phase",
   colorMap: "turbo",
   sigFigs: 3,
+  pinchParetoPct: 5,
 };
 
 // Named presets the menu exposes as one-click options.  The student

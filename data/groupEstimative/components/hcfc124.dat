@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: HCFC 124  (C2HClF4, CAS 2837-89-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hcfc124;
+formula     C2HClF4;
+CAS         2837-89-0;
+InChIKey    BOUGCJDAQLKBQH-UHFFFAOYSA-N;
+MW          136.472;      // g/mol [origin=calculated method=formula-sum]
+Tc          422.85;      // K   [origin=predictive method=joback]
+Pc          39.062;      // bar [origin=predictive method=joback]
+omega       0.2698;      // -   [origin=predictive method=lee-kesler]
+Tb          276.20;      // K   [origin=predictive method=joback]
+HvapTb      19479.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.17 0.3795 -0.000346 1.154e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CF3; count 1; } { group HCClF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group C; count 1; } { group F; count 4; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloro-1,1,1,2-tetrafluoroethane" "1,1,1,2-tetrafluoro-2-chloroethane" "1,1,1,2-tetrafluorochloroethane" "1-chloro-1,2,2,2-tetrafluoroethane" "CFC 124" "ethane, 2-chloro-1,1,1,2-tetrafluoro-" "f 124" "f 124 (halocarbon)" "fc 124" "freon 124" "fron 124" "khladon 124" );
+gibbsFormation
+{
+    dHf_298   -898820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     345.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-824810.0
+    phase     gas;
+}

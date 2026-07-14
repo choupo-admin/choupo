@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): octadecanoic acid, compd. with 2-(diethylamino)ethanol and morpholine  (C28H60N2O4, CAS 70750-10-6)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           octadecanoicAcidCompdWith2DiethylaminoEthanolAndMorpholine;
+formula        C28H60N2O4;
+CAS            70750-10-6;
+InChIKey       BUIGCFWRKZJBQW-UHFFFAOYSA-N;
+MW             488.798;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+dissociatesTo  { octadecanoic acid 1; 2-(diethylamino)ethanol and morpholine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

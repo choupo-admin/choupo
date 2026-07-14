@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ag-h-15100  (C16H35NO4, CAS 78543-39-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        agH15100;
+formula     C16H35NO4;
+CAS         78543-39-2;
+InChIKey    YUFDUZQRDAEIEN-UHFFFAOYSA-N;
+MW          305.459;      // g/mol [origin=calculated method=formula-sum]
+Tc          1101.63;      // K   [origin=predictive method=joback]
+Pc          14.557;      // bar [origin=predictive method=joback]
+omega       1.3086;      // -   [origin=predictive method=lee-kesler]
+Tb          899.72;      // K   [origin=predictive method=joback]
+HvapTb      98398.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (71.044 1.40112 -0.0004672 -4.4e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group CH2NH2; count 1; } { group COOH; count 1; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 14; } { group OH; count 1; } { group O; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-azanylethoxy)ethanol;dodecanoic acid" "dodecanoic acid compd. with 2-(2-aminoethoxy)ethanol (1:1)" );
+gibbsFormation
+{
+    dHf_298   -1086120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1053.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-540200.0
+    phase     gas;
+}

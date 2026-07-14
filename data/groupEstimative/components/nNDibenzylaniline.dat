@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-dibenzylaniline  (C20H19N, CAS 91-73-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDibenzylaniline;
+formula     C20H19N;
+CAS         91-73-6;
+InChIKey    ISGXOWLMGOPVPB-UHFFFAOYSA-N;
+MW          273.379;      // g/mol [origin=calculated method=formula-sum]
+Tc          1001.96;      // K   [origin=predictive method=joback]
+Pc          21.694;      // bar [origin=predictive method=joback]
+omega       0.7203;      // -   [origin=predictive method=lee-kesler]
+Tb          749.68;      // K   [origin=predictive method=joback]
+HvapTb      68985.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-127.698 1.791 -0.0012704 3.407e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 15; } { group AC; count 2; } { group ACCH2; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 15; } { group dC_ring; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-bis(phenylmethyl)aniline" "n-phenyldibenzylamine" "dibenzylaniline" "aniline, n,n-dibenzyl-" "benzenemethanamine, n-phenyl-n-(phenylmethyl)-" "bisbenzylphenylamine" "aniline,n-dibenzyl-" "n,n-dibenzylbenzenamine" "dibenzylamine, n-phenyl-" "n,n-dibenzyl-n-phenylamine" "benzenamine,n-bis(phenylmethyl)-" "dibenzylamine, n-phenyl- (8ci)" );
+gibbsFormation
+{
+    dHf_298   320990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     631.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=565530.0
+    phase     gas;
+}

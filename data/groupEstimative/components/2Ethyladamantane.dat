@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-ethyladamantane  (C12H20, CAS 14451-87-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Ethyladamantane;
+formula     C12H20;
+CAS         14451-87-7;
+InChIKey    LIAWCKFOFPPVGF-UHFFFAOYSA-N;
+MW          164.292;      // g/mol [origin=calculated method=formula-sum]
+Tc          696.80;      // K   [origin=predictive method=joback]
+Pc          24.483;      // bar [origin=predictive method=joback]
+omega       0.3986;      // -   [origin=predictive method=lee-kesler]
+Tb          489.31;      // K   [origin=predictive method=joback]
+HvapTb      41599.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-151.989 1.53392 -0.0011324 3.432e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CH; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tricyclo[3.3.1.13,7]decane, 2-ethyl-" "tricyclo(3.3.1.13,7)decane, 2-ethyl-" "tricyclo[3.3.1.13,7]decane,2-ethyl-" "adamantane,2-ethyl- (8ci);2-ethyladamantane;" );
+gibbsFormation
+{
+    dHf_298   -119450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     287.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=204890.0
+    phase     gas;
+}

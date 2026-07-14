@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: vinyl 4-tert-butylbenzoate  (C13H16O2, CAS 15484-80-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        vinyl4TertButylbenzoate;
+formula     C13H16O2;
+CAS         15484-80-7;
+InChIKey    ZLHVSEPPILCZHH-UHFFFAOYSA-N;
+MW          204.269;      // g/mol [origin=calculated method=formula-sum]
+Tc          798.39;      // K   [origin=predictive method=joback]
+Pc          23.025;      // bar [origin=predictive method=joback]
+omega       0.5589;      // -   [origin=predictive method=lee-kesler]
+Tb          580.37;      // K   [origin=predictive method=joback]
+HvapTb      52911.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.59 1.15146 -0.00074766 1.763e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group CH2=CH; count 1; } { group ACH; count 4; } { group AC; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethenyl 4-tert-butylbenzoate" "4-tert-butylbenzoic acid vinyl ester" "vinyl 4-(tert-butyl)benzoate" "vinyl 4-(1,1-dimethylethyl)benzoate" "benzoic acid, 4-(1,1-dimethylethyl)-, vinyl ester" "benzoic acid, 4-(1,1-dimethylethyl)-, ethenyl ester" "benzoic acid,4-(1,1-dimethylethyl)-, ethenyl ester" "benzoicacid, p-tert-butyl-, vinyl ester (7ci,8ci); vinyl4-(1,1-dimethylethyl)benzoate; vinyl 4-tert-butylbenzoate; vinylp-tert-butylbenzoate" );
+gibbsFormation
+{
+    dHf_298   -287190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     557.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-58330.0
+    phase     gas;
+}

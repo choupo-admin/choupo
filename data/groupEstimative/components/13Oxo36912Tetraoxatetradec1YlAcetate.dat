@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 13-oxo-3,6,9,12-tetraoxatetradec-1-yl acetate  (C12H22O7, CAS 22790-12-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13Oxo36912Tetraoxatetradec1YlAcetate;
+formula     C12H22O7;
+CAS         22790-12-1;
+InChIKey    DXYGJDUJLDXFOD-UHFFFAOYSA-N;
+MW          278.301;      // g/mol [origin=calculated method=formula-sum]
+Tc          830.30;      // K   [origin=predictive method=joback]
+Pc          17.203;      // bar [origin=predictive method=joback]
+omega       1.0788;      // -   [origin=predictive method=lee-kesler]
+Tb          657.86;      // K   [origin=predictive method=joback]
+HvapTb      64350.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (119.298 0.84464 -0.0001068 -1.47e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH3COO; count 2; } { group CH2O; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 8; } { group O; count 3; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-(2-acetyloxyethoxy)ethoxy]ethoxy]ethyl ethanoate" "2-[2-[2-(2-acetyloxyethoxy)ethoxy]ethoxy]ethyl acetate" "2-{2-[2-(2-acetyloxyethoxy)ethoxy]ethoxy}ethyl acetate" "2,2'-(oxybis(ethane-2,1-diyloxy))bisethyl diacetate" "2,2-(oxybis(ethane-2,1-diyloxy))bisethyl diacetate" "4,5-dichloro-2-fluoronitrobenzene;3,4-dichloro-2-fluoro-1-nitrobenzene" "2,2a'a inverted exclamation marka'a -[oxybis(ethane-2,1-diyloxy)]bisethyl diacetate" );
+gibbsFormation
+{
+    dHf_298   -1322230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     759.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-885580.0
+    phase     gas;
+}

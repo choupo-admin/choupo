@@ -1,0 +1,42 @@
+application   choupoBatch;
+description     "LHHW in a BATCH reactor: methyl-acetate synthesis over Amberlyst 15 (Popken 2000, Eq 16)";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         3600;     // s   (1 h -- equilibrium is reached inside 30 min)
+deltaT          1.0;      // s   (RK4 step)
+writeInterval   60;       // s
+
+
+// ---------------------------------------------------------------------
+//   Optional: pick the units the log + Streams table print in.
+//   Omit this block for the chem-eng defaults (bar / K / kmol/h).
+//   The simulator internals stay in SI either way --- only formatting
+//   changes.  See userGuide section "Composition basis" for the full
+//   list of accepted unit aliases.
+//
+//   units
+//   {
+//       pressure       bar;      // bar, Pa, kPa, MPa, atm, psi, mmHg
+//       temperature    K;        // K  or  degC
+//       flow           kmol/h;   // molar:  kmol/h, kmol/s, mol/h, mol/s
+//                                // mass:   kg/h,   kg/s,   g/h,   g/s
+//   }
+// ---------------------------------------------------------------------
+
+// ---------------------------------------------------------------------
+//   Optional: decimal precision of the printed values.  Omit any key
+//   to keep its default (pressure 3, temperature 2, flow 4, composition
+//   4, etc.).  `flow` is a shorthand that sets both molarFlow and
+//   massFlow at once.
+//
+//   precision
+//   {
+//       pressure       3;
+//       temperature    2;
+//       flow           4;     // shorthand: molarFlow + massFlow
+//       composition    4;
+//   }
+// ---------------------------------------------------------------------

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-ethyl-2-methylallylamine  (C6H13N, CAS 18328-90-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nEthyl2Methylallylamine;
+formula     C6H13N;
+CAS         18328-90-0;
+InChIKey    AXTLFVLHXSDZOW-UHFFFAOYSA-N;
+MW          99.177;      // g/mol [origin=calculated method=formula-sum]
+Tc          560.58;      // K   [origin=predictive method=joback]
+Pc          33.258;      // bar [origin=predictive method=joback]
+omega       0.4034;      // -   [origin=predictive method=lee-kesler]
+Tb          383.61;      // K   [origin=predictive method=joback]
+HvapTb      34796.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.458 0.62994 -0.0003764 8.99e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH2=C; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-ethyl-2-methyl-prop-2-en-1-amine" "n-ethylmethallylamine" "n-ethylmethacrylamine" "2-propen-1-amine, n-ethyl-2-methyl-" "n-ethyl methallylamine" "n-ethylmethylallylamine" "n-ethyl-2-methylprop-2-en-1-amine" "n-ethyl-2-methyl-2-propen-1-amine" "allylamine, n-ethyl-2-methyl-" "allylamine, n-ethyl-2-methyl- (6ci,8ci)" "n-ethyl-2-methyl allylamine" "allylamine,n-ethyl-2-methyl- (6ci,8ci);n-2-methylallyl-n-ethylamine;n-ethyl-2-methylallylamine;" );
+gibbsFormation
+{
+    dHf_298   1940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     421.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=168320.0
+    phase     gas;
+}

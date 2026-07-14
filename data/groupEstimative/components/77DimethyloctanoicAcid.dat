@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7,7-dimethyloctanoic acid  (C10H20O2, CAS 26896-20-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        77DimethyloctanoicAcid;
+formula     C10H20O2;
+CAS         26896-20-8;
+InChIKey    YPIFGDQKSSMYHQ-UHFFFAOYSA-N;
+MW          172.268;      // g/mol [origin=calculated method=formula-sum]
+Tc          761.66;      // K   [origin=predictive method=joback]
+Pc          23.338;      // bar [origin=predictive method=joback]
+omega       0.7731;      // -   [origin=predictive method=lee-kesler]
+Tb          570.68;      // K   [origin=predictive method=joback]
+HvapTb      53722.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.075 1.13046 -0.0007646 2.077e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group C; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group C; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "neo-decanoic acid" "rare earth neodecanoate" "neodecanoic acid, rare earth salts" "u878" "neodecanoicacid prime;topper 5e;wiltz 65;" );
+gibbsFormation
+{
+    dHf_298   -608750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     559.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-307750.0
+    phase     gas;
+}

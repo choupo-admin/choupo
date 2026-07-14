@@ -6,7 +6,7 @@
   children + boundary + default feeds + connections.
 \*---------------------------------------------------------------------------*/
 
-children    ( Evap1  Evap2  Cryst );
+sectors    ( Evap1  Evap2  Cryst );
 
 boundary
 {
@@ -25,14 +25,14 @@ streams
 }
 
 connections
-(
-    { from DilutedJuice;  to Evap1/Feed;  }     // sector inlet -> unit
-    { from Steam;         to Evap1/Steam; }
-    { from Evap1/Juice1;  to Evap2/Feed;  }     // unit -> unit
-    { from Evap1/Vap1;    to Evap2/Steam; }     // 1st-effect vapour heats the 2nd (double effect)
-    { from Evap2/Syrup;   to Cryst/Feed;  }
-    { from Cryst/Magma;   to Magma;       }     // unit -> sector outlet (product)
-    { from Evap2/Vap2;    to Vapour;      }     // 2nd-effect vapour -> effluent
-    { from Evap1/Cond1;   to Condensate1; }     // steam condensate, effect 1
-    { from Evap2/Cond2;   to Condensate2; }     // steam condensate, effect 2
-);
+{
+    DilutedJuice { to Evap1/Feed; }
+    Steam        { to Evap1/Steam; }
+    Juice1       { from Evap1/Juice1;  to Evap2/Feed; }
+    Vap1         { from Evap1/Vap1;    to Evap2/Steam; }   // 1st-effect vapour heats the 2nd
+    Syrup        { from Evap2/Syrup;   to Cryst/Feed; }
+    Magma        { from Cryst/Magma; }
+    Vap2         { from Evap2/Vap2; }
+    Cond1        { from Evap1/Cond1; }
+    Cond2        { from Evap2/Cond2; }
+}

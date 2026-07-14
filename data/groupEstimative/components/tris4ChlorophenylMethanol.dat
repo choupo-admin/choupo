@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tris(4-chlorophenyl)methanol  (C19H13Cl3O, CAS 3010-80-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tris4ChlorophenylMethanol;
+formula     C19H13Cl3O;
+CAS         3010-80-8;
+InChIKey    BPFKTJMHOWDJKI-UHFFFAOYSA-N;
+MW          363.662;      // g/mol [origin=calculated method=formula-sum]
+Tc          1189.63;      // K   [origin=predictive method=joback]
+Pc          22.806;      // bar [origin=predictive method=joback]
+omega       1.1490;      // -   [origin=predictive method=lee-kesler]
+Tb          930.54;      // K   [origin=predictive method=joback]
+HvapTb      95240.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-53.71 1.5738 -0.00116568 3.254e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group ACH; count 12; } { group AC; count 3; } { group OH; count 1; } { group ACCl; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group Cl; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,4',4''-trichlorotrityl alcohol" "tris(4-chlorophenyl)methan-1-ol" "benzenemethanol,4-chloro-a,a-bis(4-chlorophenyl)-" "methanol,tris(p-chlorophenyl)- (6ci,7ci,8ci);4,4',4''-trichlorotriphenylmethanol;tri-p-chlorophenyl carbinol;tris(4-chlorophenyl)carbinol;tris(4-chlorophenyl)methanol;tris(p-chlorophenyl)methanol;" );
+gibbsFormation
+{
+    dHf_298   31490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     670.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=247670.0
+    phase     gas;
+}

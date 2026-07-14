@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(2-ethenoxyethoxy)-2-[2-(2-ethenoxyethoxy)ethoxy]ethane  (C12H22O5, CAS 83416-06-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Ethenoxyethoxy222EthenoxyethoxyEthoxyEthane;
+formula     C12H22O5;
+CAS         83416-06-2;
+InChIKey    UEIPWOFSKAZYJO-UHFFFAOYSA-N;
+MW          246.303;      // g/mol [origin=calculated method=formula-sum]
+Tc          745.74;      // K   [origin=predictive method=joback]
+Pc          17.788;      // bar [origin=predictive method=joback]
+omega       0.9099;      // -   [origin=predictive method=lee-kesler]
+Tb          579.62;      // K   [origin=predictive method=joback]
+HvapTb      53016.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (113.498 0.7878 -0.0001198 -1.076e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2=CH; count 2; } { group CH2O; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 8; } { group dCH2; count 2; } { group dCH; count 2; } { group O; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -701250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     670.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-299160.0
+    phase     gas;
+}

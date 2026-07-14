@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  pitzer_calcite_brine / constant/thermoPackage
+
+  Water, the solvent, is the package's only component: the seawater ion pool
+  (Na+, Mg+2, Ca+2, K+, Cl-, SO4-2, HCO3-/CO3-2 and neutral CO2aq) is
+  declared in the speciate ops' totals, and the rival activity models under
+  test -- pitzerHMW (with the carbonate theta/psi + lambda salting-out) vs
+  davies -- are selected per op in the propsDict.  This package is only the
+  solvent basis; it never computes a brine activity coefficient.
+\*---------------------------------------------------------------------------*/
+
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }

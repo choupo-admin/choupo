@@ -1,0 +1,19 @@
+/* Case-local electrolyte-NRTL parameters for K+/Cl-. */
+recordType      electrolyteNRTLParameters;
+schemaVersion   1;
+
+cation K;
+anion  Cl;
+
+parameters
+{
+    tau_m_ca  8.885;
+    tau_ca_m -4.549;
+    alpha     0.2;
+}
+
+provenance
+{
+    kind   local;
+    source "proxy of Chen & Evans water-NaCl (1:1 alkali chloride); refit required for production";
+}

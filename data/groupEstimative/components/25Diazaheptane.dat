@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,5-diazaheptane  (C5H14N2, CAS 111-37-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        25Diazaheptane;
+formula     C5H14N2;
+CAS         111-37-5;
+InChIKey    MXJYVLYENVWKQX-UHFFFAOYSA-N;
+MW          102.181;      // g/mol [origin=calculated method=formula-sum]
+Tc          590.10;      // K   [origin=predictive method=joback]
+Pc          35.771;      // bar [origin=predictive method=joback]
+omega       0.5648;      // -   [origin=predictive method=lee-kesler]
+Tb          414.34;      // K   [origin=predictive method=joback]
+HvapTb      39596.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.077 0.63124 -0.0003454 6.93e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH3NH; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n'-ethyl-n-methyl-ethane-1,2-diamine" "n-ethyl-n'-methylethylenediamine" "1,2-ethanediamine, n-ethyl-n'-methyl-" "ethylenediamine, n-ethyl-n'-methyl-" "n-ethyl-n'-methyl ethylenediamine" "1,2-ethanediamine, n1-ethyl-n2-methyl-" "ethyl(2-(methylamino)ethyl)amine" "ethyl[2-(methylamino)ethyl]amine" "1, n-ethyl-n'-methyl-" "n-ethyl-n'-methylethane-1,2-diamine" "ethylenediamine, n-ethyl-n'-methyl- (8ci)" "n-ethyl-n inverted exclamation mark -methylethylenediamine" );
+gibbsFormation
+{
+    dHf_298   -39590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     432.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=170000.0
+    phase     gas;
+}

@@ -17,6 +17,8 @@
   Properties relevant to membrane simulation:
     MW             58.44 g/mol
     dissociation    2 (fully dissociated 1-1 electrolyte)
+
+                            // tier (ions.dat) -- cross-checked by check_ion_pins (+3.88).
     nonvolatile    true (never appears in the vapour)
 
   The vapour-pressure block is left empty: with nonvolatile=true
@@ -25,6 +27,13 @@
   solute side; for tutorials that DO need an energy balance with
   dissolved salt the Cp of the salt-free water dominates by 2-3
   orders of magnitude and the salt contribution is neglected.
+  Sources: formation data live PER ION in the aqueous infinite-dilution
+           tier (Na+, Cl-; H+(aq) = 0 convention) -- Wagman et al., NBS
+           Tables of Chemical Thermodynamic Properties (1982) -- and are
+           cross-checked by bin/curate/check_ion_pins (the +3.88 kJ/mol
+           heat of solution).  Solid rho_p 2165 kg/m^3 = halite
+           crystallographic density (public domain); MW from standard
+           atomic weights.
 \*---------------------------------------------------------------------------*/
 
 name           NaCl;
@@ -34,6 +43,8 @@ CAS            7647-14-5;
 MW             58.44;          // g/mol  (= kg/kmol)
 nonvolatile    true;
 dissociation   2;              // van't Hoff factor for π = ν R T c
+dissociatesTo  { Na 1; Cl 1; }   // ion stoichiometry (formula-like identity; the package activates it)
+
 
 // FORMATION DATUM lives PER ION in the aqueous infinite-dilution tier,
 // electrolyte/ions.dat (Na+, Cl-; H+(aq)=0 convention, Wagman 1982),
@@ -42,18 +53,9 @@ dissociation   2;              // van't Hoff factor for π = ν R T c
 // Both Na+ and Cl- DO carry the full hfAq/sAq/cpAq enthalpy tier in ions.dat.
 
 // Salt dissociation map for the electrolyte activity model (pitzer).  cation/anion
-// are ion NAMES into data/standards/electrolyte/{ions,pairs}.dat; solubility is the
+// are ion NAMES into data/standards/species/aqueous/ + parameters/electrolyte/pitzer/pairs/; solubility is the
 // measured saturation molality.  Intrinsic salt chemistry, declared ONCE -- a case
 // selects `activityModel { model pitzer; }` and re-types nothing.
-electrolyte
-{
-    cation     Na;          // -> ions.dat (z = +1)
-    anion      Cl;          // -> ions.dat (z = -1); pairs.dat (Na,Cl)
-    solubility 6.144;       // m_sat [mol/kg water], 25 C (solvent = water, declared)
-    dissolutionEnthalpy 3880;  // J/mol; standard enthalpy of solution NaCl(s)->Na+(aq)+Cl-(aq),
-                               //   +3.88 kJ/mol (Ksp(T) van't Hoff; small -> NaCl ~T-flat)
-    provenance { solubility { origin measured; method "Pinho & Macedo, J. Chem. Eng. Data 50 (2005) 29 (aqueous, 25 C; primary)"; } }
-}
 
 // Solid-crystal properties for the population-balance crystalliser (MSMPR/FVM):
 // particle density + volume shape factor (V = k_v L^3).  NaCl grows as CUBES.

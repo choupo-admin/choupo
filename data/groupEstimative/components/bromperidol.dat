@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bromperidol  (C21H23BrFNO2, CAS 10457-90-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bromperidol;
+formula     C21H23BrFNO2;
+CAS         10457-90-6;
+InChIKey    RKLNONIVDFXQRX-UHFFFAOYSA-N;
+MW          420.322;      // g/mol [origin=calculated method=formula-sum]
+Tc          1219.86;      // K   [origin=predictive method=joback]
+Pc          20.661;      // bar [origin=predictive method=joback]
+omega       1.4299;      // -   [origin=predictive method=lee-kesler]
+Tb          982.84;      // K   [origin=predictive method=joback]
+HvapTb      98408.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-149.647 2.3255 -0.00191902 6.5526e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group C; count 1; } { group ACH; count 8; } { group AC; count 3; } { group OH; count 1; } { group CH2CO; count 1; } { group CH2N; count 1; } { group Br; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group CH2_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group F; count 1; } { group Br; count 1; } { group OH; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[4-(4-bromophenyl)-4-oxidanyl-piperidin-1-yl]-1-(4-fluorophenyl)butan-1-one" "impromen" "bromoperidol" "bromperidolum [inn-latin]" "4-(4-(4-bromophenyl)-4-hydroxypiperidino)-4'-fluorobutyrophenone" "4-[4-(4-bromophenyl)-4-hydroxypiperidin-1-yl]-1-(4-fluorophenyl)butan-1-one" "tesoprel" "4-(4-(p-bromophenyl)-4-hydroxypiperidino)-4'-fluorobutyrophenone" "4-(4-(p-bromophenyl)-4-hydroxypiperidinol)-4'-fluorobutyrophenone" "4-(4-(4-bromophenyl)-4-hydroxypiperidin-1-yl)-1-(4-fluorophenyl)butan-1-one" "butyrophenone, 4-(4-(p-bromophenyl)-4-hydroxypiperidino)-4'-fluoro-" "1-butanone, 4-(4-(4-bromophenyl)-4-hydroxy-1-piperidinyl)-1-(4-fluorophenyl)-" );
+gibbsFormation
+{
+    dHf_298   -317990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     944.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=27110.0
+    phase     gas;
+}

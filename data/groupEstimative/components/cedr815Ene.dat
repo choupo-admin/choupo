@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cedr-8(15)-ene  (C15H24, CAS 546-28-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cedr815Ene;
+formula     C15H24;
+CAS         546-28-1;
+InChIKey    DYLPEFGBWGEFBB-UHFFFAOYSA-N;
+MW          204.357;      // g/mol [origin=calculated method=formula-sum]
+Tc          786.19;      // K   [origin=predictive method=joback]
+Pc          21.139;      // bar [origin=predictive method=joback]
+omega       0.4208;      // -   [origin=predictive method=lee-kesler]
+Tb          561.86;      // K   [origin=predictive method=joback]
+HvapTb      46306.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-237.53 2.27566 -0.002222 9.159e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 3; } { group C; count 2; } { group CH2=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 3; } { group C_ring; count 2; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1h-3a,7-methanoazulene, octahydro-3,8,8-trimethyl-6-methylene-, (3r,3as,7s,8as)-" "1h-3a,7-methanoazulene, octahydro-3,8,8-trimethyl-6-methylene-, [3r-(3.alpha.,3a.beta.,7.beta.,8a.alpha.)]-" "(3r-(3alpha,3abeta,7beta,8aalpha))-octahydro-3,8,8-trimethyl-6-methylene-1h-3a,7-methanoazulene" "1h-3a,7-methanoazulene, octahydro-3,8,8-trimethyl-6-methylene-, (3r-(3alpha,3abeta,7beta,8aalpha))-" );
+gibbsFormation
+{
+    dHf_298   -72810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     537.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=260150.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-chloro-2h-chromene-3-carbaldehyde  (C10H7ClO2, CAS 57544-34-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Chloro2hChromene3Carbaldehyde;
+formula     C10H7ClO2;
+CAS         57544-34-0;
+InChIKey    VCRXKYYFRXENHC-UHFFFAOYSA-N;
+MW          194.614;      // g/mol [origin=calculated method=formula-sum]
+Tc          840.18;      // K   [origin=predictive method=joback]
+Pc          37.180;      // bar [origin=predictive method=joback]
+omega       0.6611;      // -   [origin=predictive method=lee-kesler]
+Tb          597.90;      // K   [origin=predictive method=joback]
+HvapTb      58417.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.12 0.7865 -0.00056626 1.586e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=C; count 1; } { group ACH; count 3; } { group AC; count 2; } { group CHO; count 1; } { group FCH2O; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 4; } { group Cl; count 1; } { group O_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-chloranyl-2h-chromene-3-carbaldehyde" "6-chloro-2h-1-benzopyran-3-carboxaldehyde" "2h-1-benzopyran-3-carboxaldehyde, 6-chloro-" "2h-1-benzopyran-3-carboxaldehyde,6-chloro-" );
+gibbsFormation
+{
+    dHf_298   -136170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     355.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=5590.0
+    phase     gas;
+}

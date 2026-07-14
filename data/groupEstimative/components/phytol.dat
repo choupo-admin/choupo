@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phytol  (C20H40O, CAS 102608-53-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phytol;
+formula     C20H40O;
+CAS         102608-53-7;
+InChIKey    BOTWFXYSPFMFNR-UHFFFAOYSA-N;
+MW          296.539;      // g/mol [origin=calculated method=formula-sum]
+Tc          927.18;      // K   [origin=predictive method=joback]
+Pc          11.375;      // bar [origin=predictive method=joback]
+omega       1.0031;      // -   [origin=predictive method=lee-kesler]
+Tb          752.10;      // K   [origin=predictive method=joback]
+HvapTb      75667.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.92 1.9755 -0.0011903 2.843e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 10; } { group CH; count 3; } { group CH=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 10; } { group CH; count 3; } { group dCH; count 1; } { group dC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7,11,15-tetramethylhexadec-2-en-1-ol" "1-hexadecen-2-ol,3,7,11,15-tetramethyl-" "2-hexadecen-1-ol, 3,7,11,15-tetramethyl-" "3,7,11,15-tetramethyl-2-hexadecen-1-ol" "phytol, dist" "2-hexadecen-1-ol, 3,7,11,15-tetramethyl-, (7r,11r)-" "2-hexadecen-1-ol, 3,7,11,15-tetramethyl-, (2e)-" "2-hexadecen-1-ol, 3,7,11,15-tetramethyl-, [r-[r,r-(e)]]-" "phytol;(2e)-3,7,11,15-tetramethyl-2-hexadecen-1-ol;3,7,11,15-tetramethyl-2-hexadecen-1-ol;3,7,11,15-tetramethyl-2-hex" );
+gibbsFormation
+{
+    dHf_298   -516770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     946.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=45050.0
+    phase     gas;
+}

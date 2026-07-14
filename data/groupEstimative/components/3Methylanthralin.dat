@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methylanthralin  (C15H12O3, CAS 491-59-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Methylanthralin;
+formula     C15H12O3;
+CAS         491-59-8;
+InChIKey    JBGKVNQFVAJOGC-UHFFFAOYSA-N;
+MW          240.258;      // g/mol [origin=calculated method=formula-sum]
+Tc          1126.74;      // K   [origin=predictive method=joback]
+Pc          49.593;      // bar [origin=predictive method=joback]
+omega       1.3943;      // -   [origin=predictive method=lee-kesler]
+Tb          859.26;      // K   [origin=predictive method=joback]
+HvapTb      94906.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-105.7 1.68732 -0.00173184 7.045e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 4; } { group ACCH3; count 1; } { group ACOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 8; } { group OH_phenol; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylanthracene-1,8,9-triol" "3-methyl-1,8,9-anthracenetriol" "chrysophanic acid anthranol" "1,8,9-anthracenetriol, 3-methyl-" "1,8-dihydroxy-3-methylanthron" "1,8,9-trihydroxy-3-methylanthracene" "3-methyl-1,8,9-trihydroxyanthracene" "3-methyl-1,8-dihydroxy-9,10-dihydro-9-oxoanthracen" "ambap491-59-8" );
+gibbsFormation
+{
+    dHf_298   -289130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     483.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-81990.0
+    phase     gas;
+}

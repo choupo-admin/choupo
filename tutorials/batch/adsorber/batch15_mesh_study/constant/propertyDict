@@ -1,0 +1,16 @@
+/*---------------------------------------------------------------------------*\
+  batch15_mesh_study / constant/propertyDict (vendored with the batch13 family)
+
+  CO2 (15%) in helium over a solid adsorbent bed, isothermal at 1 bar: the
+  gas phase is ideal (the DECLARED A3 assumption, p_i = c_i R T, announced
+  by the unit) and no liquid ever forms -- ideal activity + ideal-gas EOS
+  is ALL the thermodynamics this breakthrough lesson needs.  The adsorption
+  equilibrium is NOT here: it is (adsorbent x adsorbate) PAIR data,
+  vendored under constant/parameters/adsorption/equilibria/zeolite13X/
+  (self-contained case; tRef = 298 K anchor copy, see that record header).
+\*---------------------------------------------------------------------------*/
+
+components       ( CO2 He );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

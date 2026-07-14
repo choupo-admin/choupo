@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene, 1,3,5-tris(1-methylpropyl)-  (C18H30, CAS 6565-55-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzene135Tris1Methylpropyl;
+formula     C18H30;
+CAS         6565-55-5;
+InChIKey    LNCLJYZMKXSECB-UHFFFAOYSA-N;
+MW          246.438;      // g/mol [origin=calculated method=formula-sum]
+Tc          843.89;      // K   [origin=predictive method=joback]
+Pc          14.557;      // bar [origin=predictive method=joback]
+omega       0.6568;      // -   [origin=predictive method=lee-kesler]
+Tb          646.76;      // K   [origin=predictive method=joback]
+HvapTb      58098.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.827 1.53372 -0.00086212 1.772e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 3; } { group ACH; count 3; } { group ACCH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 3; } { group CH; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3,5-tri(butan-2-yl)benzene" "benzene, 1,3,5-tri-sec-butyl-" );
+gibbsFormation
+{
+    dHf_298   -217100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     709.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=186510.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (4s,2rs)-2-ethylthiazolidine-4-carboxylic acid  (C6H11NO2S, CAS 205985-92-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4s2rs2Ethylthiazolidine4CarboxylicAcid;
+formula     C6H11NO2S;
+CAS         205985-92-8;
+InChIKey    RSZVGLFPGDKTDK-CNZKWPKMSA-N;
+MW          161.219;      // g/mol [origin=calculated method=formula-sum]
+Tc          825.81;      // K   [origin=predictive method=joback]
+Pc          42.220;      // bar [origin=predictive method=joback]
+omega       0.7390;      // -   [origin=predictive method=lee-kesler]
+Tb          589.38;      // K   [origin=predictive method=joback]
+HvapTb      58632.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.769 0.73083 -0.0004053 7.54e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group CHNH; count 1; } { group COOH; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group COOH; count 1; } { group NH_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4s)-2-ethyl-1,3-thiazolidine-4-carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -394230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     394.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-187860.0
+    phase     gas;
+}

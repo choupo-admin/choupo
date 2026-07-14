@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3,3-trimethoxybutane  (C7H16O3, CAS 6607-66-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        133Trimethoxybutane;
+formula     C7H16O3;
+CAS         6607-66-5;
+InChIKey    DIQSNTFKLAYVOT-UHFFFAOYSA-N;
+MW          148.202;      // g/mol [origin=calculated method=formula-sum]
+Tc          599.32;      // K   [origin=predictive method=joback]
+Pc          27.070;      // bar [origin=predictive method=joback]
+omega       0.4790;      // -   [origin=predictive method=lee-kesler]
+Tb          423.79;      // K   [origin=predictive method=joback]
+HvapTb      37110.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (48.552 0.60508 -0.0001958 -2.04e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 1; } { group CH3O; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butane, 1,3,3-trimethoxy-" "butane,1,3,3-trimethoxy-" "4-methoxybutan-2-one-dimethylacetal" "4-methoxy-2-butanone dimethyl acetal" );
+gibbsFormation
+{
+    dHf_298   -593220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     423.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-304100.0
+    phase     gas;
+}

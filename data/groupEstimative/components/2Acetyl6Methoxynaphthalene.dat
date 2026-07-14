@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-acetyl-6-methoxynaphthalene  (C13H12O2, CAS 3900-45-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Acetyl6Methoxynaphthalene;
+formula     C13H12O2;
+CAS         3900-45-6;
+InChIKey    GGWCZBGAIGGTDA-UHFFFAOYSA-N;
+MW          200.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          860.52;      // K   [origin=predictive method=joback]
+Pc          28.475;      // bar [origin=predictive method=joback]
+omega       0.7033;      // -   [origin=predictive method=lee-kesler]
+Tb          628.95;      // K   [origin=predictive method=joback]
+HvapTb      58928.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.82 0.94604 -0.00058754 1.3646e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 4; } { group CH3CO; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 4; } { group O; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(6-methoxynaphthalen-2-yl)ethanone" "1-(6-methoxy-2-naphthyl)ethanone" "6'-methoxy-2'-acetonaphthone" "6-methoxy-2-acetylnaphthalene" "6-methoxy-2-acetonaphthalene" "2-acetyl-6-methoxy naphthalene" "1-(6-methoxy-2-naphthyl)ethan-1-one" "1-(6-methoxynaphth-2-yl)ethan-1-one" "1-(6-methoxy-naphthalen-2-yl)-ethanone" "q059" "ethanone, 1-(6-methoxy-2-naphthalenyl)-" );
+gibbsFormation
+{
+    dHf_298   -151790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     472.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=24460.0
+    phase     gas;
+}

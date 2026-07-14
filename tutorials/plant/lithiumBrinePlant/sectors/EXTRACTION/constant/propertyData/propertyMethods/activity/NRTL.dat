@@ -1,0 +1,28 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "propertyMethods/activity/NRTL.dat"; }
+/*---------------------------------------------------------------------------*\
+  propertyMethod activity.NRTL -- the Renon-Prausnitz non-random two-liquid
+  G^E model: liquid-phase gamma for polar/azeotropic mixtures on the SYMMETRIC
+  (Raoult) convention, gamma -> 1 as x -> 1.  Pair parameters (tau, alpha) come
+  DECLARED via parameters.binaryPairs (cited files).  It supplies the LIQUID
+  activity coefficients gamma_i, usable in VLE (the gamma-phi K = gamma Psat/(phi P))
+  OR in LLE (a gamma-gamma split, as the SX settler in the lithiumBrinePlant
+  reference case uses it).  Source: Renon & Prausnitz (1968), AIChE J. 14:135.
+\*---------------------------------------------------------------------------*/
+recordType propertyMethod;
+schemaVersion 1;
+
+name NRTL;
+family activity;
+
+description "Non-Random Two-Liquid molecular activity model.";
+
+
+referenceBasis
+{
+    liquid { rung pureLiquidRaoult; convention "gamma_i -> 1 as x_i -> 1"; }
+    vapour { rung idealGasReference; }
+}
+
+requires ( components binaryInteractionParameters );
+
+provides ( activityCoefficients Kvalues excessEnthalpy );   // excessEnthalpy: the FD identity on gamma(T,x), calorimetricFit-gated, consumed by H_liquid_formation   // requires/provides = the record contract AS DOCUMENTATION (only electrolyte requires.ionSpecies is machine-asserted today); excessGibbsEnergy dropped -- nothing serves it

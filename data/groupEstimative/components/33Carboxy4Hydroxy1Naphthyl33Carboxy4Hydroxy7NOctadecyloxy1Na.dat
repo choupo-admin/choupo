@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(3'-carboxy-4'-hydroxy-1'-naphthyl)-3-(3''-carboxy-4''-hydroxy-7''-n-octadecyloxy-1''-naphthyl)naphthalide  (C52H56O9, CAS 38122-81-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33Carboxy4Hydroxy1Naphthyl33Carboxy4Hydroxy7NOctadecyloxy1Na;
+formula     C52H56O9;
+CAS         38122-81-5;
+InChIKey    AANWBJLLAXURNB-UHFFFAOYSA-N;
+MW          825.011;      // g/mol [origin=calculated method=formula-sum]
+Tc          3487.97;      // K   [origin=predictive method=joback]
+Pc          6.256;      // bar [origin=predictive method=joback]
+omega       -0.4378;      // -   [origin=predictive method=lee-kesler]
+Tb          2092.54;      // K   [origin=predictive method=joback]
+HvapTb      216319.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-188.053 5.03432 -0.0041374 1.4205e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 16; } { group C; count 1; } { group ACH; count 15; } { group AC; count 13; } { group ACOH; count 2; } { group CH2O; count 1; } { group COOH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 17; } { group C_ring; count 1; } { group dCH_ring; count 15; } { group dC_ring; count 15; } { group OH_phenol; count 2; } { group O; count 1; } { group COOH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[1-(3-carboxy-4-hydroxy-1-naphthyl)-3-oxo-1h,3h-benzo[de]isochromen-1-yl]-1-hydroxy-6-(octadecyloxy)-2-naphthoic acid" "2-naphthalenecarboxylic acid, 4-(1-(3-carboxy-4-hydroxy-1-naphthalenyl)-3-oxo-1h,3h-naphtho(1,8-cd)pyran-1-yl)-1-hydroxy-6-(octadecyloxy)-" "4-(1-(3-carboxy-4-hydroxy-1-naphthalenyl)-3-oxo-1h,3h-naphtho(1,8-cd)pyran-1-yl)-1-hydroxy-6-(octadecyloxy)-2-naphthalenecarboxylic acid" "4-(1-(3-carboxy-4-hydroxy-1-naphthyl)-3-oxo-1h,3h-naphtho(1,8-cd)pyran-1-yl)-1-hydroxy-6-(octadecyloxy)-2-naphthoic acid" "4-[1-(3-carboxy-4-hydroxynaphthalen-1-yl)-3-oxo-1h,3h-benzo[de]isochromen-1-yl]-1-hydroxy-6-(octadecyloxy)naphthalene-2-carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -1318400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1653.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-356240.0
+    phase     gas;
+}

@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-heptyl radical  (C7H15, CAS 3356-67-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        1HeptylRadical;
+formula     C7H15;
+CAS         3356-67-0;
+InChIKey    AQMHNCQZLQUNJI-UHFFFAOYSA-N;
+role        radical;
+MW          99.197;      // g/mol [origin=calculated method=formula-sum]
+Tc          517.07;      // K   [origin=predictive method=joback]
+Pc          28.475;      // bar [origin=predictive method=joback]
+omega       0.3483;      // -   [origin=predictive method=lee-kesler]
+Tb          354.36;      // K   [origin=predictive method=joback]
+HvapTb      30527.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.625 0.63882 -0.000338 6.58e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "heptane" "n-heptyl" "heptanyl" "heptyl" "1-c7h15" );
+gibbsFormation
+{
+    dHf_298   -120990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     427.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=55790.0
+    phase     gas;
+}

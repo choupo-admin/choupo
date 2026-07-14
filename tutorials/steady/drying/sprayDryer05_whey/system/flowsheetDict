@@ -1,0 +1,38 @@
+/*---------------------------------------------------------------------------*\
+  sprayDryer01_sugar  --  flowsheet (one unit, two feeds, two products).
+
+  feed:        100 kg/h of a 40 wt% sucrose solution at 25 °C.
+                 40 kg/h sucrose / 342.30 = 0.11686 kmol/h
+                 60 kg/h water   / 18.015 = 3.33056 kmol/h
+                 total 3.4474 kmol/h ;  z_sucrose = 0.03390
+
+  dryingAir:   ~500 kmol/h of hot AIR (N2/O2/Ar) at 180 C -- sized to carry the whey water.
+               Whey solids modelled as sucrose (lactose proxy, a disaccharide MW~342).
+
+  The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        dryer;
+        type        sprayDryer;
+        inputs      ( feed  dryingAir );
+        outputs     ( powder  exhaustAir );
+
+        operation
+        {
+            wheelDiameter    0.1 m;             // 10 cm spinning disc (HARDWARE)
+            wheelSpeed       25000;             // rpm
+            chamberDiameter  1.0 m;             // drying chamber (HARDWARE)
+            chamberHeight    10.0 m;             // -> residence time is a RESULT (L / v_particle)
+            // flow co;  (default: co-current gas + droplets)
+            // liquidViscosity / surfaceTension default to water.
+        }
+        dryingCurve  sugarDrying;    // KINETICS: Xc + curve, in constant/dryingKinetics
+        // (the equilibrium GAB sorption ISOTHERM is in
+        //  constant/components/sucrose.dat --- thermodynamics, kept separate)
+    }
+);

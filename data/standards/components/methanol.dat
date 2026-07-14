@@ -1,10 +1,18 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Methanol  (CH4O, CAS 67-56-1)
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
+           coefficients, Cp polynomials and the ideal-gas formation datum
+           (dHf_298/s_298, JANAF convention) are individual literature
+           values -- primary re-citation pending (IST review).  Viscosity:
+           Andrade/Vogel fits to literature mu(T); UNIQUAC r,q are the van
+           der Waals values (Abrams-Prausnitz) as used by Popken 2000.
 \*---------------------------------------------------------------------------*/
 
 name        methanol;
 formula     CH4O;
 CAS         67-56-1;
+
+
 
 MW          32.042;
 Tc          512.64;
@@ -56,4 +64,10 @@ groups
 {
     unifac ( { group CH3OH; count 1; } );
     joback ( { group CH3; count 1; } { group OH; count 1; } );
+}
+
+uniquac
+{
+    r   1.4311;
+    q   1.4320;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
 }

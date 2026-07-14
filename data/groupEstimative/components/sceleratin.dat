@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sceleratin  (C18H27NO7, CAS 6680-73-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sceleratin;
+formula     C18H27NO7;
+CAS         6680-73-5;
+InChIKey    KWEQCWXCFQWUQU-AUBWXPIGSA-N;
+MW          369.414;      // g/mol [origin=calculated method=formula-sum]
+Tc          1275.65;      // K   [origin=predictive method=joback]
+Pc          20.946;      // bar [origin=predictive method=joback]
+omega       1.6197;      // -   [origin=predictive method=lee-kesler]
+Tb          1040.50;      // K   [origin=predictive method=joback]
+HvapTb      120536.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-183.649 2.64286 -0.00231064 8.545e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 4; } { group C; count 2; } { group CH=C; count 1; } { group OH; count 3; } { group CH2N; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 3; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "sceleratine" "(5r,14ar)-3,6-dihydroxy-3-(hydroxymethyl)-4,5,6-trimethyl-3,4,5,6,9,11,13,14,14a,14b-decahydro[1,6]dioxacyclododecino[2,3,4-gh]pyrrolizine-2,7-dione" "21-norsenecionan-11,16-dione, 15,20-dihydro-12,15,20-trihydroxy-14-methyl-, (14-alpha,15-alpha)-" "[1,6]dioxacyclododecino[2,3,4-gh]pyrrolizine-2,7-dione,3,4,5,6,9,11,13,14,14a,14b-decahydro-3,6-dihydroxy-3-(hydroxymethyl)-4,5,6-trimethyl-,(3s,4r,5r,6r,14ar,14br)- (9ci)" "21-norsenecionan-11,16-dione,15,20-dihydro-12,15,20-trihydroxy-14-methyl-, (14a,15a)-; sceleratine (6ci,7ci,8ci); sceleratin;[1,6]dioxacyclododecino[2,3,4-gh]pyrrolizine-2,7-dione,3,4,5,6,9,11,13,14,14a,14b-decahydro-3,6-dihydroxy-3-(hydroxymethyl)-4,5,6-trimethyl-,[3s-(3r*,4s*,5s*,6s*,14as*,14bs*)]-" );
+gibbsFormation
+{
+    dHf_298   -1222880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     885.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-687570.0
+    phase     gas;
+}

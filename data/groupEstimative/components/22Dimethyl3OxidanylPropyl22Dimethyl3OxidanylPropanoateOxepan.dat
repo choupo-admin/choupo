@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2,2-dimethyl-3-oxidanyl-propyl) 2,2-dimethyl-3-oxidanyl-propanoate;oxepan-2-one  (C16H30O6, CAS 70776-82-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Dimethyl3OxidanylPropyl22Dimethyl3OxidanylPropanoateOxepan;
+formula     C16H30O6;
+CAS         70776-82-8;
+InChIKey    XBHMWWWYOUUZSF-UHFFFAOYSA-N;
+MW          318.41;      // g/mol [origin=calculated method=formula-sum]
+Tc          1084.08;      // K   [origin=predictive method=joback]
+Pc          17.405;      // bar [origin=predictive method=joback]
+omega       1.4063;      // -   [origin=predictive method=lee-kesler]
+Tb          881.37;      // K   [origin=predictive method=joback]
+HvapTb      97650.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-24.807 1.68588 -0.0008298 7.89e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 7; } { group C; count 2; } { group OH; count 2; } { group CH2COO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 2; } { group CH2_ring; count 5; } { group OH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propanoic acid, 3-hydroxy-2,2-dimethyl-, 3-hydroxy-2,2-dimethylpropyl ester, polymer with 2-oxepanone" "3-hydroxy-2,2-dimethylpropanoic acid, 3-hydroxy-2,2-dimethylpropyl ester, epsilon-carprolactone polymer" );
+gibbsFormation
+{
+    dHf_298   -1360890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1005.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-865360.0
+    phase     gas;
+}

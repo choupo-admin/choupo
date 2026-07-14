@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tripropionin  (C12H20O6, CAS 139-45-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tripropionin;
+formula     C12H20O6;
+CAS         139-45-7;
+InChIKey    YZWRNSARCRTXDS-UHFFFAOYSA-N;
+MW          260.286;      // g/mol [origin=calculated method=formula-sum]
+Tc          828.51;      // K   [origin=predictive method=joback]
+Pc          18.154;      // bar [origin=predictive method=joback]
+omega       0.9902;      // -   [origin=predictive method=lee-kesler]
+Tb          648.38;      // K   [origin=predictive method=joback]
+HvapTb      64139.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (66.525 0.98536 -0.0003484 -4.02e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group CH2COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-di(propanoyloxy)propyl propanoate" "propionin, tri-" "glycerol tripropionate" "glyceryl tripropionate" "tripropionine" "1,2,3-propanetriol, tripropanoate" "glycerine tripropionate" "tripropionylglycerol" "glyceryl tripropanoate" "propionic acid triglyceride" "1,2,3-propanetriol, 1,2,3-tripropanoate" "propionin, tri- (8ci)" );
+gibbsFormation
+{
+    dHf_298   -1248130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     767.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-883390.0
+    phase     gas;
+}

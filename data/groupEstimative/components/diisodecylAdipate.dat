@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diisodecyl adipate  (C26H50O4, CAS 27178-16-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diisodecylAdipate;
+formula     C26H50O4;
+CAS         27178-16-1;
+InChIKey    YKGYQYOQRGPFTO-UHFFFAOYSA-N;
+MW          426.682;      // g/mol [origin=calculated method=formula-sum]
+Tc          1116.68;      // K   [origin=predictive method=joback]
+Pc          7.352;      // bar [origin=predictive method=joback]
+omega       0.6659;      // -   [origin=predictive method=lee-kesler]
+Tb          910.04;      // K   [origin=predictive method=joback]
+HvapTb      87508.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (26.708 2.37608 -0.0012078 1.83e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 16; } { group CH; count 2; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 18; } { group CH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(8-methylnonyl) hexanedioate" "hexanedioic acid, diisodecyl ester" "adipic acid, diisodecyl ester" "diisodecyl hexanedioate" "hexanedioic acid, 1,6-diisodecyl ester" "monoplex dda" "diisodecyl adipate, adipate" "adipic acid diisodecyl ester" "hexanedioic acid, bis(8-methylnonyl) ester" "hexanedioic acid,1,6-bis(8-methylnonyl) ester" );
+gibbsFormation
+{
+    dHf_298   -1225090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1252.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-457580.0
+    phase     gas;
+}

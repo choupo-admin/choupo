@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetyl triethyl citrate  (C14H22O8, CAS 77-89-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acetylTriethylCitrate;
+formula     C14H22O8;
+CAS         77-89-4;
+InChIKey    WEAPVABOECTMGR-UHFFFAOYSA-N;
+MW          318.322;      // g/mol [origin=calculated method=formula-sum]
+Tc          937.84;      // K   [origin=predictive method=joback]
+Pc          15.710;      // bar [origin=predictive method=joback]
+omega       1.1044;      // -   [origin=predictive method=lee-kesler]
+Tb          749.57;      // K   [origin=predictive method=joback]
+HvapTb      75090.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (67.325 1.24048 -0.0005312 -1.1e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group CH3COO; count 1; } { group CH2COO; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 5; } { group C; count 1; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "triethyl 2-acetyloxypropane-1,2,3-tricarboxylate" "citroflex a 2" "atec" "triethyl acetylcitrate" "triethyl o-acetylcitrate" "acetyltriethyl citrate" "o-acetylcitric acid triethyl ester" "citric acid, acetyl triethyl ester" "triethyl citrate, acetate" "1,2,3-propanetricarboxylic acid, 2-(acetyloxy)-, triethyl ester" "citric acid, triethyl ester, acetate" "tricarballylic acid, beta-acetoxytributyl ester" );
+gibbsFormation
+{
+    dHf_298   -1610160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     867.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1171640.0
+    phase     gas;
+}

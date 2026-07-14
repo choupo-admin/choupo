@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (4bs,6s,8as)-6-methoxy-1,4,6,7,8,8a,9,10,12,13-decahydro-3h,5h-pyrano[4',3':3,4]pyrido[2,1-i]indol-3-one  (C16H23NO3, CAS 116964-02-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4bs6s8as6Methoxy146788a9101213Decahydro3h5hPyrano4334Pyrido2;
+formula     C16H23NO3;
+CAS         116964-02-4;
+InChIKey    CPIVZDKVBDXKGP-XEZPLFJOSA-N;
+MW          277.364;      // g/mol [origin=calculated method=formula-sum]
+Tc          932.58;      // K   [origin=predictive method=joback]
+Pc          22.376;      // bar [origin=predictive method=joback]
+omega       0.8565;      // -   [origin=predictive method=lee-kesler]
+Tb          708.29;      // K   [origin=predictive method=joback]
+HvapTb      63840.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-202.2 2.25752 -0.0019828 7.227e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group CH; count 2; } { group C; count 1; } { group CH2COO; count 1; } { group CH3O; count 1; } { group CH2N; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dC_ring; count 2; } { group O; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "14,17-dihydro-3-methoxy-16(15h)-oxaerythrinan-15-one (3beta)-" "16(15h)-oxaerythrinan-15-one, 14,17-dihydro-3-methoxy-, (3beta)-" );
+gibbsFormation
+{
+    dHf_298   -406240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     598.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=10970.0
+    phase     gas;
+}

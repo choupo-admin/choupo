@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ccris 1081  (C21H16O, CAS 3308-64-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ccris1081;
+formula     C21H16O;
+CAS         3308-64-3;
+InChIKey    VDFMUCPEGUQOGZ-UHFFFAOYSA-N;
+MW          284.358;      // g/mol [origin=calculated method=formula-sum]
+Tc          1120.82;      // K   [origin=predictive method=joback]
+Pc          23.888;      // bar [origin=predictive method=joback]
+omega       1.2661;      // -   [origin=predictive method=lee-kesler]
+Tb          883.25;      // K   [origin=predictive method=joback]
+HvapTb      89266.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-112.77 1.80582 -0.00152176 5.22e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 6; } { group ACCH3; count 1; } { group ACCH2; count 1; } { group ACCH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 9; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methyl-1,2-dihydrobenzo[j]aceanthrylen-2-ol" "2-hydroxy-3-methylcholanthrene" "cholanthren-2-ol, 3-methyl-" "1,2-dihydro-3-methylbenz(j)anthrylen-2-ol" "benz(j)aceanthrylen-2-ol, 1,2-dihydro-3-methyl-" "benz[j]aceanthrylen-2-ol, 1,2-dihydro-3-methyl-" "2-cholanthrenol, 3-methyl-" "3-methyl-1,2-dihydrocyclopenta[ij]tetraphen-2-ol" "benz[j]aceanthrylen-2-ol,1,2-dihydro-3-methyl- (9ci)" "2-cholanthrenol,3-methyl- (7ci,8ci); 2-hydroxy-3-methylcholanthrene; 3-methylcholanthren-2-ol" );
+gibbsFormation
+{
+    dHf_298   202350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     450.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=446180.0
+    phase     gas;
+}

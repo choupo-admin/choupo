@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: mcpa-diolamine  (C13H20ClNO5, CAS 20405-19-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        mcpaDiolamine;
+formula     C13H20ClNO5;
+CAS         20405-19-0;
+InChIKey    XQAVWNJMMDWIKG-UHFFFAOYSA-N;
+MW          305.755;      // g/mol [origin=calculated method=formula-sum]
+Tc          1194.36;      // K   [origin=predictive method=joback]
+Pc          24.483;      // bar [origin=predictive method=joback]
+omega       1.7734;      // -   [origin=predictive method=lee-kesler]
+Tb          974.97;      // K   [origin=predictive method=joback]
+HvapTb      112179.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (78.945 0.97332 -0.00025712 -8.57e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group ACH; count 3; } { group AC; count 1; } { group ACCH3; count 1; } { group OH; count 2; } { group CH2O; count 1; } { group CH2NH; count 1; } { group COOH; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group OH; count 2; } { group O; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(4-chloranyl-2-methyl-phenoxy)ethanoic acid;2-(2-hydroxyethylamino)ethanol" "mcpa diethanolamine salt" "mcpa-diolamine [iso]" "diethanolamine 2-methyl-4-chlorophenoxyacetate" "bis(2-hydroxyethyl)ammonium 4-chloro-o-tolyloxyacetate" "(2-methyl-4-chlorophenoxy)acetic acid, diethanolamine salt" "acetic acid, ((4-chloro-o-tolyl)oxy)-, compd. with 2,2'-iminodiethanol (1:1)" "2-(4-chloro-2-methylphenoxy)acetic acid; 2-(2-hydroxyethylamino)ethanol" "acetic acid, (4-chloro-2-methylphenoxy)-, compd. with 2,2'-iminobis(ethanol) (1:1)" );
+gibbsFormation
+{
+    dHf_298   -958900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     891.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-598120.0
+    phase     gas;
+}

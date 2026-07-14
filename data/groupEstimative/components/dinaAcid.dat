@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dina acid  (C22H14O4, CAS 29878-91-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dinaAcid;
+formula     C22H14O4;
+CAS         29878-91-9;
+InChIKey    XGDAODQNSVFBGM-UHFFFAOYSA-N;
+MW          342.35;      // g/mol [origin=calculated method=formula-sum]
+Tc          1374.01;      // K   [origin=predictive method=joback]
+Pc          23.565;      // bar [origin=predictive method=joback]
+omega       1.5173;      // -   [origin=predictive method=lee-kesler]
+Tb          1105.22;      // K   [origin=predictive method=joback]
+HvapTb      109374.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-81.41 1.7922 -0.00138588 4.202e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 8; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 12; } { group dC_ring; count 8; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-(8-carboxynaphthalen-1-yl)naphthalene-1-carboxylic acid" "8,8'-dicarboxy-1,1'-binaphthalene" "[1,1']binaphthalenyl-8,8'-dicarboxylic acid" "[1,1'-binaphthalene]-8,8'-dicarboxylic acid" "(1,1'-binaphthalene)-8,8'-dicarboxylic acid" "1,8'-dicarboxylic acid" "[1,8'-dicarboxylic acid" "1,1'-binaphthyl-8,8'-dicarboxylic acid" "[1,1'-binaphthalene]-8,8'-dicarboxylicacid" "8-(8-carboxynaphthyl)naphthalenecarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -388630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     663.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-153860.0
+    phase     gas;
+}

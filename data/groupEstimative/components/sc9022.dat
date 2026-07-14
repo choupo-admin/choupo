@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sc 9022  (C22H32O2, CAS 2529-46-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        sc9022;
+formula     C22H32O2;
+CAS         2529-46-6;
+InChIKey    CKWGCYIEXSUBCE-REGVOWLASA-N;
+MW          328.496;      // g/mol [origin=calculated method=formula-sum]
+Tc          1137.07;      // K   [origin=predictive method=joback]
+Pc          16.444;      // bar [origin=predictive method=joback]
+omega       1.0705;      // -   [origin=predictive method=lee-kesler]
+Tb          903.11;      // K   [origin=predictive method=joback]
+HvapTb      83448.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-270.669 2.91034 -0.00250804 9.332e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 4; } { group C; count 2; } { group CH2=C; count 1; } { group CH=C; count 1; } { group OH; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 8; } { group CH_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(8r,9s,10r,13s,14s,17r)-13-methyl-17-(2-methylprop-2-enyl)-17-oxidanyl-1,2,6,7,8,9,10,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthren-3-one" "methallyl-19-nortestosterone" "17alpha(2-methallyl)-19-nortestosterone" "17-alpha-(2-methallyl)-19-nortestosterone" "17alpha-(2-methylallyl)-19-nortestosterone" "17-alpha-(2-methylallyl)-19-nortestosterone" "17-beta-hydroxy-17-alpha-(2-methylallyl)estr-4-en-3-one" "estr-4-en-3-one, 17-beta-hydroxy-17-(2-methylallyl)-" "estr-4-en-3-one, 17-beta-hydroxy-17-alpha-(2-methylallyl)-" "17" "a-(2-methylallyl)-19-nortestosterone" "17.alpha.-(2-methallyl)-19-nortestosterone" "17.alpha.-(2-methylallyl)-19-nortestosterone" );
+gibbsFormation
+{
+    dHf_298   -375190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     725.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=130670.0
+    phase     gas;
+}

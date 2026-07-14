@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,5-dimethyl-trans-2-hexene  (C8H16, CAS 99446-75-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        45DimethylTrans2Hexene;
+formula     C8H16;
+CAS         99446-75-0;
+InChIKey    OAVNNZUEVHDCKP-UHFFFAOYSA-N;
+MW          112.216;      // g/mol [origin=calculated method=formula-sum]
+Tc          566.07;      // K   [origin=predictive method=joback]
+Pc          27.183;      // bar [origin=predictive method=joback]
+omega       0.3073;      // -   [origin=predictive method=lee-kesler]
+Tb          385.92;      // K   [origin=predictive method=joback]
+HvapTb      32584.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-21.93 0.79568 -0.0005016 1.304e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH; count 2; } { group CH=CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 2; } { group dCH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,5-dimethylhex-2-ene" "2-hexene, 4,5-dimethyl-, (2z)-" "2-hexene, 4,5-dimethyl-" "4,5-dimethyl-2-hexene" "agn-pc-0cpr1u" "4,5-dimethyl-cis-2-hexene" );
+gibbsFormation
+{
+    dHf_298   -101790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     441.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=91820.0
+    phase     gas;
+}

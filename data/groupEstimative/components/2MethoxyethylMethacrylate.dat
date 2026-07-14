@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methoxyethyl methacrylate  (C7H12O3, CAS 6976-93-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2MethoxyethylMethacrylate;
+formula     C7H12O3;
+CAS         6976-93-8;
+InChIKey    YXYJVFYWCLAXHO-UHFFFAOYSA-N;
+MW          144.17;      // g/mol [origin=calculated method=formula-sum]
+Tc          616.45;      // K   [origin=predictive method=joback]
+Pc          29.061;      // bar [origin=predictive method=joback]
+omega       0.5244;      // -   [origin=predictive method=lee-kesler]
+Tb          436.96;      // K   [origin=predictive method=joback]
+HvapTb      40403.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (44.752 0.53074 -0.0001766 -2.06e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH2=C; count 1; } { group CH3O; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methoxyethyl 2-methylprop-2-enoate" "methacrylic acid, 2-methoxyethyl ester" "2-propenoic acid, 2-methyl-, 2-methoxyethyl ester" "pegmem" "peg-mem" "beta-methoxyethyl methacrylate" ".beta.-methoxyethyl methacrylate" "methacrylic acid 2-methoxyethyl ester" "ethylene glycol methyl ether methacrylate" "ethylene glycol monomethyl ether methacrylate" "poly(ethylene glycol)methylether methacrylate" "poly(ethylene glycol)methyl ether methacrylate" );
+gibbsFormation
+{
+    dHf_298   -521670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     482.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-328020.0
+    phase     gas;
+}

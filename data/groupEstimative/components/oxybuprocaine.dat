@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxybuprocaine  (C17H28N2O3, CAS 99-43-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oxybuprocaine;
+formula     C17H28N2O3;
+CAS         99-43-4;
+InChIKey    CMHHMUWAYWTMGS-UHFFFAOYSA-N;
+MW          308.422;      // g/mol [origin=calculated method=formula-sum]
+Tc          990.03;      // K   [origin=predictive method=joback]
+Pc          15.923;      // bar [origin=predictive method=joback]
+omega       1.1084;      // -   [origin=predictive method=lee-kesler]
+Tb          790.81;      // K   [origin=predictive method=joback]
+HvapTb      79537.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.837 1.48876 -0.00074852 1.033e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group ACH; count 3; } { group AC; count 2; } { group CH2O; count 1; } { group CH2N; count 1; } { group ACNH2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 7; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 1; } { group COO; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(diethylamino)ethyl 4-azanyl-3-butoxy-benzoate" "benoxinate" "benoxil" "oxybucaine" "oxyriprocaine" "prescaina" "oxibuprocainum" "oxibuprokain" "conjucain" "oxibuprocaina" "oxybuprocainum" "novesinol" );
+gibbsFormation
+{
+    dHf_298   -528800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     829.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-52730.0
+    phase     gas;
+}

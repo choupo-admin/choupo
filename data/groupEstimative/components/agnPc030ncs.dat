@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: agn-pc-030ncs  (C26H48O10, CAS 67845-43-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        agnPc030ncs;
+formula     C26H48O10;
+CAS         67845-43-6;
+InChIKey    LNXMOXFFLALVDY-UHFFFAOYSA-N;
+MW          520.66;      // g/mol [origin=calculated method=formula-sum]
+Tc          1450.91;      // K   [origin=predictive method=joback]
+Pc          7.425;      // bar [origin=predictive method=joback]
+omega       0.3559;      // -   [origin=predictive method=lee-kesler]
+Tb          1136.89;      // K   [origin=predictive method=joback]
+HvapTb      112459.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (148.081 2.11062 -0.0007864 -1.23e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 15; } { group CH=CH; count 1; } { group CH2O; count 6; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 21; } { group dCH; count 2; } { group O; count 6; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[2-[2-[2-[2-[2-(2-decoxyethoxy)ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]-4-oxidanylidene-but-2-enoic acid" "2-butenedioic acid (2z)-, mono-3,6,9,12,15,18-hexaoxaoctacos-1-yl ester" "(z)-4-[2-[2-[2-[2-[2-(2-decoxyethoxy)ethoxy]ethoxy]ethoxy]ethoxy]ethoxy]-4-oxobut-2-enoic acid" );
+gibbsFormation
+{
+    dHf_298   -1923620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1334.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1036020.0
+    phase     gas;
+}

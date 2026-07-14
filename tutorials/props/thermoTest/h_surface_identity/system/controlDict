@@ -1,0 +1,21 @@
+/*---------------------------------------------------------------------------*\
+  h_surface_identity / system/controlDict
+
+  WHAT THIS CASE IS: the PHYSICAL gate of the one-enthalpy-surface
+  contract (design forum #106).  The grep gate (check_h_surface) proves
+  which loci call which surface; THIS case proves the surface itself
+  obeys thermodynamics: dh_phase/dT equals the phase's own declared Cp,
+  the two phase legs differ at 298.15 K by exactly the vaporisation
+  anchor, and the STATE Hvap(T) obeys Kirchhoff -- all to round-off,
+  golden-pinned.  The retired h_ig - Hvap_Watson(T) liquid leg fails
+  check 1 by construction (its slope was Cp_ig - dHvap_W/dT, silently
+  overriding the declared liquid Cp -- the mheatx +10% shift was the
+  executable symptom).
+
+  Physics: system/propsDict header.  Run log: log.choupoProps.
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "The state identities of the canonical enthalpy surface: dh/dT == Cp_phase, the 298 K vaporisation anchor, and Kirchhoff on Hvap_state -- pinned to round-off";
+
+verbosity     3;

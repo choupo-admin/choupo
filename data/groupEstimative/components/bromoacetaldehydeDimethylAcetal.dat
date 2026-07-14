@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bromoacetaldehyde dimethyl acetal  (C4H9BrO2, CAS 7252-83-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bromoacetaldehydeDimethylAcetal;
+formula     C4H9BrO2;
+CAS         7252-83-7;
+InChIKey    FUSFWUFSEJXMRQ-UHFFFAOYSA-N;
+MW          169.018;      // g/mol [origin=calculated method=formula-sum]
+Tc          592.14;      // K   [origin=predictive method=joback]
+Pc          41.144;      // bar [origin=predictive method=joback]
+omega       0.4457;      // -   [origin=predictive method=lee-kesler]
+Tb          401.68;      // K   [origin=predictive method=joback]
+HvapTb      35365.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (56.761 0.30154 -4.64e-05 -3.96e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 1; } { group CH3O; count 2; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group Br; count 1; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanyl-1,1-dimethoxy-ethane" "2-bromo-1,1-dimethoxyethane" "ethane, 2-bromo-1,1-dimethoxy-" "2,2-dimethoxyethyl bromide" "dimethylbromoacetal" "2,2-dimethoxybromoethane" "1-bromo-2,2-dimethoxyethane" "2-bromoacetaldehyde dimethyl acetal" "acetaldehyde, bromo-, dimethyl acetal" "bromoacetaldehyde diethyl acetal(2-bromide-1,1-diethoxyethane)" "ambap7252-83-7" "fusfwufsejxmrq-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -369280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     375.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-215320.0
+    phase     gas;
+}

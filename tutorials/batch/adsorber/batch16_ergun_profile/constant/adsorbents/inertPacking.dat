@@ -1,0 +1,12 @@
+adsorbent
+{
+    name        inertPacking;
+    type        "inert spherical A4 Ergun anchor";
+    rho_bulk    640;
+    dParticle   2.0 mm;
+    sphericity  1.0;
+}
+provenance
+{
+    identity { origin assumed; method "declared numerical anchor; not a material catalogue record"; }
+}

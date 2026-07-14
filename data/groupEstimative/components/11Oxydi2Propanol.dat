@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1'-oxydi-2-propanol  (C6H14O3, CAS 110-98-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Oxydi2Propanol;
+formula     C6H14O3;
+CAS         110-98-5;
+InChIKey    AZUXKVXMJOIAOF-UHFFFAOYSA-N;
+MW          134.175;      // g/mol [origin=calculated method=formula-sum]
+Tc          705.85;      // K   [origin=predictive method=joback]
+Pc          38.531;      // bar [origin=predictive method=joback]
+omega       1.3234;      // -   [origin=predictive method=lee-kesler]
+Tb          542.78;      // K   [origin=predictive method=joback]
+HvapTb      63942.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (30.152 0.59044 -0.0002588 2.4e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2-oxidanylpropoxy)propan-2-ol" "2-propanol, 1,1'-oxybis-" "bis(2-hydroxypropyl) ether" "2-propanol, 1,1'-oxydi-" "4-oxaheptane-2,6-diol" "1,1'-oxydipropan-2-ol" "1,1'-oxybis-2-propanol" "2,2'-dihydroxydipropyl ether" "niax catalyst d-19" "1,1'-dimethyldiethylene glycol" "2-propanol,1'-oxydi-" "2-propanol,1'-oxybis-" );
+gibbsFormation
+{
+    dHf_298   -614410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     483.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-383880.0
+    phase     gas;
+}

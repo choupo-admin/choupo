@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (s)-1,4-dibromo-2-butanol  (C4H8Br2O, CAS 64028-90-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        s14Dibromo2Butanol;
+formula     C4H8Br2O;
+CAS         64028-90-6;
+InChIKey    PSSRAPMBSMSACN-BYPYZUCNSA-N;
+MW          231.915;      // g/mol [origin=calculated method=formula-sum]
+Tc          714.03;      // K   [origin=predictive method=joback]
+Pc          53.749;      // bar [origin=predictive method=joback]
+omega       0.9317;      // -   [origin=predictive method=lee-kesler]
+Tb          515.18;      // K   [origin=predictive method=joback]
+HvapTb      53659.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.243 0.5001 -0.0003702 1.139e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group OH; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group CH; count 1; } { group Br; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-1,4-bis(bromanyl)butan-2-ol" "(s)-1,4-dibromobutan-2-ol" "snqdllqxbrvuuqx@" "(2s)-1,4-dibromobutan-2-ol" "2-butanol,1,4-dibromo-, (2s)-" );
+gibbsFormation
+{
+    dHf_298   -230740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     455.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-127820.0
+    phase     gas;
+}

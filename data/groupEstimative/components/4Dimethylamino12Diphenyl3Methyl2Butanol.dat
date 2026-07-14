@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-dimethylamino-1,2-diphenyl-3-methyl-2-butanol  (C19H25NO, CAS 126-04-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Dimethylamino12Diphenyl3Methyl2Butanol;
+formula     C19H25NO;
+CAS         126-04-5;
+InChIKey    WVTJZCYIIAURJU-UHFFFAOYSA-N;
+MW          283.415;      // g/mol [origin=calculated method=formula-sum]
+Tc          1004.12;      // K   [origin=predictive method=joback]
+Pc          19.475;      // bar [origin=predictive method=joback]
+omega       1.1096;      // -   [origin=predictive method=lee-kesler]
+Tb          790.98;      // K   [origin=predictive method=joback]
+HvapTb      79998.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-92.639 1.82666 -0.0012248 3.116e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group ACH; count 10; } { group ACCH; count 2; } { group OH; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 3; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(dimethylamino)-3-methyl-1,2-diphenyl-butan-1-ol" "2214-28-0 (hydrochloride)" "4-(dimethylamino)-3-methyl-1,2-diphenylbutan-1-ol" "alpha-(2-(dimethylamino)-1-methylethyl)-alpha-phenylphenethyl alcohol" "benzeneethanol, alpha-(2-(dimethylamino)-1-methylethyl)-alpha-phenyl-" );
+gibbsFormation
+{
+    dHf_298   -62970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     721.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=300560.0
+    phase     gas;
+}

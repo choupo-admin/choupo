@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-hexynenitrile  (C6H7N, CAS 14918-21-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Hexynenitrile;
+formula     C6H7N;
+CAS         14918-21-9;
+InChIKey    JZYKFLLRVPPISG-UHFFFAOYSA-N;
+MW          93.129;      // g/mol [origin=calculated method=formula-sum]
+Tc          632.12;      // K   [origin=predictive method=joback]
+Pc          35.814;      // bar [origin=predictive method=joback]
+omega       0.3954;      // -   [origin=predictive method=lee-kesler]
+Tb          429.08;      // K   [origin=predictive method=joback]
+HvapTb      39286.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.213 0.4147 -0.00026753 7.229e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2CN; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group tCH; count 1; } { group tC; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hex-5-ynenitrile" "5-cyano-1-pentyne" );
+gibbsFormation
+{
+    dHf_298   289610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     365.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=355890.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dibutylhexamethylenediamine  (C14H32N2, CAS 4835-11-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dibutylhexamethylenediamine;
+formula     C14H32N2;
+CAS         4835-11-4;
+InChIKey    VZRUGPJUVWRHKM-UHFFFAOYSA-N;
+MW          228.424;      // g/mol [origin=calculated method=formula-sum]
+Tc          786.72;      // K   [origin=predictive method=joback]
+Pc          15.549;      // bar [origin=predictive method=joback]
+omega       0.9507;      // -   [origin=predictive method=lee-kesler]
+Tb          620.26;      // K   [origin=predictive method=joback]
+HvapTb      59630.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.258 1.48624 -0.000835 1.764e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 10; } { group CH2NH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 12; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n'-dibutylhexane-1,6-diamine" "n,n'-dibutyl-1,6-hexanediamine" "1,6-hexanediamine, n,n'-dibutyl-" "1,6-n,n'-dibutylhexanediamine" "n,n'-dibutylhexamethylenediamine" "hexamethylenediamine, n,n'-dibutyl-" "n,n'-di-n-butyl-1,6-hexanediamine" "1,6-hexanediamine, n1,n6-dibutyl-" "n,n'-di-n-butyl hexa methylene diamine" "butyl[6-(butylamino)hexyl]amine" "n,n inverted exclamation mark -dibutylhexanediamine" "n,n inverted exclamation marka-dibutyl-1,6-hexanediamine" );
+gibbsFormation
+{
+    dHf_298   -225350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     782.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=245780.0
+    phase     gas;
+}

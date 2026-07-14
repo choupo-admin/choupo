@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methylpropargylamine  (C4H7N, CAS 35161-71-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethylpropargylamine;
+formula     C4H7N;
+CAS         35161-71-8;
+InChIKey    HQFYIDOMCULPIW-UHFFFAOYSA-N;
+MW          69.107;      // g/mol [origin=calculated method=formula-sum]
+Tc          514.35;      // K   [origin=predictive method=joback]
+Pc          48.158;      // bar [origin=predictive method=joback]
+omega       0.2881;      // -   [origin=predictive method=lee-kesler]
+Tb          331.41;      // K   [origin=predictive method=joback]
+HvapTb      30792.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.821 0.36612 -0.00023833 6.529e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH3NH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-methylprop-2-yn-1-amine" "2-propyn-1-amine, n-methyl-" "3-methylamino-1-propyne" "methyl-prop-2-ynyl-amine" "n-methyl-n-prop-2-ynylamine (n-methylpropargylamine)" "methyl(propargyl)amine" "methyl(2-propynyl)amine" "3-methylaminoprop-1-yne" "n-methylpropyn-2-ylamine" "n-methyl-n-propargylamine" "n-(2-propynyl)methylamine" "n-methyl-n-2-propynylamine" );
+gibbsFormation
+{
+    dHf_298   219480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     321.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=295260.0
+    phase     gas;
+}

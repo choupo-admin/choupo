@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-dimethyloctadecanamide  (C20H41NO, CAS 3886-90-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDimethyloctadecanamide;
+formula     C20H41NO;
+CAS         3886-90-6;
+InChIKey    BTSRIWFABHLYDQ-UHFFFAOYSA-N;
+MW          311.554;      // g/mol [origin=calculated method=formula-sum]
+Tc          893.30;      // K   [origin=predictive method=joback]
+Pc          10.562;      // bar [origin=predictive method=joback]
+omega       0.9215;      // -   [origin=predictive method=lee-kesler]
+Tb          723.51;      // K   [origin=predictive method=joback]
+HvapTb      68903.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.624 1.99976 -0.0011581 2.5516e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 16; } { group CON_CH3_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 16; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethylstearamide" "hallcomid m 18" "octadecanamide, n,n-dimethyl-" "octadecanoic acid dimethylamide" "dimethylamid kyseliny stearove" "octadecanamide,n,n-dimethyl-" "stearamide,n,n-dimethyl- (4ci);hallcomid m 18;n,n-dimethyloctadecanamide;n,n-dimethylstearamide;n,n-dimethylstearylamide;octadecanoic aciddimethylamide;stearic acid n,n-dimethylamide;" );
+gibbsFormation
+{
+    dHf_298   -501180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     977.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=99380.0
+    phase     gas;
+}

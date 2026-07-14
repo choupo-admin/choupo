@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: icosamethylnonasiloxane  (C20H60O8Si9, CAS 2652-13-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C20H60O8Si9 (delta Si+9; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        icosamethylnonasiloxane;
+formula     C20H60O8Si9;
+CAS         2652-13-3;
+InChIKey    XVNZQBSRKFXKSM-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          681.457;      // g/mol [origin=calculated method=formula-sum]
+Tc          1045.20;      // K   [origin=predictive method=joback]
+Pc          5.275;      // bar [origin=predictive method=joback]
+omega       0.3435;      // -   [origin=predictive method=lee-kesler]
+Tb          849.16;      // K   [origin=predictive method=joback]
+HvapTb      82040.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (556.07 -0.4572 0.003557 -2.1664e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 20; } { group Si; count 1; } { group SiO; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 20; } { group O; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis[[[[dimethyl(trimethylsilyloxy)silyl]oxy-dimethyl-silyl]oxy-dimethyl-silyl]oxy]-dimethyl-silane" "nonasiloxane, eicosamethyl-" "nonasiloxane, 1,1,1,3,3,5,5,7,7,9,9,11,11,13,13,15,15,17,17,17-eicosamethyl-" "eicosamethylnonasiloxane" "nonasiloxane,eicosamethyl- (6ci,7ci,8ci,9ci); eicosamethylnonasiloxane" "nonasiloxane,1,1,1,3,3,5,5,7,7,9,9,11,11,13,13,15,15,17,17,17-eicosamethyl-" "bis[[[[dimethyl(trimethylsilyloxy)silyl]oxy-dimethylsilyl]oxy-dimethylsilyl]oxy]-dimethylsilane" );
+gibbsFormation
+{
+    dHf_298   -2518470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     2163.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1665320.0
+    phase     gas;
+}

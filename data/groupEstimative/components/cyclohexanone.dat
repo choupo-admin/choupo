@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclohexanone  (C6H10O, CAS 108-94-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclohexanone;
+formula     C6H10O;
+CAS         108-94-1;
+InChIKey    JHIVVAPYMSGYDF-UHFFFAOYSA-N;
+MW          98.145;      // g/mol [origin=calculated method=formula-sum]
+Tc          656.33;      // K   [origin=predictive method=joback]
+Pc          43.226;      // bar [origin=predictive method=joback]
+omega       0.3055;      // -   [origin=predictive method=lee-kesler]
+Tb          428.92;      // K   [origin=predictive method=joback]
+HvapTb      33935.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.68 0.5541 -0.000195 -1.5e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 5; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pimelic ketone" "ketohexamethylene" "sextone" "anon" "cyclohexyl ketone" "nadone" "anone" "ketocyclohexane" "oxocyclohexane" "hexanon" "hytrol o" "cyclohexanon" );
+gibbsFormation
+{
+    dHf_298   -230210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     322.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-90790.0
+    phase     gas;
+}

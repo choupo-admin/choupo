@@ -18,6 +18,10 @@ name        acetone;
 formula     C3H6O;
 CAS         67-64-1;
 
+// Molecular structure (Joback groups) -- identity, like the formula.
+jobackGroups { CH3 2; ketone 1; }
+
+
 MW          58.080;        // kg/kmol
 Tc          508.10;        // K
 Pc          47.01;         // bar

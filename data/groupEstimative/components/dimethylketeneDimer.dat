@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethylketene dimer  (C8H12O2, CAS 3173-79-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethylketeneDimer;
+formula     C8H12O2;
+CAS         3173-79-3;
+InChIKey    OKAAPXFKYOTAEN-UHFFFAOYSA-N;
+MW          140.182;      // g/mol [origin=calculated method=formula-sum]
+Tc          646.83;      // K   [origin=predictive method=joback]
+Pc          30.967;      // bar [origin=predictive method=joback]
+omega       0.4547;      // -   [origin=predictive method=lee-kesler]
+Tb          450.09;      // K   [origin=predictive method=joback]
+HvapTb      40266.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-62.68 1.08388 -0.0010868 4.568e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group C; count 1; } { group C=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dC; count 1; } { group C_ring; count 1; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3-dimethyl-4-propan-2-ylidene-oxetan-2-one" "4-isopropylidene-3,3-dimethyl-2-oxetanone" "dimethylketene-.beta.-lactone dimer" "4-isopropylidene-3,3-dimethyloxetan-2-one" "2-oxetanone, 4-isopropylidene-3,3-dimethyl-" "2,2-dimethyl-3-isopropyliden-beta-propiolactone" "2,2,4-trimethyl-3-hydroxy-3-pentenoic acid beta lactone" "3-hydroxy-2,2,4-trimethyl-3-pentenoic acid, beta-lactone" "3-hydroxy-2,2,4-trimethyl-3-pentenoic acid .beta.-lactone" "3-pentenoic acid, 3-hydroxy-2,2,4-trimethyl-, beta-lactone" "2-oxetanone,3-dimethyl-" "3,3-dimethyl-4-propan-2-ylideneoxetan-2-one" );
+gibbsFormation
+{
+    dHf_298   -365290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     445.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-189620.0
+    phase     gas;
+}

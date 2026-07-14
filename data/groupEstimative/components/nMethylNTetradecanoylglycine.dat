@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methyl-n-tetradecanoylglycine  (C17H33NO3, CAS 52558-73-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethylNTetradecanoylglycine;
+formula     C17H33NO3;
+CAS         52558-73-3;
+InChIKey    NGOZDSMNMIRDFP-UHFFFAOYSA-N;
+MW          299.455;      // g/mol [origin=calculated method=formula-sum]
+Tc          986.61;      // K   [origin=predictive method=joback]
+Pc          13.717;      // bar [origin=predictive method=joback]
+omega       1.1680;      // -   [origin=predictive method=lee-kesler]
+Tb          800.38;      // K   [origin=predictive method=joback]
+HvapTb      79389.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.297 1.76554 -0.0010675 2.4746e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 12; } { group COOH; count 1; } { group CONCH3CH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 13; } { group CdO; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[methyl(tetradecanoyl)amino]ethanoic acid" "glycine, n-methyl-n-(1-oxotetradecyl)-" "myristoyl sarcosine" "myristoyl n-methylglycine" "n-myristoylsarcosine acid" "n-(1-oxotetradecyl)sarcosine" "n-methyl-n-(1-oxotetradecyl)glycine" "glycine,n-methyl-n-(1-oxotetradecyl)-" "2-[methyl(tetradecanoyl)amino]acetic acid" "sarcosine,n-myristoyl- (6ci,7ci); crodasinic m; hamposyl m; myristoyl sarcosinate;myristoyl sarcosine; n-myristoylsarcosine; n-tetradecanoylsarcosine" );
+gibbsFormation
+{
+    dHf_298   -789530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     914.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-269790.0
+    phase     gas;
+}

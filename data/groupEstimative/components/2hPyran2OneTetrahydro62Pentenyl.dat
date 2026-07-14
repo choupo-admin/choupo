@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2h-pyran-2-one, tetrahydro-6-(2-pentenyl)-  (C10H16O2, CAS 25524-95-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2hPyran2OneTetrahydro62Pentenyl;
+formula     C10H16O2;
+CAS         25524-95-2;
+InChIKey    XPPALVZZCMPTIV-UHFFFAOYSA-N;
+MW          168.236;      // g/mol [origin=calculated method=formula-sum]
+Tc          698.97;      // K   [origin=predictive method=joback]
+Pc          25.872;      // bar [origin=predictive method=joback]
+omega       0.5422;      // -   [origin=predictive method=lee-kesler]
+Tb          501.79;      // K   [origin=predictive method=joback]
+HvapTb      45304.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-50.338 1.06032 -0.0006832 1.675e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 1; } { group CH=CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-pent-2-enyloxan-2-one" "(z)-tetrahydro-6-(2-pentenyl)-2h-pyran-2-one" "2h-pyran-2-one, tetrahydro-6-(2-penten-1-yl)-" "2h-pyran-2-one, tetrahydro-6-(2z)-2-pentenyl-" "2h-pyran-2-one, tetrahydro-6-(2z)-2-penten-1-yl-" "agn-pc-00jlva" );
+gibbsFormation
+{
+    dHf_298   -383150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     519.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-148180.0
+    phase     gas;
+}

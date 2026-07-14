@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethane, 1-iodo-2-methoxy-  (C3H7IO, CAS 4296-15-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethane1Iodo2Methoxy;
+formula     C3H7IO;
+CAS         4296-15-5;
+InChIKey    SZCAORBAQHOJQI-UHFFFAOYSA-N;
+MW          185.988;      // g/mol [origin=calculated method=formula-sum]
+Tc          589.41;      // K   [origin=predictive method=joback]
+Pc          41.893;      // bar [origin=predictive method=joback]
+omega       0.2816;      // -   [origin=predictive method=lee-kesler]
+Tb          383.80;      // K   [origin=predictive method=joback]
+HvapTb      34055.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (37.352 0.26462 -0.0001098 9.6e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH3O; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group I; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-iodanyl-2-methoxy-ethane" "2-iodoethyl methyl ether" "1-iodo-2-methoxyethane" "ethane, 1-iodo-2-methoxy, gauche" "ethane,1-iodo-2-methoxy- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -160600.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     339.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-72500.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl methacrylate, butyl acrylate, acrylamide polymer  (C15H25NO5, CAS 29405-51-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylMethacrylateButylAcrylateAcrylamidePolymer;
+formula     C15H25NO5;
+CAS         29405-51-4;
+InChIKey    NYEYNPRDSNBRKT-UHFFFAOYSA-N;
+MW          299.367;      // g/mol [origin=calculated method=formula-sum]
+Tc          981.27;      // K   [origin=predictive method=joback]
+Pc          15.105;      // bar [origin=predictive method=joback]
+omega       0.9908;      // -   [origin=predictive method=lee-kesler]
+Tb          778.36;      // K   [origin=predictive method=joback]
+HvapTb      79843.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (126.893 0.88066 0.0001309 -3.2534e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH2=CH; count 2; } { group CH2=C; count 1; } { group COO; count 2; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group dCH2; count 3; } { group dCH; count 2; } { group dC; count 1; } { group CdO; count 1; } { group COO; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butyl prop-2-enoate;methyl 2-methylprop-2-enoate;prop-2-enamide" "butyl acrylate, methyl methacrylate, acrylamide copolymer" "butyl prop-2-enoate; methyl 2-methylprop-2-enoate; prop-2-enamide" "2-propenoic acid, 2-methyl-, methyl ester, polymer with butyl 2-propenoate and 2-propenamide" );
+gibbsFormation
+{
+    dHf_298   -923020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1118.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-562340.0
+    phase     gas;
+}

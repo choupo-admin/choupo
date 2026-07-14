@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: divinylbenzene, vinylbenzyl-n-methylglucamine polymer  (C26H35NO6, CAS 63181-98-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        divinylbenzeneVinylbenzylNMethylglucaminePolymer;
+formula     C26H35NO6;
+CAS         63181-98-6;
+InChIKey    STVMLWQMXHXTJS-ULVCUCBLSA-N;
+MW          457.567;      // g/mol [origin=calculated method=formula-sum]
+Tc          1957.11;      // K   [origin=predictive method=joback]
+Pc          16.605;      // bar [origin=predictive method=joback]
+omega       0.3554;      // -   [origin=predictive method=lee-kesler]
+Tb          1412.56;      // K   [origin=predictive method=joback]
+HvapTb      177807.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.468 2.28822 -0.00128382 2.281e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 5; } { group CH2=CH; count 3; } { group ACH; count 8; } { group AC; count 3; } { group ACCH2; count 1; } { group OH; count 6; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 5; } { group dCH2; count 3; } { group dCH; count 3; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group OH; count 6; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-bis(ethenyl)benzene;(2r,3s,4r,5r)-1-[(2-ethenylphenyl)methyl-methyl-amino]hexane-1,2,3,4,5,6-hexol" "d-glucitol, 1-deoxy-1-(((ethenylphenyl)methyl)methylamino)-, polymer with diethenylbenzene" "1,2-bis(ethenyl)benzene; (2r,3s,4r,5r)-1-[(2-ethenylphenyl)methyl-methylamino]hexane-1,2,3,4,5,6-hexol" );
+gibbsFormation
+{
+    dHf_298   -737430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1311.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-189980.0
+    phase     gas;
+}

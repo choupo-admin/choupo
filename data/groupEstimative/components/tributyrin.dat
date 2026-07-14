@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tributyrin  (C15H26O6, CAS 60-01-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tributyrin;
+formula     C15H26O6;
+CAS         60-01-5;
+InChIKey    UYXTWWCETRIEDR-UHFFFAOYSA-N;
+MW          302.367;      // g/mol [origin=calculated method=formula-sum]
+Tc          895.89;      // K   [origin=predictive method=joback]
+Pc          14.403;      // bar [origin=predictive method=joback]
+omega       1.0497;      // -   [origin=predictive method=lee-kesler]
+Tb          717.02;      // K   [origin=predictive method=joback]
+HvapTb      70817.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (63.798 1.27036 -0.0005116 -4.5e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group CH2COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 8; } { group CH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-di(butanoyloxy)propyl butanoate" "glyceryl tributyrate" "glycerol tributyrate" "tributyrinine" "tributin" "butanoic acid, 1,2,3-propanetriyl ester" "butyryl triglyceride" "1,2,3-tributyrylglycerol" "tributyroin" "butyrin" "tri-n-butyrin" "glyceroltributyrin" );
+gibbsFormation
+{
+    dHf_298   -1310050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     884.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-858130.0
+    phase     gas;
+}

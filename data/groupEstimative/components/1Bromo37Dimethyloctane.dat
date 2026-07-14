@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-bromo-3,7-dimethyloctane  (C10H21Br, CAS 3383-83-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Bromo37Dimethyloctane;
+formula     C10H21Br;
+CAS         3383-83-3;
+InChIKey    VGSUDZKDSKCYJP-UHFFFAOYSA-N;
+MW          221.182;      // g/mol [origin=calculated method=formula-sum]
+Tc          679.02;      // K   [origin=predictive method=joback]
+Pc          22.828;      // bar [origin=predictive method=joback]
+omega       0.5556;      // -   [origin=predictive method=lee-kesler]
+Tb          493.68;      // K   [origin=predictive method=joback]
+HvapTb      43513.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.375 1.00386 -0.000598 1.409e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 2; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-3,7-dimethyl-octane" "3,7-dimethyloctyl bromide" "perhydrogeranyl bromide" "tetrahydrogeranyl bromide" "dihydrocitronellyl bromide" "3,7-dimethyl-1-bromooctane" "( inverted exclamation marka)-1-bromo-3,7-dimethyloctane" "(?a'a a'a currency)-1-bromo-3,7-dimethyloctane;1-bromo-3,7-dimethyloctane;3,7-dimethyl-1-bromooctane;3,7-dimethyloctylbromide;dihydrocitronellyl bromide;geranyl bromide, perhydro-;tetrahydrogeranyl bromide;" );
+gibbsFormation
+{
+    dHf_298   -233960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     577.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=42760.0
+    phase     gas;
+}

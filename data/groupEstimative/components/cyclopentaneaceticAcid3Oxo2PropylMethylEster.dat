@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopentaneacetic acid, 3-oxo-2-propyl-, methyl ester  (C11H18O3, CAS 42186-33-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopentaneaceticAcid3Oxo2PropylMethylEster;
+formula     C11H18O3;
+CAS         42186-33-4;
+InChIKey    XIWMHTMGRGPLQO-UHFFFAOYSA-N;
+MW          198.262;      // g/mol [origin=calculated method=formula-sum]
+Tc          794.24;      // K   [origin=predictive method=joback]
+Pc          22.959;      // bar [origin=predictive method=joback]
+omega       0.6756;      // -   [origin=predictive method=lee-kesler]
+Tb          587.93;      // K   [origin=predictive method=joback]
+HvapTb      51682.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.183 0.93094 -0.000308 -3.91e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 2; } { group CH2CO; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-(3-oxidanylidene-2-propyl-cyclopentyl)ethanoate" "methyl 3-oxo-2-propylcyclopentaneacetate" "methyl 2-(3-oxo-2-propylcyclopentyl)acetate" "(3-oxo-2-propyl-1-cyclopentyl)acetic acid methyl ester" );
+gibbsFormation
+{
+    dHf_298   -685210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     464.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-362380.0
+    phase     gas;
+}

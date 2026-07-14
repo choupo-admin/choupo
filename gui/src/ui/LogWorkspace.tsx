@@ -152,15 +152,15 @@ export function LogWorkspace() {
       return next;
     });
 
-  // Auto-scroll the log to the bottom when fresh content arrives
-  // (and the user hasn't jumped somewhere).  Mirrors the legacy
-  // bottom-output-panel LogView behaviour (OutputPanel.tsx, removed
-  // 2026-06-11).
+  // Follow live output while solving.  Once the run is complete, return to the
+  // human-readable beginning; structured result payloads are parsed by the
+  // adapter and should never become the student's default view.
   const logRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (selectedLine !== null) return;
-    if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
-  }, [log, selectedLine]);
+    if (!logRef.current) return;
+    logRef.current.scrollTop = status === "running" ? logRef.current.scrollHeight : 0;
+  }, [log, selectedLine, status]);
 
   const jumpTo = (line: number) => {
     setSelectedLine(line);

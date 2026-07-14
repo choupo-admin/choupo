@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-isocyanatopropyltrimethoxysilane  (C7H15NO4Si, CAS 15396-00-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H15NO4Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        3Isocyanatopropyltrimethoxysilane;
+formula     C7H15NO4Si;
+CAS         15396-00-6;
+InChIKey    FMGBDYLOANULLW-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          205.285;      // g/mol [origin=calculated method=formula-sum]
+Tc          676.08;      // K   [origin=predictive method=joback]
+Pc          25.328;      // bar [origin=predictive method=joback]
+omega       0.6550;      // -   [origin=predictive method=lee-kesler]
+Tb          495.09;      // K   [origin=predictive method=joback]
+HvapTb      48232.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH3O; count 3; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group dCd; count 1; } { group O; count 3; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-isocyanatopropyl(trimethoxy)silane" "3-(trimethoxysilyl)propyl isocyanate" "(3-isocyanatopropyl)(trimethoxy)silane" "silane, (3-isocyanatopropyl)trimethoxy-" "3-isocyanatopropyl-trimethoxysilane" "(3-isocyanatopropyl)trimethoxysilane" "gamma-isocynatopropyl trimethoxy silane" "p832" "isocyanicacid, 3-(trimethoxysilyl)propyl ester (8ci);(3-isocyanatopropyl)trimethoxysilane;silane,(3-isocyanatopropyl)trimethoxy-;a-link 35;geniosil gf 40;kbk 9007;sii6456.0;silquest a-link 35;silquest y 5187;y 5187;gamma-isocyanopropyltrimethoxysilane;(gamma-isocyanatopropyl)trimethoxysilane;1-isocyanato-3-trimethoxysilylpropane;3-(trimethoxysilyl)propyl isocyanate;" );
+// formation datum unavailable (element entropy missing): dHf_298=-701500.0 dGf_298=None

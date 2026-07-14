@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4-dimethyl-5-oxopentanenitrile  (C7H11NO, CAS 6140-61-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44Dimethyl5Oxopentanenitrile;
+formula     C7H11NO;
+CAS         6140-61-0;
+InChIKey    HKJVKIURQSVEQB-UHFFFAOYSA-N;
+MW          125.171;      // g/mol [origin=calculated method=formula-sum]
+Tc          711.53;      // K   [origin=predictive method=joback]
+Pc          30.123;      // bar [origin=predictive method=joback]
+omega       0.5739;      // -   [origin=predictive method=lee-kesler]
+Tb          507.27;      // K   [origin=predictive method=joback]
+HvapTb      47078.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.452 0.70394 -0.0004908 1.356e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group CHO; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group OdCH_al; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,4-dimethyl-5-oxidanylidene-pentanenitrile" "vhx1&1&2cn" "butyraldehyde, 4-cyano-2,2-dimethyl" "pentanenitrile, 4,4-dimethyl-5-oxo-" "4-formyl-4-methylvaleronitrile" "2,2 dimethyl-4-cyanobutyraldehyde" "pentanenitrile,4,4-dimethyl-5-oxo-" );
+gibbsFormation
+{
+    dHf_298   -117260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     414.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=44560.0
+    phase     gas;
+}

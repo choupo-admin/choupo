@@ -86,6 +86,20 @@ public:
     std::map<std::string, scalar> kpis() const override { return kpis_; }
 
 private:
+    // MULTI-REACTION path (`reactions ( r1 r2 ... );`): the same RK4 march, but
+    // dF_i/dV = SUM_j nu_ij r_j(F) -- an IVP, no Newton.  A series network is
+    // where a PFR beats a CSTR (no back-mixing consumes the intermediate).
+    int solveMultiReaction(const DictPtr&       dict,
+                           const ThermoPackage& thermo,
+                           int                  verbosity,
+                           scalar               F_in_kmols,
+                           scalar               T,
+                           scalar               P,
+                           scalar               V_R,
+                           scalar               vf_in,
+                           int                  nSteps,
+                           const sVector&       z_in);
+
     inline static const std::string type_ = "pfr";
     std::vector<ProcessStream>     produced_;
     UnitProfile                    profile_;

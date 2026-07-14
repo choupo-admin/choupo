@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-butyldodecanamide  (C16H33NO, CAS 6284-08-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nButyldodecanamide;
+formula     C16H33NO;
+CAS         6284-08-8;
+InChIKey    NTHVNXBUGUHNAH-UHFFFAOYSA-N;
+MW          255.446;      // g/mol [origin=calculated method=formula-sum]
+Tc          840.41;      // K   [origin=predictive method=joback]
+Pc          13.944;      // bar [origin=predictive method=joback]
+omega       0.9770;      // -   [origin=predictive method=lee-kesler]
+Tb          669.72;      // K   [origin=predictive method=joback]
+HvapTb      64392.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.507 1.57204 -0.0008765 1.8066e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 12; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 13; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodecanamide, n-butyl-" "lauramide, n-butyl-" );
+gibbsFormation
+{
+    dHf_298   -432680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     846.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=44310.0
+    phase     gas;
+}

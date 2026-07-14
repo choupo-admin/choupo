@@ -1,0 +1,51 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Phosphoric acid (H3PO4, orthophosphoric).  CAS 7664-38-2.
+
+  A NON-VOLATILE triprotic mineral acid.  Pure H3PO4 MELTS at ~42 C, so at
+  the 25 C reference state the pure compound is a CRYSTALLINE SOLID -- the
+  honest reference phase, so this entry carries the SOLID-phase formation
+  datum (phase solid) and a real solid heat capacity.  In aqueous cases the
+  acid is dissolved; role nonvolatile keeps it out of the vapour (K = 0) for
+  phosphate-precipitation, fertiliser and acid-balance exercises.
+
+  PRIMARY: Wagman et al., NBS Tables of Chemical Thermodynamic Properties,
+  J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982) -- PUBLIC DOMAIN.
+  NOTE on dHf_298: the crystalline-H3PO4 formation enthalpy is tabulated as
+  -1284.4 kJ/mol (CRC / commonly tabulated; used here); some NBS printings
+  list -1279.0 -- a ~5 kJ/mol spread.  Flag before a precise heat-of-reaction
+  hinges on it.
+\*---------------------------------------------------------------------------*/
+
+name        H3PO4;
+formula     H3PO4;
+CAS         7664-38-2;
+
+MW          97.995;            // kg/kmol
+
+role        nonvolatile;       // never goes to the vapour (K = 0)
+
+solid
+{
+    rho_p   1834.0;            // crystalline H3PO4 density [kg/m^3]
+}
+
+gibbsFormation
+{
+    dHf_298   -1284400;        // J/mol  crystalline [CRC; NBS printings -1279.0, see header]
+    s_298     110.5;           // J/(mol*K) [Wagman et al. NBS Tables 1982]
+    phase     solid;
+}
+
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = a0  [J/(mol*K)], constant
+    coefficients  ( 106.06 );          // Cp(298) [Wagman et al. NBS Tables 1982]
+    Trange        ( 298  315 );        // constant-Cp validity flag (solid; melts ~315 K)
+}
+
+provenance
+{
+    gibbsFormation { origin literature; method "dHf_298: CRC Handbook (crystalline H3PO4, -1284.4 kJ/mol; NBS printings -1279.0); s_298: Wagman et al. NBS Tables 1982"; }
+    solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
+    rho_p { origin literature; method "crystalline H3PO4 density ~1.834 g/cm3"; }
+}

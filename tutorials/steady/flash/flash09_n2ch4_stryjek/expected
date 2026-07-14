@@ -1,0 +1,14 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.000277777777778 1e-4
+stream  liq                    F                0.000145628387466 1e-4
+stream  vap                    F                0.000132149390312 1e-4
+kpi     node                   F_alpha          0.000145628387466 1e-4
+kpi     node                   F_beta           0.000132149390312 1e-4
+kpi     node                   F_in             0.000277777777778 1e-4
+kpi     node                   P                2061600          1e-4
+kpi     node                   Q                0                1e-4
+kpi     node                   Q_kW             0                1e-4
+kpi     node                   T                149.82           1e-4
+kpi     node                   V_over_F         0.475737805121   1e-4
+kpi     node                   phaseSet         0                1e-4

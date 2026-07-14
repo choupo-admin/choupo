@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7-bromo-5-chloroquinolin-8-ol  (C9H5BrClNO, CAS 7640-33-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        7Bromo5Chloroquinolin8Ol;
+formula     C9H5BrClNO;
+CAS         7640-33-7;
+InChIKey    ADJQQSUBKRASQN-UHFFFAOYSA-N;
+MW          258.499;      // g/mol [origin=calculated method=formula-sum]
+Tc          980.18;      // K   [origin=predictive method=joback]
+Pc          54.546;      // bar [origin=predictive method=joback]
+omega       0.8543;      // -   [origin=predictive method=lee-kesler]
+Tb          699.05;      // K   [origin=predictive method=joback]
+HvapTb      70912.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.82 0.89056 -0.00085706 3.307e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 1; } { group AC; count 1; } { group ACOH; count 1; } { group C5H3N; count 1; } { group ACCl; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 4; } { group dC_ring; count 5; } { group Cl; count 1; } { group Br; count 1; } { group OH_phenol; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-bromanyl-5-chloranyl-quinolin-8-ol" "7-bromo-5-chloro-8-hydroxyquinoline" "7-bromo-5-chloro-8-quinolinol" "5-chloro-7-bromo-8-hydroxyquinoline" "8-quinolinol, 7-bromo-5-chloro-" "5-chlor-7-brom-8-hydroxychinolin [german]" "adjqqsubkrasqn-uhfffaoysa-" "7-bromo-5-chloro-quinolin-8-ol" "8-quinolinol,7-bromo-5-chloro-" "5-chlor-7-brom-8-hydroxychinolin" "5-chloro-7-bromo-8-hydroxyquinoline;5-chloro-7-bromo-8-quinolinol; 7-bromo-5-chloro-8-hydroxyquinoline;7-bromo-5-chloro-8-quinolinol" );
+gibbsFormation
+{
+    dHf_298   41640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     402.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=149520.0
+    phase     gas;
+}

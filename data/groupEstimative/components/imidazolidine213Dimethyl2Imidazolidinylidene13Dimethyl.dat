@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: imidazolidine,2-(1,3-dimethyl-2-imidazolidinylidene)-1,3-dimethyl-  (C10H20N4, CAS 1911-01-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        imidazolidine213Dimethyl2Imidazolidinylidene13Dimethyl;
+formula     C10H20N4;
+CAS         1911-01-9;
+InChIKey    JEQZGWFYERDGMC-UHFFFAOYSA-N;
+MW          196.298;      // g/mol [origin=calculated method=formula-sum]
+Tc          696.13;      // K   [origin=predictive method=joback]
+Pc          29.092;      // bar [origin=predictive method=joback]
+omega       0.7322;      // -   [origin=predictive method=lee-kesler]
+Tb          510.10;      // K   [origin=predictive method=joback]
+HvapTb      48086.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-124.95 1.62928 -0.001375 4.668e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH3N; count 4; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 4; } { group dC_ring; count 2; } { group N; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(1,3-dimethylimidazolidin-2-ylidene)-1,3-dimethyl-imidazolidine" "2-(1,3-dimethylimidazolidin-2-ylidene)-1,3-dimethylimidazolidine" "imidazolidine, 2-(1,3-dimethyl-2-imidazolidinylidene)-1,3-dimethyl-" "d2,2'-biimidazolidine,1,1',3,3'-tetramethyl- (7ci,8ci); 1,1',3,3'-tetramethyl-2,2'-biimidazolidinylidene;1,1',3,3'-tetramethyl-d2,2'-biimidazolidine" );
+gibbsFormation
+{
+    dHf_298   241510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     464.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=624060.0
+    phase     gas;
+}

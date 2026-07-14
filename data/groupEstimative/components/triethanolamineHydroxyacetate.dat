@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethanolamine hydroxyacetate  (C8H19NO6, CAS 67924-04-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethanolamineHydroxyacetate;
+formula     C8H19NO6;
+CAS         67924-04-3;
+InChIKey    PQJDLYIRTTVMCS-UHFFFAOYSA-N;
+MW          225.241;      // g/mol [origin=calculated method=formula-sum]
+Tc          1117.40;      // K   [origin=predictive method=joback]
+Pc          38.151;      // bar [origin=predictive method=joback]
+omega       2.1465;      // -   [origin=predictive method=lee-kesler]
+Tb          910.71;      // K   [origin=predictive method=joback]
+HvapTb      119619.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (51.507 0.8683 -0.0003034 -2.86e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group OH; count 4; } { group CH2N; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 7; } { group OH; count 4; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[bis(2-hydroxyethyl)amino]ethanol;2-oxidanylethanoic acid" "polytriethanolamine, hydroxyacetic acid salt" "acetic acid, hydroxy-, reaction products with triethanolamine" "acetic acid, 2-hydroxy-, reaction products with triethanolamine" "polymerized triethanolamine, hydroxyacetic acid salt" "2-[bis(2-hydroxyethyl)amino]ethanol; 2-hydroxyacetic acid" "acetic acid, hydroxy-, compd. with 2,2',2''-nitrilotris(ethanol) (1:1)" "acetic acid, 2-hydroxy-, compd. with 2,2',2''-nitrilotris(ethanol) (1:1)" "acetic acid, 2-hydroxy-, compd. with 2,2',2''-nitrilotris(ethanol) homopolymer" "acetic acid, hydroxy-, compd. with 2,2',2''-nitrilotris(ethanol) homopolymer" );
+gibbsFormation
+{
+    dHf_298   -1211730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     848.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-868690.0
+    phase     gas;
+}

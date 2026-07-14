@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-methylpyrrolidin-3-one  (C5H9NO, CAS 68165-06-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Methylpyrrolidin3One;
+formula     C5H9NO;
+CAS         68165-06-0;
+InChIKey    SLPUTJFVMJPMKV-UHFFFAOYSA-N;
+MW          99.133;      // g/mol [origin=calculated method=formula-sum]
+Tc          618.98;      // K   [origin=predictive method=joback]
+Pc          45.839;      // bar [origin=predictive method=joback]
+omega       0.3790;      // -   [origin=predictive method=lee-kesler]
+Tb          409.94;      // K   [origin=predictive method=joback]
+HvapTb      33408.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.22 0.60222 -0.000346 7.03e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2CO; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CdO_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methyl-3-pyrrolidinone" "1-methyl-3-pyrrolidone" "3-pyrrolidone, 1-methyl-" "3-pyrrolidinone, 1-methyl-" "1-methyl-3-pyrrolidinone;n-methyl-3-pyrrolidinone;" );
+gibbsFormation
+{
+    dHf_298   -129720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     260.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=35770.0
+    phase     gas;
+}

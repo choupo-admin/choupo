@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: silane, methoxybis(1-methylethoxy)(2-methylpropyl)-  (C11H26O3Si, CAS 118337-13-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C11H26O3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        silaneMethoxybis1Methylethoxy2Methylpropyl;
+formula     C11H26O3Si;
+CAS         118337-13-6;
+InChIKey    UTARNPLVNPIUSC-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          234.411;      // g/mol [origin=calculated method=formula-sum]
+Tc          694.81;      // K   [origin=predictive method=joback]
+Pc          17.061;      // bar [origin=predictive method=joback]
+omega       0.5655;      // -   [origin=predictive method=lee-kesler]
+Tb          518.62;      // K   [origin=predictive method=joback]
+HvapTb      46440.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (105.161 0.67084 0.0001636 -2.634e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 1; } { group CH; count 1; } { group CH3O; count 1; } { group CH-O; count 2; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 7; } { group CH2; count 1; } { group CH; count 3; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methoxy-(2-methylpropyl)-di(propan-2-yloxy)silane" "methoxy(2-methylpropyl)bis(propan-2-yloxy)silane" );
+gibbsFormation
+{
+    dHf_298   -794490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     716.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-385340.0
+    phase     gas;
+}

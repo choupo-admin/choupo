@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(butoxycarbonyl)isophthalicacid  (C13H14O6, CAS 28904-29-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4ButoxycarbonylIsophthalicacid;
+formula     C13H14O6;
+CAS         28904-29-2;
+InChIKey    GCDUOFOLOZOBSV-UHFFFAOYSA-N;
+MW          266.249;      // g/mol [origin=calculated method=formula-sum]
+Tc          1106.71;      // K   [origin=predictive method=joback]
+Pc          25.456;      // bar [origin=predictive method=joback]
+omega       1.4681;      // -   [origin=predictive method=lee-kesler]
+Tb          882.92;      // K   [origin=predictive method=joback]
+HvapTb      89867.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.373 1.08772 -0.00063112 1.181e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group ACH; count 3; } { group AC; count 3; } { group COOH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COOH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-butoxycarbonylbenzene-1,3-dicarboxylic acid" "butyl dihydrogen benzene-1,2,4-tricarboxylate" "1,2,4-benzenetricarboxylic acid, monobutyl ester" "4-(butoxycarbonyl)benzene-1,3-dicarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -1115880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     701.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-846460.0
+    phase     gas;
+}

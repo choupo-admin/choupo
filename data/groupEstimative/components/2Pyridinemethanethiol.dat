@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-pyridinemethanethiol  (C6H7NS, CAS 2044-73-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Pyridinemethanethiol;
+formula     C6H7NS;
+CAS         2044-73-7;
+InChIKey    SJIIDWBFRZACDQ-UHFFFAOYSA-N;
+MW          125.189;      // g/mol [origin=calculated method=formula-sum]
+Tc          735.41;      // K   [origin=predictive method=joback]
+Pc          51.166;      // bar [origin=predictive method=joback]
+omega       0.3580;      // -   [origin=predictive method=lee-kesler]
+Tb          480.12;      // K   [origin=predictive method=joback]
+HvapTb      44173.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.519 0.55596 -0.00036546 9.31e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C5H4N; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group Nd_ring; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pyridin-2-ylmethanethiol" "2-pyridinylmethanethiol" "pyridine-2-thiocarbinol" "2-pyridylmethyl mercaptan" "2-picolylthiol" "2-(mercaptomethyl)pyridine" "pyridin-2-yl-methanethiol" "2-pyridinylmethyl mercaptan" "pyridine-2-methanethiol" "u757" "2-mercaptomethyl pyridine; 2-pyridylmethylmercaptan" );
+gibbsFormation
+{
+    dHf_298   140630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     358.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=218490.0
+    phase     gas;
+}

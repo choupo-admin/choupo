@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: allyl pentyl ether  (C8H16O, CAS 23186-70-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        allylPentylEther;
+formula     C8H16O;
+CAS         23186-70-1;
+InChIKey    QHOPNDWHOHMZPV-UHFFFAOYSA-N;
+MW          128.215;      // g/mol [origin=calculated method=formula-sum]
+Tc          569.05;      // K   [origin=predictive method=joback]
+Pc          26.004;      // bar [origin=predictive method=joback]
+omega       0.4524;      // -   [origin=predictive method=lee-kesler]
+Tb          401.74;      // K   [origin=predictive method=joback]
+HvapTb      35142.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.125 0.68062 -0.0003233 4.66e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH2=CH; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-prop-2-enoxypentane" "ether, allyl pentyl" "pentane, 1-(2-propenyloxy)-" "allylpentyl ether" "pentane,1-(2-propen-1-yloxy)-" "ether,allyl pentyl (8ci); pentane, 1-(2-propenyloxy)- (9ci); 1-pentyl 2-propenylether; 2,2-dimethylpropionic acid 4-(4-allyloxybutyl)-[1,2,3]triazol-1-ylmethylester; allyl pentyl ether; pentyl allyl ether; n-pentyl allyl ether" );
+gibbsFormation
+{
+    dHf_298   -215240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     474.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-680.0
+    phase     gas;
+}

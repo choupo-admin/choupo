@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-ethyl-1-benzothiophene  (C10H10S, CAS 54385-63-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Ethyl1Benzothiophene;
+formula     C10H10S;
+CAS         54385-63-6;
+InChIKey    XPDFLCCDJKRYRT-UHFFFAOYSA-N;
+MW          162.25;      // g/mol [origin=calculated method=formula-sum]
+Tc          764.67;      // K   [origin=predictive method=joback]
+Pc          35.263;      // bar [origin=predictive method=joback]
+omega       0.4282;      // -   [origin=predictive method=lee-kesler]
+Tb          523.44;      // K   [origin=predictive method=joback]
+HvapTb      47780.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.089 0.89173 -0.0006989 2.24e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 3; } { group ACCH2; count 1; } { group C4H2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 3; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   160040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     391.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=264750.0
+    phase     gas;
+}

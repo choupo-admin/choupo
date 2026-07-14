@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9,10-bis(phenylethynyl)anthracene  (C30H18, CAS 10075-85-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        910BisPhenylethynylAnthracene;
+formula     C30H18;
+CAS         10075-85-1;
+InChIKey    ZHBOFZNNPZNWGB-UHFFFAOYSA-N;
+MW          378.474;      // g/mol [origin=calculated method=formula-sum]
+Tc          1343.80;      // K   [origin=predictive method=joback]
+Pc          18.263;      // bar [origin=predictive method=joback]
+omega       0.8623;      // -   [origin=predictive method=lee-kesler]
+Tb          1036.94;      // K   [origin=predictive method=joback]
+HvapTb      98772.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-110.97 2.1316 -0.00158984 4.6776e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 18; } { group AC; count 8; } { group C_C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tC; count 4; } { group dCH_ring; count 18; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9,10-bis(2-phenylethynyl)anthracene" "bpea" "anthracene, 9,10-bis(phenylethynyl)-" "anthracene, 9,10-bis(2-phenylethynyl)-" "bis(phcc)-anthracene" "zhbofznnpznwgb-uhfffaoysa-" "9,10-bis-(phenylethynyl)anthracene" "q033" "anthracene,9,10-bis(phenylethynyl)- (6ci,7ci,8ci,9ci);9,10-bis(phenethynyl)anthracene;9,10-bis(phenylethynyl)anthracene;9,10-bis(phenylvinyl)anthracene;bpea;bpea(scintillator additive);cyalume green;" );
+gibbsFormation
+{
+    dHf_298   939390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     712.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1128960.0
+    phase     gas;
+}

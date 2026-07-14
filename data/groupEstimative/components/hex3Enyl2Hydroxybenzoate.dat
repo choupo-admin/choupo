@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hex-3-enyl 2-hydroxybenzoate  (C13H16O3, CAS 65405-77-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hex3Enyl2Hydroxybenzoate;
+formula     C13H16O3;
+CAS         65405-77-8;
+InChIKey    IEPWIPZLLIOZLU-UHFFFAOYSA-N;
+MW          220.268;      // g/mol [origin=calculated method=formula-sum]
+Tc          885.30;      // K   [origin=predictive method=joback]
+Pc          26.874;      // bar [origin=predictive method=joback]
+omega       0.8970;      // -   [origin=predictive method=lee-kesler]
+Tb          666.72;      // K   [origin=predictive method=joback]
+HvapTb      67187.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-40.527 1.27972 -0.00096016 2.924e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH=CH; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hex-3-enyl 2-oxidanylbenzoate" "salicylic acid cis-3-hexen-1-yl ester" "cis-3-hexenyl salicylate" "(e)-3-hexenyl salicylate" "benzoic acid, 2-hydroxy-, (3e)-3-hexenyl ester" "benzoic acid, 2-hydroxy-, (3e)-3-hexen-1-yl ester" "benzoic acid, 2-hydroxy-, (3z)-3-hexen-1-yl ester" "cis-3-hexenylsalicylate" "benzoic acid, 2-hydroxy-, 3-hexenyl ester" );
+gibbsFormation
+{
+    dHf_298   -452490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     627.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-213780.0
+    phase     gas;
+}

@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer like-charge mixing parameter theta(CO3,HCO3) --- the two anions
+  CO3(2-) and HCO3(-).
+  Role: the binary mixing (second-virial) correction of the Harvie-Moller-
+  Weare formulation, active in the pitzerHMW multi-ion engine whenever both
+  anions coexist in solution; it works together with the
+  psi(CO3,HCO3|counter-ion) ternary terms and never replaces the single-pair
+  beta/Cphi sets.
+  Source: Harvie, Moller & Weare, Geochim. Cosmochim. Acta 48 (1984) 723 (HMW
+  seawater system); via USGS PHREEQC pitzer.dat (public domain) -- full
+  string in the source entry below.
+\*-----------------------------------------------------------------------------*/
+recordType electrolyteMixingParameter;
+schemaVersion 1;
+kind theta;
+a CO3;
+b HCO3;
+value -0.04;
+source "Harvie, Moller & Weare, Geochim. Cosmochim. Acta 48 (1984) 723 (HMW seawater system); via USGS PHREEQC pitzer.dat (public domain)";

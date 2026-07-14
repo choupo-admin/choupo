@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimethyl(pentafluorophenyl)silane  (C9H9F5Si, CAS 1206-46-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H9F5Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        trimethylPentafluorophenylSilane;
+formula     C9H9F5Si;
+CAS         1206-46-8;
+InChIKey    GABHTFORECKGBB-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          240.246;      // g/mol [origin=calculated method=formula-sum]
+Tc          625.25;      // K   [origin=predictive method=joback]
+Pc          21.217;      // bar [origin=predictive method=joback]
+omega       0.5218;      // -   [origin=predictive method=lee-kesler]
+Tb          454.85;      // K   [origin=predictive method=joback]
+HvapTb      37423.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (103.57 0.33526 0.000171 -1.923e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group AC; count 1; } { group ACF; count 5; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dC_ring; count 6; } { group F; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl-[2,3,4,5,6-pentakis(fluoranyl)phenyl]silane" "trimethylsilylpentafluorobenzene" "trimethyl(perfluorophenyl)silane" "(pentafluorophenyl)trimethylsilane" "silane, trimethyl(pentafluorophenyl)-" "trimethyl-(2,3,4,5,6-pentafluorophenyl)silane" "benzene,1,2,3,4,5-pentafluoro-6-(trimethylsilyl)-" "2-methyl-2-(2,3,4,5,6-pentafluorophenyl)-2-silapropane" "(pentafluorophenyl)trimethylsilane;trimethyl(pentafluorophenyl)silane;trimethylsilylpentafluorobenzene;" );
+gibbsFormation
+{
+    dHf_298   -1142080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     654.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-989650.0
+    phase     gas;
+}

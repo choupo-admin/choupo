@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene-1,3-dicarboxylic acid;terephthalic acid;2,2,4-trimethylpentane-1,3-diol  (C24H30O10, CAS 65970-31-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzene13DicarboxylicAcidTerephthalicAcid224Trimethylpentane;
+formula     C24H30O10;
+CAS         65970-31-2;
+InChIKey    QEGBTJZFSCNQKG-UHFFFAOYSA-N;
+MW          478.494;      // g/mol [origin=calculated method=formula-sum]
+Tc          2052.12;      // K   [origin=predictive method=joback]
+Pc          16.116;      // bar [origin=predictive method=joback]
+omega       0.7451;      // -   [origin=predictive method=lee-kesler]
+Tb          1577.13;      // K   [origin=predictive method=joback]
+HvapTb      175424.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.641 2.00348 -0.00090992 4.37e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 2; } { group C; count 1; } { group ACH; count 8; } { group AC; count 4; } { group OH; count 2; } { group COOH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 2; } { group C; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group OH; count 2; } { group COOH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-benzenedicarboxylic acid, polymer with 1,4-benzenedicarboxylic acid and 2,2,4-trimethyl-1,3-pentanediol" "benzene-1,3-dicarboxylic acid; terephthalic acid; 2,2,4-trimethylpentane-1,3-diol" );
+gibbsFormation
+{
+    dHf_298   -2036660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1337.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1504080.0
+    phase     gas;
+}

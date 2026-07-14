@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-dotriacontanol  (C32H66O, CAS 6624-79-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Dotriacontanol;
+formula     C32H66O;
+CAS         6624-79-9;
+InChIKey    QOEHNLSDMADWEF-UHFFFAOYSA-N;
+MW          466.879;      // g/mol [origin=calculated method=formula-sum]
+Tc          1312.58;      // K   [origin=predictive method=joback]
+Pc          5.674;      // bar [origin=predictive method=joback]
+omega       0.1365;      // -   [origin=predictive method=lee-kesler]
+Tb          1023.94;      // K   [origin=predictive method=joback]
+HvapTb      103505.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.909 3.07782 -0.0017474 3.794e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 31; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 31; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dotriacontan-1-ol" "dotriacontanol" "n-dotriacontanol" );
+gibbsFormation
+{
+    dHf_298   -856040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1453.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=81740.0
+    phase     gas;
+}

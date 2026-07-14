@@ -1,0 +1,4983 @@
+[
+ {
+  "system": "_meta",
+  "note": "Farelo, Fernandes & Avelino, J.Chem.Eng.Data 50 (2005) 1470-1477. All values in mol/kg water (paper's native unit; NO conversion needed). Transcribed from the PDF embedded text layer, cross-checked vs page images; all 12 numbered data tables read cleanly. Convention: salt1 = Na/K chloride, salt2 = secondary electrolyte (NH4Cl, LiCl, or AlCl3); m1,m2 = molalities of salt1,salt2; 'solid' = equilibrium solid phase. NaCl and KCl pure-water binaries are NOT measured in the paper; they are computed from the Table-12 smoothing polynomials at 298/303/313/323/333 K (NaCl: 7.78461-0.01566T+3.400e-5 T^2; KCl: -11.56851+0.06924T-4.835e-5 T^2). NH4Cl, LiCl.H2O, AlCl3.6H2O binaries are raw measured rows."
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 297.5,
+  "salt1": "NaCl",
+  "m1": 5.7499,
+  "salt2": "NH4Cl",
+  "m2": 0.9346,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 302.0,
+  "salt1": "NaCl",
+  "m1": 5.7766,
+  "salt2": "NH4Cl",
+  "m2": 0.9346,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 309.1,
+  "salt1": "NaCl",
+  "m1": 5.8248,
+  "salt2": "NH4Cl",
+  "m2": 0.9346,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 315.0,
+  "salt1": "NaCl",
+  "m1": 5.8505,
+  "salt2": "NH4Cl",
+  "m2": 0.9346,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 322.9,
+  "salt1": "NaCl",
+  "m1": 5.9642,
+  "salt2": "NH4Cl",
+  "m2": 0.9346,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 329.3,
+  "salt1": "NaCl",
+  "m1": 6.0024,
+  "salt2": "NH4Cl",
+  "m2": 0.9346,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 332.3,
+  "salt1": "NaCl",
+  "m1": 6.0243,
+  "salt2": "NH4Cl",
+  "m2": 0.9346,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 295.5,
+  "salt1": "NaCl",
+  "m1": 5.349,
+  "salt2": "NH4Cl",
+  "m2": 1.8697,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 300.2,
+  "salt1": "NaCl",
+  "m1": 5.3728,
+  "salt2": "NH4Cl",
+  "m2": 1.8697,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 304.7,
+  "salt1": "NaCl",
+  "m1": 5.4015,
+  "salt2": "NH4Cl",
+  "m2": 1.8697,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 311.7,
+  "salt1": "NaCl",
+  "m1": 5.4306,
+  "salt2": "NH4Cl",
+  "m2": 1.8697,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 314.4,
+  "salt1": "NaCl",
+  "m1": 5.5124,
+  "salt2": "NH4Cl",
+  "m2": 1.8697,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 321.7,
+  "salt1": "NaCl",
+  "m1": 5.5507,
+  "salt2": "NH4Cl",
+  "m2": 1.8697,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 326.8,
+  "salt1": "NaCl",
+  "m1": 5.5831,
+  "salt2": "NH4Cl",
+  "m2": 1.8697,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 333.1,
+  "salt1": "NaCl",
+  "m1": 5.6322,
+  "salt2": "NH4Cl",
+  "m2": 1.8697,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 291.5,
+  "salt1": "NaCl",
+  "m1": 4.9531,
+  "salt2": "NH4Cl",
+  "m2": 2.8038,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 298.7,
+  "salt1": "NaCl",
+  "m1": 4.9825,
+  "salt2": "NH4Cl",
+  "m2": 2.8038,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 305.6,
+  "salt1": "NaCl",
+  "m1": 5.0238,
+  "salt2": "NH4Cl",
+  "m2": 2.8038,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 312.2,
+  "salt1": "NaCl",
+  "m1": 5.0684,
+  "salt2": "NH4Cl",
+  "m2": 2.8038,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 317.9,
+  "salt1": "NaCl",
+  "m1": 5.169,
+  "salt2": "NH4Cl",
+  "m2": 2.8038,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 322.2,
+  "salt1": "NaCl",
+  "m1": 5.2103,
+  "salt2": "NH4Cl",
+  "m2": 2.8038,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 328.1,
+  "salt1": "NaCl",
+  "m1": 5.257,
+  "salt2": "NH4Cl",
+  "m2": 2.8038,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 332.3,
+  "salt1": "NaCl",
+  "m1": 5.3073,
+  "salt2": "NH4Cl",
+  "m2": 2.8038,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 297.4,
+  "salt1": "NaCl",
+  "m1": 4.6257,
+  "salt2": "NH4Cl",
+  "m2": 3.739,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 304.3,
+  "salt1": "NaCl",
+  "m1": 4.6669,
+  "salt2": "NH4Cl",
+  "m2": 3.739,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 310.8,
+  "salt1": "NaCl",
+  "m1": 4.7092,
+  "salt2": "NH4Cl",
+  "m2": 3.739,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 317.2,
+  "salt1": "NaCl",
+  "m1": 4.766,
+  "salt2": "NH4Cl",
+  "m2": 3.739,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 325.3,
+  "salt1": "NaCl",
+  "m1": 4.8825,
+  "salt2": "NH4Cl",
+  "m2": 3.739,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 333.6,
+  "salt1": "NaCl",
+  "m1": 4.9805,
+  "salt2": "NH4Cl",
+  "m2": 3.739,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 310.4,
+  "salt1": "NaCl",
+  "m1": 4.3868,
+  "salt2": "NH4Cl",
+  "m2": 4.6749,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 315.6,
+  "salt1": "NaCl",
+  "m1": 4.4265,
+  "salt2": "NH4Cl",
+  "m2": 4.6749,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 324.0,
+  "salt1": "NaCl",
+  "m1": 4.5487,
+  "salt2": "NH4Cl",
+  "m2": 4.6749,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 334.1,
+  "salt1": "NaCl",
+  "m1": 4.6323,
+  "salt2": "NH4Cl",
+  "m2": 4.6749,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 315.8,
+  "salt1": "NaCl",
+  "m1": 4.1521,
+  "salt2": "NH4Cl",
+  "m2": 5.6068,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 321.4,
+  "salt1": "NaCl",
+  "m1": 4.2051,
+  "salt2": "NH4Cl",
+  "m2": 5.6068,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 327.1,
+  "salt1": "NaCl",
+  "m1": 4.3085,
+  "salt2": "NH4Cl",
+  "m2": 5.6068,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 332.7,
+  "salt1": "NaCl",
+  "m1": 4.3254,
+  "salt2": "NH4Cl",
+  "m2": 5.6068,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 326.2,
+  "salt1": "NaCl",
+  "m1": 3.9579,
+  "salt2": "NH4Cl",
+  "m2": 6.5423,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 331.4,
+  "salt1": "NaCl",
+  "m1": 4.0275,
+  "salt2": "NH4Cl",
+  "m2": 6.5423,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 335.6,
+  "salt1": "NaCl",
+  "m1": 4.0678,
+  "salt2": "NH4Cl",
+  "m2": 6.5423,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 296.9,
+  "salt1": "NaCl",
+  "m1": 0.4277,
+  "salt2": "NH4Cl",
+  "m2": 6.8847,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 302.4,
+  "salt1": "NaCl",
+  "m1": 0.4277,
+  "salt2": "NH4Cl",
+  "m2": 7.3404,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 308.3,
+  "salt1": "NaCl",
+  "m1": 0.4277,
+  "salt2": "NH4Cl",
+  "m2": 7.7469,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 312.9,
+  "salt1": "NaCl",
+  "m1": 0.4277,
+  "salt2": "NH4Cl",
+  "m2": 8.1279,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 318.1,
+  "salt1": "NaCl",
+  "m1": 0.4277,
+  "salt2": "NH4Cl",
+  "m2": 8.5773,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 324.3,
+  "salt1": "NaCl",
+  "m1": 0.4277,
+  "salt2": "NH4Cl",
+  "m2": 9.0787,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 332.4,
+  "salt1": "NaCl",
+  "m1": 0.4277,
+  "salt2": "NH4Cl",
+  "m2": 9.7972,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 293.2,
+  "salt1": "NaCl",
+  "m1": 0.8556,
+  "salt2": "NH4Cl",
+  "m2": 6.3285,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 297.6,
+  "salt1": "NaCl",
+  "m1": 0.8556,
+  "salt2": "NH4Cl",
+  "m2": 6.6476,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 304.2,
+  "salt1": "NaCl",
+  "m1": 0.8556,
+  "salt2": "NH4Cl",
+  "m2": 7.1458,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 309.0,
+  "salt1": "NaCl",
+  "m1": 0.8556,
+  "salt2": "NH4Cl",
+  "m2": 7.5412,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 316.4,
+  "salt1": "NaCl",
+  "m1": 0.8556,
+  "salt2": "NH4Cl",
+  "m2": 8.1292,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 323.1,
+  "salt1": "NaCl",
+  "m1": 0.8556,
+  "salt2": "NH4Cl",
+  "m2": 8.6814,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 329.6,
+  "salt1": "NaCl",
+  "m1": 0.8556,
+  "salt2": "NH4Cl",
+  "m2": 9.1823,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 332.7,
+  "salt1": "NaCl",
+  "m1": 0.8556,
+  "salt2": "NH4Cl",
+  "m2": 9.4567,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 297.5,
+  "salt1": "NaCl",
+  "m1": 1.7109,
+  "salt2": "NH4Cl",
+  "m2": 6.0686,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 302.6,
+  "salt1": "NaCl",
+  "m1": 1.7109,
+  "salt2": "NH4Cl",
+  "m2": 6.4279,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 307.3,
+  "salt1": "NaCl",
+  "m1": 1.7109,
+  "salt2": "NH4Cl",
+  "m2": 6.7955,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 312.6,
+  "salt1": "NaCl",
+  "m1": 1.7109,
+  "salt2": "NH4Cl",
+  "m2": 7.1862,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 322.8,
+  "salt1": "NaCl",
+  "m1": 1.7109,
+  "salt2": "NH4Cl",
+  "m2": 8.0166,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 327.8,
+  "salt1": "NaCl",
+  "m1": 1.7109,
+  "salt2": "NH4Cl",
+  "m2": 8.3862,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 331.7,
+  "salt1": "NaCl",
+  "m1": 1.7109,
+  "salt2": "NH4Cl",
+  "m2": 8.7414,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 299.4,
+  "salt1": "NaCl",
+  "m1": 2.566,
+  "salt2": "NH4Cl",
+  "m2": 5.5967,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 302.9,
+  "salt1": "NaCl",
+  "m1": 2.566,
+  "salt2": "NH4Cl",
+  "m2": 5.8736,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 308.7,
+  "salt1": "NaCl",
+  "m1": 2.566,
+  "salt2": "NH4Cl",
+  "m2": 6.2632,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 313.0,
+  "salt1": "NaCl",
+  "m1": 2.566,
+  "salt2": "NH4Cl",
+  "m2": 6.6076,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 316.4,
+  "salt1": "NaCl",
+  "m1": 2.566,
+  "salt2": "NH4Cl",
+  "m2": 6.8809,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 323.3,
+  "salt1": "NaCl",
+  "m1": 2.566,
+  "salt2": "NH4Cl",
+  "m2": 7.4113,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 328.7,
+  "salt1": "NaCl",
+  "m1": 2.566,
+  "salt2": "NH4Cl",
+  "m2": 7.8215,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 332.4,
+  "salt1": "NaCl",
+  "m1": 2.566,
+  "salt2": "NH4Cl",
+  "m2": 8.1333,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 299.6,
+  "salt1": "NaCl",
+  "m1": 3.4224,
+  "salt2": "NH4Cl",
+  "m2": 5.0694,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 306.9,
+  "salt1": "NaCl",
+  "m1": 3.4224,
+  "salt2": "NH4Cl",
+  "m2": 5.5586,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 314.4,
+  "salt1": "NaCl",
+  "m1": 3.4224,
+  "salt2": "NH4Cl",
+  "m2": 6.1071,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 327.0,
+  "salt1": "NaCl",
+  "m1": 3.4224,
+  "salt2": "NH4Cl",
+  "m2": 7.0671,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 334.3,
+  "salt1": "NaCl",
+  "m1": 3.4224,
+  "salt2": "NH4Cl",
+  "m2": 7.6268,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 297.6,
+  "salt1": "NaCl",
+  "m1": 3.8154,
+  "salt2": "NH4Cl",
+  "m2": 4.7001,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 303.9,
+  "salt1": "NaCl",
+  "m1": 3.8154,
+  "salt2": "NH4Cl",
+  "m2": 5.1011,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 311.3,
+  "salt1": "NaCl",
+  "m1": 3.8154,
+  "salt2": "NH4Cl",
+  "m2": 5.6177,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 317.8,
+  "salt1": "NaCl",
+  "m1": 3.8154,
+  "salt2": "NH4Cl",
+  "m2": 6.1004,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 331.5,
+  "salt1": "NaCl",
+  "m1": 3.8154,
+  "salt2": "NH4Cl",
+  "m2": 7.1196,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 296.8,
+  "salt1": "KCl",
+  "m1": 4.319,
+  "salt2": "NH4Cl",
+  "m2": 0.9348,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 300.6,
+  "salt1": "KCl",
+  "m1": 4.3804,
+  "salt2": "NH4Cl",
+  "m2": 0.9348,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 304.7,
+  "salt1": "KCl",
+  "m1": 4.5432,
+  "salt2": "NH4Cl",
+  "m2": 0.9348,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 310.4,
+  "salt1": "KCl",
+  "m1": 4.7676,
+  "salt2": "NH4Cl",
+  "m2": 0.9348,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 318.2,
+  "salt1": "KCl",
+  "m1": 5.0708,
+  "salt2": "NH4Cl",
+  "m2": 0.9348,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 324.5,
+  "salt1": "KCl",
+  "m1": 5.3188,
+  "salt2": "NH4Cl",
+  "m2": 0.9348,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 326.0,
+  "salt1": "KCl",
+  "m1": 5.3763,
+  "salt2": "NH4Cl",
+  "m2": 0.9348,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 328.6,
+  "salt1": "KCl",
+  "m1": 5.4689,
+  "salt2": "NH4Cl",
+  "m2": 0.9348,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 298.5,
+  "salt1": "KCl",
+  "m1": 3.8419,
+  "salt2": "NH4Cl",
+  "m2": 1.8704,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 304.4,
+  "salt1": "KCl",
+  "m1": 4.0586,
+  "salt2": "NH4Cl",
+  "m2": 1.8704,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 317.3,
+  "salt1": "KCl",
+  "m1": 4.5711,
+  "salt2": "NH4Cl",
+  "m2": 1.8704,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 328.2,
+  "salt1": "KCl",
+  "m1": 4.9869,
+  "salt2": "NH4Cl",
+  "m2": 1.8704,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 335.1,
+  "salt1": "KCl",
+  "m1": 5.2466,
+  "salt2": "NH4Cl",
+  "m2": 1.8704,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 297.4,
+  "salt1": "KCl",
+  "m1": 3.4264,
+  "salt2": "NH4Cl",
+  "m2": 2.8058,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 300.6,
+  "salt1": "KCl",
+  "m1": 3.5405,
+  "salt2": "NH4Cl",
+  "m2": 2.8058,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 305.7,
+  "salt1": "KCl",
+  "m1": 3.6975,
+  "salt2": "NH4Cl",
+  "m2": 2.8058,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 311.4,
+  "salt1": "KCl",
+  "m1": 3.901,
+  "salt2": "NH4Cl",
+  "m2": 2.8058,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 317.8,
+  "salt1": "KCl",
+  "m1": 4.1483,
+  "salt2": "NH4Cl",
+  "m2": 2.8058,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 326.6,
+  "salt1": "KCl",
+  "m1": 4.4936,
+  "salt2": "NH4Cl",
+  "m2": 2.8058,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 333.5,
+  "salt1": "KCl",
+  "m1": 4.7589,
+  "salt2": "NH4Cl",
+  "m2": 2.8058,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 298.4,
+  "salt1": "KCl",
+  "m1": 2.6741,
+  "salt2": "NH4Cl",
+  "m2": 4.6749,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 303.4,
+  "salt1": "KCl",
+  "m1": 2.8415,
+  "salt2": "NH4Cl",
+  "m2": 4.6749,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 311.1,
+  "salt1": "KCl",
+  "m1": 3.0975,
+  "salt2": "NH4Cl",
+  "m2": 4.6749,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 313.6,
+  "salt1": "KCl",
+  "m1": 3.229,
+  "salt2": "NH4Cl",
+  "m2": 4.6749,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 325.4,
+  "salt1": "KCl",
+  "m1": 3.6304,
+  "salt2": "NH4Cl",
+  "m2": 4.6749,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 334.0,
+  "salt1": "KCl",
+  "m1": 3.9291,
+  "salt2": "NH4Cl",
+  "m2": 4.6749,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 304.6,
+  "salt1": "KCl",
+  "m1": 2.3228,
+  "salt2": "NH4Cl",
+  "m2": 6.0744,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 310.2,
+  "salt1": "KCl",
+  "m1": 2.5174,
+  "salt2": "NH4Cl",
+  "m2": 6.0744,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 314.1,
+  "salt1": "KCl",
+  "m1": 2.6793,
+  "salt2": "NH4Cl",
+  "m2": 6.0744,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 320.0,
+  "salt1": "KCl",
+  "m1": 2.8573,
+  "salt2": "NH4Cl",
+  "m2": 6.0744,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 324.5,
+  "salt1": "KCl",
+  "m1": 3.0849,
+  "salt2": "NH4Cl",
+  "m2": 6.0744,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 328.2,
+  "salt1": "KCl",
+  "m1": 3.1766,
+  "salt2": "NH4Cl",
+  "m2": 6.0744,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 334.9,
+  "salt1": "KCl",
+  "m1": 3.4402,
+  "salt2": "NH4Cl",
+  "m2": 6.0744,
+  "solid": "KCl"
+ },
+ {
+  "system": "binary",
+  "T": 293.4,
+  "salt1": "NH4Cl",
+  "m1": 6.9892,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "binary",
+  "T": 297.8,
+  "salt1": "NH4Cl",
+  "m1": 7.3294,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "binary",
+  "T": 303.2,
+  "salt1": "NH4Cl",
+  "m1": 7.7347,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "binary",
+  "T": 307.6,
+  "salt1": "NH4Cl",
+  "m1": 8.0965,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "binary",
+  "T": 313.3,
+  "salt1": "NH4Cl",
+  "m1": 8.5132,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "binary",
+  "T": 318.8,
+  "salt1": "NH4Cl",
+  "m1": 8.972,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "binary",
+  "T": 323.7,
+  "salt1": "NH4Cl",
+  "m1": 9.4391,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "binary",
+  "T": 329.1,
+  "salt1": "NH4Cl",
+  "m1": 9.8405,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "binary",
+  "T": 333.4,
+  "salt1": "NH4Cl",
+  "m1": 10.2266,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "binary",
+  "T": 340.2,
+  "salt1": "NH4Cl",
+  "m1": 10.771,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 296.5,
+  "salt1": "KCl",
+  "m1": 0.5365,
+  "salt2": "NH4Cl",
+  "m2": 6.8582,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 301.9,
+  "salt1": "KCl",
+  "m1": 0.5365,
+  "salt2": "NH4Cl",
+  "m2": 7.284,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 307.0,
+  "salt1": "KCl",
+  "m1": 0.5365,
+  "salt2": "NH4Cl",
+  "m2": 7.6556,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 317.8,
+  "salt1": "KCl",
+  "m1": 0.5365,
+  "salt2": "NH4Cl",
+  "m2": 8.539,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 322.6,
+  "salt1": "KCl",
+  "m1": 0.5365,
+  "salt2": "NH4Cl",
+  "m2": 8.9346,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 323.9,
+  "salt1": "KCl",
+  "m1": 0.5365,
+  "salt2": "NH4Cl",
+  "m2": 9.0537,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 331.9,
+  "salt1": "KCl",
+  "m1": 0.5365,
+  "salt2": "NH4Cl",
+  "m2": 9.737,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 297.7,
+  "salt1": "KCl",
+  "m1": 1.0075,
+  "salt2": "NH4Cl",
+  "m2": 6.5678,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 302.5,
+  "salt1": "KCl",
+  "m1": 1.0075,
+  "salt2": "NH4Cl",
+  "m2": 7.0475,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 309.8,
+  "salt1": "KCl",
+  "m1": 1.0075,
+  "salt2": "NH4Cl",
+  "m2": 7.6012,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 320.0,
+  "salt1": "KCl",
+  "m1": 1.0075,
+  "salt2": "NH4Cl",
+  "m2": 8.4156,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 325.0,
+  "salt1": "KCl",
+  "m1": 1.0075,
+  "salt2": "NH4Cl",
+  "m2": 8.8645,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 332.2,
+  "salt1": "KCl",
+  "m1": 1.0075,
+  "salt2": "NH4Cl",
+  "m2": 9.4698,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 298.8,
+  "salt1": "KCl",
+  "m1": 1.3427,
+  "salt2": "NH4Cl",
+  "m2": 6.5895,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 303.4,
+  "salt1": "KCl",
+  "m1": 1.3427,
+  "salt2": "NH4Cl",
+  "m2": 6.9349,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 310.9,
+  "salt1": "KCl",
+  "m1": 1.3427,
+  "salt2": "NH4Cl",
+  "m2": 7.4937,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 315.4,
+  "salt1": "KCl",
+  "m1": 1.3427,
+  "salt2": "NH4Cl",
+  "m2": 7.7777,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 320.7,
+  "salt1": "KCl",
+  "m1": 1.3427,
+  "salt2": "NH4Cl",
+  "m2": 8.2842,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 328.4,
+  "salt1": "KCl",
+  "m1": 1.3427,
+  "salt2": "NH4Cl",
+  "m2": 8.9215,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 332.3,
+  "salt1": "KCl",
+  "m1": 1.3427,
+  "salt2": "NH4Cl",
+  "m2": 9.2733,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 301.7,
+  "salt1": "KCl",
+  "m1": 2.144,
+  "salt2": "NH4Cl",
+  "m2": 6.1913,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 306.6,
+  "salt1": "KCl",
+  "m1": 2.144,
+  "salt2": "NH4Cl",
+  "m2": 6.5592,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 314.9,
+  "salt1": "KCl",
+  "m1": 2.144,
+  "salt2": "NH4Cl",
+  "m2": 7.2697,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 318.0,
+  "salt1": "KCl",
+  "m1": 2.144,
+  "salt2": "NH4Cl",
+  "m2": 7.4995,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 324.2,
+  "salt1": "KCl",
+  "m1": 2.144,
+  "salt2": "NH4Cl",
+  "m2": 8.0202,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 331.5,
+  "salt1": "KCl",
+  "m1": 2.144,
+  "salt2": "NH4Cl",
+  "m2": 8.758,
+  "solid": "NH4Cl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 298.3,
+  "salt1": "KCl",
+  "m1": 3.982,
+  "salt2": "LiCl",
+  "m2": 1.0,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 302.6,
+  "salt1": "KCl",
+  "m1": 4.158,
+  "salt2": "LiCl",
+  "m2": 1.0,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 308.2,
+  "salt1": "KCl",
+  "m1": 4.367,
+  "salt2": "LiCl",
+  "m2": 1.0,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 312.3,
+  "salt1": "KCl",
+  "m1": 4.538,
+  "salt2": "LiCl",
+  "m2": 1.0,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 316.8,
+  "salt1": "KCl",
+  "m1": 4.712,
+  "salt2": "LiCl",
+  "m2": 1.0,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 322.2,
+  "salt1": "KCl",
+  "m1": 4.874,
+  "salt2": "LiCl",
+  "m2": 1.0,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 293.0,
+  "salt1": "KCl",
+  "m1": 3.122,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 298.4,
+  "salt1": "KCl",
+  "m1": 3.346,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 303.7,
+  "salt1": "KCl",
+  "m1": 3.528,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 308.6,
+  "salt1": "KCl",
+  "m1": 3.682,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 313.7,
+  "salt1": "KCl",
+  "m1": 3.886,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 318.3,
+  "salt1": "KCl",
+  "m1": 4.018,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 323.5,
+  "salt1": "KCl",
+  "m1": 4.211,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 332.9,
+  "salt1": "KCl",
+  "m1": 4.583,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 297.2,
+  "salt1": "KCl",
+  "m1": 2.089,
+  "salt2": "LiCl",
+  "m2": 3.93,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 301.4,
+  "salt1": "KCl",
+  "m1": 2.206,
+  "salt2": "LiCl",
+  "m2": 3.93,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 308.2,
+  "salt1": "KCl",
+  "m1": 2.417,
+  "salt2": "LiCl",
+  "m2": 3.93,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 313.5,
+  "salt1": "KCl",
+  "m1": 2.601,
+  "salt2": "LiCl",
+  "m2": 3.93,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 318.0,
+  "salt1": "KCl",
+  "m1": 2.748,
+  "salt2": "LiCl",
+  "m2": 3.93,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 324.1,
+  "salt1": "KCl",
+  "m1": 2.94,
+  "salt2": "LiCl",
+  "m2": 3.93,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 296.4,
+  "salt1": "KCl",
+  "m1": 1.286,
+  "salt2": "LiCl",
+  "m2": 5.94,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 304.5,
+  "salt1": "KCl",
+  "m1": 1.448,
+  "salt2": "LiCl",
+  "m2": 5.94,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 308.6,
+  "salt1": "KCl",
+  "m1": 1.522,
+  "salt2": "LiCl",
+  "m2": 5.94,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 313.7,
+  "salt1": "KCl",
+  "m1": 1.66,
+  "salt2": "LiCl",
+  "m2": 5.94,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 318.6,
+  "salt1": "KCl",
+  "m1": 1.788,
+  "salt2": "LiCl",
+  "m2": 5.94,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 323.1,
+  "salt1": "KCl",
+  "m1": 1.881,
+  "salt2": "LiCl",
+  "m2": 5.94,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 329.1,
+  "salt1": "KCl",
+  "m1": 2.029,
+  "salt2": "LiCl",
+  "m2": 5.94,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 333.9,
+  "salt1": "KCl",
+  "m1": 2.163,
+  "salt2": "LiCl",
+  "m2": 5.94,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 297.6,
+  "salt1": "KCl",
+  "m1": 0.994,
+  "salt2": "LiCl",
+  "m2": 7.05,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 303.3,
+  "salt1": "KCl",
+  "m1": 1.11,
+  "salt2": "LiCl",
+  "m2": 7.05,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 308.2,
+  "salt1": "KCl",
+  "m1": 1.19,
+  "salt2": "LiCl",
+  "m2": 7.05,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 312.7,
+  "salt1": "KCl",
+  "m1": 1.312,
+  "salt2": "LiCl",
+  "m2": 7.05,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 324.1,
+  "salt1": "KCl",
+  "m1": 1.575,
+  "salt2": "LiCl",
+  "m2": 7.05,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 332.8,
+  "salt1": "KCl",
+  "m1": 1.745,
+  "salt2": "LiCl",
+  "m2": 7.05,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 296.9,
+  "salt1": "KCl",
+  "m1": 0.65,
+  "salt2": "LiCl",
+  "m2": 9.32,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 301.4,
+  "salt1": "KCl",
+  "m1": 0.718,
+  "salt2": "LiCl",
+  "m2": 9.32,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 310.1,
+  "salt1": "KCl",
+  "m1": 0.823,
+  "salt2": "LiCl",
+  "m2": 9.32,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 315.1,
+  "salt1": "KCl",
+  "m1": 0.931,
+  "salt2": "LiCl",
+  "m2": 9.32,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 322.4,
+  "salt1": "KCl",
+  "m1": 1.063,
+  "salt2": "LiCl",
+  "m2": 9.32,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 327.0,
+  "salt1": "KCl",
+  "m1": 1.168,
+  "salt2": "LiCl",
+  "m2": 9.32,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 335.5,
+  "salt1": "KCl",
+  "m1": 1.368,
+  "salt2": "LiCl",
+  "m2": 9.32,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 298.8,
+  "salt1": "KCl",
+  "m1": 0.555,
+  "salt2": "LiCl",
+  "m2": 10.61,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 303.5,
+  "salt1": "KCl",
+  "m1": 0.62,
+  "salt2": "LiCl",
+  "m2": 10.61,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 308.5,
+  "salt1": "KCl",
+  "m1": 0.736,
+  "salt2": "LiCl",
+  "m2": 10.61,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 312.5,
+  "salt1": "KCl",
+  "m1": 0.77,
+  "salt2": "LiCl",
+  "m2": 10.61,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 318.7,
+  "salt1": "KCl",
+  "m1": 0.917,
+  "salt2": "LiCl",
+  "m2": 10.61,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 323.5,
+  "salt1": "KCl",
+  "m1": 0.954,
+  "salt2": "LiCl",
+  "m2": 10.61,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 328.6,
+  "salt1": "KCl",
+  "m1": 1.08,
+  "salt2": "LiCl",
+  "m2": 10.61,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 295.0,
+  "salt1": "KCl",
+  "m1": 0.477,
+  "salt2": "LiCl",
+  "m2": 12.7,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 298.5,
+  "salt1": "KCl",
+  "m1": 0.489,
+  "salt2": "LiCl",
+  "m2": 12.7,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 300.0,
+  "salt1": "KCl",
+  "m1": 0.534,
+  "salt2": "LiCl",
+  "m2": 12.7,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 303.2,
+  "salt1": "KCl",
+  "m1": 0.589,
+  "salt2": "LiCl",
+  "m2": 12.7,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 318.0,
+  "salt1": "KCl",
+  "m1": 0.786,
+  "salt2": "LiCl",
+  "m2": 12.7,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 324.0,
+  "salt1": "KCl",
+  "m1": 0.93,
+  "salt2": "LiCl",
+  "m2": 12.7,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 327.2,
+  "salt1": "KCl",
+  "m1": 0.946,
+  "salt2": "LiCl",
+  "m2": 12.7,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 332.1,
+  "salt1": "KCl",
+  "m1": 1.074,
+  "salt2": "LiCl",
+  "m2": 12.7,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 294.7,
+  "salt1": "KCl",
+  "m1": 0.475,
+  "salt2": "LiCl",
+  "m2": 13.1,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 302.5,
+  "salt1": "KCl",
+  "m1": 0.564,
+  "salt2": "LiCl",
+  "m2": 13.1,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 312.3,
+  "salt1": "KCl",
+  "m1": 0.67,
+  "salt2": "LiCl",
+  "m2": 13.1,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 319.5,
+  "salt1": "KCl",
+  "m1": 0.781,
+  "salt2": "LiCl",
+  "m2": 13.1,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 324.5,
+  "salt1": "KCl",
+  "m1": 0.874,
+  "salt2": "LiCl",
+  "m2": 13.1,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 331.9,
+  "salt1": "KCl",
+  "m1": 1.019,
+  "salt2": "LiCl",
+  "m2": 13.1,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 300.0,
+  "salt1": "KCl",
+  "m1": 0.516,
+  "salt2": "LiCl",
+  "m2": 14.1,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 323.3,
+  "salt1": "KCl",
+  "m1": 0.855,
+  "salt2": "LiCl",
+  "m2": 14.1,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 325.9,
+  "salt1": "KCl",
+  "m1": 0.907,
+  "salt2": "LiCl",
+  "m2": 14.1,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 329.4,
+  "salt1": "KCl",
+  "m1": 0.961,
+  "salt2": "LiCl",
+  "m2": 14.1,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 301.2,
+  "salt1": "KCl",
+  "m1": 0.555,
+  "salt2": "LiCl",
+  "m2": 15.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 308.4,
+  "salt1": "KCl",
+  "m1": 0.698,
+  "salt2": "LiCl",
+  "m2": 15.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 317.4,
+  "salt1": "KCl",
+  "m1": 0.862,
+  "salt2": "LiCl",
+  "m2": 15.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 324.7,
+  "salt1": "KCl",
+  "m1": 0.955,
+  "salt2": "LiCl",
+  "m2": 15.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 326.9,
+  "salt1": "KCl",
+  "m1": 1.021,
+  "salt2": "LiCl",
+  "m2": 15.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 329.8,
+  "salt1": "KCl",
+  "m1": 1.047,
+  "salt2": "LiCl",
+  "m2": 15.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 294.0,
+  "salt1": "KCl",
+  "m1": 0.539,
+  "salt2": "LiCl",
+  "m2": 16.8,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 305.0,
+  "salt1": "KCl",
+  "m1": 0.681,
+  "salt2": "LiCl",
+  "m2": 16.8,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 308.9,
+  "salt1": "KCl",
+  "m1": 0.735,
+  "salt2": "LiCl",
+  "m2": 16.8,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 314.1,
+  "salt1": "KCl",
+  "m1": 0.83,
+  "salt2": "LiCl",
+  "m2": 16.8,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 323.7,
+  "salt1": "KCl",
+  "m1": 0.952,
+  "salt2": "LiCl",
+  "m2": 16.8,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 332.8,
+  "salt1": "KCl",
+  "m1": 1.132,
+  "salt2": "LiCl",
+  "m2": 16.8,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 293.5,
+  "salt1": "KCl",
+  "m1": 0.56,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 297.0,
+  "salt1": "KCl",
+  "m1": 0.606,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 299.8,
+  "salt1": "KCl",
+  "m1": 0.672,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 301.3,
+  "salt1": "KCl",
+  "m1": 0.676,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 302.5,
+  "salt1": "KCl",
+  "m1": 0.694,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 307.8,
+  "salt1": "KCl",
+  "m1": 0.805,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 313.5,
+  "salt1": "KCl",
+  "m1": 0.872,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 316.0,
+  "salt1": "KCl",
+  "m1": 0.914,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 317.4,
+  "salt1": "KCl",
+  "m1": 0.939,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 323.7,
+  "salt1": "KCl",
+  "m1": 1.041,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 326.7,
+  "salt1": "KCl",
+  "m1": 1.089,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 332.8,
+  "salt1": "KCl",
+  "m1": 1.209,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 330.1,
+  "salt1": "KCl",
+  "m1": 1.144,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 298.5,
+  "salt1": "KCl",
+  "m1": 0.672,
+  "salt2": "LiCl",
+  "m2": 18.8,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 302.1,
+  "salt1": "KCl",
+  "m1": 0.739,
+  "salt2": "LiCl",
+  "m2": 18.8,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 309.3,
+  "salt1": "KCl",
+  "m1": 0.874,
+  "salt2": "LiCl",
+  "m2": 18.8,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 316.4,
+  "salt1": "KCl",
+  "m1": 1.006,
+  "salt2": "LiCl",
+  "m2": 18.8,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 324.0,
+  "salt1": "KCl",
+  "m1": 1.153,
+  "salt2": "LiCl",
+  "m2": 18.8,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 332.2,
+  "salt1": "KCl",
+  "m1": 1.275,
+  "salt2": "LiCl",
+  "m2": 18.8,
+  "solid": "KCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 293.1,
+  "salt1": "NaCl",
+  "m1": 5.151,
+  "salt2": "LiCl",
+  "m2": 1.09,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 300.6,
+  "salt1": "NaCl",
+  "m1": 5.182,
+  "salt2": "LiCl",
+  "m2": 1.09,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 308.0,
+  "salt1": "NaCl",
+  "m1": 5.262,
+  "salt2": "LiCl",
+  "m2": 1.09,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 318.7,
+  "salt1": "NaCl",
+  "m1": 5.324,
+  "salt2": "LiCl",
+  "m2": 1.09,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 323.6,
+  "salt1": "NaCl",
+  "m1": 5.354,
+  "salt2": "LiCl",
+  "m2": 1.09,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 332.4,
+  "salt1": "NaCl",
+  "m1": 5.416,
+  "salt2": "LiCl",
+  "m2": 1.09,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 293.8,
+  "salt1": "NaCl",
+  "m1": 4.239,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 297.8,
+  "salt1": "NaCl",
+  "m1": 4.286,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 303.4,
+  "salt1": "NaCl",
+  "m1": 4.329,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 309.4,
+  "salt1": "NaCl",
+  "m1": 4.375,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 314.6,
+  "salt1": "NaCl",
+  "m1": 4.43,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 317.1,
+  "salt1": "NaCl",
+  "m1": 4.447,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 318.0,
+  "salt1": "NaCl",
+  "m1": 4.452,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 322.7,
+  "salt1": "NaCl",
+  "m1": 4.501,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 327.2,
+  "salt1": "NaCl",
+  "m1": 4.492,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 328.8,
+  "salt1": "NaCl",
+  "m1": 4.546,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 333.3,
+  "salt1": "NaCl",
+  "m1": 4.596,
+  "salt2": "LiCl",
+  "m2": 1.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 294.8,
+  "salt1": "NaCl",
+  "m1": 2.546,
+  "salt2": "LiCl",
+  "m2": 3.91,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 300.0,
+  "salt1": "NaCl",
+  "m1": 2.623,
+  "salt2": "LiCl",
+  "m2": 3.91,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 308.3,
+  "salt1": "NaCl",
+  "m1": 2.694,
+  "salt2": "LiCl",
+  "m2": 3.91,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 319.7,
+  "salt1": "NaCl",
+  "m1": 2.807,
+  "salt2": "LiCl",
+  "m2": 3.91,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 326.1,
+  "salt1": "NaCl",
+  "m1": 2.862,
+  "salt2": "LiCl",
+  "m2": 3.91,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 334.4,
+  "salt1": "NaCl",
+  "m1": 2.952,
+  "salt2": "LiCl",
+  "m2": 3.91,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 341.0,
+  "salt1": "NaCl",
+  "m1": 3.04,
+  "salt2": "LiCl",
+  "m2": 3.91,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 293.8,
+  "salt1": "NaCl",
+  "m1": 1.372,
+  "salt2": "LiCl",
+  "m2": 5.8,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 298.0,
+  "salt1": "NaCl",
+  "m1": 1.398,
+  "salt2": "LiCl",
+  "m2": 5.8,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 303.1,
+  "salt1": "NaCl",
+  "m1": 1.448,
+  "salt2": "LiCl",
+  "m2": 5.8,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 308.0,
+  "salt1": "NaCl",
+  "m1": 1.515,
+  "salt2": "LiCl",
+  "m2": 5.8,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 318.7,
+  "salt1": "NaCl",
+  "m1": 1.599,
+  "salt2": "LiCl",
+  "m2": 5.8,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 323.6,
+  "salt1": "NaCl",
+  "m1": 1.65,
+  "salt2": "LiCl",
+  "m2": 5.8,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 328.0,
+  "salt1": "NaCl",
+  "m1": 1.694,
+  "salt2": "LiCl",
+  "m2": 5.8,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 332.6,
+  "salt1": "NaCl",
+  "m1": 1.746,
+  "salt2": "LiCl",
+  "m2": 5.8,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 297.6,
+  "salt1": "NaCl",
+  "m1": 0.342,
+  "salt2": "LiCl",
+  "m2": 9.67,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 306.3,
+  "salt1": "NaCl",
+  "m1": 0.386,
+  "salt2": "LiCl",
+  "m2": 9.67,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 315.8,
+  "salt1": "NaCl",
+  "m1": 0.428,
+  "salt2": "LiCl",
+  "m2": 9.67,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 323.6,
+  "salt1": "NaCl",
+  "m1": 0.501,
+  "salt2": "LiCl",
+  "m2": 9.67,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 332.8,
+  "salt1": "NaCl",
+  "m1": 0.532,
+  "salt2": "LiCl",
+  "m2": 9.67,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 298.5,
+  "salt1": "NaCl",
+  "m1": 0.239,
+  "salt2": "LiCl",
+  "m2": 10.61,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 306.0,
+  "salt1": "NaCl",
+  "m1": 0.25,
+  "salt2": "LiCl",
+  "m2": 10.61,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 314.5,
+  "salt1": "NaCl",
+  "m1": 0.298,
+  "salt2": "LiCl",
+  "m2": 10.61,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 319.2,
+  "salt1": "NaCl",
+  "m1": 0.328,
+  "salt2": "LiCl",
+  "m2": 10.61,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 323.4,
+  "salt1": "NaCl",
+  "m1": 0.319,
+  "salt2": "LiCl",
+  "m2": 10.61,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 327.9,
+  "salt1": "NaCl",
+  "m1": 0.335,
+  "salt2": "LiCl",
+  "m2": 10.61,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 333.2,
+  "salt1": "NaCl",
+  "m1": 0.386,
+  "salt2": "LiCl",
+  "m2": 10.61,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 298.8,
+  "salt1": "NaCl",
+  "m1": 0.152,
+  "salt2": "LiCl",
+  "m2": 11.75,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 306.4,
+  "salt1": "NaCl",
+  "m1": 0.18,
+  "salt2": "LiCl",
+  "m2": 11.75,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 314.2,
+  "salt1": "NaCl",
+  "m1": 0.207,
+  "salt2": "LiCl",
+  "m2": 11.75,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 320.5,
+  "salt1": "NaCl",
+  "m1": 0.231,
+  "salt2": "LiCl",
+  "m2": 11.75,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 327.6,
+  "salt1": "NaCl",
+  "m1": 0.256,
+  "salt2": "LiCl",
+  "m2": 11.75,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 332.8,
+  "salt1": "NaCl",
+  "m1": 0.283,
+  "salt2": "LiCl",
+  "m2": 11.75,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 295.7,
+  "salt1": "NaCl",
+  "m1": 0.086,
+  "salt2": "LiCl",
+  "m2": 12.7,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 303.7,
+  "salt1": "NaCl",
+  "m1": 0.109,
+  "salt2": "LiCl",
+  "m2": 12.7,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 319.6,
+  "salt1": "NaCl",
+  "m1": 0.154,
+  "salt2": "LiCl",
+  "m2": 12.7,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 299.1,
+  "salt1": "NaCl",
+  "m1": 0.059,
+  "salt2": "LiCl",
+  "m2": 14.2,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 304.7,
+  "salt1": "NaCl",
+  "m1": 0.086,
+  "salt2": "LiCl",
+  "m2": 14.2,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 314.3,
+  "salt1": "NaCl",
+  "m1": 0.097,
+  "salt2": "LiCl",
+  "m2": 14.2,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 322.3,
+  "salt1": "NaCl",
+  "m1": 0.112,
+  "salt2": "LiCl",
+  "m2": 14.2,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 331.2,
+  "salt1": "NaCl",
+  "m1": 0.145,
+  "salt2": "LiCl",
+  "m2": 14.2,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 337.1,
+  "salt1": "NaCl",
+  "m1": 0.168,
+  "salt2": "LiCl",
+  "m2": 14.2,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 305.5,
+  "salt1": "NaCl",
+  "m1": 0.047,
+  "salt2": "LiCl",
+  "m2": 16.6,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 312.1,
+  "salt1": "NaCl",
+  "m1": 0.052,
+  "salt2": "LiCl",
+  "m2": 16.6,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 316.4,
+  "salt1": "NaCl",
+  "m1": 0.071,
+  "salt2": "LiCl",
+  "m2": 16.6,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 299.8,
+  "salt1": "NaCl",
+  "m1": 0.043,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 312.0,
+  "salt1": "NaCl",
+  "m1": 0.052,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 320.7,
+  "salt1": "NaCl",
+  "m1": 0.086,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 326.9,
+  "salt1": "NaCl",
+  "m1": 0.11,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 333.6,
+  "salt1": "NaCl",
+  "m1": 0.135,
+  "salt2": "LiCl",
+  "m2": 17.5,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 297.8,
+  "salt1": "NaCl",
+  "m1": 0.033,
+  "salt2": "LiCl",
+  "m2": 19.1,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 304.1,
+  "salt1": "NaCl",
+  "m1": 0.045,
+  "salt2": "LiCl",
+  "m2": 19.1,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 311.8,
+  "salt1": "NaCl",
+  "m1": 0.057,
+  "salt2": "LiCl",
+  "m2": 19.1,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 332.5,
+  "salt1": "NaCl",
+  "m1": 0.116,
+  "salt2": "LiCl",
+  "m2": 19.1,
+  "solid": "NaCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 298.5,
+  "salt1": "KCl",
+  "m1": 3.93,
+  "salt2": "AlCl3",
+  "m2": 0.375,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 304.9,
+  "salt1": "KCl",
+  "m1": 4.057,
+  "salt2": "AlCl3",
+  "m2": 0.375,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 311.1,
+  "salt1": "KCl",
+  "m1": 4.284,
+  "salt2": "AlCl3",
+  "m2": 0.375,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 320.3,
+  "salt1": "KCl",
+  "m1": 4.642,
+  "salt2": "AlCl3",
+  "m2": 0.375,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 324.8,
+  "salt1": "KCl",
+  "m1": 4.784,
+  "salt2": "AlCl3",
+  "m2": 0.375,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 335.2,
+  "salt1": "KCl",
+  "m1": 5.093,
+  "salt2": "AlCl3",
+  "m2": 0.375,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 338.3,
+  "salt1": "KCl",
+  "m1": 5.227,
+  "salt2": "AlCl3",
+  "m2": 0.375,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 298.9,
+  "salt1": "KCl",
+  "m1": 3.032,
+  "salt2": "AlCl3",
+  "m2": 0.749,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 306.6,
+  "salt1": "KCl",
+  "m1": 3.208,
+  "salt2": "AlCl3",
+  "m2": 0.749,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 319.0,
+  "salt1": "KCl",
+  "m1": 3.629,
+  "salt2": "AlCl3",
+  "m2": 0.749,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 326.7,
+  "salt1": "KCl",
+  "m1": 3.897,
+  "salt2": "AlCl3",
+  "m2": 0.749,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 334.6,
+  "salt1": "KCl",
+  "m1": 4.18,
+  "salt2": "AlCl3",
+  "m2": 0.749,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 341.1,
+  "salt1": "KCl",
+  "m1": 4.416,
+  "salt2": "AlCl3",
+  "m2": 0.749,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 297.5,
+  "salt1": "KCl",
+  "m1": 2.116,
+  "salt2": "AlCl3",
+  "m2": 1.13,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 305.0,
+  "salt1": "KCl",
+  "m1": 2.305,
+  "salt2": "AlCl3",
+  "m2": 1.13,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 312.4,
+  "salt1": "KCl",
+  "m1": 2.586,
+  "salt2": "AlCl3",
+  "m2": 1.13,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 316.8,
+  "salt1": "KCl",
+  "m1": 2.736,
+  "salt2": "AlCl3",
+  "m2": 1.13,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 323.5,
+  "salt1": "KCl",
+  "m1": 2.94,
+  "salt2": "AlCl3",
+  "m2": 1.13,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 331.7,
+  "salt1": "KCl",
+  "m1": 3.246,
+  "salt2": "AlCl3",
+  "m2": 1.13,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 296.2,
+  "salt1": "KCl",
+  "m1": 1.502,
+  "salt2": "AlCl3",
+  "m2": 1.39,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 299.0,
+  "salt1": "KCl",
+  "m1": 1.561,
+  "salt2": "AlCl3",
+  "m2": 1.39,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 306.2,
+  "salt1": "KCl",
+  "m1": 1.745,
+  "salt2": "AlCl3",
+  "m2": 1.39,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 316.3,
+  "salt1": "KCl",
+  "m1": 2.123,
+  "salt2": "AlCl3",
+  "m2": 1.39,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 320.8,
+  "salt1": "KCl",
+  "m1": 2.254,
+  "salt2": "AlCl3",
+  "m2": 1.39,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 329.6,
+  "salt1": "KCl",
+  "m1": 2.555,
+  "salt2": "AlCl3",
+  "m2": 1.39,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 303.2,
+  "salt1": "KCl",
+  "m1": 1.541,
+  "salt2": "AlCl3",
+  "m2": 1.49,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 312.5,
+  "salt1": "KCl",
+  "m1": 1.809,
+  "salt2": "AlCl3",
+  "m2": 1.49,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 297.6,
+  "salt1": "KCl",
+  "m1": 0.704,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 299.6,
+  "salt1": "KCl",
+  "m1": 0.797,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 304.2,
+  "salt1": "KCl",
+  "m1": 0.919,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 305.1,
+  "salt1": "KCl",
+  "m1": 0.934,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 311.0,
+  "salt1": "KCl",
+  "m1": 1.131,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 312.9,
+  "salt1": "KCl",
+  "m1": 1.163,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 322.0,
+  "salt1": "KCl",
+  "m1": 1.468,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 325.3,
+  "salt1": "KCl",
+  "m1": 1.615,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 330.8,
+  "salt1": "KCl",
+  "m1": 1.721,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 334.7,
+  "salt1": "KCl",
+  "m1": 1.866,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 337.8,
+  "salt1": "KCl",
+  "m1": 1.978,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 303.9,
+  "salt1": "KCl",
+  "m1": 0.819,
+  "salt2": "AlCl3",
+  "m2": 2.14,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 320.4,
+  "salt1": "KCl",
+  "m1": 1.16,
+  "salt2": "AlCl3",
+  "m2": 2.14,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 325.2,
+  "salt1": "KCl",
+  "m1": 1.254,
+  "salt2": "AlCl3",
+  "m2": 2.14,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 329.0,
+  "salt1": "KCl",
+  "m1": 1.36,
+  "salt2": "AlCl3",
+  "m2": 2.14,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 298.1,
+  "salt1": "KCl",
+  "m1": 0.671,
+  "salt2": "AlCl3",
+  "m2": 2.24,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 301.0,
+  "salt1": "KCl",
+  "m1": 0.737,
+  "salt2": "AlCl3",
+  "m2": 2.24,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 308.4,
+  "salt1": "KCl",
+  "m1": 0.872,
+  "salt2": "AlCl3",
+  "m2": 2.24,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 315.4,
+  "salt1": "KCl",
+  "m1": 1.008,
+  "salt2": "AlCl3",
+  "m2": 2.24,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 326.4,
+  "salt1": "KCl",
+  "m1": 1.22,
+  "salt2": "AlCl3",
+  "m2": 2.24,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 303.1,
+  "salt1": "KCl",
+  "m1": 0.712,
+  "salt2": "AlCl3",
+  "m2": 2.53,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 312.7,
+  "salt1": "KCl",
+  "m1": 0.859,
+  "salt2": "AlCl3",
+  "m2": 2.53,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 318.2,
+  "salt1": "KCl",
+  "m1": 0.958,
+  "salt2": "AlCl3",
+  "m2": 2.53,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 327.6,
+  "salt1": "KCl",
+  "m1": 1.157,
+  "salt2": "AlCl3",
+  "m2": 2.53,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 308.6,
+  "salt1": "KCl",
+  "m1": 0.709,
+  "salt2": "AlCl3",
+  "m2": 2.7,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 317.7,
+  "salt1": "KCl",
+  "m1": 0.864,
+  "salt2": "AlCl3",
+  "m2": 2.7,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 329.5,
+  "salt1": "KCl",
+  "m1": 1.072,
+  "salt2": "AlCl3",
+  "m2": 2.7,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 297.3,
+  "salt1": "KCl",
+  "m1": 0.564,
+  "salt2": "AlCl3",
+  "m2": 2.71,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 306.7,
+  "salt1": "KCl",
+  "m1": 0.693,
+  "salt2": "AlCl3",
+  "m2": 2.71,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 320.3,
+  "salt1": "KCl",
+  "m1": 0.911,
+  "salt2": "AlCl3",
+  "m2": 2.71,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 325.8,
+  "salt1": "KCl",
+  "m1": 1.003,
+  "salt2": "AlCl3",
+  "m2": 2.71,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 335.0,
+  "salt1": "KCl",
+  "m1": 1.183,
+  "salt2": "AlCl3",
+  "m2": 2.71,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 302.1,
+  "salt1": "KCl",
+  "m1": 0.564,
+  "salt2": "AlCl3",
+  "m2": 2.96,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 322.8,
+  "salt1": "KCl",
+  "m1": 0.808,
+  "salt2": "AlCl3",
+  "m2": 2.96,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 335.2,
+  "salt1": "KCl",
+  "m1": 0.999,
+  "salt2": "AlCl3",
+  "m2": 2.96,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 301.3,
+  "salt1": "KCl",
+  "m1": 0.553,
+  "salt2": "AlCl3",
+  "m2": 2.99,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 306.8,
+  "salt1": "KCl",
+  "m1": 0.612,
+  "salt2": "AlCl3",
+  "m2": 2.99,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 311.0,
+  "salt1": "KCl",
+  "m1": 0.68,
+  "salt2": "AlCl3",
+  "m2": 2.99,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 317.8,
+  "salt1": "KCl",
+  "m1": 0.759,
+  "salt2": "AlCl3",
+  "m2": 2.99,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 330.9,
+  "salt1": "KCl",
+  "m1": 0.947,
+  "salt2": "AlCl3",
+  "m2": 2.99,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 336.0,
+  "salt1": "KCl",
+  "m1": 1.034,
+  "salt2": "AlCl3",
+  "m2": 2.99,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 309.7,
+  "salt1": "KCl",
+  "m1": 0.567,
+  "salt2": "AlCl3",
+  "m2": 3.13,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 311.8,
+  "salt1": "KCl",
+  "m1": 0.571,
+  "salt2": "AlCl3",
+  "m2": 3.13,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 316.8,
+  "salt1": "KCl",
+  "m1": 0.638,
+  "salt2": "AlCl3",
+  "m2": 3.13,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 319.8,
+  "salt1": "KCl",
+  "m1": 0.705,
+  "salt2": "AlCl3",
+  "m2": 3.13,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 327.4,
+  "salt1": "KCl",
+  "m1": 0.805,
+  "salt2": "AlCl3",
+  "m2": 3.13,
+  "solid": "KCl"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 336.5,
+  "salt1": "KCl",
+  "m1": 1.011,
+  "salt2": "AlCl3",
+  "m2": 3.13,
+  "solid": "KCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 299.2,
+  "salt1": "NaCl",
+  "m1": 5.027,
+  "salt2": "AlCl3",
+  "m2": 0.373,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 301.3,
+  "salt1": "NaCl",
+  "m1": 5.045,
+  "salt2": "AlCl3",
+  "m2": 0.373,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 306.7,
+  "salt1": "NaCl",
+  "m1": 5.084,
+  "salt2": "AlCl3",
+  "m2": 0.373,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 312.5,
+  "salt1": "NaCl",
+  "m1": 5.12,
+  "salt2": "AlCl3",
+  "m2": 0.373,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 330.4,
+  "salt1": "NaCl",
+  "m1": 5.252,
+  "salt2": "AlCl3",
+  "m2": 0.373,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 298.0,
+  "salt1": "NaCl",
+  "m1": 4.474,
+  "salt2": "AlCl3",
+  "m2": 0.555,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 305.6,
+  "salt1": "NaCl",
+  "m1": 4.53,
+  "salt2": "AlCl3",
+  "m2": 0.555,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 311.6,
+  "salt1": "NaCl",
+  "m1": 4.597,
+  "salt2": "AlCl3",
+  "m2": 0.555,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 314.8,
+  "salt1": "NaCl",
+  "m1": 4.602,
+  "salt2": "AlCl3",
+  "m2": 0.555,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 323.2,
+  "salt1": "NaCl",
+  "m1": 4.68,
+  "salt2": "AlCl3",
+  "m2": 0.555,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 330.8,
+  "salt1": "NaCl",
+  "m1": 4.733,
+  "salt2": "AlCl3",
+  "m2": 0.555,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 332.6,
+  "salt1": "NaCl",
+  "m1": 4.754,
+  "salt2": "AlCl3",
+  "m2": 0.555,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 299.0,
+  "salt1": "NaCl",
+  "m1": 3.912,
+  "salt2": "AlCl3",
+  "m2": 0.75,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 306.5,
+  "salt1": "NaCl",
+  "m1": 3.984,
+  "salt2": "AlCl3",
+  "m2": 0.75,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 311.3,
+  "salt1": "NaCl",
+  "m1": 4.016,
+  "salt2": "AlCl3",
+  "m2": 0.75,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 316.7,
+  "salt1": "NaCl",
+  "m1": 4.063,
+  "salt2": "AlCl3",
+  "m2": 0.75,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 320.2,
+  "salt1": "NaCl",
+  "m1": 4.104,
+  "salt2": "AlCl3",
+  "m2": 0.75,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 326.0,
+  "salt1": "NaCl",
+  "m1": 4.151,
+  "salt2": "AlCl3",
+  "m2": 0.75,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 330.4,
+  "salt1": "NaCl",
+  "m1": 4.192,
+  "salt2": "AlCl3",
+  "m2": 0.75,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 299.0,
+  "salt1": "NaCl",
+  "m1": 3.292,
+  "salt2": "AlCl3",
+  "m2": 0.984,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 303.7,
+  "salt1": "NaCl",
+  "m1": 3.329,
+  "salt2": "AlCl3",
+  "m2": 0.984,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 310.7,
+  "salt1": "NaCl",
+  "m1": 3.389,
+  "salt2": "AlCl3",
+  "m2": 0.984,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 316.7,
+  "salt1": "NaCl",
+  "m1": 3.434,
+  "salt2": "AlCl3",
+  "m2": 0.984,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 321.8,
+  "salt1": "NaCl",
+  "m1": 3.488,
+  "salt2": "AlCl3",
+  "m2": 0.984,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 326.0,
+  "salt1": "NaCl",
+  "m1": 3.528,
+  "salt2": "AlCl3",
+  "m2": 0.984,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 298.7,
+  "salt1": "NaCl",
+  "m1": 2.885,
+  "salt2": "AlCl3",
+  "m2": 1.13,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 300.7,
+  "salt1": "NaCl",
+  "m1": 2.923,
+  "salt2": "AlCl3",
+  "m2": 1.13,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 304.6,
+  "salt1": "NaCl",
+  "m1": 2.938,
+  "salt2": "AlCl3",
+  "m2": 1.13,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 322.3,
+  "salt1": "NaCl",
+  "m1": 3.114,
+  "salt2": "AlCl3",
+  "m2": 1.13,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 326.5,
+  "salt1": "NaCl",
+  "m1": 3.163,
+  "salt2": "AlCl3",
+  "m2": 1.13,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 329.5,
+  "salt1": "NaCl",
+  "m1": 3.168,
+  "salt2": "AlCl3",
+  "m2": 1.13,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 335.0,
+  "salt1": "NaCl",
+  "m1": 3.249,
+  "salt2": "AlCl3",
+  "m2": 1.13,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 302.0,
+  "salt1": "NaCl",
+  "m1": 2.903,
+  "salt2": "AlCl3",
+  "m2": 1.14,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 307.5,
+  "salt1": "NaCl",
+  "m1": 2.946,
+  "salt2": "AlCl3",
+  "m2": 1.14,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 314.6,
+  "salt1": "NaCl",
+  "m1": 3.018,
+  "salt2": "AlCl3",
+  "m2": 1.14,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 296.9,
+  "salt1": "NaCl",
+  "m1": 1.959,
+  "salt2": "AlCl3",
+  "m2": 1.51,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 307.9,
+  "salt1": "NaCl",
+  "m1": 2.054,
+  "salt2": "AlCl3",
+  "m2": 1.51,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 313.3,
+  "salt1": "NaCl",
+  "m1": 2.117,
+  "salt2": "AlCl3",
+  "m2": 1.51,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 319.1,
+  "salt1": "NaCl",
+  "m1": 2.179,
+  "salt2": "AlCl3",
+  "m2": 1.51,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 323.2,
+  "salt1": "NaCl",
+  "m1": 2.245,
+  "salt2": "AlCl3",
+  "m2": 1.51,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 328.9,
+  "salt1": "NaCl",
+  "m1": 2.297,
+  "salt2": "AlCl3",
+  "m2": 1.51,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 336.1,
+  "salt1": "NaCl",
+  "m1": 2.355,
+  "salt2": "AlCl3",
+  "m2": 1.51,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 295.1,
+  "salt1": "NaCl",
+  "m1": 1.135,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 297.8,
+  "salt1": "NaCl",
+  "m1": 1.158,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 307.9,
+  "salt1": "NaCl",
+  "m1": 1.284,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 316.4,
+  "salt1": "NaCl",
+  "m1": 1.369,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 325.6,
+  "salt1": "NaCl",
+  "m1": 1.457,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 332.8,
+  "salt1": "NaCl",
+  "m1": 1.544,
+  "salt2": "AlCl3",
+  "m2": 1.88,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 300.1,
+  "salt1": "NaCl",
+  "m1": 1.163,
+  "salt2": "AlCl3",
+  "m2": 1.89,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 310.3,
+  "salt1": "NaCl",
+  "m1": 1.285,
+  "salt2": "AlCl3",
+  "m2": 1.89,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 317.2,
+  "salt1": "NaCl",
+  "m1": 1.332,
+  "salt2": "AlCl3",
+  "m2": 1.89,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 319.2,
+  "salt1": "NaCl",
+  "m1": 1.366,
+  "salt2": "AlCl3",
+  "m2": 1.89,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 326.3,
+  "salt1": "NaCl",
+  "m1": 1.43,
+  "salt2": "AlCl3",
+  "m2": 1.89,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 296.2,
+  "salt1": "NaCl",
+  "m1": 0.733,
+  "salt2": "AlCl3",
+  "m2": 2.25,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 301.5,
+  "salt1": "NaCl",
+  "m1": 0.803,
+  "salt2": "AlCl3",
+  "m2": 2.25,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 309.8,
+  "salt1": "NaCl",
+  "m1": 0.866,
+  "salt2": "AlCl3",
+  "m2": 2.25,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 316.4,
+  "salt1": "NaCl",
+  "m1": 0.922,
+  "salt2": "AlCl3",
+  "m2": 2.25,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 325.8,
+  "salt1": "NaCl",
+  "m1": 0.996,
+  "salt2": "AlCl3",
+  "m2": 2.25,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 300.8,
+  "salt1": "NaCl",
+  "m1": 0.306,
+  "salt2": "AlCl3",
+  "m2": 2.79,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 304.8,
+  "salt1": "NaCl",
+  "m1": 0.343,
+  "salt2": "AlCl3",
+  "m2": 2.79,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 310.1,
+  "salt1": "NaCl",
+  "m1": 0.372,
+  "salt2": "AlCl3",
+  "m2": 2.79,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 321.5,
+  "salt1": "NaCl",
+  "m1": 0.451,
+  "salt2": "AlCl3",
+  "m2": 2.79,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 327.9,
+  "salt1": "NaCl",
+  "m1": 0.493,
+  "salt2": "AlCl3",
+  "m2": 2.79,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 333.9,
+  "salt1": "NaCl",
+  "m1": 0.51,
+  "salt2": "AlCl3",
+  "m2": 2.79,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 299.5,
+  "salt1": "NaCl",
+  "m1": 0.212,
+  "salt2": "AlCl3",
+  "m2": 2.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 306.7,
+  "salt1": "NaCl",
+  "m1": 0.282,
+  "salt2": "AlCl3",
+  "m2": 2.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 313.9,
+  "salt1": "NaCl",
+  "m1": 0.312,
+  "salt2": "AlCl3",
+  "m2": 2.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 320.0,
+  "salt1": "NaCl",
+  "m1": 0.342,
+  "salt2": "AlCl3",
+  "m2": 2.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 325.1,
+  "salt1": "NaCl",
+  "m1": 0.37,
+  "salt2": "AlCl3",
+  "m2": 2.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 332.5,
+  "salt1": "NaCl",
+  "m1": 0.408,
+  "salt2": "AlCl3",
+  "m2": 2.97,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 319.5,
+  "salt1": "NaCl",
+  "m1": 0.24,
+  "salt2": "AlCl3",
+  "m2": 3.28,
+  "solid": "NaCl"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 333.5,
+  "salt1": "NaCl",
+  "m1": 0.297,
+  "salt2": "AlCl3",
+  "m2": 3.28,
+  "solid": "NaCl"
+ },
+ {
+  "system": "binary",
+  "T": 298.3,
+  "salt1": "AlCl3",
+  "m1": 3.395,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "binary",
+  "T": 303.2,
+  "salt1": "AlCl3",
+  "m1": 3.4,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "binary",
+  "T": 308.1,
+  "salt1": "AlCl3",
+  "m1": 3.406,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "binary",
+  "T": 313.1,
+  "salt1": "AlCl3",
+  "m1": 3.415,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "binary",
+  "T": 317.0,
+  "salt1": "AlCl3",
+  "m1": 3.417,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "binary",
+  "T": 318.4,
+  "salt1": "AlCl3",
+  "m1": 3.425,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "binary",
+  "T": 323.2,
+  "salt1": "AlCl3",
+  "m1": 3.427,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "binary",
+  "T": 325.7,
+  "salt1": "AlCl3",
+  "m1": 3.431,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "binary",
+  "T": 333.2,
+  "salt1": "AlCl3",
+  "m1": 3.44,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "binary",
+  "T": 338.1,
+  "salt1": "AlCl3",
+  "m1": 3.45,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 298.2,
+  "salt1": "KCl",
+  "m1": 0.191,
+  "salt2": "AlCl3",
+  "m2": 3.33,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 298.1,
+  "salt1": "KCl",
+  "m1": 0.256,
+  "salt2": "AlCl3",
+  "m2": 3.25,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 297.8,
+  "salt1": "KCl",
+  "m1": 0.393,
+  "salt2": "AlCl3",
+  "m2": 3.23,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 298.0,
+  "salt1": "KCl",
+  "m1": 0.475,
+  "salt2": "AlCl3",
+  "m2": 3.2,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 303.2,
+  "salt1": "KCl",
+  "m1": 0.19,
+  "salt2": "AlCl3",
+  "m2": 3.38,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 303.3,
+  "salt1": "KCl",
+  "m1": 0.255,
+  "salt2": "AlCl3",
+  "m2": 3.36,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 304.8,
+  "salt1": "KCl",
+  "m1": 0.472,
+  "salt2": "AlCl3",
+  "m2": 3.29,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 323.2,
+  "salt1": "KCl",
+  "m1": 0.19,
+  "salt2": "AlCl3",
+  "m2": 3.4,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 323.2,
+  "salt1": "KCl",
+  "m1": 0.253,
+  "salt2": "AlCl3",
+  "m2": 3.39,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 323.3,
+  "salt1": "KCl",
+  "m1": 0.466,
+  "salt2": "AlCl3",
+  "m2": 3.31,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 323.1,
+  "salt1": "KCl",
+  "m1": 0.653,
+  "salt2": "AlCl3",
+  "m2": 3.21,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 333.1,
+  "salt1": "KCl",
+  "m1": 0.189,
+  "salt2": "AlCl3",
+  "m2": 3.43,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 333.4,
+  "salt1": "KCl",
+  "m1": 0.384,
+  "salt2": "AlCl3",
+  "m2": 3.4,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 333.3,
+  "salt1": "KCl",
+  "m1": 0.461,
+  "salt2": "AlCl3",
+  "m2": 3.38,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 332.8,
+  "salt1": "KCl",
+  "m1": 0.797,
+  "salt2": "AlCl3",
+  "m2": 3.28,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 336.5,
+  "salt1": "KCl",
+  "m1": 0.914,
+  "salt2": "AlCl3",
+  "m2": 3.23,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 298.1,
+  "salt1": "NaCl",
+  "m1": 0.086,
+  "salt2": "AlCl3",
+  "m2": 3.28,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 298.1,
+  "salt1": "NaCl",
+  "m1": 0.092,
+  "salt2": "AlCl3",
+  "m2": 3.3,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 298.2,
+  "salt1": "NaCl",
+  "m1": 0.138,
+  "salt2": "AlCl3",
+  "m2": 3.26,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 303.2,
+  "salt1": "NaCl",
+  "m1": 0.092,
+  "salt2": "AlCl3",
+  "m2": 3.31,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 303.5,
+  "salt1": "NaCl",
+  "m1": 0.137,
+  "salt2": "AlCl3",
+  "m2": 3.29,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 310.9,
+  "salt1": "NaCl",
+  "m1": 0.169,
+  "salt2": "AlCl3",
+  "m2": 3.31,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 311.3,
+  "salt1": "NaCl",
+  "m1": 0.19,
+  "salt2": "AlCl3",
+  "m2": 3.3,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 313.2,
+  "salt1": "NaCl",
+  "m1": 0.085,
+  "salt2": "AlCl3",
+  "m2": 3.36,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 313.3,
+  "salt1": "NaCl",
+  "m1": 0.091,
+  "salt2": "AlCl3",
+  "m2": 3.36,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 313.1,
+  "salt1": "NaCl",
+  "m1": 0.136,
+  "salt2": "AlCl3",
+  "m2": 3.33,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 323.2,
+  "salt1": "NaCl",
+  "m1": 0.084,
+  "salt2": "AlCl3",
+  "m2": 3.39,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 323.2,
+  "salt1": "NaCl",
+  "m1": 0.19,
+  "salt2": "AlCl3",
+  "m2": 3.34,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 322.9,
+  "salt1": "NaCl",
+  "m1": 0.21,
+  "salt2": "AlCl3",
+  "m2": 3.31,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 333.4,
+  "salt1": "NaCl",
+  "m1": 0.084,
+  "salt2": "AlCl3",
+  "m2": 3.43,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 333.1,
+  "salt1": "NaCl",
+  "m1": 0.134,
+  "salt2": "AlCl3",
+  "m2": 3.44,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 333.2,
+  "salt1": "NaCl",
+  "m1": 0.23,
+  "salt2": "AlCl3",
+  "m2": 3.41,
+  "solid": "AlCl3.6H2O"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 298.2,
+  "salt1": "NaCl",
+  "m1": 4.3,
+  "salt2": "NH4Cl",
+  "m2": 4.35,
+  "solid": "invariant"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 313.1,
+  "salt1": "NaCl",
+  "m1": 4.1,
+  "salt2": "NH4Cl",
+  "m2": 5.41,
+  "solid": "invariant"
+ },
+ {
+  "system": "NaCl+NH4Cl",
+  "T": 332.9,
+  "salt1": "NaCl",
+  "m1": 3.9,
+  "salt2": "NH4Cl",
+  "m2": 7.09,
+  "solid": "invariant"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 298.2,
+  "salt1": "KCl",
+  "m1": 2.23,
+  "salt2": "NH4Cl",
+  "m2": 5.75,
+  "solid": "invariant"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 303.2,
+  "salt1": "KCl",
+  "m1": 2.25,
+  "salt2": "NH4Cl",
+  "m2": 6.29,
+  "solid": "invariant"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 313.1,
+  "salt1": "KCl",
+  "m1": 2.32,
+  "salt2": "NH4Cl",
+  "m2": 6.82,
+  "solid": "invariant"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 323.0,
+  "salt1": "KCl",
+  "m1": 2.4,
+  "salt2": "NH4Cl",
+  "m2": 7.81,
+  "solid": "invariant"
+ },
+ {
+  "system": "KCl+NH4Cl",
+  "T": 332.9,
+  "salt1": "KCl",
+  "m1": 2.43,
+  "salt2": "NH4Cl",
+  "m2": 8.82,
+  "solid": "invariant"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 298.2,
+  "salt1": "KCl",
+  "m1": 0.87,
+  "salt2": "LiCl",
+  "m2": 19.7,
+  "solid": "invariant"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 303.2,
+  "salt1": "KCl",
+  "m1": 0.98,
+  "salt2": "LiCl",
+  "m2": 20.1,
+  "solid": "invariant"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 313.1,
+  "salt1": "KCl",
+  "m1": 1.22,
+  "salt2": "LiCl",
+  "m2": 21.0,
+  "solid": "invariant"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 323.1,
+  "salt1": "KCl",
+  "m1": 1.42,
+  "salt2": "LiCl",
+  "m2": 21.9,
+  "solid": "invariant"
+ },
+ {
+  "system": "KCl+LiCl",
+  "T": 333.0,
+  "salt1": "KCl",
+  "m1": 1.72,
+  "salt2": "LiCl",
+  "m2": 23.2,
+  "solid": "invariant"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 298.2,
+  "salt1": "NaCl",
+  "m1": 0.034,
+  "salt2": "LiCl",
+  "m2": 19.8,
+  "solid": "invariant"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 303.9,
+  "salt1": "NaCl",
+  "m1": 0.043,
+  "salt2": "LiCl",
+  "m2": 20.5,
+  "solid": "invariant"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 313.1,
+  "salt1": "NaCl",
+  "m1": 0.058,
+  "salt2": "LiCl",
+  "m2": 21.1,
+  "solid": "invariant"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 323.1,
+  "salt1": "NaCl",
+  "m1": 0.081,
+  "salt2": "LiCl",
+  "m2": 22.0,
+  "solid": "invariant"
+ },
+ {
+  "system": "NaCl+LiCl",
+  "T": 333.0,
+  "salt1": "NaCl",
+  "m1": 0.11,
+  "salt2": "LiCl",
+  "m2": 23.7,
+  "solid": "invariant"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 298.1,
+  "salt1": "KCl",
+  "m1": 0.566,
+  "salt2": "AlCl3",
+  "m2": 3.12,
+  "solid": "invariant"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 303.4,
+  "salt1": "KCl",
+  "m1": 0.563,
+  "salt2": "AlCl3",
+  "m2": 3.12,
+  "solid": "invariant"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 313.2,
+  "salt1": "KCl",
+  "m1": 0.592,
+  "salt2": "AlCl3",
+  "m2": 3.13,
+  "solid": "invariant"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 323.1,
+  "salt1": "KCl",
+  "m1": 0.751,
+  "salt2": "AlCl3",
+  "m2": 3.14,
+  "solid": "invariant"
+ },
+ {
+  "system": "KCl+AlCl3",
+  "T": 333.3,
+  "salt1": "KCl",
+  "m1": 0.96,
+  "salt2": "AlCl3",
+  "m2": 3.17,
+  "solid": "invariant"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 298.1,
+  "salt1": "NaCl",
+  "m1": 0.17,
+  "salt2": "AlCl3",
+  "m2": 3.24,
+  "solid": "invariant"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 303.4,
+  "salt1": "NaCl",
+  "m1": 0.19,
+  "salt2": "AlCl3",
+  "m2": 3.28,
+  "solid": "invariant"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 313.2,
+  "salt1": "NaCl",
+  "m1": 0.21,
+  "salt2": "AlCl3",
+  "m2": 3.33,
+  "solid": "invariant"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 323.1,
+  "salt1": "NaCl",
+  "m1": 0.23,
+  "salt2": "AlCl3",
+  "m2": 3.3,
+  "solid": "invariant"
+ },
+ {
+  "system": "NaCl+AlCl3",
+  "T": 333.9,
+  "salt1": "NaCl",
+  "m1": 0.29,
+  "salt2": "AlCl3",
+  "m2": 3.4,
+  "solid": "invariant"
+ },
+ {
+  "system": "binary",
+  "T": 296.7,
+  "salt1": "LiCl",
+  "m1": 19.7,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "LiCl.H2O"
+ },
+ {
+  "system": "binary",
+  "T": 298.4,
+  "salt1": "LiCl",
+  "m1": 19.9,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "LiCl.H2O"
+ },
+ {
+  "system": "binary",
+  "T": 303.1,
+  "salt1": "LiCl",
+  "m1": 20.0,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "LiCl.H2O"
+ },
+ {
+  "system": "binary",
+  "T": 308.0,
+  "salt1": "LiCl",
+  "m1": 20.7,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "LiCl.H2O"
+ },
+ {
+  "system": "binary",
+  "T": 313.3,
+  "salt1": "LiCl",
+  "m1": 21.1,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "LiCl.H2O"
+ },
+ {
+  "system": "binary",
+  "T": 318.0,
+  "salt1": "LiCl",
+  "m1": 21.4,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "LiCl.H2O"
+ },
+ {
+  "system": "binary",
+  "T": 323.2,
+  "salt1": "LiCl",
+  "m1": 22.1,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "LiCl.H2O"
+ },
+ {
+  "system": "binary",
+  "T": 328.2,
+  "salt1": "LiCl",
+  "m1": 22.5,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "LiCl.H2O"
+ },
+ {
+  "system": "binary",
+  "T": 330.6,
+  "salt1": "LiCl",
+  "m1": 23.1,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "LiCl.H2O"
+ },
+ {
+  "system": "binary",
+  "T": 334.5,
+  "salt1": "LiCl",
+  "m1": 23.5,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "LiCl.H2O"
+ },
+ {
+  "system": "binary",
+  "T": 298.0,
+  "salt1": "NaCl",
+  "m1": 6.137,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "NaCl"
+ },
+ {
+  "system": "binary",
+  "T": 298.0,
+  "salt1": "KCl",
+  "m1": 4.771,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "KCl"
+ },
+ {
+  "system": "binary",
+  "T": 303.0,
+  "salt1": "NaCl",
+  "m1": 6.161,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "NaCl"
+ },
+ {
+  "system": "binary",
+  "T": 303.0,
+  "salt1": "KCl",
+  "m1": 4.972,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "KCl"
+ },
+ {
+  "system": "binary",
+  "T": 313.0,
+  "salt1": "NaCl",
+  "m1": 6.214,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "NaCl"
+ },
+ {
+  "system": "binary",
+  "T": 313.0,
+  "salt1": "KCl",
+  "m1": 5.367,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "KCl"
+ },
+ {
+  "system": "binary",
+  "T": 323.0,
+  "salt1": "NaCl",
+  "m1": 6.274,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "NaCl"
+ },
+ {
+  "system": "binary",
+  "T": 323.0,
+  "salt1": "KCl",
+  "m1": 5.752,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "KCl"
+ },
+ {
+  "system": "binary",
+  "T": 333.0,
+  "salt1": "NaCl",
+  "m1": 6.34,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "NaCl"
+ },
+ {
+  "system": "binary",
+  "T": 333.0,
+  "salt1": "KCl",
+  "m1": 6.127,
+  "salt2": "",
+  "m2": 0.0,
+  "solid": "KCl"
+ }
+]

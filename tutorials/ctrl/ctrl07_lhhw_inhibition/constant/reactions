@@ -1,0 +1,55 @@
+/*---------------------------------------------------------------------------*\
+  Reaction library for ctrl01.  A mild exothermic first-order
+  Arrhenius for the control demo:
+
+      k(T)  =  A · exp(-Ea / RT)        with A = 1e4 s⁻¹,
+                                              Ea = 50 kJ/mol
+      ΔH_rxn = -50 kJ/mol               (mild exotherm)
+
+  At T = 320 K (initial / inlet):  k ≈ 1.8e-4 s⁻¹  (τ ≈ 5600 s)
+  At T = 350 K (setpoint):         k ≈ 3.2e-4 s⁻¹  (τ ≈ 3100 s)
+
+  These are slow rates relative to the residence time (τ_res ≈ 240 s),
+  so the reactor's principal dynamics are temperature, not
+  conversion --- exactly what we want to demonstrate temperature
+  control in isolation.
+\*---------------------------------------------------------------------------*/
+
+compA_to_compB
+{
+    limitingReactant   compA;
+
+    stoichiometry
+    (
+        { component compA;  nu -1;  order 1; }
+        { component compB;  nu  1;  order 0; }
+    );
+
+    kinetics
+    {
+        // LANGMUIR-HINSHELWOOD: the product compB adsorbs on the catalyst and
+        // crowds compA off it.  Same forward Arrhenius constants; what is new is
+        // the denominator, which GROWS as the product builds up:
+        //
+        //     r = k(T) c_A / (1 + K_B c_B)
+        //
+        // No power law of any order does this.  It is the SAME `RateLaw` the
+        // steady CSTR and the batch reactor evaluate -- a dynamic reactor cannot
+        // disagree with them about what an adsorption denominator means.
+        //
+        // K0 = 2.0 m3/kmol is DIDACTIC, chosen to make the inhibition visible on
+        // the control timescale.  It is not a measured adsorption constant.
+        type   LHHW;
+        basis  concentration;
+        adsorption
+        {
+            exponent    1;      // a single-site rate-determining step
+            vacantSite  1;      // the classical "1 + K c" form
+            species ( { component compB;  K0 2.0; } );
+        }
+        A      1.0e4;
+        Ea     5.0e4;
+    }
+
+    dH_rxn  -5.0e4;     // J/mol     (exothermic)
+}

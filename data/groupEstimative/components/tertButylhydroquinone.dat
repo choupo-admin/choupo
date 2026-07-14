@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tert-butylhydroquinone  (C10H14O2, CAS 1948-33-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tertButylhydroquinone;
+formula     C10H14O2;
+CAS         1948-33-0;
+InChIKey    BGNXCDMCOKJUMV-UHFFFAOYSA-N;
+MW          166.22;      // g/mol [origin=calculated method=formula-sum]
+Tc          856.65;      // K   [origin=predictive method=joback]
+Pc          42.719;      // bar [origin=predictive method=joback]
+omega       0.7629;      // -   [origin=predictive method=lee-kesler]
+Tb          613.09;      // K   [origin=predictive method=joback]
+HvapTb      64862.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-82.42 1.30996 -0.00123592 4.714e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-tert-butylbenzene-1,4-diol" "tbhq" "2-tert-butylhydroquinone" "t-butylhydroquinone" "hydroquinone, tert-butyl-" "mtbhq" "mono-tert-butylhydroquinone" "t-butyl hydroquinone" "1,4-benzenediol, 2-(1,1-dimethylethyl)-" "2-tert-butyl-1,4-benzenediol" "tenox tbhq" "tert-butyl-1,4-benzenediol" );
+gibbsFormation
+{
+    dHf_298   -376570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     453.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-160670.0
+    phase     gas;
+}

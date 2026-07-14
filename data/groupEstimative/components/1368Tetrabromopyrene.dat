@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3,6,8-tetrabromopyrene  (C16H6Br4, CAS 128-63-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1368Tetrabromopyrene;
+formula     C16H6Br4;
+CAS         128-63-2;
+InChIKey    ZKBKRTZIYOKNRG-UHFFFAOYSA-N;
+MW          517.84;      // g/mol [origin=calculated method=formula-sum]
+Tc          1230.78;      // K   [origin=predictive method=joback]
+Pc          39.655;      // bar [origin=predictive method=joback]
+omega       1.2257;      // -   [origin=predictive method=lee-kesler]
+Tb          936.12;      // K   [origin=predictive method=joback]
+HvapTb      87482.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.87 1.3048 -0.00127684 4.906e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 10; } { group Br; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 6; } { group dC_ring; count 10; } { group Br; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3,6,8-tetrakis(bromanyl)pyrene" "1,3,6,8-tetrabromo-pyrene" "pyrene, 1,3,6,8-tetrabromo-" "pyrene,1,3,6,8-tetrabromo-;" );
+gibbsFormation
+{
+    dHf_298   427210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     510.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=509940.0
+    phase     gas;
+}

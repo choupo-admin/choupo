@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 14-methylhexadec-8-enal  (C17H32O, CAS 60609-53-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14Methylhexadec8Enal;
+formula     C17H32O;
+CAS         60609-53-2;
+InChIKey    HSGUJTMCFWXGAP-UHFFFAOYSA-N;
+MW          252.442;      // g/mol [origin=calculated method=formula-sum]
+Tc          812.19;      // K   [origin=predictive method=joback]
+Pc          13.556;      // bar [origin=predictive method=joback]
+omega       0.8571;      // -   [origin=predictive method=lee-kesler]
+Tb          640.94;      // K   [origin=predictive method=joback]
+HvapTb      59726.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.029 1.61924 -0.000981 2.359e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 11; } { group CH; count 1; } { group CH=CH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 11; } { group CH; count 1; } { group dCH; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-hexadecenal, 14-methyl-, (8z)-" "8-hexadecenal,14-methyl-, (8e)-" "8-hexadecenal,14-methyl-, (8z)-" "14-methyl-z-8-hexa-decen-1-al" "(z)-14-methyl-8-hexadecen-1-al" "8-hexadecenal,14-methyl-, (e)-; (e)-14-methyl-8-hexadecenal; (e)-trogodermal" "8-hexadecenal,14-methyl-, (z)-; (z)-14-methyl-8-hexadecenal; 14-methyl-cis-8-hexadecenal" );
+gibbsFormation
+{
+    dHf_298   -367850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     820.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=70520.0
+    phase     gas;
+}

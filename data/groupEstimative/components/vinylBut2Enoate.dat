@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: vinyl but-2-enoate  (C6H8O2, CAS 3234-54-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        vinylBut2Enoate;
+formula     C6H8O2;
+CAS         3234-54-6;
+InChIKey    IYNRVIKPUTZSOR-UHFFFAOYSA-N;
+MW          112.128;      // g/mol [origin=calculated method=formula-sum]
+Tc          582.54;      // K   [origin=predictive method=joback]
+Pc          34.807;      // bar [origin=predictive method=joback]
+omega       0.3903;      // -   [origin=predictive method=lee-kesler]
+Tb          395.94;      // K   [origin=predictive method=joback]
+HvapTb      35645.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.67 0.51902 -0.0003147 6.79e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2=CH; count 1; } { group CH=CH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH2; count 1; } { group dCH; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethenyl but-2-enoate" "2-butenoic acid, ethenyl ester, (2e)-" );
+gibbsFormation
+{
+    dHf_298   -241800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     429.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-142670.0
+    phase     gas;
+}

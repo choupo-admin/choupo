@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethanone, 1-(1,2-dimethyl-4-(1-methylethyl)bicyclo(2.2.2)oct-5-en-2-yl)-  (C15H24O, CAS 101200-52-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethanone112Dimethyl41MethylethylBicyclo222Oct5En2Yl;
+formula     C15H24O;
+CAS         101200-52-6;
+InChIKey    XHZSMFXXIIGJHJ-UHFFFAOYSA-N;
+MW          220.356;      // g/mol [origin=calculated method=formula-sum]
+Tc          843.08;      // K   [origin=predictive method=joback]
+Pc          21.856;      // bar [origin=predictive method=joback]
+omega       0.5384;      // -   [origin=predictive method=lee-kesler]
+Tb          613.46;      // K   [origin=predictive method=joback]
+HvapTb      52042.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-252.05 2.4826 -0.00265398 1.16656e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 1; } { group C; count 3; } { group CH=CH; count 1; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH; count 1; } { group CH2_ring; count 3; } { group C_ring; count 3; } { group dCH_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(1,2-dimethyl-4-propan-2-yl-2-bicyclo[2.2.2]oct-5-enyl)ethanone" "ethanone, 1-[1,2-dimethyl-4-(1-methylethyl)bicyclo[2.2.2]oct-5-en-2-yl]-" "ethanone, 1-(1,2,3,4-tetrahydro-1,2-dimethyl-4-(1-methylethyl)bicyclo(2.2.2)oct-5-en-2-yl-" );
+gibbsFormation
+{
+    dHf_298   -254350.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     745.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=47140.0
+    phase     gas;
+}

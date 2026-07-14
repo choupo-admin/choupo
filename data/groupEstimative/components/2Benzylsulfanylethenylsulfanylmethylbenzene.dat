@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-benzylsulfanylethenylsulfanylmethylbenzene  (C16H16S2, CAS 16906-37-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Benzylsulfanylethenylsulfanylmethylbenzene;
+formula     C16H16S2;
+CAS         16906-37-9;
+InChIKey    RZVCNFNSLCXUMM-UHFFFAOYSA-N;
+MW          272.424;      // g/mol [origin=calculated method=formula-sum]
+Tc          1033.83;      // K   [origin=predictive method=joback]
+Pc          24.851;      // bar [origin=predictive method=joback]
+omega       0.6777;      // -   [origin=predictive method=lee-kesler]
+Tb          760.76;      // K   [origin=predictive method=joback]
+HvapTb      69354.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-54.448 1.37478 -0.0009124 2.224e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group ACH; count 10; } { group AC; count 2; } { group CH2S; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group S; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(phenylmethylsulfanyl)ethenylsulfanylmethylbenzene" "1,1'-[ethene-1,2-diylbis(sulfanediylmethanediyl)]dibenzene" "benzene,1,1'-[(1z)-1,2-ethenediylbis(thiomethylene)]bis- (9ci)" "benzene,1,1'-[1,2-ethenediylbis(thiomethylene)]bis-, (z)-; ethylene,1,2-bis(benzylthio)-, (z)- (8ci); ethylene, 1,2-bis(benzylthio)-, cis- (6ci);(z)-1,2-bis(benzylthio)ethene; cis-1,2-bis(benzylthio)ethene;cis-1,2-bis(benzylthio)ethylene" );
+gibbsFormation
+{
+    dHf_298   300450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     682.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=455120.0
+    phase     gas;
+}

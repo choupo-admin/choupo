@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: beta-amyrin  (C30H50O, CAS 559-70-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        betaAmyrin;
+formula     C30H50O;
+CAS         559-70-6;
+InChIKey    JFSHUTJDVKUMTJ-QHPUVITPSA-N;
+MW          426.729;      // g/mol [origin=calculated method=formula-sum]
+Tc          1268.92;      // K   [origin=predictive method=joback]
+Pc          10.715;      // bar [origin=predictive method=joback]
+omega       0.8945;      // -   [origin=predictive method=lee-kesler]
+Tb          1024.00;      // K   [origin=predictive method=joback]
+HvapTb      92325.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-554.32 5.07866 -0.00525364 2.2691e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 8; } { group CH2; count 10; } { group CH; count 4; } { group C; count 6; } { group CH=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2_ring; count 10; } { group CH_ring; count 4; } { group C_ring; count 6; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,4ar,6ar,6bs,8ar,12ar,14ar,14br)-4,4,6a,6b,8a,11,11,14b-octamethyl-1,2,3,4a,5,6,7,8,9,10,12,12a,14,14a-tetradecahydropicen-3-ol" "amyrin" "beta-amyrenol" "olean-12-en-3beta-ol" "b-amyrenol" "(3beta)-olean-12-en-3-ol" "beta.-amyrenol" "beta.-amyrin" "b-amyrin" "olean-12-en-3" "a-ol" "3beta-hydroxyolean-12-ene" "ambap559-70-6" );
+gibbsFormation
+{
+    dHf_298   -457830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1225.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=232790.0
+    phase     gas;
+}

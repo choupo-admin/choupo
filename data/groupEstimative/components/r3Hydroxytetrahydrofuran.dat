@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (r)-(-)-3-hydroxytetrahydrofuran  (C4H8O2, CAS 86087-24-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        r3Hydroxytetrahydrofuran;
+formula     C4H8O2;
+CAS         86087-24-3;
+InChIKey    XDPCNPCKDGQBAN-SCSAIBSYSA-N;
+MW          88.106;      // g/mol [origin=calculated method=formula-sum]
+Tc          616.90;      // K   [origin=predictive method=joback]
+Pc          55.775;      // bar [origin=predictive method=joback]
+omega       0.6531;      // -   [origin=predictive method=lee-kesler]
+Tb          425.53;      // K   [origin=predictive method=joback]
+HvapTb      45944.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.62 0.5465 -0.0003377 7.7e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group OH; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group OH; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3r)-oxolan-3-ol" "(r)-tetrahydrofuran-3-ol" "(r)-3-hydroxytetrahydrofuran" "(3r)-tetrahydrofuran-3-ol" "s)-(-)-3-hydoxy tetahydro tetrahydro furan" "(s)-tetrahydrofuran-3-ol" "(r)-tetrahydro-furan-3-ol" "(r)-(+)-3-hydroxytetrahydrofuran" "(3r)-3-hydroxytetrahydrofuran" "(r)-(-)-tetrahydro-3-furanol" "(r)-(+)-3-hydroxy tetrahydro furan" "3-furanol,tetrahydro-, (r)-;(-)-3-hydroxytetrahydrofuran;(3r)-3-hydroxytetrahydrofuran;(r)-(-)-3-hydroxy-tetrahydro-furan;(r)-(-)-tetrahydrofuran-3-ol;(r)-3-hydroxy-tetrahydro-furan;(r)-3-hydroxytetrahydrofuran;(r)-tetrahydro-3-furanol;3(r)-hydroxytetrahydrofuran;" );
+gibbsFormation
+{
+    dHf_298   -349640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     260.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-203590.0
+    phase     gas;
+}

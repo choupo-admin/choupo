@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dipropyl 2,5-pyridinedicarboxylate  (C13H17NO4, CAS 136-45-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dipropyl25Pyridinedicarboxylate;
+formula     C13H17NO4;
+CAS         136-45-8;
+InChIKey    IITCWRFYJWUUPC-UHFFFAOYSA-N;
+MW          251.282;      // g/mol [origin=calculated method=formula-sum]
+Tc          909.88;      // K   [origin=predictive method=joback]
+Pc          21.856;      // bar [origin=predictive method=joback]
+omega       0.9393;      // -   [origin=predictive method=lee-kesler]
+Tb          698.84;      // K   [origin=predictive method=joback]
+HvapTb      68494.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (32.344 1.0246 -0.00046762 3.17e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group C5H3N; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 2; } { group COO; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dipropyl pyridine-2,5-dicarboxylate" "dipropyl isocinchomeronate" "di-n-propyl isocinchomeronate" "2,5-pyridinedicarboxylic acid, dipropyl ester" "di-propylisocinchomeronate" "isocinchomeronic acid, dipropyl ester" "di-n-propyl 2,5-pyridinedicarboxylate" "di-n-propyl-isocinchomeronate" "mgk repellent 326 (van)" "di-n-propyl-isocinchomeronate [german]" "pyridin-2,5-dicarbonsaeure-di-n-propylester" "pyridin-2,5-dicarbonsaeure-di-n-propylester [german]" );
+gibbsFormation
+{
+    dHf_298   -688360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     665.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-382330.0
+    phase     gas;
+}

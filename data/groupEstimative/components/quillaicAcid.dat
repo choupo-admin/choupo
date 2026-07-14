@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: quillaic acid  (C30H46O5, CAS 631-01-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        quillaicAcid;
+formula     C30H46O5;
+CAS         631-01-6;
+InChIKey    MQUFAARYGOUYEV-UAWZMHPWSA-N;
+MW          486.693;      // g/mol [origin=calculated method=formula-sum]
+Tc          1607.09;      // K   [origin=predictive method=joback]
+Pc          12.460;      // bar [origin=predictive method=joback]
+omega       1.1018;      // -   [origin=predictive method=lee-kesler]
+Tb          1305.68;      // K   [origin=predictive method=joback]
+HvapTb      132579.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-527.09 5.11142 -0.00529424 2.2766e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 9; } { group CH; count 5; } { group C; count 6; } { group CH=C; count 1; } { group OH; count 2; } { group CHO; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2_ring; count 9; } { group CH_ring; count 5; } { group C_ring; count 6; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 2; } { group OdCH_al; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4ar,5r,6ar,6as,6br,8ar,9s,10s,12ar,14bs)-9-methanoyl-2,2,6a,6b,9,12a-hexamethyl-5,10-bis(oxidanyl)-1,3,4,5,6,6a,7,8,8a,10,11,12,13,14b-tetradecahydropicene-4a-carboxylic acid" "quillaja sapogenin" "3beta,16alpha-dihydroxy-23-oxoolean-12-en-28-oic acid" "(3beta,16alpha)-3,16-dihydroxy-23-oxoolean-12-en-28-oic acid" "(3beta,4alpha,16alpha)-3,16-dihydroxy-23-oxoolean-12-en-28-oic acid" "(4ar,5r,6ar,6as,6br,8ar,9s,10s,12ar,14bs)-9-formyl-5,10-dihydroxy-2,2,6a,6b,9,12a-hexamethyl-1,3,4,5,6,6a,7,8,8a,10,11,12,13,14b-tetradecahydropicene-4a-carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -1066250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1305.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-355170.0
+    phase     gas;
+}

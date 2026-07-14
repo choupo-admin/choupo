@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ag-g-93501  (C7H10O5, CAS 73991-95-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        agG93501;
+formula     C7H10O5;
+CAS         73991-95-4;
+InChIKey    IDQOCLIWDMZKBZ-BYPYZUCNSA-N;
+MW          174.152;      // g/mol [origin=calculated method=formula-sum]
+Tc          803.97;      // K   [origin=predictive method=joback]
+Pc          36.159;      // bar [origin=predictive method=joback]
+omega       0.8937;      // -   [origin=predictive method=lee-kesler]
+Tb          592.75;      // K   [origin=predictive method=joback]
+HvapTb      58710.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-50.439 1.07814 -0.0010185 4.034e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group CH-O; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH_ring; count 1; } { group C_ring; count 1; } { group O_ring; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[(4s)-2,2-dimethyl-5-oxidanylidene-1,3-dioxolan-4-yl]ethanoic acid" "(s)-2-(2,2-dimethyl-5-oxo-1,3-dioxolan-4-yl)acetic acid" "(s)-[2,2-dimethyl-5-oxodioxolan-4-yl]acetic acid" "(s)-(+)-2,2-dimethyl-5-oxo-1,3-dioxolane-4-acetic acid" "2-[(4s)-2,2-dimethyl-5-oxo-1,3-dioxolan-4-yl]acetic acid" "2-((4s)-2,2-dimethyl-5-oxo-1,3-dioxolan-4-yl)acetic acid" "(l)-malic acid acetonide" "[(4s)-2,2-dimethyl-5-oxo-1,3-dioxolan-4-yl]acetic acid" "1,3-dioxolane-4-acetic acid, 2,2-dimethyl-5-oxo-, (4s)-" "(s)-2,2-dimethyl-5-oxo-1,3-dioxolane-4-acetic acid;1,3-dioxolane-4-acetic acid, 2,2-dimethyl-5-oxo-, (4s)-;[(4s)-2,2-dimethyl-5-oxo-1,3-dioxolan-4-yl]acetic acid;(s)-[2,2-dimethyl-5-oxodioxolan-4-yl]acetic acid;" );
+gibbsFormation
+{
+    dHf_298   -919660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     418.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-684790.0
+    phase     gas;
+}

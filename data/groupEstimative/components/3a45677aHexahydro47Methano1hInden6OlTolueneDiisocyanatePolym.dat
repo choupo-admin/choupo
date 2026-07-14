@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3a,4,5,6,7,7a-hexahydro-4,7-methano-1h-inden-6-ol, toluene diisocyanate polymer  (C19H20N2O3, CAS 67969-76-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3a45677aHexahydro47Methano1hInden6OlTolueneDiisocyanatePolym;
+formula     C19H20N2O3;
+CAS         67969-76-0;
+InChIKey    NLLJKCURHHMBNW-UHFFFAOYSA-N;
+MW          324.38;      // g/mol [origin=calculated method=formula-sum]
+Tc          1142.11;      // K   [origin=predictive method=joback]
+Pc          20.586;      // bar [origin=predictive method=joback]
+omega       1.3130;      // -   [origin=predictive method=lee-kesler]
+Tb          912.19;      // K   [origin=predictive method=joback]
+HvapTb      97110.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 5; } { group CH=CH; count 1; } { group ACH; count 3; } { group AC; count 2; } { group ACCH3; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:2
+    joback ( { group CH3; count 1; } { group dCd; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 5; } { group dCH_ring; count 5; } { group dC_ring; count 3; } { group OH; count 1; } { group dO_oth; count 2; } { group Nd; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,7-methano-1h-inden-6-ol, 3a,4,5,6,7,7a-hexahydro-, polymer with 1,3-diisocyanatomethylbenzene" );
+// formation datum unavailable (element entropy missing): dHf_298=-267230.0 dGf_298=None

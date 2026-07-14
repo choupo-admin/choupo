@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5,8,11,14-eicosatetraenoic acid  (C20H32O2, CAS 7771-44-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        581114EicosatetraenoicAcid;
+formula     C20H32O2;
+CAS         7771-44-0;
+InChIKey    YZXBAPSDXZZRGB-UHFFFAOYSA-N;
+MW          304.474;      // g/mol [origin=calculated method=formula-sum]
+Tc          1014.83;      // K   [origin=predictive method=joback]
+Pc          12.390;      // bar [origin=predictive method=joback]
+omega       1.0233;      // -   [origin=predictive method=lee-kesler]
+Tb          819.35;      // K   [origin=predictive method=joback]
+HvapTb      77110.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-67.42 2.03462 -0.001472 4.444e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group CH=CH; count 4; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 10; } { group dCH; count 8; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "icosa-5,8,11,14-tetraenoic acid" "agn-pc-00aij3" "arachidonic acid lipid maps ms standard" "5,8,11,14-eicosatetraenoicacid, (5z,8z,11z,14z)-" "5,8,11,14-eicosatetraenoicacid, (all-z)- (8ci);(all-z)-5,8,11,14-eicosatetraenoic acid;5,8,11,14-all-cis-eicosatetraenoic acid;5-cis,8-cis,11-cis,14-cis-eicosatetraenoic acid;5z,8z,11z,14z-eicosatetraenoicacid;a 0871;arachidonic acid;immunocytophyte;all-cis-5,8,11,14-eicosatetraenoic acid;cis-d5,8,11,14-eicosatetraenoic acid;" );
+gibbsFormation
+{
+    dHf_298   -337520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     961.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=94490.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimethyl orthoacetate  (C5H12O3, CAS 1445-45-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trimethylOrthoacetate;
+formula     C5H12O3;
+CAS         1445-45-0;
+InChIKey    HDPNBNXLBDFELL-UHFFFAOYSA-N;
+MW          120.148;      // g/mol [origin=calculated method=formula-sum]
+Tc          555.40;      // K   [origin=predictive method=joback]
+Pc          33.412;      // bar [origin=predictive method=joback]
+omega       0.3808;      // -   [origin=predictive method=lee-kesler]
+Tb          378.03;      // K   [origin=predictive method=joback]
+HvapTb      32658.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (50.37 0.41508 -8.7e-05 -4.42e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group C; count 1; } { group CH3O; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group C; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1-trimethoxyethane" "ethane, 1,1,1-trimethoxy-" "orthoacetic acid, trimethyl ester" "orthoacetic acid trimethyl ester" "s707" "orthoacetic acid, trimethyl ester;ethane, 1,1,1-trimethoxy-;" "ethane,1,1,1-trimethoxy   orthoacetic acid,trimethyl ester" );
+gibbsFormation
+{
+    dHf_298   -551940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     345.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-320940.0
+    phase     gas;
+}

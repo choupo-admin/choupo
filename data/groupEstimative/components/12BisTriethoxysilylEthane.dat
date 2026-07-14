@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-bis(triethoxysilyl)ethane  (C14H34O6Si2, CAS 16068-37-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C14H34O6Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        12BisTriethoxysilylEthane;
+formula     C14H34O6Si2;
+CAS         16068-37-4;
+InChIKey    IZRJPHXTEXTLHY-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          354.59;      // g/mol [origin=calculated method=formula-sum]
+Tc          826.18;      // K   [origin=predictive method=joback]
+Pc          11.858;      // bar [origin=predictive method=joback]
+omega       0.8318;      // -   [origin=predictive method=lee-kesler]
+Tb          657.24;      // K   [origin=predictive method=joback]
+HvapTb      61806.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (224.798 0.54232 0.0007578 -6.078e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 2; } { group CH2O; count 6; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 8; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "triethoxy(2-triethoxysilylethyl)silane" "4,4,7,7-tetraethoxy-3,8-dioxa-4,7-disiladecane" "3,8-dioxa-4,7-disiladecane, 4,4,7,7-tetraethoxy-" );
+gibbsFormation
+{
+    dHf_298   -1348850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1021.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-772520.0
+    phase     gas;
+}

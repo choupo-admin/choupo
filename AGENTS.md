@@ -8,16 +8,18 @@ repository.  There are TWO audiences, with different docs.
 (A student, an engineer, anyone composing a `flowsheetDict` /
 `propsDict` for this simulator.)
 
-→ Read **`docs/ai/`**.  Start with [`docs/ai/overview.md`](docs/ai/overview.md).
-The eight files in that folder are designed to fit a single context
-window together (~1500 lines total):
+→ Read **[`docs/ai/start-here.md`](docs/ai/start-here.md)** first, then use
+[`docs/ai/overview.md`](docs/ai/overview.md) and the reference files below as
+needed.  `docs/ai/` is a reference library; do not load the whole directory
+when one or two focused files answer the question.
 
 | File | Read when |
 |---|---|
-| `overview.md`     | First.  What Choupo is, the 4 binaries, the case layout. |
+| `start-here.md`   | First run and the canonical files of a minimal case. |
+| `overview.md`     | What Choupo is, the 4 binaries, and the governing contracts. |
 | `dict-syntax.md`  | Before writing any dict.  Dict syntax, units, `$variables`. |
 | `case-layout.md`  | When organising the directory tree (`system/`, `constant/`, `.cho`). |
-| `thermo.md`       | When composing a `thermoPackage` (components + γ-φ models). |
+| `thermo.md`       | When composing `constant/propertyDict` (components + γ-φ models). |
 | `unit-ops.md`     | The catalogue.  Per unit op: required + optional fields, an example. |
 | `components.md`   | The shipped component / material / membrane / Henry inventory. |
 | `curation-protocol.md` | When a compound LACKS data a model needs.  Build the case WITH the student: read the gap report, advise, offer bounded choices, invoke deterministic estimators, NEVER invent numbers. |
@@ -25,8 +27,8 @@ window together (~1500 lines total):
 | `pitfalls.md`     | Common mistakes -- read before answering a question that smells like one. |
 | `gui-credo.md`    | Before proposing any GUI change.  Single source of truth for Choupo GUI design: identity, founding principles, deliberate adaptations vs ParaView, consolidated patterns, anti-patterns, vocabulary, roadmap.  Replaces the older `gui-mental-model.md`. |
 
-For one-shot bundling (paste-into-fresh-Claude-or-ChatGPT) use
-`bin/llmctx`:
+For one-shot bundling use `bin/llmctx`, but prefer selecting only the files
+needed for the task:
 
 ```sh
 bin/llmctx                # print all docs/ai/*.md to stdout in reading order
@@ -49,7 +51,8 @@ user-facing.  Don't confuse them.
 
 ## Quick orientation either way
 
-- **Licence:** GPL-3.0-or-later (single permissive).  Copyright Vítor Geraldes.
+- **Licence:** GPL-3.0-or-later.  Copyright and attribution are defined in
+  `AUTHORS`, `NOTICE`, and the file headers.
 - **Stack:** C++17 + GNU make for the engine; Vite + React + Mantine +
   Plotly + React Flow for the GUI; Emscripten for the WASM build.
   Zero external C++ deps (Newton / Gauss / RK4 / Nelder-Mead are

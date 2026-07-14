@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3'-dichlorobenzidine  (C12H10Cl2N2, CAS 91-94-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33Dichlorobenzidine;
+formula     C12H10Cl2N2;
+CAS         91-94-1;
+InChIKey    HUWXDEQWWKGHRV-UHFFFAOYSA-N;
+MW          253.126;      // g/mol [origin=calculated method=formula-sum]
+Tc          1037.56;      // K   [origin=predictive method=joback]
+Pc          33.490;      // bar [origin=predictive method=joback]
+omega       0.8763;      // -   [origin=predictive method=lee-kesler]
+Tb          767.36;      // K   [origin=predictive method=joback]
+HvapTb      79558.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.13 0.8854 -0.00055084 1.23e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 2; } { group ACNH2; count 2; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 6; } { group dC_ring; count 6; } { group Cl; count 2; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(4-azanyl-3-chloranyl-phenyl)-2-chloranyl-aniline" "dichlorobenzidine base" "o,o'-dichlorobenzidine" "curithane c126" "3,3'-dichlorbenzidin" "3,3'-dichlorobenzidina" "3,3'-dichloro-4,4'-diaminobiphenyl" "3,3'-dichlorobiphenyl-4,4'-diamine" "3,3'-dichlorobenzidine base" "benzidine, 3,3'-dichloro-" "ortho,ortho'-dichlorobenzidine" "3,3'-dichloro-p,p'-bianiline" );
+gibbsFormation
+{
+    dHf_298   172270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     555.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=345500.0
+    phase     gas;
+}

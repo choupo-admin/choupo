@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octatetracontane  (C48H98, CAS 7098-26-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octatetracontane;
+formula     C48H98;
+CAS         7098-26-2;
+InChIKey    CFBPOLLJQOANPF-UHFFFAOYSA-N;
+MW          675.312;      // g/mol [origin=calculated method=formula-sum]
+Tc          2013.72;      // K   [origin=predictive method=joback]
+Pc          2.946;      // bar [origin=predictive method=joback]
+omega       -0.6009;      // -   [origin=predictive method=lee-kesler]
+Tb          1297.84;      // K   [origin=predictive method=joback]
+HvapTb      122442.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-40.744 4.56384 -0.0025874 5.6e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 46; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 46; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-octatetracontane" "octatetracontane, analytical standard" "AS-56756" "DB-361499" "Q11291863" "C48" "nc48" "n-c48" );
+gibbsFormation
+{
+    dHf_298   -1034050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     2025.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=353280.0
+    phase     gas;
+}

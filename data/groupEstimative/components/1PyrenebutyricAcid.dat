@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-pyrenebutyric acid  (C20H16O2, CAS 3443-45-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1PyrenebutyricAcid;
+formula     C20H16O2;
+CAS         3443-45-6;
+InChIKey    QXYRRCOJHNZVDJ-UHFFFAOYSA-N;
+MW          288.346;      // g/mol [origin=calculated method=formula-sum]
+Tc          1135.49;      // K   [origin=predictive method=joback]
+Pc          22.376;      // bar [origin=predictive method=joback]
+omega       1.2016;      // -   [origin=predictive method=lee-kesler]
+Tb          893.57;      // K   [origin=predictive method=joback]
+HvapTb      85824.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-93.567 1.7613 -0.00148256 5.045e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 9; } { group AC; count 6; } { group ACCH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group dCH_ring; count 9; } { group dC_ring; count 7; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-pyren-1-ylbutanoic acid" "1-pyrenebutanoic acid" "4-(pyren-1-yl)butanoic acid" "1-pyrenylbutyric acid" "pyrene-3-butyric acid" "4-(1-pyrenyl)butyric acid" "4-pyrenylbutanoic acid" "pyrenebutanoic acid" "1-pyrenebutyrate" "pyrene-1-butyric acid" "gamma-(3-pyrenyl)butyric acid" "qxyrrcojhnzvdj-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -76530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     534.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=171320.0
+    phase     gas;
+}

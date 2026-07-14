@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chlorobenzilate  (C16H14Cl2O3, CAS 510-15-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chlorobenzilate;
+formula     C16H14Cl2O3;
+CAS         510-15-6;
+InChIKey    RAPBNVDSDCTNRC-UHFFFAOYSA-N;
+MW          325.185;      // g/mol [origin=calculated method=formula-sum]
+Tc          1083.36;      // K   [origin=predictive method=joback]
+Pc          23.114;      // bar [origin=predictive method=joback]
+omega       1.2055;      // -   [origin=predictive method=lee-kesler]
+Tb          851.03;      // K   [origin=predictive method=joback]
+HvapTb      88646.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.859 1.36562 -0.00092332 2.23e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group ACH; count 8; } { group AC; count 2; } { group OH; count 1; } { group ACCl; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group Cl; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2,2-bis(4-chlorophenyl)-2-oxidanyl-ethanoate" "chlorbenzylate" "chlorobenzylate" "ethyl 4,4'-dichlorobenzilate" "chlorbenzilat" "acaraben" "benzilan" "folbex" "acar" "akar" "kop-mite" "chlorbenzilate" );
+gibbsFormation
+{
+    dHf_298   -433190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     684.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-178810.0
+    phase     gas;
+}

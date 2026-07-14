@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): polypropylene glycol alpha-methyl glucoside ether (4:1)  (C19H38O10, CAS 112748-33-1)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           polypropyleneGlycolAlphaMethylGlucosideEther41;
+formula        C19H38O10;
+CAS            112748-33-1;
+InChIKey       GKFRSRGHGLRUBB-UHFFFAOYSA-N;
+MW             426.503;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   5;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: polypropylene glycol alpha-methyl glucoside ether (4:1)

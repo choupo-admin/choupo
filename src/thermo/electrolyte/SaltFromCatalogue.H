@@ -41,14 +41,20 @@ License
 #pragma once
 
 #include "thermo/Database.H"
+#include "thermo/ThermoAnnounce.H"
 #include "thermo/electrolyte/PitzerSingleSalt.H"
 #include "thermo/electrolyte/ENRTLSingleSalt.H"
+#include "core/Advisory.H"
 #include "core/Dictionary.H"
 
 #include <cstdlib>
 #include <filesystem>
+#include <iomanip>
 #include <iostream>
 #include <numeric>
+#include <map>
+#include <set>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -78,6 +84,71 @@ inline fs::path caseElectrolytePath(const std::string& file)
     return {};
 }
 
+// Case SNAPSHOT (Choupo-2607 data strategy): the frozen dependency copy under
+// constant/propertyData/<sub>, found by walking UP the cascade.  When present it
+// is used INSTEAD of the installation catalogue -- the run reads its own copy.
+// Opt-in by file presence: empty when the case ships no snapshot.
+inline fs::path caseSnapshotPath(const std::string& sub)
+{
+    fs::path p = fs::current_path();
+    for (int up = 0; up < 8; ++up)
+    {
+        fs::path cand = p / "constant" / "propertyData" / sub;
+        if (fs::exists(cand)) return cand;
+        fs::path par = p.parent_path();
+        if (par == p) break;
+        p = par;
+    }
+    return {};
+}
+
+// A parsed dictionary, held for the life of the run.  `findPitzerPair` is called
+// once per (cation, anion) per activity-model construction, and a scaling scan
+// constructs one model per grid point -- so re-reading and re-parsing the pair
+// file from disk on every call turned a 40-point scan into thousands of file
+// parses.  The flagship brine case ran at 100 % CPU for minutes and was written
+// off as a non-convergent solve; it was neither.  Parse once, keyed by path.
+inline const DictPtr& parsedOnce(const fs::path& p)
+{
+    static std::map<std::string, DictPtr> cache;
+    auto it = cache.find(p.string());
+    if (it == cache.end())
+        it = cache.emplace(p.string(), Dictionary::fromFile(p.string())).first;
+    return it->second;
+}
+
+// The overlay announcement is a CURATION fact -- which file won for which pair --
+// so it belongs in the log exactly ONCE, not once per solver iteration.
+inline bool announceOnce(const std::string& key)
+{
+    static std::set<std::string> said;
+    return said.insert(key).second;
+}
+
+// SEALED (Choupo-2607): a manifest with `sealed true;` FORBIDS the installation
+// catalogue -- a record missing from the snapshot is a HARD error (re-import),
+// never a silent catalogue read.  "Everything in each case", enforced.
+inline bool caseSnapshotSealed()
+{
+    fs::path p = fs::current_path();
+    for (int up = 0; up < 8; ++up)
+    {
+        fs::path m = p / "constant" / "propertyData" / "manifest.dat";
+        if (fs::exists(m))
+        {
+            auto d = parsedOnce(m);
+            if (d->found("propertyDataManifest"))
+                return d->subDict("propertyDataManifest")
+                        ->lookupWordOrDefault("sealed", "false") == "true";
+            return false;
+        }
+        fs::path par = p.parent_path();
+        if (par == p) break;
+        p = par;
+    }
+    return false;
+}
+
 // Catalogue files to scan, case-local FIRST (overlay) then standard (base).
 inline std::vector<fs::path> electrolytePaths(const std::string& file)
 {
@@ -99,11 +170,11 @@ inline DictPtr findPair(const std::string& file, const std::string& listKey,
     {
         const bool isCase = first && !caseElectrolytePath(file).empty();
         first = false;
-        auto d = Dictionary::fromFile(path.string());
+        auto d = parsedOnce(path);
         for (const auto& p : d->lookupDictList(listKey))
             if (p->lookupWord("cation") == cation && p->lookupWord("anion") == anion)
             {
-                if (isCase)
+                if (isCase && thermoAnnounce())
                     std::cerr << "[overlay] electrolyte (" << cation << "," << anion
                               << ") from case-local " << path.string() << "\n";
                 return p;
@@ -112,14 +183,200 @@ inline DictPtr findPair(const std::string& file, const std::string& listKey,
     return nullptr;
 }
 
+// Bridge a NESTED species/aqueous/<species>.dat record to the FLAT inline keys every
+// ion accessor expects (z/MW/hfAq/sAq/cpAq/radius/D0).  CONDITIONAL emission
+// preserves found() semantics (so e.g. Electrochem's LOUD !found("radius") still
+// fires for ions without a transport tier, and ionAqReference returns false for
+// an hfAq-less ion).  setprecision(17) = double max_digits10 -> bit-exact
+// round-trip, so no golden KPI drifts.
+inline DictPtr bridgeTrueIon(const DictPtr& r, const std::string& species)
+{
+    std::ostringstream os;  os << std::setprecision(17);
+    os << "species " << species << "; ";
+    if (r->found("ion")) os << "ion \"" << r->lookupWord("ion") << "\"; ";
+    os << "z " << static_cast<int>(r->lookupScalar("charge")) << "; ";
+    if (r->found("MW")) os << "MW " << r->subDict("MW")->lookupScalar("value") << "; ";
+    if (r->found("aqueousThermo"))
+    {
+        auto a = r->subDict("aqueousThermo");
+        if (a->found("hfAq")) os << "hfAq " << a->subDict("hfAq")->lookupScalar("value") << "; ";
+        if (a->found("sAq"))  os << "sAq "  << a->subDict("sAq")->lookupScalar("value")  << "; ";
+        if (a->found("cpAq")) os << "cpAq " << a->subDict("cpAq")->lookupScalar("value") << "; ";
+    }
+    if (r->found("transport"))
+    {
+        auto t = r->subDict("transport");
+        if (t->found("radius")) os << "radius " << t->subDict("radius")->lookupScalar("value") << "; ";
+        if (t->found("D0"))     os << "D0 "     << t->subDict("D0")->lookupScalar("value")     << "; ";
+    }
+    return Dictionary::fromString(os.str());
+}
+
+// Ion record by species name.  Two source legs (the ion kind is now stored ONLY
+// as per-species records under species/aqueous/; the old monolithic
+// electrolyte/ions.dat is gone):
+//   (1) case-local constant/electrolyte/ions.dat -- OLD FLAT list, read EXACTLY
+//       as before, whole-row FIRST-FILE-WINS (do NOT merge fields with the
+//       standards leg: crystalliser05 ships {z,MW}-only Na with NO hfAq, and its
+//       golden depends on ionAqReference returning false there).
+//   (2) standards species/aqueous/<species>.dat -- NESTED, bridged to flat.
 inline DictPtr findIon(const std::string& species)
 {
-    for (const auto& path : electrolytePaths("ions.dat"))
+    const fs::path cl = caseElectrolytePath("ions.dat");
+    if (!cl.empty())
     {
-        auto d = Dictionary::fromFile(path.string());
+        auto d = parsedOnce(cl);
         for (const auto& i : d->lookupDictList("ions"))
             if (i->lookupWord("species") == species) return i;
     }
+    const fs::path snap = caseSnapshotPath("species/aqueous/" + species + ".dat");
+    if (!snap.empty())
+        return bridgeTrueIon(parsedOnce(snap), species);
+    if (caseSnapshotSealed())
+        throw std::runtime_error("SEALED snapshot: ion '" + species
+            + "' (species/aqueous/) is NOT in the case's constant/propertyData/ --"
+              " re-run `choupo-import` (the installation catalogue is forbidden).");
+    const fs::path tp = fs::path(Database::currentRoot())
+                      / "standards" / "species" / "aqueous" / (species + ".dat");
+    if (fs::exists(tp))
+        return bridgeTrueIon(parsedOnce(tp), species);
+    return nullptr;
+}
+
+// Bridge a NESTED per-pair record (parameters{ beta0.. }) to the FLAT inline keys
+// the callers expect (loadSalt/readPair/pairCalorimetricFit/ElectrolyteActivity).
+// beta0/beta1/Cphi are REQUIRED (lookupScalar throws if absent); beta2/alpha1/
+// alpha2 + the optional T-slots/lphiValidityMax are emitted when present (faithful,
+// NOT defaulted); calorimetricFit is a WORD.  setprecision(17) -> bit-exact.
+inline DictPtr bridgePitzerPair(const DictPtr& r)
+{
+    auto pr = r->subDict("parameters");
+    std::ostringstream os;  os << std::setprecision(17);
+    os << "beta0 " << pr->lookupScalar("beta0") << "; ";
+    os << "beta1 " << pr->lookupScalar("beta1") << "; ";
+    os << "Cphi "  << pr->lookupScalar("Cphi")  << "; ";
+    for (const char* k : {"beta2", "alpha1", "alpha2",
+                          "dbeta0_dT", "dbeta1_dT", "dCphi_dT", "lphiValidityMax",
+                          "sp_q1", "sp_q2", "sp_q3", "sp_q4", "sp_q5",
+                          "sp_q6", "sp_q9", "sp_q10",
+                          "sp_q11", "sp_q12", "sp_q13", "sp_q14",
+                          "TvalidLo", "TvalidHi"})
+        if (pr->found(k)) os << k << " " << pr->lookupScalar(k) << "; ";
+    if (pr->found("calorimetricFit"))
+        os << "calorimetricFit " << pr->lookupWord("calorimetricFit") << "; ";
+    return Dictionary::fromString(os.str());
+}
+
+// Pitzer pair by (cation,anion).  Two legs (the pairs kind is now stored ONLY as
+// The pair record's temperature-correlation form, DECLARED + cross-checked
+// (forum #101/#103: `tCorrelationForm` is a typed contract, never a silent
+// field probe).  Legal words: `constant298` | `linearSlopes` |
+// `silvesterPitzer1977`.  A record that declares one form but carries the
+// fields of another REFUSES (dead data is a lie); an UNDECLARED record with
+// T-fields resolves by the historical inference and files a deduped
+// "provenance" advisory asking for the declaration -- byte-identical
+// behaviour, now with the gap on the record's ledger.  Shared by BOTH
+// Pitzer readers (single-salt loadSalt + PitzerHMW::readPair): one contract.
+inline std::string resolveTCorrelationForm(const DictPtr& p,
+                                           const std::string& pairName)
+{
+    const bool hasSp    = p->found("sp_q1");
+    const bool hasSlope = p->found("dbeta0_dT") || p->found("dbeta1_dT")
+                       || p->found("dCphi_dT");
+    const std::string declared =
+        p->found("tCorrelationForm") ? p->lookupWord("tCorrelationForm") : "";
+    if (declared.empty())
+    {
+        const std::string inferred =
+            hasSp ? "silvesterPitzer1977"
+                  : (hasSlope ? "linearSlopes" : "constant298");
+        if (hasSp || hasSlope)
+            AdvisoryLog::instance().add("provenance", "info",
+                "pitzer pair " + pairName,
+                "tCorrelationForm not declared -- inferred '" + inferred
+                + "' from the record's fields; declare it in the record");
+        return inferred;
+    }
+    if (declared == "silvesterPitzer1977")
+    {
+        if (!hasSp)
+            throw std::runtime_error("pitzer pair " + pairName
+                + ": tCorrelationForm silvesterPitzer1977 declared but the"
+                " record carries no sp_q1..q14 coefficients");
+    }
+    else if (declared == "linearSlopes")
+    {
+        if (!hasSlope)
+            throw std::runtime_error("pitzer pair " + pairName
+                + ": tCorrelationForm linearSlopes declared but the record"
+                " carries no dbeta*_dT/dCphi_dT slopes");
+        if (hasSp)
+            throw std::runtime_error("pitzer pair " + pairName
+                + ": tCorrelationForm linearSlopes declared but sp_q*"
+                " coefficients are present -- AMBIGUOUS; declare"
+                " silvesterPitzer1977 or remove the sp_q* fields");
+    }
+    else if (declared == "constant298")
+    {
+        if (hasSp || hasSlope)
+            throw std::runtime_error("pitzer pair " + pairName
+                + ": tCorrelationForm constant298 declared but T-extension"
+                " fields are present -- dead data is a lie; declare the"
+                " real form or remove the fields");
+    }
+    else
+        throw std::runtime_error("pitzer pair " + pairName
+            + ": unknown tCorrelationForm '" + declared
+            + "' (legal: constant298 | linearSlopes | silvesterPitzer1977)");
+    return declared;
+}
+
+// per-pair records under parameters/electrolyte/pitzer/pairs/; the monolithic
+// electrolyte/pairs.dat is gone) -- sibling of findIon, NOT a change to the
+// generic findPair (which enrtl.dat/mixing.dat still use as a list):
+//   (1) case-local constant/electrolyte/pairs.dat -- OLD FLAT list, whole-row
+//       FIRST-FILE-WINS, NO merge (a case may ship a divergent value, e.g.
+//       enthalpy_naoh_water's Li-Cl beta0 0.1494 vs the standards 0.17).
+//   (2) standards per-file, bridged to flat keys.
+inline DictPtr findPitzerPair(const std::string& cation, const std::string& anion)
+{
+    // Memoise the RESOLVED pair, not just the parsed file: the flat case-local list
+    // is scanned linearly with string compares, and an activity model asks for every
+    // (cation, anion) combination on every gamma evaluation.
+    static std::map<std::string, DictPtr> resolved;
+    const std::string key = cation + "," + anion;
+    { auto it = resolved.find(key); if (it != resolved.end()) return it->second; }
+    struct Memo {
+        std::map<std::string, DictPtr>& m; const std::string& k;
+        DictPtr operator()(DictPtr d) const { m[k] = d; return d; }
+    } memo{resolved, key};
+
+    const fs::path cl = caseElectrolytePath("pairs.dat");
+    if (!cl.empty())
+    {
+        const DictPtr& d = parsedOnce(cl);
+        for (const auto& p : d->lookupDictList("pairs"))
+            if (p->lookupWord("cation") == cation && p->lookupWord("anion") == anion)
+            {
+                if (thermoAnnounce() && announceOnce("pair:" + cation + "," + anion))
+                    std::cerr << "[overlay] electrolyte pair (" << cation << "," << anion
+                              << ") from case-local " << cl.string() << "\n";
+                return memo(p);
+            }
+    }
+    const fs::path snap = caseSnapshotPath("parameters/electrolyte/pitzer/pairs/"
+                                           + cation + "-" + anion + ".dat");
+    if (!snap.empty())
+        return memo(bridgePitzerPair(parsedOnce(snap)));
+    if (caseSnapshotSealed())
+        throw std::runtime_error("SEALED snapshot: pitzer pair (" + cation + ","
+            + anion + ") is NOT in constant/propertyData/ -- re-run `choupo-import`"
+              " (the installation catalogue is forbidden).");
+    const fs::path tp = fs::path(Database::currentRoot())
+                      / "standards" / "parameters" / "electrolyte" / "pitzer" / "pairs"
+                      / (cation + "-" + anion + ".dat");
+    if (fs::exists(tp))
+        return memo(bridgePitzerPair(parsedOnce(tp)));
     return nullptr;
 }
 
@@ -128,7 +385,7 @@ inline int ionCharge(const std::string& species)
     auto i = findIon(species);
     if (!i)
         throw std::runtime_error("electrolyte: ion '" + species
-            + "' not in constant/electrolyte/ions.dat (case) or standards/electrolyte/ions.dat");
+            + "' not in constant/electrolyte/ions.dat (case) or standards/species/aqueous/");
     return static_cast<int>(i->lookupScalar("z"));
 }
 
@@ -156,21 +413,43 @@ inline PitzerSingleSalt loadSalt(const std::string& cation, const std::string& a
     s.nu_c = (-za) / g;                         // nu_c*zc = nu_a*|za| (electroneutral)
     s.nu_a = zc / g;
 
-    auto p = findPair("pairs.dat", "pairs", cation, anion);
+    auto p = findPitzerPair(cation, anion);
     if (!p)
         throw std::runtime_error("electrolyte: no Pitzer pair (" + cation + ", " + anion
-            + ") in constant/electrolyte/pairs.dat (case) or standards/electrolyte/pairs.dat");
+            + ") in constant/electrolyte/pairs.dat (case) or "
+              "standards/parameters/electrolyte/pitzer/pairs/" + cation + "-" + anion + ".dat");
     s.beta0  = p->lookupScalar("beta0");
     s.beta1  = p->lookupScalar("beta1");
     s.beta2  = p->lookupScalarOrDefault("beta2", 0.0);
     s.Cphi   = p->lookupScalar("Cphi");
     s.alpha1 = p->lookupScalarOrDefault("alpha1", 2.0);
     s.alpha2 = p->lookupScalarOrDefault("alpha2", 12.0);
+    // The record's T-correlation form, DECLARED and cross-checked (never
+    // inferred silently) -- see resolveTCorrelationForm.
+    const std::string tForm =
+        resolveTCorrelationForm(p, cation + "-" + anion);
     // Silvester-Pitzer calorimetric T-slots (default 0 = frozen-beta; fitted
     // at curation time against Parker Phi_L -- bin/curate/fit_lphi_pitzer.py).
     s.dbeta0_dT = p->lookupScalarOrDefault("dbeta0_dT", 0.0);
     s.dbeta1_dT = p->lookupScalarOrDefault("dbeta1_dT", 0.0);
     s.dCphi_dT  = p->lookupScalarOrDefault("dCphi_dT",  0.0);
+    // full Silvester-Pitzer 1977 T-functions (eqs 30-32), deviation form --
+    // gated by the RESOLVED form (identical to the historical sp_q1 probe
+    // for undeclared records; a declared record that lies about its fields
+    // has already been refused above).
+    if (tForm == "silvesterPitzer1977")
+    {
+        s.spForm = true;
+        s.spB0[0]=p->lookupScalar("sp_q1");  s.spB0[1]=p->lookupScalar("sp_q2");
+        s.spB0[2]=p->lookupScalar("sp_q3");  s.spB0[3]=p->lookupScalar("sp_q4");
+        s.spB0[4]=p->lookupScalar("sp_q5");
+        s.spB1[0]=p->lookupScalar("sp_q6");  s.spB1[1]=p->lookupScalar("sp_q9");
+        s.spB1[2]=p->lookupScalar("sp_q10");
+        s.spCp[0]=p->lookupScalar("sp_q11"); s.spCp[1]=p->lookupScalar("sp_q12");
+        s.spCp[2]=p->lookupScalar("sp_q13"); s.spCp[3]=p->lookupScalar("sp_q14");
+        s.TvalidLo = p->lookupScalarOrDefault("TvalidLo", 273.15);
+        s.TvalidHi = p->lookupScalarOrDefault("TvalidHi", 573.15);
+    }
     return s;
 }
 
@@ -191,31 +470,111 @@ inline bool ionAqReference(const std::string& cation, const std::string& anion,
     return true;
 }
 
+// Criss-Cobble 1964 (JACS 86, 5390, Table II): the salt's T-AVERAGED ionic
+// heat capacity Sum nu*Cp-bar]_25^T at the published nodes 25/60/100/150/200 C,
+// converted cal -> J.  Single-ion values sit on the CC "absolute" scale
+// (Cp(H+) = 28 cal), which CANCELS in any neutral-salt sum -- the only thing
+// this function returns.  false when either ion lacks a CC entry (caller
+// falls back to the constant cpAq tier).  Read at BUILD time only (the
+// builder preloads the five nodes; the hot path interpolates in memory).
+inline bool crissCobbleNodes(const std::string& cation, const std::string& anion,
+                             double nu_c, double nu_a, double nodes[5])
+{
+    const fs::path f = fs::path(Database::currentRoot())
+                     / "standards" / "parameters" / "electrolyte" / "crissCobble.dat";
+    if (!fs::exists(f)) return false;
+    auto d = parsedOnce(f);
+    DictPtr ec = nullptr, ea = nullptr;
+    for (const auto& e : d->lookupDictList("ions"))
+    {
+        if (e->lookupWord("ion") == cation) ec = e;
+        if (e->lookupWord("ion") == anion)  ea = e;
+    }
+    if (!ec || !ea) return false;
+    const char* keys[5] = {"cp25", "t60", "t100", "t150", "t200"};
+    for (int k = 0; k < 5; ++k)
+        nodes[k] = 4.184 * (nu_c * ec->lookupScalar(keys[k])
+                          + nu_a * ea->lookupScalar(keys[k]));
+    return true;
+}
+
 // Was this pair's T-dependence regressed against calorimetry?  Read the
 // per-row flag (default false -- the slice-0 honesty gate).
 inline bool pairCalorimetricFit(const std::string& cation, const std::string& anion)
 {
-    auto p = findPair("pairs.dat", "pairs", cation, anion);
+    auto p = findPitzerPair(cation, anion);
     return p && p->lookupWordOrDefault("calorimetricFit", "false") == "true";
 }
 
 // Build a configured ENRTLSingleSalt (electrolyte-NRTL) for the named salt,
 // reading tau/alpha from the curated catalogue electrolyte/enrtl.dat.
+// Bridge a NESTED per-salt eNRTL record (parameters{ tau.. }) to the FLAT keys
+// loadENRTL expects.  tau_m_ca/tau_ca_m REQUIRED (lookupScalar); alpha CONDITIONAL
+// (loadENRTL uses lookupScalarOrDefault(0.2), so a missing alpha must stay missing).
+inline DictPtr bridgeENRTLPair(const DictPtr& r)
+{
+    auto pr = r->subDict("parameters");
+    std::ostringstream os;  os << std::setprecision(17);
+    os << "tau_m_ca " << pr->lookupScalar("tau_m_ca") << "; ";
+    os << "tau_ca_m " << pr->lookupScalar("tau_ca_m") << "; ";
+    if (pr->found("alpha")) os << "alpha " << pr->lookupScalar("alpha") << "; ";
+    return Dictionary::fromString(os.str());
+}
+
+// eNRTL params by (cation,anion).  Dual leg (the eNRTL kind is now stored ONLY as
+// per-salt records under parameters/electrolyte/eNRTL/; the monolithic
+// electrolyte/enrtl.dat is gone) -- sibling of findPitzerPair, NOT a change to the
+// generic findPair (which mixing.dat still uses as a list).
+inline DictPtr findENRTLPair(const std::string& cation, const std::string& anion)
+{
+    const fs::path cl = caseElectrolytePath("enrtl.dat");
+    if (!cl.empty())
+    {
+        auto d = parsedOnce(cl);
+        for (const auto& p : d->lookupDictList("enrtl"))
+            if (p->lookupWord("cation") == cation && p->lookupWord("anion") == anion)
+            {
+                if (thermoAnnounce())
+                    std::cerr << "[overlay] eNRTL pair (" << cation << "," << anion
+                              << ") from case-local " << cl.string() << "\n";
+                return p;
+            }
+    }
+    // Case snapshot (sealed self-containment): propertyData/parameters/ is the
+    // canonical home for a model parameter -- consulted BEFORE the installation
+    // catalogue, and (when sealed) the catalogue is forbidden.  Mirrors findPitzerPair.
+    const fs::path snap = caseSnapshotPath("parameters/electrolyte/eNRTL/"
+                                           + cation + "-" + anion + ".dat");
+    if (!snap.empty())
+        return bridgeENRTLPair(parsedOnce(snap));
+    if (caseSnapshotSealed())
+        throw std::runtime_error("SEALED snapshot: eNRTL pair (" + cation + ","
+            + anion + ") is NOT in constant/propertyData/ -- re-run `choupo-import`"
+              " (the installation catalogue is forbidden).");
+    const fs::path tp = fs::path(Database::currentRoot())
+                      / "standards" / "parameters" / "electrolyte" / "eNRTL"
+                      / (cation + "-" + anion + ".dat");
+    if (fs::exists(tp))
+        return bridgeENRTLPair(parsedOnce(tp));
+    return nullptr;
+}
+
 inline ENRTLSingleSalt loadENRTL(const std::string& cation, const std::string& anion)
 {
     const int zc = ionCharge(cation), za = ionCharge(anion);
     if (zc <= 0 || za >= 0)
         throw std::runtime_error("eNRTL: '" + cation + "' must be a cation and '"
-            + anion + "' an anion (check ions.dat charges)");
+            + anion + "' an anion (check ion charges)");
     const int g = std::gcd(zc, -za);
     ENRTLSingleSalt s;
     s.z_c = zc; s.z_a = -za;
     s.nu_c = (-za) / g; s.nu_a = zc / g;
 
-    auto p = findPair("enrtl.dat", "enrtl", cation, anion);
+    auto p = findENRTLPair(cation, anion);
     if (!p)
         throw std::runtime_error("eNRTL: no parameters for (" + cation + ", " + anion
-            + ") in constant/electrolyte/enrtl.dat (case) or standards/electrolyte/enrtl.dat");
+            + ") in constant/electrolyte/enrtl.dat (case) or "
+              "standards/parameters/electrolyte/eNRTL/" + cation + "-" + anion + ".dat");
     s.tau_m_ca = p->lookupScalar("tau_m_ca");
     s.tau_ca_m = p->lookupScalar("tau_ca_m");
     s.alpha    = p->lookupScalarOrDefault("alpha", 0.2);

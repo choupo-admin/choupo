@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methylnon-1-yn-3-ol  (C10H18O, CAS 5430-01-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Methylnon1Yn3Ol;
+formula     C10H18O;
+CAS         5430-01-3;
+InChIKey    VQUXVWMAXIQKTQ-UHFFFAOYSA-N;
+MW          154.253;      // g/mol [origin=calculated method=formula-sum]
+Tc          684.32;      // K   [origin=predictive method=joback]
+Pc          27.155;      // bar [origin=predictive method=joback]
+omega       0.7812;      // -   [origin=predictive method=lee-kesler]
+Tb          507.47;      // K   [origin=predictive method=joback]
+HvapTb      53095.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.605 1.01974 -0.00071833 2.0789e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group C; count 1; } { group OH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group C; count 1; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methyl-1-nonyn-3-ol" "3-methyl-1-nonyne-3-ol" "1-nonyn-3-ol, 3-methyl-" "ethynyl n-hexyl methyl carbinol" );
+gibbsFormation
+{
+    dHf_298   -118810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     527.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=122410.0
+    phase     gas;
+}

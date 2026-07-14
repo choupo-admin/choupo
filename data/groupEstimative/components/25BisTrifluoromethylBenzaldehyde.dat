@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,5-bis(trifluoromethyl)benzaldehyde  (C9H4F6O, CAS 395-64-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H4F6O (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        25BisTrifluoromethylBenzaldehyde;
+formula     C9H4F6O;
+CAS         395-64-2;
+InChIKey    PICGJIQKPLBIES-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          242.118;      // g/mol [origin=calculated method=formula-sum]
+Tc          578.70;      // K   [origin=predictive method=joback]
+Pc          25.793;      // bar [origin=predictive method=joback]
+omega       0.4385;      // -   [origin=predictive method=lee-kesler]
+Tb          407.74;      // K   [origin=predictive method=joback]
+HvapTb      29361.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-42.5 0.9914 -0.00095792 3.457e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group CHO; count 1; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -1133210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     581.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1001170.0
+    phase     gas;
+}

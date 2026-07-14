@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenol, 2-amino-4-(1,1,3,3-tetramethylbutyl)-  (C14H23NO, CAS 6073-20-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenol2Amino41133Tetramethylbutyl;
+formula     C14H23NO;
+CAS         6073-20-7;
+InChIKey    BESJCRMQEYZHPM-UHFFFAOYSA-N;
+MW          221.344;      // g/mol [origin=calculated method=formula-sum]
+Tc          934.56;      // K   [origin=predictive method=joback]
+Pc          24.950;      // bar [origin=predictive method=joback]
+omega       0.7903;      // -   [origin=predictive method=lee-kesler]
+Tb          698.27;      // K   [origin=predictive method=joback]
+HvapTb      70759.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-80.819 1.6636 -0.00134532 4.439e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 1; } { group C; count 2; } { group ACH; count 3; } { group AC; count 1; } { group ACOH; count 1; } { group ACNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 1; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-4-(2,4,4-trimethylpentan-2-yl)phenol" "2-amino-4-(2,4,4-trimethylpentan-2-yl)phenol" "2-amino-4-(1,1,3,3-tetramethyl-butyl)-phenol" );
+gibbsFormation
+{
+    dHf_298   -268250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     589.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=87290.0
+    phase     gas;
+}

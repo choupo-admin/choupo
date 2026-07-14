@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(2,4-dichlorophenoxy)ethanol  (C8H8Cl2O2, CAS 120-67-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        224DichlorophenoxyEthanol;
+formula     C8H8Cl2O2;
+CAS         120-67-2;
+InChIKey    PCCMNBRZMKANQD-UHFFFAOYSA-N;
+MW          207.05;      // g/mol [origin=calculated method=formula-sum]
+Tc          815.54;      // K   [origin=predictive method=joback]
+Pc          35.263;      // bar [origin=predictive method=joback]
+omega       0.9804;      // -   [origin=predictive method=lee-kesler]
+Tb          608.74;      // K   [origin=predictive method=joback]
+HvapTb      64861.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (46.882 0.5503 -0.00026872 3.27e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACCl; count 2; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2,4-bis(chloranyl)phenoxy]ethanol" "o,p-dichlorophenoxyethanol" "ethanol, 2-(2,4-dichlorophenoxy)-" "2,4-dichlorphenyl cellosolve" "2-(2,4-dichlorophenoxy)ethan-1-ol" "cellosolve, 2,4-dichlorophenyl-" "2,4-dichlorophenoxyethanol" "ethanol,4-dichlorophenoxy)-" "cellosolve,4-dichlorophenyl-" "2-(2,4-dichloro-phenoxy)-ethanol" "ethanol,2-(2,4-dichlorophenoxy)-" "2-(2',4'-dichlorophenoxy) ethanol" );
+gibbsFormation
+{
+    dHf_298   -310790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     477.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-156050.0
+    phase     gas;
+}

@@ -1,0 +1,13 @@
+/*---------------------------------------------------------------------------*\
+  gamma_satd of saturated NaCl(aq) vs T -- Silvester & Pitzer, J. Phys. Chem.
+  81 (1977) 1822, Table V, "from soln data" column (their eqs 6 + 30-32
+  evaluated at the saturation molality; solubilities Liu & Lindsay).
+  NOTE: m_satd = 6.7-8.0 mol/kg EXCEEDS the m-range the parameters were
+  weighted for (>4 M downweighted, >6 m sparse) -- the paper reports these as
+  a consistency check and so do we: the comparison is m-EXTRAPOLATION at
+  every T, declared, not hidden.
+\*---------------------------------------------------------------------------*/
+
+satd100C ( { m 6.680; gamma 0.915; } );
+satd150C ( { m 7.198; gamma 0.724; } );
+satd200C ( { m 7.973; gamma 0.515; } );

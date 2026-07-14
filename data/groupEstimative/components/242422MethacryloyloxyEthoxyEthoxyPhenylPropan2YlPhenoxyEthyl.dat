@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-{4-[2-(4-{2-[2-(methacryloyloxy)ethoxy]ethoxy}phenyl)propan-2-yl]phenoxy}ethyl methacrylate  (C29H36O7, CAS 65133-66-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        242422MethacryloyloxyEthoxyEthoxyPhenylPropan2YlPhenoxyEthyl;
+formula     C29H36O7;
+CAS         65133-66-6;
+InChIKey    NGFFKUHICVFZTR-UHFFFAOYSA-N;
+MW          496.6;      // g/mol [origin=calculated method=formula-sum]
+Tc          1346.89;      // K   [origin=predictive method=joback]
+Pc          9.194;      // bar [origin=predictive method=joback]
+omega       0.8906;      // -   [origin=predictive method=lee-kesler]
+Tb          1100.03;      // K   [origin=predictive method=joback]
+HvapTb      105592.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (34.796 2.26848 -0.00118212 1.668e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 1; } { group CH2=C; count 2; } { group ACH; count 8; } { group AC; count 4; } { group CH2O; count 3; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 6; } { group C; count 1; } { group dCH2; count 2; } { group dC; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group O; count 3; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[4-[2-[4-[2-(2-methylprop-2-enoyloxy)ethoxy]phenyl]propan-2-yl]phenoxy]ethoxy]ethyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, 2-(4-(1-methyl-1-(4-(2-(2-((2-methyl-1-oxo-2-propen-1-yl)oxy)ethoxy)ethoxy)phenyl)ethyl)phenoxy)ethyl ester" "2-propenoic acid, 2-methyl-, 2-(4-(1-methyl-1-(4-(2-(2-((2-methyl-1-oxo-2-propenyl)oxy)ethoxy)ethoxy)phenyl)ethyl)phenoxy)ethyl ester" "2-propenoic acid, 2-methyl-, 2-[4-[1-methyl-1-[4-[2-[2-[(2-methyl-1-oxo-2-propen-1-yl)oxy]ethoxy]ethoxy]phenyl]ethyl]phenoxy]ethyl ester" "2-propenoic acid, 2-methyl-, 2-[4-[1-methyl-1-[4-[2-[2-[(2-methyl-1-oxo-2-propenyl)oxy]ethoxy]ethoxy]phenyl]ethyl]phenoxy]ethyl ester" "2-(4-{2-[4-(2-{2-[(2-methylacryloyl)oxy]ethoxy}ethoxy)phenyl]propan-2-yl}phenoxy)ethyl 2-methylprop-2-enoate" );
+gibbsFormation
+{
+    dHf_298   -1000460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1140.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-375460.0
+    phase     gas;
+}

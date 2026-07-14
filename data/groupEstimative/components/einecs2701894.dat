@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: einecs 270-189-4  (C16H29N3O4, CAS 68412-44-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        einecs2701894;
+formula     C16H29N3O4;
+CAS         68412-44-2;
+InChIKey    RQLFGXJYPQMHRV-UHFFFAOYSA-N;
+MW          327.425;      // g/mol [origin=calculated method=formula-sum]
+Tc          1190.07;      // K   [origin=predictive method=joback]
+Pc          18.108;      // bar [origin=predictive method=joback]
+omega       1.1928;      // -   [origin=predictive method=lee-kesler]
+Tb          949.10;      // K   [origin=predictive method=joback]
+HvapTb      99860.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-44.704 1.8634 -0.0011405 2.792e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 2; } { group C; count 1; } { group FCH2O; count 4; } { group CH2NH2; count 2; } { group ACRY; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group C_ring; count 1; } { group O_ring; count 4; } { group NH2; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[3-(3-azanylpropyl)-2,4,8,10-tetraoxaspiro[5.5]undecan-9-yl]propan-1-amine;prop-2-enenitrile" "3,9-bis(3-aminopropyl)-2,4,8,10-tetraoxaspiro(5,5)undecane, acrylonitrile addition product" "2-propenenitrile, reaction products with 2,4,8,10-tetraoxaspiro(5.5)undecane-3,9-dipropanamine" "3-[9-(3-aminopropyl)-2,4,8,10-tetraoxaspiro[5.5]undecan-3-yl]propan-1-amine; prop-2-enenitrile" );
+gibbsFormation
+{
+    dHf_298   -545600.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     732.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=36320.0
+    phase     gas;
+}

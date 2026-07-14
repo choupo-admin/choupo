@@ -44,3 +44,6 @@ idealGasHeatCapacity
     coefficients  (28.11   -3.680e-6   1.746e-5   -1.065e-8);
     Trange        (250  1500);
 }
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( oxygen );

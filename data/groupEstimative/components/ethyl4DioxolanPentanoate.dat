@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 4-dioxolan pentanoate  (C9H16O4, CAS 941-43-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl4DioxolanPentanoate;
+formula     C9H16O4;
+CAS         941-43-5;
+InChIKey    PLUNGZQWVYCJBJ-UHFFFAOYSA-N;
+MW          188.223;      // g/mol [origin=calculated method=formula-sum]
+Tc          737.07;      // K   [origin=predictive method=joback]
+Pc          28.597;      // bar [origin=predictive method=joback]
+omega       0.6372;      // -   [origin=predictive method=lee-kesler]
+Tb          533.16;      // K   [origin=predictive method=joback]
+HvapTb      51161.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-55.717 1.22164 -0.0010034 3.589e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group CH2COO; count 1; } { group FCH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group O_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 3-(2-methyl-1,3-dioxolan-2-yl)propanoate" "1,3-dioxolane-2-propionic acid, 2-methyl-, ethyl ester" "1,3-dioxolane-2-propanoic acid, 2-methyl-, ethyl ester" "ethyl 2-methyl-1,3-dioxolane-2-propionate" "ethyl 3-(2-methyl-[1,3]dioxolan-2-yl)propanoate" "ethyl levulinate ethylene ketal" "2-methyl-1,3-dioxolane-2-propanoic acid ethyl ester" "1,3-dioxolane-2-propionic acid, 2-methyl-, ethyl ester (8ci)" );
+gibbsFormation
+{
+    dHf_298   -734650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     474.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-426650.0
+    phase     gas;
+}

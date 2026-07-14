@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene,1-chloro-4-[1-(1-methylethyl)cyclopropyl]-  (C12H15Cl, CAS 63340-07-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzene1Chloro411MethylethylCyclopropyl;
+formula     C12H15Cl;
+CAS         63340-07-8;
+InChIKey    LLWMDTOIHHQUHQ-UHFFFAOYSA-N;
+MW          194.702;      // g/mol [origin=calculated method=formula-sum]
+Tc          785.44;      // K   [origin=predictive method=joback]
+Pc          27.469;      // bar [origin=predictive method=joback]
+omega       0.4330;      // -   [origin=predictive method=lee-kesler]
+Tb          549.79;      // K   [origin=predictive method=joback]
+HvapTb      48003.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-116.65 1.46094 -0.00136956 5.38e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-4-(1-propan-2-ylcyclopropyl)benzene" "benzene, 1-chloro-4-(1-(1-methylethyl)cyclopropyl)-" "1-chloro-4-(1-propan-2-ylcyclopropyl)benzene" );
+gibbsFormation
+{
+    dHf_298   1070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     514.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=193830.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 20-norcrotalanan-11,15-dione, 14,19-dihydro-12,13-dihydroxy-, (13.alpha.,14.alpha.)-  (C16H23NO6, CAS 315-22-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        20Norcrotalanan1115Dione1419Dihydro1213Dihydroxy13Alpha14Alp;
+formula     C16H23NO6;
+CAS         315-22-0;
+InChIKey    QVCMHGGNRFRMAD-UHFFFAOYSA-N;
+MW          325.361;      // g/mol [origin=calculated method=formula-sum]
+Tc          1112.42;      // K   [origin=predictive method=joback]
+Pc          23.181;      // bar [origin=predictive method=joback]
+omega       1.6355;      // -   [origin=predictive method=lee-kesler]
+Tb          902.96;      // K   [origin=predictive method=joback]
+HvapTb      99542.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-187.94 2.45496 -0.00227324 8.79e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 3; } { group C; count 2; } { group CH=C; count 1; } { group OH; count 2; } { group CH2N; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 2; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "agn-pc-00hrer" "2h-[1,6]dioxacycloundecino[2,3,4-gh]pyrrolizine-2,6(3h)-dione, 4,5,8,10,12,13,13a,13b-octahydro-4,5-dihydroxy-3,4,5-trimethyl-, (3r,4r,5r,13ar,13br)-" "4,5-dihydroxy-3,4,5-trimethyl-4,5,8,10,12,13,13a,13b-octahydro-2h-[1,6]dioxacycloundecino[2,3,4-gh]pyrrolizine-2,6(3h)-dione" );
+gibbsFormation
+{
+    dHf_298   -1002870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     779.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-547780.0
+    phase     gas;
+}

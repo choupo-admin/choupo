@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-dimethyl-2-[2-methyl-4-[3-(trifluoromethyl)phenyl]chroman-7-yl]oxy -ethanamine  (C21H24F3NO2, CAS 147241-85-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDimethyl22Methyl43TrifluoromethylPhenylChroman7YlOxyEthana;
+formula     C21H24F3NO2;
+CAS         147241-85-8;
+InChIKey    GKQQWVNUPNIGPZ-UHFFFAOYSA-N;
+MW          379.422;      // g/mol [origin=calculated method=formula-sum]
+Tc          1023.36;      // K   [origin=predictive method=joback]
+Pc          14.359;      // bar [origin=predictive method=joback]
+omega       0.9438;      // -   [origin=predictive method=lee-kesler]
+Tb          811.11;      // K   [origin=predictive method=joback]
+HvapTb      73870.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-64.608 1.99626 -0.00130698 3.188e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group ACH; count 7; } { group AC; count 4; } { group ACCH; count 1; } { group CH2O; count 1; } { group CH-O; count 1; } { group CH3N; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group F; count 3; } { group O; count 1; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethyl-2-[[2-methyl-4-[3-(trifluoromethyl)phenyl]-3,4-dihydro-2h-chromen-7-yl]oxy]ethanamine" "2-((3,4-dihydro-2-methyl-4-(3-(trifluoromethyl)phenyl)-2h-1-benzopyran-7-yl)oxy)-n,n-dimethylethanamine" "ethanamine, 2-((3,4-dihydro-2-methyl-4-(3-(trifluoromethyl)phenyl)-2h-1-benzopyran-7-yl)oxy)-n,n-dimethyl-" "ethanamine,2-[[3,4-dihydro-2-methyl-4-[3-(trifluoromethyl)phenyl]-2h-1-benzopyran-7-yl]oxy]-n,n-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -785590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     662.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-299120.0
+    phase     gas;
+}

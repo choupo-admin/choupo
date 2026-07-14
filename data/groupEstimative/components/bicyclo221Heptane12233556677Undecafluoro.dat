@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bicyclo[2.2.1]heptane, 1,2,2,3,3,5,5,6,6,7,7-undecafluoro-  (C7HF11, CAS 4934-61-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bicyclo221Heptane12233556677Undecafluoro;
+formula     C7HF11;
+CAS         4934-61-6;
+InChIKey    PQEPIOYQAWRWPA-UHFFFAOYSA-N;
+MW          294.063;      // g/mol [origin=calculated method=formula-sum]
+Tc          487.83;      // K   [origin=predictive method=joback]
+Pc          25.125;      // bar [origin=predictive method=joback]
+omega       0.4855;      // -   [origin=predictive method=lee-kesler]
+Tb          347.57;      // K   [origin=predictive method=joback]
+HvapTb      13736.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-312.33 2.7097 -0.00385 1.9494e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group CF2; count 5; } { group CF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 1; } { group C_ring; count 6; } { group F; count 11; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,5,5,6,6,7,7-undecakis(fluoranyl)bicyclo[2.2.1]heptane" "agn-pc-03h4jj" );
+gibbsFormation
+{
+    dHf_298   -2215840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     822.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2096940.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tributyl citrate  (C18H32O7, CAS 77-94-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tributylCitrate;
+formula     C18H32O7;
+CAS         77-94-1;
+InChIKey    ZFOZVQLOBQUTQQ-UHFFFAOYSA-N;
+MW          360.447;      // g/mol [origin=calculated method=formula-sum]
+Tc          1071.37;      // K   [origin=predictive method=joback]
+Pc          12.575;      // bar [origin=predictive method=joback]
+omega       1.1761;      // -   [origin=predictive method=lee-kesler]
+Tb          875.05;      // K   [origin=predictive method=joback]
+HvapTb      93266.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (43.571 1.70926 -0.0008738 1.134e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 9; } { group C; count 1; } { group OH; count 1; } { group CH2COO; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 11; } { group C; count 1; } { group OH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tributyl 2-oxidanylpropane-1,2,3-tricarboxylate" "butyl citrate" "tri-n-butyl citrate" "n-butyl citrate" "citroflex 4" "citric acid, tributyl ester" "butyl citrate (van)" "1,2,3-propanetricarboxylic acid, 2-hydroxy-, tributyl ester" "tributyl 2-hydroxypropane-1,2,3-tricarboxylate" "tributyl 2-hydroxy-1,2,3-propanetricarboxylate" "2-hydroxy-1,2,3-propanetricarboxylic acid, tributyl ester" "1,2,3-propanetricarboxylic acid, 2-hydroxy-, 1,2,3-tributyl ester" );
+gibbsFormation
+{
+    dHf_298   -1527670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1023.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-964410.0
+    phase     gas;
+}

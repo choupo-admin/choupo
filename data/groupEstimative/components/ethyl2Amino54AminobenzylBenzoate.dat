@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 2-amino-5-(4-aminobenzyl)benzoate  (C16H18N2O2, CAS 66037-55-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl2Amino54AminobenzylBenzoate;
+formula     C16H18N2O2;
+CAS         66037-55-6;
+InChIKey    DPCSKJGUTXCIHE-UHFFFAOYSA-N;
+MW          270.332;      // g/mol [origin=calculated method=formula-sum]
+Tc          1080.64;      // K   [origin=predictive method=joback]
+Pc          24.556;      // bar [origin=predictive method=joback]
+omega       1.1010;      // -   [origin=predictive method=lee-kesler]
+Tb          837.26;      // K   [origin=predictive method=joback]
+HvapTb      86437.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.822 1.25652 -0.00070008 1.204e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 7; } { group AC; count 2; } { group ACCH2; count 1; } { group ACNH2; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group COO; count 1; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 5-[(4-aminophenyl)methyl]-2-azanyl-benzoate" "benzoic acid, 2-amino-5-((4-aminophenyl)methyl)-, ethyl ester" "benzoic acid, 2-amino-5-[(4-aminophenyl)methyl]-, ethyl ester" "ethyl 5-((4-aminophenyl)methyl)anthranilate" "ethyl 2-amino-5-[(4-aminophenyl)methyl]benzoate" );
+gibbsFormation
+{
+    dHf_298   -184620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     702.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=102300.0
+    phase     gas;
+}

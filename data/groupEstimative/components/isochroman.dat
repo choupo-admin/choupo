@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isochroman  (C9H10O, CAS 493-05-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isochroman;
+formula     C9H10O;
+CAS         493-05-0;
+InChIKey    HEBMCVBCEDMUOF-UHFFFAOYSA-N;
+MW          134.178;      // g/mol [origin=calculated method=formula-sum]
+Tc          714.62;      // K   [origin=predictive method=joback]
+Pc          39.705;      // bar [origin=predictive method=joback]
+omega       0.3859;      // -   [origin=predictive method=lee-kesler]
+Tb          479.81;      // K   [origin=predictive method=joback]
+HvapTb      43470.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-68.88 0.8852 -0.00064526 1.854e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group ACCH2; count 2; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4-dihydro-1h-isochromene" "isochromane" "3,4-dihydro-1h-2-benzopyran" "1h-2-benzopyran, 3,4-dihydro-" "3,4-dihydro-1h-benzo[c]pyran" "1h-2-benzopyran,4-dihydro-" );
+gibbsFormation
+{
+    dHf_298   -49050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     314.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97920.0
+    phase     gas;
+}

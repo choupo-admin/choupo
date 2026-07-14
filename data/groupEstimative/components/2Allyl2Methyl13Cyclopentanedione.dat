@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-allyl-2-methyl-1,3-cyclopentanedione  (C9H12O2, CAS 26828-48-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Allyl2Methyl13Cyclopentanedione;
+formula     C9H12O2;
+CAS         26828-48-8;
+InChIKey    MCOMBKZMVPQQKK-UHFFFAOYSA-N;
+MW          152.193;      // g/mol [origin=calculated method=formula-sum]
+Tc          792.48;      // K   [origin=predictive method=joback]
+Pc          32.840;      // bar [origin=predictive method=joback]
+omega       0.4976;      // -   [origin=predictive method=lee-kesler]
+Tb          553.36;      // K   [origin=predictive method=joback]
+HvapTb      42558.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-45.899 0.92582 -0.0006607 2.248e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 1; } { group CH2=CH; count 1; } { group CH2CO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group CdO_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-2-prop-2-enyl-cyclopentane-1,3-dione" "2-methyl-2-prop-2-enylcyclopentane-1,3-dione" "2-allyl-2-methylcyclopentane-1,3-dione" "1,3-cyclopentanedione, 2-methyl-2-(2-propenyl)-" "1,3-cyclopentanedione,2-methyl-2-(2-propen-1-yl)-" );
+gibbsFormation
+{
+    dHf_298   -303340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     363.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-101380.0
+    phase     gas;
+}

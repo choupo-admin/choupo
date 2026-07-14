@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-hexanol, 2-phenyl-  (C12H18O, CAS 4396-98-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Hexanol2Phenyl;
+formula     C12H18O;
+CAS         4396-98-9;
+InChIKey    HANZCFMKZJDWMT-UHFFFAOYSA-N;
+MW          178.275;      // g/mol [origin=calculated method=formula-sum]
+Tc          788.04;      // K   [origin=predictive method=joback]
+Pc          26.902;      // bar [origin=predictive method=joback]
+omega       0.8468;      // -   [origin=predictive method=lee-kesler]
+Tb          589.79;      // K   [origin=predictive method=joback]
+HvapTb      59965.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-61.107 1.22474 -0.0008624 2.388e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenylhexan-2-ol" "benzenemethanol, .alpha.-butyl-.alpha.-methyl-" );
+gibbsFormation
+{
+    dHf_298   -215460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     529.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=28590.0
+    phase     gas;
+}

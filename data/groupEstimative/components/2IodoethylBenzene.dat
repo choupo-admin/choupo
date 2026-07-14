@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2-iodoethyl)benzene  (C8H9I, CAS 17376-04-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2IodoethylBenzene;
+formula     C8H9I;
+CAS         17376-04-4;
+InChIKey    KVTHPKXDLVYNCH-UHFFFAOYSA-N;
+MW          232.06;      // g/mol [origin=calculated method=formula-sum]
+Tc          749.47;      // K   [origin=predictive method=joback]
+Pc          35.558;      // bar [origin=predictive method=joback]
+omega       0.3389;      // -   [origin=predictive method=lee-kesler]
+Tb          502.46;      // K   [origin=predictive method=joback]
+HvapTb      45051.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.598 0.7239 -0.000524 1.494e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-iodanylethylbenzene" "benzene, (2-iodoethyl)-" "iodoethyl benzene" "2-iodoethylbenzene" "2-phenylethyl iodide" ".beta.-phenethyl iodide" "phenethyl iodide" "beta-phenylethyl iodide" "(2-iodoethyl)benzene;1-iodo-2-phenylethane;2-phenylethyl iodide;4-(2-iodoethyl)benzene;phenethyliodide;b-phenethyl iodide;b-phenylethyl iodide;" );
+gibbsFormation
+{
+    dHf_298   104950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     416.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=187010.0
+    phase     gas;
+}

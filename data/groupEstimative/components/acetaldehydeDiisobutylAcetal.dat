@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetaldehyde, diisobutyl acetal  (C10H22O2, CAS 5669-09-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acetaldehydeDiisobutylAcetal;
+formula     C10H22O2;
+CAS         5669-09-0;
+InChIKey    KIELJSVPUISYCI-UHFFFAOYSA-N;
+MW          174.284;      // g/mol [origin=calculated method=formula-sum]
+Tc          644.79;      // K   [origin=predictive method=joback]
+Pc          20.888;      // bar [origin=predictive method=joback]
+omega       0.5505;      // -   [origin=predictive method=lee-kesler]
+Tb          471.92;      // K   [origin=predictive method=joback]
+HvapTb      41510.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (39.752 0.8452 -0.0003078 -3.3e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH; count 3; } { group CH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 2; } { group CH; count 3; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-1-[1-(2-methylpropoxy)ethoxy]propane" "propane, 1,1'-[ethylidenebis(oxy)]bis[2-methyl-" "1,1-bis(2-methylpropoxy)ethane" "propane, 1,1'-(ethylidenebis(oxy))bis(2-methyl-" "kieljsvpuisyci-uhfffaoysa-" "acetaldehyde di(2-methylpropyl) acetal" "1,1'-(ethylidenebis(oxy))bis(2-methylpropane)" "propane,1,1'-[ethylidenebis(oxy)]bis[2-methyl-" "acetaldehyde,diisobutyl acetal (6ci,7ci,8ci); ethane, 1,1-diisobutoxy- (6ci);1,1-diisobutoxyethane" );
+gibbsFormation
+{
+    dHf_298   -530010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     539.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-184000.0
+    phase     gas;
+}

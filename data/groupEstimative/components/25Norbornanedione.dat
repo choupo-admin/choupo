@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,5-norbornanedione  (C7H8O2, CAS 27943-47-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        25Norbornanedione;
+formula     C7H8O2;
+CAS         27943-47-1;
+InChIKey    RVFBNLMXCXFOET-UHFFFAOYSA-N;
+MW          124.139;      // g/mol [origin=calculated method=formula-sum]
+Tc          755.81;      // K   [origin=predictive method=joback]
+Pc          42.441;      // bar [origin=predictive method=joback]
+omega       0.4618;      // -   [origin=predictive method=lee-kesler]
+Tb          513.15;      // K   [origin=predictive method=joback]
+HvapTb      39668.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-36.22 0.6244 -0.000263 1.48e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 2; } { group CH2CO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CH_ring; count 2; } { group CdO_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bicyclo[2.2.1]heptane-2,5-dione" "bicyclo(2.2.1)heptane-2,5-dione" "bicyclo[2.2.1]heptane-2,5-dione, (1r,4r)-" "bicyclo[2.2.1]heptane, 2,5-dione" );
+gibbsFormation
+{
+    dHf_298   -323770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     110.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-127720.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4-diphenyl-2-cyclohexen-1-one  (C18H16O, CAS 4528-64-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44Diphenyl2Cyclohexen1One;
+formula     C18H16O;
+CAS         4528-64-7;
+InChIKey    LUFGFXHHSGISSL-UHFFFAOYSA-N;
+MW          248.325;      // g/mol [origin=calculated method=formula-sum]
+Tc          1036.57;      // K   [origin=predictive method=joback]
+Pc          25.951;      // bar [origin=predictive method=joback]
+omega       0.6035;      // -   [origin=predictive method=lee-kesler]
+Tb          751.57;      // K   [origin=predictive method=joback]
+HvapTb      64031.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-152.67 1.7457 -0.00137468 4.528e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group C; count 1; } { group CH=CH; count 1; } { group ACH; count 10; } { group AC; count 2; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,4-diphenylcyclohex-2-en-1-one" "2-cyclohexen-1-one, 4,4-diphenyl-" "4,4-diphenylcyclohex-2-enone" "2-cyclohexen-1-one,4-diphenyl-" "2-cyclohexen-1-one,4,4-diphenyl-" "4,4-diphenyl-cyclohex-2-en-one" "2'h-[1,1':1',1''-terphenyl]-4'(3'h)-one" );
+gibbsFormation
+{
+    dHf_298   47850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     567.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=251830.0
+    phase     gas;
+}

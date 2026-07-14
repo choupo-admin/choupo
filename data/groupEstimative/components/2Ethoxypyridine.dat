@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-ethoxypyridine  (C7H9NO, CAS 14529-53-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Ethoxypyridine;
+formula     C7H9NO;
+CAS         14529-53-4;
+InChIKey    LISKAOIANGDBTB-UHFFFAOYSA-N;
+MW          123.155;      // g/mol [origin=calculated method=formula-sum]
+Tc          685.68;      // K   [origin=predictive method=joback]
+Pc          40.312;      // bar [origin=predictive method=joback]
+omega       0.4125;      // -   [origin=predictive method=lee-kesler]
+Tb          462.56;      // K   [origin=predictive method=joback]
+HvapTb      42072.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.819 0.56048 -0.00028646 4.46e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2O; count 1; } { group C5H4N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group O; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pyridine, 2-ethoxy-" "2-ethoxy pyridine" "2-ethoxy-pyridine" "ethyl 2-pyridinyl ether" "l259" );
+gibbsFormation
+{
+    dHf_298   -50710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     346.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=92520.0
+    phase     gas;
+}

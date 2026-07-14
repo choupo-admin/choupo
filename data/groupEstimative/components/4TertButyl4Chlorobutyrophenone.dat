@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4'-tert-butyl-4-chlorobutyrophenone  (C14H19ClO, CAS 43076-61-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4TertButyl4Chlorobutyrophenone;
+formula     C14H19ClO;
+CAS         43076-61-5;
+InChIKey    RLKSQLJFGCDUOX-UHFFFAOYSA-N;
+MW          238.755;      // g/mol [origin=calculated method=formula-sum]
+Tc          857.93;      // K   [origin=predictive method=joback]
+Pc          20.642;      // bar [origin=predictive method=joback]
+omega       0.6663;      // -   [origin=predictive method=lee-kesler]
+Tb          639.65;      // K   [origin=predictive method=joback]
+HvapTb      59531.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-33.667 1.30006 -0.00087546 2.2786e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group ACH; count 4; } { group AC; count 2; } { group CH2CO; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-tert-butylphenyl)-4-chloranyl-butan-1-one" "1-(4-(tert-butyl)phenyl)-4-chlorobutan-1-one" "4-chloro-1-[4-(1,1-dimethylethyl)phenyl]- 1-butanone" "1-(4-tert-butylphenyl)-4-chlorobutan-1-one" "1-[4-(tert-butyl)phenyl]-4-chlorobutan-1-one" "q401" "4-chloro-1-[4-(2-methyl-2-propanyl)phenyl]-1-butanone" "4 inverted exclamation marka-tert-butyl-4-chlorobutyrophenone" "butyrophenone,4'-tert-butyl-4-chloro- (6ci);1-(4-tert-butylphenyl)-4-chloro-1-butanone;4-chloro-4'-tert-butylbutyrophenone;p-tert-butyl-w-chlorobutyrophenone;" );
+gibbsFormation
+{
+    dHf_298   -244300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     609.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=31770.0
+    phase     gas;
+}

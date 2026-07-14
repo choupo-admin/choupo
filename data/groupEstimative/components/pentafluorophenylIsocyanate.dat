@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentafluorophenyl isocyanate  (C7F5NO, CAS 1591-95-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentafluorophenylIsocyanate;
+formula     C7F5NO;
+CAS         1591-95-3;
+InChIKey    QXLDBWRLZDBVGF-UHFFFAOYSA-N;
+MW          209.073;      // g/mol [origin=calculated method=formula-sum]
+Tc          652.02;      // K   [origin=predictive method=joback]
+Pc          31.385;      // bar [origin=predictive method=joback]
+omega       0.7219;      // -   [origin=predictive method=lee-kesler]
+Tb          474.36;      // K   [origin=predictive method=joback]
+HvapTb      42209.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group AC; count 1; } { group ACF; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group dCd; count 1; } { group dC_ring; count 6; } { group F; count 5; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5-pentakis(fluoranyl)-6-isocyanato-benzene" "isocyanate, pentafluorophenyl-" "1,2,3,4,5-pentafluoro-6-isocyanatobenzene" "perfluorophenyl isocyanate" "benzene, pentafluoroisocyanato-" "benzene,1,2,3,4,5-pentafluoro-6-isocyanato-" "benzene,pentafluoroisocyanato- (9ci); isocyanic acid, pentafluorophenyl ester(7ci,8ci); pentafluoroisocyanatobenzene; pentafluorophenyl isocyanate;perfluorophenyl isocyanate" );
+// formation datum unavailable (element entropy missing): dHf_298=-994590.0 dGf_298=None

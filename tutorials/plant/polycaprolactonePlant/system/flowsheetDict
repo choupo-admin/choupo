@@ -55,35 +55,7 @@
   the recycle -- the Le Chatelier conversion penalty.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    freshMonomer
-    {
-        F            1.0 kmol/h;             // molten AB-type hydroxy-acid monomer
-        T            450.0 K;
-        P            1.01325 bar;
-        vf           0;                       // liquid (molten) feed
-        molarComposition  { hydroxyhexanoicAcid 1.0;  pclRepeat 0.0;  water 0.0; }
-    }
-
-    // tear SEED (initial guess; the outer Newton loop iterates it to its fixed
-    // point).  The recovered overhead is the water condensate.
-    condensateRecycle
-    {
-        F            0.15 kmol/h;
-        T            470.0 K;
-        P            0.15 bar;
-        vf           1;
-        molarComposition  { water 0.95;  pclRepeat 0.04;  hydroxyhexanoicAcid 0.01; }
-
-        // OPTIONAL author cage for the tear iterate — GENEROUS, so non-binding;
-        // if one DID bind the solver SAYS so (no-silent-crutch credo).
-        bounds
-        {
-            F  { reference feedTotal;  min 0.0;  max 4; }   // 0 .. 4x the fresh feed
-        }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

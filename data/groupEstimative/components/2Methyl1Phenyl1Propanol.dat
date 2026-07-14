@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methyl-1-phenyl-1-propanol  (C10H14O, CAS 611-69-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methyl1Phenyl1Propanol;
+formula     C10H14O;
+CAS         611-69-8;
+InChIKey    GMDYDZMQHRTHJA-UHFFFAOYSA-N;
+MW          150.221;      // g/mol [origin=calculated method=formula-sum]
+Tc          746.95;      // K   [origin=predictive method=joback]
+Pc          33.067;      // bar [origin=predictive method=joback]
+omega       0.7869;      // -   [origin=predictive method=lee-kesler]
+Tb          546.38;      // K   [origin=predictive method=joback]
+HvapTb      56033.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.18 0.92074 -0.0005882 1.421e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group ACH; count 5; } { group ACCH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-1-phenyl-propan-1-ol" "2-methyl-1-phenylpropan-1-ol" ".alpha.-isopropylbenzyl alcohol" "benzenemethanol, .alpha.-(1-methylethyl)-, (r)-" "isopropyl benzyl alcohol" "1-phenyl-2-methylpropyl alcohol" "benzenemethanol, alpha-(1-methylethyl)-" "benzenemethanol, .alpha.-(1-methylethyl)-" "benzenemethanol, " "a-(1-methylethyl)-, (" "ar)-" "benzenemethanol, alpha-(1-methylethyl)-, (r)-" "benzenemethanol, a-(1-methylethyl)-,(r)-;benzyl alcohol, a-isopropyl-, (r)-(+)- (8ci);(+)-(ar)-a-(1-methylethyl)benzenemethanol;(+)-a-isopropylbenzylalcohol;(1r)-2-methyl-1-phenylpropan-1-ol;(r)-(+)-2-methyl-1-phenyl-1-propanol;(r)-1-phenyl-2-methyl-1-propanol;(r)-1-phenyl-2-methylpropanol;(r)-2-methyl-1-phenyl-1-propanol;(r)-a-(1-methylethyl)benzenemethanol;(r)-a-isopropylbenzylalcohol;" );
+gibbsFormation
+{
+    dHf_298   -175990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     470.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=4030.0
+    phase     gas;
+}

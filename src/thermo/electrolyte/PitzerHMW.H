@@ -34,7 +34,7 @@ Description
         cations  Na  K  Ca  Mg  H
         anions   Cl  SO4  OH
     on the molality scale, referenced to infinite dilution in water.  It IS-A
-    AqueousActivity (registered "pitzer"), so `activityModel pitzer;` in a
+    AqueousActivity (registered "pitzerHMW"), so `activityModel pitzerHMW;` in a
     speciation case routes every per-ion gamma through this model instead of
     Davies.  All the Pitzer arithmetic comes from the shared PitzerForm.H (the
     SAME g/g'/B/C the single-salt kernel uses), so there is ONE Pitzer surface.
@@ -55,11 +55,11 @@ Description
       Z = sum_i |z_i| m_i,   b = 1.2,   A_phi(T) = 0.3915 * debyeHuckelFactor(T)
     with B_ca, B'_ca, B^phi_ca, C_ca = C^phi_ca / (2 sqrt|z_c z_a|) from
     PitzerForm.H and beta0/beta1/beta2/Cphi/alpha1/alpha2 read per (cation,anion)
-    from the SHARED catalogue data/standards/electrolyte/pairs.dat (case-local
+    from the SHARED catalogue data/standards/parameters/electrolyte/pitzer/pairs/ (case-local
     overlay honoured, exactly like the single-salt loader).
 
     SCOPE -- BINARIES + TERNARY MIXING + E_theta.  theta_ij + psi_ijk are read
-    per like-sign pair / triplet from data/standards/electrolyte/mixing.dat
+    per like-sign pair / triplet from data/standards/parameters/electrolyte/pitzer/mixing/
     (per-entry case-local overlay, same rule as pairs.dat).  The mixing parameter
     is the FULL Pitzer form
         Phi_ij  = theta_ij + E_theta_ij(I)     Phi'_ij = E_theta'_ij(I)

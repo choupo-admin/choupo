@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclotetrasiloxane, 2,4,6,8-tetramethyl-2,4,6,8-tetrakis(3-acryloxypropyl)-  (C28H48O12Si4, CAS 71550-64-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C28H48O12Si4 (delta Si+4; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        cyclotetrasiloxane2468Tetramethyl2468Tetrakis3Acryloxypropyl;
+formula     C28H48O12Si4;
+CAS         71550-64-6;
+InChIKey    CUHKVBVNLQPDQC-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          689.02;      // g/mol [origin=calculated method=formula-sum]
+Tc          1485.89;      // K   [origin=predictive method=joback]
+Pc          6.109;      // bar [origin=predictive method=joback]
+omega       0.3529;      // -   [origin=predictive method=lee-kesler]
+Tb          1188.92;      // K   [origin=predictive method=joback]
+HvapTb      124480.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (238.362 1.69568 0.000273 -6.428e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 12; } { group CH2=CH; count 4; } { group COO; count 4; } { group SiO; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 12; } { group dCH2; count 4; } { group dCH; count 4; } { group O_ring; count 4; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[2,4,6,8-tetramethyl-4,6,8-tris(3-prop-2-enoyloxypropyl)-1,3,5,7,2,4,6,8-tetraoxatetrasilocan-2-yl]propyl prop-2-enoate" "(2,4,6,8-tetramethylcyclotetrasiloxane-2,4,6,8-tetrayl)tetrakis(propane-1,3-diyl) tetraacrylate" "2,4,6,8-tetramethyl-2,4,6,8-tetrakis(3-acryloyloxypropyl) cyclotetrasiloxane" "2-propenoic acid, 1,1',1'',1'''-((2,4,6,8-tetramethylcyclotetrasiloxane-2,4,6,8-tetrayl)tetra-3,1-propanediyl) ester" "2-propenoic acid, 1,1',1'',1'''-[(2,4,6,8-tetramethylcyclotetrasiloxane-2,4,6,8-tetrayl)tetra-3,1-propanediyl] ester" "2-propenoic acid, (2,4,6,8-tetramethylcyclotetrasiloxane-2,4,6,8-tetrayl)tetra-3,1-propanediyl ester" "2-propenoic acid,1,1',1'',1'''-[(2,4,6,8-tetramethylcyclotetrasiloxane-2,4,6,8-tetrayl)tetra-3,1-propanediyl]ester" "2-propenoicacid, (2,4,6,8-tetramethylcyclotetrasiloxane-2,4,6,8-tetrayl)tetra-3,1-propanediylester (9ci); cyclotetrasiloxane, 2-propenoic acid deriv.; 2-propenoic acid,(2,4,6,8-tetramethylcyclotetrasiloxane-2,4,6,8-tetrayl)tetrakis(3,1-propanediyl)ester" );
+gibbsFormation
+{
+    dHf_298   -2276150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1706.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1412400.0
+    phase     gas;
+}

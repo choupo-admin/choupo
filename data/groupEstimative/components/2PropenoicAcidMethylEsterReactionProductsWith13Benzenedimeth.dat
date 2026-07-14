@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propenoic acid, methyl ester, reaction products with 1,3-benzenedimethanamine and oleylamine  (C30H55N3O2, CAS 95321-68-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropenoicAcidMethylEsterReactionProductsWith13Benzenedimeth;
+formula     C30H55N3O2;
+CAS         95321-68-9;
+InChIKey    IQMQNUIXHWYSNZ-XXAVUKJNSA-N;
+MW          489.789;      // g/mol [origin=calculated method=formula-sum]
+Tc          1483.54;      // K   [origin=predictive method=joback]
+Pc          7.352;      // bar [origin=predictive method=joback]
+omega       0.5742;      // -   [origin=predictive method=lee-kesler]
+Tb          1197.11;      // K   [origin=predictive method=joback]
+HvapTb      124518.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (65.357 2.43394 -0.00088506 -4.73e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 14; } { group CH2=CH; count 1; } { group CH=CH; count 1; } { group ACH; count 4; } { group AC; count 2; } { group CH2NH2; count 3; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 17; } { group dCH2; count 1; } { group dCH; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } { group NH2; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[3-(aminomethyl)phenyl]methanamine;methyl prop-2-enoate;(z)-octadec-9-en-1-amine" );
+gibbsFormation
+{
+    dHf_298   -633970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1622.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=152020.0
+    phase     gas;
+}

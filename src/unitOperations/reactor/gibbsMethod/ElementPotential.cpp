@@ -44,7 +44,8 @@ GibbsEquilibrium ElementPotential::equilibrium(const GibbsProblem& p, scalar T,
 
     sVector g_over_RT(N);
     for (std::size_t i = 0; i < N; ++i)
-        g_over_RT[i] = thermo.comp(p.compIdx[i]).g_pure_ig(T) / RTt;
+        g_over_RT[i] = thermo.comp(p.compIdx[i]).g_pure_ig(T + p.dTapproach)
+                     / (constant::R * (T + p.dTapproach));   // chemistry at T+dT (approach); Psat/enthalpy stay at T
 
     // 1. Gas-only equilibrium (the path).
     GibbsEquilibrium eq = gibbsGasSolve(p, T, g_over_RT, p.b, onIter);

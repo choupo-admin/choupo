@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methoxyphenyl benzoate  (C14H12O3, CAS 531-37-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2MethoxyphenylBenzoate;
+formula     C14H12O3;
+CAS         531-37-3;
+InChIKey    IZYQCDNLUPLXOO-UHFFFAOYSA-N;
+MW          228.247;      // g/mol [origin=calculated method=formula-sum]
+Tc          897.01;      // K   [origin=predictive method=joback]
+Pc          26.930;      // bar [origin=predictive method=joback]
+omega       0.7083;      // -   [origin=predictive method=lee-kesler]
+Tb          658.90;      // K   [origin=predictive method=joback]
+HvapTb      61789.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.44 0.99852 -0.00052756 6.96e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 3; } { group CH3O; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2-methoxyphenyl) benzoate" "benzosol" "guaiacol benzoate" "o-anisyl benzoate" "benzoylguaiacol" "benzcaine" "2-(benzoyloxy)anisole" "guaiacyl benzoate" "o-methoxyphenyl benzoate" "phenol, 2-methoxy-, benzoate" "2-[(phenylcarbonyl)oxy]anisole" "1-benzoyloxy-2-methoxybenzene" );
+gibbsFormation
+{
+    dHf_298   -320200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     544.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-133180.0
+    phase     gas;
+}

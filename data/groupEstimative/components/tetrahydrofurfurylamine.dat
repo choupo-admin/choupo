@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrahydrofurfurylamine  (C5H11NO, CAS 4795-29-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrahydrofurfurylamine;
+formula     C5H11NO;
+CAS         4795-29-3;
+InChIKey    YNOGYQAEJGADFJ-UHFFFAOYSA-N;
+MW          101.149;      // g/mol [origin=calculated method=formula-sum]
+Tc          643.01;      // K   [origin=predictive method=joback]
+Pc          46.277;      // bar [origin=predictive method=joback]
+omega       0.4116;      // -   [origin=predictive method=lee-kesler]
+Tb          428.76;      // K   [origin=predictive method=joback]
+HvapTb      42132.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.329 0.6694 -0.0004051 9.01e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group FCH2O; count 1; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group O_ring; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oxolan-2-ylmethanamine" "2-aminomethyltetrahydrofuran" "furfurylamine, tetrahydro-" "2-furanmethanamine, tetrahydro-" "usaf q-2" "tetrahydro-2-furanmethanamine" "2-(aminomethyl)tetrahydrofuran" "(tetrahydrofuran-2-yl)methanamine" "oxolan-2-yl-methanamine" "c-(tetrahydro-furan-2-yl)-methylamine" "1-(tetrahydrofur-2-yl)methylamine" "oxolan-2-ylmethylamine" );
+gibbsFormation
+{
+    dHf_298   -184260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     300.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=8100.0
+    phase     gas;
+}

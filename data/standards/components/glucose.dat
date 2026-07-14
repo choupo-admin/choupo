@@ -9,6 +9,12 @@
   separations.  NF membranes partially reject glucose
   (MW 180 ≈ NF270 cutoff of 200 Da), giving the partial-rejection
   curve that pedagogically distinguishes NF from RO.
+  Sources: dHf_298 from Ponomarev & Migarskaya, Russ. J. Phys. Chem. 34
+           (1960) -- combustion calorimetry; s_298 from Boerio-Goates,
+           J. Chem. Thermodyn. 23 (1991) -- adiabatic calorimetry (full
+           citations at the gibbsFormation block).  MW from standard
+           atomic weights; solid Cp deliberately absent (flagged, not
+           fabricated -- see body).
 \*---------------------------------------------------------------------------*/
 
 name           glucose;
@@ -55,3 +61,8 @@ gibbsFormation
 // dominates Cp by orders of magnitude -- the same closure rationale as NaCl).
 // Fill `coefficients` from Boerio-Goates 1991 Table before any case runs a
 // solid-glucose energy balance.  Do NOT invent a number.
+
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 4; } { group OH; count 5; } { group CHO; count 1; } );   // added from data/groupEstimative (UNIFAC decomposition; vocab-checked vs groups.dat)
+}

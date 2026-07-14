@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(diisopropylamino)ethanethiol  (C8H19NS, CAS 5842-07-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2DiisopropylaminoEthanethiol;
+formula     C8H19NS;
+CAS         5842-07-9;
+InChIKey    IFZVKYXDCOHPOT-UHFFFAOYSA-N;
+MW          161.307;      // g/mol [origin=calculated method=formula-sum]
+Tc          649.01;      // K   [origin=predictive method=joback]
+Pc          27.469;      // bar [origin=predictive method=joback]
+omega       0.4641;      // -   [origin=predictive method=lee-kesler]
+Tb          457.06;      // K   [origin=predictive method=joback]
+HvapTb      41406.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.548 0.92688 -0.0005528 1.26e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH; count 2; } { group CH2N; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group N; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[di(propan-2-yl)amino]ethanethiol" "ethanethiol, 2-(diisopropylamino)-" "2-(diisopropylamino)-ethanethiol" "2-(n,n-diisopropylamino)ethanethiol" "41480-75-5 (hydrochloride)" "2-[bis(propan-2-yl)amino]ethane-1-thiol" "ethanethiol,2-[bis(1-methylethyl)amino]-" "ethanethiol, 2-(bis(1-methylethyl)amino)-" "ethanethiol, 2-(bis(1-methylethyl)amino)- (9ci)" "ethanethiol,2-(diisopropylamino)- (6ci,7ci,8ci);2-(diisopropylamino)ethanethiol;diisopropylaminoethanethiol;b-diisopropylaminoethanethiol;" );
+gibbsFormation
+{
+    dHf_298   -113000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     527.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=151770.0
+    phase     gas;
+}

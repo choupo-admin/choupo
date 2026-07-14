@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chloroacetamide  (C2H4ClNO, CAS 79-07-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chloroacetamide;
+formula     C2H4ClNO;
+CAS         79-07-2;
+InChIKey    VXIVSQZSERGHQP-UHFFFAOYSA-N;
+MW          93.51;      // g/mol [origin=calculated method=formula-sum]
+Tc          616.17;      // K   [origin=predictive method=joback]
+Pc          56.788;      // bar [origin=predictive method=joback]
+omega       0.4665;      // -   [origin=predictive method=lee-kesler]
+Tb          409.19;      // K   [origin=predictive method=joback]
+HvapTb      41818.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (27.811 0.2345 -0.0001301 2.356e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2Cl; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group Cl; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranylethanamide" "2-chloroacetamide" "acetamide, 2-chloro-" "2-chloroethanamide" "chloracetamide" "microcide" "mergal af" "chloracetamid" ".alpha.-chloroacetamide" "2-chloracetamide" "usaf do-29" "2-chloro-acetamide" );
+gibbsFormation
+{
+    dHf_298   -179140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     345.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-108440.0
+    phase     gas;
+}

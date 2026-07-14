@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,7-methano-1h-indene, 2,4,5,6,7,8,8-heptachloro-2,3,3a,4,7,7a-hexahydro-, (2.alpha.,3a.alpha.,4.beta.,7.beta.,7a.alpha.)-  (C10H7Cl7, CAS 14168-01-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        47Methano1hIndene2456788Heptachloro233a477aHexahydro2Alpha3a;
+formula     C10H7Cl7;
+CAS         14168-01-5;
+InChIKey    CLTVIMPCWMHKFX-UHFFFAOYSA-N;
+MW          375.316;      // g/mol [origin=calculated method=formula-sum]
+Tc          987.18;      // K   [origin=predictive method=joback]
+Pc          25.508;      // bar [origin=predictive method=joback]
+omega       0.5521;      // -   [origin=predictive method=lee-kesler]
+Tb          710.73;      // K   [origin=predictive method=joback]
+HvapTb      65696.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-167.59 2.0657 -0.002562 1.2026e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 2; } { group CHCl; count 1; } { group CCl2; count 1; } { group Cl_C=C_; count 2; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:2
+    joback ( { group CH2_ring; count 2; } { group CH_ring; count 3; } { group C_ring; count 3; } { group dC_ring; count 2; } { group Cl; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -128130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     560.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=91060.0
+    phase     gas;
+}

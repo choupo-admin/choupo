@@ -9,31 +9,14 @@
 
       heat of dilution = X kW   (L_phi: m a -> b mol/kg, calorimetric fit)
 
-  Contrast evaporator06 (NaCl, calorimetricFit false): same machinery, but
+  Contrast evaporator06 (whose CASE-LOCAL pair overlay omits the T-slots, so ITS NaCl runs calorimetricFit false -- the standards Na-Cl record is fitted since the Parker refit): same machinery, but
   there the dilution heat is OMITTED and the run says so loudly.  The feed
   (m ~ 2.0) concentrates to m ~ 4-5 mol/kg -- inside the Parker fit window
   (<= 6), so no extrapolation flag; push the steam rate up and watch the
   [electrolyte] EXTRAPOLATED advisory fire.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F                  100.0 kmol/h;
-        T                  298.15 K;
-        P                    1.0 bar;
-        molarComposition  { water 0.965;  NaOH 0.035; }   // ~ 2.0 mol/kg caustic
-    }
-    saturatedSteam130C
-    {
-        F                   75.0 kmol/h;
-        P                    2.7 bar;
-        state            saturatedVapour;
-        molarComposition  { water 1.0; }
-        category         HP_steam_2.7bar;
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 units
 (
     {

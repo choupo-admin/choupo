@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-hydroxydihydrotheaspirane  (C13H24O2, CAS 53398-90-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Hydroxydihydrotheaspirane;
+formula     C13H24O2;
+CAS         53398-90-6;
+InChIKey    LJOISVFAMDWVFA-UHFFFAOYSA-N;
+MW          212.333;      // g/mol [origin=calculated method=formula-sum]
+Tc          856.17;      // K   [origin=predictive method=joback]
+Pc          26.191;      // bar [origin=predictive method=joback]
+omega       0.7989;      // -   [origin=predictive method=lee-kesler]
+Tb          638.11;      // K   [origin=predictive method=joback]
+HvapTb      62164.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-245.38 2.35598 -0.0024417 1.0612e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 5; } { group C; count 3; } { group OH; count 1; } { group CH-O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group C_ring; count 3; } { group OH; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6,10,10-tetramethyl-1-oxaspiro[4.5]decan-6-ol" "2,6,10,10-tetramethyl-1-oxaspiro(4.5)decan-6-ol" "1-oxaspiro(4.5)decan-6-ol, 2,6,10,10-tetramethyl-" "6-hydroxy-2,6,10,10-tetramethyl-1-oxaspiro(4.5)decane" "1-oxaspiro(4.5)decan-6-ol, 2,6,10,10-tetramethyl-, (2r,5r,6r)-rel-" "1-oxaspiro(4.5)decan-6-ol, 2,6,10,10-tetramethyl-, (2r,5s,6r)-rel-" "1-oxaspiro(4.5)decan-6-ol, 2,6,10,10-tetramethyl-, (2r,5s,6s)-rel-" "1-oxaspiro[4.5]decan-6-ol, 2,6,10,10-tetramethyl-, (2r,5r,6r)-rel-" "1-oxaspiro[4.5]decan-6-ol, 2,6,10,10-tetramethyl-, (2r,5s,6r)-rel-" "1-oxaspiro[4.5]decan-6-ol, 2,6,10,10-tetramethyl-, (2r,5s,6s)-rel-" "1-oxaspiro[4.5]decan-6-ol, 2,6,10,10-tetramethyl-, (2r,5r,6s)-rel-" "(2r,5r,6s)-2,6,10,10-tetramethyl-1-oxaspiro[4.5]decan-6-ol" );
+gibbsFormation
+{
+    dHf_298   -469880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     684.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-123150.0
+    phase     gas;
+}

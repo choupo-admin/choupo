@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyltris(methoxyethoxy)silane  (C10H24O6Si, CAS 17980-64-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C10H24O6Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        methyltrisMethoxyethoxySilane;
+formula     C10H24O6Si;
+CAS         17980-64-2;
+InChIKey    OLTVTFUBQOLTND-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          268.381;      // g/mol [origin=calculated method=formula-sum]
+Tc          731.07;      // K   [origin=predictive method=joback]
+Pc          17.361;      // bar [origin=predictive method=joback]
+omega       0.8313;      // -   [origin=predictive method=lee-kesler]
+Tb          564.32;      // K   [origin=predictive method=joback]
+HvapTb      52608.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (187.616 0.36848 0.0005606 -4.382e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH3O; count 3; } { group CH2O; count 3; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 6; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tris(2-methoxyethoxy)-methyl-silane" "methyltris(2-methoxyethoxy)silane" "tris(2-methoxyethoxy)methylsilane" "2,5,7,10-tetraoxa-6-silaundecane, 6-(2-methoxyethoxy)-6-methyl-" "6-(2-methoxyethoxy)-6-methyl-2,5,7,10-tetraoxa-6-silaundecane" "tris(2-methoxyethoxy)-methylsilane" "2,7,10-tetraoxa-6-silaundecane, 6-(2-methoxyethoxy)-6-methyl-" "2,7,10-tetraoxa-6-silaundecane,6-(2-methoxyethoxy)-6-methyl-" );
+gibbsFormation
+{
+    dHf_298   -1154670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     739.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-701440.0
+    phase     gas;
+}

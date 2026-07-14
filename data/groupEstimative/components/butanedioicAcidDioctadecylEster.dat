@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butanedioic acid, dioctadecyl ester  (C40H78O4, CAS 26720-12-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butanedioicAcidDioctadecylEster;
+formula     C40H78O4;
+CAS         26720-12-7;
+InChIKey    KYZQKJZPHLFERP-UHFFFAOYSA-N;
+MW          623.06;      // g/mol [origin=calculated method=formula-sum]
+Tc          1727.02;      // K   [origin=predictive method=joback]
+Pc          3.924;      // bar [origin=predictive method=joback]
+omega       -0.3800;      // -   [origin=predictive method=lee-kesler]
+Tb          1231.24;      // K   [origin=predictive method=joback]
+HvapTb      119448.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.346 3.69424 -0.001963 3.506e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 34; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 36; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dioctadecyl butanedioate" "dioctadecyl succinate" "agn-pc-03r6ee" );
+gibbsFormation
+{
+    dHf_298   -1503490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1816.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-334820.0
+    phase     gas;
+}

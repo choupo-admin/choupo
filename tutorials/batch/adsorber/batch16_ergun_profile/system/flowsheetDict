@@ -1,0 +1,24 @@
+units
+(
+    {
+        name bed;
+        type fixedBedAdsorber;
+        operation
+        {
+            adsorbent inertPacking;
+            flowModel ergun;
+            L 0.5 m;
+            area 0.01 m2;
+            eps 0.4;
+            u 0.05 m/s;
+            T 298.15 K;
+            P 100000 Pa;
+            P_out 99893.3459257 Pa;
+            muGas 1.99e-5 Pa.s;
+            Dax [0 2 -1 0 0] 0;
+            nCells 100;
+            feed { molarComposition { He 1.0; } }
+            initial { molarComposition { He 1.0; } }
+        }
+    }
+);

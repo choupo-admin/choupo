@@ -17,32 +17,21 @@
                       equivalent diameter D_e and crossflow mass flux G_s.
     * U on the OUTSIDE area: 1/U = 1/h_o + r_o ln(r_o/r_i)/k_wall + r_o/(r_i h_i)
     * area = pi d_o L n_tubes
+    * PRESSURE DROP (Kern, both sides): tube f = 0.079 Re^-0.25 (Blasius),
+      dP = (4 f L n_p/d_i + 4 n_p)(rho u^2/2) -- friction + turnaround
+      losses; shell f = exp(0.576 - 0.19 ln Re_s), dP = f G_s^2 D_s (N_b+1)
+      /(2 rho D_e) over the N_b baffles.  (Kern, Process Heat Transfer, 1950.)
 
   Properties are IF97 water (rho, mu, lambda) at each stream temperature.
 
   Expected order of magnitude (clean water-water): U ~ 2000-3000 W/(m2.K),
-  the SHELL side controlling, both sides turbulent (Re ~ 3-4 e4).  The exact
-  numbers are pinned by --record (self-consistency) -- they are RESULTS.
+  the SHELL side controlling, both sides turbulent (Re ~ 2-4 e4); tube-side
+  dP ~ 9 kPa, shell-side dP ~ 35 kPa (shell > tube: baffled crossflow is more
+  dissipative -- the duty-vs-pumping trade-off you design around, NOT just
+  the area).  The exact numbers are pinned by --record -- they are RESULTS.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    hotShell
-    {
-        F            5995.0 kmol/h;     // ~30 kg/s water
-        T            330.0 K;
-        P            3.0 bar;
-        molarComposition { water 1.0; }
-    }
-
-    coldTube
-    {
-        F            7993.0 kmol/h;     // ~40 kg/s water
-        T            300.0 K;
-        P            3.0 bar;
-        molarComposition { water 1.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (
@@ -64,10 +53,11 @@ units
                 tubeOD         0.019 m;
                 tubeLength     4.88  m;
                 nTubes         160;
-                passes         1;
+                passes         2;
                 shellID        0.387 m;
                 baffleSpacing  0.305 m;
                 tubePitch      0.025 m;
+                tubePattern    triangular;   // (square = cleanable lanes, lower dP)
                 wallMaterial   carbonSteel;   // -> k = 50 W/(m.K)
             }
 

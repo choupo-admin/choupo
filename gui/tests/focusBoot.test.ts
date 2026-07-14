@@ -17,6 +17,26 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
+// ---- Heavy-glob cache (suite health, forum #99/#100.1) --------------------
+//  The store's import graph reaches the eager import.meta.glob catalogues
+//  (the WHOLE tutorials corpus + data/standards) -- under vitest each
+//  vi.resetModules() + fresh import re-reads and re-transforms every matched
+//  file: ~5 s and huge sys-time PER TEST (48 s for 6 tests on an idle
+//  machine; the 20 s timeout then trips under any extra load).  The data
+//  modules are PURE (derived constants, no mutable state this suite
+//  exercises), so load them ONCE and re-register the loaded exports as mocks:
+//  the STORE still re-initialises fresh each test (the behaviour under
+//  test); only the corpus re-read is gone.
+import * as _tutorialsMod from "../src/cases/tutorials.js";
+import * as _catalogueMod from "../src/case/catalogue.js";
+import * as _pairsMod from "../src/case/pairsCatalogue.js";
+const mockHeavyDataModules = () => {
+  vi.doMock("../src/cases/tutorials.js", () => _tutorialsMod);
+  vi.doMock("../src/case/catalogue.js", () => _catalogueMod);
+  vi.doMock("../src/case/pairsCatalogue.js", () => _pairsMod);
+};
+
+
 // localStorage stub WITH length/key (the boot-time GC iterates the keys).
 function makeLocalStorage() {
   const m = new Map<string, string>();
@@ -53,6 +73,7 @@ const stash = JSON.stringify({
 
 beforeEach(() => {
   vi.resetModules();
+  mockHeavyDataModules();
   ls = makeLocalStorage();
 });
 
@@ -74,6 +95,7 @@ describe("?focus= boot (stable, never-consumed stash)", () => {
 
     // Simulate F5: fresh module init over the same storage.
     vi.resetModules();
+  mockHeavyDataModules();
     ({ useStore } = await import("../src/state/store.js"));
     expect(useStore.getState().tutorialName).toBe("focus:flash1");
   });

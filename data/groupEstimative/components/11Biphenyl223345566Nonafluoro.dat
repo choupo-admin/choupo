@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1'-biphenyl, 2,2',3,3',4,5,5',6,6'-nonafluoro-  (C12HF9, CAS 5121-88-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Biphenyl223345566Nonafluoro;
+formula     C12HF9;
+CAS         5121-88-0;
+InChIKey    OSUMUXITIBIVNW-UHFFFAOYSA-N;
+MW          316.122;      // g/mol [origin=calculated method=formula-sum]
+Tc          735.08;      // K   [origin=predictive method=joback]
+Pc          19.788;      // bar [origin=predictive method=joback]
+omega       0.8929;      // -   [origin=predictive method=lee-kesler]
+Tb          565.77;      // K   [origin=predictive method=joback]
+HvapTb      45463.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (107.68 0.5567 -0.00023564 8.9e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 1; } { group AC; count 2; } { group ACF; count 9; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 1; } { group dC_ring; count 11; } { group F; count 9; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5-pentakis(fluoranyl)-6-[2,3,5,6-tetrakis(fluoranyl)phenyl]benzene" "agn-pc-00lree" );
+gibbsFormation
+{
+    dHf_298   -1686170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     640.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1564980.0
+    phase     gas;
+}

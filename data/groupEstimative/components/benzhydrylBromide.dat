@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzhydryl bromide  (C13H11Br, CAS 776-74-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzhydrylBromide;
+formula     C13H11Br;
+CAS         776-74-9;
+InChIKey    OQROAIRCEOBYJA-UHFFFAOYSA-N;
+MW          247.135;      // g/mol [origin=calculated method=formula-sum]
+Tc          880.54;      // K   [origin=predictive method=joback]
+Pc          33.529;      // bar [origin=predictive method=joback]
+omega       0.5175;      // -   [origin=predictive method=lee-kesler]
+Tb          616.12;      // K   [origin=predictive method=joback]
+HvapTb      55131.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-70.23 1.1251 -0.0008204 2.281e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 1; } { group ACCH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[bromanyl(phenyl)methyl]benzene" "bromodiphenylmethane" "diphenylmethyl bromide" "diphenylbromomethane" "methane, bromodiphenyl-" "[bromo(phenyl)methyl]benzene" "benzene, 1,1'-(bromomethylene)bis-" "alpha-bromodiphenylmethane" "(bromophenylmethyl)benzene" "(bromo-phenylmethyl)benzene" ".alpha.-bromodiphenylmethane" "diphenylmethyl bromide, solid" );
+gibbsFormation
+{
+    dHf_298   182460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     491.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=295280.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-piperidinepropionic acid  (C8H15NO2, CAS 26371-07-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1PiperidinepropionicAcid;
+formula     C8H15NO2;
+CAS         26371-07-3;
+InChIKey    LPDGWMLCUHULJF-UHFFFAOYSA-N;
+MW          157.213;      // g/mol [origin=calculated method=formula-sum]
+Tc          770.41;      // K   [origin=predictive method=joback]
+Pc          35.179;      // bar [origin=predictive method=joback]
+omega       0.7807;      // -   [origin=predictive method=lee-kesler]
+Tb          560.54;      // K   [origin=predictive method=joback]
+HvapTb      53175.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-76.898 1.0967 -0.0007794 2.171e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH2N; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH2_ring; count 5; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-piperidin-1-ylpropanoic acid" "1-piperidinepropanoic acid" "3-(piperidin-1-yl)propanoic acid" "1-piperidinepropanoicacid" "3-piperidylpropanoic acid" "piperidine-1-propionic acid" "3-(1-piperidinyl)propionic acid" "3-piperidin-1-yl-propanoic acid" "3-piperidin-1-yl-propionic acid" "1-piperidinepropionicacid (8ci);3-(1-piperidinyl)propanoic acid;3-piperidin-1-ylpropionic acid;3-piperidinopropanoic acid;3-piperidinopropionic acid;" );
+gibbsFormation
+{
+    dHf_298   -410370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     528.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-172390.0
+    phase     gas;
+}

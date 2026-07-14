@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-norbornene-2-methanol  (C8H12O, CAS 95-12-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Norbornene2Methanol;
+formula     C8H12O;
+CAS         95-12-5;
+InChIKey    LUMNWCHHXDUKFI-UHFFFAOYSA-N;
+MW          124.183;      // g/mol [origin=calculated method=formula-sum]
+Tc          679.65;      // K   [origin=predictive method=joback]
+Pc          38.771;      // bar [origin=predictive method=joback]
+omega       0.7254;      // -   [origin=predictive method=lee-kesler]
+Tb          487.06;      // K   [origin=predictive method=joback]
+HvapTb      50062.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-90.979 1.0075 -0.00076768 2.385e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 3; } { group CH=CH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group dCH_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-bicyclo[2.2.1]hept-2-enylmethanol" "cyclol" "2-hydroxymethyl-5-norbornene" "bicyclo[2.2.1]hept-5-ene-2-methanol" "bicyclo[2.2.1]hept-5-en-2-ylmethanol" "5-norbornene 2-methanol" "5-hydroxymethyl-2-norbornene" "bicyclo(2.2.1)hept-5-ene-2-methanol" "5-hydroxymethylbicyclo(2.2.1)hept-2-ene" "5-hydroxymethylbicyclo[2.2.1]hept-2-ene" "2-(hydroxymethyl)bicyclo(2.2.1)hept-5-ene" "2-(hydroxymethyl)bicyclo[2.2.1]hept-5-ene" );
+gibbsFormation
+{
+    dHf_298   -183800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     278.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=11310.0
+    phase     gas;
+}

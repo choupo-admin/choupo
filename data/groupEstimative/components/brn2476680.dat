@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 2476680  (C22H32O3, CAS 66964-26-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn2476680;
+formula     C22H32O3;
+CAS         66964-26-9;
+InChIKey    DVZBAYMQAXVRQF-CTCCYDHESA-N;
+MW          344.495;      // g/mol [origin=calculated method=formula-sum]
+Tc          1104.44;      // K   [origin=predictive method=joback]
+Pc          14.657;      // bar [origin=predictive method=joback]
+omega       0.7962;      // -   [origin=predictive method=lee-kesler]
+Tb          860.46;      // K   [origin=predictive method=joback]
+HvapTb      72833.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-267.0 2.91064 -0.0024051 8.57e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 5; } { group C; count 2; } { group CH2=CH; count 1; } { group CH2CO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 5; } { group C_ring; count 2; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(5r,8r,9s,10s,13s,14r,17s)-10,13-dimethyl-3-oxidanylidene-1,2,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydrocyclopenta[a]phenanthren-17-yl] prop-2-enoate" "5-beta,14-beta-androstan-3-one, 17-beta-hydroxy-, acrylate" "[(5r,8r,9s,10s,13s,14r,17s)-10,13-dimethyl-3-oxo-1,2,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydrocyclopenta[a]phenanthren-17-yl] prop-2-enoate" );
+gibbsFormation
+{
+    dHf_298   -597100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     731.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-62370.0
+    phase     gas;
+}

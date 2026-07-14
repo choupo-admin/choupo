@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-aminophenol  (C6H7NO, CAS 123-30-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Aminophenol;
+formula     C6H7NO;
+CAS         123-30-8;
+InChIKey    PLIKAWJENQZMHA-UHFFFAOYSA-N;
+MW          109.128;      // g/mol [origin=calculated method=formula-sum]
+Tc          762.30;      // K   [origin=predictive method=joback]
+Pc          63.289;      // bar [origin=predictive method=joback]
+omega       0.6071;      // -   [origin=predictive method=lee-kesler]
+Tb          516.71;      // K   [origin=predictive method=joback]
+HvapTb      54881.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.9 0.7114 -0.00063356 2.298e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group ACOH; count 1; } { group ACNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH_phenol; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-azanylphenol" "p-aminophenol" "4-hydroxyaniline" "p-hydroxyaniline" "phenol, 4-amino-" "paranol" "4-aminobenzenol" "certinal" "citol" "phenol, p-amino-" "azol" "fouramine p" );
+gibbsFormation
+{
+    dHf_298   -74160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     361.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=23880.0
+    phase     gas;
+}

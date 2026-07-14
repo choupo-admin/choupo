@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 4-oxobutanoate  (C5H8O3, CAS 13865-19-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl4Oxobutanoate;
+formula     C5H8O3;
+CAS         13865-19-5;
+InChIKey    DLZVZNAPRCRXEG-UHFFFAOYSA-N;
+MW          116.116;      // g/mol [origin=calculated method=formula-sum]
+Tc          602.93;      // K   [origin=predictive method=joback]
+Pc          38.151;      // bar [origin=predictive method=joback]
+omega       0.5604;      // -   [origin=predictive method=lee-kesler]
+Tb          420.88;      // K   [origin=predictive method=joback]
+HvapTb      40851.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (35.152 0.39852 -0.0001466 -1.09e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CHO; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group OdCH_al; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 4-oxidanylidenebutanoate" "methyl 4-oxobutyrate" "4-oxobutanoic acid methyl ester" "4-oxo-butyric acid methyl ester" "succinaldehydic acid, methyl ester" "(4s)-4-hydroxy-4-methoxybutanoic acid" "methyl 4-oxobutanoate/methyl 3-formylpropionate" "succinaldehydicacid, methyl ester (6ci,8ci);3-(methoxycarbonyl)propanal;3-(methoxycarbonyl)propionaldehyde;3-carbomethoxypropionaldehyde;3-formylpropionic acid methyl ester;4-oxobutanoic acid methyl ester;methoxycarbonylpropanal;methyl 3-formylpropanoate;methyl 3-formylpropionate;methyl 4-oxobutanoate;methyl b-formylpropionate;b-(methoxycarbonyl)propionaldehyde;b-carbomethoxypropionaldehyde;" );
+gibbsFormation
+{
+    dHf_298   -549390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     420.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-418670.0
+    phase     gas;
+}

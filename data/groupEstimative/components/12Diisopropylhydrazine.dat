@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-diisopropylhydrazine  (C6H16N2, CAS 3711-34-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Diisopropylhydrazine;
+formula     C6H16N2;
+CAS         3711-34-0;
+InChIKey    QWLQTDXXEZQUBB-UHFFFAOYSA-N;
+MW          116.208;      // g/mol [origin=calculated method=formula-sum]
+Tc          618.88;      // K   [origin=predictive method=joback]
+Pc          32.579;      // bar [origin=predictive method=joback]
+omega       0.5463;      // -   [origin=predictive method=lee-kesler]
+Tb          436.34;      // K   [origin=predictive method=joback]
+HvapTb      41046.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.35 0.73808 -0.0004062 8.02e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CHNH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 2; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-di(propan-2-yl)diazane" "hydrazine, 1,2-diisopropyl-" "hydrazine, 1,2-bis(1-methylethyl)-" "1,2-di(propan-2-yl)hydrazine" );
+gibbsFormation
+{
+    dHf_298   -70790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     451.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=173540.0
+    phase     gas;
+}

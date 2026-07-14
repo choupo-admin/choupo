@@ -1,0 +1,72 @@
+/*---------------------------------------------------------------------------*\
+  Crystallizer09chatGPT / system/flowsheetDict
+
+  ONE operational flowsheet.  This case has NO sectors.
+
+  The three entries below are unit operations and are resolved under
+  unitOperations/<unitName>/.  Units are not subdomains and therefore do not
+  partition 0/ or converged/.
+
+  Every physical stream is one named graph edge.  The edge name is the stable
+  stream ID and therefore the state filename.  Stream role is inferred from
+  topology in the current run domain:
+
+      to-only       -> inlet
+      from + to     -> internal
+      from-only     -> outlet
+
+  There is no boundary{} and no streams{} state here.
+\*---------------------------------------------------------------------------*/
+
+units ( cryst1 cryst2 recovery );
+
+connections
+{
+    // External inlets
+    feed
+    {
+        to cryst1/feed;
+    }
+
+    freshEthanol
+    {
+        to cryst2/freshEthanol;
+    }
+
+    // cryst1 outputs
+    KHT_cake
+    {
+        from cryst1/crystals;
+    }
+
+    liquor1
+    {
+        from cryst1/motherLiquor;
+        to   cryst2/liquor1;
+    }
+
+    // cryst2 outputs
+    KCl_cake
+    {
+        from cryst2/crystals;
+    }
+
+    finalLiquor
+    {
+        from cryst2/motherLiquor;
+        to   recovery/finalLiquor;
+    }
+
+    // recovery outputs. recoveredEthanol is ONE physical edge; its tear role
+    // is numerical and lives only in system/solverDict.
+    recoveredEthanol
+    {
+        from recovery/distillate;
+        to   cryst2/recoveredEthanol;
+    }
+
+    stillage
+    {
+        from recovery/bottoms;
+    }
+}

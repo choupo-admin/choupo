@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene, 1,4-dibutoxy-2,5-bis(1,1-dimethylethyl)-  (C22H38O2, CAS 125904-18-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzene14Dibutoxy25Bis11Dimethylethyl;
+formula     C22H38O2;
+CAS         125904-18-9;
+InChIKey    OYMURBYTRMDBKX-UHFFFAOYSA-N;
+MW          334.544;      // g/mol [origin=calculated method=formula-sum]
+Tc          980.67;      // K   [origin=predictive method=joback]
+Pc          10.821;      // bar [origin=predictive method=joback]
+omega       0.7942;      // -   [origin=predictive method=lee-kesler]
+Tb          782.96;      // K   [origin=predictive method=joback]
+HvapTb      71056.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.064 1.96176 -0.00112468 2.356e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 8; } { group CH2; count 4; } { group C; count 2; } { group ACH; count 2; } { group AC; count 4; } { group CH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2; count 6; } { group C; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-dibutoxy-2,5-ditert-butyl-benzene" "1,4-dibutoxy-2,5-ditert-butylbenzene" "1,4-dibutoxy-2,5-di-tert-butylbenzene" );
+gibbsFormation
+{
+    dHf_298   -577230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     832.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13560.0
+    phase     gas;
+}

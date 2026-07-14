@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,7,9-trimethyldeca-1,6-dien-3-ol  (C13H24O, CAS 56105-46-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        379Trimethyldeca16Dien3Ol;
+formula     C13H24O;
+CAS         56105-46-5;
+InChIKey    XVNDKDXSDQQJTO-UHFFFAOYSA-N;
+MW          196.334;      // g/mol [origin=calculated method=formula-sum]
+Tc          764.47;      // K   [origin=predictive method=joback]
+Pc          19.788;      // bar [origin=predictive method=joback]
+omega       0.8611;      // -   [origin=predictive method=lee-kesler]
+Tb          586.27;      // K   [origin=predictive method=joback]
+HvapTb      58895.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-46.657 1.40448 -0.0009978 2.913e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group CH2=CH; count 1; } { group CH=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -245050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     649.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=81670.0
+    phase     gas;
+}

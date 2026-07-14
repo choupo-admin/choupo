@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: doxylamine succinate  (C21H28N2O5, CAS 562-10-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        doxylamineSuccinate;
+formula     C21H28N2O5;
+CAS         562-10-7;
+InChIKey    KBAUFVUYFNWQFM-UHFFFAOYSA-N;
+MW          388.464;      // g/mol [origin=calculated method=formula-sum]
+Tc          1365.48;      // K   [origin=predictive method=joback]
+Pc          16.246;      // bar [origin=predictive method=joback]
+omega       1.3580;      // -   [origin=predictive method=lee-kesler]
+Tb          1111.19;      // K   [origin=predictive method=joback]
+HvapTb      110881.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-33.596 1.95672 -0.00109406 1.848e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH2O; count 1; } { group CH3N; count 1; } { group C5H4N; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group C; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 2; } { group O; count 1; } { group COOH; count 2; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butanedioic acid;n,n-dimethyl-2-(1-phenyl-1-pyridin-2-yl-ethoxy)ethanamine" "decapryn" "unisom" "evigoa d" "a-h injection" "doxylamine succinate (1:1)" "alsadorm" "gittalun" "mereprine" "sedaplus" "doxy-sleep-aid" "hoggar n" );
+gibbsFormation
+{
+    dHf_298   -856520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     976.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-356150.0
+    phase     gas;
+}

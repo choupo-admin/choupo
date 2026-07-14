@@ -1,0 +1,34 @@
+/*---------------------------------------------------------------------------*\
+  cstr04_adiabatic  --  an ADIABATIC continuous stirred-tank reactor.
+
+  The outlet temperature is an UNKNOWN, solved WITH the reaction extents:
+
+      xi_j = r_j(xi, T) V_R          (R design equations)
+      H_out(T, xi) = H_in            (one enthalpy balance)
+
+  There is NO dH_rxn source term.  With the enthalpy on the ELEMENTS datum, the
+  heat of reaction already lives inside H: as reactants become products the
+  formation enthalpies differ and T rises on its own.  Q_kW = 0 by construction.
+
+  A non-isothermal CSTR can have up to THREE steady states (multiplicity).  The
+  Newton lands on ONE of them, selected by `T_guess` -- sweep it to find the
+  ignited and extinguished branches.  That honesty is the point: the reactor
+  reports which root it found, it does not pretend there is only one.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        cstr;
+        in          feed;
+        outputs     ( reactorOut );
+        operation
+        {
+            V_R          0.005;         // m^3
+            thermalMode  adiabatic;     // <-- T_out is a RESULT
+            T_guess      350;           // K  -- which branch the Newton starts from
+        }
+        reactions   ( esterification_etac );   // one-element list -> the general path
+    }
+);

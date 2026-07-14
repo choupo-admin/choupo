@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloro-1-(2,4-dichlorophenyl)ethanol  (C8H7Cl3O, CAS 13692-14-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chloro124DichlorophenylEthanol;
+formula     C8H7Cl3O;
+CAS         13692-14-3;
+InChIKey    XHEPANNURIQWRM-UHFFFAOYSA-N;
+MW          225.493;      // g/mol [origin=calculated method=formula-sum]
+Tc          840.41;      // K   [origin=predictive method=joback]
+Pc          34.765;      // bar [origin=predictive method=joback]
+omega       0.9195;      // -   [origin=predictive method=lee-kesler]
+Tb          623.31;      // K   [origin=predictive method=joback]
+HvapTb      66448.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (32.591 0.6262 -0.00040332 9.6e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACCH; count 1; } { group OH; count 1; } { group CH2Cl; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-1-(2,4-dichlorophenyl)ethanol" "benzyl alcohol, 2,4-dichloro-.alpha.-(chloromethyl)-" "benzenemethanol, 2,4-dichloro-.alpha.-(chloromethyl)-" "(s)-2-chloro-1-(2,4-dichlorophenyl)ethanol" "benzenemethanol,2,4-dichloro-a-(chloromethyl)-,(as)-" "1-(2,4-dichlorophenyl)-2-chloroethan-1-ol" "alpha-(chloromethyl)-2,4-dichlorobenzyl alcohol" "benzenemethanol,2,4-dichloro-" "a-(chloromethyl)-" "benzylalcohol, 2,4-dichloro-a'a" "afa-(chloromethyl)- (8ci);2,4-dichloro-a'a" "afa-(chloromethyl)benzyl alcohol;2-chloro-1-(2,4-dichlorophenyl)ethanol;a'a" "afa-(2,4-dichlorophenyl)-a'a" "afas-chloroethanol;a'a" "afa-(chloromethyl)-2,4-dichlorobenzylalcohol;" );
+gibbsFormation
+{
+    dHf_298   -199590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     490.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-65420.0
+    phase     gas;
+}

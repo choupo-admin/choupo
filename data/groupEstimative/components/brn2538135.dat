@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 2538135  (C20H14ClF, CAS 67639-45-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn2538135;
+formula     C20H14ClF;
+CAS         67639-45-6;
+InChIKey    XDWPSGQUCMCJCO-UHFFFAOYSA-N;
+MW          308.78;      // g/mol [origin=calculated method=formula-sum]
+Tc          1047.54;      // K   [origin=predictive method=joback]
+Pc          20.127;      // bar [origin=predictive method=joback]
+omega       0.8620;      // -   [origin=predictive method=lee-kesler]
+Tb          802.42;      // K   [origin=predictive method=joback]
+HvapTb      74188.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-53.049 1.53492 -0.00120716 3.857e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 7; } { group ACCH3; count 1; } { group CH2Cl; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 9; } { group F; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-(chloromethyl)-5-fluoranyl-12-methyl-benzo[a]anthracene" "7-(chloromethyl)-5-fluoro-12-methylbenz(a)anthracene" "benz(a)anthracene, 7-(chloromethyl)-5-fluoro-12-methyl-" "7-(chloromethyl)-5-fluoro-12-methyltetraphene" "7-(chloromethyl)-5-fluoro-12-methylbenzo[a]anthracene" );
+gibbsFormation
+{
+    dHf_298   84410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     536.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=294990.0
+    phase     gas;
+}

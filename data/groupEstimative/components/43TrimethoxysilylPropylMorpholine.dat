@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(3-(trimethoxysilyl)propyl)morpholine  (C10H23NO4Si, CAS 31024-54-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C10H23NO4Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        43TrimethoxysilylPropylMorpholine;
+formula     C10H23NO4Si;
+CAS         31024-54-1;
+InChIKey    YJDOIAGBSYPPCK-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          249.382;      // g/mol [origin=calculated method=formula-sum]
+Tc          746.01;      // K   [origin=predictive method=joback]
+Pc          21.694;      // bar [origin=predictive method=joback]
+omega       0.6971;      // -   [origin=predictive method=lee-kesler]
+Tb          556.40;      // K   [origin=predictive method=joback]
+HvapTb      52497.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (51.323 0.83716 -5.39e-05 -1.774e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH3O; count 3; } { group FCH2O; count 1; } { group CH2N; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH2_ring; count 4; } { group O; count 3; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethoxy(3-morpholin-4-ylpropyl)silane" "morpholine, 4-[3-(trimethoxysilyl)propyl]-" "n-((3-trimethoxysilyl)propyl)morpholine" "n-[(3-trimethoxysilyl)propyl]morpholine" "morpholine, 4-(3-(trimethoxysilyl)propyl)-" "morpholine,4-[3-(trimethoxysilyl)propyl]-" "n-(3-trimethoxysilylpropyl)morpholine" "x 12-570;[3-(morpholino)propyl]trimethoxysilane;g-morphinylpropyltrimethoxysilane;" );
+gibbsFormation
+{
+    dHf_298   -741660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     662.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-317520.0
+    phase     gas;
+}

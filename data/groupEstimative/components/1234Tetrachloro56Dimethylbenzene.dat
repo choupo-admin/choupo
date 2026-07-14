@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,3,4-tetrachloro-5,6-dimethylbenzene  (C8H6Cl4, CAS 877-08-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1234Tetrachloro56Dimethylbenzene;
+formula     C8H6Cl4;
+CAS         877-08-7;
+InChIKey    SCOSFGXUBLANNC-UHFFFAOYSA-N;
+MW          243.936;      // g/mol [origin=calculated method=formula-sum]
+Tc          822.21;      // K   [origin=predictive method=joback]
+Pc          28.354;      // bar [origin=predictive method=joback]
+omega       0.5239;      // -   [origin=predictive method=lee-kesler]
+Tb          583.94;      // K   [origin=predictive method=joback]
+HvapTb      56528.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (84.77 0.41464 -0.000189 2.1e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACCH3; count 2; } { group ACCl; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dC_ring; count 6; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4-tetrakis(chloranyl)-5,6-dimethyl-benzene" "benzene, 1,2,3,4-tetrachloro-5,6-dimethyl-" "tetrachloro-o-xylene" "benzene, tetrachlorodimethyl-" "tetrachloro-o-xylene, [solid]" );
+gibbsFormation
+{
+    dHf_298   -92230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     464.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=33020.0
+    phase     gas;
+}

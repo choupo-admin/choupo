@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tris(4-aminophenyl)methanol  (C19H19N3O, CAS 467-62-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tris4AminophenylMethanol;
+formula     C19H19N3O;
+CAS         467-62-9;
+InChIKey    KRVRUAYUNOQMOV-UHFFFAOYSA-N;
+MW          305.381;      // g/mol [origin=calculated method=formula-sum]
+Tc          1301.47;      // K   [origin=predictive method=joback]
+Pc          30.457;      // bar [origin=predictive method=joback]
+omega       1.5778;      // -   [origin=predictive method=lee-kesler]
+Tb          1035.84;      // K   [origin=predictive method=joback]
+HvapTb      114008.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-72.91 1.7391 -0.00123468 3.314e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group ACH; count 12; } { group AC; count 3; } { group OH; count 1; } { group ACNH2; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group OH; count 1; } { group NH2; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pararosaniline base" "tris(p-aminophenyl)methanol" "benzenemethanol, 4-amino-.alpha.,.alpha.-bis(4-aminophenyl)-" "tris(4-aminophenyl)methan-1-ol" "fuchsin dye base" "tris (4-aminophenyl) carbinol" "methanol, tris(4-aminophenyl)-" "4,4',4''-triaminotrityl alcohol" "4,4',4''-triaminotriphenylcarbinol" "benzenemethanol, 4-amino-alpha,alpha-bis(4-aminophenyl)-" "methanol,tris(p-aminophenyl)- (7ci);parafuchsin carbinol (6ci);tris(4-aminophenyl)methanol;tris(p-aminophenyl)methanol;" );
+gibbsFormation
+{
+    dHf_298   180080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     725.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=482810.0
+    phase     gas;
+}

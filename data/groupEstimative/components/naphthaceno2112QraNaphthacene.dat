@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: naphthaceno(2,1,12-qra)naphthacene  (C32H18, CAS 189-45-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        naphthaceno2112QraNaphthacene;
+formula     C32H18;
+CAS         189-45-7;
+InChIKey    BTOIWQMCXHYGGB-UHFFFAOYSA-N;
+MW          402.496;      // g/mol [origin=calculated method=formula-sum]
+Tc          1394.18;      // K   [origin=predictive method=joback]
+Pc          17.075;      // bar [origin=predictive method=joback]
+omega       1.1629;      // -   [origin=predictive method=lee-kesler]
+Tb          1113.48;      // K   [origin=predictive method=joback]
+HvapTb      103918.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-191.95 2.6572 -0.00240852 8.69e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 18; } { group AC; count 14; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 18; } { group dC_ring; count 14; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "naphthaceno[2,1,12-qra]naphthacene" "dinaphtho[2,3-a:2',3'-h]pyrene" );
+gibbsFormation
+{
+    dHf_298   755930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     494.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1013980.0
+    phase     gas;
+}

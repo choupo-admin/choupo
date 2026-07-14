@@ -1,0 +1,17 @@
+/*--- SEPARATION sector: the flash subdomain.  The ethylAcetate-water NRTL pair
+  is PARTICULAR to this sector (constant/binaryPairs/NRTL/), which is the whole
+  point of the fractal constant/: the pair lives with the sector that needs it. */
+
+units
+(
+    flash
+);
+
+connections
+{
+    reactorOut  { to flash/reactorOut; }
+    // ORDER MATTERS: a unit's outputs bind POSITIONALLY, and the flash produces
+    // (liquid, vapor) in that order.  Name them in the same order or the phases swap.
+    liquid      { from flash/liquid; }
+    vapor       { from flash/vapor; }
+}

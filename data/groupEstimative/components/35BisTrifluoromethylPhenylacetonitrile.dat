@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-bis(trifluoromethyl)phenylacetonitrile  (C10H5F6N, CAS 85068-32-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35BisTrifluoromethylPhenylacetonitrile;
+formula     C10H5F6N;
+CAS         85068-32-2;
+InChIKey    YXGWYBUKRTYHJM-UHFFFAOYSA-N;
+MW          253.145;      // g/mol [origin=calculated method=formula-sum]
+Tc          745.90;      // K   [origin=predictive method=joback]
+Pc          21.959;      // bar [origin=predictive method=joback]
+omega       0.7035;      // -   [origin=predictive method=lee-kesler]
+Tb          556.28;      // K   [origin=predictive method=joback]
+HvapTb      44438.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.909 1.0131 -0.00082832 2.546e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group CH2CN; count 1; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 6; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[3,5-bis(trifluoromethyl)phenyl]ethanenitrile" "3,5-bis(trifluoromethyl)benzyl cyanide" "2-[3,5-bis(trifluoromethyl)phenyl]acetonitrile" "3,5-bis(trifluoromethyl)-phenylacetonitrile" "3,5-di(trifluoromethyl)benzyl cyanide" "2-(3,5-bis(trifluoromethyl)phenyl)acetonitrile" "3,5-bis(trifluoromethyl)benzylcyanide" "3,5-di(trifluoro methyl)benzyl cyanide" "n656" "(3,5-bis(trifluoromethyl)phenyl)acetonitrile" "[3,5-bis(trifluoromethyl)phenyl]acetonitrile;" "benzeneacetonitrile, 3,5-bis(trifluoromethyl)-" );
+gibbsFormation
+{
+    dHf_298   -1065420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     545.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-903530.0
+    phase     gas;
+}

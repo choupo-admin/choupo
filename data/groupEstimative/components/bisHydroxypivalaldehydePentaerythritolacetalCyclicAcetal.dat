@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(hydroxypivalaldehyde) pentaerythritolacetal cyclic acetal  (C15H28O6, CAS 1455-42-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bisHydroxypivalaldehydePentaerythritolacetalCyclicAcetal;
+formula     C15H28O6;
+CAS         1455-42-1;
+InChIKey    BPZIYBJCZRUDEG-UHFFFAOYSA-N;
+MW          304.383;      // g/mol [origin=calculated method=formula-sum]
+Tc          1070.05;      // K   [origin=predictive method=joback]
+Pc          23.225;      // bar [origin=predictive method=joback]
+omega       1.4759;      // -   [origin=predictive method=lee-kesler]
+Tb          858.90;      // K   [origin=predictive method=joback]
+HvapTb      97016.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-149.968 2.25568 -0.0018266 6.148e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group C; count 3; } { group OH; count 2; } { group FCH2O; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group C_ring; count 1; } { group OH; count 2; } { group O_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-2-[3-(2-methyl-1-oxidanyl-propan-2-yl)-2,4,8,10-tetraoxaspiro[5.5]undecan-9-yl]propan-1-ol" "3,9-bis(1,1-dimethyl-2-hydroxyethyl)-2,4,8,10-tetraoxaspiro[5.5]undecane" "2,2'-(2,4,8,10-tetraoxaspiro[5.5]undecane-3,9-diyl)bis(2-methylpropan-1-ol)" "2,4,8,10-tetraoxaspiro(5.5)undecane-3,9-diethanol, beta,beta,beta',beta'-tetramethyl-" "2,4,8,10-tetraoxaspiro(5.5)undecane-3,9-diethanol, beta3,beta3,beta9,beta9-tetramethyl-" "2,4,8,10-tetraoxaspiro[5.5]undecane-3,9-diethanol,a'a" "afas,a'a" "afas,a'a" "afas',a'a" "afas'-tetramethyl- (6ci,7ci,8ci,9ci);3,9-bis(1,1-dimethyl-2-hydroxyethyl)-2,4,8,10-tetraoxaspiro[5.5]undecane;3,9-bis(2-hydroxy-1,1-dimethylethyl)-2,4,8,10-tetraoxaspiro(5.5)undecane;spiroglycol;a'a" "afas,a'a" "afas,a'a" "afas',a'a" "afas'-tetramethyl-3,9-(2,4,8,10-tetraoxaspiro[5.5]undecane)diethanol;2,2'-(2,4,8,10-tetraoxaspiro[5.5]undecane-3,9-diyl)bis(2-methylpropan-1-ol);2,2-dimethyl-3-hydroxypropionaldehyde pentaerythrityl bisacetal;2,4,8,10-tetraoxaspiro[5.5]undecane-3,9-diethanol, a'a" "afas,a'a" "afas,a'a" "afas',a'a" "afas'-tetramethyl-;" "2-[9-(1-hydroxy-2-methylpropan-2-yl)-2,4,8,10-tetraoxaspiro[5.5]undecan-3-yl]-2-methyl-1-propanol" "2-methyl-2-[9-(2-methyl-1-oxidanyl-propan-2-yl)-2,4,8,10-tetraoxaspiro[5.5]undecan-3-yl]propan-1-ol" );
+gibbsFormation
+{
+    dHf_298   -1093190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     505.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-489220.0
+    phase     gas;
+}

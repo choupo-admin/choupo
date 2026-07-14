@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl methacrylate, itaconic acid polymer  (C13H20O6, CAS 65379-39-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butylMethacrylateItaconicAcidPolymer;
+formula     C13H20O6;
+CAS         65379-39-7;
+InChIKey    PQUNWXLWYFNOSQ-UHFFFAOYSA-N;
+MW          272.297;      // g/mol [origin=calculated method=formula-sum]
+Tc          1049.91;      // K   [origin=predictive method=joback]
+Pc          19.287;      // bar [origin=predictive method=joback]
+omega       1.2939;      // -   [origin=predictive method=lee-kesler]
+Tb          840.80;      // K   [origin=predictive method=joback]
+HvapTb      85381.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (61.134 1.03924 -0.0003696 -3.64e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH2=C; count 2; } { group COOH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH2; count 2; } { group dC; count 2; } { group COOH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butyl 2-methylprop-2-enoate;2-methylidenebutanedioic acid" "butanedioic acid, methylene-, polymer with butyl 2-methyl-2-propenoate" "butanedioic acid, 2-methylene-, polymer with butyl 2-methyl-2-propenoate" "butyl 2-methylprop-2-enoate; 2-methylidenebutanedioic acid" );
+gibbsFormation
+{
+    dHf_298   -1209810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     910.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-885790.0
+    phase     gas;
+}

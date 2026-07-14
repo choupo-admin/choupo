@@ -1,0 +1,17 @@
+recordType modelSpecies;   // model species — summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+
+name    F;
+ion     "F-";
+charge  -1;
+
+MW { value 18.998; unit g/mol;}
+
+aqueousThermo
+{
+    hfAq { value -332630; unit J/mol;}
+    sAq  { value -13.8;  unit J/mol/K;}
+    cpAq { value -106.7; unit J/mol/K;}
+}
+
+source "phreeqc.dat (speciation master)  [+formation: Wagman 1982 (phreeqc speciation master; aq enthalpy contested -- see CODATA -335.4)]";

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-stearoyl-glycerol  (C21H42O4, CAS 22610-61-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1StearoylGlycerol;
+formula     C21H42O4;
+CAS         22610-61-3;
+InChIKey    VBICKXHEKHSIBG-FQEVSTJZSA-N;
+MW          358.563;      // g/mol [origin=calculated method=formula-sum]
+Tc          1139.01;      // K   [origin=predictive method=joback]
+Pc          10.842;      // bar [origin=predictive method=joback]
+omega       0.9406;      // -   [origin=predictive method=lee-kesler]
+Tb          922.22;      // K   [origin=predictive method=joback]
+HvapTb      102717.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.108 2.01792 -0.001088 2.007e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 17; } { group CH; count 1; } { group OH; count 2; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 18; } { group CH; count 1; } { group OH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(2s)-2,3-bis(oxidanyl)propyl] octadecanoate" "(s)-1-monostearin" "1-stearoyl-sn-glycerol" "l-(+)-1-monostearin" "1-octadecanoyl-sn-glycerol" "1-o-octadecanoyl-2n-glycerol" "sn-1-octadecanoyl-monoglyceride" "(s)-(+)-1-o-stearoylglycerol" "(2s)-2,3-dihydroxypropyl octadecanoate" "mag(18:0/0:0)" "mg(18:0/0:0)" "octadecanoic acid (2s)-2,3-dihydroxypropyl ester" );
+gibbsFormation
+{
+    dHf_298   -1103790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1117.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-460510.0
+    phase     gas;
+}

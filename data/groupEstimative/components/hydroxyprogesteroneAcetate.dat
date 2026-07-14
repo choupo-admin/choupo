@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hydroxyprogesterone acetate  (C23H32O4, CAS 302-23-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hydroxyprogesteroneAcetate;
+formula     C23H32O4;
+CAS         302-23-8;
+InChIKey    VTHUYJIXSMGYOQ-GRTSCFIKSA-N;
+MW          372.505;      // g/mol [origin=calculated method=formula-sum]
+Tc          1200.12;      // K   [origin=predictive method=joback]
+Pc          14.930;      // bar [origin=predictive method=joback]
+omega       0.9562;      // -   [origin=predictive method=lee-kesler]
+Tb          949.58;      // K   [origin=predictive method=joback]
+HvapTb      82587.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-291.41 3.20058 -0.00292614 1.14796e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 7; } { group CH; count 3; } { group C; count 3; } { group CH=C; count 1; } { group CH3CO; count 1; } { group CH2CO; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 8; } { group CH_ring; count 3; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(9s,14s,17r)-17-ethanoyl-10,13-dimethyl-3-oxidanylidene-2,6,7,8,9,11,12,14,15,16-decahydro-1h-cyclopenta[a]phenanthren-17-yl] ethanoate" "(8xi,10xi,13xi)-3,20-dioxopregn-4-en-17-yl acetate" "prokan" "prodox acetate" "acetoxyprogesterone" "17-acetoxyprogesterone" "17-hydroxyprogesterone acetate" "17-hydroxyprogesterone 17alpha-acetate" "17alpha-acetoxypregnen-4-en-3,20-dion" "17-(acetyloxy)pregn-4-ene-3,20-dione" "17-hydroxypregn-4-ene-3,20-dione acetate" "3,20-dioxo-4-pregnen-17alpha-yl acetate" );
+gibbsFormation
+{
+    dHf_298   -773860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     869.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-248160.0
+    phase     gas;
+}

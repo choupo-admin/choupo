@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclohexene, 4-(1,5-dimethyl-1,4-hexadienyl)-1-methyl-  (C15H24, CAS 17627-44-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclohexene415Dimethyl14Hexadienyl1Methyl;
+formula     C15H24;
+CAS         17627-44-0;
+InChIKey    YHBUQBJHSRGZNF-UHFFFAOYSA-N;
+MW          204.357;      // g/mol [origin=calculated method=formula-sum]
+Tc          786.24;      // K   [origin=predictive method=joback]
+Pc          18.611;      // bar [origin=predictive method=joback]
+omega       0.4811;      // -   [origin=predictive method=lee-kesler]
+Tb          574.57;      // K   [origin=predictive method=joback]
+HvapTb      50443.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-82.019 1.47528 -0.00096564 2.546e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 1; } { group CH=C; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group dCH; count 2; } { group dC; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methyl-4-(6-methylhepta-2,5-dien-2-yl)cyclohexene" "cyclohexene, 4-(1,5-dimethyl-1,4-hexadien-1-yl)-1-methyl-" "alpha-bisabolene" "alpha1-bisabolene" "1,8,12-bisabolatriene" "agn-pc-00lpaq" "6-methyl-2-(4-methylcyclohex-3-enyl)hept-2,5-diene" "cyclohexene, 4-[(1e)-1,5-dimethyl-1,4-hexadienyl]-1-methyl-" );
+gibbsFormation
+{
+    dHf_298   -37440.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     644.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=263540.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-chlorobutyl acetate  (C6H11ClO2, CAS 6962-92-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4ChlorobutylAcetate;
+formula     C6H11ClO2;
+CAS         6962-92-1;
+InChIKey    PYLDCZJUHYVOAF-UHFFFAOYSA-N;
+MW          150.602;      // g/mol [origin=calculated method=formula-sum]
+Tc          613.42;      // K   [origin=predictive method=joback]
+Pc          29.992;      // bar [origin=predictive method=joback]
+omega       0.5099;      // -   [origin=predictive method=lee-kesler]
+Tb          432.53;      // K   [origin=predictive method=joback]
+HvapTb      40742.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (35.734 0.52582 -0.0002284 1.21e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH3COO; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-chloranylbutyl ethanoate" "4-chloro-n-butyl acetate" "1-acetoxy-4-chlorobutane" "1-butanol, 4-chloro-, acetate" "1-chloro-4-acetoxybutane" "delta-chlorobutyl acetate" "4-chloro-1-butanol acetate" "4-chlorbut-1-ylacetat [german]" "1-butanol, 4-chloro-, 1-acetate" ".omega.-chlorobutyl acetate" "acetic acid 4-chlorobutyl ester" "4-chlorbut-1-ylacetat" );
+gibbsFormation
+{
+    dHf_298   -500190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     474.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-322660.0
+    phase     gas;
+}

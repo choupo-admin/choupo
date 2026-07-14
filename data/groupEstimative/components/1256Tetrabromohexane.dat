@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,5,6-tetrabromohexane  (C6H10Br4, CAS 58443-86-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1256Tetrabromohexane;
+formula     C6H10Br4;
+CAS         58443-86-0;
+InChIKey    WPBWUVCMCYXPFI-UHFFFAOYSA-N;
+MW          401.762;      // g/mol [origin=calculated method=formula-sum]
+Tc          841.43;      // K   [origin=predictive method=joback]
+Pc          44.326;      // bar [origin=predictive method=joback]
+omega       0.7630;      // -   [origin=predictive method=lee-kesler]
+Tb          600.64;      // K   [origin=predictive method=joback]
+HvapTb      53914.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (26.834 0.7384 -0.0005946 1.956e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 2; } { group Br; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group CH; count 2; } { group Br; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,5,6-tetrakis(bromanyl)hexane" "hexane, 1,2,5,6-tetrabromo-" "hexane,1,2,5,6-tetrabromo-" );
+gibbsFormation
+{
+    dHf_298   -72410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     574.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=52040.0
+    phase     gas;
+}

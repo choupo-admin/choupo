@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trihexyl benzene-1,2,4-tricarboxylate  (C27H42O6, CAS 1528-49-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trihexylBenzene124Tricarboxylate;
+formula     C27H42O6;
+CAS         1528-49-0;
+InChIKey    MXHBQKVKHGQWRB-UHFFFAOYSA-N;
+MW          462.627;      // g/mol [origin=calculated method=formula-sum]
+Tc          1264.07;      // K   [origin=predictive method=joback]
+Pc          8.191;      // bar [origin=predictive method=joback]
+omega       0.7482;      // -   [origin=predictive method=lee-kesler]
+Tb          1028.66;      // K   [origin=predictive method=joback]
+HvapTb      101517.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (49.265 2.20656 -0.00105832 1.145e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 15; } { group ACH; count 3; } { group AC; count 3; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 15; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,4-benzenetricarboxylic acid, trihexyl ester" "1,2,4-benzenetricarboxylic acid, 1,2,4-trihexyl ester" "trihexyl trimellitate" "trihexyl 1,2,4-benzenetricarboxylate" "1,2,4-benzenetricarboxylicacid, 1,2,4-trihexyl ester" "1,2,4-benzenetricarboxylicacid, trihexyl ester (7ci,8ci,9ci); morflex 560; tri-n-hexyl trimellitate;trihexyl trimellitate; trimellitic acid tri-n-hexyl ester" );
+gibbsFormation
+{
+    dHf_298   -1338860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1242.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-661500.0
+    phase     gas;
+}

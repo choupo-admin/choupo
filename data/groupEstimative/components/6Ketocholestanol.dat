@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-ketocholestanol  (C27H46O2, CAS 1175-06-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Ketocholestanol;
+formula     C27H46O2;
+CAS         1175-06-0;
+InChIKey    JQMQKOQOLPGBBE-ZNCJEFCDSA-N;
+MW          402.663;      // g/mol [origin=calculated method=formula-sum]
+Tc          1237.52;      // K   [origin=predictive method=joback]
+Pc          10.652;      // bar [origin=predictive method=joback]
+omega       0.9768;      // -   [origin=predictive method=lee-kesler]
+Tb          1006.59;      // K   [origin=predictive method=joback]
+HvapTb      92820.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-286.097 3.4798 -0.0027302 9.368e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 10; } { group CH; count 8; } { group C; count 2; } { group OH; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 3; } { group CH; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 6; } { group C_ring; count 2; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,5s,8s,9s,10r,13r,14s,17r)-10,13-dimethyl-17-[(2r)-6-methylheptan-2-yl]-3-oxidanyl-1,2,3,4,5,7,8,9,11,12,14,15,16,17-tetradecahydrocyclopenta[a]phenanthren-6-one" "6-oxocholestanol" "3" "a-hydroxy-5" "a-cholestan-6-one" "5" "a-cholestan-6-one, 3" "a-hydroxy-" "5" "a-cholestan-3" "a-ol-6-one" "5alpha-cholestan-6-one, 3beta-hydroxy- (8ci)" "cholestan-6-one, 3-hydroxy-, (3beta,5alpha)- (9ci)" "(3s,5s,8s,9s,10r,13r,14s,17r)-3-hydroxy-10,13-dimethyl-17-[(2r)-6-methylheptan-2-yl]-1,2,3,4,5,7,8,9,11,12,14,15,16,17-tetradecahydrocyclopenta[a]phenanthren-6-one" );
+gibbsFormation
+{
+    dHf_298   -691580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     868.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=52850.0
+    phase     gas;
+}

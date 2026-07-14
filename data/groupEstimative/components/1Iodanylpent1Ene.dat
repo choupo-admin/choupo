@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-iodanylpent-1-ene  (C5H9I, CAS 66703-02-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Iodanylpent1Ene;
+formula     C5H9I;
+CAS         66703-02-4;
+InChIKey    BKPFTDPOCSONMX-UHFFFAOYSA-N;
+MW          196.027;      // g/mol [origin=calculated method=formula-sum]
+Tc          624.69;      // K   [origin=predictive method=joback]
+Pc          35.942;      // bar [origin=predictive method=joback]
+omega       0.2712;      // -   [origin=predictive method=lee-kesler]
+Tb          411.30;      // K   [origin=predictive method=joback]
+HvapTb      36055.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.148 0.53782 -0.0004134 1.356e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH=CH; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH; count 2; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-pentene, 1-iodo-, (1z)-" );
+gibbsFormation
+{
+    dHf_298   47560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     399.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=129560.0
+    phase     gas;
+}

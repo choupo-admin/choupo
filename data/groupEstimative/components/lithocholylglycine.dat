@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lithocholylglycine  (C26H43NO4, CAS 474-74-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lithocholylglycine;
+formula     C26H43NO4;
+CAS         474-74-8;
+InChIKey    XBSQTYHEGZTYJE-OETIFKLTSA-N;
+MW          433.633;      // g/mol [origin=calculated method=formula-sum]
+Tc          1428.47;      // K   [origin=predictive method=joback]
+Pc          12.346;      // bar [origin=predictive method=joback]
+omega       1.1503;      // -   [origin=predictive method=lee-kesler]
+Tb          1165.88;      // K   [origin=predictive method=joback]
+HvapTb      117081.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-309.187 3.64616 -0.0030191 1.06786e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 11; } { group CH; count 7; } { group C; count 2; } { group OH; count 1; } { group COOH; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 6; } { group C_ring; count 2; } { group OH; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[[(4r)-4-[(3r,5r,8r,9s,10s,13r,14s,17r)-10,13-dimethyl-3-oxidanyl-2,3,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthren-17-yl]pentanoyl]amino]ethanoic acid" "glycolithocholic acid" "lithocholic acid glycine conjugate" "glycolithocholate" "glycolithocholic acid (6ci,7ci)" "n-((3-alpha,5-beta)-3-hydroxy-24-oxocholan-24-yl)glycine" "glycine, n-((3alpha,5beta)-3-hydroxy-24-oxocholan-24-yl)-" "glycine, n-((3-alpha,5-beta)-3-hydroxy-24-oxocholan-24-yl)-" "b-d-glucopyranosiduronic acid,(3a,5b)-24-[(carboxymethyl)amino]-24-oxocholan-3-yl" "lithocholoyglycine" "3a-hydroxy-5b-cholanoylglycine" "3" "a-hydroxy-5" "a-cholanoylglycine" );
+gibbsFormation
+{
+    dHf_298   -937340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1038.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-213980.0
+    phase     gas;
+}

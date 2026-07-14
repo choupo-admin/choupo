@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): n-{2-[(2-hydroxyethyl)amino]ethyl}-16-methylheptadecanamideacetate(1:1)  (C24H50N2O4, CAS 68189-10-6)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           n22HydroxyethylAminoEthyl16Methylheptadecanamideacetate11;
+formula        C24H50N2O4;
+CAS            68189-10-6;
+InChIKey       CKMHSHPONIDAHN-UHFFFAOYSA-N;
+MW             430.674;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: n-{2-[(2-hydroxyethyl)amino]ethyl}-16-methylheptadecanamideacetate(1:1)

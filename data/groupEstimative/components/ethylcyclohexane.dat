@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethylcyclohexane  (C8H16, CAS 1678-91-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylcyclohexane;
+formula     C8H16;
+CAS         1678-91-7;
+InChIKey    IIEWJVIFRVWJOD-UHFFFAOYSA-N;
+MW          112.216;      // g/mol [origin=calculated method=formula-sum]
+Tc          603.16;      // K   [origin=predictive method=joback]
+Pc          31.526;      // bar [origin=predictive method=joback]
+omega       0.2734;      // -   [origin=predictive method=lee-kesler]
+Tb          402.19;      // K   [origin=predictive method=joback]
+HvapTb      33831.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.989 0.88592 -0.0004924 9.36e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclohexane, ethyl-" "ethyl cyclohexane" "ethyl-cyclohexane" );
+gibbsFormation
+{
+    dHf_298   -154130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     437.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=40930.0
+    phase     gas;
+}

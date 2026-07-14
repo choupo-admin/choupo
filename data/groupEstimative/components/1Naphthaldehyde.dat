@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-naphthaldehyde  (C11H8O, CAS 66-77-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C11H8O (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        1Naphthaldehyde;
+formula     C11H8O;
+CAS         66-77-3;
+InChIKey    SQAINHDHICKHLX-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          156.184;      // g/mol [origin=calculated method=formula-sum]
+Tc          713.16;      // K   [origin=predictive method=joback]
+Pc          35.899;      // bar [origin=predictive method=joback]
+omega       0.3443;      // -   [origin=predictive method=lee-kesler]
+Tb          478.34;      // K   [origin=predictive method=joback]
+HvapTb      42285.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-77.66 0.9148 -0.00082848 2.981e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 7; } { group AC; count 3; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 7; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "naphthalene-1-carbaldehyde" "1-naphthalenecarboxaldehyde" "1-formylnaphthalene" "alpha-naphthaldehyde" "1-naphthylaldehyde" "alpha-naphthal" "naphthaldehyde" "i-napthaldehyde" ".alpha.-naphthal" "alpha-naphthylaldehyde" ".alpha.-naphthaldehyde" ".alpha.-naphthylaldehyde" );
+gibbsFormation
+{
+    dHf_298   222210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     443.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=295130.0
+    phase     gas;
+}

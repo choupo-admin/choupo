@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  constant/propertyPackage -- THE SELECTOR: this case USES the shared
+  catalogue manifest 'aqueousNaCl_ethanol_eNRTL' (several cases share identical thermo,
+  so the record lives once in the catalogue; a case-specific thermo would be
+  written INLINE here instead).
+
+  The manifest lives at:  data/standards/propertyPackages/aqueousNaCl_ethanol_eNRTL.dat
+  and declares:  components ( water ethanol NaCl )
+                 liquid method  electrolyte.eNRTL     vapour method  builtin.idealGas
+                 (+ the parameter files it cites, verified at assembly)
+  Run the case and READ THE LOG: the assembly announces the selected package,
+  each method's reference rungs and every parameter with its source.
+\*---------------------------------------------------------------------------*/
+package aqueousNaCl_ethanol_eNRTL;

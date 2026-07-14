@@ -1,0 +1,68 @@
+/*---------------------------------------------------------------------------*\
+  nh3_equilibrium_map
+  ===================
+
+  THE HABER MAP -- the forum-ratified Gibbs equilibrium map
+  (docs/design/gibbs-map-forum-2026-07-02.md) on its canonical pilot:
+  N2 + 3 H2 at stoichiometric feed, equilibrium NH3 mole fraction contoured
+  over 300-700 C x 1-300 bar.  The map shows the whole Haber story at a
+  glance: equilibrium loves COLD and PRESSURE (exothermic, Delta_n < 0);
+  the industrial window (400-500 C, 150-300 bar) sits where the catalyst
+  can actually work -- the tension IS the lesson.
+
+  VALIDATION ANCHORS (golden-locked; verified 2026-07-03): the classic
+  measurements of Larson & Dodge, J. Am. Chem. Soc. 45 (1923) 2918 --
+      400 C / 10 atm:  engine 4.09 %  vs  L&D 3.85 %   (+6 %)
+      450 C / 10 atm:  engine 2.22 %  vs  L&D 2.11 %   (+5 %)
+  The ~5 % offset is consistent with propagating the JANAF formation-data
+  uncertainty of NH3 into Kp (exp(-dG/RT) amplifies ~0.2 kJ/mol into ~5 %)
+  -- honest agreement for an equilibrium constant spanning decades.
+  IDEAL-GAS VALIDITY: the kernel is ideal-gas, so pins stay at <= 50 atm,
+  350-500 C (the forum's chair: at 300 bar a temperatureApproach would
+  silently absorb the missing fugacity corrections -- announced, and the
+  high-P corner of this map is drawn as EQUILIBRIUM SHAPE, not quantitative
+  prediction).
+
+  temperatureApproach: 0 here (true equilibrium).  Re-run with e.g.
+  `temperatureApproach 25;` to see the contours slide -- the empirical
+  closeness-to-equilibrium parameter industry quotes in C (announced loud,
+  the anchor KPI names then carry _dT25 so the golden breaks visibly).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      haber_map;
+        type      gibbsMap;
+        elements  ( N H );
+        species
+        (
+            { name N2;   atoms ( 2 0 ); }
+            { name H2;   atoms ( 0 2 ); }
+            { name NH3;  atoms ( 1 3 ); }
+        );
+        feed      { N2 1.0; H2 3.0; }
+        Tgrid     { from 573.15; to 973.15; n 25; }
+        Pgrid     { from 1.0e5; to 3.0e7; n 25; log true; }
+        metric    { type moleFraction; species NH3; }
+        // The industrial window (a labelled box on the map): the Haber-Bosch
+        // operating envelope -- 400-500 C, 150-300 bar.  Its whole point is
+        // that it does NOT sit where equilibrium is best (cold + high P):
+        // it sits where the iron catalyst can work.  T in K, P in Pa.
+        industrialWindow { Tmin 673.15; Tmax 773.15; Pmin 1.5e7; Pmax 3.0e7;
+                           label "Haber-Bosch window"; }
+        // The kinetic band (user-DECLARED, watermarked on the plot): the iron
+        // catalyst is effectively inert below ~400 C -- there is no approach
+        // to the cold equilibrium optimum at all.  Source: Appl / textbook.
+        kineticBand { Tmin 573.15; Tmax 673.15; Pmin 1.0e5; Pmax 3.0e7;
+                      label "Fe catalyst inactive (< 400 C)"; }
+        anchors
+        (
+            { T 673.15; P 1.0133e6; }     // 400 C, 10 atm -- L&D: 3.85 %
+            { T 723.15; P 1.0133e6; }     // 450 C, 10 atm -- L&D: 2.11 %
+            { T 673.15; P 5.0663e6; }     // 400 C, 50 atm (ideal-gas edge)
+            { T 773.15; P 1.0133e7; }     // 500 C, 100 atm (shape only)
+        );
+        output    { file nh3_map.csv; }
+    }
+);

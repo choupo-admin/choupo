@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: decyl hexyl phthalate  (C24H38O4, CAS 25724-58-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        decylHexylPhthalate;
+formula     C24H38O4;
+CAS         25724-58-7;
+InChIKey    OMQBXAQAHHFSST-UHFFFAOYSA-N;
+MW          390.564;      // g/mol [origin=calculated method=formula-sum]
+Tc          1099.35;      // K   [origin=predictive method=joback]
+Pc          9.790;      // bar [origin=predictive method=joback]
+omega       0.9346;      // -   [origin=predictive method=lee-kesler]
+Tb          896.82;      // K   [origin=predictive method=joback]
+HvapTb      86770.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.284 2.03584 -0.00105676 1.608e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 14; } { group ACH; count 4; } { group AC; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 14; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "o2-decyl o1-hexyl benzene-1,2-dicarboxylate" "phthalic acid, decyl hexyl ester" "1,2-benzenedicarboxylic acid, decyl hexyl ester" "1,2-benzenedicarboxylic acid, 1-decyl 2-hexyl ester" "2-o-decyl 1-o-hexyl benzene-1,2-dicarboxylate" "1,2-benzenedicarboxylicacid, 1-decyl 2-hexyl ester" "1,2-benzenedicarboxylicacid, decyl hexyl ester (9ci); phthalic acid, decyl hexyl ester (8ci); decylhexyl phthalate; hexyl decyl phthalate" );
+gibbsFormation
+{
+    dHf_298   -948190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1080.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-366760.0
+    phase     gas;
+}

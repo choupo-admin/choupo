@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: silane, 1,2-ethanediylbis(trimethyl-  (C8H22Si2, CAS 6231-76-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H22Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        silane12EthanediylbisTrimethyl;
+formula     C8H22Si2;
+CAS         6231-76-1;
+InChIKey    DMKCEJPDZDUPDV-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          174.434;      // g/mol [origin=calculated method=formula-sum]
+Tc          560.94;      // K   [origin=predictive method=joback]
+Pc          20.181;      // bar [origin=predictive method=joback]
+omega       0.2211;      // -   [origin=predictive method=lee-kesler]
+Tb          385.44;      // K   [origin=predictive method=joback]
+HvapTb      33990.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (77.252 0.35152 0.0004182 -3.504e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 2; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl(2-trimethylsilylethyl)silane" "silane, 1,2-ethanediylbis[trimethyl-" "2,5-disilahexane, 2,2,5,5-tetramethyl-" );
+gibbsFormation
+{
+    dHf_298   -431690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     720.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-193040.0
+    phase     gas;
+}

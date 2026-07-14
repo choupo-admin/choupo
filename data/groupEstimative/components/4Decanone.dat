@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-decanone  (C10H20O, CAS 624-16-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Decanone;
+formula     C10H20O;
+CAS         624-16-8;
+InChIKey    MKJDUHZPLQYUCB-UHFFFAOYSA-N;
+MW          156.269;      // g/mol [origin=calculated method=formula-sum]
+Tc          655.12;      // K   [origin=predictive method=joback]
+Pc          22.355;      // bar [origin=predictive method=joback]
+omega       0.6235;      // -   [origin=predictive method=lee-kesler]
+Tb          482.27;      // K   [origin=predictive method=joback]
+HvapTb      44600.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.157 0.92584 -0.0005015 9.876e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 6; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 7; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "decan-4-one" "hexyl propyl ketone" "mkjduhzplqyucb-uhfffaoysa-" "4-decanone;hexyl propyl ketone;n-propyl n-hexyl ketone;n-hexyl n-propyl ketone;4-decanon;decan-4-one;propyl hexyl ketone;decan-1-oyl chloride" );
+gibbsFormation
+{
+    dHf_298   -362310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     572.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-95600.0
+    phase     gas;
+}

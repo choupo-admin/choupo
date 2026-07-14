@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3'-bromopropiophenone  (C9H9BrO, CAS 19829-31-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Bromopropiophenone;
+formula     C9H9BrO;
+CAS         19829-31-3;
+InChIKey    QSHLXVTVXQTHBS-UHFFFAOYSA-N;
+MW          213.074;      // g/mol [origin=calculated method=formula-sum]
+Tc          792.20;      // K   [origin=predictive method=joback]
+Pc          37.454;      // bar [origin=predictive method=joback]
+omega       0.5949;      // -   [origin=predictive method=lee-kesler]
+Tb          557.21;      // K   [origin=predictive method=joback]
+HvapTb      51747.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.349 0.73062 -0.00048266 1.2156e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 4; } { group AC; count 2; } { group CH2CO; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Br; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(3-bromophenyl)propan-1-one" "m-bromopropiophenone" "1-propanone, 1-(3-bromophenyl)-" "qshlxvtvxqthbs-uhfffaoysa-" "3-bromophenyl ethyl ketone" "propiophenone,3'-bromo- (6ci,7ci,8ci);1-(3-bromophenyl)-1-propanone;3-bromophenyl ethylketone;m-bromopropiophenone;" );
+gibbsFormation
+{
+    dHf_298   -90280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     471.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=13080.0
+    phase     gas;
+}

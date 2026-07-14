@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimethylsilyl tetracosanoate  (C27H56O2Si, CAS 74367-37-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C27H56O2Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        trimethylsilylTetracosanoate;
+formula     C27H56O2Si;
+CAS         74367-37-6;
+InChIKey    MFKGSZQXHZDMAM-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          440.828;      // g/mol [origin=calculated method=formula-sum]
+Tc          1075.55;      // K   [origin=predictive method=joback]
+Pc          6.491;      // bar [origin=predictive method=joback]
+omega       0.5588;      // -   [origin=predictive method=lee-kesler]
+Tb          876.98;      // K   [origin=predictive method=joback]
+HvapTb      83397.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (44.572 2.30788 -0.0009356 3.58e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 21; } { group CH2COO; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 22; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetracosanoic acid, trimethylsilyl ester" "tetracosanoic acid trimethylsilyl ester" );
+gibbsFormation
+{
+    dHf_298   -1029510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1385.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-238670.0
+    phase     gas;
+}

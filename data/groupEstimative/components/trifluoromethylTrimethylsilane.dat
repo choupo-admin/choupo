@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (trifluoromethyl)trimethylsilane  (C4H9F3Si, CAS 81290-20-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C4H9F3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        trifluoromethylTrimethylsilane;
+formula     C4H9F3Si;
+CAS         81290-20-2;
+InChIKey    MWKJTNBSKNUMFN-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          142.195;      // g/mol [origin=calculated method=formula-sum]
+Tc          437.22;      // K   [origin=predictive method=joback]
+Pc          29.601;      // bar [origin=predictive method=joback]
+omega       0.1951;      // -   [origin=predictive method=lee-kesler]
+Tb          287.10;      // K   [origin=predictive method=joback]
+HvapTb      21045.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (33.87 0.33886 0.0 -9.21e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CF3; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl(trifluoromethyl)silane" "ruppert's reagent" "tfmtms" "trifluoromethyltrimethylsilane" "(trimethylsilyl)trifluoromethane" "ruppert-prakash reagent" "trimethyl-trifluoromethyl-silane" "trimethyl(trifluoromethyl)silane solution" "tms-cf3" "trimethyltrifluoromethylsilane" "trifluoromethyl trimethyl silane" "trifluoromethyl(trimethylsilane)" );
+gibbsFormation
+{
+    dHf_298   -834590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     494.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-703550.0
+    phase     gas;
+}

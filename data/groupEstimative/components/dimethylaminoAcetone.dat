@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (dimethylamino)acetone  (C5H11NO, CAS 15364-56-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethylaminoAcetone;
+formula     C5H11NO;
+CAS         15364-56-4;
+InChIKey    VFPKIWATTACVJR-UHFFFAOYSA-N;
+MW          101.149;      // g/mol [origin=calculated method=formula-sum]
+Tc          557.18;      // K   [origin=predictive method=joback]
+Pc          37.317;      // bar [origin=predictive method=joback]
+omega       0.4369;      // -   [origin=predictive method=lee-kesler]
+Tb          380.31;      // K   [origin=predictive method=joback]
+HvapTb      35513.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.989 0.57476 -0.0003421 7.666e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH3CO; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(dimethylamino)propan-2-one" "1-dimethylaminoacetone" "1-(dimethylamino)-2-propanone" "2-propanone, 1-(dimethylamino)-" "n,n-dimethylaminoacetone" "1-(dimethylamino)acetone" "(dimethylamino)-acetone" "dimethylamino-2-propanone" "dimethylaminoacetone" "1-dimethylamino-2-propanone" "2-propanone,1-(dimethylamino)-" "2-propanone, 1-(dimethylamino)- (8ci)(9ci)" );
+gibbsFormation
+{
+    dHf_298   -191580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     393.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-26920.0
+    phase     gas;
+}

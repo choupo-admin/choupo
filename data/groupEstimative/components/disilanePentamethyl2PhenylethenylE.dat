@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: disilane, pentamethyl(2-phenylethenyl)-, (e)-  (C13H22Si2, CAS 40595-36-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C13H22Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        disilanePentamethyl2PhenylethenylE;
+formula     C13H22Si2;
+CAS         40595-36-6;
+InChIKey    DGOKJOCHXBTAIU-VAWYXSNFSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          234.489;      // g/mol [origin=calculated method=formula-sum]
+Tc          750.28;      // K   [origin=predictive method=joback]
+Pc          18.531;      // bar [origin=predictive method=joback]
+omega       0.3088;      // -   [origin=predictive method=lee-kesler]
+Tb          530.68;      // K   [origin=predictive method=joback]
+HvapTb      47354.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.62 0.7676 3.12e-05 -2.18e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH=CH; count 1; } { group ACH; count 5; } { group AC; count 1; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dimethyl-[(e)-2-phenylethenyl]-trimethylsilyl-silane" "dimethyl-[(e)-2-phenylethenyl]-trimethylsilylsilane" );
+gibbsFormation
+{
+    dHf_298   -181140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     802.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=41690.0
+    phase     gas;
+}

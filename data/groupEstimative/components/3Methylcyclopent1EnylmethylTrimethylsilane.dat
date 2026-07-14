@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (3-methylcyclopent-1-enylmethyl)-trimethylsilane  (C10H20Si, CAS 177087-92-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C10H20Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        3Methylcyclopent1EnylmethylTrimethylsilane;
+formula     C10H20Si;
+CAS         177087-92-2;
+InChIKey    UIAABQPBPDPDKO-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          168.355;      // g/mol [origin=calculated method=formula-sum]
+Tc          648.65;      // K   [origin=predictive method=joback]
+Pc          22.741;      // bar [origin=predictive method=joback]
+omega       0.3027;      // -   [origin=predictive method=lee-kesler]
+Tb          449.22;      // K   [origin=predictive method=joback]
+HvapTb      39359.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.789 0.76388 -0.00015304 -9.06e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 1; } { group CH=C; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl-[(3-methylcyclopenten-1-yl)methyl]silane" );
+gibbsFormation
+{
+    dHf_298   -254560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     578.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-14560.0
+    phase     gas;
+}

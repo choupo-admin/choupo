@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-[4-(trifluoromethyl)phenyl]ethanol  (C9H9F3O, CAS 1737-26-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14TrifluoromethylPhenylEthanol;
+formula     C9H9F3O;
+CAS         1737-26-4;
+InChIKey    YMXIDIAEXNLCFT-UHFFFAOYSA-N;
+MW          190.164;      // g/mol [origin=calculated method=formula-sum]
+Tc          707.09;      // K   [origin=predictive method=joback]
+Pc          31.491;      // bar [origin=predictive method=joback]
+omega       0.8507;      // -   [origin=predictive method=lee-kesler]
+Tb          523.50;      // K   [origin=predictive method=joback]
+HvapTb      51110.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.49 0.92152 -0.00068456 1.945e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-(trifluoromethyl)phenyl)ethanol" "1-[4-(trifluoromethyl)phenyl]ethan-1-ol" "alpha-methyl-4-(trifluoromethyl)benzyl alcohol" "(1r)-1-[4-(trifluoromethyl)phenyl]ethan-1-ol" "(1s)-1-[4-(trifluoromethyl)phenyl]ethan-1-ol" "a-methyl-4-trifluoromethylbenzyl alcohol" "alpha-methyl-4-trifluoromethylbenzyl alcohol" "alpha-methyl-4(trifluoromethyl)benzyl alcohol" ".alpha.-methyl-p-trifluoromethylbenzyl alcohol" "alpha-methyl-p-(trifluoromethyl)benzyl alcohol" "benzylalcohol, a-methyl-p-(trifluoromethyl)-(7ci,8ci);(?a'a a'a currency)-1-(p-trifluoromethylphenyl)ethanol;1-(1-hydroxyethyl)-4-trifluoromethylbenzene;1-(4-trifluoromethylphenyl)ethanol;1-(p-trifluoromethylphenyl)ethanol;4-trifluoromethyl-a-methylbenzenemethanol;a-methyl-4-trifluoromethylbenzenemethanol;a-methyl-p-(trifluoromethyl)benzyl alcohol;1-(4-(trifluoromethyl)phenyl)ethanol;1-[4-(trifluoromethyl)phenyl]ethanol;benzenemethanol, a'a" "afa-methyl-4-(trifluoromethyl)-;a'a" "afa-methyl-p-trifluoromethylbenzyl alcohol;" );
+gibbsFormation
+{
+    dHf_298   -758620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     491.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-593170.0
+    phase     gas;
+}

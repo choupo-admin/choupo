@@ -28,16 +28,7 @@
   pump.P_out (converges in one step --- the relation is linear).
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            36.0 kmol/h;        // = 10 mol/s
-        T           298.15 K;
-        P             1.0  bar;
-        molarComposition  { water 1.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

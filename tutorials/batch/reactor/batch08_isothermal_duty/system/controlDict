@@ -1,0 +1,25 @@
+/*---------------------------------------------------------------------------*\
+  batch08_isothermal_duty / system/controlDict
+
+  WHAT THIS CASE IS: the extent-branch test of the batch ENERGY LEDGER
+  (design forum #98.3/#101).  An isothermal lumped A -> B reactor whose
+  species carry NO formation data but whose reaction declares dH_rxn: the
+  jacket duty must be priced E = dH_rxn * dXi with the extent solved from
+  the committed mole numbers (announced-override branch), and the campaign
+  energy BALANCE must stay UNAVAILABLE naming the datum-less species ---
+  a declared reaction heat prices the duty, but it cannot place the vessel
+  inventories on the elements datum.
+
+  Narrative + the hand-checkable number: constant/reactions header.
+  Run log: log.choupoBatch.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Isothermal jacket duty from a DECLARED dH_rxn: E = dH*dXi via extents (lumped species, no formation data)";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         600;      // s
+deltaT          1.0;      // s
+writeInterval   20;       // s

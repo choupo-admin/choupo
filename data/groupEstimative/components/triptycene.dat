@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triptycene  (C20H14, CAS 477-75-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triptycene;
+formula     C20H14;
+CAS         477-75-8;
+InChIKey    NGDCLPXRKSWRPY-UHFFFAOYSA-N;
+MW          254.332;      // g/mol [origin=calculated method=formula-sum]
+Tc          1009.16;      // K   [origin=predictive method=joback]
+Pc          24.267;      // bar [origin=predictive method=joback]
+omega       0.7209;      // -   [origin=predictive method=lee-kesler]
+Tb          748.58;      // K   [origin=predictive method=joback]
+HvapTb      68066.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-154.11 1.8288 -0.00158268 5.468e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 4; } { group ACCH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 2; } { group dCH_ring; count 12; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tryptycene" "9,10-o-benzeno-9,10-dihydroanthracene" "9,10[1',2']-benzenoanthracene, 9,10-dihydro-" "9,10-dihydro-9,10-o-benzenoanthracene" "tribenzobicyclo(2.2.2)octatriene" "tribenzobicyclo[2.2.2]octatriene" "9,10(1',2')-benzenoanthracene, 9,10-dihydro-" "9-hydroxytriptycene" "9,2']-benzenoanthracene, 9,10-dihydro-" "9,10-dihydro-9,10-[1,2]benzenoanthracene" "9,10-o-benzenoanthracene, 9,10-dihydro- (8ci)" "hexacyclo[6.6.5.1<15,19>.0<1,18>.0<2,7>.0<9,14>]icosa-2(7),3,5,9(14),10,12,15( 20),16,18-nonaene" );
+gibbsFormation
+{
+    dHf_298   389290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     337.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=595760.0
+    phase     gas;
+}

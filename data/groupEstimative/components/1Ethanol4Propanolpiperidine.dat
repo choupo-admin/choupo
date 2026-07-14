@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-ethanol-4-propanolpiperidine  (C10H21NO2, CAS 19780-85-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Ethanol4Propanolpiperidine;
+formula     C10H21NO2;
+CAS         19780-85-9;
+InChIKey    QCZXNEGHMZUDNS-UHFFFAOYSA-N;
+MW          187.283;      // g/mol [origin=calculated method=formula-sum]
+Tc          813.13;      // K   [origin=predictive method=joback]
+Pc          30.323;      // bar [origin=predictive method=joback]
+omega       1.4379;      // -   [origin=predictive method=lee-kesler]
+Tb          640.48;      // K   [origin=predictive method=joback]
+HvapTb      73512.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-66.795 1.2774 -0.000821 2.043e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH; count 1; } { group OH; count 2; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 5; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group OH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[1-(2-hydroxyethyl)piperidin-4-yl]propan-1-ol" "4-piperidinepropanol, 1-(2-hydroxyethyl)-" "1-(2-hydroxyethyl)-4-(3-hydroxypropyl)piperidine" "n-(2-hydroxyethyl)-4-(3-hydroxypropyl)piperidine" "n-(.beta.-hydroxyethyl)-4-(.gamma.-hydroxypropyl)piperidine" "4-(hydroxypropyl)piperidine-1-ethanol" "1-(2-hydroxyethyl)piperidine-4-propanol" "4-piperidinepropanol,1-(2-hydroxyethyl)-" "3-[1-(2-hydroxyethyl)-4-piperidinyl]-1-propanol" "n-(beta-hydroxyethyl)-4-(gamma-hydroxypropyl)piperidine" );
+gibbsFormation
+{
+    dHf_298   -426180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     612.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-92990.0
+    phase     gas;
+}

@@ -121,13 +121,37 @@ inline std::vector<ModelBoundaryFinding> computeModelBoundaries(
             f.producer = pu->lookupWord("name");
             f.consumer = u->lookupWord("name");
 
-            // Speciation change -> ill-posed, refuse rather than mislead.
+            // Speciation change -> ill-posed, refuse rather than mislead.  But the
+            // change is only REAL when the stream ACTUALLY carries a species that
+            // speciates (an electrolyte / salt).  A stream of purely molecular
+            // species (e.g. recovered ethanol + water, no ions) shares the SAME
+            // molecular reference in both worlds -- its dH is well-posed -- so it
+            // must NOT be refused just because the two packages differ in kind.
             if (Pup.hasElectrolyte() != Pdn.hasElectrolyte())
             {
-                f.refused = true;
-                f.reason  = "speciation change (electrolyte<->molecular) -- dH ill-posed";
-                found.push_back(f);
-                continue;
+                const ThermoPackage& elec = Pup.hasElectrolyte() ? Pup : Pdn;
+                bool carriesSalt = false;
+                for (std::size_t i = 0; i < elec.n(); ++i)
+                {
+                    const bool present = (i < s.z.size() && s.z[i] > 1e-9)
+                                      || (i < s.s.size() && s.s[i] > 0.0);
+                    // A species SPECIATES between the two worlds iff it dissociates
+                    // (van't Hoff nu > 1, e.g. KCl -> K+ + Cl-) or carries an explicit
+                    // ion spec.  Ethanol/water (nu = 1) do NOT -> a molecular-only
+                    // stream is not a speciation change.
+                    const Component& c = elec.comp(i);
+                    if (present && (c.dissociation() > 1.5 || c.hasElectrolyteSpec()))
+                    { carriesSalt = true; break; }
+                }
+                if (carriesSalt)
+                {
+                    f.refused = true;
+                    f.reason  = "speciation change (electrolyte<->molecular): no shared enthalpy reference";
+                    found.push_back(f);
+                    continue;
+                }
+                // No electrolyte species in THIS stream -> no speciation change;
+                // fall through and report the boundary with its (well-posed) dH.
             }
 
             // Datum change -> ill-posed, refuse.  A pure-fluid package (IF97 &

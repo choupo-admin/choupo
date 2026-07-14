@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-butenedioic acid (2z)-, mono[3-[3-[[(2z)-3-carboxy-1-oxo-2-propenyl]oxy]-2,2-dimethyl-1-oxopropoxy]-2,2-dimethylpropyl] ester  (C18H24O10, CAS 71550-59-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2ButenedioicAcid2zMono332z3Carboxy1Oxo2PropenylOxy22Dimethyl;
+formula     C18H24O10;
+CAS         71550-59-9;
+InChIKey    HJYGBXXJBRVGTH-UHFFFAOYSA-N;
+MW          400.38;      // g/mol [origin=calculated method=formula-sum]
+Tc          1320.98;      // K   [origin=predictive method=joback]
+Pc          14.669;      // bar [origin=predictive method=joback]
+omega       1.3170;      // -   [origin=predictive method=lee-kesler]
+Tb          1078.98;      // K   [origin=predictive method=joback]
+HvapTb      109535.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.357 1.94268 -0.001328 3.263e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 2; } { group CH=CH; count 2; } { group COOH; count 2; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group C; count 2; } { group dCH; count 4; } { group COOH; count 2; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[3-[2,2-dimethyl-3-(4-oxidanyl-4-oxidanylidene-but-2-enoyl)oxy-propanoyl]oxy-2,2-dimethyl-propoxy]-4-oxidanylidene-but-2-enoic acid" "2-butenedioic acid (2z)-, 1-[3-[3-[[(2z)-3-carboxy-1-oxo-2-propen-1-yl]oxy]-2,2-dimethyl-1-oxopropoxy]-2,2-dimethylpropyl] ester" );
+gibbsFormation
+{
+    dHf_298   -1850290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1026.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1352130.0
+    phase     gas;
+}

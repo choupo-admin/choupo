@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentaiodobenzene  (C6HI5, CAS 608-96-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentaiodobenzene;
+formula     C6HI5;
+CAS         608-96-8;
+InChIKey    GGMXRUAPRJCPMY-UHFFFAOYSA-N;
+MW          707.574;      // g/mol [origin=calculated method=formula-sum]
+Tc          1247.34;      // K   [origin=predictive method=joback]
+Pc          37.500;      // bar [origin=predictive method=joback]
+omega       0.4267;      // -   [origin=predictive method=lee-kesler]
+Tb          849.18;      // K   [origin=predictive method=joback]
+HvapTb      80739.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (79.18 0.4519 -0.00047264 1.856e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 1; } { group AC; count 5; } { group I; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 1; } { group dC_ring; count 5; } { group I; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5-pentakis(iodanyl)benzene" "1,2,3,4,5-pentaiodobenzene" );
+gibbsFormation
+{
+    dHf_298   407830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     536.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=364130.0
+    phase     gas;
+}

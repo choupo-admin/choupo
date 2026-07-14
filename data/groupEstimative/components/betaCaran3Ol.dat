@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: beta-caran-3-ol  (C10H18O, CAS 38748-97-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        betaCaran3Ol;
+formula     C10H18O;
+CAS         38748-97-9;
+InChIKey    ZOKKRMIFZVQTTP-UHFFFAOYSA-N;
+MW          154.253;      // g/mol [origin=calculated method=formula-sum]
+Tc          730.49;      // K   [origin=predictive method=joback]
+Pc          31.668;      // bar [origin=predictive method=joback]
+omega       0.7013;      // -   [origin=predictive method=lee-kesler]
+Tb          529.47;      // K   [origin=predictive method=joback]
+HvapTb      51611.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-194.62 1.81086 -0.001899 8.259e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 2; } { group C; count 2; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,7,7-trimethylbicyclo[4.1.0]heptan-4-ol" "alpha-caran-3-ol" "bicyclo[4.1.0]heptan-3-ol, 3,7,7-trimethyl-" "bicyclo[4.1.0]heptan-3-ol, 3,7,7-trimethyl-, [1s-(1.alpha.,3.beta.,6.alpha.)]-" "3-caranol, (1s,3r,6r)-(+)-" "3-caranol, (1s,3s,6r)-(+)-" "3,7,7-trimethylbicyclo[4.1.0]heptan-3-ol" "bicyclo[4.1.0]heptan-3-ol, 3,7,7-trimethyl-, [1s-(1.alpha.,3.alpha.,6.alpha.)]-" );
+gibbsFormation
+{
+    dHf_298   -272720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     490.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-20500.0
+    phase     gas;
+}

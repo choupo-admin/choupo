@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dodecyl gallate  (C19H30O5, CAS 1166-52-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dodecylGallate;
+formula     C19H30O5;
+CAS         1166-52-5;
+InChIKey    RPWFJAMTCNSJKK-UHFFFAOYSA-N;
+MW          338.444;      // g/mol [origin=calculated method=formula-sum]
+Tc          1183.09;      // K   [origin=predictive method=joback]
+Pc          19.596;      // bar [origin=predictive method=joback]
+omega       1.4994;      // -   [origin=predictive method=lee-kesler]
+Tb          961.08;      // K   [origin=predictive method=joback]
+HvapTb      106613.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-49.639 2.13892 -0.00171548 5.826e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group ACH; count 2; } { group AC; count 1; } { group ACOH; count 3; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group OH_phenol; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodecyl 3,4,5-tris(oxidanyl)benzoate" "lauryl gallate" "dodecyl 3,4,5-trihydroxybenzoate" "nipagallin la" "progallin la" "gallic acid, dodecyl ester" "n-dodecylgallate" "gallic acid dodecyl ester" "gallic acid, lauryl ester" "n-dodecyl gallate" "benzoic acid, 3,4,5-trihydroxy-, dodecyl ester" "gallic acid lauryl ester" );
+gibbsFormation
+{
+    dHf_298   -1048170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     920.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-552720.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: corodane  (C10H14O, CAS 13380-94-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        corodane;
+formula     C10H14O;
+CAS         13380-94-4;
+InChIKey    OMIDXVJKZCPKEI-UHFFFAOYSA-N;
+MW          150.221;      // g/mol [origin=calculated method=formula-sum]
+Tc          747.27;      // K   [origin=predictive method=joback]
+Pc          32.246;      // bar [origin=predictive method=joback]
+omega       0.4340;      // -   [origin=predictive method=lee-kesler]
+Tb          516.04;      // K   [origin=predictive method=joback]
+HvapTb      41703.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-119.68 1.2021 -0.000835 2.346e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 4; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 5; } { group CH_ring; count 4; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,7-methano-5h-inden-5-one, octahydro-" "4,7-methanoindan-5(4h)-one, tetrahydro-" "tricyclo[5.2.1.0(2,6)]decan-8-one" "8-ketotricyclo[5.2.1.02,6]decane" "octahydro-5h-4,7-methanoinden-5-one" "tricyclo(5.2.1.02,6)decan-8-one" "tricyclo(5.2.1.02,6)decane-8-one" "8-oxotricyclo(5.2.1.0(sup2,6))decane" "8-ketotricyclo(5.2.1.0(sup2,6))decane" "8-ketotricyclo(5.2.1.0(sup 2,6))decane" "8-oxotricyclo(5.2.1.0(sup 2,6))decane" "tricyclo(5.2.1.0(sup 2,6))decan-8-one" );
+gibbsFormation
+{
+    dHf_298   -195530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     173.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=73170.0
+    phase     gas;
+}

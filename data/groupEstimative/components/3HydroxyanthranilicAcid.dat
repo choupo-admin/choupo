@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-hydroxyanthranilic acid  (C7H7NO3, CAS 548-93-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3HydroxyanthranilicAcid;
+formula     C7H7NO3;
+CAS         548-93-6;
+InChIKey    WJXSWCUQABXPFS-UHFFFAOYSA-N;
+MW          153.137;      // g/mol [origin=calculated method=formula-sum]
+Tc          940.05;      // K   [origin=predictive method=joback]
+Pc          61.131;      // bar [origin=predictive method=joback]
+omega       1.1388;      // -   [origin=predictive method=lee-kesler]
+Tb          690.08;      // K   [origin=predictive method=joback]
+HvapTb      74933.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.91 0.7977 -0.00069352 2.448e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACOH; count 1; } { group ACNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-3-oxidanyl-benzoic acid" "2-amino-3-hydroxybenzoic acid" "3-oxyanthranilic acid" "benzoic acid, 2-amino-3-hydroxy-" "anthranilic acid, 3-hydroxy-" "2-amino-3-hydroxy-benzoic acid" "3-hydroxy-anthranilsaeure" "3-ohaa" "3-hydroxyanthranilate" "3-oh-anthranilic acid" "3-hydroxy-anthranilsaeure [german]" "3-hydroxy anthranilic acid" );
+gibbsFormation
+{
+    dHf_298   -456540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     447.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-321240.0
+    phase     gas;
+}

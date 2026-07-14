@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrakis-(2-hydroxyethyl)silane  (C8H20O4Si, CAS 18928-76-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H20O4Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        tetrakis2HydroxyethylSilane;
+formula     C8H20O4Si;
+CAS         18928-76-2;
+InChIKey    LXFRPUMDYPOXOO-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          208.329;      // g/mol [origin=calculated method=formula-sum]
+Tc          922.97;      // K   [origin=predictive method=joback]
+Pc          33.106;      // bar [origin=predictive method=joback]
+omega       2.0313;      // -   [origin=predictive method=lee-kesler]
+Tb          752.76;      // K   [origin=predictive method=joback]
+HvapTb      100412.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (57.598 0.6936 -0.0001182 -9.4e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group OH; count 4; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 8; } { group OH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[tris(2-hydroxyethyl)silyl]ethanol" "tetra-(2-hydroxyethyl)silane" "2,2',2'',2'''-silanetetrayltetrakisethanol" "ethanol, 2,2',2'',2'''-silanetetrayltetrakis-" );
+gibbsFormation
+{
+    dHf_298   -928990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     797.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-635560.0
+    phase     gas;
+}

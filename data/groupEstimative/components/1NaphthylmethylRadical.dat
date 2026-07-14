@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-naphthylmethyl radical  (C11H9, CAS 7419-60-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        1NaphthylmethylRadical;
+formula     C11H9;
+CAS         7419-60-5;
+InChIKey    PHRABVHYUHIYGY-UHFFFAOYSA-N;
+role        radical;
+MW          141.193;      // g/mol [origin=calculated method=formula-sum]
+Tc          730.99;      // K   [origin=predictive method=joback]
+Pc          34.725;      // bar [origin=predictive method=joback]
+omega       0.3864;      // -   [origin=predictive method=lee-kesler]
+Tb          496.52;      // K   [origin=predictive method=joback]
+HvapTb      44009.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-54.06 0.8767 -0.00065648 1.951e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group dCH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methylnaphthalene" "naphthalen-1-ylmethyl" );
+gibbsFormation
+{
+    dHf_298   212580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     361.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=298900.0
+    phase     gas;
+}

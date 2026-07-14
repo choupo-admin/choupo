@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(chloromethyl)-4-dodecyltoluene  (C20H33Cl, CAS 68833-60-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chloromethyl4Dodecyltoluene;
+formula     C20H33Cl;
+CAS         68833-60-3;
+InChIKey    PERGJZRGWNBFEQ-UHFFFAOYSA-N;
+MW          308.934;      // g/mol [origin=calculated method=formula-sum]
+Tc          920.47;      // K   [origin=predictive method=joback]
+Pc          12.107;      // bar [origin=predictive method=joback]
+omega       0.8351;      // -   [origin=predictive method=lee-kesler]
+Tb          731.27;      // K   [origin=predictive method=joback]
+HvapTb      68099.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.708 1.71274 -0.00098172 2.115e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group ACH; count 3; } { group AC; count 1; } { group ACCH3; count 1; } { group ACCH2; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 12; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(chloromethyl)-4-dodecyl-1-methyl-benzene" "2-(chloromethyl)-4-lauryltoluene" "benzene, 2-(chloromethyl)-4-dodecyl-1-methyl-" "5-dodecyl-2-methylbenzyl chloride" "2-(chloromethyl)-4-dodecyl-1-methylbenzene" );
+gibbsFormation
+{
+    dHf_298   -258280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     849.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=198740.0
+    phase     gas;
+}

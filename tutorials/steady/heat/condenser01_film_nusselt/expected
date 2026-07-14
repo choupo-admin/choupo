@@ -1,24 +1,25 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 stream  condensate             F                0.0277777777778    1e-4
 stream  steam                  F                0.0277777777778    1e-4
 kpi     condenser              F                0.0277777777778    1e-4
 kpi     condenser              P                100000             1e-4
-kpi     condenser              Q                -528308.26244      1e-4
-kpi     condenser              Q_UAdT_kW        528.227218426      1e-4
-kpi     condenser              Q_kW             -528.30826244      1e-4
-kpi     condenser              R_coolant        0.000125           1e-4
-kpi     condenser              R_film           0.000350664243254  1e-4
+kpi     condenser              Q                -506700.51677      1e-4
+kpi     condenser              Q_UAdT_kW        506.617311982      1e-4
+kpi     condenser              Q_kW             -506.70051677      1e-4
+kpi     condenser              R_coolant        0.00014880952381   1e-4
+kpi     condenser              R_film           0.000349003587291  1e-4
 kpi     condenser              R_wall           4.35883467862e-05  1e-4
-kpi     condenser              Re_film          15.4929873324      1e-4
+kpi     condenser              Re_film          15.1166609728      1e-4
 kpi     condenser              T_in             372.76             1e-4
 kpi     condenser              T_out            372.755918611      1e-4
-kpi     condenser              T_wall           323.622029573      1e-4
+kpi     condenser              T_wall           325.855275434      1e-4
 kpi     condenser              Tsat             372.755918611      1e-4
-kpi     condenser              U_overall        1925.84499178      1e-4
+kpi     condenser              U_overall        1847.05819579      1e-4
 kpi     condenser              area             3.76991118431      1e-4
-kpi     condenser              controllingResistance 0                  1e-4
-kpi     condenser              dT_film          49.1338890387      1e-4
-kpi     condenser              h_condensation   2851.73073456      1e-4
+kpi     condenser              controllingResistanceCode 0                  1e-4
+kpi     condenser              dT_film          46.9006431773      1e-4
+kpi     condenser              h_condensation   2865.30006113      1e-4
 kpi     condenser              vf_in            1                  1e-4
-kpi     condenser              vf_out           0.532349005696     1e-4
+kpi     condenser              vf_out           0.551476029749     1e-4

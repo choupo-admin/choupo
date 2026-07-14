@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: stilbene, .alpha.-chloro-  (C14H11Cl, CAS 948-99-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        stilbeneAlphaChloro;
+formula     C14H11Cl;
+CAS         948-99-2;
+InChIKey    VVFIZEWCXRQNGK-KAMYIIQDSA-N;
+MW          214.692;      // g/mol [origin=calculated method=formula-sum]
+Tc          874.00;      // K   [origin=predictive method=joback]
+Pc          28.293;      // bar [origin=predictive method=joback]
+omega       0.4707;      // -   [origin=predictive method=lee-kesler]
+Tb          614.75;      // K   [origin=predictive method=joback]
+HvapTb      55733.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-78.63 1.2027 -0.0009067 2.646e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=C; count 1; } { group ACH; count 10; } { group AC; count 2; } { group Cl_C=C_; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(z)-1-chloranyl-2-phenyl-ethenyl]benzene" "stilbene, .alpha.-chloro-, (e)-" "1-chloro-1,2-diphenylethene" "[(z)-1-chloro-2-phenylethenyl]benzene" "[(z)-1-chloro-2-phenyl-vinyl]-benzene" "benzene, 1,1'-(1-chloro-1,2-ethenediyl)bis-" "benzene, 1,1'-(1-chloro-1,2-ethenediyl)bis-, (e)-" );
+gibbsFormation
+{
+    dHf_298   232460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     511.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=351560.0
+    phase     gas;
+}

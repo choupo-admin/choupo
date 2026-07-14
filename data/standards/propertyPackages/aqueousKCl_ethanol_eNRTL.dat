@@ -1,0 +1,42 @@
+/*---------------------------------------------------------------------------*\
+  propertyPackage aqueousKCl_ethanol_eNRTL -- the declarative thermo MANIFEST a case selects
+  (`package aqueousKCl_ethanol_eNRTL;` in its constant/propertyPackage, or copy this record
+  inline into the case for the self-contained form).
+  Components: water ethanol KCl.  Liquid method: electrolyte.eNRTL (the world);
+  the ThermoPackageBuilder loads + verifies every declared parameter file and
+  announces the assembly in the run log.  Grammar: the 2026-07-04 forum
+  (models per PHASE, conventions per GROUP, parameters per PAIR, all cited).
+\*---------------------------------------------------------------------------*/
+recordType propertyPackage;
+schemaVersion 1;
+
+name aqueousKCl_ethanol_eNRTL;
+
+components ( water ethanol KCl );
+
+chemistry
+{
+    salts ( sylvite );
+
+    activeSaltEquilibriumData
+    {
+        sylvite measuredSolubilityAnchor;
+    }
+}
+
+propertyMethods
+{
+    liquid electrolyte.eNRTL;
+    vapour builtin.idealGas;
+    solid  builtin.saltEquilibrium;
+}
+
+parameters
+{
+    eNRTLPairs
+    {
+        K-Cl "data/standards/parameters/electrolyte/eNRTL/K-Cl.dat";
+    }
+}
+
+

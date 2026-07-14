@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 15(r)-prostaglandin d2  (C20H32O5, CAS 41598-07-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        15RProstaglandinD2;
+formula     C20H32O5;
+CAS         41598-07-6;
+InChIKey    BHMBVRSPMRCCGG-UHFFFAOYSA-N;
+MW          352.471;      // g/mol [origin=calculated method=formula-sum]
+Tc          1312.93;      // K   [origin=predictive method=joback]
+Pc          14.747;      // bar [origin=predictive method=joback]
+omega       1.2753;      // -   [origin=predictive method=lee-kesler]
+Tb          1068.71;      // K   [origin=predictive method=joback]
+HvapTb      114050.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-42.332 1.97892 -0.001141 2.388e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CH; count 4; } { group CH=CH; count 2; } { group OH; count 2; } { group CH2CO; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group CH; count 1; } { group dCH; count 4; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group OH; count 2; } { group CdO_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-[5-oxidanyl-3-oxidanylidene-2-(3-oxidanyloct-1-enyl)cyclopentyl]hept-5-enoic acid" "5-trans prostaglandin d2" "9,15-dihydroxy-11-oxoprosta-5,13-dien-1-oic acid" "agn-pc-00lww6" "[5z,9alpha,13e,15s]9,15-dihydroxy-11-oxoprosta-5,13-dien-1-oic acid" "prostaglandin d2 lipid maps ms standard" "11-dehydroprostaglandinf2a; pgd2; prostaglandin d2" "7-[5-hydroxy-2-(3-hydroxyoct-1-enyl)-3-oxocyclopentyl]hept-5-enoic acid" "(z)-7-[(1r,2s,5s)-5-hydroxy-2-[(e,3s)-3-hydroxyoct-1-enyl]-3-oxocyclopentyl]hept-5-enoic acid" );
+gibbsFormation
+{
+    dHf_298   -999600.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     853.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-443490.0
+    phase     gas;
+}

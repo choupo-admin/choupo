@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-dichlorocyclopropyl phenyl sulfide  (C9H8Cl2S, CAS 63289-85-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22DichlorocyclopropylPhenylSulfide;
+formula     C9H8Cl2S;
+CAS         63289-85-0;
+InChIKey    DIHSMJVOQUSOTO-UHFFFAOYSA-N;
+MW          219.123;      // g/mol [origin=calculated method=formula-sum]
+Tc          848.40;      // K   [origin=predictive method=joback]
+Pc          36.029;      // bar [origin=predictive method=joback]
+omega       0.4156;      // -   [origin=predictive method=lee-kesler]
+Tb          578.15;      // K   [origin=predictive method=joback]
+HvapTb      51944.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-88.11 1.20419 -0.001195 4.809e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CCl2; count 1; } { group CHS; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 2; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2,2-bis(chloranyl)cyclopropyl]sulfanylbenzene" "[(2,2-dichlorocyclopropyl)sulfanyl]benzene" "1,1-dichloro-2-phenylthiocyclopropane" "2,2-dichlorocyclopropyl phenyl sulphide" "(2,2-dichlorocyclopropyl)sulfanylbenzene" );
+gibbsFormation
+{
+    dHf_298   85530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     465.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=194120.0
+    phase     gas;
+}

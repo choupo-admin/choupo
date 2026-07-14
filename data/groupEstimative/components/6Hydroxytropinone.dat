@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-hydroxytropinone  (C8H13NO2, CAS 5932-53-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Hydroxytropinone;
+formula     C8H13NO2;
+CAS         5932-53-6;
+InChIKey    UOHSTKWPZWFYTF-UHFFFAOYSA-N;
+MW          155.197;      // g/mol [origin=calculated method=formula-sum]
+Tc          770.85;      // K   [origin=predictive method=joback]
+Pc          38.627;      // bar [origin=predictive method=joback]
+omega       0.9270;      // -   [origin=predictive method=lee-kesler]
+Tb          568.16;      // K   [origin=predictive method=joback]
+HvapTb      56060.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-73.02 1.01912 -0.000649 1.587e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 3; } { group OH; count 1; } { group CH2CO; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 3; } { group OH; count 1; } { group CdO_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-methyl-6-oxidanyl-8-azabicyclo[3.2.1]octan-3-one" "6-hydroxy-8-methyl-8-azabicyclo[3.2.1]octan-3-one" "6-hydroxy tropinone" "(+/-)-exo-6-hydroxytropinone" "(+/-)-exo-6-hydroxy-3-tropanone" "7-hydroxy-8-methylazabicyclo(3.2.1)octan-3-one" "8-azabicyclo[3.2.1]octan-3-one, 6-hydroxy-8-methyl-, exo-" "(+/-)-exo-6-hydroxy-8-methyl-8-azabicyclo[3.2.1]octan-3-one" );
+gibbsFormation
+{
+    dHf_298   -311750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     252.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-30460.0
+    phase     gas;
+}

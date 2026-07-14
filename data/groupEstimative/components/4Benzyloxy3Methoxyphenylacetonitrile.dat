@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-benzyloxy-3-methoxyphenylacetonitrile  (C16H15NO2, CAS 1700-29-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Benzyloxy3Methoxyphenylacetonitrile;
+formula     C16H15NO2;
+CAS         1700-29-4;
+InChIKey    KSOYPRFHKIOHMY-UHFFFAOYSA-N;
+MW          253.301;      // g/mol [origin=calculated method=formula-sum]
+Tc          1012.47;      // K   [origin=predictive method=joback]
+Pc          21.023;      // bar [origin=predictive method=joback]
+omega       0.8942;      // -   [origin=predictive method=lee-kesler]
+Tb          775.92;      // K   [origin=predictive method=joback]
+HvapTb      72384.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.132 1.05542 -0.00052192 6.45e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 4; } { group CH3O; count 1; } { group CH2O; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group O; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(3-methoxy-4-phenylmethoxy-phenyl)ethanenitrile" "2-(4-(benzyloxy)-3-methoxyphenyl)acetonitrile" "2-(3-methoxy-4-phenylmethoxyphenyl)acetonitrile" "2-[4-(benzyloxy)-3-methoxyphenyl]acetonitrile" "agn-pc-04y22e" "4-benzyl-oxy-3-methoxyphenylacetonitrile" "benzeneacetonitrile,3-methoxy-4-(phenylmethoxy)-" "benzeneacetonitrile, 3-methoxy-4-(phenylmethoxy)-" "2-[3-methoxy-4-(phenylmethoxy)phenyl]ethanenitrile" );
+gibbsFormation
+{
+    dHf_298   -23010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     582.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=212580.0
+    phase     gas;
+}

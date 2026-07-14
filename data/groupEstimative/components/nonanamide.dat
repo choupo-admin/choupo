@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nonanamide  (C9H19NO, CAS 1120-07-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nonanamide;
+formula     C9H19NO;
+CAS         1120-07-6;
+InChIKey    GHLZUHZBBNDWHW-UHFFFAOYSA-N;
+MW          157.257;      // g/mol [origin=calculated method=formula-sum]
+Tc          717.03;      // K   [origin=predictive method=joback]
+Pc          25.978;      // bar [origin=predictive method=joback]
+omega       0.7593;      // -   [origin=predictive method=lee-kesler]
+Tb          531.92;      // K   [origin=predictive method=joback]
+HvapTb      53015.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.557 0.89272 -0.0004905 9.786e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "nonamide" "pelargonamide" "nonan-1-amide" "nonanoic acid amide" "nonanamide (8ci)(9ci)" );
+gibbsFormation
+{
+    dHf_298   -307880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     584.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-37570.0
+    phase     gas;
+}

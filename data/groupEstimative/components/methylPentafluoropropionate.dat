@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl pentafluoropropionate  (C4H3F5O2, CAS 378-75-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylPentafluoropropionate;
+formula     C4H3F5O2;
+CAS         378-75-6;
+InChIKey    JMKJCPUVEMZGEC-UHFFFAOYSA-N;
+MW          178.056;      // g/mol [origin=calculated method=formula-sum]
+Tc          489.28;      // K   [origin=predictive method=joback]
+Pc          31.420;      // bar [origin=predictive method=joback]
+omega       0.4428;      // -   [origin=predictive method=lee-kesler]
+Tb          339.23;      // K   [origin=predictive method=joback]
+HvapTb      25228.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.17 0.63962 -0.0005248 1.511e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CF3; count 1; } { group CF2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 2; } { group F; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2,2,3,3,3-pentakis(fluoranyl)propanoate" "methyl perfluoropropionate" "methyl 2,2,3,3,3-pentafluoropropanoate" "pentafluoropropionic acid methyl ester" "methylpentafluoropropionate" "methyl pentafluoropropanoate" "2,2,3,3,3-pentafluoro-propionic acid methyl ester" "propanoic acid, pentafluoro-, methyl ester" "perfluoropropionic acid, methyl ester" "propionic acid, pentafluoro-, methyl ester" "propanoic acid, 2,2,3,3,3-pentafluoro-, methyl ester" "methyl perfluoropropanoate" );
+gibbsFormation
+{
+    dHf_298   -1441220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     443.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1295940.0
+    phase     gas;
+}

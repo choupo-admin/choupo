@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl propionate  (C4H8O2, CAS 554-12-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylPropionate;
+formula     C4H8O2;
+CAS         554-12-1;
+InChIKey    RJUFJBKOKNCXHH-UHFFFAOYSA-N;
+MW          88.106;      // g/mol [origin=calculated method=formula-sum]
+Tc          523.90;      // K   [origin=predictive method=joback]
+Pc          39.209;      // bar [origin=predictive method=joback]
+omega       0.3519;      // -   [origin=predictive method=lee-kesler]
+Tb          349.34;      // K   [origin=predictive method=joback]
+HvapTb      31905.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.661 0.32904 -9.92e-05 -2.07e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl propanoate" "propanoic acid, methyl ester" "methyl propylate" "propionic acid, methyl ester" "propionate de methyle" "propanoic acid methyl ester" "methyl propionate (natural)" "propionate de methyle [french]" "propionic acid methyl ester" "formyl propionate" "agn-pc-0cqxkd" "methylester kyseliny propionove" );
+gibbsFormation
+{
+    dHf_298   -443170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     363.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-327570.0
+    phase     gas;
+}

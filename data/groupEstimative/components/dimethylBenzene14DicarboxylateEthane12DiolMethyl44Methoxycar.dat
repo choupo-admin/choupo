@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethyl benzene-1,4-dicarboxylate;ethane-1,2-diol;methyl 4-(4-methoxycarbonylphenyl)benzoate  (C28H30O10, CAS 66747-18-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethylBenzene14DicarboxylateEthane12DiolMethyl44Methoxycar;
+formula     C28H30O10;
+CAS         66747-18-0;
+InChIKey    ZUWBOJXUKDZNKV-UHFFFAOYSA-N;
+MW          526.538;      // g/mol [origin=calculated method=formula-sum]
+Tc          1697.95;      // K   [origin=predictive method=joback]
+Pc          11.648;      // bar [origin=predictive method=joback]
+omega       0.8504;      // -   [origin=predictive method=lee-kesler]
+Tb          1355.26;      // K   [origin=predictive method=joback]
+HvapTb      150310.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (112.472 1.68508 -0.00024468 -3.194e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group ACH; count 12; } { group AC; count 6; } { group _CH2OH_2; count 1; } { group COO; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group OH; count 2; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dimethyl benzene-1,4-dicarboxylate; ethane-1,2-diol; methyl 4-(4-methoxycarbonylphenyl)benzoate" "(1,1'-biphenyl)-4,4'-dicarboxylic acid, 4,4'-dimethyl ester, polymer with 1,4-dimethyl 1,4-benzenedicarboxylate and 1,2-ethanediol" "(1,1'-biphenyl)-4,4'-dicarboxylic acid, dimethyl ester, polymer with 1,4-benzenedicarboxylic acid, dimethyl ester and 1,2-ethanediol" "(1,1'-biphenyl)-4,4'-dicarboxylic acid, dimethyl ester, polymer with dimethyl 1,4-benzenedicarboxylate and 1,2-ethanediol" );
+gibbsFormation
+{
+    dHf_298   -1742890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1431.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1231420.0
+    phase     gas;
+}

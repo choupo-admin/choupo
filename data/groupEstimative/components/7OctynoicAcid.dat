@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7-octynoic acid  (C8H12O2, CAS 10297-09-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        7OctynoicAcid;
+formula     C8H12O2;
+CAS         10297-09-3;
+InChIKey    WJBHDZBQZOMDFF-UHFFFAOYSA-N;
+MW          140.182;      // g/mol [origin=calculated method=formula-sum]
+Tc          715.58;      // K   [origin=predictive method=joback]
+Pc          32.690;      // bar [origin=predictive method=joback]
+omega       0.7122;      // -   [origin=predictive method=lee-kesler]
+Tb          518.27;      // K   [origin=predictive method=joback]
+HvapTb      50424.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (13.995 0.7207 -0.00047993 1.3039e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group COOH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 5; } { group tCH; count 1; } { group tC; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oct-7-ynoic acid" );
+gibbsFormation
+{
+    dHf_298   -266820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     490.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-104360.0
+    phase     gas;
+}

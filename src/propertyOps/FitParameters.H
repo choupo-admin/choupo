@@ -85,6 +85,37 @@ Description
                        given P and the model parameters, return
                        (T_bubble_model - T_exp).  Drives NRTL / Wilson
                        binary pair regression.
+
+      * isotherm  --  adsorption-isotherm regression (A1b, contract section
+                       2/5): fit the van't Hoff Langmuir surface
+                       q = q_max b(T) p / (1 + b(T) p),
+                       b(T) = b_ref exp(-dH_ads/R (1/T - 1/tRef)) to
+                       (T, p, q) data.  Residual r_j = (q_model - q_j)/sigma_j
+                       with sigma from a dataset `sigma` column when present,
+                       else 1 mol/kg ABSOLUTE (announced), or
+                       `weighting relative;` (sigma_j = max(q_j, floor),
+                       floor declared).  POSITIVITY BY TRANSFORMATION: q_max
+                       and b_ref are fitted in ln-space (positive by
+                       construction, never clamped); dH_ads in natural space,
+                       sign free --- a fitted dH_ads > 0 makes the report
+                       SCREAM (endothermic adsorption: physically suspicious),
+                       never refuse.  Identifiability is structural, not
+                       cosmetic: a single-temperature dataset REFUSES to
+                       report dH_ads (it fits q_max + b(T_data) only); data
+                       confined to the Henry regime (max b p < 0.05) reports
+                       ONLY the product q_max*b (the Henry slope) with its
+                       uncertainty --- the factors are marked unidentifiable,
+                       never quoted with +/-3000%.  The SVD of the
+                       relative-scaled Jacobian (J diag(theta), natural
+                       parameters) gives the condition number; cond > 1e8 =>
+                       rank-deficient.  Covariance from the Gauss-Newton
+                       Hessian at the optimum (cov = s^2 (J^T W J)^-1, i.e.
+                       2 s^2 against the full chi^2 Hessian 2 J^T W J),
+                       delta-method-transformed to natural space; correlation
+                       matrix printed.  Opt-in `output { proposal auto; }`
+                       writes a schema-exact record proposal under
+                       data/proposed/adsorption/equilibria/ --- for HUMAN
+                       promotion, never the standards catalogue.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -107,12 +138,26 @@ public:
             const ThermoPackage& thermo,
             int verbosity) override;
 
+    std::vector<std::string> headline() const override
+    { return headline_; }
+
     std::map<std::string, scalar> diagnostics() const override
     {
         return diag_;
     }
 
 private:
+    // fit keeps its historical trio; evaluate swaps in its honest scores.
+    std::vector<std::string> headline_ =
+        { "chi2_reduced", "converged", "identifiable" };
+
+private:
+    // residual.kind == isotherm: self-contained analytic-Jacobian LM on the
+    // van't Hoff Langmuir surface (no thermoPackage rebuild --- the isotherm
+    // record is pair data, not a thermo model).  Declared here, implemented
+    // in FitParameters.cpp beside the T_bubble engine.
+    int runIsothermFit(const DictPtr& dict, int verbosity);
+
     inline static const std::string type_ = "fitParameters";
     std::map<std::string, scalar>   diag_;
 };

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexadeca-7,11-diynyl acetate  (C18H28O2, CAS 62103-12-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexadeca711DiynylAcetate;
+formula     C18H28O2;
+CAS         62103-12-2;
+InChIKey    OJBBVRWULKDROR-UHFFFAOYSA-N;
+MW          276.42;      // g/mol [origin=calculated method=formula-sum]
+Tc          880.95;      // K   [origin=predictive method=joback]
+Pc          14.557;      // bar [origin=predictive method=joback]
+omega       0.8084;      // -   [origin=predictive method=lee-kesler]
+Tb          687.66;      // K   [origin=predictive method=joback]
+HvapTb      67373.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (47.051 1.35944 -0.00067652 1.0386e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group CH3COO; count 1; } { group C_C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 11; } { group tC; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexadeca-7,11-diynyl ethanoate" "7,11-hexadecadiyn-1-ol acetate" "7,11-hexadecadiyn-1-ol, acetate" "7,11-hexadecadiyn-1-ol, 1-acetate" );
+gibbsFormation
+{
+    dHf_298   -187530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     851.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=195910.0
+    phase     gas;
+}

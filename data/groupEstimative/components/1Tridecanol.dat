@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-tridecanol  (C13H28O, CAS 112-70-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Tridecanol;
+formula     C13H28O;
+CAS         112-70-9;
+InChIKey    XFRVVPUIAFSTFO-UHFFFAOYSA-N;
+MW          200.366;      // g/mol [origin=calculated method=formula-sum]
+Tc          747.03;      // K   [origin=predictive method=joback]
+Pc          17.743;      // bar [origin=predictive method=joback]
+omega       1.0539;      // -   [origin=predictive method=lee-kesler]
+Tb          589.22;      // K   [origin=predictive method=joback]
+HvapTb      61211.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.638 1.27282 -0.0007138 1.533e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 12; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 12; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tridecan-1-ol" "tridecanol" "tridecyl alcohol" "n-tridecan-1-ol" "n-tridecanol" "n-tridecyl alcohol" "fatty alcohol c-13" "alcohols, c12-14" "agn-pc-00gu0s" "tridecanol  (mixture of isomers)" "22758-82-3 (tri-aluminum salt)" "tridecyl alcohol,mix prim alcohols" );
+gibbsFormation
+{
+    dHf_298   -463880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     713.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-78240.0
+    phase     gas;
+}

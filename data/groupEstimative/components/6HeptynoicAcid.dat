@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-heptynoic acid  (C7H10O2, CAS 30964-00-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6HeptynoicAcid;
+formula     C7H10O2;
+CAS         30964-00-2;
+InChIKey    OFCPMJGTZUVUSM-UHFFFAOYSA-N;
+MW          126.155;      // g/mol [origin=calculated method=formula-sum]
+Tc          695.37;      // K   [origin=predictive method=joback]
+Pc          36.598;      // bar [origin=predictive method=joback]
+omega       0.6605;      // -   [origin=predictive method=lee-kesler]
+Tb          495.39;      // K   [origin=predictive method=joback]
+HvapTb      48198.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.904 0.6257 -0.00042553 1.1849e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group COOH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group tCH; count 1; } { group tC; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hept-6-ynoic acid" "hept-6-ynoic acid;" "ofcpmjgtzuvusm-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -246180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     451.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-112780.0
+    phase     gas;
+}

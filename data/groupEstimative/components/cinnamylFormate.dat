@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cinnamyl formate  (C10H10O2, CAS 104-65-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C10H10O2 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        cinnamylFormate;
+formula     C10H10O2;
+CAS         104-65-4;
+InChIKey    LBHJXKYRYCUGPD-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          162.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          649.75;      // K   [origin=predictive method=joback]
+Pc          31.456;      // bar [origin=predictive method=joback]
+omega       0.2943;      // -   [origin=predictive method=lee-kesler]
+Tb          435.66;      // K   [origin=predictive method=joback]
+HvapTb      37715.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-73.789 0.903 -0.0007882 2.774e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH=CH; count 1; } { group ACH; count 5; } { group AC; count 1; } { group HCOO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-phenylprop-2-enyl methanoate" "2-propen-1-ol, 3-phenyl-, 1-formate" "3-phenylprop-2-enyl formate" );
+gibbsFormation
+{
+    dHf_298   180470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     615.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=269910.0
+    phase     gas;
+}

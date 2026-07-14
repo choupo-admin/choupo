@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2-bis(hydroxymethyl)butyl 6-aminohexanoate  (C12H25NO4, CAS 68084-20-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22BisHydroxymethylButyl6Aminohexanoate;
+formula     C12H25NO4;
+CAS         68084-20-8;
+InChIKey    DWVOZKAOIUGQCB-UHFFFAOYSA-N;
+MW          247.335;      // g/mol [origin=calculated method=formula-sum]
+Tc          968.31;      // K   [origin=predictive method=joback]
+Pc          22.568;      // bar [origin=predictive method=joback]
+omega       1.6131;      // -   [origin=predictive method=lee-kesler]
+Tb          786.04;      // K   [origin=predictive method=joback]
+HvapTb      92416.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.989 1.34472 -0.0008104 1.77e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group C; count 1; } { group OH; count 2; } { group CH2COO; count 1; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 9; } { group C; count 1; } { group OH; count 2; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2-bis(hydroxymethyl)butyl 6-azanylhexanoate" "hexanoic acid, 6-amino-, 2,2-bis(hydroxymethyl)butyl ester" );
+gibbsFormation
+{
+    dHf_298   -887710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     789.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-464560.0
+    phase     gas;
+}

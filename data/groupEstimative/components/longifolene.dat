@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: longifolene  (C15H24, CAS 475-20-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        longifolene;
+formula     C15H24;
+CAS         475-20-7;
+InChIKey    PDSNLYSELAIEBU-PQNSMMMDSA-N;
+MW          204.357;      // g/mol [origin=calculated method=formula-sum]
+Tc          786.19;      // K   [origin=predictive method=joback]
+Pc          21.139;      // bar [origin=predictive method=joback]
+omega       0.4208;      // -   [origin=predictive method=lee-kesler]
+Tb          561.86;      // K   [origin=predictive method=joback]
+HvapTb      46306.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-237.53 2.27566 -0.002222 9.159e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 3; } { group C; count 2; } { group CH2=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 3; } { group C_ring; count 2; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "kuromatsuen" "kuromatsuene" "longifolen" "junipen" "junipene" "d-longifolene" "1,4-methanoazulene, decahydro-4,8,8-trimethyl-9-methylene-" "(+)-longifolene" "1,4-methanoazulene, decahydro-4,8,8-trimethyl-9-methylene-, (1s,3ar,4s,8as)-" "1,4-methanoazulene, decahydro-4,8,8-trimethyl-9-methylene-, (1s-(1alpha,3abeta,4alpha,8abeta))" "1,4-methanoazulene, decahydro-9-methylene-4,8,8-trimethyl-, (1s-(1-alpha,3a-beta,4-alpha,8a-beta))-" "(1s-(1alpha,3abeta,4alpha,8abeta))-decahydro-4,8,8-trimethyl-9-methylene-1,4-methanoazulene" );
+gibbsFormation
+{
+    dHf_298   -72810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     537.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=260150.0
+    phase     gas;
+}

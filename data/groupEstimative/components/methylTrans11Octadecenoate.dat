@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl trans-11-octadecenoate  (C19H36O2, CAS 6198-58-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylTrans11Octadecenoate;
+formula     C19H36O2;
+CAS         6198-58-9;
+InChIKey    PVVODBCDJBGMJL-CMDGGOBGSA-N;
+MW          296.495;      // g/mol [origin=calculated method=formula-sum]
+Tc          867.19;      // K   [origin=predictive method=joback]
+Pc          11.223;      // bar [origin=predictive method=joback]
+omega       0.8865;      // -   [origin=predictive method=lee-kesler]
+Tb          696.70;      // K   [origin=predictive method=joback]
+HvapTb      65253.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.156 1.77404 -0.000999 2.052e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 13; } { group CH=CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 14; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl (e)-octadec-11-enoate" "methyl 11-octadecenoate" "methyl trans-vaccenate" "11-octadecenoic acid, methyl ester" "trans-11-octadecenoic acid methyl ester" "methyl vaccenate" "methyl (z)-octadec-11-enoate" "trans-vaccenic acid methyl ester" "ambap6198-58-9" "methyl (11e)-octadec-11-enoate" "11-cis-octadecenoic acid methyl ester" );
+gibbsFormation
+{
+    dHf_298   -635550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     940.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-121050.0
+    phase     gas;
+}

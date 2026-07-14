@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diisopropanolamine  (C6H15NO2, CAS 110-97-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diisopropanolamine;
+formula     C6H15NO2;
+CAS         110-97-4;
+InChIKey    LVTYICIALWPMFW-UHFFFAOYSA-N;
+MW          133.191;      // g/mol [origin=calculated method=formula-sum]
+Tc          736.77;      // K   [origin=predictive method=joback]
+Pc          40.007;      // bar [origin=predictive method=joback]
+omega       1.4282;      // -   [origin=predictive method=lee-kesler]
+Tb          570.53;      // K   [origin=predictive method=joback]
+HvapTb      67968.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.442 0.72984 -0.0004184 8.93e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group OH; count 2; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group OH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2-oxidanylpropylamino)propan-2-ol" "1,1'-iminodipropan-2-ol" "bis(2-hydroxypropyl)amine" "2-propanol, 1,1'-iminobis-" "1,1'-iminodi-2-propanol" "bis(2-propanol)amine" "di-2-propanolamine" "dipa (alcohol)" "dipropyl-2,2'-dihydroxy-amine" "1,1'-iminobis-2-propanol" "1-[(2-hydroxypropyl)amino]propan-2-ol" "2-propanol, 1,1'-iminodi-" );
+gibbsFormation
+{
+    dHf_298   -428720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     513.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-189490.0
+    phase     gas;
+}

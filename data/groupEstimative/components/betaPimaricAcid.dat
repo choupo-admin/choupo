@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: beta-pimaric acid  (C20H30O2, CAS 83817-45-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        betaPimaricAcid;
+formula     C20H30O2;
+CAS         83817-45-2;
+InChIKey    RWWVEQKPFPXLGL-RMGPQRKISA-N;
+MW          302.458;      // g/mol [origin=calculated method=formula-sum]
+Tc          1087.60;      // K   [origin=predictive method=joback]
+Pc          16.977;      // bar [origin=predictive method=joback]
+omega       0.9060;      // -   [origin=predictive method=lee-kesler]
+Tb          847.93;      // K   [origin=predictive method=joback]
+HvapTb      76786.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-238.59 2.69158 -0.00241888 9.291e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 6; } { group CH; count 3; } { group C; count 2; } { group CH=C; count 2; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 2; } { group C_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1r,4ar,4bs)-1,4a-dimethyl-7-propan-2-yl-2,3,4,4b,5,9,10,10a-octahydrophenanthrene-1-carboxylic acid" "levopimaric acid" "l-sapietic acid" "delta6,8(14)-abietadienoic acid" "(5xi)-abieta-8(14),12-dien-18-oic acid" "1-phenanthrenecarboxylic acid, 1,2,3,4,4a,4b,5,9,10,10a-decahydro-1,4a-dimethyl-7-(1-methylethyl)-, (1theta-(1alpha,4abeta,4balpha,10aalpha))-" "podocarpa-8(14),12-dien-15-oic acid, 13-isopropyl-" "podocarpa-8(14),12-dien-15-oic acid, 13-isopropyl- (8ci)" "1-phenanthrenecarboxylic acid, 1,2,3,4,4a,4b,5,9,10,10a-decahydro-1,4a-dimethyl-7-(1-methylethyl)-, (1r-(1alpha,4abeta, 4balpha,10aalpha))-" );
+gibbsFormation
+{
+    dHf_298   -521320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     817.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-85110.0
+    phase     gas;
+}

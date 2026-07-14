@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ccris 7141  (C19H16O2, CAS 83053-57-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ccris7141;
+formula     C19H16O2;
+CAS         83053-57-0;
+InChIKey    GNFMNRWHMUCFDL-UHFFFAOYSA-N;
+MW          276.335;      // g/mol [origin=calculated method=formula-sum]
+Tc          1072.07;      // K   [origin=predictive method=joback]
+Pc          22.676;      // bar [origin=predictive method=joback]
+omega       0.9316;      // -   [origin=predictive method=lee-kesler]
+Tb          820.53;      // K   [origin=predictive method=joback]
+HvapTb      72971.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-48.229 1.43042 -0.00096688 2.627e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 7; } { group AC; count 6; } { group ACCH2; count 1; } { group CH2CO; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 7; } { group O; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "11-ethoxy-15,16-dihydrocyclopenta[a]phenanthren-17-one" "11-ethoxy-15,16-dihydro-17-cyclopenta(a)phenanthren-17-one" "15,16-dihydro-11-ethoxy-17h-cyclopenta(a)phenanthren-17-one" "17-cyclopenta(a)phenanthren-17-one, 15,16-dihydro-11-ethoxy-" "17h-cyclopenta(a)phenathren-17-one, 11-ethoxy-15,16-dihydro-" "11-ethoxygona-1(10),2,4,6,8(14),9(11),12-heptaen-17-one" );
+gibbsFormation
+{
+    dHf_298   -39480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     431.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=237160.0
+    phase     gas;
+}

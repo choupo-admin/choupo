@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: veratramine  (C27H39NO2, CAS 60-70-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        veratramine;
+formula     C27H39NO2;
+CAS         60-70-8;
+InChIKey    MALFODICFSIXPO-KFKQDBFTSA-N;
+MW          409.614;      // g/mol [origin=calculated method=formula-sum]
+Tc          1383.64;      // K   [origin=predictive method=joback]
+Pc          13.768;      // bar [origin=predictive method=joback]
+omega       1.2590;      // -   [origin=predictive method=lee-kesler]
+Tb          1130.13;      // K   [origin=predictive method=joback]
+HvapTb      119074.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-223.51 3.02448 -0.00221392 6.875e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 5; } { group C; count 1; } { group CH=C; count 1; } { group ACH; count 2; } { group ACCH3; count 1; } { group ACCH2; count 1; } { group ACCH; count 2; } { group OH; count 2; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 6; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 5; } { group OH; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s,3r,5s)-2-[(1s)-1-[(3s,6ar,11as,11br)-10,11b-dimethyl-3-oxidanyl-1,2,3,4,6,6a,11,11a-octahydrobenzo[a]fluoren-9-yl]ethyl]-5-methyl-piperidin-3-ol" "(3beta,23beta)-14,15,16,17-tetradehydroveratraman-3,23-diol" "veratraman-3,23-diol, 14,15,16,17-tetradehydro-, (3-beta,23-beta)-" "veratraman-3, 14,15,16,17-tetradehydro-, (3.beta.,23.beta.)-" "(3" "a,23" "a)-14,15,16,17-teradehydroveratraman-3,23-diol" "(3beta,23r)-14,15,16,17-tetradehydroveratraman-3,23-diol" "veratraman-3,23-diol, 14,15,16,17-tetradehydro-, (3beta,23beta)-" "veratraman-3,23-diol, 14,15,16,17-tetradehydro-, (3beta,23beta)- (9ci)" "(2s,3r,5s)-2-[(1s)-1-[(3s,6ar,11as,11br)-3-hydroxy-10,11b-dimethyl-1,2,3,4,6,6a,11,11a-octahydrobenzo[a]fluoren-9-yl]ethyl]-5-methylpiperidin-3-ol" );
+gibbsFormation
+{
+    dHf_298   -409490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     806.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=245820.0
+    phase     gas;
+}

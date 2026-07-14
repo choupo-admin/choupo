@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: alpha-n-propyldecalin  (C13H24, CAS 91972-45-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        alphaNPropyldecalin;
+formula     C13H24;
+CAS         91972-45-1;
+InChIKey    HIXIFRGJVIZERN-UHFFFAOYSA-N;
+MW          180.335;      // g/mol [origin=calculated method=formula-sum]
+Tc          734.63;      // K   [origin=predictive method=joback]
+Pc          21.856;      // bar [origin=predictive method=joback]
+omega       0.4157;      // -   [origin=predictive method=lee-kesler]
+Tb          522.93;      // K   [origin=predictive method=joback]
+HvapTb      44737.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-123.958 1.47572 -0.0008828 1.943e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 9; } { group CH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-propyl-1,2,3,4,4a,5,6,7,8,8a-decahydronaphthalene" ".alpha.-n-propyldecalin" "1-propyldecahydronaphthalene" );
+gibbsFormation
+{
+    dHf_298   -211030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     519.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=123970.0
+    phase     gas;
+}

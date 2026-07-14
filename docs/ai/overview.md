@@ -1,8 +1,9 @@
 # Choupo — Overview for an LLM helping a user
 
-Read this first.  The core files in this folder together fit a single
-context window; the others are catalogue + recipes you pull in as
-needed.  The full set is `overview.md` (this file), `dict-syntax.md`,
+For a first run, read [`start-here.md`](start-here.md).  This overview defines
+the governing contracts; the remaining files are references and recipes to
+pull in as needed.  Do not load the whole directory by default.  The principal
+references are `overview.md` (this file), `dict-syntax.md`,
 `case-layout.md`, `thermo.md`, `unit-ops.md`, `components.md`,
 `patterns.md`, `pitfalls.md`, `energy.md` (energy wires + heat ports +
 utilities), `schemas-reference.md`, and `gui-credo.md`.  See
@@ -64,7 +65,11 @@ case/
 │   ├── solverDict         (opt) per-unit-op solver options
 │   └── outerDict          (opt) outer driver (sweep / optim / DesignSpec / fit)
 └── constant/
-    ├── thermoPackage      (required) components + activity / EoS / transport
+    ├── propertyDict       REQUIRED -- the ONE property-package file, in
+    │                      either form by content: FLAT (components +
+    │                      activity / EoS / transport) or the declarative
+    │                      MANIFEST (full inline record, the tutorial
+    │                      standard; or a `package <name>;` selector)
     ├── reactions          (opt) named-reaction library
     ├── crystallisation    (opt) per-kinetic-pair library
     └── dryingKinetics     (opt) drying-curve library
@@ -114,6 +119,14 @@ them in answers to users.
       OVERLAYS the standard catalogue entry **block-by-block** (you
       copy the whole reference-state block you refine, never a lone
       scalar — `data-doctrine.md` §3).
+   5. **Package-declared parameter files** — a `propertyPackage`
+      DECLARES the pair files it consumes (`parameters { henryPairs
+      {…} kijPairs {…} }`, homes under `data/standards/parameters/`
+      + `henrysLaw/`) and the builder VERIFIES them at assembly: a
+      declared-but-missing file REFUSES loudly, naming the entry to
+      add (never an ideal-default).  Method records live in
+      `data/standards/propertyMethods/`, shared package manifests in
+      `data/standards/propertyPackages/` (see `thermo.md`).
 
    When you write a case, intrinsic data come from existing
    `data/standards/components/` entries (see `components.md`); only
@@ -125,7 +138,7 @@ Three shapes of question dominate.  Use this rough decision tree:
 
 - **"Write me a case for X"** → `dict-syntax.md` + `case-layout.md` +
   `unit-ops.md` (the unit they need) + `thermo.md` (compose the
-  thermoPackage) + `components.md` (check which components ship).
+  property package) + `components.md` (check which components ship).
   Often `patterns.md` for a related recipe.
 - **"Wire heat / shaft work between units" / "heat integration" /
   "add a utility / heat-link"** → `energy.md` (energy wires `W` =
@@ -142,13 +155,13 @@ Three shapes of question dominate.  Use this rough decision tree:
 1. **Pick the right binary** (set `application` in controlDict
    accordingly).  Steady is the default; batch/ctrl needs time
    settings; props needs a propsDict.
-2. **Compose the thermoPackage** explicitly.  Don't assume defaults
+2. **Compose the property package** (`constant/propertyDict`) explicitly.  Don't assume defaults
    — write `activityModel { model ideal; }` and
    `equationOfState { model idealGas; }` even when they are.
 3. **Use named units** in every scalar (`P 1 bar;`, `F 100 kmol/h;`,
    `T 350 K;`).  Choupo's parser tracks dimensions and will catch
    mismatches if you slip.  Bare numbers are interpreted as raw SI.
-4. **Quote a tutorial** the user can compare against.  131 shipped
+4. **Quote a tutorial** the user can compare against.  More than 200 shipped
    tutorials are listed in `case-layout.md`; near-twins exist for
    most asked-for cases.
 5. **End with: "now you can edit `system/flowsheetDict` to tweak,
@@ -156,10 +169,19 @@ Three shapes of question dominate.  Use this rough decision tree:
 
 ## Versioning, currency
 
-This document tracks the line (current as of 2026-05-30: 131
-tutorials, 117 passing `bin/runTests`; 56 components in
-`data/standards/components/`).  Big changes, recent first:
+This document tracks the line current as of 2026-07-13.  The repository carries
+more than 300 openable `.cho` markers (including nested plant sectors and
+validation cases), 255 golden-master cases, and 194 standard component files.
+Big changes, recent first:
 
+- The `propertyPackage` grammar consolidation (2026-07-04): the
+  declarative manifest in TWO forms (inline full record — the tutorial
+  standard — or a `package <name>;` selector with a REQUIRED header),
+  the four VLE worlds selected by the liquid method slot (γ-φ /
+  `solution.henryDilute` / φ-φ `eos.<Model>` both phases /
+  `electrolyte.*`), per-group reference rungs in each
+  `propertyMethods/` record, and declared→verified→refused parameter
+  files (`henryPairs`, `kijPairs`).  See `thermo.md`.
 - Forward heat-links + `utilityAllocation` report — a column's
   condenser/reboiler heat can drive another unit (heat integration),
   credo-accounted (see `energy.md`).

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7,8-dehydroretinoic acid  (C20H26O2, CAS 74193-14-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        78DehydroretinoicAcid;
+formula     C20H26O2;
+CAS         74193-14-9;
+InChIKey    PZGWJKNRUMKVBF-SNQZJYSLSA-N;
+MW          298.426;      // g/mol [origin=calculated method=formula-sum]
+Tc          1093.01;      // K   [origin=predictive method=joback]
+Pc          16.431;      // bar [origin=predictive method=joback]
+omega       0.8907;      // -   [origin=predictive method=lee-kesler]
+Tb          852.86;      // K   [origin=predictive method=joback]
+HvapTb      80358.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-114.28 2.1037 -0.00176746 6.4158e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 3; } { group C; count 1; } { group CH=CH; count 1; } { group CH=C; count 2; } { group COOH; count 1; } { group C_C; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group dCH; count 4; } { group dC; count 2; } { group tC; count 2; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dC_ring; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2e,4e,6e)-3,7-dimethyl-9-(2,6,6-trimethylcyclohexen-1-yl)nona-2,4,6-trien-8-ynoic acid" "7,8-didehydroretinoic acid" "retinoic acid, 7,8-didehydro-" "trans-3,7-dimethyl-9-(2,6,6-trimethyl-1-cyclohexen-1-yl)-7-yne-2,4,6-nonatrienoic acid" );
+gibbsFormation
+{
+    dHf_298   -97620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     921.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=229630.0
+    phase     gas;
+}

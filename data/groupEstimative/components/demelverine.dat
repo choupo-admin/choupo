@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: demelverine  (C17H21N, CAS 13977-33-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        demelverine;
+formula     C17H21N;
+CAS         13977-33-8;
+InChIKey    XVWQQNARVMHZBP-UHFFFAOYSA-N;
+MW          239.362;      // g/mol [origin=calculated method=formula-sum]
+Tc          876.66;      // K   [origin=predictive method=joback]
+Pc          20.850;      // bar [origin=predictive method=joback]
+omega       0.6801;      // -   [origin=predictive method=lee-kesler]
+Tb          654.36;      // K   [origin=predictive method=joback]
+HvapTb      60031.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-91.066 1.58492 -0.001076 2.795e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 10; } { group ACCH2; count 2; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-methyl-2-phenyl-n-(2-phenylethyl)ethanamine" "benzeneethanamine, n-methyl-n-(2-phenylethyl)-" "n-methyl-n-phenethyl-2-phenylethanamine" "demelverina" "demelverinum" "methphenethamin" "methphenethamine" "demelverinum [inn-latin]" "diphenethylamine, n-methyl-" "n-methyl-n,n-diphenethylamine" "n-methyl-beta,beta-diphenyldiethylamine" "18719-09-0 (hcl)" );
+gibbsFormation
+{
+    dHf_298   146380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     621.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=427860.0
+    phase     gas;
+}

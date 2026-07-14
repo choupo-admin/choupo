@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclooctasiloxane, hexadecamethyl-  (C16H48O8Si8, CAS 556-68-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C16H48O8Si8 (delta Si+8; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        cyclooctasiloxaneHexadecamethyl;
+formula     C16H48O8Si8;
+CAS         556-68-3;
+InChIKey    XKJMJYZFAWYREL-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          593.232;      // g/mol [origin=calculated method=formula-sum]
+Tc          1051.34;      // K   [origin=predictive method=joback]
+Pc          8.173;      // bar [origin=predictive method=joback]
+omega       0.4378;      // -   [origin=predictive method=lee-kesler]
+Tb          825.24;      // K   [origin=predictive method=joback]
+HvapTb      90724.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (371.67 -0.02008 0.0025394 -1.65e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 16; } { group SiO; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 16; } { group O_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,4,4,6,6,8,8,10,10,12,12,14,14,16,16-hexadecamethyl-1,3,5,7,9,11,13,15-octaoxa-2,4,6,8,10,12,14,16-octasilacyclohexadecane" "hexadecamethylcyclooctasiloxane" "hexadecamethyl-cyclooctasioxane" "cyclooctasiloxane,2,2,4,4,6,6,8,8,10,10,12,12,14,14,16,16-hexadecamethyl-" "cyclooctasiloxane,hexadecamethyl- (7ci,8ci,9ci); hexadecamethylcyclooctasiloxane" );
+gibbsFormation
+{
+    dHf_298   -2260190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1432.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1435240.0
+    phase     gas;
+}

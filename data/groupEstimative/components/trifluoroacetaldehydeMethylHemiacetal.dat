@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trifluoroacetaldehyde methyl hemiacetal  (C3H5F3O2, CAS 431-46-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trifluoroacetaldehydeMethylHemiacetal;
+formula     C3H5F3O2;
+CAS         431-46-9;
+InChIKey    GWTBCUWZAVMAQV-UHFFFAOYSA-N;
+MW          130.065;      // g/mol [origin=calculated method=formula-sum]
+Tc          528.20;      // K   [origin=predictive method=joback]
+Pc          42.220;      // bar [origin=predictive method=joback]
+omega       0.7390;      // -   [origin=predictive method=lee-kesler]
+Tb          376.98;      // K   [origin=predictive method=joback]
+HvapTb      37226.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.07 0.42672 -0.000283 6.77e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group OH; count 1; } { group CH3O; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group C; count 1; } { group F; count 3; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,2-tris(fluoranyl)-1-methoxy-ethanol" "2,2,2-trifluoro-1-methoxyethanol" "fluoral methyl hemiacetal" "ethanol, 2,2,2-trifluoro-1-methoxy-" "trifluoroacetaldehyde hemi methyl acetal" "1-methoxy-2,2,2-trifluoroethanol" "trifluoroacetaldehyde methyl hemiacetal, tech" "trifluoroacetaldehyde methyl hemiacetal, tech." "ethanol, 1-methoxy-2,2,2-trifluoro-" "fluoral hemimethylacetal" "gwtbcuwzavmaqv-uhfffaoysa-" "trifuoroacetaldehyde hemimethylacetal" );
+gibbsFormation
+{
+    dHf_298   -992060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     381.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-851470.0
+    phase     gas;
+}

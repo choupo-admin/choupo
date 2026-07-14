@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chloral hydrate  (C2H3Cl3O2, CAS 302-17-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chloralHydrate;
+formula     C2H3Cl3O2;
+CAS         302-17-0;
+InChIKey    RNFNDJAIBTYOQL-UHFFFAOYSA-N;
+MW          165.394;      // g/mol [origin=calculated method=formula-sum]
+Tc          728.89;      // K   [origin=predictive method=joback]
+Pc          58.272;      // bar [origin=predictive method=joback]
+omega       1.1675;      // -   [origin=predictive method=lee-kesler]
+Tb          538.34;      // K   [origin=predictive method=joback]
+HvapTb      64875.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.17 0.4139 -0.000382 1.306e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group OH; count 2; } { group CCl3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group C; count 1; } { group Cl; count 3; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,2-tris(chloranyl)ethane-1,1-diol" "noctec" "tosyl" "trichloroacetaldehyde hydrate" "somnote" "chloral monohydrate" "2,2,2-trichloroethane-1,1-diol" "chloraldurat" "chloradorm" "cohidrate" "felsules" "kessodrate" );
+gibbsFormation
+{
+    dHf_298   -450320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     387.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-343070.0
+    phase     gas;
+}

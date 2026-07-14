@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): 5-carboxy-4-hexyl-2-cyclohexene-1-octanoic acid ethanolamine salt (1:1)  (C23H43NO5, CAS 67939-53-1)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           5Carboxy4Hexyl2Cyclohexene1OctanoicAcidEthanolamineSalt11;
+formula        C23H43NO5;
+CAS            67939-53-1;
+InChIKey       WJSMHCRJYTZKHE-UHFFFAOYSA-N;
+MW             413.599;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: 5-carboxy-4-hexyl-2-cyclohexene-1-octanoic acid ethanolamine salt (1:1)

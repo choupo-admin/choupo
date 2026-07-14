@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1-methylenedi-2-naphthol  (C21H16O2, CAS 1096-84-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Methylenedi2Naphthol;
+formula     C21H16O2;
+CAS         1096-84-0;
+InChIKey    ZPANWZBSGMDWON-UHFFFAOYSA-N;
+MW          300.357;      // g/mol [origin=calculated method=formula-sum]
+Tc          1215.19;      // K   [origin=predictive method=joback]
+Pc          30.390;      // bar [origin=predictive method=joback]
+omega       1.2593;      // -   [origin=predictive method=lee-kesler]
+Tb          942.60;      // K   [origin=predictive method=joback]
+HvapTb      97524.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-136.139 2.0238 -0.00183308 6.683e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 5; } { group ACCH2; count 1; } { group ACOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 8; } { group OH_phenol; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[(2-oxidanylnaphthalen-1-yl)methyl]naphthalen-2-ol" "1,1'-methylenedi-2-naphthol" "squoxin" "2-naphthalenol, 1,1'-methylenebis-" "1,1'-methylenebis(2-naphthol)" "1,1'-methylenebis(naphthalen-2-ol)" "2-naphthol, 1,1'-methylenedi-" "2-naphthalenol,1'-methylenebis-" "1-[(2-hydroxynaphthyl)methyl]naphthalen-2-ol" "1,1'-methylene-di(2-naphthol)" "bis(2-hydroxy-1-naphthyl)methane" "2-naphthol, 1,1'-methylene-di-" );
+gibbsFormation
+{
+    dHf_298   870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     583.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=235560.0
+    phase     gas;
+}

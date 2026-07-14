@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------*\
+  compare_visc_liquid_water / constant/thermoPackage
+
+  Pure water is the whole system: the case compares two liquid-viscosity
+  correlations (Andrade vs Vogel) over 280-360 K, so the property under test
+  is TRANSPORT, not phase equilibrium.  The ideal-gamma / ideal-gas pair is
+  an inert default for a single pure liquid; each op brings its own
+  viscosity correlation via a per-op thermo {} override (note below).
+\*---------------------------------------------------------------------------*/
+
+components       ( water );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }
+
+// No baseline transport model here on purpose: each op declares its own
+// liquidViscosity via the `thermo {}` per-op override.  Required when
+// the property `viscosity_liquid` is evaluated.

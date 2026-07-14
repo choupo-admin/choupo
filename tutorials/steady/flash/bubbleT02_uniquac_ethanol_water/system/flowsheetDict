@@ -7,16 +7,7 @@
   the vapour enriched in ethanol towards the azeotrope, y_ethanol ~ 0.58).
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;            // not actually used by bubbleT
-        T            350.0 K;                 // initial T guess
-        P            1.01325 bar;
-        molarComposition  { ethanol 0.30;  water 0.70; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

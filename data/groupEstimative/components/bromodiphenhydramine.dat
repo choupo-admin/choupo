@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bromodiphenhydramine  (C17H20BrNO, CAS 118-23-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bromodiphenhydramine;
+formula     C17H20BrNO;
+CAS         118-23-0;
+InChIKey    NUNIWXHYABYXKF-UHFFFAOYSA-N;
+MW          334.257;      // g/mol [origin=calculated method=formula-sum]
+Tc          982.34;      // K   [origin=predictive method=joback]
+Pc          21.734;      // bar [origin=predictive method=joback]
+omega       0.8541;      // -   [origin=predictive method=lee-kesler]
+Tb          747.48;      // K   [origin=predictive method=joback]
+HvapTb      69150.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-44.758 1.50634 -0.00097256 2.334e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 9; } { group AC; count 2; } { group ACCH; count 1; } { group CH2O; count 1; } { group CH3N; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group Br; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[(4-bromophenyl)-phenyl-methoxy]-n,n-dimethyl-ethanamine" "bromazine" "bromdiphenhydramine" "bromdiphenhydraminum" "bromazinum" "bromazina" "bromazine [inn:ban]" "bromazinum [inn-latin]" "bromanautine" "histabromamine" "amodryl" "bromazin" );
+gibbsFormation
+{
+    dHf_298   23740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     668.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=325110.0
+    phase     gas;
+}

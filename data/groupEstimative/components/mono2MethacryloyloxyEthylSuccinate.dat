@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: mono-2-(methacryloyloxy)ethyl succinate  (C10H14O6, CAS 20882-04-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        mono2MethacryloyloxyEthylSuccinate;
+formula     C10H14O6;
+CAS         20882-04-6;
+InChIKey    ZEWLHMQYEZXSBH-UHFFFAOYSA-N;
+MW          230.216;      // g/mol [origin=calculated method=formula-sum]
+Tc          881.81;      // K   [origin=predictive method=joback]
+Pc          24.219;      // bar [origin=predictive method=joback]
+omega       1.1475;      // -   [origin=predictive method=lee-kesler]
+Tb          686.91;      // K   [origin=predictive method=joback]
+HvapTb      69242.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (46.534 0.87492 -0.0004288 4.08e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH2=C; count 1; } { group CH2COO; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group dCH2; count 1; } { group dC; count 1; } { group COOH; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[2-(2-methylprop-2-enoyloxy)ethoxy]-4-oxidanylidene-butanoic acid" "4-[2-(methacryloyloxy)ethoxy]-4-oxobutanoic acid" "butanedioic acid, 1-(2-((2-methyl-1-oxo-2-propen-1-yl)oxy)ethyl) ester" "butanedioic acid, 1-[2-[(2-methyl-1-oxo-2-propen-1-yl)oxy]ethyl] ester" "butanedioic acid, mono(2-((2-methyl-1-oxo-2-propenyl)oxy)ethyl) ester" "butanedioic acid, mono[2-[(2-methyl-1-oxo-2-propenyl)oxy]ethyl] ester" "(2-((2-methyl-1-oxoallyl)oxy)ethyl) hydrogen succinate" "4-[2-(2-methylprop-2-enoyloxy)ethoxy]-4-oxobutanoic acid" );
+gibbsFormation
+{
+    dHf_298   -1118920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     692.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-852040.0
+    phase     gas;
+}

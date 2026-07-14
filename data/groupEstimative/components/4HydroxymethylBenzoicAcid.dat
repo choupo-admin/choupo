@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(Hydroxymethyl)benzoic acid  (C8H8O3, CAS 3006-96-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4HydroxymethylBenzoicAcid;
+formula     C8H8O3;
+CAS         3006-96-0;
+InChIKey    WWYFPDXEIFBNKE-UHFFFAOYSA-N;
+MW          152.149;      // g/mol [origin=calculated method=formula-sum]
+Tc          863.79;      // K   [origin=predictive method=joback]
+Pc          45.104;      // bar [origin=predictive method=joback]
+omega       1.2277;      // -   [origin=predictive method=lee-kesler]
+Tb          651.99;      // K   [origin=predictive method=joback]
+HvapTb      70183.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.099 0.7102 -0.00047856 1.224e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-carboxybenzyl alcohol" "Benzoic acid, 4-(hydroxymethyl)-" "p-(hydroxymethyl)benzoic acid" "p-carboxybenzyl alcohol" "p-toluic acid, α-hydroxy-" "α-hydroxy-p-toluic acid" "4-hydroxymethylbenzoic acid" "4-hydroxymethyl-benzoic acid" "p-hydroxymethyl benzoic acid" "4-(hydroxymethyl)-benzoic acid" "CHEMBL4636837" ".alpha.-hydroxy-p-toluic acid" );
+gibbsFormation
+{
+    dHf_298   -485890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     459.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-361470.0
+    phase     gas;
+}

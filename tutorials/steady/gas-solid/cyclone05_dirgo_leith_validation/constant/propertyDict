@@ -1,0 +1,12 @@
+/*---------------------------------------------------------------------------*\
+  N2 (carrier gas) + oilDroplet (Dirgo-Leith mineral-oil aerosol, a solid pseudo-particle).  The
+  cyclone needs a gas viscosity for the Lapple d50, so the package carries
+  a transport model (Chung).  silica is non-volatile (K = 0) and lives in
+  the solid phase (s[]), never in z.
+\*---------------------------------------------------------------------------*/
+
+components       ( N2  oilDroplet );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }
+transport        { viscosity           { model Chung; } }

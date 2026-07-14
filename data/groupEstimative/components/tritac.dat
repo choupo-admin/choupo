@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tritac  (C10H11Cl3O2, CAS 1861-44-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tritac;
+formula     C10H11Cl3O2;
+CAS         1861-44-5;
+InChIKey    LJWIIRATRWPHBA-UHFFFAOYSA-N;
+MW          269.546;      // g/mol [origin=calculated method=formula-sum]
+Tc          905.45;      // K   [origin=predictive method=joback]
+Pc          27.127;      // bar [origin=predictive method=joback]
+omega       1.0952;      // -   [origin=predictive method=lee-kesler]
+Tb          696.47;      // K   [origin=predictive method=joback]
+HvapTb      73972.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (70.572 0.69352 -0.00033408 4.01e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 2; } { group ACCH2; count 1; } { group ACCl; count 3; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 3; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[[2,3,6-tris(chloranyl)phenyl]methoxy]propan-2-ol" "1-((2,3,6-trichlorobenzyl)oxy)-2-propanol" "1-((2,3,6-trichlorophenyl)methoxy)-2-propanol" "1-[(2,3,6-trichlorophenyl)methoxy]propan-2-ol" "2-propanol, 1-((2,3,6-trichlorophenyl)methoxy)-" "2-propanol, 1-((2,3,6-trichlorobenzyl)oxy)- (7ci,8ci)" "2-propanol, 1-[(2,3,6-trichlorophenyl)methoxy]-" "2-propanol,1-[(2,3,6-trichlorophenyl)methoxy]-" "2-propanol,1-[(2,3,6-trichlorobenzyl)oxy]- (7ci,8ci);1-(2,3,6-trichlorobenzyloxy)propan-2-ol; hrs 587; tritac" );
+gibbsFormation
+{
+    dHf_298   -384560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     573.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-163210.0
+    phase     gas;
+}

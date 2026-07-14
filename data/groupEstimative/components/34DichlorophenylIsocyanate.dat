@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,4-dichlorophenyl isocyanate  (C7H3Cl2NO, CAS 102-36-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34DichlorophenylIsocyanate;
+formula     C7H3Cl2NO;
+CAS         102-36-3;
+InChIKey    MFUVCHZWGSJKEQ-UHFFFAOYSA-N;
+MW          188.007;      // g/mol [origin=calculated method=formula-sum]
+Tc          776.03;      // K   [origin=predictive method=joback]
+Pc          39.605;      // bar [origin=predictive method=joback]
+omega       0.5385;      // -   [origin=predictive method=lee-kesler]
+Tb          537.93;      // K   [origin=predictive method=joback]
+HvapTb      53078.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group dCd; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-bis(chloranyl)-4-isocyanato-benzene" "1,2-dichloro-4-isocyanatobenzene" "benzene, 1,2-dichloro-4-isocyanato-" "isocyanic acid 3,4-dichlorophenyl ester" "3,4-dichlorophenylisocyanate" "isocyanic acid, 3,4-dichlorophenyl ester" "3,4-dichlorobenzenisocyanate" "3,4-dichlorophenyl ester" "3,4-dichlorfenylisokyanat" "3,4-dichlorphenylisocyanate" "benzene,2-dichloro-4-isocyanato-" "isocyanic acid,4-dichlorophenyl ester" );
+// formation datum unavailable (element entropy missing): dHf_298=-11110.0 dGf_298=None

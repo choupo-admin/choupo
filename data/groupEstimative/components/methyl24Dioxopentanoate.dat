@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 2,4-dioxopentanoate  (C6H8O4, CAS 20577-61-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl24Dioxopentanoate;
+formula     C6H8O4;
+CAS         20577-61-1;
+InChIKey    OMHOEQINEXASKE-UHFFFAOYSA-N;
+MW          144.126;      // g/mol [origin=calculated method=formula-sum]
+Tc          698.49;      // K   [origin=predictive method=joback]
+Pc          36.159;      // bar [origin=predictive method=joback]
+omega       0.7217;      // -   [origin=predictive method=lee-kesler]
+Tb          502.84;      // K   [origin=predictive method=joback]
+HvapTb      49849.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (37.561 0.46304 -0.0001706 -1.498e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH3CO; count 1; } { group CH2CO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CdO; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2,4-bis(oxidanylidene)pentanoate" "methyl acetopyruvate" "pentanoic acid, 2,4-dioxo-, methyl ester" "rd-04" "valericacid, 2,4-dioxo-, methyl ester (6ci,8ci);1-methoxy-1,2,4-pentanetrione;methyl2,4-dioxopentanoate;methyl 3-acetylpyruvate;methyl acetylpyruvate;methyl b-acetylpyruvate;" );
+gibbsFormation
+{
+    dHf_298   -709610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     494.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-568570.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: sulfonyldiethanol  (C4H10O4S, CAS 2580-77-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C4H10O4S (delta S+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        sulfonyldiethanol;
+formula     C4H10O4S;
+CAS         2580-77-0;
+InChIKey    QQLILYBIARWEIF-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          154.18;      // g/mol [origin=calculated method=formula-sum]
+Tc          594.98;      // K   [origin=predictive method=joback]
+Pc          58.094;      // bar [origin=predictive method=joback]
+omega       1.5134;      // -   [origin=predictive method=lee-kesler]
+Tb          454.48;      // K   [origin=predictive method=joback]
+HvapTb      69674.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.474 0.491 -0.0002292 2.04e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group OH; count 2; } { group CH2SuCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group OH; count 2; } { group dO_oth; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(2-hydroxyethylsulfonyl)ethanol" "diethanol sulfone" "2,2'-sulfonyldiethanol" "ethanol, 2,2'-sulfonylbis-" "beta-hydroxyethyl sulfone" "2,2'-sulfonyl bisethanol" "bis(2-hydroxyethyl) sulfone" "bhes 50" "2,2'-sulfonyldiethanol(65% in water)" "ethanol,2'-sulfonyldi-" "bis(hydroxyethyl) sulfone" "ethanol,2'-sulfonylbis-" );
+gibbsFormation
+{
+    dHf_298   -925570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     672.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-792500.0
+    phase     gas;
+}

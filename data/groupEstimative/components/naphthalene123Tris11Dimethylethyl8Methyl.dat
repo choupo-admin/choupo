@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: naphthalene, 1,2,3-tris(1,1-dimethylethyl)-8-methyl-  (C23H34, CAS 139417-55-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        naphthalene123Tris11Dimethylethyl8Methyl;
+formula     C23H34;
+CAS         139417-55-3;
+InChIKey    TUJLTHQYRWQNRH-UHFFFAOYSA-N;
+MW          310.525;      // g/mol [origin=calculated method=formula-sum]
+Tc          1007.80;      // K   [origin=predictive method=joback]
+Pc          12.286;      // bar [origin=predictive method=joback]
+omega       0.6370;      // -   [origin=predictive method=lee-kesler]
+Tb          781.73;      // K   [origin=predictive method=joback]
+HvapTb      69468.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-99.59 2.2458 -0.00164256 4.852e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 9; } { group C; count 3; } { group ACH; count 4; } { group AC; count 5; } { group ACCH3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 10; } { group C; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3-tritert-butyl-8-methyl-naphthalene" );
+gibbsFormation
+{
+    dHf_298   -162580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     695.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=331840.0
+    phase     gas;
+}

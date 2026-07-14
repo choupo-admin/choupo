@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,6-di-tert-butylpyrogallol  (C14H22O3, CAS 3934-77-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        46DiTertButylpyrogallol;
+formula     C14H22O3;
+CAS         3934-77-8;
+InChIKey    NRVDOWRFIAEMPS-UHFFFAOYSA-N;
+MW          238.327;      // g/mol [origin=calculated method=formula-sum]
+Tc          1031.96;      // K   [origin=predictive method=joback]
+Pc          32.246;      // bar [origin=predictive method=joback]
+omega       1.1223;      // -   [origin=predictive method=lee-kesler]
+Tb          786.98;      // K   [origin=predictive method=joback]
+HvapTb      86146.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-105.15 1.91092 -0.00181464 6.991e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group C; count 2; } { group ACH; count 1; } { group AC; count 2; } { group ACOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group C; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group OH_phenol; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,6-ditert-butylbenzene-1,2,3-triol" "4,6-di-t-butylpyrogallol" "4,6-di(tert-butyl)benzene-1,2,3-triol" "4,6-bis(tert-butyl)benzene-1,2,3-triol" "4,6-di-tert-butylbenzene-1,2,3-triol" );
+gibbsFormation
+{
+    dHf_298   -656660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     590.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-288400.0
+    phase     gas;
+}

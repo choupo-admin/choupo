@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: biofermin  (C12H20N2, CAS 51-73-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        biofermin;
+formula     C12H20N2;
+CAS         51-73-0;
+InChIKey    JSUAJTLKVREZHV-UHFFFAOYSA-N;
+MW          192.306;      // g/mol [origin=calculated method=formula-sum]
+Tc          759.78;      // K   [origin=predictive method=joback]
+Pc          29.601;      // bar [origin=predictive method=joback]
+omega       0.5417;      // -   [origin=predictive method=lee-kesler]
+Tb          539.40;      // K   [origin=predictive method=joback]
+HvapTb      49332.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-134.448 1.5774 -0.00122046 3.8058e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH2N; count 2; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group tC; count 2; } { group CH2_ring; count 8; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-pyrrolidin-1-ylbut-2-ynyl)pyrrolidine" "tremorine" "tremorin" "1,4-dipyrrolidino-2-butyne" "1,4-dipyrrolidinyl-2-butyne" "pyrrolidine, 1,1'-(2-butyne-1,4-diyl)bis-" "1,4-dipyrrolidine-2-butyne" "2-butyne, 1,4-bis(1-pyrrolidinyl)-" "dipyrrolidine, 1,1'-(2-butynylene)-" "pyrrolidine, 1,1'-(2-butynylene)di-" "pyrrolidine,1'-(2-butynylene)di-" "(4-pyrrolidinylbut-2-ynyl)pyrrolidine" );
+gibbsFormation
+{
+    dHf_298   290310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     571.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=587240.0
+    phase     gas;
+}

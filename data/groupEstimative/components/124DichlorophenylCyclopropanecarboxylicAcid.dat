@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(2,4-dichlorophenyl)cyclopropanecarboxylic acid  (C10H8Cl2O2, CAS 84604-70-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        124DichlorophenylCyclopropanecarboxylicAcid;
+formula     C10H8Cl2O2;
+CAS         84604-70-6;
+InChIKey    MIBWNJWOBDYPRS-UHFFFAOYSA-N;
+MW          231.072;      // g/mol [origin=calculated method=formula-sum]
+Tc          945.50;      // K   [origin=predictive method=joback]
+Pc          35.137;      // bar [origin=predictive method=joback]
+omega       0.8268;      // -   [origin=predictive method=lee-kesler]
+Tb          692.39;      // K   [origin=predictive method=joback]
+HvapTb      66150.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-81.36 1.2631 -0.00128352 5.268e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group C; count 1; } { group ACH; count 3; } { group AC; count 1; } { group COOH; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2,4-dichlorophenyl)cyclopropane-1-carboxylic acid" "dichlorophenylcyclopropanecarboxylicacid" "1-(2,4-dichlorophenyl)cyclopropanecarboxylicacid" "cyclopropanecarboxylicacid, 1-(2,4-dichlorophenyl)-" "1-(2,4-dichlorophenyl)-1-cyclopropanecarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -329850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     526.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-186040.0
+    phase     gas;
+}

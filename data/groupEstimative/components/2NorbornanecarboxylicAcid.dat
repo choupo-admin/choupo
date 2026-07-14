@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-norbornanecarboxylic acid  (C8H12O2, CAS 824-62-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2NorbornanecarboxylicAcid;
+formula     C8H12O2;
+CAS         824-62-4;
+InChIKey    JESWDXIHOJGWBP-UHFFFAOYSA-N;
+MW          140.182;      // g/mol [origin=calculated method=formula-sum]
+Tc          762.29;      // K   [origin=predictive method=joback]
+Pc          36.955;      // bar [origin=predictive method=joback]
+omega       0.6443;      // -   [origin=predictive method=lee-kesler]
+Tb          541.23;      // K   [origin=predictive method=joback]
+HvapTb      50255.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-99.45 1.0803 -0.0008226 2.525e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 3; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group CH_ring; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bicyclo[2.2.1]heptane-3-carboxylic acid" "bicyclo[2.2.1]heptane-2-carboxylic acid" "norbornane-2-carboxylic acid" "bicyclo(2.2.1)heptane-2-carboxylic acid" "2-norbornanecarboxylic acid, endo-" "bicyclo(2.2.1)heptane-2-carboxylic acid, endo-" "bicyclo[2.2.1]heptane-2-carboxylic acid, endo-" "(1s,2s,4s)-bicyclo[2.2.1]heptane-2-carboxylic acid" "bicyclo[2.2.1]heptane-2-carboxylic acid, (1s,2s,4s)-" "agn-pc-00h0r9" "bicyclo[2.2.1]heptane-2-carboxylicacid" "2-norbornanecarboxylicacid (6ci,7ci,8ci);2-norcamphanecarboxylic acid (4ci);" );
+gibbsFormation
+{
+    dHf_298   -439620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     317.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-225740.0
+    phase     gas;
+}

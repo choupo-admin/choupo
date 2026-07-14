@@ -11,16 +11,7 @@
   re-recorded accordingly (was the wrong all-vapour result).
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            355.0 K;
-        P            1.01325 bar;
-        molarComposition  { ethanol 0.50;  water 0.50; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: alcohols, c11-unsatd.  (C11H20O, CAS 68955-39-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        alcoholsC11Unsatd;
+formula     C11H20O;
+CAS         68955-39-5;
+InChIKey    ZOSXYZHZTMOCKL-BLWKUPHCSA-N;
+MW          168.28;      // g/mol [origin=calculated method=formula-sum]
+Tc          722.01;      // K   [origin=predictive method=joback]
+Pc          23.158;      // bar [origin=predictive method=joback]
+omega       0.9318;      // -   [origin=predictive method=lee-kesler]
+Tb          551.78;      // K   [origin=predictive method=joback]
+HvapTb      56675.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.184 1.12282 -0.0007726 2.243e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CH=CH; count 2; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 6; } { group dCH; count 4; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5e,9e)-undeca-5,9-dien-1-ol" "(c11) isomeric alcohols" );
+gibbsFormation
+{
+    dHf_298   -188160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     622.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=65360.0
+    phase     gas;
+}

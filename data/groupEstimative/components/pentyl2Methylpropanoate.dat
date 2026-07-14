@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentyl 2-methylpropanoate  (C9H18O2, CAS 2445-72-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentyl2Methylpropanoate;
+formula     C9H18O2;
+CAS         2445-72-9;
+InChIKey    UYGGIIOLYXRSQY-UHFFFAOYSA-N;
+MW          158.241;      // g/mol [origin=calculated method=formula-sum]
+Tc          637.50;      // K   [origin=predictive method=joback]
+Pc          23.360;      // bar [origin=predictive method=joback]
+omega       0.5648;      // -   [origin=predictive method=lee-kesler]
+Tb          463.30;      // K   [origin=predictive method=joback]
+HvapTb      42647.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.434 0.80996 -0.0003744 3.83e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "amyl isobutyrate" "propanoic acid, 2-methyl-, pentyl ester" "isobutyric acid, pentyl ester" "pentyl isobutyrate" "propanoic acid,2-methyl-, pentyl ester" "isobutyricacid, pentyl ester (6ci,7ci,8ci); 2-methylpropionic acid pentyl ester; amylisobutyrate; pentyl 2-methylpropanoate; pentyl 2-methylpropionate; pentylisobutyrate; n-pentyl 2-methylpropanoate" );
+gibbsFormation
+{
+    dHf_298   -551650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     548.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-287910.0
+    phase     gas;
+}

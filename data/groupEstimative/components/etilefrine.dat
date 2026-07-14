@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: etilefrine  (C10H15NO2, CAS 709-55-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        etilefrine;
+formula     C10H15NO2;
+CAS         709-55-7;
+InChIKey    SQVIAVUSQAWMKL-UHFFFAOYSA-N;
+MW          181.235;      // g/mol [origin=calculated method=formula-sum]
+Tc          884.50;      // K   [origin=predictive method=joback]
+Pc          39.805;      // bar [origin=predictive method=joback]
+omega       1.3036;      // -   [origin=predictive method=lee-kesler]
+Tb          677.61;      // K   [origin=predictive method=joback]
+HvapTb      75871.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-46.628 1.14562 -0.00088996 2.862e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 4; } { group ACCH; count 1; } { group OH; count 1; } { group ACOH; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group OH_phenol; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[2-(ethylamino)-1-oxidanyl-ethyl]phenol" "effortil" "ethyladrianol" "etilefrin" "ethylphenylephrine" "phetanol" "ethyl adrianol" "etilephrine" "ethyl noradrianol" "racemic etilefrine" "(+-)-etilefrine" "circupon" );
+gibbsFormation
+{
+    dHf_298   -294550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     547.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-58760.0
+    phase     gas;
+}

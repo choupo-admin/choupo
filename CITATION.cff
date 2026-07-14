@@ -33,15 +33,14 @@ keywords:
   - Wilson
   - parameter estimation
   - C++
-version: "0.9.0"
-date-released: "2026-06-24"
+version: "2607"
 preferred-citation:
   type: software
   title: "Choupo — Open Chemical Process Simulator"
   authors:
     - family-names: Geraldes
       given-names: Vítor
-  version: "0.9.0"
+  version: "2607"
   year: 2026
   url: "https://github.com/choupo-admin/choupo"
   license: "GPL-3.0-or-later"

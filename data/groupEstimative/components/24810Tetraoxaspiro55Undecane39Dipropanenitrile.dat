@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4,8,10-tetraoxaspiro(5.5)undecane-3,9-dipropanenitrile  (C13H18N2O4, CAS 3058-04-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24810Tetraoxaspiro55Undecane39Dipropanenitrile;
+formula     C13H18N2O4;
+CAS         3058-04-6;
+InChIKey    BNAMIPLIODPZLE-UHFFFAOYSA-N;
+MW          266.297;      // g/mol [origin=calculated method=formula-sum]
+Tc          1080.52;      // K   [origin=predictive method=joback]
+Pc          21.533;      // bar [origin=predictive method=joback]
+omega       1.0374;      // -   [origin=predictive method=lee-kesler]
+Tb          839.40;      // K   [origin=predictive method=joback]
+HvapTb      82754.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-75.786 1.6156 -0.0012514 4.15e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 2; } { group C; count 1; } { group FCH2O; count 4; } { group CH2CN; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group C_ring; count 1; } { group O_ring; count 4; } { group CN; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[3-(2-cyanoethyl)-2,4,8,10-tetraoxaspiro[5.5]undecan-9-yl]propanenitrile" "3,9-bis(2-cyanoethyl)-2,4,8,10-tetraoxaspiro[5.5]undecane" "2,4,8,10-tetraoxaspiro[5.5]undecane-3,9-dipropanenitrile" "2,4,8,10-tetraoxaspiro(5.5)undecane-3,9-dipropiononitrile" "3-[9-(2-cyanoethyl)-2,4,8,10-tetraoxaspiro[5.5]undecan-3-yl]propanenitrile" "2,4,8,10-tetraoxaspiro[5.5]undecane-3,9-dipropionitrile(6ci,7ci,8ci); 3,9-bis(2-cyanoethyl)-2,4,8,10-tetraoxaspiro[5.5]undecane" "ctu" );
+gibbsFormation
+{
+    dHf_298   -400190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     415.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=28260.0
+    phase     gas;
+}

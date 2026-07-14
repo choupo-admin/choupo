@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 15(s)-hete-d8  (C20H32O3, CAS 73180-00-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        15SHeteD8;
+formula     C20H32O3;
+CAS         73180-00-4;
+InChIKey    JSFATNQSLKRBCI-UHFFFAOYSA-N;
+MW          320.473;      // g/mol [origin=calculated method=formula-sum]
+Tc          1116.32;      // K   [origin=predictive method=joback]
+Pc          13.310;      // bar [origin=predictive method=joback]
+omega       1.2182;      // -   [origin=predictive method=lee-kesler]
+Tb          911.09;      // K   [origin=predictive method=joback]
+HvapTb      93401.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-63.811 2.07452 -0.0015056 4.537e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 9; } { group CH; count 1; } { group CH=CH; count 4; } { group OH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 9; } { group CH; count 1; } { group dCH; count 8; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "15-oxidanylicosa-5,8,11,13-tetraenoic acid" "5,8,11,13-eicosatetraenoic acid, 15-hydroxy-" "agn-pc-00s9sv" "15-hydroxyeicosatetraenoicacid" "(?15-hete" "eicosatetraenoic acid,15-hydroxy-" "15-hydroxy-5,8,11,13-eicosatetraenoicacid" "5,8,11,13-eicosatetraenoicacid, 15-hydroxy-" "5,8,11,13-eicosatetraenoicacid, 15-hydroxy-, (5z,8z,11z,13e)-" "5,8,11,13-eicosatetraenoicacid, 15-hydroxy-, (e,z,z,z)-; (?a'a a'a currency)-(5z,8z,11z,13e)-15-hydroxyeicosa-5,8,11,13-tetraenoic acid; 15-hete;15-hydroxy-5(z),8(z),11(z),13(e)-eicosatetraenoic acid;15-hydroxyeicosa-5,8,11,13-tetraenoic acid; 15-hydroxyeicosatetraenoic acid;racemic 15-hete" );
+gibbsFormation
+{
+    dHf_298   -495030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1003.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-44770.0
+    phase     gas;
+}

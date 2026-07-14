@@ -1,0 +1,15 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    hmw_nacl_100C          I                4.0000             1e-4
+diag    hmw_nacl_100C          SI_halite        -0.7734            1e-4
+diag    hmw_nacl_100C          aw               0.8533             1e-4
+diag    hmw_nacl_100C          gamma_Cl         0.7309             1e-4
+diag    hmw_nacl_100C          gamma_Na         0.7309             1e-4
+diag    hmw_nacl_100C          m_Cl             4.0000             1e-4
+diag    hmw_nacl_100C          m_Na             4.0000             1e-4
+diag    hmw_nacl_100C          pH               7.0000             1e-4
+diag    kernel_nacl_100C       aw_1m            0.9670             1e-4
+diag    kernel_nacl_100C       gamma_pm_1m      0.6221             1e-4
+diag    kernel_nacl_100C       gamma_pm_3m      0.6760             1e-4
+diag    kernel_nacl_100C       phi_1m           0.9327             1e-4

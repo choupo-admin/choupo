@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: citronellyl hexanoate  (C16H30O2, CAS 10580-25-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        citronellylHexanoate;
+formula     C16H30O2;
+CAS         10580-25-3;
+InChIKey    KNYRCCKTQMBSFP-UHFFFAOYSA-N;
+MW          254.414;      // g/mol [origin=calculated method=formula-sum]
+Tc          802.14;      // K   [origin=predictive method=joback]
+Pc          13.881;      // bar [origin=predictive method=joback]
+omega       0.7939;      // -   [origin=predictive method=lee-kesler]
+Tb          627.50;      // K   [origin=predictive method=joback]
+HvapTb      58267.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.802 1.49488 -0.0008413 1.708e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 7; } { group CH; count 1; } { group CH=C; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 8; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7-dimethyloct-6-enyl hexanoate" "3,7-dimethyloct-6-en-1-yl hexanoate" "hexanoic acid, 3,7-dimethyl-6-octenyl ester" "hexanoic acid, 3,7-dimethyl-6-octen-1-yl ester" "citronellyl caproate" "hexanoic acid,3,7-dimethyl-6-octen-1-yl ester" "hexanoicacid, 3,7-dimethyl-6-octenyl ester (8ci,9ci);6-octen-1-ol, 3,7-dimethyl-,hexanoate (8ci);citronellyl caproate;citronellyl hexanoate;" );
+gibbsFormation
+{
+    dHf_298   -588700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     810.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-157300.0
+    phase     gas;
+}

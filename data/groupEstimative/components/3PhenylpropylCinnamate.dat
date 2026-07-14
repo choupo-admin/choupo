@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-phenylpropyl cinnamate  (C18H18O2, CAS 122-68-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3PhenylpropylCinnamate;
+formula     C18H18O2;
+CAS         122-68-9;
+InChIKey    LYRAHIUDQRJGGZ-UHFFFAOYSA-N;
+MW          266.34;      // g/mol [origin=calculated method=formula-sum]
+Tc          958.61;      // K   [origin=predictive method=joback]
+Pc          20.163;      // bar [origin=predictive method=joback]
+omega       0.7823;      // -   [origin=predictive method=lee-kesler]
+Tb          727.18;      // K   [origin=predictive method=joback]
+HvapTb      67579.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-70.057 1.5212 -0.001007 2.443e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH=CH; count 1; } { group ACH; count 10; } { group AC; count 1; } { group ACCH2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group dCH; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-phenylpropyl 3-phenylprop-2-enoate" "hydrocinnamyl cinnamate" "2-propenoic acid, 3-phenyl-, 3-phenylpropyl ester" "2-propenoic acid,3-phenyl-, 3-phenylpropyl ester" "cinnamicacid, 3-phenylpropyl ester (7ci,8ci); hydrocinnamyl cinnamate; phenylpropylcinnamate" );
+gibbsFormation
+{
+    dHf_298   -141850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     689.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=95350.0
+    phase     gas;
+}

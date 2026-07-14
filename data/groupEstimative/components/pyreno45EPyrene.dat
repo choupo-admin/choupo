@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pyreno(4,5-e)pyrene  (C30H16, CAS 385-13-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pyreno45EPyrene;
+formula     C30H16;
+CAS         385-13-7;
+InChIKey    GXLNAHLOKJQKHW-UHFFFAOYSA-N;
+MW          376.458;      // g/mol [origin=calculated method=formula-sum]
+Tc          1335.08;      // K   [origin=predictive method=joback]
+Pc          18.676;      // bar [origin=predictive method=joback]
+omega       1.1655;      // -   [origin=predictive method=lee-kesler]
+Tb          1060.02;      // K   [origin=predictive method=joback]
+HvapTb      98830.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-187.67 2.5424 -0.00240524 9.008e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 16; } { group AC; count 14; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 16; } { group dC_ring; count 14; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetrabenzo[de,hi,mn,qr]naphthacene" "tetrabenzo(de,hi,mn,qr)naphthacene" "pyreno(1',2':1,2)pyrene" "tetrabenzo[de,hi,mn,qr]tetracene" );
+gibbsFormation
+{
+    dHf_298   751750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     413.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=991380.0
+    phase     gas;
+}

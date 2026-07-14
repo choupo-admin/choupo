@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 3-formylbicyclo(2.2.1)hept-5-ene-2-carboxylate  (C11H14O3, CAS 70542-46-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl3Formylbicyclo221Hept5Ene2Carboxylate;
+formula     C11H14O3;
+CAS         70542-46-0;
+InChIKey    PTOWCTCRIJFDMK-UHFFFAOYSA-N;
+MW          194.23;      // g/mol [origin=calculated method=formula-sum]
+Tc          771.08;      // K   [origin=predictive method=joback]
+Pc          26.570;      // bar [origin=predictive method=joback]
+omega       0.6931;      // -   [origin=predictive method=lee-kesler]
+Tb          565.73;      // K   [origin=predictive method=joback]
+HvapTb      53879.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-56.249 1.15172 -0.00074348 1.77e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 4; } { group CH=CH; count 1; } { group CHO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 4; } { group dCH_ring; count 2; } { group OdCH_al; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-methanoylbicyclo[2.2.1]hept-5-ene-3-carboxylate" "bicyclo[2.2.1]hept-5-ene-2-carboxylic acid, 3-formyl-, ethyl ester" "bicyclo(2.2.1)hept-5-ene-2-carboxylic acid, 3-formyl-, ethyl ester" "agn-pc-00e9w4" "ethyl 2-formylbicyclo[2.2.1]hept-5-ene-3-carboxylate" "3-formylbicyclo[2.2.1]hept-5-ene-2-carboxylic acid ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -516690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     371.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-244210.0
+    phase     gas;
+}

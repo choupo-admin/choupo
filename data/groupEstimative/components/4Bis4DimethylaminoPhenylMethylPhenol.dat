@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-{bis[4-(dimethylamino)phenyl]methyl}phenol  (C23H26N2O, CAS 652-46-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Bis4DimethylaminoPhenylMethylPhenol;
+formula     C23H26N2O;
+CAS         652-46-0;
+InChIKey    ZTXGOUSDKAXJJB-UHFFFAOYSA-N;
+MW          346.474;      // g/mol [origin=calculated method=formula-sum]
+Tc          1167.64;      // K   [origin=predictive method=joback]
+Pc          18.740;      // bar [origin=predictive method=joback]
+omega       1.0939;      // -   [origin=predictive method=lee-kesler]
+Tb          920.90;      // K   [origin=predictive method=joback]
+HvapTb      91656.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-123.12 2.24148 -0.00167168 4.966e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group ACH; count 12; } { group AC; count 4; } { group ACCH; count 1; } { group ACOH; count 1; } { group CH3N; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group OH_phenol; count 1; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[bis[4-(dimethylamino)phenyl]methyl]phenol" "a," "a-bis(p-dimethylaminophenyl)-p-cresol" "(4-hydroxyphenyl)bis(4-dimethylaminophenyl)methane" "4-hydroxy-4',4''-(dimethylamino)triphenylmethane" "4-[bis(4-dimethylaminophenyl)methyl]phenol" "alpha,alpha-bis(p-dimethylaminophenyl)-p-cresol" "p,p'-[p-hydroxybenzylidene-bis(n,n-dimethylaniline)]" "1om" );
+gibbsFormation
+{
+    dHf_298   121070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     769.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=525250.0
+    phase     gas;
+}

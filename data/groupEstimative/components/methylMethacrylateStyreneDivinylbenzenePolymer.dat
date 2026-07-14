@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl methacrylate, styrene, divinylbenzene polymer  (C23H26O2, CAS 9017-43-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylMethacrylateStyreneDivinylbenzenePolymer;
+formula     C23H26O2;
+CAS         9017-43-0;
+InChIKey    AIEUKWDTINGCKS-UHFFFAOYSA-N;
+MW          334.459;      // g/mol [origin=calculated method=formula-sum]
+Tc          1067.49;      // K   [origin=predictive method=joback]
+Pc          12.967;      // bar [origin=predictive method=joback]
+omega       0.7114;      // -   [origin=predictive method=lee-kesler]
+Tb          831.80;      // K   [origin=predictive method=joback]
+HvapTb      77401.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.86 1.42424 -0.00039246 -1.315e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2=CH; count 3; } { group CH2=C; count 1; } { group ACH; count 9; } { group AC; count 3; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 4; } { group dCH; count 3; } { group dC; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-bis(ethenyl)benzene;ethenylbenzene;methyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, methyl ester, polymer with diethenylbenzene and ethenylbenzene" "1,2-diethenylbenzene; methyl 2-methylprop-2-enoate; styrene" "1,2-bis(ethenyl)benzene; methyl 2-methylprop-2-enoate; styrene" );
+gibbsFormation
+{
+    dHf_298   -105050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1076.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=180890.0
+    phase     gas;
+}

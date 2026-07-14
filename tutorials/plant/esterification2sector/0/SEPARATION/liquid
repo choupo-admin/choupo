@@ -1,0 +1,12 @@
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI. ---*/
+
+componentMolarFlows
+{
+    aceticAcid     18 kmol/h;
+    ethanol        15 kmol/h;
+    ethylAcetate   20 kmol/h;
+    water          27 kmol/h;
+}
+
+T               355 K;
+P               1.01325 bar;

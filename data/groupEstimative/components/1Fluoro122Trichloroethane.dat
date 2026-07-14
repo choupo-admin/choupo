@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-fluoro-1,2,2-trichloroethane  (C2H2Cl3F, CAS 359-28-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Fluoro122Trichloroethane;
+formula     C2H2Cl3F;
+CAS         359-28-4;
+InChIKey    ORMSTDJYMPIZAO-UHFFFAOYSA-N;
+MW          151.386;      // g/mol [origin=calculated method=formula-sum]
+Tc          546.85;      // K   [origin=predictive method=joback]
+Pc          41.623;      // bar [origin=predictive method=joback]
+omega       0.2790;      // -   [origin=predictive method=lee-kesler]
+Tb          356.04;      // K   [origin=predictive method=joback]
+HvapTb      31608.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (42.47 0.2378 -0.000169 4.42e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CHCl2; count 1; } { group HCClF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 2; } { group F; count 1; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2-tris(chloranyl)-2-fluoranyl-ethane" "ethane, 1,1,2-trichloro-2-fluoro-" "2-fluoro-1,1,2-trichloroethane" "1,1,2-trichloro-2-fluoroethane" "r 131 (refrigerant)" "ormstdjympizao-uhfffaoysa-" "1,2,2-trichloro-1-fluoroethane" "ethane,1,1,2-trichloro-2-fluoro-" "1,1,2-trichloro-2-fluoroethane;1-fluoro-1,2,2-trichloroethane;2-fluoro-1,1,2-trichloroethane;hcfc 131;r131;r 131 (refrigerant);" );
+gibbsFormation
+{
+    dHf_298   -338500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     346.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-269520.0
+    phase     gas;
+}

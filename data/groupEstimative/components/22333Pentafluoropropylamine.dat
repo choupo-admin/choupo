@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,3,3,3-pentafluoropropylamine  (C3H4F5N, CAS 422-03-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22333Pentafluoropropylamine;
+formula     C3H4F5N;
+CAS         422-03-7;
+InChIKey    DPQNQLKPUVWGHE-UHFFFAOYSA-N;
+MW          149.062;      // g/mol [origin=calculated method=formula-sum]
+Tc          486.54;      // K   [origin=predictive method=joback]
+Pc          37.362;      // bar [origin=predictive method=joback]
+omega       0.4172;      // -   [origin=predictive method=lee-kesler]
+Tb          330.66;      // K   [origin=predictive method=joback]
+HvapTb      26236.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.839 0.6613 -0.0006084 2.073e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2NH2; count 1; } { group CF3; count 1; } { group CF2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 2; } { group F; count 5; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,3-pentakis(fluoranyl)propan-1-amine" "2,2,3,3,3-pentafluoropropan-1-amine" "1h,1h-perfluoropropylamine" "1h,1h-pentafluoropropylamine" "1-propanamine,2,2,3,3,3-pentafluoro-" "1-propanamine, 2,2,3,3,3-pentafluoro-" "propylamine,2,2,3,3,3-pentafluoro- (6ci,7ci,8ci);2,2,3,3,3-pentafluoro-1-propanamine;2,2,3,3,3-pentafluoropropylamine;" );
+gibbsFormation
+{
+    dHf_298   -1069510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     405.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-927540.0
+    phase     gas;
+}

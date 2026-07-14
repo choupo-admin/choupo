@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chlorflurenol  (C14H9ClO3, CAS 2464-37-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chlorflurenol;
+formula     C14H9ClO3;
+CAS         2464-37-1;
+InChIKey    SVOAUHHKPGKPQK-UHFFFAOYSA-N;
+MW          260.673;      // g/mol [origin=calculated method=formula-sum]
+Tc          1101.57;      // K   [origin=predictive method=joback]
+Pc          35.600;      // bar [origin=predictive method=joback]
+omega       1.4701;      // -   [origin=predictive method=lee-kesler]
+Tb          861.78;      // K   [origin=predictive method=joback]
+HvapTb      89942.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-101.96 1.5511 -0.00156808 6.356e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group ACH; count 7; } { group AC; count 4; } { group OH; count 1; } { group COOH; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C_ring; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group Cl; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-9-oxidanyl-fluorene-9-carboxylic acid" "chlorflurecol" "chloroflurenol" "9h-fluorene-9-carboxylic acid, 2-chloro-9-hydroxy-" "chlorflurecol [bsi:iso]" "2-chloro-9-hydroxyfluorene-9-carboxylic acid" "chloroflurenol [iso-french]" "2-chloro-9-hydroxy-9h-fluorene-9-carboxylic acid" "2-chloro-9-hydroxyflurene-9-carboxylic acid" "fluorene-9-carboxylic acid, 2-chloro-9-hydroxy-" "o684" "2-chloro-9-hydroxy-9-fluorenecarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -311520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     546.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-150270.0
+    phase     gas;
+}

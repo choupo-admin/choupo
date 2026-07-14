@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-iodanylhex-1-ene  (C6H11I, CAS 16644-98-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Iodanylhex1Ene;
+formula     C6H11I;
+CAS         16644-98-7;
+InChIKey    TUAPXMNNQGXDDV-UHFFFAOYSA-N;
+MW          210.054;      // g/mol [origin=calculated method=formula-sum]
+Tc          645.06;      // K   [origin=predictive method=joback]
+Pc          32.137;      // bar [origin=predictive method=joback]
+omega       0.3179;      // -   [origin=predictive method=lee-kesler]
+Tb          434.18;      // K   [origin=predictive method=joback]
+HvapTb      38281.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.057 0.63282 -0.0004678 1.475e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH=CH; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH; count 2; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trans-1-iodo-1-hexene" "1-hexene, 1-iodo-, (1e)-" );
+gibbsFormation
+{
+    dHf_298   26920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     438.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=137980.0
+    phase     gas;
+}

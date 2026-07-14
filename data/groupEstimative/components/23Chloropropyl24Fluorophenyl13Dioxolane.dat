@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(3-chloropropyl)-2-(4-fluorophenyl)-1,3-dioxolane  (C12H14ClFO2, CAS 3308-94-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23Chloropropyl24Fluorophenyl13Dioxolane;
+formula     C12H14ClFO2;
+CAS         3308-94-9;
+InChIKey    FXFDJSQOCVDXBX-UHFFFAOYSA-N;
+MW          244.69;      // g/mol [origin=calculated method=formula-sum]
+Tc          841.26;      // K   [origin=predictive method=joback]
+Pc          26.874;      // bar [origin=predictive method=joback]
+omega       0.6417;      // -   [origin=predictive method=lee-kesler]
+Tb          611.94;      // K   [origin=predictive method=joback]
+HvapTb      56938.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-84.477 1.4416 -0.00126216 4.669e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group C; count 1; } { group ACH; count 4; } { group AC; count 1; } { group FCH2O; count 2; } { group CH2Cl; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group CH2_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group Cl; count 1; } { group O_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(3-chloranylpropyl)-2-(4-fluorophenyl)-1,3-dioxolane" "r379" "1,3-dioxolane,2-(3-chloropropyl)-2-(4-fluorophenyl)-" "2-(3-chloroprop-1-yl)-2-(4-fluorophenyl)-1,3-dioxolane" "4-[2-(3-chloroprop-1-yl)-1,3-dioxolan-2-yl]fluorobenzene" "1,3-dioxolane,2-(3-chloropropyl)-2-(p-fluorophenyl)- (7ci,8ci);1,1-(ethylenedioxy)-4-chloro-1-(4-fluorophenyl)butane;1-chloro-4,4-(ethylenedioxy)-4-(4-fluorophenyl)butane;2-(3-chloropropyl)-2-(4-fluorophenyl)dioxolane;2-(3-chloropropyl)-2-(4'-fluorophenyl)-1,3-dioxolane;2-(3-chloropropyl)-2-(p-fluorophenyl)dioxolane;3-chloropropyl4-fluorophenyl ketone ethylene ketal;3-p-fluorobenzoylpropyl chloride ethyleneketal;4,4-(ethylenedioxy)-4-(4-fluorophenyl)butyl chloride;4-(p-fluorophenyl)-4,4-ethylenedioxy-1-chlorobutane;4-chloro-1-(p-fluorophenyl)-1-butanonecyclic ethylene acetal;4-chloro-p-fluorobutyrophenone cyclic ethylene acetal;" );
+gibbsFormation
+{
+    dHf_298   -466080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     492.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-194980.0
+    phase     gas;
+}

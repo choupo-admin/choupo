@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-chloro-4'-fluorobutyrophenone  (C10H10ClFO, CAS 3874-54-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Chloro4Fluorobutyrophenone;
+formula     C10H10ClFO;
+CAS         3874-54-2;
+InChIKey    HXAOUYGZEOZTJO-UHFFFAOYSA-N;
+MW          200.637;      // g/mol [origin=calculated method=formula-sum]
+Tc          760.64;      // K   [origin=predictive method=joback]
+Pc          28.263;      // bar [origin=predictive method=joback]
+omega       0.6362;      // -   [origin=predictive method=lee-kesler]
+Tb          550.63;      // K   [origin=predictive method=joback]
+HvapTb      51106.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.533 0.806 -0.00050246 1.1396e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 4; } { group AC; count 1; } { group CH2CO; count 1; } { group CH2Cl; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group Cl; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-chloranyl-1-(4-fluorophenyl)butan-1-one" "4-chloro-1-(4-fluorophenyl)butan-1-one" "1-butanone, 4-chloro-1-(4-fluorophenyl)-" "4-fluorobenzoylpropyl chloride" ".gamma.-chloro-p-fluorobutyrophenone" "p-fluorobenzoylpropyl chloride" "4-chloro-p-fluorobutyrophenone" "p-fluoro-4-chlorobutyrophenone" "3-chloro-4'-fluorobutyrophenone" "4'-fluoro-4-chlorobutyrophenone" "3-(p-fluorobenzoyl)propyl chloride" "3-(4-fluorobenzoyl)propyl chloride" );
+gibbsFormation
+{
+    dHf_298   -349100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     524.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-199560.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bromocubane  (C8H7Br, CAS 59346-69-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bromocubane;
+formula     C8H7Br;
+CAS         59346-69-9;
+InChIKey    GCQYIRWYCIIVNE-UHFFFAOYSA-N;
+MW          183.048;      // g/mol [origin=calculated method=formula-sum]
+Tc          652.35;      // K   [origin=predictive method=joback]
+Pc          44.682;      // bar [origin=predictive method=joback]
+omega       0.4383;      // -   [origin=predictive method=lee-kesler]
+Tb          438.84;      // K   [origin=predictive method=joback]
+HvapTb      36120.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-243.73 1.8361 -0.002275 1.0373e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 7; } { group C; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 7; } { group C_ring; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanylcubane" "1-bromocubane" "1-bromocubane;bromocubane" "pentacyclo[4.2.0.02,5.03,8.04,7]octane,bromo-" );
+gibbsFormation
+{
+    dHf_298   179220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     -129.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=390630.0
+    phase     gas;
+}

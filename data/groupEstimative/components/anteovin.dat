@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: anteovin  (C41H52O4, CAS 8056-51-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        anteovin;
+formula     C41H52O4;
+CAS         8056-51-7;
+InChIKey    ORKBYCQJWQBPFG-WOMZHKBXSA-N;
+MW          608.863;      // g/mol [origin=calculated method=formula-sum]
+Tc          1921.12;      // K   [origin=predictive method=joback]
+Pc          10.352;      // bar [origin=predictive method=joback]
+omega       0.8449;      // -   [origin=predictive method=lee-kesler]
+Tb          1547.27;      // K   [origin=predictive method=joback]
+HvapTb      156136.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-489.189 5.35594 -0.00486662 1.88088e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 13; } { group CH; count 6; } { group C; count 4; } { group CH=C; count 1; } { group ACH; count 3; } { group ACCH2; count 1; } { group ACCH; count 1; } { group OH; count 2; } { group ACOH; count 1; } { group CH2CO; count 1; } { group CH_C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group tCH; count 2; } { group tC; count 2; } { group CH2_ring; count 14; } { group CH_ring; count 7; } { group C_ring; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 4; } { group OH; count 2; } { group OH_phenol; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(8r,9s,10r,13s,14s,17r)-13-ethyl-17-ethynyl-17-oxidanyl-1,2,6,7,8,9,10,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthren-3-one;(8r,9s,13s,14s,17r)-17-ethynyl-13-methyl-7,8,9,11,12,14,15,16-octahydro-6h-cyclopenta[a]phenanthrene-3,17-diol" "eugynon" "gravistat" "gynatrol" "minisiston" "rigevidon" "sequostat" "trigynon" "trikvilar" "triquilar" "trisiston" "adepal" );
+gibbsFormation
+{
+    dHf_298   -319410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1309.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=495730.0
+    phase     gas;
+}

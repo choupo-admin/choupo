@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  pitzer_gamma_hamer_wu / constant/thermoPackage
+
+  Water only: the solvent basis for a props-bench run.  This package is a
+  loader-satisfying stub -- the six 1-1 salts (NaCl, KCl, KBr, LiCl, HCl,
+  NaOH) are named per op in the propsDict, and their gamma_pm/phi come
+  from the frozen Pitzer catalogue pairs validated against Hamer & Wu
+  1972, not from the ideal models declared here.
+\*---------------------------------------------------------------------------*/
+
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }

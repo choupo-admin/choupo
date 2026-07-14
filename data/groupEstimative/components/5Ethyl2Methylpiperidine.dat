@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-ethyl-2-methylpiperidine  (C8H17N, CAS 104-89-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Ethyl2Methylpiperidine;
+formula     C8H17N;
+CAS         104-89-2;
+InChIKey    XOFNHZHCGBPVGJ-UHFFFAOYSA-N;
+MW          127.231;      // g/mol [origin=calculated method=formula-sum]
+Tc          654.65;      // K   [origin=predictive method=joback]
+Pc          31.245;      // bar [origin=predictive method=joback]
+omega       0.3594;      // -   [origin=predictive method=lee-kesler]
+Tb          446.07;      // K   [origin=predictive method=joback]
+HvapTb      40280.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.129 0.84604 -0.0003764 3.25e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 2; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-ethyl-2-methyl-piperidine" "copellidine" "copellidin" "piperidine, 5-ethyl-2-methyl-" "2-pipecoline, 5-ethyl-" "2-methyl-5-ethylpiperidine" "3-ethyl-6-methylpiperidine" "copellidine (8ci)" );
+gibbsFormation
+{
+    dHf_298   -136660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     388.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=120930.0
+    phase     gas;
+}

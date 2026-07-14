@@ -1,5 +1,5 @@
 /* Case-local Pitzer pair. PRIMARY: Appelo, Appl. Geochem. 55 (2015) 62. */
 pairs
 (
-    { cation Na; anion Cl; beta0 0.07534; beta1 0.2769; beta2 0.0; Cphi 0.00148; alpha1 2.0; alpha2 12.0; source "Appelo, Appl. Geochem. 55 (2015) 62"; }
+    { cation Na; anion Cl; beta0 0.07534; beta1 0.2769; beta2 0.0; Cphi 0.00148; alpha1 2.0; alpha2 12.0; dbeta0_dT 7.581400e-04; dbeta1_dT 7.041009e-04; dCphi_dT -1.146413e-04; lphiValidityMax 6.0; calorimetricFit true; source "Appelo, Appl. Geochem. 55 (2015) 62; T-slots: Parker NSRDS-NBS 2 (1965), curation fit 2026-07-02"; }
 );

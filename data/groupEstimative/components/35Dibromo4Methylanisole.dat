@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-dibromo-4-methylanisole  (C8H8Br2O, CAS 14542-71-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35Dibromo4Methylanisole;
+formula     C8H8Br2O;
+CAS         14542-71-3;
+InChIKey    BZRKRRXRNGVEIZ-UHFFFAOYSA-N;
+MW          279.959;      // g/mol [origin=calculated method=formula-sum]
+Tc          823.57;      // K   [origin=predictive method=joback]
+Pc          40.108;      // bar [origin=predictive method=joback]
+omega       0.6224;      // -   [origin=predictive method=lee-kesler]
+Tb          579.00;      // K   [origin=predictive method=joback]
+HvapTb      52944.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (46.49 0.51964 -0.00027328 4.82e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 3; } { group ACCH3; count 1; } { group CH3O; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Br; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-bis(bromanyl)-5-methoxy-2-methyl-benzene" "2,6-dibromo-4-methoxytoluene" "1,3-dibromo-5-methoxy-2-methylbenzene" "anisole,3,5-dibromo-4-methyl-" "anisole, 3,5-dibromo-4-methyl-" );
+gibbsFormation
+{
+    dHf_298   -85890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     456.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=23640.0
+    phase     gas;
+}

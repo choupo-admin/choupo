@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,7,7-tetramethyltricyclo[6.2.1.01,6]undec-5-en-4-one  (C15H22O, CAS 23747-14-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2277Tetramethyltricyclo621016Undec5En4One;
+formula     C15H22O;
+CAS         23747-14-0;
+InChIKey    LGSKOQUJWNADCQ-UHFFFAOYSA-N;
+MW          218.34;      // g/mol [origin=calculated method=formula-sum]
+Tc          887.73;      // K   [origin=predictive method=joback]
+Pc          23.565;      // bar [origin=predictive method=joback]
+omega       0.5175;      // -   [origin=predictive method=lee-kesler]
+Tb          639.57;      // K   [origin=predictive method=joback]
+HvapTb      50506.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-257.24 2.42778 -0.00257864 1.1375e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 1; } { group C; count 3; } { group CH=C; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5,6-hexahydro-1,1,5,5-tetramethyl-2,4a-methanonaphthalen-7(4ah)-one" "7h-2,4a-methanonaphthalen-7-one, 1,2,3,4,5,6-hexahydro-1,1,5,5-tetramethyl-" "1,2,3,4,5,6-hexahydro-1,1,5,5-tetramethyl-7h-2,4a-methanonaphthalen-7-one" "2,4a-methanonaphthalen-7(4ah)-one, 1,2,3,4,5,6-hexahydro-1,1,5,5-tetramethyl-, (2s-cis)-" );
+gibbsFormation
+{
+    dHf_298   -212860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     553.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=107030.0
+    phase     gas;
+}

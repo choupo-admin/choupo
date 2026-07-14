@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 12-hydroxydodecanoic acid  (C12H24O3, CAS 505-95-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12HydroxydodecanoicAcid;
+formula     C12H24O3;
+CAS         505-95-3;
+InChIKey    ZDHCZVWCTKTBRY-UHFFFAOYSA-N;
+MW          216.321;      // g/mol [origin=calculated method=formula-sum]
+Tc          887.52;      // K   [origin=predictive method=joback]
+Pc          20.869;      // bar [origin=predictive method=joback]
+omega       1.3780;      // -   [origin=predictive method=lee-kesler]
+Tb          711.85;      // K   [origin=predictive method=joback]
+HvapTb      76149.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.871 1.2286 -0.000732 1.694e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 11; } { group OH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 11; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "12-oxidanyldodecanoic acid" "12-hydroxylauric acid" "omega-hydroxydodecanoic acid" "12-hydroxy-dodecanoic acid" "dodecanoic acid, 12-hydroxy-" "12-hydroxydodecanoate" "omega-hydroxydodecanoate" "12h" "12-hydroxylaurate" "omega-oh lauric acid" "12-hydroxy lauric acid" "omega hydroxy dodecanoate" );
+gibbsFormation
+{
+    dHf_298   -793510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     727.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-430570.0
+    phase     gas;
+}

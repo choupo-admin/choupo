@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-pentyl-2-cyclopenten-1-one  (C10H16O, CAS 25564-22-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Pentyl2Cyclopenten1One;
+formula     C10H16O;
+CAS         25564-22-1;
+InChIKey    ILHZVKAXFCDFMT-UHFFFAOYSA-N;
+MW          152.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          729.56;      // K   [origin=predictive method=joback]
+Pc          27.440;      // bar [origin=predictive method=joback]
+omega       0.5323;      // -   [origin=predictive method=lee-kesler]
+Tb          520.31;      // K   [origin=predictive method=joback]
+HvapTb      43621.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.116 0.82822 -0.00037924 4.18e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH=C; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 4; } { group CH2_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-pentylcyclopent-2-en-1-one" "2-cyclopenten-1-one, 2-pentyl-" "amyl cyclopentenone" "2-pentyl-2-cyclopentene-1-one" "2-pentylcyclopent-2-enone" "2-pentyl-cyclopent-2-en-1-one" "2-cyclopenten-1-one,2-amyl- (4ci); 2-(1-pentyl)-2-cyclopenten-1-one; 2-pentyl-1-cyclopenten-3-one;2-pentyl-2-cyclopenten-1-one; 2-pentyl-2-cyclopentenone;3-oxo-2-pentyl-1-cyclopentene" );
+gibbsFormation
+{
+    dHf_298   -260300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     415.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-24680.0
+    phase     gas;
+}

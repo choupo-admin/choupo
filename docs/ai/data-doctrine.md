@@ -3,7 +3,7 @@
 This is the **curator's** doctrine: a mechanical decision procedure for
 WHERE a thermodynamic number belongs in `data/standards/`, the case tree,
 or an operation's `constant/`.  It is the settled, ratified governance
-(MIT four-pillar forum, 4/4) and it gates every component-`.dat` curation
+(four-pillar design review) and it gates every component-`.dat` curation
 act and every property-model PR.  Read it before you add, move, or refine a
 number.  The companion files are
 [`components.md`](components.md) (the catalogue field glossary),
@@ -26,8 +26,9 @@ Read the quantity's definition, not its frequency of use.
 - The instant the definition must name a **partner** (a solvent, a
   counter-ion, an interaction species) — **even if that partner is water** —
   it is PAIR/SET data and lives in a **catalogue**
-  (`binaryPairs/`, `henrysLaw/`, `electrolyte/`, the `solution/` tier,
-  `eos/<model>/binaryInteractions/`, …), keyed by the pair, **cited per
+  (`binaryPairs/`, `henrysLaw/`, `electrolyte/`, the `solution/` tier, the
+  declarative `parameters/{binary,electrolyte,eos}/` tree — e.g.
+  `parameters/eos/kij/<i>-<j>.dat`, …), keyed by the pair, **cited per
   value**, referenced **by name** from the component.  The number is **never
   copied into the `.dat`**.
 
@@ -59,6 +60,37 @@ Nothing — no solvent, no model, no level — is ever **implicit** on disk.
 "implied" / "assumed" is the forbidden word; the second species, the model,
 and the level are always **named in the file**.
 
+### No juice-less files — every file carries its own explanatory content
+
+The explicitness rule has a file-level corollary: **a content-free file is
+forbidden**.  A bare one-line `package <name>;` propertyPackage selector, an
+empty role overlay, any stub that tells the reader nothing — all the same
+disease.  The worked instance is the **selector-header requirement**: a
+`constant/propertyDict` selector file MUST carry a header stating which
+manifest it selects, summarising what that manifest declares (methods, pairs
++ sources), and pointing at the run log's assembly story.  The one-line
+SELECTION stays (the case selects, the package declares); the FILE must
+still explain itself.  (Sibling rule already below: a unit `constant/` never
+carries a `thermoPackage` placeholder — §3.)
+
+### Derivatives are NEVER stored — the salt-formation rule (settled 2026-06-29, forum)
+
+The arity test has a sharp corollary: **a number FIXED by an exact identity to
+data already in the tree is a DERIVATIVE, and a tree never stores its
+derivatives.**  The canonical case is a salt's *solid* formation enthalpy —
+`Hf_solid = Σνᵢ·hfAq_i − dH_soln`, pinned by the aqueous ions
+(`components/true/aqueous/` `hfAq`) and the heat of solution (the component's
+`electrolyte { dissolutionEnthalpy }`).  Writing it a *third*, component-level
+`gibbsFormation` literal is the **arity-1 sin in its purest form**: a second
+source of truth that drifts silently from the two primaries that determine it
+(it drifted 7 J/mol on day one).  Derive it once, at load, announced — never
+store it.  `bin/curate/check_ion_pins.py` **exits 1** if any component carrying
+`dissolutionEnthalpy` also carries a `gibbsFormation` block.  *(Contrast the
+property-architecture's curation-time resolution: that is for a datum the engine
+CANNOT otherwise reach — a Joback `Tc` — never a value the engine already
+derives live.  Property-architecture answers HOW a MISSING datum is filled;
+arity-1 answers WHERE a PRESENT one lives.)*
+
 ---
 
 ## 2. The water decision — strict purity, an aqueous TIER, a LOUD default
@@ -67,7 +99,7 @@ Water gets **NO exemption** from the arity test.  An "in-water" property is
 pair data wearing a convenience hat — it does **not** go in `<name>.dat`.
 
 Putting an in-water property in the component with water as the *implied*
-solvent is the Aspen black-box sin in miniature: the student opens
+solvent is the commercial black-box sin in miniature: the student opens
 `sucrose.dat`, cannot see that a **second species was silently assumed**,
 then runs an ethanol-solvent case and inherits a water number with no
 warning.  **Forbidden.**
@@ -81,14 +113,14 @@ is the DEFINITION, not the frequency of use.*
 |---|---|---|---|
 | crystalline ΔH_f, S°, Cp_solid/liquid, Tc, Pc, ω, MW, Vliq | the pure compound + its elements | 1 | `components/<name>.dat` |
 | ΔH_soln (crystal → **aqueous**) | solute **+ water** | 2 | `solution/<solute>-water.dat` |
-| aqueous Hf°, S°(aq), Cp°(aq) at ∞-dilution | ion **+ water** (the solvation state IS water) | 2 | `electrolyte/ions.dat` |
+| aqueous Hf°, S°(aq), Cp°(aq) at ∞-dilution | ion **+ water** (the solvation state IS water) | 2 | `components/true/aqueous/` |
 | NRTL/Wilson τ, Henry H, Pitzer β, EOS k_ij | i **+** j | 2 | the relevant pair catalogue |
 
 ### Water's one earned privilege — a TIER, not a slot
 
 Water is ubiquitous enough to earn **one canonical, named, by-name aqueous
 reference tier in the catalogue** — and it already physically exists for ions
-in `data/standards/electrolyte/ions.dat` (`hfAq / sAq / cpAq` at infinite
+in `data/standards/components/true/aqueous/` (`hfAq / sAq / cpAq` at infinite
 dilution, H⁺(aq)=0 convention, Wagman/NBS 1982; `NaOH.dat` points at it by
 name).  The privilege is: **water alone gets a dedicated reference tier
 referenced by name — that tier is a catalogue file, never a component slot.**
@@ -111,7 +143,7 @@ every run**:
 
 That one line delivers the water-is-implied ergonomics **and** shows (a) a
 default was applied, (b) which solvent, (c) which file, (d) the primary source
-— the four things Aspen hides.  **Off-default it fails with a remedy:** if the
+— the four things a black-box simulator hides.  **Off-default it fails with a remedy:** if the
 case's actual solvent is not the default and no matching pair exists, the
 resolver **refuses** ("dHsoln(sucrose) requested in solvent ethanol; only
 sucrose-water exists; provide solution/sucrose-ethanol.dat or accept water
@@ -130,14 +162,36 @@ GEOMETRY; that is never component data.*
 | Level | MAY add | MAY NOT add | Overlay merges… |
 |---|---|---|---|
 | **standard** `data/standards/components/<name>.dat` | the canonical molecule: identity, critical, gasIdeal, liquidPure, solid, transport, `eosParameters{}`; the FROZEN truth | sample-specific data; equipment rates/PSD; **engine REFUSES to write here** | — (base) |
-| **catalogue** `data/standards/<feature>/<pair>.dat` (binaryPairs, henrysLaw, electrolyte, **solution**, unifac, eos/`<model>`) | PAIR/SET/ion-tier data with no single owning molecule (NRTL τ, Henry, Pitzer β, k_ij, ΔH_soln-in-water) | anything ownable by one molecule alone | — (base, per pair) |
+| **catalogue** `data/standards/<feature>/<pair>.dat` (binaryPairs, henrysLaw, electrolyte, **solution**, unifac, `parameters/{binary,electrolyte,eos}/` — e.g. `parameters/eos/kij/<i>-<j>.dat`) | PAIR/SET/ion-tier data with no single owning molecule (NRTL τ, Henry, Pitzer β, k_ij, ΔH_soln-in-water) | anything ownable by one molecule alone | — (base, per pair) |
 | **case** `<case>/constant/components/<name>.dat`, `constant/<feature>/<pair>.dat` | sample-refined molecular **blocks**; case-local pairs/ions the case uses (self-containment) | a NEW molecule's identity (MW/Tc/Pc are born only at standard); equipment rates/PSD | **top-level BLOCK** |
 | **sector** `<case>/<sector>/constant/…` | the SAME, scoped to the sector (a sector = a thermo region) | re-hosting the whole molecule; equipment physics | top-level BLOCK |
 | **unit** `<case>/<sector>/<unit>/constant/…` | the SAME molecular-refinement overlay; **AND** the unit's EQUIPMENT files (`constant/crystallisation`, `constant/dryingKinetics`, `constant/reactions`) | re-hosting the molecule; a `thermoPackage` placeholder (shadows the case default, breaks the run) | top-level BLOCK |
 
-**Resolution precedence, lowest → highest:** `proposed < standard < case <
+**Resolution precedence, lowest → highest:** `local < standard < case <
 sector < unit` (the `Database` walk-up already gives unit→sector→case; pairs
 resolve `standard < caseRoot < perNode`).
+
+### The declarative homes — `propertyMethods/` + `propertyPackages/` (2026-07-04 grammar)
+
+Two further standards homes carry the DECLARATIVE layer the 2026-07-04
+grammar reads from:
+
+* **`data/standards/propertyMethods/<family>/<name>.dat`** — one record per
+  method (`activity/NRTL`, `solution/henryDilute`, `eos/{SRK,PengRobinson}`,
+  `electrolyte/{pitzer,eNRTL}`, `transport/chung`), each carrying its
+  per-GROUP `referenceBasis` rungs (amendment A1) and its `requires{}` /
+  `provides{}` contract.
+* **`data/standards/propertyPackages/<name>.dat`** — shared package
+  manifests a case's `constant/propertyDict` selector may name (a case
+  may equally carry the full manifest INLINE — the tutorial standard).
+
+The contract is **declare → verify → refuse**: the package DECLARES its
+parameter files (`parameters { henryPairs {…} kijPairs {…} }`, pointing into
+`henrysLaw/` and `parameters/{binary,electrolyte,eos}/`), and the
+`ThermoPackageBuilder` VERIFIES every declared file at assembly — a
+declared-but-missing/unparseable entry REFUSES loudly, naming the entry to
+add, and each loaded pair is announced with its source (`[builder]` /
+`[henry]` lines).  The builder loads and assembles; it NEVER estimates.
 
 ### THE MERGE SEMANTICS — block-by-block, NOT field-by-field
 
@@ -199,10 +253,13 @@ name the model?*
    Each factory reads **its own** sub-block by name and ignores the rest.  One
    molecule carries SRK + PR + PC-SAFT + the next EOS simultaneously, never
    colliding, each with its own `provenance{}`.
-3. **PAIR parameters (k_ij and friends) → a model-keyed catalogue**,
-   `data/standards/eos/<model>/binaryInteractions/<i>-<j>.dat`, mirroring
-   `binaryPairs/NRTL/<i>-<j>.dat`, with the always-permitted inline override
-   in the package.
+3. **PAIR parameters (k_ij and friends) → the declarative parameter
+   catalogue**, `data/standards/parameters/eos/kij/<i>-<j>.dat` (siblings:
+   `parameters/binary/` for activity pairs, `parameters/electrolyte/` for
+   Pitzer/eNRTL), mirroring `binaryPairs/NRTL/<i>-<j>.dat`, declared in the
+   propertyPackage (`parameters { kijPairs { N2-CH4 "…"; } }`) and announced
+   at assembly (`[builder] kij(N2,CH4) = 0.0289 --- <file>`), with the
+   always-permitted inline override in the package.
 
 **The boundary test (tier-1 vs tier-2):** *could ANY model in principle
 consume this number (Tc, Pc, ω, MW)? → shared intrinsic field.  Does it only
@@ -217,7 +274,7 @@ corresponding-states fallback.
 
 ---
 
-## 5. The glass-box origin line — the anti-Aspen
+## 5. The glass-box origin line — the anti-black-box stance
 
 **The governing test:** *a student points at any number or any model on
 screen and asks "where did THIS come from?" — and the run already answered it,
@@ -243,7 +300,7 @@ At thermo-build the run prints, per consumed value,
   ethanol-water NRTL                 | level: standard | model: NRTL                  | origin: regressed  [Carey&Lewis 1932]
   hexane-heptane NRTL                | level: (none)   | model: NRTL                  | DEFAULTED TO IDEAL  <- fit or add
 ```
-This is the screen Aspen's "Property Method: NRTL-RK" dropdown is built to
+This is the screen a commercial simulator's property-method dropdown is built to
 suppress.
 
 ---
@@ -270,7 +327,9 @@ Gas = methane (already carries `{Tc,Pc,ω}`).  New EOS = `pcSaft`, needing
    block (research path: a `constant/components/methane.dat` overlay carrying
    *only* that block; promotion path: the same block in the standard `.dat`,
    primary-cited).
-3. k_ij → `eos/PCSAFT/binaryInteractions/<i>-<j>.dat` or inline.
+3. k_ij → the `data/standards/parameters/eos/` catalogue (the shipped
+   cubic home is `parameters/eos/kij/<i>-<j>.dat`; a new EOS family adds
+   its own keyed folder there) or inline.
 4. The run prints `[thermo] EOS = PCSAFT — methane: m,sigma,epsilon/k from
    eosParameters.PCSAFT [Gross&Sadowski 2001] origin: regressed`; a missing
    block fails with a remedy.
@@ -288,4 +347,4 @@ Gas = methane (already carries `{Tc,Pc,ω}`).  New EOS = `pcSaft`, needing
 > molecule, whole at every level; equipment physics is a rate or a geometry,
 > never a component property.  No second species, no model, and no level is
 > ever implicit on disk — the student SEES it on every run, which is the one
-> thing Aspen is built to hide.**
+> thing a black-box simulator is built to hide.**

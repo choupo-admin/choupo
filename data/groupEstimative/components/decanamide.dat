@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: decanamide  (C10H21NO, CAS 2319-29-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        decanamide;
+formula     C10H21NO;
+CAS         2319-29-1;
+InChIKey    TUTWLYPCGCUWQI-UHFFFAOYSA-N;
+MW          171.284;      // g/mol [origin=calculated method=formula-sum]
+Tc          737.93;      // K   [origin=predictive method=joback]
+Pc          23.611;      // bar [origin=predictive method=joback]
+omega       0.8066;      // -   [origin=predictive method=lee-kesler]
+Tb          554.80;      // K   [origin=predictive method=joback]
+HvapTb      55241.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.648 0.98772 -0.0005449 1.0976e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-decanamide" "decanoic acid amide" "capramide" "decylamide" "decan-1-amide" "decanamide-" "amides, c10-16" "decanoylamide" "amides, c1o-16" "(c10-c16) alkylcarboxylic acid amide" );
+gibbsFormation
+{
+    dHf_298   -328520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     623.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-29150.0
+    phase     gas;
+}

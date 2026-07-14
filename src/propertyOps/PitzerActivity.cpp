@@ -26,6 +26,7 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
+#include "core/Advisory.H"
 #include "PitzerActivity.H"
 
 #include "core/Constants.H"
@@ -51,6 +52,40 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
     // Temperature [K] -- the model is T-dependent (A_phi(T) via eps_w(T)/rho_w(T));
     // defaults to 25 C so a bench with no `temperature` reads the 25 C curve.
     const scalar T = dict->lookupScalarOrDefault("temperature", 298.15);
+    // T-validity is DATA, not code: announce when the requested T leaves the
+    // window the pair's T-extension was fitted for (and when no extension
+    // exists at all beyond the 25 C surface).
+    // (checked after the salt loads, below)
+    if (T != 298.15)
+    {
+        // Validity is EVIDENCE (#101/#103): the structured advisory lands in
+        // the result JSON regardless of verbosity; the console line is only
+        // its presentation.
+        if (model.spForm && (T < model.TvalidLo || T > model.TvalidHi))
+        {
+            AdvisoryLog::instance().add("validity", "warning",
+                "pitzerActivity " + cation + "-" + anion,
+                "T = " + std::to_string(T) + " K OUTSIDE the pair's"
+                " T-function validity [" + std::to_string(model.TvalidLo)
+                + ", " + std::to_string(model.TvalidHi)
+                + "] K -- EXTRAPOLATED");
+            if (verbosity >= 1)
+                std::cout << "  WARNING: T = " << T << " K is OUTSIDE the pair's"
+                             " T-function validity [" << model.TvalidLo << ", "
+                          << model.TvalidHi << "] K -- extrapolation.\n";
+        }
+        else if (!model.spForm && model.dbeta0_dT == 0.0)
+        {
+            AdvisoryLog::instance().add("validity", "warning",
+                "pitzerActivity " + cation + "-" + anion,
+                "T = " + std::to_string(T) + " K but the pair carries NO"
+                " temperature extension -- frozen 25 C surface used");
+            if (verbosity >= 1)
+                std::cout << "  WARNING: T = " << T << " K but the (" << cation
+                          << "," << anion << ") pair carries NO temperature"
+                             " extension -- using the frozen 25 C surface.\n";
+        }
+    }
 
     // -- molality grid --------------------------------------------------------
     scalar mFrom = 0.1, mTo = 6.0;
@@ -74,6 +109,7 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
     // Debye-Huckel tail only the calorimetric fit tracks the measured curve.
     PitzerSingleSalt anchored = model;
     anchored.dbeta0_dT = anchored.dbeta1_dT = anchored.dCphi_dT = 0.0;
+    anchored.spForm = false;                       // the full SP77 form too
     auto Lphi = [&](const PitzerSingleSalt& k_, scalar m) -> scalar
     { return k_.Lphi(m, T); };   // ONE implementation: the kernel's own
 
@@ -112,10 +148,24 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
         }
         scalar sumRel = 0.0, sumAbs = 0.0, extrapMax = 0.0, extrapAtM = 0.0;
         int nRel = 0, nAbs = 0, nExtrap = 0;
+        // gamma_pm / osmotic phi points (e.g. Hamer & Wu 1972 evaluated tables):
+        //   { m 0.1; gamma 0.778; }   { m 1.0; phi 0.936; }
+        scalar gSum = 0.0, pSum = 0.0; int gN = 0, pN = 0;
         for (const auto& e : pts)
         {
             const scalar m = e->lookupScalar("m");
             if (m < mFrom || m > mTo) continue;
+            if (e->found("gamma") && m >= wLo && m <= wHi)
+            {
+                const scalar meas = e->lookupScalar("gamma");
+                gSum += std::fabs(model.gammaPM(m, T) - meas) / meas; ++gN;
+            }
+            if (e->found("phi") && m >= wLo && m <= wHi)
+            {
+                const scalar meas = e->lookupScalar("phi");
+                pSum += std::fabs(model.osmoticCoefficient(m, T) - meas) / meas; ++pN;
+            }
+            if (!e->found("phiL")) continue;
             const scalar meas = e->lookupScalar("phiL") * CALORIE;   // cal -> J
             const scalar pred = Lphi(model, m);
             const scalar dev  = std::fabs(pred - meas);
@@ -130,6 +180,26 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
                 ++nExtrap;
                 if (dev > extrapMax) { extrapMax = dev; extrapAtM = m; }
             }
+        }
+        if (gN > 0)
+        {
+            diag_["gamma_AAD_pct"] = 100.0 * gSum / gN;
+            diag_["gamma_nMeas"]   = static_cast<scalar>(gN);
+            if (verbosity >= 1)
+                std::cout << "  gamma_pm validation vs " << v->lookupWord("dataset")
+                          << " [" << v->lookupWord("series") << "]: AAD "
+                          << std::fixed << std::setprecision(2) << (100.0 * gSum / gN)
+                          << " % over " << gN << " points\n";
+        }
+        if (pN > 0)
+        {
+            diag_["phi_AAD_pct"] = 100.0 * pSum / pN;
+            diag_["phi_nMeas"]   = static_cast<scalar>(pN);
+            if (verbosity >= 1)
+                std::cout << "  osmotic phi validation vs " << v->lookupWord("dataset")
+                          << " [" << v->lookupWord("series") << "]: AAD "
+                          << std::fixed << std::setprecision(2) << (100.0 * pSum / pN)
+                          << " % over " << pN << " points\n";
         }
         if (nAbs > 0)
         {

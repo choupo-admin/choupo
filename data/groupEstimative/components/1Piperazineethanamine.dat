@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-piperazineethanamine  (C6H15N3, CAS 140-31-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Piperazineethanamine;
+formula     C6H15N3;
+CAS         140-31-8;
+InChIKey    IMUDHTPIFIBORV-UHFFFAOYSA-N;
+MW          129.207;      // g/mol [origin=calculated method=formula-sum]
+Tc          706.60;      // K   [origin=predictive method=joback]
+Pc          44.385;      // bar [origin=predictive method=joback]
+omega       0.5922;      // -   [origin=predictive method=lee-kesler]
+Tb          490.35;      // K   [origin=predictive method=joback]
+HvapTb      48958.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-56.268 0.9044 -0.0005808 1.434e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2NH2; count 1; } { group CH2NH; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH2_ring; count 4; } { group NH2; count 1; } { group NH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-piperazin-1-ylethanamine" "n-aminoethylpiperazine" "n-(2-aminoethyl)piperazine" "1-(2-aminoethyl)piperazine" "aminoethylpiperazine" "1-aminoethylpiperazine" "2-(piperazin-1-yl)ethanamine" "piperazine, 1-(2-aminoethyl)-" "1-piperazineethylamine" "2-piperazin-1-ylethylamine" "usaf do-46" "2-piperazinoethylamine" );
+gibbsFormation
+{
+    dHf_298   52780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     443.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=308840.0
+    phase     gas;
+}

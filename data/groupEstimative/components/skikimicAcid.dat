@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: skikimic acid  (C7H10O5, CAS 138-59-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        skikimicAcid;
+formula     C7H10O5;
+CAS         138-59-0;
+InChIKey    JXOHGGNKMLTUBP-UHFFFAOYSA-N;
+MW          174.152;      // g/mol [origin=calculated method=formula-sum]
+Tc          989.93;      // K   [origin=predictive method=joback]
+Pc          53.670;      // bar [origin=predictive method=joback]
+omega       2.2006;      // -   [origin=predictive method=lee-kesler]
+Tb          796.16;      // K   [origin=predictive method=joback]
+HvapTb      99142.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.65 0.7752 -0.00041124 6.2e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 3; } { group CH=C; count 1; } { group OH; count 3; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4,5-tris(oxidanyl)cyclohexene-1-carboxylic acid" "3,4,5-trihydroxy-1-cyclohexene-1-carboxylic acid" "1-cyclohexene-1-carboxylic acid, 3,4,5-trihydroxy-, [3r-(3.alpha.,4.alpha.,5.beta.)]-" "3,4,5-trihydroxy-1-cyclohexenecarboxylic acid" "3,4,5-trihydroxycyclohex-1-ene-1-carboxylic acid" "1-cyclohexene-1-carboxylic acid, 3,4,5-trihydroxy-" "cyclohexen-3,4,5-triol-1-carboxylic acid" "3,4,5-trihydroxycyclohex-1-enecarboxylic acid" "3,4,5-trihydroxycyclohexene-1-carboxylic acid" "3,5-trihydroxy-1-cyclohexene-1-carboxylic acid" "1-cyclohexene-1-carboxylic acid,4,5-trihydroxy-" "1-cyclohexene-1-carboxylic acid,4,5-trihydroxy-, [3r-(3.alpha.,4.alpha.,5.beta.)]-" );
+gibbsFormation
+{
+    dHf_298   -934820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     475.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-716950.0
+    phase     gas;
+}

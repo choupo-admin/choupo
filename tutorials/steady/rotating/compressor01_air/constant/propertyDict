@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  compressor01_air / constant/thermoPackage
+
+  Dry air as N2 + O2: the gas the 10 kW adiabatic compressor works on.
+  Ideal-gas EoS is the physically right choice here, not a placeholder --
+  air at 1 to ~9 bar and 298-640 K has Z ~ 1, and the isentropic
+  hand-check in the flowsheet header (gamma = 1.4 relations) is exactly
+  ideal-gas.  No liquid ever forms, so the activity model is never used.
+\*---------------------------------------------------------------------------*/
+
+components       ( N2  O2 );
+
+activityModel    { model  ideal; }
+
+equationOfState  { model  idealGas; }

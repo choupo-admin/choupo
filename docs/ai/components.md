@@ -2,7 +2,7 @@
 
 <!-- BEGIN-PROSE -->
 Inventory snapshot, regenerated from `data/standards/components/`.
-When composing a `thermoPackage`, pick component names from this list
+When composing a property package (`constant/propertyDict`), pick component names from this list
 (case-sensitive).  Adding a new component is a project-level act, not
 a per-case one --- case-local overlays (axiom 4) can refine
 sample-specific **blocks** but NOT MW / Tc / Pc.
@@ -19,12 +19,65 @@ the catalogue's `k_v`).  See [`data-doctrine.md`](data-doctrine.md) §3.
 A property whose definition names a **solvent** — an "in-water" ΔH_soln, an
 aqueous Hf°, a solubility curve — is arity-2 and lives in a **catalogue**
 (`data/standards/solution/<solute>-<solvent>.dat` for molecular solutes;
-`data/standards/electrolyte/ions.dat` for the ∞-dilution ion tier), referenced
+`data/standards/components/true/aqueous/` for the ∞-dilution ion tier), referenced
 by name, never copied into `<name>.dat`.  The solvent is always **named**, not
 implied (`data-doctrine.md` §2).
 
+**Henry behaviour: the ROLE is selected by the package, not stored on the
+substance.**  The `role solute;` flag in a `.dat` (the "Soluble gas" table
+below) is the legacy flat-`thermoPackage` trigger.  The modern route is the
+`propertyPackage` `solution { solvent water; solutes ( CO2 ); }` block (the
+`solution.henryDilute` world) — the PACKAGE declares WHO dissolves in WHAT,
+the pair files are declared in `parameters.henryPairs` (the Henry's-law
+pairs table below names the shipped files), and a declared-but-missing pair
+REFUSES at assembly.  See `thermo.md` → "propertyPackage".
+
 *56 components currently shipped.*
 <!-- END-PROSE -->
+
+## Extended catalogue (`data/local/`)
+
+Choupo also ships an **extended, unverified tier**. At the current snapshot the
+file-level inventory is 194 records in `data/standards/components/` and 625 in
+`data/local/components/`; overlapping names and identities mean these counts
+must not be added and advertised as an equal-quality compound total. The GUI
+shows proposals separately and the engine prints `[proposed]` whenever one is
+actually used.
+
+The ChemSep v8.3 import contributes 279 new proposal files after CAS
+deduplication. Each carries the source-file SHA-256, Artistic-2.0 licence,
+record name and per-property `Origin`. The imported pure-component skeleton is
+normally:
+
+- `MW`, `Tc`, `Pc`, `omega`, `Tb`: source database values, `origin literature`;
+- `vaporPressure`: **predictive** Ambrose-Walton from `Tc/Pc/omega`, not a
+  measured vapour-pressure correlation;
+- `Cp`, formation thermochemistry, transport, `Vliq`, Joback and UNIFAC groups:
+  absent unless another explicitly identified source already supplied them.
+
+Therefore these records are useful for screening flashes and cubic-EOS work,
+but a component with missing Cp/formation data is not ready for an energy or
+reaction calculation. Run the gap report and inspect the Property Explorer
+provenance before choosing one.
+
+ChemSep also stages 748 NRTL/UNIQUAC/Wilson records under
+`data/local/binaryPairs/`. Pair resolution is lower-precedence than the
+standard library and is announced as `[proposed]`; missing pairs still
+ideal-default loudly. The records passed the deterministic identity, source
+hash and unit-conversion audit in `data/local/CHEMSEP-PAIR-AUDIT.md`, but
+their imported DECHEMA parameters have no captured temperature range and must
+be checked against project VLE data before design use.
+
+Maintainer regeneration and gates:
+
+```sh
+python3 bin/curate/chemsep_to_choupo.py --dry-run
+python3 bin/curate/chemsep_to_choupo.py
+python3 bin/curate/reconcile_chemsep_collisions.py --prune-resolved
+python3 bin/curate/audit_proposed.py
+python3 bin/curate/validate_components.py
+python3 bin/curate/audit_chemsep_pairs.py
+```
 
 <!-- AUTO-GENERATED below this line by bin/regen-llm-docs. -->
 <!-- Edit the .dat files in data/standards/components/, then re-run. -->
@@ -164,7 +217,7 @@ Each carries ρ, F_M (Guthrie), σ_y, max T, max P.
   - `AmbroseWalton` — corresponding-states PREDICTION from `Tc`, `Pc`, `omega` ALONE (taken from the component automatically — declare them once; no extra keys). Closes the Psat gap of a Joback estimate so an estimated component is **flashable without measured data**. It is an ESTIMATE: ~3 % near Tb, degrading at low reduced T and for polar/associating species — overlay vs data before design use (see `tutorials/props/compare/compare_psat_ambrose_walton`).
 - `idealGasHeatCapacity { coefficients (a1 a2... ); }` — for H_ig, S_ig.
 - `liquidHeatCapacity { coefficients (... ); }` — for sensible H_liq.
-- `gibbsFormation { dHf_298; s_298; phase; }` — for K_eq, adiabatic flames, and elements-reference stream enthalpy. The optional `phase` keyword (`gas` / `liquid` / `solid`) tells the solver in which phase `dHf_298` is tabulated; if omitted it defaults to `gas` (the NIST / JANAF convention). Set it explicitly for any new component, and use `solid` for crystalline non-volatiles like sucrose whose Hf cannot honestly be referenced to gas. Throws clearly at `h_formation` time if the matching Cp model is absent (gas needs `idealGasHeatCapacity`; liquid + solid need `liquidHeatCapacity`).
+- `gibbsFormation { dHf_298; s_298; phase; }` — for K_eq, adiabatic flames, **the isothermal reactor duty / heat of reaction**, and elements-reference stream enthalpy. **Every reacting species in a reactor needs this block** — it is the single enthalpy base for the heat of reaction (`dH_rxn = Σ νᵢ·hᵢ(T)`); without it the heat of reaction is dropped (steady reactors, announced) or falls back to the dict `dH_rxn` override (batch/dynamic). The optional `phase` keyword (`gas` / `liquid` / `solid`) tells the solver in which phase `dHf_298` is tabulated; if omitted it defaults to `gas` (the NIST / JANAF convention). Set it explicitly for any new component, and use `solid` for crystalline non-volatiles like sucrose whose Hf cannot honestly be referenced to gas. Throws clearly at `h_formation` time if the matching Cp model is absent (gas needs `idealGasHeatCapacity`; liquid + solid need `liquidHeatCapacity`).
 - `diffusionVolume <Sigma_v>;` — for Fuller diffusivity.
 - `liquidViscosity { andrade {... } vogel {... } }` — model-specific.
 - `associationFactor <phi>;` — for Wilke-Chang liquid diffusivity.
@@ -262,6 +315,29 @@ run that uses it — an unvalidated lump never hides.
 Worked example (self-contained, FLASHES + closes an energy balance):
 `tutorials/steady/flash/flash_pseudoComponent_petCut`.
 
+### The structure is identity — `jobackGroups` + `bin/estimate` (no case needed)
+
+A molecular component's Joback groups live **in its own `.dat`**, like the
+formula (sibling of the UNIFAC `groups {}` block — different table, same idea):
+
+```
+jobackGroups { CH3 2; ketone 1; }     // acetone = 2 x CH3 + 1 x >C=O
+```
+
+Any component that declares them is estimable with **one command, zero case
+ceremony**:
+
+```bash
+bin/estimate acetone            # resolves case-local, then data/standards/
+bin/estimate path/to/new.dat    # or an explicit file
+```
+
+Prints the full glass-box build-up and drops ONE stable proposal
+(`<name>.estimated.dat`) next to the source — review, then promote by hand.
+Never writes into `data/standards/`; the solver never estimates at runtime.
+The `estimateComponent` op still accepts inline `groups (...)` when the
+estimate itself is the lesson (`tutorials/props/estimate/estimate_acetone`).
+
 ### Estimating a petroleum cut from (Tb, SG) — `model RiaziDaubert;`
 
 A crude assay reports each cut's **normal boiling point Tb** and **specific
@@ -314,7 +390,7 @@ liquid by `role nonvolatile;`, the solvent boils off):
 
 A common convenience lump is **air** (≈ 79 % N2 / 21 % O2 by mole).  Until a
 predefined-mixture shorthand lands, author it explicitly — list `N2` and `O2`
-in the `thermoPackage` `components` and set the feed `molarComposition { N2
+in the property package's `components` and set the feed `molarComposition { N2
 0.79; O2 0.21; }`.  Both are fully curated permanent gases (criticals, Cp_ig,
 gibbsFormation), so an air feed flashes and balances energy with the standard
 catalogue alone.

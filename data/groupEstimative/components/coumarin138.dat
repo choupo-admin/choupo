@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: coumarin 138  (C14H15NO2, CAS 62669-74-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        coumarin138;
+formula     C14H15NO2;
+CAS         62669-74-3;
+InChIKey    RIUSGHALMCFISX-UHFFFAOYSA-N;
+MW          229.279;      // g/mol [origin=calculated method=formula-sum]
+Tc          876.07;      // K   [origin=predictive method=joback]
+Pc          26.272;      // bar [origin=predictive method=joback]
+omega       0.8237;      // -   [origin=predictive method=lee-kesler]
+Tb          654.89;      // K   [origin=predictive method=joback]
+HvapTb      61696.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-71.29 1.39444 -0.00110372 3.507e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group ACH; count 3; } { group AC; count 3; } { group CH3N; count 1; } { group C=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 5; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-(dimethylamino)-2,3-dihydro-1h-cyclopenta[c]chromen-4-one" "7-(dimethylamino)-2,3-dihydrocyclopenta[c]chromen-4(1h)-one" "cyclopenta[c][1]benzopyran-4(1h)-one, 7-(dimethylamino)-2,3-dihydro-" "cyclopenta(c)(1)benzopyran-4(1h)-one, 7-(dimethylamino)-2,3-dihydro-" "cyclopenta[c][1]benzopyran-4(1h)-one,3-dihydro-" "7-(dimethylamino)-1,2,3-trihydrocyclopenta[1,2-c]chromen-4-one" "7-(dimethylamino)-2,3-dihydrocyclopenta[c]chromen-4(1h)-one; {cyclopenta[c][1]benzopyran-4(1h)-one,} 7-(dimethylamino)-2,3-dihydro-" );
+gibbsFormation
+{
+    dHf_298   -141170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     484.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=120280.0
+    phase     gas;
+}

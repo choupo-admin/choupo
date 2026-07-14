@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (e)-beta-farnesene  (C15H24, CAS 18794-84-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        eBetaFarnesene;
+formula     C15H24;
+CAS         18794-84-8;
+InChIKey    JSNRRGGBADWTMC-NTCAYCPXSA-N;
+MW          204.357;      // g/mol [origin=calculated method=formula-sum]
+Tc          730.48;      // K   [origin=predictive method=joback]
+Pc          16.592;      // bar [origin=predictive method=joback]
+omega       0.5360;      // -   [origin=predictive method=lee-kesler]
+Tb          544.12;      // K   [origin=predictive method=joback]
+HvapTb      47800.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-44.166 1.42856 -0.0010125 3.023e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH2=CH; count 1; } { group CH2=C; count 1; } { group CH=C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group dCH2; count 2; } { group dCH; count 3; } { group dC; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(6e)-7,11-dimethyl-3-methylidene-dodeca-1,6,10-triene" "beta-farnesene" "trans-beta-farnesene" ".beta.-farnesene" "7,11-dimethyl-3-methylenedodeca-1,6,10-triene" "1,6,10-dodecatriene, 7,11-dimethyl-3-methylene-, (e)-" "trans-7,11-dimethyl-3-methylene-1,6,10-dodecatriene" "(6e)-7,11-dimethyl-3-methylidenedodeca-1,6,10-triene" "(e)-7,11-dimethyl-3-methylenedodeca-1,6,10-triene" "(6e)-7,11-dimethyl-3-methylene-1,6,10-dodecatriene" "beta-trans-farnesene" "trans-" "a-farnesene" );
+gibbsFormation
+{
+    dHf_298   103000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     705.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=385890.0
+    phase     gas;
+}

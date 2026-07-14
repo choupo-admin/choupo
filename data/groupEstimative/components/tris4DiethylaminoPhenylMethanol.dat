@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tris[4-(diethylamino)phenyl]methanol  (C31H43N3O, CAS 596-49-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tris4DiethylaminoPhenylMethanol;
+formula     C31H43N3O;
+CAS         596-49-6;
+InChIKey    NDGDAUFULOJWFG-UHFFFAOYSA-N;
+MW          473.705;      // g/mol [origin=calculated method=formula-sum]
+Tc          1385.25;      // K   [origin=predictive method=joback]
+Pc          10.136;      // bar [origin=predictive method=joback]
+omega       0.9668;      // -   [origin=predictive method=lee-kesler]
+Tb          1130.13;      // K   [origin=predictive method=joback]
+HvapTb      114926.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-135.364 3.06522 -0.00209508 5.534e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 3; } { group C; count 1; } { group ACH; count 12; } { group AC; count 6; } { group OH; count 1; } { group CH2N; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 6; } { group C; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group OH; count 1; } { group N; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(diethylamino)-" "a," "a-bis(4-(diethylamino)phenyl)benzenemethanol" "p,p',p''-tris(diethylamino)trityl alcohol" "4-(diethylamino)-alpha,alpha-bis(4-(diethylamino)phenyl)benzenemethanol" "benzenemethanol, 4-(diethylamino)-alpha,alpha-bis(4-(diethylamino)phenyl)-" "benzenemethanol, 4-(diethylamino)-.alpha.,.alpha.-bis[4-(diethylamino)phenyl]-" );
+gibbsFormation
+{
+    dHf_298   33620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1086.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=716840.0
+    phase     gas;
+}

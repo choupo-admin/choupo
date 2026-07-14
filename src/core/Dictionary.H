@@ -99,6 +99,10 @@ public:
     std::vector<scalar>       lookupList  (const std::string& key) const;
     std::vector<std::string>  lookupWordList(const std::string& key) const;
     std::vector<DictPtr>      lookupDictList(const std::string& key) const;
+    // True iff `key` is present AND holds a list of sub-dicts ({...} {...}) --
+    // distinguishes an INLINE `units ( {..} )` (flat case) from a WORD list
+    // `units ( a b c )` (folder-based dignified units / sectors).
+    bool                      hasDictList (const std::string& key) const;
     DictPtr                   subDict     (const std::string& key) const;
 
     scalar      lookupScalarOrDefault(const std::string& key, scalar def) const;
@@ -192,10 +196,20 @@ public:
     //  `$ref` lookup throws --- catching the most common authoring
     //  mistake at the point of failure.
     void                  setVarsDict(DictPtr v) { varsDict_ = std::move(v); }
+
+    // DEEP copy of the whole tree (forum #63-7).  `DictPtr work = other` is an
+    // ALIAS -- a shared_ptr copy -- so a setScalarAtPath through it mutates the
+    // ORIGINAL; a what-if evaluation or a fit working tree must never do that.
+    // Sub-dicts and dict-lists are copied recursively; the variables block is
+    // deep-copied ONCE at the root and re-pointed on every copied node, so a
+    // manipulation of $vars in the copy stays in the copy.
+    DictPtr deepCopy() const;
     DictPtr               varsDict()      const  { return varsDict_; }
     void                  propagateVarsDict(DictPtr v);
 
 private:
+    void setVarsDictRecursive_(const DictPtr& v);
+
     std::string name_;
     std::string source_;
     std::map<std::string, EntryValue> entries_;

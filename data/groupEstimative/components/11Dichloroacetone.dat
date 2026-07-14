@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1-dichloroacetone  (C3H4Cl2O, CAS 513-88-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Dichloroacetone;
+formula     C3H4Cl2O;
+CAS         513-88-2;
+InChIKey    CSVFWMMPUJDVKH-UHFFFAOYSA-N;
+MW          126.964;      // g/mol [origin=calculated method=formula-sum]
+Tc          598.66;      // K   [origin=predictive method=joback]
+Pc          43.916;      // bar [origin=predictive method=joback]
+omega       0.3644;      // -   [origin=predictive method=lee-kesler]
+Tb          396.53;      // K   [origin=predictive method=joback]
+HvapTb      37400.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (31.62 0.28032 -0.0001647 3.296e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3CO; count 1; } { group CHCl2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group Cl; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1-bis(chloranyl)propan-2-one" "1,1-dichloro-2-propanone" "2-propanone, 1,1-dichloro-" "1,1-dichloropropanone" "dichloromethyl methyl ketone" ".alpha.,.alpha.-dichloroacetone" "alpha,alpha-dichloroacetone" "1,1-dca" "dichloropropanone" "asym-dichloroacetone" "sgqdbhaqbs]tp@" "2-propanone, dichloro-" );
+gibbsFormation
+{
+    dHf_298   -254590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     356.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-180840.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentadecylamine  (C15H33N, CAS 2570-26-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentadecylamine;
+formula     C15H33N;
+CAS         2570-26-5;
+InChIKey    JPZYXGPCHFZBHO-UHFFFAOYSA-N;
+MW          227.436;      // g/mol [origin=calculated method=formula-sum]
+Tc          784.27;      // K   [origin=predictive method=joback]
+Pc          14.782;      // bar [origin=predictive method=joback]
+omega       0.8662;      // -   [origin=predictive method=lee-kesler]
+Tb          615.33;      // K   [origin=predictive method=joback]
+HvapTb      59625.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.256 1.49072 -0.0008356 1.783e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 13; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 14; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentadecan-1-amine" "n-pentadecylamine" "1-aminopentadecane" "1-pentadecanamine" "1-pentadecylamine" "pentadecane, 1-amino-" "1- degrees +/->>ue(r)iaie" );
+gibbsFormation
+{
+    dHf_298   -319140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     791.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=141870.0
+    phase     gas;
+}

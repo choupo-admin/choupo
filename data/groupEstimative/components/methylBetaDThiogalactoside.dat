@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl beta-d-thiogalactoside  (C7H14O5S, CAS 155-30-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylBetaDThiogalactoside;
+formula     C7H14O5S;
+CAS         155-30-6;
+InChIKey    LZFNFLTVAMOOPJ-UHFFFAOYSA-N;
+MW          210.244;      // g/mol [origin=calculated method=formula-sum]
+Tc          1016.30;      // K   [origin=predictive method=joback]
+Pc          48.158;      // bar [origin=predictive method=joback]
+omega       2.2804;      // -   [origin=predictive method=lee-kesler]
+Tb          825.08;      // K   [origin=predictive method=joback]
+HvapTb      108412.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.761 0.81231 -0.0002839 -2.82e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 4; } { group OH; count 4; } { group CH-O; count 1; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH_ring; count 5; } { group OH; count 4; } { group O_ring; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(hydroxymethyl)-6-methylsulfanyl-oxane-3,4,5-triol" "agn-pc-03vide" "methyl-beta-d-thiogalactopyranoside" ".beta.-d-galactopyranoside, methyl 1-thio-" "2-(hydroxymethyl)-6-methylsulfanyloxane-3,4,5-triol" "(2r,3r,4s,5r)-2-(hydroxymethyl)-6-methylsulfanyloxane-3,4,5-triol" );
+gibbsFormation
+{
+    dHf_298   -913900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     442.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-598610.0
+    phase     gas;
+}

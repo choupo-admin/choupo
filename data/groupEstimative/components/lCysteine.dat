@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: l-cysteine  (C3H7NO2S, CAS 52-90-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lCysteine;
+formula     C3H7NO2S;
+CAS         52-90-4;
+InChIKey    XUJNEKJLAYXESH-REOHCLBHSA-N;
+MW          121.154;      // g/mol [origin=calculated method=formula-sum]
+Tc          783.04;      // K   [origin=predictive method=joback]
+Pc          60.279;      // bar [origin=predictive method=joback]
+omega       0.7812;      // -   [origin=predictive method=lee-kesler]
+Tb          548.70;      // K   [origin=predictive method=joback]
+HvapTb      56426.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.461 0.4347 -0.000281 6.86e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CHNH2; count 1; } { group COOH; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r)-2-azanyl-3-sulfanyl-propanoic acid" "cysteine" "half-cystine" "thioserine" "cystein" "(r)-cysteine" "l-(+)-cysteine" "beta-mercaptoalanine" "(r)-2-amino-3-mercaptopropanoic acid" "half cystine" "cysteine, l-" "l-cys" );
+gibbsFormation
+{
+    dHf_298   -388530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     430.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-276130.0
+    phase     gas;
+}

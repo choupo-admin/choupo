@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,4,5-tetrachloro-6-(dihexylcarbamoyl)benzoic acid  (C20H27Cl4NO3, CAS 67905-38-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2345Tetrachloro6DihexylcarbamoylBenzoicAcid;
+formula     C20H27Cl4NO3;
+CAS         67905-38-8;
+InChIKey    DOVOIHLVRGFQDQ-UHFFFAOYSA-N;
+MW          471.24;      // g/mol [origin=calculated method=formula-sum]
+Tc          1310.39;      // K   [origin=predictive method=joback]
+Pc          12.056;      // bar [origin=predictive method=joback]
+omega       1.1384;      // -   [origin=predictive method=lee-kesler]
+Tb          1070.32;      // K   [origin=predictive method=joback]
+HvapTb      109193.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (75.13 1.70134 -0.0010083 2.2016e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group AC; count 2; } { group COOH; count 1; } { group ACCl; count 4; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 10; } { group dC_ring; count 6; } { group Cl; count 4; } { group CdO; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,4,5-tetrakis(chloranyl)-6-(dihexylcarbamoyl)benzoic acid" "2,3,4,5-tetrachloro-6-((dihexylamino)carbonyl)benzoic acid" "2,3,4,5-tetrachloro-6-[(dihexylamino)carbonyl]benzoic acid" "benzoic acid, 2,3,4,5-tetrachloro-6-((dihexylamino)carbonyl)-" "benzoic acid, 2,3,4,5-tetrachloro-6-[(dihexylamino)carbonyl]-" "3,4,5,6-tetrachloro-n-dihexylphthalamic acid" );
+gibbsFormation
+{
+    dHf_298   -735230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1027.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-227990.0
+    phase     gas;
+}

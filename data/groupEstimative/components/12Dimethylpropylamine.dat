@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-dimethylpropylamine  (C5H13N, CAS 598-74-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Dimethylpropylamine;
+formula     C5H13N;
+CAS         598-74-3;
+InChIKey    JOZZAIIGWFLONA-UHFFFAOYSA-N;
+MW          87.166;      // g/mol [origin=calculated method=formula-sum]
+Tc          575.56;      // K   [origin=predictive method=joback]
+Pc          37.870;      // bar [origin=predictive method=joback]
+omega       0.3596;      // -   [origin=predictive method=lee-kesler]
+Tb          385.65;      // K   [origin=predictive method=joback]
+HvapTb      36589.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.47 0.55256 -0.000298 5.83e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH; count 1; } { group CHNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methylbutan-2-amine" "2-butanamine, 3-methyl-" "3-methyl-2-butanamine" "2-amino-3-methylbutane" "iso-amylamine" "propylamine, 1,2-dimethyl-" "1,2-dimethylpropanamine" "1,2-dimethyl-propylamine" "jozzaiigwflona-uhfffaoysa-" "(r)-(-)-3-methyl-2-butylamine, 98%" "(s)-(+)-3-methyl-2-butylamine, 98+%" "propylamine,1,2-dimethyl- (6ci,7ci,8ci); (3-methylbutan-2-yl)amine; (?a'a a'a currency)-3-methyl-2-butanamine; (?a'a a'a currency)-3-methyl-2-butylamine;1,2-dimethylpropanamine; 1,2-dimethylpropylamine; 2-amino-3-methylbutane;3-methyl-2-aminobutane; 3-methyl-2-butanamine; 3-methyl-2-butylamine" );
+gibbsFormation
+{
+    dHf_298   -123300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     383.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=52790.0
+    phase     gas;
+}

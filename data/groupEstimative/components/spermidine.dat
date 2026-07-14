@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: spermidine  (C7H19N3, CAS 124-20-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        spermidine;
+formula     C7H19N3;
+CAS         124-20-9;
+InChIKey    ATHGHQPFGPMSJY-UHFFFAOYSA-N;
+MW          145.25;      // g/mol [origin=calculated method=formula-sum]
+Tc          747.19;      // K   [origin=predictive method=joback]
+Pc          32.173;      // bar [origin=predictive method=joback]
+omega       0.8881;      // -   [origin=predictive method=lee-kesler]
+Tb          554.99;      // K   [origin=predictive method=joback]
+HvapTb      58894.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.297 0.8688 -0.0004924 1.046e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2NH2; count 2; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 7; } { group NH2; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n'-(3-azanylpropyl)butane-1,4-diamine" "1,5,10-triazadecane" "4-azaoctamethylenediamine" "spermidin" "n-(3-aminopropyl)butane-1,4-diamine" "4-azaoctane-1,8-diamine" "1,4-butanediamine, n-(3-aminopropyl)-" "1,8-diamino-4-azaoctane" "n-(3-aminopropyl)-1,4-butane-diamine" "n-(3-aminopropyl)-1,4-butanediamine" "n-(3-aminopropyl)-1,4-diaminobutane" "1,4-diaminobutane, n-(3-aminopropyl)-" );
+gibbsFormation
+{
+    dHf_298   -66760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     572.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=230350.0
+    phase     gas;
+}

@@ -29,8 +29,10 @@ License
 #include "ThermoPackage.H"
 
 #include "PackageAudit.H"
+#include "ThermoAnnounce.H"   // load-phase announcement gate (verbosity contract)
 #include "activityCoefficient/Wilson.H"
 #include "activityCoefficient/UNIFAC.H"
+#include "activityCoefficient/UNIQUAC.H"
 #include "activityCoefficient/ElectrolyteActivity.H"
 #include "core/Constants.H"
 #include "henrysLaw/HenrysLawRegistry.H"
@@ -38,6 +40,7 @@ License
 #include "propertyOps/DerivedClosures.H"   // closures::rackettVliq (liquid Vm)
 #include "core/Advisory.H"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <filesystem>
@@ -58,6 +61,15 @@ pureFluidRoute(const std::map<std::size_t, std::unique_ptr<PureFluidModel>>& pf,
                const std::vector<Component>& comps,
                const sVector& z);
 
+void ThermoPackage::adoptElectrolytePackage(std::vector<Component> comps,
+                                            std::unique_ptr<ActivityModel> act,
+                                            std::unique_ptr<EquationOfState> eos)
+{
+    components_ = std::move(comps);
+    activity_   = std::move(act);
+    eos_        = std::move(eos);
+}
+
 void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
 {
     auto names = dict->lookupWordList("components");
@@ -71,7 +83,25 @@ void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
     // tokens pass through untouched; the normal flat-by-name load then runs
     // on the expanded list.  Announced LOUDLY (see expandMixtures).
     std::map<std::string, scalar> seedByName;
-    names = expandMixtures(names, db, seedByName);
+    names = expandMixtures(names, db, seedByName, &mixtureMembersByToken_);
+
+    // ALIAS canonicalisation (forum 2026-06-29) -- THE single chokepoint, reusing
+    // the expandMixtures token-rewrite slot.  Map each token to its canonical
+    // component stem BEFORE the names vector fans out to loadComponent, to the
+    // binary-pair filename builder, to indexOf/name_, and to the Henry lookup --
+    // so the WHOLE engine (pairs included) only ever sees canonical names and the
+    // pair/Henry files stay alive with zero registry change.  Announced LOUD.
+    for (auto& nm : names)
+    {
+        const std::string canon = db.canonicalName(nm);
+        if (canon != nm)
+        {
+            if (thermoAnnounce())
+                std::cerr << "[alias] component '" << nm << "' -> canonical '"
+                          << canon << "'\n";
+            nm = canon;
+        }
+    }
 
     components_.clear();
     components_.reserve(names.size());
@@ -99,6 +129,58 @@ void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
     // heuristic; the case author should set it explicitly when running
     // an absorption / stripping case.
     solventName_ = dict->lookupWordOrDefault("solvent", "");
+    vleWorld_    = dict->lookupWordOrDefault("vleWorld", "gammaPhi");
+    // Assembly-level Henry solutes (see header note): each MUST have a pair
+    // file for the declared solvent -- an explicit request with missing data
+    // is an ERROR, never a silent Raoult fallback.
+    if (dict->found("solutes"))
+    {
+        declaredSolutes_ = dict->lookupWordList("solutes");
+        if (solventName_.empty())
+            throw std::runtime_error("thermoPackage: `solutes (...)` declared"
+                " but no `solvent <name>;` -- name the solvent they dissolve in.");
+        for (const auto& sol : declaredSolutes_)
+        {
+            (void)indexOf(sol);   // throws if not a package component
+            if (!HenrysLawRegistry::has(sol, solventName_))
+                throw std::runtime_error("thermoPackage: solute '" + sol
+                    + "' declared but no Henry pair henrysLaw/" + sol + "-"
+                    + solventName_ + ".dat exists -- add the pair (or remove '"
+                    + sol + "' from `solutes`).");
+        }
+    }
+
+    // LOUD Henry announcement (no silent physics): the moment a solvent is
+    // declared, say WHICH solutes will dissolve by Henry's law, with WHICH
+    // constants, from WHICH pair file -- the "juice" a 2-line role overlay
+    // points at.  Anyone reading the run log sees the dissolution physics.
+    // Gated at the load-phase announce level (verbosity 0/1 runs stay silent).
+    if (!solventName_.empty() && thermoAnnounce())
+    {
+        for (const auto& c : components_)
+        {
+            const bool declared = std::find(declaredSolutes_.begin(),
+                declaredSolutes_.end(), c.name()) != declaredSolutes_.end();
+            if (c.role() != "solute" && !declared) continue;
+            if (!HenrysLawRegistry::has(c.name(), solventName_)) continue;
+            const auto& hl = HenrysLawRegistry::byPair(c.name(), solventName_);
+            if (!announceOnce("henryPair:" + c.name() + "-" + solventName_))
+                continue;   // pass-7: a second configure in the same run
+                            // re-printed the line with different printf --
+                            // the student asked if H had CHANGED mid-run
+            std::cout << "[henry] " << c.name() << " in " << solventName_
+                      << ":  H_ref = " << hl.H_ref() << " Pa (" << hl.T_ref()
+                      << " K),  dH_diss = " << hl.dHdiss() / 1000.0 << " kJ/mol";
+            if (hl.v_inf() > 0.0)
+                std::cout << ",  v_inf = " << hl.v_inf() * 1.0e6
+                          << " cm^3/mol (Krichevsky-Kasarnovsky Poynting)";
+            if (hl.margulesA() != 0.0)
+                std::cout << ",  Margules A = " << hl.margulesA()
+                          << " J/mol (Krichevsky-Ilinskaya gamma*)";
+            std::cout << "  --- pair file henrysLaw/" << c.name() << "-"
+                      << solventName_ << ".dat\n";
+        }
+    }
 
     // Transport models (viscosity; thermal conductivity &
     // diffusivity).  The `transport {... }` block carries the viscosity
@@ -107,7 +189,16 @@ void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
     if (dict->found("transport"))
     {
         auto td = dict->subDict("transport");
-        transport_ = TransportModel::New(td);
+        // CANONICAL hierarchy (Vitor 2026-07-04: "poe ordem nisto!"): every
+        // transport property gets its own named sub-block,
+        //     transport { viscosity { model Chung; }
+        //                 thermalConductivity { model Eucken; } ... }
+        // The bare legacy `model Chung;` at transport level (gas viscosity
+        // implied) stays ACCEPTED for old cases -- a degenerate form, like the
+        // flat thermoPackage itself.
+        transport_ = td->found("viscosity")
+                   ? TransportModel::New(td->subDict("viscosity"))
+                   : TransportModel::New(td);
         if (td->found("thermalConductivity"))
             thermalConductivity_ =
                 ThermalConductivityModel::New(td->subDict("thermalConductivity"));
@@ -152,8 +243,20 @@ void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
         auto pList = dict->lookupDictList("phases");
         if (pList.empty())
             throw std::runtime_error("thermoPackage: 'phases' list is empty");
+        // Push the per-node pair-search base into EACH liquid phase's activity
+        // block too (line 229 only reached the single legacy activityModel): an
+        // LLE world declared as `phases ( {activity NRTL} {activity NRTL} )` needs
+        // every phase's NRTL to search the node's propertyData first, or the
+        // settler collapses to one phase (ideal, no pairs).
+        const bool hasPairBase = dict->found("binaryPairsBase");
         for (const auto& pd : pList)
+        {
+            if (hasPairBase && pd->found("activity")
+                && !pd->subDict("activity")->found("binaryPairsBase"))
+                pd->subDict("activity")->insert("binaryPairsBase",
+                                                dict->entryValue("binaryPairsBase"));
             phases_.push_back(Phase::New(pd, names, components_));
+        }
     }
     else
     {
@@ -206,20 +309,27 @@ void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
         // UNIFAC groups are INTRINSIC component data: fill them in from each
         // component's .dat (`groups { unifac (...) }`) when not declared inline,
         // so they live ONCE in the component, not re-declared per case.
-        injectUnifacGroups(activityRef, names, components_);
-        activity_ = ActivityModel::New(activityRef, names);
-        if (auto* w = dynamic_cast<Wilson*>(activity_.get()))
-        {
-            sVector V(n());
-            for (std::size_t i = 0; i < n(); ++i) V[i] = components_[i].Vliq();
-            w->setMolarVolumes(V);
-        }
-        // pitzer/electrolyte: wire the salt's electrolyte{} block + solvent MW
-        // (same post-construction pattern as Wilson::setMolarVolumes).
-        if (auto* e = dynamic_cast<ElectrolyteActivity*>(activity_.get()))
-            e->configure(components_);
+        activityRef = injectUnifacGroups(activityRef, names, components_);
+        injectUniquacRQ(activityRef, names, components_);   // UNIQUAC r/q from the component .dat
+        // Models self-configure from the RESOLVED components in their
+        // constructors (Wilson reads Vliq, ElectrolyteActivity wires the salt's
+        // electrolyte{} block) -- no dynamic_cast / setMolarVolumes / configure
+        // two-phase dance.
+        activity_ = ActivityModel::New(activityRef, components_);
     }
     if (eosRef) eos_ = EquationOfState::New(eosRef, components_);
+    // phi-phi world coherence (AFTER the EoS exists): a real cubic is required.
+    if (vleWorld_ == "phiPhi" && (!eos_ || eos_->isIdeal()))
+        throw std::runtime_error("thermoPackage: vleWorld phiPhi needs a real"
+            " cubic EoS (SRK/PengRobinson), not idealGas.");
+    // Announce the world HERE, the one point BOTH entry paths cross: a legacy
+    // thermoPackage selecting `vleWorld phiPhi;` directly AND the builder
+    // (which writes that key into the dict it synthesises).  Same physics,
+    // same announcement.  gammaPhi is the default world; the flash K-header
+    // names its gamma/phi models per run.
+    if (vleWorld_ == "phiPhi" && thermoAnnounce())
+        std::cout << "VLE world: phi-phi (K = phi_L/phi_V, "
+                  << eos_->modelName() << " both phases)\n";
 
     // Validation boundary (no silent crutch): confront each model's minimum-
     // parameter-set manifest against the components.  Store the findings (for the
@@ -286,6 +396,12 @@ std::size_t ThermoPackage::indexOf(const std::string& name) const
 {
     for (std::size_t i = 0; i < components_.size(); ++i)
         if (components_[i].name() == name) return i;
+    // Alias fallback (forum 2026-06-29): a component referenced by a friendly
+    // alias ('C4H10' for nButane, ...) resolves here too, so a composition,
+    // reaction or stream may use any alias, not only the canonical name.
+    for (std::size_t i = 0; i < components_.size(); ++i)
+        for (const auto& a : components_[i].aliases())
+            if (a == name) return i;
     throw std::runtime_error("ThermoPackage: component '" + name + "' not loaded");
 }
 
@@ -297,11 +413,12 @@ std::size_t ThermoPackage::indexOf(const std::string& name) const
 // names already present AND across mixtures) and accumulate the member mole
 // fractions into `seedByName`.  Plain component tokens are passed through.
 // Glass-box: every splice + every dedup reconciliation prints on stderr,
-// mirroring the [overlay]/[proposed] style in Database.cpp.
+// mirroring the [overlay]/[local] style in Database.cpp.
 std::vector<std::string>
 ThermoPackage::expandMixtures(const std::vector<std::string>& names,
                              const Database& db,
-                             std::map<std::string, scalar>& seedByName)
+                             std::map<std::string, scalar>& seedByName,
+                             std::map<std::string, std::map<std::string, scalar>>* membersByToken)
 {
     namespace fs = std::filesystem;
     const fs::path mixDir = fs::path(db.root()) / "standards" / "mixtures";
@@ -321,7 +438,7 @@ ThermoPackage::expandMixtures(const std::vector<std::string>& names,
         {
             // Plain component token -- keep it (dedup defensively).
             if (!already(token)) out.push_back(token);
-            else
+            else if (thermoAnnounce())
                 std::cerr << "[mixture] component '" << token
                           << "' already present -- duplicate dropped.\n";
             continue;
@@ -348,19 +465,21 @@ ThermoPackage::expandMixtures(const std::vector<std::string>& names,
 
             // Seed accumulates even across mixtures sharing a member.
             seedByName[comp] += x;
+            if (membersByToken) (*membersByToken)[token][comp] = x;   // per-token membership
 
             if (already(comp))
             {
-                std::cerr << "[mixture] reconciliation: '" << token
-                          << "' member '" << comp << "' is already in the "
-                             "component set -- expanded ONCE (its mole "
-                             "fraction still seeds the feed).\n";
+                if (thermoAnnounce())
+                    std::cerr << "[mixture] reconciliation: '" << token
+                              << "' member '" << comp << "' is already in the "
+                                 "component set -- expanded ONCE (its mole "
+                                 "fraction still seeds the feed).\n";
                 continue;
             }
             out.push_back(comp);
         }
         announce += "  [" + mixFile.string() + "]";
-        std::cerr << announce << "\n";
+        if (thermoAnnounce()) std::cerr << announce << "\n";
     }
 
     return out;
@@ -376,6 +495,19 @@ sVector ThermoPackage::mixtureSeedVector() const
     return z;
 }
 
+bool ThermoPackage::isHenrySolute(std::size_t i) const
+{
+    // MIRRORS the Henry branch in Kvec below (same predicate, one truth): a
+    // `role solute;` component OR an assembly-declared solute, with a named
+    // solvent and an existing (solute, solvent) Henry pair.
+    if (i >= n() || solventName_.empty()) return false;
+    const std::string& role = components_[i].role();
+    const bool declared = std::find(declaredSolutes_.begin(),
+        declaredSolutes_.end(), components_[i].name()) != declaredSolutes_.end();
+    return (role == "solute" || declared)
+        && HenrysLawRegistry::has(components_[i].name(), solventName_);
+}
+
 scalar ThermoPackage::K(std::size_t i, scalar T, scalar P,
                         const sVector& x, const sVector& y) const
 {
@@ -388,6 +520,19 @@ scalar ThermoPackage::K(std::size_t i, scalar T, scalar P,
 sVector ThermoPackage::Kvec(scalar T, scalar P,
                             const sVector& x, const sVector& y) const
 {
+    // World 2 (phi-phi): K_i = phi_i^L(x)/phi_i^V(y), the SAME cubic both
+    // phases -- one Gibbs surface, two roots.  Composition dependence is
+    // handled by the flash's own outer iteration (it re-calls Kvec at the
+    // current x,y exactly as it does for gamma(x)).
+    if (vleWorld_ == "phiPhi")
+    {
+        const auto phiV = eos_->phi      (T, P, y);
+        const auto phiL = eos_->phiLiquid(T, P, x);
+        sVector Kpp(n());
+        for (std::size_t i = 0; i < n(); ++i)
+            Kpp[i] = (phiV[i] > 0.0) ? phiL[i] / phiV[i] : 0.0;
+        return Kpp;
+    }
     auto gam = activity_->gamma(T, x);
     auto phi = eos_     ->phi  (T, P, y);
     sVector K(n());
@@ -403,11 +548,38 @@ sVector ThermoPackage::Kvec(scalar T, scalar P,
         // Solutes (CO2, NH3, O2, H2S,...) follow Henry's law when an
         // entry exists for (solute, solvent).  Otherwise fall back to
         // the Raoult/γ-φ form below.
-        if (role == "solute" && !solventName_.empty()
+        const bool henrySolute = (role == "solute"
+             || std::find(declaredSolutes_.begin(), declaredSolutes_.end(),
+                          components_[i].name()) != declaredSolutes_.end());
+        if (henrySolute && !solventName_.empty()
          && HenrysLawRegistry::has(components_[i].name(), solventName_))
         {
             const auto& hl = HenrysLawRegistry::byPair(components_[i].name(), solventName_);
-            K[i] = hl.H(T) / P;
+            // Full unsymmetric-convention gas solubility (Prausnitz Ch. 10):
+            //   y phi^V P = x gamma2* H(T) exp[ v_inf (P - Ps_solvent)/RT ]
+            // -> K = gamma2* H(T) Poynting / (phi^V P).  With v_inf = A = 0
+            // this is the textbook H/P at low P (phi^V -> 1), byte-identical;
+            // v_inf > 0 adds the Krichevsky-Kasarnovsky Poynting term and
+            // margulesA != 0 the Krichevsky-Ilinskaya activity coefficient.
+            scalar Hcorr = hl.H(T);
+            if (hl.v_inf() > 0.0)
+            {
+                // Poynting anchored at the SOLVENT's saturation pressure.
+                scalar Ps = 0.0;
+                const std::size_t sIdx = indexOf(solventName_);
+                if (components_[sIdx].hasVaporPressure())
+                    Ps = components_[sIdx].vp().Psat_Pa(T);
+                Hcorr *= std::exp(hl.v_inf() * (P - Ps)
+                                  / (constant::R * T));
+            }
+            if (hl.margulesA() != 0.0)
+            {
+                // Unsymmetric gamma2*: ln g2* = (A/RT)(x1^2 - 1), x1 = solvent.
+                const scalar x1 = x[indexOf(solventName_)];
+                Hcorr *= std::exp(hl.margulesA() / (constant::R * T)
+                                  * (x1 * x1 - 1.0));
+            }
+            K[i] = Hcorr / (phi[i] * P);
             continue;
         }
 
@@ -425,7 +597,10 @@ sVector ThermoPackage::Kvec_Raoult(scalar T, scalar P) const
         const std::string& role = components_[i].role();
         if (role == "nonvolatile" || role == "radical")
         { K[i] = 0.0; continue; }
-        if (role == "solute" && !solventName_.empty()
+        const bool henrySolute = (role == "solute"
+             || std::find(declaredSolutes_.begin(), declaredSolutes_.end(),
+                          components_[i].name()) != declaredSolutes_.end());
+        if (henrySolute && !solventName_.empty()
          && HenrysLawRegistry::has(components_[i].name(), solventName_))
         {
             const auto& hl = HenrysLawRegistry::byPair(components_[i].name(), solventName_);
@@ -664,6 +839,31 @@ std::optional<scalar> ThermoPackage::dHsolnForSolute(std::size_t i) const
     return std::nullopt;
 }
 
+bool ThermoPackage::hasEnthalpyDatum(std::size_t i) const
+{
+    if (i >= n()) return false;
+    // Route 1: the ordinary formation datum.  A gibbsFormation{} block lets
+    // h_pure_ig / h_formation place the species on the elements reference
+    // (the generic loop in H_liquid_formation / H_ig).
+    if (components_[i].hasGibbsData()) return true;
+    // Route 2: the electrolyte aqueous infinite-dilution ion reference.  A
+    // strong electrolyte has no pure-liquid datum; H_liquid_formation places
+    // its salt via aqueousSaltEnthalpy() -- but ONLY when calorimetricFit() is
+    // on AND the ions carry the aqueous tier.  Gate identically so this
+    // predicate never claims a datum the kernel would throw on.
+    if (hasElectrolyte())
+    {
+        const ElectrolyteModel& el = electrolyte();
+        // Gate IDENTICALLY to the kernel (forum 2026-06-28): the aqueous ion
+        // reference is a datum whenever the ions carry it, independent of the
+        // calorimetric L_phi fit -- else the predicate denies a datum the kernel
+        // now places, resurrecting the silent sensible fallback.
+        if (el.hasAqueousReference() && i == el.soluteIndex())
+            return true;
+    }
+    return false;
+}
+
 scalar ThermoPackage::H_liquid_formation(scalar T, const sVector& x) const
 {
     // Pure-fluid override (IF97 et al.): a phase effectively pure in a flagged
@@ -681,7 +881,7 @@ scalar ThermoPackage::H_liquid_formation(scalar T, const sVector& x) const
     // Liquid on the ELEMENTS reference: ideal gas (which carries Hf via
     // h_pure_ig) minus the latent heat of vaporisation.
     //
-    // PER-ROLE BRANCH (electrolyte-enthalpy slice 4, forum-ratified +
+    // PER-ROLE BRANCH (electrolyte-enthalpy slice 4, settled design +
     // Vitor's framing -- docs/electrolyte-enthalpy-spec.md sec.2-3): a strong
     // electrolyte has NO pure-liquid reference (no liquid NaOH at 80 C), so
     // its molecular term is physically empty.  When the package carries a
@@ -690,22 +890,58 @@ scalar ThermoPackage::H_liquid_formation(scalar T, const sVector& x) const
     // reference + the measured-and-fitted heat-of-dilution curve) and the
     // SOLVENT stays molecular.  Same elements datum (the H+(aq)=0 convention
     // cancels for a neutral salt), so reaction enthalpies still emerge as
-    // h_out - h_in.  Unfitted salts (calorimetricFit false, e.g. NaCl) keep
+    // h_out - h_in.  Unfitted salts (calorimetricFit false -- e.g. a case-local
+    // overlay without the T-slots; the STANDARDS NaCl/KCl are fitted since the
+    // 2026-07-02 Parker refit) keep
     // the legacy path BYTE-IDENTICAL -- and keep announcing the omission.
     if (hasElectrolyte())
     {
         const ElectrolyteModel& el = electrolyte();
         const std::size_t is = el.soluteIndex(), iw = el.solventIndex();
-        if (el.calorimetricFit() && el.hasAqueousReference()
+        // GATE DECOUPLED (forum 2026-06-28): the aqueous infinite-dilution ION
+        // REFERENCE (hfAqSum + cpAqSum*(T-298), exact, calorimetry-FREE) triggers
+        // on hasAqueousReference() ALONE; the finite-concentration L_phi term is
+        // gated SEPARATELY (inside aqueousSaltEnthalpy, by calorimetricFit).  The
+        // old `calorimetricFit() &&` conflated the two, so an unfitted salt (one WITHOUT the Parker-refit T-slots; NaCl/KCl are both FITTED since 2026-07-02)
+        // fell through to h_pure_ig and threw -> silently caught -> sensible.  The
+        // ion sum lands on the SAME elements datum (H+(aq)=0 cancels, neutral salt).
+        if (el.hasAqueousReference()
             && is < n() && iw < n() && x[is] > 1.0e-12 && x[iw] > 1.0e-12)
         {
             const scalar m = x[is] / (x[iw] * components_[iw].MW() * 1.0e-3);
             scalar h = x[is] * el.aqueousSaltEnthalpy(m, T);
+            // LOUD per-species announcement (forum 2026-06-28: the pedagogical win
+            // the rejected `liquidEnthalpy` menu was reaching for -- SEE the
+            // reference, never PICK it).  Deduped once per salt per run.
+            if (AdvisoryLog::instance().add("thermo", "info",
+                    "H_liquid '" + el.soluteName() + "'",
+                    "aqueous infinite-dilution ion reference"))
+                std::cerr << "[thermo] H_liquid(" << el.soluteName()
+                          << "): aqueous infinite-dilution ION reference, "
+                          << "sum(nu*hfAq) = " << el.aqueousSaltEnthalpy(0.0, 298.15) * 1.0e-3
+                          << " kJ/mol (ions.dat, elements/25C datum); "
+                          << (el.calorimetricFit()
+                                  ? "L_phi heat-of-dilution ON (calorimetric fit)"
+                                  : "L_phi OFF (no calorimetricFit -- valid at low molality)")
+                          << "\n";
             for (std::size_t i = 0; i < n(); ++i)
             {
                 if (i == is) continue;
-                h += x[i] * (components_[i].h_pure_ig(T)
-                             - components_[i].Hvap_latent(T));
+                if (x[i] <= 1.0e-12) continue;   // skip negligible (FP noise / absent co-salt)
+                // A co-dissolved nonvolatile salt (e.g. KHT alongside KCl) has no
+                // pure-liquid datum either; route it through the crystalline rung
+                // when it carries one, else the generic molecular leg.
+                if (auto dHsoln = dHsolnForSolute(i))
+                {
+                    const Component& c = components_[i];
+                    scalar cpAq = c.hasCpLiquid() ? c.cpLiquid().H(T, 298.15) : 0.0;
+                    h += x[i] * (c.Hf298() + *dHsoln + cpAq);
+                    continue;
+                }
+                // Canonical phase leg (#106): the SAME Kirchhoff-
+                // consistent liquid rung every balance reads.
+                h += x[i] * speciesPhaseEnthalpy(i, T, 1.0e5, "liquid",
+                                        ReferenceContext::StandardPhase);
             }
             return h;
         }
@@ -714,34 +950,11 @@ scalar ThermoPackage::H_liquid_formation(scalar T, const sVector& x) const
     for (std::size_t i = 0; i < n(); ++i)
     {
         if (x[i] <= 0.0) continue;
-        // DISSOLVED-vs-CRYSTALLINE rung (aqueous-solution tier): a nonvolatile
-        // solute with a crystalline Hf datum and a solution/<solute>-<solvent>
-        // entry sits one rung ABOVE the crystal on the SAME elements floor:
-        //   h_aq(T) = Hf_crystal + dHsoln + INT_298^T cp_aq dT'
-        // (cp_aq from the solution/ entry when given, else the component's
-        // liquidHeatCapacity -- the dissolved-solute Cp).  This is what lets
-        // the elements datum LIVE for a sugar plant: sucrose has no ideal-gas
-        // Cp / Watson Hvap, so the h_pure_ig - Hvap leg would throw and the
-        // whole balance would silently fall back to the sensible datum (and
-        // miss the heat of crystallisation).  Volatile species are UNCHANGED.
-        if (auto dHsoln = dHsolnForSolute(i))
-        {
-            const Component& c = components_[i];
-            scalar cpAq;
-            if (SolutionRegistry::has(c.name(),
-                    solventName_.empty() ? "water" : solventName_)
-             && SolutionRegistry::byPair(c.name(),
-                    solventName_.empty() ? "water" : solventName_).hasCpAq())
-                cpAq = SolutionRegistry::byPair(c.name(),
-                    solventName_.empty() ? "water" : solventName_).cpAq()
-                    * (T - 298.15);
-            else
-                cpAq = c.hasCpLiquid() ? c.cpLiquid().H(T, 298.15) : 0.0;
-            h += x[i] * (c.Hf298() + *dHsoln + cpAq);
-            continue;
-        }
-        h += x[i] * (components_[i].h_pure_ig(T)
-                     - components_[i].Hvap_latent(T));
+        // ONE canonical leg per species (forum #103/#105): the body moved
+        // verbatim into speciesPhaseEnthalpy so reactionHeat and every
+        // balance read the SAME rung -- byte-identical here by construction.
+        h += x[i] * speciesPhaseEnthalpy(i, T, 1.0e5, "liquid",
+                                         ReferenceContext::StandardPhase);
     }
     // MOLECULAR twin (spec sec.8b): for a molecular mixture the symmetric
     // frame IS correct -- ideal mixing + H^E from the SAME G^E that gives the
@@ -753,6 +966,77 @@ scalar ThermoPackage::H_liquid_formation(scalar T, const sVector& x) const
     if (!hasElectrolyte() && activity_ && activity_->calorimetricFit())
         h += activity_->excessEnthalpy(T, x);
     return h;
+}
+
+scalar ThermoPackage::speciesPhaseEnthalpy(std::size_t i, scalar T,
+                                           scalar /*P_Pa*/,
+                                           const std::string& phase,
+                                           ReferenceContext /*ctx*/) const
+{
+    // THE canonical per-species phase leg (forum #103/#105/#106) -- the ONE
+    // place a species' elements-datum enthalpy in a phase is defined.
+    // ReferenceContext::StandardPhase is the only context today (the
+    // enum exists so a future partial-molar evaluation is a NEW context
+    // with the full mixture state, never a reinterpretation of this one).
+    // P is unused by the ideal legs but part of the contract.
+    //
+    // THE STATE IDENTITY (#106, the reopened gate): the leg is anchored on
+    // the 298.15 K formation datum and integrated with the TARGET PHASE's
+    // OWN Cp -- Component::h_formation -- so dh_phase/dT == Cp_phase by
+    // construction and Hvap_state(T) = h_g(T) - h_liq(T) obeys Kirchhoff
+    // automatically.  The earlier h_pure_ig - Hvap_Watson(T) liquid leg is
+    // GONE: its slope was Cp_ig - dHvap_W/dT, silently overriding the
+    // component's declared liquid Cp (the mheatx +10% was the executable
+    // proof).  Watson survives as the independent latentHeat correlation
+    // for estimation/validation/announced fallback -- it never defines the
+    // state enthalpy used by a balance when both phases' Cp exist.
+    if (i >= n())
+        throw std::runtime_error("speciesPhaseEnthalpy: component index "
+            + std::to_string(i) + " out of range");
+    const Component& c = components_[i];
+
+    if (phase == "gas")
+        return c.h_formation(T, "gas");
+
+    // DISSOLVED-vs-CRYSTALLINE rung (aqueous-solution tier): a nonvolatile
+    // solute with a crystalline Hf datum and a solution/<solute>-<solvent>
+    // entry sits one rung ABOVE the crystal on the SAME elements floor:
+    //   h_aq(T) = Hf_crystal + dHsoln + INT_298^T cp_aq dT'
+    // (cp_aq from the solution/ entry when given, else the component's
+    // liquidHeatCapacity -- the dissolved-solute Cp).  This is the m->0
+    // STANDARD state: for chemistry whose enthalpy genuinely depends on
+    // molality, the finite-concentration part lives in the MIXTURE calls
+    // (L_phi in the electrolyte branch), never here.
+    if (auto dHsoln = dHsolnForSolute(i))
+    {
+        scalar cpAq;
+        if (SolutionRegistry::has(c.name(),
+                solventName_.empty() ? "water" : solventName_)
+         && SolutionRegistry::byPair(c.name(),
+                solventName_.empty() ? "water" : solventName_).hasCpAq())
+            cpAq = SolutionRegistry::byPair(c.name(),
+                solventName_.empty() ? "water" : solventName_).cpAq()
+                * (T - 298.15);
+        else
+            cpAq = c.hasCpLiquid() ? c.cpLiquid().H(T, 298.15) : 0.0;
+        return c.Hf298() + *dHsoln + cpAq;
+    }
+    if (c.hasCpLiquid())
+        return c.h_formation(T, "liquid");
+    // A species with NO liquid Cp (a permanent / supercritical gas -- H2,
+    // N2 -- appearing as a dissolved trace in a liquid stream) has no
+    // pure-liquid rung to integrate.  The honest future home is the
+    // dissolved-gas HENRY rung; until it exists, the Watson-slope leg
+    // survives as the ANNOUNCED fallback (#106: estimation/validation/
+    // fallback -- explicitly announced, never the silent state surface).
+    if (AdvisoryLog::instance().add("thermo", "warning",
+            "speciesPhaseEnthalpy " + c.name(),
+            "no liquidHeatCapacity: liquid leg falls back to the"
+            " Watson-slope form h_ig - Hvap(T) (a dissolved-gas Henry rung"
+            " is the honest future home)"))
+        std::cerr << "[thermo] " << c.name() << ": no liquidHeatCapacity --"
+                     " liquid leg uses the ANNOUNCED Watson-slope fallback\n";
+    return c.h_pure_ig(T) - c.Hvap_latent(T);
 }
 
 scalar ThermoPackage::H_stream_formation(scalar T, scalar P_Pa,
@@ -780,12 +1064,32 @@ scalar ThermoPackage::H_stream_formation(scalar T, scalar P_Pa,
     }
 
     if (vapFrac <= 0.0) return H_liquid_formation(T, z);
-    if (vapFrac >= 1.0) return H_real(T, P_Pa, z);
+
+    // NONVOLATILE species (no priceable ideal-gas leg -- sucrose, salts)
+    // are WHOLLY liquid at ANY vapour fraction: their share contributes the
+    // liquid leg at full weight and is zeroed out of the vapour half, so a
+    // solute-bearing stream never routes through h_pure_ig (which throws).
+    // All-volatile streams are BYTE-IDENTICAL to the plain blend -- hNonvol
+    // is 0 and zV == z.  This replaces the old blend surface's silent
+    // "skip the impossible phase" with an explicit, conserving rule.
+    sVector zV = z;
+    scalar  hNonvol = 0.0;
+    for (std::size_t i = 0; i < n() && i < z.size(); ++i)
+    {
+        if (z[i] <= 0.0) continue;
+        if (!components_[i].hasCpIdealGas())
+        {
+            hNonvol += z[i] * speciesPhaseEnthalpy(
+                i, T, P_Pa, "liquid", ReferenceContext::StandardPhase);
+            zV[i] = 0.0;
+        }
+    }
+    if (vapFrac >= 1.0) return hNonvol + H_real(T, P_Pa, zV);
     return (1.0 - vapFrac) * H_liquid_formation(T, z)
-         + vapFrac * H_real(T, P_Pa, z);
+         + vapFrac * (hNonvol + H_real(T, P_Pa, zV));
 }
 
-scalar ThermoPackage::H_stream(scalar T, scalar P_Pa,
+scalar ThermoPackage::H_blendPerNaturalPhase(scalar T, scalar P_Pa,
                                scalar vapFrac, const sVector& z) const
 {
     // Pure-fluid override: same routing as H_stream_formation (the actual
@@ -874,7 +1178,9 @@ scalar ThermoPackage::viscosityGas(scalar T, const sVector& y) const
         }
     if (!transport_)
         throw std::runtime_error("ThermoPackage::viscosityGas: no transport"
-            " model --- add `transport { model Chung; }` to the thermoPackage.");
+            " model --- add `transport { viscosity { model Chung; } }` to the"
+            " thermoPackage, or `transport Chung;` under propertyMethods in"
+            " the propertyPackage.");
     const std::size_t N = n();
     sVector eta(N, 0.0);
     for (std::size_t i = 0; i < N; ++i)
@@ -917,11 +1223,13 @@ scalar ThermoPackage::thermalConductivityGas(scalar T, const sVector& y) const
     if (!thermalConductivity_)
         throw std::runtime_error("ThermoPackage::thermalConductivityGas: no"
             " model --- add `transport { thermalConductivity { model Eucken;"
-            " } }` to the thermoPackage.");
+            " } }` to the thermoPackage (a propertyPackage's propertyMethods"
+            " `transport` slot covers gas viscosity only).");
     if (!transport_)
         throw std::runtime_error("ThermoPackage::thermalConductivityGas: Eucken"
-            " needs the gas viscosity --- add `transport { model Chung; }`"
-            " alongside the thermalConductivity sub-block.");
+            " needs the gas viscosity --- add `transport { viscosity { model Chung; } }`"
+            " alongside the thermalConductivity sub-block (or `transport Chung;`"
+            " under propertyMethods in a propertyPackage).");
     const std::size_t N = n();
     sVector lam(N, 0.0), eta(N, 0.0);
     for (std::size_t i = 0; i < N; ++i)
@@ -962,7 +1270,8 @@ scalar ThermoPackage::diffusivityGas(scalar T, scalar P_Pa,
     if (!diffusivity_)
         throw std::runtime_error("ThermoPackage::diffusivityGas: no model ---"
             " add `transport { diffusivity { model Fuller; } }` to the"
-            " thermoPackage.");
+            " thermoPackage (a propertyPackage's propertyMethods `transport`"
+            " slot covers gas viscosity only).");
     return diffusivity_->diffusivityGasBinary(components_.at(i), components_.at(j), T, P_Pa);
 }
 
@@ -983,7 +1292,9 @@ scalar ThermoPackage::viscosityLiquid(scalar T, const sVector& x) const
         }
     if (!liquidViscosity_)
         throw std::runtime_error("ThermoPackage::viscosityLiquid: no model ---"
-            " add `transport { liquidViscosity { model Andrade; } }`.");
+            " add `transport { liquidViscosity { model Andrade; } }` to the"
+            " thermoPackage (a propertyPackage's propertyMethods `transport`"
+            " slot covers gas viscosity only).");
     // Grunberg-Nissan (no interaction term): ln μ_mix = Σ xᵢ ln μᵢ.
     const std::size_t N = n();
     scalar lnmu = 0.0, xsum = 0.0;
@@ -1016,7 +1327,8 @@ scalar ThermoPackage::thermalConductivityLiquid(scalar T, const sVector& x) cons
     if (!liquidConductivity_)
         throw std::runtime_error("ThermoPackage::thermalConductivityLiquid: no"
             " model --- add `transport { liquidConductivity { model"
-            " SatoRiedel; } }`.");
+            " SatoRiedel; } }` to the thermoPackage (a propertyPackage's"
+            " propertyMethods `transport` slot covers gas viscosity only).");
     // Mass-fraction weighting: λ_mix = Σ wᵢ λᵢ.
     const std::size_t N = n();
     scalar Mbar = 0.0;
@@ -1038,10 +1350,13 @@ scalar ThermoPackage::diffusivityLiquid(scalar T, std::size_t i, std::size_t j) 
 {
     if (!liquidDiffusivity_)
         throw std::runtime_error("ThermoPackage::diffusivityLiquid: no model ---"
-            " add `transport { liquidDiffusivity { model WilkeChang; } }`.");
+            " add `transport { liquidDiffusivity { model WilkeChang; } }` to the"
+            " thermoPackage (a propertyPackage's propertyMethods `transport`"
+            " slot covers gas viscosity only).");
     if (!liquidViscosity_)
         throw std::runtime_error("ThermoPackage::diffusivityLiquid: needs the"
-            " solvent viscosity --- add a `liquidViscosity` model alongside.");
+            " solvent viscosity --- add a `liquidViscosity` model alongside"
+            " (in the thermoPackage's transport{} block).");
     // i = solute, j = solvent.
     const scalar muB =
         liquidViscosity_->viscosityLiquidPure(components_.at(j), T);
@@ -1068,7 +1383,8 @@ scalar ThermoPackage::surfaceTension(scalar T, const sVector& x) const
     if (!surfaceTension_)
         throw std::runtime_error("ThermoPackage::surfaceTension: no model ---"
             " add `transport { surfaceTension { model BrockBird; } }` to the"
-            " thermoPackage.");
+            " thermoPackage (a propertyPackage's propertyMethods `transport`"
+            " slot covers gas viscosity only).");
     // Mole-fraction average of the pure-component surface tensions (v1).
     const std::size_t N = n();
     scalar s = 0.0, xsum = 0.0;
@@ -1137,7 +1453,9 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
     static bool announcedRackett = false;
     if (!announcedRackett)
     {
-        std::cout << "liquid density: Rackett (saturated correlation)\n";
+        std::cout << "liquid density: Rackett (saturated correlation --"
+                     " an ESTIMATE; known weak for water, ~12% low at 25 C:"
+                     " check against a measured density where it matters)\n";
         announcedRackett = true;
     }
     scalar Vmix = 0.0;                                          // m³/mol

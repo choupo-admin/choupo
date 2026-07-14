@@ -51,7 +51,7 @@ export function ModelBoundaryBadge({ x, y, refused }: {
     <EdgeLabelRenderer>
       <div
         title={refused
-          ? "Model-boundary audit: REFUSED — speciation change across this stream (a single ΔH would lie). See the Streams summary band."
+          ? "Model boundary: the producer and consumer thermo models share no common enthalpy reference for a species in this stream, so ΔH is not carried across here (reporting one would mislead). Expected at a world boundary, not an error. See the Streams summary band."
           : "Model-boundary audit: producer and consumer use different thermo models — ΔH is what they disagree by. See the Streams summary band."}
         style={{
           position: "absolute",
@@ -66,8 +66,11 @@ export function ModelBoundaryBadge({ x, y, refused }: {
           borderRadius: 3,
           ...(refused
             ? {
-                color: "light-dark(var(--mantine-color-red-7), var(--mantine-color-red-4))",
-                background: "light-dark(var(--mantine-color-red-0), rgba(224,49,49,0.18))",
+                // A model boundary is EXPECTED, not an error: a calm amber note,
+                // never an alarm-red "REFUSED".  The stream itself is fine (it
+                // carries state); the two units just compute enthalpy differently.
+                color: "light-dark(var(--mantine-color-yellow-8), var(--mantine-color-yellow-4))",
+                background: "light-dark(var(--mantine-color-yellow-0), rgba(240,192,32,0.16))",
               }
             : {
                 color: "light-dark(var(--mantine-color-indigo-7), var(--mantine-color-indigo-4))",
@@ -75,7 +78,7 @@ export function ModelBoundaryBadge({ x, y, refused }: {
               }),
         }}
       >
-        {refused ? "REFUSED" : "ΔH"}
+        {refused ? "ΔH n/a" : "ΔH"}
       </div>
     </EdgeLabelRenderer>
   );

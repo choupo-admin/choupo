@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # scrub_proposed.py -- deterministic IN-PLACE scrub of the token-clean candidate
-# subset of data/proposed/components/.  Removes FALSE pedigree comment text +
+# subset of data/local/components/.  Removes FALSE pedigree comment text +
 # commented-out excluded coefficient blocks left behind by the 2026-06-07 ingest
 # (the LIVE values were already stripped/Joback-substituted; only the comment
 # text still names excluded sources -- and a commented excluded fragment is
-# STILL redistribution).  Files STAY in data/proposed/ (no mv, no promotion).
+# STILL redistribution).  Files STAY in data/local/ (no mv, no promotion).
 #
 # Operates ONLY on files audit_proposed.py classifies REJECT->scrubbable (no
 # live excluded token, no unattributed live value).  A genuinely-contaminated
@@ -27,7 +27,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-PROP = ROOT / 'data/proposed/components'
+PROP = ROOT / 'data/local/components'
 
 import importlib.util
 spec = importlib.util.spec_from_file_location(

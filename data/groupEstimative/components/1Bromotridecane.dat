@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-bromotridecane  (C13H27Br, CAS 765-09-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Bromotridecane;
+formula     C13H27Br;
+CAS         765-09-3;
+InChIKey    BFDNZQUBFCYTIC-UHFFFAOYSA-N;
+MW          263.263;      // g/mol [origin=calculated method=formula-sum]
+Tc          736.51;      // K   [origin=predictive method=joback]
+Pc          17.405;      // bar [origin=predictive method=joback]
+omega       0.7542;      // -   [origin=predictive method=lee-kesler]
+Tb          563.20;      // K   [origin=predictive method=joback]
+HvapTb      50967.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.738 1.27702 -0.0007548 1.776e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 12; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 12; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyltridecane" "tridecyl bromide" "tridecane, 1-bromo-" "n-tridecyl-1-bromide" "1-bromo-tridecane" "tridecane,1-bromo-" "1-bromo-n-tridecane" );
+gibbsFormation
+{
+    dHf_298   -285320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     713.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=72900.0
+    phase     gas;
+}

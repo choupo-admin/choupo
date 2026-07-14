@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(octyloxy)propylammonium acetate  (C13H29NO3, CAS 15930-71-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3OctyloxyPropylammoniumAcetate;
+formula     C13H29NO3;
+CAS         15930-71-9;
+InChIKey    RUFBKNMLVUJMAM-UHFFFAOYSA-N;
+MW          247.379;      // g/mol [origin=calculated method=formula-sum]
+Tc          928.56;      // K   [origin=predictive method=joback]
+Pc          17.005;      // bar [origin=predictive method=joback]
+omega       1.1177;      // -   [origin=predictive method=lee-kesler]
+Tb          738.90;      // K   [origin=predictive method=joback]
+HvapTb      75041.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (68.48 1.08214 -0.0002736 -8.95e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group CH2O; count 1; } { group CH2NH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 10; } { group O; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethanoic acid;3-octoxypropan-1-amine" "acetic acid; 3-octoxypropan-1-amine" "3-(octyloxy)propan-1-aminium acetate" "1-propanamine, 3-(octyloxy)-, acetate" "1-propanamine, 3-(octyloxy)-, acetate (1:1)" "3-octoxypropane-1-amine acetate" "propylamine, 3-(octyloxy)-, acetate" );
+gibbsFormation
+{
+    dHf_298   -871970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     886.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-428640.0
+    phase     gas;
+}

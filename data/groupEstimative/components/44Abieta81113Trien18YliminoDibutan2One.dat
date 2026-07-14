@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4'-(abieta-8,11,13-trien-18-ylimino)dibutan-2-one  (C28H43NO2, CAS 70776-88-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44Abieta81113Trien18YliminoDibutan2One;
+formula     C28H43NO2;
+CAS         70776-88-4;
+InChIKey    YPAVIPVDMOLQQS-UHFFFAOYSA-N;
+MW          425.657;      // g/mol [origin=calculated method=formula-sum]
+Tc          1246.76;      // K   [origin=predictive method=joback]
+Pc          10.366;      // bar [origin=predictive method=joback]
+omega       0.9564;      // -   [origin=predictive method=lee-kesler]
+Tb          1014.45;      // K   [origin=predictive method=joback]
+HvapTb      94228.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-230.295 3.37972 -0.00283232 1.02312e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 8; } { group CH; count 1; } { group C; count 2; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group ACCH; count 1; } { group CH3CO; count 2; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 5; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group CdO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[(1,4a-dimethyl-7-propan-2-yl-2,3,4,9,10,10a-hexahydrophenanthren-1-yl)methyl-(3-oxidanylidenebutyl)amino]butan-2-one" "2-butanone, 4,4'-((((1r,4as,10ar)-1,2,3,4,4a,9,10,10a-octahydro-1,4a-dimethyl-7-(1-methylethyl)-1-phenanthrenyl)methyl)imino)bis-" "2-butanone, 4,4'-[[[(1r,4as,10ar)-1,2,3,4,4a,9,10,10a-octahydro-1,4a-dimethyl-7-(1-methylethyl)-1-phenanthrenyl]methyl]imino]bis-" "(1r-(1alpha,4abeta,10aalpha))-4,4'-(((1,2,3,4,4a,9,10,10a-octahydro-7-isopropyl-1,4a-dimethylphenanthren-1-yl)methyl)imino)bisbutan-2-one" "4-[(1,4a-dimethyl-7-propan-2-yl-2,3,4,9,10,10a-hexahydrophenanthren-1-yl)methyl-(3-oxobutyl)amino]butan-2-one" "4-[[(1r,4as,10ar)-1,4a-dimethyl-7-propan-2-yl-2,3,4,9,10,10a-hexahydrophenanthren-1-yl]methyl-(3-oxobutyl)amino]butan-2-one" );
+gibbsFormation
+{
+    dHf_298   -427150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1143.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=207140.0
+    phase     gas;
+}

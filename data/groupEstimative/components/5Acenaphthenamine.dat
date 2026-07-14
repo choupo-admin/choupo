@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-acenaphthenamine  (C12H11N, CAS 4657-93-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Acenaphthenamine;
+formula     C12H11N;
+CAS         4657-93-6;
+InChIKey    JEUAWMJVEYFVNJ-UHFFFAOYSA-N;
+MW          169.227;      // g/mol [origin=calculated method=formula-sum]
+Tc          864.51;      // K   [origin=predictive method=joback]
+Pc          37.000;      // bar [origin=predictive method=joback]
+omega       0.6510;      // -   [origin=predictive method=lee-kesler]
+Tb          614.43;      // K   [origin=predictive method=joback]
+HvapTb      58899.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-75.04 1.1316 -0.0009612 3.319e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 2; } { group ACCH2; count 2; } { group ACNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 5; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-dihydroacenaphthylen-5-amine" "5-aminoacenaphthene" "5-acenaphtheneamine" "1,2-dihydro-5-acenaphthylenamine" "5-acenaphthylenamine, 1,2-dihydro-" "acenaphthen-5-amine" "acenaphthen-5-ylamine" "acenaphthene-5-ylamine" "5-acenaphthylenamine,2-dihydro-" "5-acenaphthylenamine, 1,2-dihydro- (9ci)" );
+gibbsFormation
+{
+    dHf_298   235270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     373.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=387340.0
+    phase     gas;
+}

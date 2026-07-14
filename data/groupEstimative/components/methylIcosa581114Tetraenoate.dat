@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl icosa-5,8,11,14-tetraenoate  (C21H34O2, CAS 2566-89-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylIcosa581114Tetraenoate;
+formula     C21H34O2;
+CAS         2566-89-4;
+InChIKey    OFIDNKMQBYGNIW-UHFFFAOYSA-N;
+MW          318.501;      // g/mol [origin=calculated method=formula-sum]
+Tc          939.20;      // K   [origin=predictive method=joback]
+Pc          10.957;      // bar [origin=predictive method=joback]
+omega       0.8719;      // -   [origin=predictive method=lee-kesler]
+Tb          754.94;      // K   [origin=predictive method=joback]
+HvapTb      69579.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.52 2.02404 -0.0013592 3.712e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 9; } { group CH=CH; count 4; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 10; } { group dCH; count 8; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "agn-pc-00b9q5" "5,8,11,14-eicosatetraenoic acid, methyl ester" "5,8,11,14-eicosatetraenoicacid, methyl ester, (5z,8z,11z,14z)-" "5,8,11,14-eicosatetraenoicacid, methyl ester, (all-z)- (8ci); arachidonic acid, methyl ester (6ci,7ci);methyl 5z,8z,11z,14z-eicosatetraenoate; methylall-cis-5,8,11,14-eicosatetraenoate; methyl arachidonate; methylcis,cis,cis,cis-eicosa-5,8,11,14-tetraenoate" );
+gibbsFormation
+{
+    dHf_298   -325170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     998.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=136450.0
+    phase     gas;
+}

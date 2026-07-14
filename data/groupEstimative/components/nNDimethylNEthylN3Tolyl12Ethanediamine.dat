@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-dimethyl-n'-ethyl-n'-(3-tolyl)-1,2-ethanediamine  (C13H22N2, CAS 36790-28-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDimethylNEthylN3Tolyl12Ethanediamine;
+formula     C13H22N2;
+CAS         36790-28-0;
+InChIKey    PFIBWRMTMDDALJ-UHFFFAOYSA-N;
+MW          206.333;      // g/mol [origin=calculated method=formula-sum]
+Tc          746.45;      // K   [origin=predictive method=joback]
+Pc          21.553;      // bar [origin=predictive method=joback]
+omega       0.6535;      // -   [origin=predictive method=lee-kesler]
+Tb          553.58;      // K   [origin=predictive method=joback]
+HvapTb      51556.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-49.917 1.34828 -0.00087276 2.189e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group ACH; count 4; } { group AC; count 1; } { group ACCH3; count 1; } { group CH3N; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n'-ethyl-n,n-dimethyl-n'-(3-methylphenyl)ethane-1,2-diamine" "1,2-ethanediamine, n-ethyl-n',n'-dimethyl-n-(3-methylphenyl)-" "1,2-ethanediamine, n1-ethyl-n2,n2-dimethyl-n1-(3-methylphenyl)-" "n-ethyl-n',n'-dimethyl-n-m-tolylethylenediamine" );
+gibbsFormation
+{
+    dHf_298   48470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     581.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=382920.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3',4'-dimethylacetophenone  (C10H12O, CAS 3637-01-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34Dimethylacetophenone;
+formula     C10H12O;
+CAS         3637-01-2;
+InChIKey    WPRAXAOJIODQJR-UHFFFAOYSA-N;
+MW          148.205;      // g/mol [origin=calculated method=formula-sum]
+Tc          736.27;      // K   [origin=predictive method=joback]
+Pc          30.390;      // bar [origin=predictive method=joback]
+omega       0.5132;      // -   [origin=predictive method=lee-kesler]
+Tb          518.91;      // K   [origin=predictive method=joback]
+HvapTb      48200.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.15 0.72796 -0.00039862 7.446e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACCH3; count 2; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(3,4-dimethylphenyl)ethanone" "3,4-dimethylacetophenone" "ethanone, 1-(3,4-dimethylphenyl)-" "1-(3,4-dimethylphenyl)ethan-1-one" "1-acetyl-3,4-dimethylbenzene" "1-(3,4-dimethyl-phenyl)-ethanone" "l073" "l433" "acetophenone,3',4'-dimethyl- (6ci,7ci,8ci);1-(3,4-dimethylphenyl)ethanone;3,4-dimethylacetophenone;3',4'-dimethylacetophenone;methyl 3,4-dimethylphenylketone;" );
+gibbsFormation
+{
+    dHf_298   -148720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     453.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2450.0
+    phase     gas;
+}

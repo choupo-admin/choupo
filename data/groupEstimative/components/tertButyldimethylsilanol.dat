@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tert-butyldimethylsilanol  (C6H16OSi, CAS 18173-64-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C6H16OSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        tertButyldimethylsilanol;
+formula     C6H16OSi;
+CAS         18173-64-3;
+InChIKey    FGWRMMTYIZKYMA-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          132.278;      // g/mol [origin=calculated method=formula-sum]
+Tc          604.19;      // K   [origin=predictive method=joback]
+Pc          30.762;      // bar [origin=predictive method=joback]
+omega       0.5368;      // -   [origin=predictive method=lee-kesler]
+Tb          427.23;      // K   [origin=predictive method=joback]
+HvapTb      44627.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.07 0.5275 -9e-05 -7.53e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group C; count 1; } { group OH; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group C; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tert-butyl-dimethyl-oxidanyl-silane" "tert-butyl(dimethyl)silanol" "tert-butyl-hydroxy-dimethylsilane" "agn-pc-0cibr4" "silanol, (1,1-dimethylethyl)dimethyl-" "silanol,1-(1,1-dimethylethyl)-1,1-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -439770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     528.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-239100.0
+    phase     gas;
+}

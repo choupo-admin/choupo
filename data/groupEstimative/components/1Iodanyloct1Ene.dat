@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-iodanyloct-1-ene  (C8H15I, CAS 42599-17-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Iodanyloct1Ene;
+formula     C8H15I;
+CAS         42599-17-7;
+InChIKey    SJZDDNSUIVLYIN-UHFFFAOYSA-N;
+MW          238.108;      // g/mol [origin=calculated method=formula-sum]
+Tc          685.31;      // K   [origin=predictive method=joback]
+Pc          26.137;      // bar [origin=predictive method=joback]
+omega       0.4138;      // -   [origin=predictive method=lee-kesler]
+Tb          479.94;      // K   [origin=predictive method=joback]
+HvapTb      42733.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.875 0.82282 -0.0005766 1.713e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH=CH; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH; count 2; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trans-1-iodo-1-octene" "1-octene, 1-iodo-, (e)-" "1-octene, 1-iodo-, (z)-" );
+gibbsFormation
+{
+    dHf_298   -14360.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     516.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=154820.0
+    phase     gas;
+}

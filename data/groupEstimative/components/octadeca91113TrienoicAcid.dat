@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octadeca-9,11,13-trienoic acid  (C18H30O2, CAS 13296-76-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octadeca91113TrienoicAcid;
+formula     C18H30O2;
+CAS         13296-76-9;
+InChIKey    CUXYLFPMQMFGPL-UHFFFAOYSA-N;
+MW          278.436;      // g/mol [origin=calculated method=formula-sum]
+Tc          959.75;      // K   [origin=predictive method=joback]
+Pc          13.707;      // bar [origin=predictive method=joback]
+omega       1.0283;      // -   [origin=predictive method=lee-kesler]
+Tb          769.43;      // K   [origin=predictive method=joback]
+HvapTb      72700.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-51.42 1.82462 -0.0012794 3.732e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group CH=CH; count 3; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 10; } { group dCH; count 6; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9z,11e,13e-octadecatrienoic acid" "9,11,13-octadecatrienoicacid" "9,11,13-octadecatrienoicacid, (9e,11e,13e)-" "9,11,13-octadecatrienoicacid, (9z,11e,13e)-" "9,11,13-octadecatrienoicacid, (9z,11z,13e)-" "9,11,13-octadecatrienoicacid, (e,z,z)- (8ci)" "9,11,13-octadecatrienoicacid, (e,e,e)- (8ci); 9-trans,11-trans,13-trans-octadecatrienoic acid; b-eleostearic acid; y-eleostearic acid" "9,11,13-octadecatrienoicacid, (e,z,e)- (8ci); cis,trans,trans-9,11,13-octadecatrienoic acid;cis-eleostearic acid; a-eleostearic acid" );
+gibbsFormation
+{
+    dHf_298   -413460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     890.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2570.0
+    phase     gas;
+}

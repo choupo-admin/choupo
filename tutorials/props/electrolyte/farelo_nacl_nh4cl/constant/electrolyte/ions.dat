@@ -1,0 +1,90 @@
+/*---------------------------------------------------------------------------*\
+  Choupo electrolyte catalogue --- IONS (species, charge, molar mass).
+
+  Source: USGS PHREEQC pitzer.dat (public domain). `species` is a dict-safe
+  key (no +/-/parentheses); `ion` is the chemical form; `z` the charge.
+  Polyatomic-ion MW is the ION mass (PHREEQC lists element gfw, e.g. 32.064
+  for S not 96.06 for SO4 --- corrected); a few complex ions: MW pending.
+
+  AQUEOUS INFINITE-DILUTION REFERENCE TIER (electrolyte-enthalpy slice 2):
+  hfAq [J/mol], sAq [J/(mol K)], cpAq [J/(mol K)] --- standard partial molar
+  formation enthalpy / entropy / heat capacity of the ion at infinite dilution,
+  25 C, on the H+(aq) = 0 convention.  Source: Wagman et al., NBS Tables of
+  Chemical Thermodynamic Properties, J. Phys. Chem. Ref. Data 11 Suppl. 2
+  (1982) --- US-gov public domain.  VERIFIED by three independent dissolution
+  pins against anchors already in the catalogue (bin/curate/check_ion_pins.py):
+  NaOH -44.51, NaCl +3.88, KCl +17.2 kJ/mol.  Absence-tolerant: rows without
+  the tier simply have no enthalpy reference yet (the L_phi build refuses them).
+
+  ION-TRANSPORT TIER (electrochemistry v1 -- electrodialysis):
+  radius [m]  -- the effective (Stokes/hydrated) radius of the aqueous ion
+  (raw SI; the nm value is in each row comment -- `nm` is not a parser unit alias);
+  D0 [m2/s]   -- the infinite-dilution (Nernst) diffusion coefficient, 25 C.
+  SINGLE PRIMARY SOURCE: E. R. Nightingale, "Phenomenological Theory of Ion
+  Solvation.  Effective Radii of Hydrated Ions", J. Phys. Chem. 63 (1959)
+  1381-1387 (doi:10.1021/j150579a011) -- Nightingale's Table III reports BOTH
+  the effective hydrated radii AND the limiting ionic conductances lambda0 from
+  which D0 is DERIVED here by the Nernst-Einstein relation
+       D0 = R T lambda0 / (z^2 F^2)          (lambda0 in SI, S m2/mol)
+  so one clean primary supplies both columns (NO CRC / Robinson-Stokes-verbatim
+  no-grant table is used).  The lambda0 (S cm2/mol, 25 C) behind each D0 are in
+  the per-row comment; for divalent ions lambda0 is the MOLAR value (= per-eq x z).
+  Derivation reproducible by bin/curate (see PROVENANCE.md).  Absence-tolerant:
+  only the eight master ions an electrodialysis run can transport carry the tier;
+  the electrochem accessor (ionRadius / ionD0) REFUSES LOUDLY for any ion lacking
+  it (never a silent zero).  Provenance + flagged gaps: PROVENANCE.md.
+\*---------------------------------------------------------------------------*/
+
+ions
+(
+    { species Ba; ion "Ba+2"; z +2; MW 137.327; }
+    { species Ca; ion "Ca+2"; z +2; MW 40.078; hfAq -542830; sAq -53.1; radius 4.12e-10; D0 7.92e-10; }   // Wagman 1982 (cpAq pending); radius+D0 Nightingale 1959 (lambda0 119.0 molar)
+    { species CaBOH4; ion "CaB(OH)4+"; z +1; }
+    { species Fe; ion "Fe+2"; z +2; MW 55.845; }
+    { species H; ion "H+"; z +1; MW 1.008; hfAq 0; sAq 0; cpAq 0; radius 2.82e-10; D0 9.31e-09; }   // convention zero (Wagman 1982); radius+D0 Nightingale 1959 (lambda0 349.8, Grotthuss)
+    { species K; ion "K+"; z +1; MW 39.098; hfAq -252380; sAq 102.5; cpAq 21.8; radius 3.31e-10; D0 1.96e-09; }   // Wagman 1982; radius+D0 Nightingale 1959 (lambda0 73.5)
+    { species Li; ion "Li+"; z +1; MW 6.941; }
+    { species Mg; ion "Mg+2"; z +2; MW 24.305; hfAq -466850; sAq -138.1; radius 4.28e-10; D0 7.06e-10; }   // hfAq+sAq Wagman 1982;  radius+D0 Nightingale 1959 (lambda0 106.0 molar)
+    { species MgBOH4; ion "MgB(OH)4+"; z +1; }
+    { species MgOH; ion "MgOH+"; z +1; MW 41.31; }
+    { species Mn; ion "Mn+2"; z +2; MW 54.938; }
+    { species Na; ion "Na+"; z +1; MW 22.99; hfAq -240120; sAq 59.0; cpAq 46.4; radius 3.58e-10; D0 1.33e-09; }   // Wagman 1982; radius+D0 Nightingale 1959 (lambda0 50.1)
+    { species Sr; ion "Sr+2"; z +2; MW 87.62; }
+    { species B3O3OH4; ion "B3O3(OH)4-"; z -1; }
+    { species B4O5OH4; ion "B4O5(OH)4-2"; z -2; }
+    { species BOH4; ion "B(OH)4-"; z -1; MW 78.84; }
+    { species Br; ion "Br-"; z -1; MW 79.904; }
+    { species CO3; ion "CO3-2"; z -2; MW 60.01; hfAq -677140; sAq -56.9; }   // hfAq+sAq Wagman 1982
+    { species Cl; ion "Cl-"; z -1; MW 35.453; hfAq -167160; sAq 56.5; cpAq -136.4; radius 3.32e-10; D0 2.03e-09; }   // Wagman 1982; radius+D0 Nightingale 1959 (lambda0 76.3)
+    { species F; ion "F-"; z -1; MW 18.998; }                                          // phreeqc.dat (speciation master)
+    { species HCO3; ion "HCO3-"; z -1; MW 61.02; hfAq -691990; sAq 91.2; }   // hfAq+sAq Wagman 1982
+    { species HSO4; ion "HSO4-"; z -1; MW 97.07; }
+    { species OH; ion "OH-"; z -1; MW 17.007; hfAq -229990; sAq -10.75; cpAq -148.5; radius 3.00e-10; D0 5.27e-09; }  // Wagman 1982; radius+D0 Nightingale 1959 (lambda0 198.0, Grotthuss)
+    { species SO4; ion "SO4-2"; z -2; MW 96.06; hfAq -909270; sAq 20.1; radius 3.79e-10; D0 1.06e-09; }   // hfAq+sAq Wagman 1982;  radius+D0 Nightingale 1959 (lambda0 160.0 molar)
+    { species H4SiO4; ion "H4SiO4"; z 0; MW 96.113; }                                  // neutral silica master, phreeqc.dat (speciation)
+
+    // --- EXPANSION (appended 2026-06-21) ---------------------------------
+    // Master ions for the newly-in-scope chemistry (Fe(3), Mn(3), Al, B as
+    // H3BO3, P, N as NO3/NO2/NH4, S(-2) as HS, plus trace metals Zn/Cd/Pb/Cu),
+    // parsed deterministically from the phreeqc.dat SOLUTION_MASTER_SPECIES
+    // block by bin/curate (this run).  MW = ION mass (standard IUPAC atomic
+    // weights summed over the formula; the db lists only the element gfw).
+    // No enthalpy / transport tier yet (absence-tolerant; added on curation).
+    // Source: USGS PHREEQC phreeqc.dat (public domain); primary not stated in db.
+    { species Al; ion "Al+3"; z +3; MW 26.982; }
+    { species Cd; ion "Cd+2"; z +2; MW 112.414; }
+    { species Cu; ion "Cu+2"; z +2; MW 63.546; }
+    { species Cup; ion "Cu+1"; z +1; MW 63.546; }
+    { species Fep3; ion "Fe+3"; z +3; MW 55.845; }
+    { species H3BO3; ion "H3BO3"; z 0; MW 61.831; }
+    { species HS; ion "HS-"; z -1; MW 33.068; }
+    { species Mnp3; ion "Mn+3"; z +3; MW 54.938; }
+    { species NH4; ion "NH4+"; z +1; MW 18.039; hfAq -132510; sAq 113.4; }   // hfAq+sAq Wagman 1982
+    { species NO2; ion "NO2-"; z -1; MW 46.005; }
+    { species NO3; ion "NO3-"; z -1; MW 62.004; hfAq -207360; sAq 146.4; }   // hfAq+sAq Wagman 1982
+    { species Pb; ion "Pb+2"; z +2; MW 207.2; }
+    { species PO4; ion "PO4-3"; z -3; MW 94.97; hfAq -1277400; sAq -222.0; }   // hfAq+sAq Wagman 1982
+    { species Tart;  ion "C4H4O6-2"; z -2; MW 148.07; hfAq -1291000; }   // tartrate; hfAq Kochergina et al. Russ.J.Phys.Chem. 80 (2006) 899, Tab.5 (mean of 2 methods)
+    { species HTart; ion "HC4H4O6-"; z -1; MW 149.08; hfAq -1292100; }   // bitartrate; hfAq Kochergina et al. 2006 Tab.5
+    { species Zn; ion "Zn+2"; z +2; MW 65.38; }
+);

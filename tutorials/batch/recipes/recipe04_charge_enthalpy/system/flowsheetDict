@@ -1,0 +1,60 @@
+/*---------------------------------------------------------------------------*\
+  recipe04_charge_enthalpy  --  mixing is a FIRST-LAW act.
+
+  Two passive tanks.  `hot` holds 0.5 mol of ethanol at 340 K; `cold`
+  holds 1.0 mol of water at 300 K.  At t = 100 s the recipe empties the
+  hot tank into the cold one.  The charge solves the mix temperature
+  from enthalpy equality on the elements datum,
+
+      H(n_EtOH + n_W, T_mix)  =  H(n_EtOH, 340 K) + H(n_W, 300 K),
+
+  so heat capacity DIFFERENCES matter: ethanol carries ~112 J/(mol K)
+  against water's ~75, and the enthalpy-true T_mix (~317 K) sits ~4 K
+  above the equal-Cp molar average (313.3 K) a naive mixing rule gives.
+
+  Because both species price on the elements datum, no jacket acts, and
+  nothing leaves, the campaign ENERGY BALANCE is AVAILABLE and closes:
+  dH_vessels = 0 to the mix-solve tolerance --- the transfer moved
+  enthalpy between tanks without creating or destroying any.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        hot;
+        type        batchAccumulator;
+
+        initial
+        {
+            T            340.0 K;
+            P            1.013 bar;
+            V            1.0e-4;           // m^3
+            totalMoles   5.0e-4;           // kmol (0.5 mol ethanol)
+            molarComposition  { ethanol 1.0;  water 0.0; }
+        }
+    }
+
+    {
+        name        cold;
+        type        batchAccumulator;
+
+        initial
+        {
+            T            300.0 K;
+            P            1.013 bar;
+            V            1.0e-4;
+            totalMoles   1.0e-3;           // kmol (1.0 mol water)
+            molarComposition  { ethanol 0.0;  water 1.0; }
+        }
+    }
+);
+
+recipe
+(
+    {
+        time      100;          // s
+        action    transfer;
+        from      hot;
+        to        cold;
+    }
+);

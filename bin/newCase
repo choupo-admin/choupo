@@ -39,8 +39,8 @@
 #  The skeleton (all five files):
 #      <name>.cho                 empty marker -- the GUI's "openable" entity
 #      system/controlDict         application + description + verbosity
-#      system/flowsheetDict       streams{} + units() + connections() -- EMPTY
-#      constant/thermoPackage     components() -- EMPTY -- + ideal model blocks
+#      system/flowsheetDict       units() + connections() -- EMPTY topology
+#      constant/propertyDict      components() -- EMPTY -- + ideal model blocks
 #      CLAUDE.md                  per-case brief (seeded with your statement)
 #
 #  Cases live in $CHOUPO_WORKSPACE (default $CHOUPO_HOME/cases, gitignored).
@@ -138,52 +138,46 @@ description   "$DESC";
 verbosity     3;                  // 0 silent .. 3 info (Newton iters) .. 4 debug
 EOF
 
-# 3. system/flowsheetDict  --  CURATION phase: empty streams/units/connections
+# 3. system/flowsheetDict  --  CURATION phase: empty topology
 cat > "$CASE/system/flowsheetDict" <<'EOF'
 /*---------------------------------------------------------------------------*\
-  flowsheetDict  --  topology (streams + units + connections).
+  flowsheetDict  --  topology (units + connections).  Stream state lives in 0/.
 
-  CURATION phase: this case is EMPTY.  Add streams and units below; the
-  connections are implicit via stream names (a unit's `in` / `outputs`).
+  CURATION phase: this case is EMPTY.  Add units below; their `in` and
+  `outputs` names define graph streams.  Author one complete 0/<stream> file
+  for each graph stream before running.
   UNITS ARE MANDATORY on every dimensional value.
 
-  Example (an isothermal flash):
+  Example state file, 0/feed:
 
-      streams
+      componentMolarFlows
       {
-          feed
-          {
-              F                100.0 kmol/h;
-              T                370.0 K;
-              P                  1.0 bar;
-              molarComposition { benzene 0.40;  toluene 0.60; }
-          }
+          benzene          40.0 kmol/h;
+          toluene          60.0 kmol/h;
       }
-      units
-      (
-          {
-              name      flash01;
-              type      isothermalFlash;
-              in        feed;
-              outputs   ( liquid  vapor );
-              operation { T 370.0 K;  P 1.0 bar; }
-          }
-      );
-\*---------------------------------------------------------------------------*/
+      T                    370.0 K;
+      P                      1.0 bar;
 
-streams
-{
-}
+  Example unit in the units list:
+
+      {
+          name      flash01;
+          type      isothermalFlash;
+          in        feed;
+          outputs   ( liquid  vapor );
+          operation { T 370.0 K;  P 1.0 bar; }
+      }
+\*---------------------------------------------------------------------------*/
 
 units
 (
 );
 EOF
 
-# 4. constant/thermoPackage  --  EMPTY components + ideal model defaults
-cat > "$CASE/constant/thermoPackage" <<'EOF'
+# 4. constant/propertyDict  --  EMPTY components + ideal model defaults
+cat > "$CASE/constant/propertyDict" <<'EOF'
 /*---------------------------------------------------------------------------*\
-  thermoPackage  --  the components + thermodynamic models for this case.
+  propertyDict  --  the components + thermodynamic models for this case.
 
   EMPTY skeleton.  Add your components (loaded from data/standards/components/)
   and choose ONE global model set -- the default.  "All models are wrong, some
@@ -227,8 +221,9 @@ This is an empty Choupo case in the **curation phase** (no units yet).  The
 dicts on disk are the source of truth; fill them in a text editor or via the
 in-GUI AI console.
 
-- \`system/flowsheetDict\` -- the streams + units (the topology).
-- \`constant/thermoPackage\` -- the components + thermodynamic models.
+- \`system/flowsheetDict\` -- units and connections (topology only).
+- \`0/<stream>\` -- one complete state file for every graph stream.
+- \`constant/propertyDict\` -- the components + thermodynamic models.
 - \`system/controlDict\` -- application (choupoSolve/Batch/Ctrl) + verbosity.
 
 ## Rules
@@ -268,6 +263,6 @@ EOF
 
 echo "newCase: created $CASE"
 echo "  in curation phase (empty).  Next:"
-echo "    - edit system/flowsheetDict + constant/thermoPackage, or"
+echo "    - edit system/flowsheetDict + constant/propertyDict, or"
 echo "    - open it in the GUI and let the console fill the dicts."
 echo "    - then:  runCase $CASE"

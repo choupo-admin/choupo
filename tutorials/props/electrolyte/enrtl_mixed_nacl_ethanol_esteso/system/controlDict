@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "VALIDATION of the generalized segment-based eNRTL (Chen & Song 2004, AIChE J 50:1928, DOI 10.1002/aic.10151) against the PRIMARY measured gamma_pm of NaCl in ethanol-water at 25 C (Esteso et al., J. Solution Chem. 18 (1989) 277, emf cell, 0-90 wt% ethanol). ZERO refit: every tau/X:Z is the published Table 2/4/7 value; A_phi per composition is Esteso's measured Table II. Headline AAD ~4.3% over 47 points (paper quotes RMS 0.026 on gamma); ~1% in pure water, ~1.2% at 70 wt%. The +8% at 80/90 wt% is DECLARED physics the complete-dissociation model cannot carry: Esteso measures ion association K_A = 30-46 there (his Table V).";
+verbosity     2;

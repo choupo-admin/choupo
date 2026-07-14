@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentafluorophenyl trifluoroacetate  (C8F8O2, CAS 14533-84-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentafluorophenylTrifluoroacetate;
+formula     C8F8O2;
+CAS         14533-84-7;
+InChIKey    VCQURUZYYSOUHP-UHFFFAOYSA-N;
+MW          280.07;      // g/mol [origin=calculated method=formula-sum]
+Tc          642.14;      // K   [origin=predictive method=joback]
+Pc          23.428;      // bar [origin=predictive method=joback]
+omega       0.8116;      // -   [origin=predictive method=lee-kesler]
+Tb          483.37;      // K   [origin=predictive method=joback]
+HvapTb      38563.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (82.87 0.5528 -0.0003158 4.46e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 1; } { group ACF; count 5; } { group CF3; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dC_ring; count 6; } { group F; count 8; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[2,3,4,5,6-pentakis(fluoranyl)phenyl] 2,2,2-tris(fluoranyl)ethanoate" "trifluoroacetic acid pentafluorophenyl ester" "perfluorophenyl 2,2,2-trifluoroacetate" "(2,3,4,5,6-pentafluorophenyl) 2,2,2-trifluoroacetate" "pentafluorophenyl 2,2,2-trifluoroacetate" "2,2,2-trifluoroacetic acid (2,3,4,5,6-pentafluorophenyl) ester" "acetic acid,2,2,2-trifluoro-, 2,3,4,5,6-pentafluorophenyl ester" "aceticacid, trifluoro-, pentafluorophenyl ester (7ci,8ci,9ci);pentafluorophenyltrifluoroacetate;trifluoroacetic acid pentafluorophenyl ester;(2,3,4,5,6-pentafluorophenyl) 2,2,2-trifluoroacetate;2-[n,n-bis(trifluoromethylsulphonyl)amino]-5-chloropyridine;" );
+gibbsFormation
+{
+    dHf_298   -1924180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     596.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1785270.0
+    phase     gas;
+}

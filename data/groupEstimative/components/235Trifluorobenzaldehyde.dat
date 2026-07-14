@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,5-trifluorobenzaldehyde  (C7H3F3O, CAS 126202-23-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H3F3O (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        235Trifluorobenzaldehyde;
+formula     C7H3F3O;
+CAS         126202-23-1;
+InChIKey    RQUNVQGCKIBORD-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          160.094;      // g/mol [origin=calculated method=formula-sum]
+Tc          555.86;      // K   [origin=predictive method=joback]
+Pc          34.807;      // bar [origin=predictive method=joback]
+omega       0.3645;      // -   [origin=predictive method=lee-kesler]
+Tb          375.61;      // K   [origin=predictive method=joback]
+HvapTb      30614.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.29 0.4549 -0.00038928 1.364e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 1; } { group CHO; count 1; } { group ACF; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,5-tris(fluoranyl)benzaldehyde" "2,3,5-ttrifluorobenzaldehyde" "2,3,5-trifluoro benzaldehyde" "benzaldehyde,2,3,5-trifluoro-" "benzaldehyde, 2,3,5-trifluoro-" "benzaldehyde, 2,3,5-trifluoro- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -497570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     479.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-448890.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7-dehydrositosterol  (C29H48O, CAS 521-04-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        7Dehydrositosterol;
+formula     C29H48O;
+CAS         521-04-0;
+InChIKey    ARVGMISWLZPBCH-XHVHEOSNSA-N;
+MW          412.702;      // g/mol [origin=calculated method=formula-sum]
+Tc          1229.52;      // K   [origin=predictive method=joback]
+Pc          9.920;      // bar [origin=predictive method=joback]
+omega       0.9318;      // -   [origin=predictive method=lee-kesler]
+Tb          1001.71;      // K   [origin=predictive method=joback]
+HvapTb      95163.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-293.747 3.66602 -0.00303748 1.0881e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 10; } { group CH; count 7; } { group C; count 2; } { group CH=C; count 2; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 3; } { group CH; count 3; } { group CH2_ring; count 7; } { group CH_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,9s,10r,13r,14r,17r)-17-[(2r,5r)-5-ethyl-6-methyl-heptan-2-yl]-10,13-dimethyl-2,3,4,9,11,12,14,15,16,17-decahydro-1h-cyclopenta[a]phenanthren-3-ol" "stigmasta-5,7-dien-3beta-ol" "stigmasta-5,7-dien-3-beta-ol, not irradiated" "(3s,9s,10r,13r,14r,17r)-17-[(2r,5r)-5-ethyl-6-methylheptan-2-yl]-10,13-dimethyl-2,3,4,9,11,12,14,15,16,17-decahydro-1h-cyclopenta[a]phenanthren-3-ol" );
+gibbsFormation
+{
+    dHf_298   -467140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1013.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=245920.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: d-arabonolactone  (C5H8O5, CAS 2782-09-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dArabonolactone;
+formula     C5H8O5;
+CAS         2782-09-4;
+InChIKey    CUOKHACJLGPRHD-JJYYJPOSSA-N;
+MW          148.114;      // g/mol [origin=calculated method=formula-sum]
+Tc          815.57;      // K   [origin=predictive method=joback]
+Pc          54.627;      // bar [origin=predictive method=joback]
+omega       1.9644;      // -   [origin=predictive method=lee-kesler]
+Tb          646.16;      // K   [origin=predictive method=joback]
+HvapTb      83463.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.261 0.6239 -0.0003542 6.35e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 3; } { group OH; count 3; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH_ring; count 3; } { group OH; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,4s,5r)-5-(hydroxymethyl)-3,4-bis(oxidanyl)oxolan-2-one" "1,4-d-arabinonolactone" "d-arabinono-1,4-lactone" "arabinonic acid, gamma-lactone, d-" "(3s,4s,5r)-3,4-dihydroxy-5-(hydroxymethyl)oxolan-2-one" "d-arabino-1,4-lactone" "arabinonic acid-1,4-lactone" "d-arabinonic acid " "a-lactone" "cuokhacjlgprhd-jjyyjpossa-" "d-arabinonic acid, gamma-lactone" "e6b670a8-4605-455a-b696-7c0b3a83d3e3" );
+gibbsFormation
+{
+    dHf_298   -888380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     379.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-684280.0
+    phase     gas;
+}

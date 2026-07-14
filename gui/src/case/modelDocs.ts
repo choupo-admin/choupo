@@ -108,7 +108,7 @@ const THEORY_DEST: Record<string, string> = {
   membraneSW: "ch:membrane",
   spiralWound: "ch:membrane",
   // heat transfer
-  heatExchanger: "ch:hx-entu",
+  heatExchanger: "sec:hx-design",   // rating + design + dP (the richer section)
   // multi-stream HX (MHeatX): N hot + M cold inside one adiabatic shell -- a
   // CHECKER not a solver (user furnishes all T_out, unit verifies Sum Q = 0 and
   // reads the internal pinch off pooled hot/cold composite curves).
@@ -146,6 +146,7 @@ const THEORY_DEST: Record<string, string> = {
   // balance, laminar 64/Re + Colebrook/Haaland/Churchill turbulent factor,
   // minor losses, static head) -- pressure drop is a computed RESULT.
   pipe: "ch:hydraulics",
+  pneumaticConveyor: "sec:pneumatic-conveying",   // particle drag+Yang+saltation+bends
   // liquid-liquid extraction column: each theoretical stage IS one LL Gibbs-
   // minimisation flash; the cascade just tears the counter-current stages.
   // The dedicated chapter (ch:extractor) extends the LL-flash chapter
@@ -165,15 +166,22 @@ const THEORY_DEST: Record<string, string> = {
 };
 
 // A link that opens the theory guide at the unit's section, or null.
-export function theoryLink(type: string): string | null {
+export function theoryLink(type: string): string {
+  // Every unit-op gets a Theory link (Vitor: none must fall through).  A mapped
+  // type deep-links to its section; an unmapped one (a unit with no dedicated
+  // theory chapter yet, e.g. psa, or any newly-added op) lands on the guide's
+  // front so the student can still navigate -- honest, never a dead link.
   const dest = THEORY_DEST[type];
-  if (!dest) return null;
-  return `${import.meta.env.BASE_URL}docs/theoryGuide.pdf#nameddest=${dest}`;
+  return dest
+    ? `${import.meta.env.BASE_URL}docs/theoryGuide.pdf#nameddest=${dest}`
+    : `${import.meta.env.BASE_URL}docs/theoryGuide.pdf`;
 }
 
 // Props-mode item GROUP -> the Properties-Guide section that derives the theory
 // behind that estimate / test / fit.  (propsGuide.tex labels via destlabel.)
 const PROPS_DEST: Record<string, string> = {
+  Foundation: "ch:property-package",  // the thermo-readiness panel: what the
+                                      // package selects + where the data lives
   Estimate: "ch:joback",              // group contribution (Joback + Lee-Kesler)
   Comparison: "ch:pairs",             // the see-then-decide model overlay
   Fit: "ch:pairs",                    // binary-pair regression (LM)
@@ -186,6 +194,40 @@ export function propsTheoryLink(group: string): string | null {
   const dest = PROPS_DEST[group];
   if (!dest) return null;
   return `${import.meta.env.BASE_URL}docs/propsGuide.pdf#nameddest=${dest}`;
+}
+
+// Per-OP-TYPE help destination (the F1 target): what does THIS operation do?
+// Maps every registered choupoProps op type to the guide section that
+// explains it; falls back to the Properties Guide front (the bench: CREATE /
+// SEE / TEST / FIT) so F1 always lands somewhere useful.
+const OP_DEST: Record<string, { pdf: string; dest?: string }> = {
+  // THEORY-FIRST (F1 = the thermophysics + the numerical method of what runs):
+  speciate:          { pdf: "theoryGuide.pdf", dest: "ch:speciation" },    // mass action + charge balance + Newton in log-molality
+  scalingScan:       { pdf: "theoryGuide.pdf", dest: "ch:speciation" },    // + the speciation->SI scaling link
+  exchange:          { pdf: "theoryGuide.pdf", dest: "ch:ion-exchange" },  // Gaines-Thomas mass action
+  pitzerActivity:    { pdf: "theoryGuide.pdf", dest: "ch:electrolytes" },  // ionic strength, phi, Pitzer 1:1
+  electrolyteActivity: { pdf: "theoryGuide.pdf", dest: "ch:electrolytes" },
+  enrtlMixedSolvent: { pdf: "theoryGuide.pdf", dest: "sec:enrtl-mixed" },  // Chen & Song segment eNRTL
+  enrtlMultiSalt: { pdf: "theoryGuide.pdf", dest: "ch:electrolytes" },     // Song & Chen 2009 multicomponent
+  gibbsMap: { pdf: "theoryGuide.pdf", dest: "sec:gibbs-maps" },                  // equilibrium maps (forum 2026-07-02)
+  fitParameters:     { pdf: "theoryGuide.pdf", dest: "ch:lm" },            // Levenberg-Marquardt
+  vaporPressureFit:  { pdf: "theoryGuide.pdf", dest: "ch:lm" },
+  heatCapacityFit:   { pdf: "theoryGuide.pdf", dest: "ch:lm" },
+  kinetics1D:        { pdf: "theoryGuide.pdf", dest: "ch:lm" },
+  // Workflow-first (the derivation lives in the Props Guide):
+  estimateComponent: { pdf: "propsGuide.pdf", dest: "ch:joback" },
+  vleConsistency:    { pdf: "propsGuide.pdf", dest: "ch:consistency-props" },
+  propertyScan1D:    { pdf: "propsGuide.pdf", dest: "ch:pairs" },
+  propertyScan2D:    { pdf: "propsGuide.pdf", dest: "ch:pairs" },
+  propertyScanBinary:  { pdf: "propsGuide.pdf", dest: "ch:pairs" },
+  propertyScanTernary: { pdf: "propsGuide.pdf", dest: "ch:pairs" },
+  // steamTables: no dedicated theory section yet -> guide front (honest).
+};
+export function propsOpHelpLink(opType: string): string {
+  const m = OP_DEST[opType];
+  const base = import.meta.env.BASE_URL;
+  if (!m) return `${base}docs/propsGuide.pdf`;
+  return `${base}docs/${m.pdf}${m.dest ? `#nameddest=${m.dest}` : ""}`;
 }
 
 // ---------------------------------------------------------------------------

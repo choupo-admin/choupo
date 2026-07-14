@@ -1,0 +1,11 @@
+/* cryst2 -- antisolvent crystalliser.  Targets KCl by drowning-out. */
+type        crystalliser;
+operation
+{
+    operatingTemperature 278.15 K;
+    solute               KCl;
+    cakeMoisture         0.10;
+}
+
+inputs   ( freshEthanol  liquor1  recoveredEthanol );
+outputs  ( KCl_cake  finalLiquor );

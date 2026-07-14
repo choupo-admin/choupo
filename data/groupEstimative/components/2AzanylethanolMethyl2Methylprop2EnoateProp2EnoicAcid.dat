@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-azanylethanol;methyl 2-methylprop-2-enoate;prop-2-enoic acid  (C10H19NO5, CAS 149344-81-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2AzanylethanolMethyl2Methylprop2EnoateProp2EnoicAcid;
+formula     C10H19NO5;
+CAS         149344-81-0;
+InChIKey    MXALQSWRFWEDQJ-UHFFFAOYSA-N;
+MW          233.264;      // g/mol [origin=calculated method=formula-sum]
+Tc          995.88;      // K   [origin=predictive method=joback]
+Pc          24.459;      // bar [origin=predictive method=joback]
+omega       1.4096;      // -   [origin=predictive method=lee-kesler]
+Tb          792.88;      // K   [origin=predictive method=joback]
+HvapTb      89073.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (111.552 0.59324 0.0002095 -2.983e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH2=CH; count 1; } { group CH2=C; count 1; } { group OH; count 1; } { group CH2NH2; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group OH; count 1; } { group COOH; count 1; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-propenoic acid, 2-methyl-, methyl ester, polymer with 2-propenoic acid, compd. with 2-aminoethanol" );
+gibbsFormation
+{
+    dHf_298   -1017890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     954.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-733720.0
+    phase     gas;
+}

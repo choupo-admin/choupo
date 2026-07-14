@@ -85,6 +85,7 @@ Description
 
 #pragma once
 
+#include "ConstraintSpec.H"
 #include "OuterDriver.H"
 
 #include <string>
@@ -100,6 +101,35 @@ public:
     const std::string& type() const override { return type_; }
     int                run () override;
 
+    // ---- Programmatic hooks (the paretoSweep driver, forum #102.6/#103) --
+    //  A pareto point is THIS optimizer plus one epsilon-bound constraint
+    //  and a warm/cold start -- injected here after construction, never by
+    //  dict surgery.  setInitialX is an EXECUTION optimisation only (the
+    //  caller announces warm vs cold); values are in USER units, one per
+    //  declared variable, clamped-checked against the bounds.
+    void addConstraint(const ConstraintSpec& c) { constraints_.push_back(c); }
+    void setInitialX(const std::vector<scalar>& x0);
+    void setReportFile(const std::string& f) { reportFile_ = f; }
+    //  A parent driver (paretoSweep) emits ONE representative result JSON
+    //  for the whole front; the per-point children must not also emit
+    //  theirs (multiple result blocks in one log break every consumer's
+    //  first-block parse).  The SQP trace stays visible -- only the JSON
+    //  block is suppressed.
+    void suppressResultJson() { emitJson_ = false; }
+    //  Fix one declared variable at a value (the integer-enumeration outer
+    //  loop, forum #102.6/#103: each integer is a NEW run with the value
+    //  BAKED into every clone, never a late parameter mutation).  Removes
+    //  it from the optimised set.
+    void fixVariable(const std::string& path, scalar v);
+
+    //  Solution of the LAST run() (populated by the SQP path): x in USER
+    //  units by variable order, the objective in the USER sense, and the
+    //  solver's own converged/feasible verdicts.
+    const std::vector<scalar>& solutionX() const { return lastX_; }
+    scalar solutionF()          const { return lastF_; }
+    bool   solutionConverged()  const { return lastConverged_; }
+    bool   solutionFeasible()   const { return lastFeasible_; }
+
     // Objective specification (public so the free objective-extractor
     // can dispatch on it from the.cpp's anonymous namespace).
     enum class Sense { Minimise, Maximise };
@@ -114,17 +144,13 @@ private:
         scalar      lo;
         scalar      hi;
         scalar      x0;
+        bool        isInt = false;   // `integer;` -- enumerated, never relaxed
     };
 
     // A nonlinear constraint:  resp(kpi)  {<= | >= | ==}  rhs (canonical SI).
-    struct Constraint
-    {
-        enum class Op { AtMost, AtLeast, Equals };
-        std::string path;        // "<unit>.<kpi>" or "<stream>.<field>"
-        Op          op = Op::AtMost;
-        scalar      rhs = 0.0;
-        scalar      tol = 1.0e-4; // only used by Equals (equality scaling)
-    };
+    // THE shared constraint grammar (ConstraintSpec.H) -- the sweep's
+    // feasibility map parses the same block, so the two can never drift.
+    using Constraint = ConstraintSpec;
 
     enum class Method { NelderMead, Sqp };
 
@@ -146,6 +172,18 @@ private:
     bool                    fdCentral_   = false;
 
     std::string             reportFile_ = "optimization_history.csv";
+
+    bool                    emitJson_ = true;
+    DictPtr                 outerDict_;   // kept for the enumeration children
+    std::vector<std::pair<std::string, scalar>> fixedVars_;
+    // The integer-enumeration outer loop (run() dispatches to it when a
+    // declared variable carries `integer;`).
+    int runIntegerEnumeration();
+    // Last-run solution (SQP path; see the public accessors).
+    std::vector<scalar>     lastX_;
+    scalar                  lastF_ = 0.0;
+    bool                    lastConverged_ = false;
+    bool                    lastFeasible_  = false;
 
     // The two solver back-ends.
     int runNelderMead();

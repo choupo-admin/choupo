@@ -1,17 +1,12 @@
 /*---------------------------------------------------------------------------*\
-  Bubble-T of a 30/70 ethanol/water liquid at 1 atm  (NRTL).
+  bubbleT01_ethanol_water  --  Bubble-T of a 30/70 ethanol/water liquid at
+  1 atm (NRTL gamma, non-ideal).  A saturation calc, not a flash: the unit
+  solves sum(K_i x_i) = 1 for T at the given P (no product streams).
+  Expected: T_bubble ~ 354.4 K with y_ethanol ~ 0.58 -- ethanol enriched
+  in the incipient vapour well beyond its 0.30 in the liquid.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;            // not actually used by bubbleT
-        T            350.0 K;            // initial T guess
-        P            1.01325 bar;
-        molarComposition  { ethanol 0.30;  water 0.70; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

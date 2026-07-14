@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-heptanedione  (C7H12O2, CAS 7424-54-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35Heptanedione;
+formula     C7H12O2;
+CAS         7424-54-6;
+InChIKey    DGCTVLNZTFDPDJ-UHFFFAOYSA-N;
+MW          128.171;      // g/mol [origin=calculated method=formula-sum]
+Tc          655.33;      // K   [origin=predictive method=joback]
+Pc          32.137;      // bar [origin=predictive method=joback]
+omega       0.6080;      // -   [origin=predictive method=lee-kesler]
+Tb          467.50;      // K   [origin=predictive method=joback]
+HvapTb      44668.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.243 0.61284 -0.0003196 5.402e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH2CO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CdO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "heptane-3,5-dione" "dipropionylmethane" "3,5-heptandione" "dipropionylmethane;heptane-3,5-dione;" );
+gibbsFormation
+{
+    dHf_298   -412970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     482.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-249780.0
+    phase     gas;
+}

@@ -1,0 +1,16 @@
+recordType modelSpecies;   // model species — summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+
+name    H3BO3;
+ion     "H3BO3";
+charge  0;
+
+MW { value 61.831; unit g/mol;}
+
+aqueousThermo
+{
+    hfAq { value -1072320; unit J/mol;}
+    sAq  { value 162.3;  unit J/mol/K;}
+}
+
+source "+formation: hfAq+sAq Wagman 1982 (boric acid aq, undissoc.; CODATA -1072.8/162.4 confirms; cpAq pending)";

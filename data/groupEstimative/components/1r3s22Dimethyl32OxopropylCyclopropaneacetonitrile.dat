@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (1r,3s)-2,2-dimethyl-3-(2-oxopropyl)-cyclopropaneacetonitrile  (C10H15NO, CAS 110847-02-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1r3s22Dimethyl32OxopropylCyclopropaneacetonitrile;
+formula     C10H15NO;
+CAS         110847-02-4;
+InChIKey    KRZTYSCUOUIFHR-BDAKNGLRSA-N;
+MW          165.236;      // g/mol [origin=calculated method=formula-sum]
+Tc          791.94;      // K   [origin=predictive method=joback]
+Pc          24.243;      // bar [origin=predictive method=joback]
+omega       0.6555;      // -   [origin=predictive method=lee-kesler]
+Tb          581.99;      // K   [origin=predictive method=joback]
+HvapTb      53222.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-70.198 1.25046 -0.0011125 4.3336e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group C; count 1; } { group CH3CO; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH_ring; count 2; } { group C_ring; count 1; } { group CdO; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[(1r,3s)-2,2-dimethyl-3-(2-oxidanylidenepropyl)cyclopropyl]ethanenitrile" "2-[(1r,3s)-2,2-dimethyl-3-(2-oxopropyl)cyclopropyl]acetonitrile" "2-[(3s,1r)-2,2-dimethyl-3-(2-oxopropyl)cyclopropyl]ethanenitrile" );
+gibbsFormation
+{
+    dHf_298   -150070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     472.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=77420.0
+    phase     gas;
+}

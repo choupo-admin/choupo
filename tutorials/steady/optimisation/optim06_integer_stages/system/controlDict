@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  sensitivity01_column_reflux -- meta-control
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "The classic N-vs-R trade solved in ONE run: nStages declared integer -> exhaustive enumeration, one full SQP per stage count, ALL values on the table";
+
+verbosity     1;

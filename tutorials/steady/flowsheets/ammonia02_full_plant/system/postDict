@@ -1,0 +1,90 @@
+/*---------------------------------------------------------------------------*\
+  postDict -- the ammonia plant's sizing -> costing -> economics chain.
+    1. sizing     -- the two COMPRESSORS (by shaft power) and the two HEAT
+                     EXCHANGERS (by area).  The converter and the flash drums
+                     need a catalyst-volume / residence-time design basis the
+                     equilibrium units do not emit, so they are NOT sized here
+                     (a separate vessel-design step) -- an HONEST partial CAPEX,
+                     announced.
+    2. costing    -- Guthrie/Turton purchased + bare-module cost, CEPCI-updated
+                     to 2026, in EUR.  The syngas compressor is far above the
+                     correlation's 3000 kW range -> the pass flags the
+                     extrapolation.
+    3. economics  -- revenue (NH3), raw-material (syngas makeup), utilities
+                     (compressor electricity + cooling water), DCF -> NPV, IRR,
+                     payback.  Prices in constant/economics (refuse if absent).
+
+  READ THIS ABOUT THE RETURNS.  The OPEX + revenue side is realistic and
+  feedstock-DOMINATED (raw materials the bulk of COM_d -- exactly why ammonia
+  margins track the gas price).  EVERY unit in this loop is now sized: the two
+  compressors (by power), the two exchangers (by area), and -- via the `vessel`
+  sizing -- the high-pressure CONVERTER (catalyst-volume basis) and the two flash
+  DRUMS (vapour-residence basis).  With every loop unit costed -- and the high-pressure CONVERTER + SEPARATOR
+  (thick ASME walls at 220 bar, F_P ~ 36) now DOMINATING the CAPEX -- the
+  in-battery-limits FCI is ~68 MEUR; with the Henry-calibrated separator
+  recovering more product (~59 t/h) the loop shows NPV ~ +185 MEUR at 10%,
+  IRR ~ 44%, discounted payback ~ 2.7 yr -- healthy because the NH3-vs-syngas
+  price spread here is a mid-cycle teaching figure and the syngas island's
+  capital sits outside the battery limits.  What remains OUTSIDE this
+  battery limit is the upstream SYNGAS ISLAND (steam reformer + air separation)
+  + the refrigeration package -- a grassroots single-train plant is ~300-500 MEUR
+  of total FCI.  So this is a faithful SYNTHESIS-LOOP appraisal, honest that the
+  syngas generation is a separate (larger) investment.  Within the loop, every
+  unit operation carries its own sizing and cost -- the doctrine Vitor set.
+\*---------------------------------------------------------------------------*/
+sizing
+{
+    units
+    (
+        { unitName makeupComp;  type compressor;  material SS316;
+          designRules { pressureDesign 250.0; } }
+        { unitName recycleComp; type compressor;  material SS316;
+          designRules { pressureDesign 205.0; } }
+        { unitName FEHE;        type shellTubeHX;  material SS316;
+          designRules { U 550.0;  LMTD 150.0;  pressureDesign 220.0; } }
+        { unitName waterCooler; type shellTubeHX;  material carbonSteel;
+          designRules { U 700.0;  LMTD 60.0;   pressureDesign 200.0; } }
+
+        // The CONVERTER: a high-pressure catalyst vessel.  Catalyst+internals
+        // volume ~80 m3 (from an ammonia space velocity ~20000 Nm3/m3/h at a
+        // world-scale rate); sized as a tall thick-wall vessel at 220 bar.
+        { unitName converter;   type vessel;  material SS316;
+          designRules { volume 80.0;  L_over_D 6.0;  pressureDesign 220.0;
+                        corrosionAllow 0.004; } }
+
+        // The high-pressure SEPARATOR: a knock-out drum, ~45 s of vapour holdup.
+        { unitName separator;   type vessel;  material SS316;
+          designRules { residenceTime 45.0;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3.0;  pressureDesign 220.0; } }
+
+        // The product LET-DOWN drum at 20 bar (smaller, carbon steel).
+        { unitName letdown;     type vessel;  material carbonSteel;
+          designRules { residenceTime 60.0;  flowKey F_beta;  flowUnit kmol/s;
+                        L_over_D 3.0;  pressureDesign 25.0; } }
+    );
+}
+costing
+{
+    method   Guthrie;
+    year     2026;
+    cepci    820;
+    cepci2001 397;
+    usdToEur 0.92;
+}
+economics
+{
+    method              discountedCashFlow;
+    projectLife         15;
+    constructionPeriod  2;
+    discountRate        0.10;
+    taxRate             0.21;
+    depreciation        straightLine;
+    depreciableLife     9;
+    salvageFraction     0.0;
+    workingCapital      0.15;
+    streamFactor        0.90;
+    siteFactor          0.50;
+    contingencyFee      1.18;
+    estimateClass       4;
+    refuseOnMissingPrice 1;
+}

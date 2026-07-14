@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,10-diaminodecane  (C10H24N2, CAS 646-25-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        110Diaminodecane;
+formula     C10H24N2;
+CAS         646-25-3;
+InChIKey    YQLZOAVZWJBZSY-UHFFFAOYSA-N;
+MW          172.316;      // g/mol [origin=calculated method=formula-sum]
+Tc          757.71;      // K   [origin=predictive method=joback]
+Pc          23.474;      // bar [origin=predictive method=joback]
+omega       0.8566;      // -   [origin=predictive method=lee-kesler]
+Tb          573.46;      // K   [origin=predictive method=joback]
+HvapTb      59136.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.78 1.0776 -0.000607 1.298e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH2NH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 10; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "decane-1,10-diamine" "1,10-decanediamine" "decamethylenediamine" "decyldiamine" "1,10-decamethylenediamine" "10-amino-decyl-amine" "da10; decamethylenediamine" "k834" );
+gibbsFormation
+{
+    dHf_298   -182150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     648.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=166220.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: proge  (C27H40O4, CAS 630-56-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        proge;
+formula     C27H40O4;
+CAS         630-56-8;
+InChIKey    DOMWKUIIPQCAJU-LJHIYBGHSA-N;
+MW          428.613;      // g/mol [origin=calculated method=formula-sum]
+Tc          1285.79;      // K   [origin=predictive method=joback]
+Pc          11.321;      // bar [origin=predictive method=joback]
+omega       0.9785;      // -   [origin=predictive method=lee-kesler]
+Tb          1041.10;      // K   [origin=predictive method=joback]
+HvapTb      91491.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-295.046 3.58058 -0.00314374 1.19556e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 10; } { group CH; count 3; } { group C; count 3; } { group CH=C; count 1; } { group CH3CO; count 1; } { group CH2CO; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 4; } { group CH2_ring; count 8; } { group CH_ring; count 3; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(8r,9s,10r,13s,14s,17r)-17-ethanoyl-10,13-dimethyl-3-oxidanylidene-2,6,7,8,9,11,12,14,15,16-decahydro-1h-cyclopenta[a]phenanthren-17-yl] hexanoate" "primolut depot" "estralutin" "hormofort" "hyproval" "kaprogest" "relutin" "syngynon" "lutate" "neolutin forte" "proluton depot" "depo-proluton" );
+gibbsFormation
+{
+    dHf_298   -856420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1025.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-214480.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclohexene, 1-ethyl-2-methyl-  (C9H16, CAS 19780-54-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclohexene1Ethyl2Methyl;
+formula     C9H16;
+CAS         19780-54-2;
+InChIKey    CPCWTCKHZOBWJT-UHFFFAOYSA-N;
+MW          124.227;      // g/mol [origin=calculated method=formula-sum]
+Tc          643.24;      // K   [origin=predictive method=joback]
+Pc          29.601;      // bar [origin=predictive method=joback]
+omega       0.3439;      // -   [origin=predictive method=lee-kesler]
+Tb          438.86;      // K   [origin=predictive method=joback]
+HvapTb      37982.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-40.459 0.83244 -0.0004554 8.81e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 4; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethyl-2-methyl-cyclohexene" "1-ethyl-2-methylcyclohexene" "1-ethyl-2-methyl-1-cyclohexene" );
+gibbsFormation
+{
+    dHf_298   -119590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     468.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=67760.0
+    phase     gas;
+}

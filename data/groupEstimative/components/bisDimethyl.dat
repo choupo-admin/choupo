@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: [[bis[(dimethyl-  (C20H34O5Si6, CAS 66817-59-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C20H34O5Si6 (delta Si+6; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        bisDimethyl;
+formula     C20H34O5Si6;
+CAS         66817-59-2;
+InChIKey    ZHVZRDQTXMZDKI-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+role        radical;
+MW          522.997;      // g/mol [origin=calculated method=formula-sum]
+Tc          1053.57;      // K   [origin=predictive method=joback]
+Pc          10.372;      // bar [origin=predictive method=joback]
+omega       0.6243;      // -   [origin=predictive method=lee-kesler]
+Tb          828.26;      // K   [origin=predictive method=joback]
+HvapTb      77892.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (207.67 0.60536 0.0010876 -8.65e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 8; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group O; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[[bis[(dimethyl-$l^{3}-silanyl)oxy]-phenyl-silyl]oxy-(dimethyl-$l^{3}-silanyl)oxy-phenyl-silyl]oxy-dimethyl-silicon" "tetrasiloxane, 3,5-bis((dimethylsilyl)oxy)-1,1,7,7-tetramethyl-3,5-diphenyl-" "tetrasiloxane, 3,5-bis[(dimethylsilyl)oxy]-1,1,7,7-tetramethyl-3,5-diphenyl-" );
+gibbsFormation
+{
+    dHf_298   -1090650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1322.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-601700.0
+    phase     gas;
+}

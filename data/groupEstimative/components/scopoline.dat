@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: scopoline  (C8H13NO2, CAS 487-27-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        scopoline;
+formula     C8H13NO2;
+CAS         487-27-4;
+InChIKey    MEGPURSNXMUDAE-OMKQZNDVSA-N;
+MW          155.197;      // g/mol [origin=calculated method=formula-sum]
+Tc          708.92;      // K   [origin=predictive method=joback]
+Pc          38.771;      // bar [origin=predictive method=joback]
+omega       0.9033;      // -   [origin=predictive method=lee-kesler]
+Tb          520.82;      // K   [origin=predictive method=joback]
+HvapTb      55583.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-126.19 1.32802 -0.0011367 3.939e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 4; } { group OH; count 1; } { group CH-O; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 5; } { group OH; count 1; } { group O_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oscin" "1betah,5betah-tropan-6alpha-ol, 3beta,7beta-epoxy- (8ci)" "2,5-methano-2h-furo(3,2-b)pyrrol-6-ol, hexahydro-4-methyl-, (2alpha,3abeta,5alpha,6beta,6abeta)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -241270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     107.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83250.0
+    phase     gas;
+}

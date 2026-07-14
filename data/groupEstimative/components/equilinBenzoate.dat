@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: equilin, benzoate  (C25H24O3, CAS 6030-80-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        equilinBenzoate;
+formula     C25H24O3;
+CAS         6030-80-4;
+InChIKey    UIXFQXUDHNMOTI-KJWPAHLWSA-N;
+MW          372.464;      // g/mol [origin=calculated method=formula-sum]
+Tc          1260.62;      // K   [origin=predictive method=joback]
+Pc          16.797;      // bar [origin=predictive method=joback]
+omega       1.0106;      // -   [origin=predictive method=lee-kesler]
+Tb          994.10;      // K   [origin=predictive method=joback]
+HvapTb      88660.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-186.09 2.48882 -0.00194656 6.328e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group C; count 1; } { group CH=C; count 1; } { group ACH; count 8; } { group AC; count 2; } { group ACCH2; count 1; } { group ACCH; count 1; } { group CH2CO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 5; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(9s,13s,14s)-13-methyl-17-oxidanylidene-9,11,12,14,15,16-hexahydro-6h-cyclopenta[a]phenanthren-3-yl] benzoate" "equilin benzoate" "17-oxoestra-1,3,5(10),7-tetraen-3-yl benzoate" "3-hydroxyestra-1,3,5(10),7-tetraen-17-one, benzoate" "[(9s,13s,14s)-13-methyl-17-oxo-9,11,12,14,15,16-hexahydro-6h-cyclopenta[a]phenanthren-3-yl] benzoate" );
+gibbsFormation
+{
+    dHf_298   -296560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     672.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=105110.0
+    phase     gas;
+}

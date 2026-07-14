@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7-ethoxycoumarin  (C11H10O3, CAS 31005-02-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        7Ethoxycoumarin;
+formula     C11H10O3;
+CAS         31005-02-4;
+InChIKey    LIFAQMGORKPVDH-UHFFFAOYSA-N;
+MW          190.198;      // g/mol [origin=calculated method=formula-sum]
+Tc          791.40;      // K   [origin=predictive method=joback]
+Pc          30.490;      // bar [origin=predictive method=joback]
+omega       0.6967;      // -   [origin=predictive method=lee-kesler]
+Tb          574.86;      // K   [origin=predictive method=joback]
+HvapTb      53839.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.789 0.86392 -0.0005754 1.451e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH=CH; count 1; } { group ACH; count 3; } { group AC; count 3; } { group CH2O; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 3; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-ethoxychromen-2-one" "7-ethoxy-1-benzopyran-2-one" "2h-1-benzopyran-2-one, 7-ethoxy-" "ethylumbelliferone" "7-ethoxycoumarine" "ethoxycoumarin" "7-ethoxy-2h-chromen-2-one" "7-ethoxy-2h-1-benzopyran-2-one" "2h-1-benzopyran-2-one,7-ethoxy-" "coumarin,7-ethoxy- (6ci,8ci);ethylumbelliferone;" );
+gibbsFormation
+{
+    dHf_298   -349200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     423.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-169960.0
+    phase     gas;
+}

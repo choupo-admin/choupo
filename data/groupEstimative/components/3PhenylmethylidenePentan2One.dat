@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(phenylmethylidene)pentan-2-one  (C12H14O, CAS 3437-89-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3PhenylmethylidenePentan2One;
+formula     C12H14O;
+CAS         3437-89-6;
+InChIKey    QQKHASOJMBEMJE-UHFFFAOYSA-N;
+MW          174.243;      // g/mol [origin=calculated method=formula-sum]
+Tc          780.38;      // K   [origin=predictive method=joback]
+Pc          27.155;      // bar [origin=predictive method=joback]
+omega       0.5500;      // -   [origin=predictive method=lee-kesler]
+Tb          558.75;      // K   [origin=predictive method=joback]
+HvapTb      51366.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-48.439 1.05684 -0.0007276 1.9726e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH=C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -59630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     532.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=105320.0
+    phase     gas;
+}

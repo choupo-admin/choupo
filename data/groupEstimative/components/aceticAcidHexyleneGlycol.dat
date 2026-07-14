@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetic acid, hexylene glycol  (C10H18O4, CAS 1637-24-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        aceticAcidHexyleneGlycol;
+formula     C10H18O4;
+CAS         1637-24-7;
+InChIKey    PTPLKZHLDXVIBT-UHFFFAOYSA-N;
+MW          202.25;      // g/mol [origin=calculated method=formula-sum]
+Tc          729.50;      // K   [origin=predictive method=joback]
+Pc          21.816;      // bar [origin=predictive method=joback]
+omega       0.6623;      // -   [origin=predictive method=lee-kesler]
+Tb          541.17;      // K   [origin=predictive method=joback]
+HvapTb      50984.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.461 0.976 -0.000506 6.5e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group CH3COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 1; } { group CH; count 1; } { group C; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4-acetyloxy-4-methyl-pentan-2-yl) ethanoate" "2-methyl-2,4-pentanediol diacetate" "2-methylpentane-2,4-diyl diacetate" "2,4-pentanediol, 2-methyl-, diacetate" "2,4-pentanediol, 2-methyl-, 2,4-diacetate" "acetic acid, 2-methyl-2,4-pentanediol diester" "2, 2-methyl-, diacetate" "acetic acid,4-pentanediol diester" "2-methyl-2,4-pentanediol, diacetate" "(4-acetyloxy-4-methylpentan-2-yl) acetate" );
+gibbsFormation
+{
+    dHf_298   -898320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     599.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-587020.0
+    phase     gas;
+}

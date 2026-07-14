@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2',2'',2'''-{(3-oxo-1,3-dihydro-2-benzofuran-1,1-diyl)bis[(6-hydroxybenzene-3,1-diyl)methanediylnitrilo]}tetraacetic acid  (C30H28N2O12, CAS 62698-58-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22223Oxo13Dihydro2Benzofuran11DiylBis6Hydroxybenzene31DiylMe;
+formula     C30H28N2O12;
+CAS         62698-58-2;
+InChIKey    QHKMTHBQSIKVAC-UHFFFAOYSA-N;
+MW          608.556;      // g/mol [origin=calculated method=formula-sum]
+Tc          2441.48;      // K   [origin=predictive method=joback]
+Pc          17.803;      // bar [origin=predictive method=joback]
+omega       0.5304;      // -   [origin=predictive method=lee-kesler]
+Tb          1805.80;      // K   [origin=predictive method=joback]
+HvapTb      195783.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-168.604 3.606 -0.00328 1.2006e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group C; count 1; } { group ACH; count 10; } { group AC; count 4; } { group ACCH2; count 2; } { group ACOH; count 2; } { group CH2N; count 2; } { group COOH; count 4; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group C_ring; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 8; } { group OH_phenol; count 2; } { group COOH; count 4; } { group COO; count 1; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[[5-[1-[3-[[bis(2-hydroxy-2-oxoethyl)amino]methyl]-4-oxidanyl-phenyl]-3-oxidanylidene-2-benzofuran-1-yl]-2-oxidanyl-phenyl]methyl-(2-hydroxy-2-oxoethyl)amino]ethanoic acid" "phenolphthalexon" "62698-58-2 (tetra-hydrochloride salt)" "2-[[5-[1-[3-[[bis(carboxymethyl)amino]methyl]-4-hydroxyphenyl]-3-oxo-2-benzofuran-1-yl]-2-hydroxyphenyl]methyl-(carboxymethyl)amino]acetic acid" "n,n'-((3-oxo-1(3h)-isobenzofuranylidene)bis((6-hydroxy-3,1-phenylene)methylene))bis(n-(carboxymethyl)glycine)" );
+gibbsFormation
+{
+    dHf_298   -1824910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1275.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1184170.0
+    phase     gas;
+}

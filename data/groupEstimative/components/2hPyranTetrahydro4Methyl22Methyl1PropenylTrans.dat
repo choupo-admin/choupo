@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2h-pyran, tetrahydro-4-methyl-2-(2-methyl-1-propenyl)-, trans-  (C10H18O, CAS 876-18-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2hPyranTetrahydro4Methyl22Methyl1PropenylTrans;
+formula     C10H18O;
+CAS         876-18-6;
+InChIKey    CZCBTSFUTPZVKJ-ZJUUUORDSA-N;
+MW          154.253;      // g/mol [origin=calculated method=formula-sum]
+Tc          684.05;      // K   [origin=predictive method=joback]
+Pc          26.084;      // bar [origin=predictive method=joback]
+omega       0.3649;      // -   [origin=predictive method=lee-kesler]
+Tb          474.27;      // K   [origin=predictive method=joback]
+HvapTb      42522.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-62.42 1.06636 -0.000618 1.297e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 2; } { group CH=C; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r,4r)-4-methyl-2-(2-methylprop-1-enyl)oxane" "(+)-rose oxide" "(-)-rose oxide" "rose oxide ii" "(-)-trans-rose oxide" "(+-)-trans-rose oxide" "(4s)-2-(2-methyl-1-propenyl)-4-methyltetrahydropyran" "rose oxide, trans-(-)-" "rose oxide, trans-(+-)-" "(4r,2r)-(-)-rose oxide" "(2s,4r)-2-(2-methyl-1-propenyl)-4-methyltetrahydropyran" "2h-pyran, tetrahydro-4-methyl-2-(2-methylpropenyl)-, trans-" );
+gibbsFormation
+{
+    dHf_298   -240320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     410.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=35610.0
+    phase     gas;
+}

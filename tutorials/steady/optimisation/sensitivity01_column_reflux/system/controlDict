@@ -1,8 +1,8 @@
 /*---------------------------------------------------------------------------*\
-  Meta-control for this case.
+  sensitivity01_column_reflux -- meta-control
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;
-description   "Sweep reflux ratio across the column01 case";
+description   "Sweep reflux ratio R = 1.5..5.0 (10 pts) across the column01 case; responses: x_D purity + V_strip (reboiler-duty proxy)";
 
 verbosity     1;

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octyltriglycol  (C14H30O4, CAS 19327-38-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octyltriglycol;
+formula     C14H30O4;
+CAS         19327-38-9;
+InChIKey    XIVLVYLYOMHUGB-UHFFFAOYSA-N;
+MW          262.39;      // g/mol [origin=calculated method=formula-sum]
+Tc          841.66;      // K   [origin=predictive method=joback]
+Pc          15.735;      // bar [origin=predictive method=joback]
+omega       1.2233;      // -   [origin=predictive method=lee-kesler]
+Tb          679.36;      // K   [origin=predictive method=joback]
+HvapTb      70667.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (71.953 1.17822 -0.0004352 8e-10);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 9; } { group CH2O; count 2; } { group C2H5O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 13; } { group OH; count 1; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-(2-octoxyethoxy)ethoxy]ethanol" "triethylene glycol monooctyl ether" "octyl triethylene glycol ether" "c8e3" "triethylene glycol monooctyl ether solution" "triethyleneglycol monooctyl ether 1 mm solution" "2-[2-(2-octyloxyethoxy)ethoxy]ethan-1-ol" "(ooe)3e" "n-octyl(oxyethylene)(3)ethanol" "ethanol, 2-(2-(2-(octyloxy)ethoxy)ethoxy)-" "aduxol hex03;c8e3;triethylene glycol mono-n-octyl ether;triethylene glycol monooctylether;triethylene glycol octyl ether;" );
+gibbsFormation
+{
+    dHf_298   -881180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     786.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-384820.0
+    phase     gas;
+}

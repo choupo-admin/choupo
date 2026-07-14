@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tcbd  (C4H3Cl3, CAS 25854-04-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tcbd;
+formula     C4H3Cl3;
+CAS         25854-04-0;
+InChIKey    ZFBGKBGUMMBBMY-UHFFFAOYSA-N;
+MW          157.418;      // g/mol [origin=calculated method=formula-sum]
+Tc          617.68;      // K   [origin=predictive method=joback]
+Pc          38.627;      // bar [origin=predictive method=joback]
+omega       0.2711;      // -   [origin=predictive method=lee-kesler]
+Tb          404.01;      // K   [origin=predictive method=joback]
+HvapTb      37101.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.37 0.404 -0.0003663 1.318e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group Cl_C=C_; count 3; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group dCH; count 1; } { group dC; count 2; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,2-tris(chloranyl)buta-1,3-diene" "trichlorobutadiene" "1,1,2-trichlorobuta-1,3-diene" "1,3-butadiene, 1,1,2-trichloro-" "1,1,2-trichlorobutadiene" "1,1,2-trichlorobutadiene-1,3" "1,1,2-trichloro-1,3-butadiene" "trichloro-1,3-butadiene homopolymer" "1,3-butadiene, trichloro-, homopolymer" );
+gibbsFormation
+{
+    dHf_298   49960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     392.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97970.0
+    phase     gas;
+}

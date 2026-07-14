@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: anandamide  (C22H37NO2, CAS 94421-68-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        anandamide;
+formula     C22H37NO2;
+CAS         94421-68-8;
+InChIKey    LGEQQWMQCRIYKG-DOFZRALJSA-N;
+MW          347.543;      // g/mol [origin=calculated method=formula-sum]
+Tc          1121.23;      // K   [origin=predictive method=joback]
+Pc          11.460;      // bar [origin=predictive method=joback]
+omega       1.0922;      // -   [origin=predictive method=lee-kesler]
+Tb          915.82;      // K   [origin=predictive method=joback]
+HvapTb      94259.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-62.398 2.25602 -0.0015685 4.5146e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group CH=CH; count 4; } { group OH; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 12; } { group dCH; count 8; } { group OH; count 1; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5z,8z,11z,14z)-n-(2-hydroxyethyl)icosa-5,8,11,14-tetraenamide" "arachidonylethanolamide" "arachidonoyl ethanolamide" "n-arachidonoyl-2-hydroxyethylamide" "5,8,11,14-eicosatetraenoylethanolamide" "anandamide (20.4, n-6)" "arachidonoyl-ea" "arachidonoylethanolamide" "n-(2-hydroxyethyl)anachidonamide" "n-arachidonoyl ethanolamine" "aea" "n-arachidonoylethanolamine" );
+gibbsFormation
+{
+    dHf_298   -239870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1104.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=278890.0
+    phase     gas;
+}

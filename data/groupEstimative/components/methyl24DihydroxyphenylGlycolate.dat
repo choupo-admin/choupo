@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl (2,4-dihydroxyphenyl)glycolate  (C9H10O5, CAS 67828-43-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl24DihydroxyphenylGlycolate;
+formula     C9H10O5;
+CAS         67828-43-7;
+InChIKey    OOJPWYDQMAVSQH-UHFFFAOYSA-N;
+MW          198.174;      // g/mol [origin=calculated method=formula-sum]
+Tc          964.35;      // K   [origin=predictive method=joback]
+Pc          55.033;      // bar [origin=predictive method=joback]
+omega       1.5884;      // -   [origin=predictive method=lee-kesler]
+Tb          743.40;      // K   [origin=predictive method=joback]
+HvapTb      87630.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.02 1.07422 -0.00094872 3.398e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 3; } { group ACCH; count 1; } { group OH; count 1; } { group ACOH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-[2,4-bis(oxidanyl)phenyl]-2-oxidanyl-ethanoate" "methyl alpha,2,4-trihydroxyphenylacetate" "methyl 2-(2,4-dihydroxyphenyl)-2-hydroxyacetate" "benzeneacetic acid, alpha,2,4-trihydroxy-, methyl ester" "benzeneacetic acid, .alpha.,2,4-trihydroxy-, methyl ester" );
+gibbsFormation
+{
+    dHf_298   -821970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     545.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-621560.0
+    phase     gas;
+}

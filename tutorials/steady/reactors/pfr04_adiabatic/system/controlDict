@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  pfr01_first_order -- meta-control
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "ADIABATIC PFR: the exothermic esterification heats its own stream -- T(V) is a RESULT";
+
+verbosity     3;

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,6-decadienal, 3,7,9-trimethyl-  (C13H22O, CAS 58605-97-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        26Decadienal379Trimethyl;
+formula     C13H22O;
+CAS         58605-97-3;
+InChIKey    INLBYQNSKXMVTI-UHFFFAOYSA-N;
+MW          194.318;      // g/mol [origin=calculated method=formula-sum]
+Tc          741.64;      // K   [origin=predictive method=joback]
+Pc          19.407;      // bar [origin=predictive method=joback]
+omega       0.6361;      // -   [origin=predictive method=lee-kesler]
+Tb          553.34;      // K   [origin=predictive method=joback]
+HvapTb      50940.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.957 1.25908 -0.0008518 2.393e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 1; } { group CH=C; count 2; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 1; } { group dCH; count 2; } { group dC; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7,9-trimethyldeca-2,6-dienal" );
+gibbsFormation
+{
+    dHf_298   -187650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     650.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=99960.0
+    phase     gas;
+}

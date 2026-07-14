@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,12-tridecadienenitrile  (C13H21N, CAS 134769-33-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        312Tridecadienenitrile;
+formula     C13H21N;
+CAS         134769-33-8;
+InChIKey    DBWSGRFEGVADLQ-UHFFFAOYSA-N;
+MW          191.318;      // g/mol [origin=calculated method=formula-sum]
+Tc          786.19;      // K   [origin=predictive method=joback]
+Pc          17.405;      // bar [origin=predictive method=joback]
+omega       0.7378;      // -   [origin=predictive method=lee-kesler]
+Tb          599.96;      // K   [origin=predictive method=joback]
+HvapTb      54298.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.102 1.1736 -0.0007591 2.02e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group CH2=CH; count 1; } { group CH=CH; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 8; } { group dCH2; count 1; } { group dCH; count 3; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trideca-3,12-dienenitrile" "(3e)-trideca-3,12-dienenitrile;" );
+gibbsFormation
+{
+    dHf_298   95880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     657.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=359820.0
+    phase     gas;
+}

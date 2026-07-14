@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenyl salicylate  (C13H10O3, CAS 118-55-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenylSalicylate;
+formula     C13H10O3;
+CAS         118-55-8;
+InChIKey    ZQBAKBUEJOMQEX-UHFFFAOYSA-N;
+MW          214.22;      // g/mol [origin=calculated method=formula-sum]
+Tc          943.46;      // K   [origin=predictive method=joback]
+Pc          36.731;      // bar [origin=predictive method=joback]
+omega       0.8323;      // -   [origin=predictive method=lee-kesler]
+Tb          689.24;      // K   [origin=predictive method=joback]
+HvapTb      69505.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-60.25 1.1808 -0.00090756 2.705e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 2; } { group ACOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "phenyl 2-oxidanylbenzoate" "salol" "phenyl 2-hydroxybenzoate" "phenol salicylate" "salphenyl" "musol" "salicylic acid, phenyl ester" "2-phenoxycarbonylphenol" "benzoic acid, 2-hydroxy-, phenyl ester" "phenyl-2-hydroxybenzoate" "2-hydroxybenzoic acid phenyl ester" "2-hydroxy-benzoic acid phenyl ester" );
+gibbsFormation
+{
+    dHf_298   -333180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     527.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-181590.0
+    phase     gas;
+}

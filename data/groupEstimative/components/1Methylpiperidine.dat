@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-methylpiperidine  (C6H13N, CAS 626-67-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Methylpiperidine;
+formula     C6H13N;
+CAS         626-67-5;
+InChIKey    PAMIQIKDUOTOBW-UHFFFAOYSA-N;
+MW          99.177;      // g/mol [origin=calculated method=formula-sum]
+Tc          563.25;      // K   [origin=predictive method=joback]
+Pc          39.906;      // bar [origin=predictive method=joback]
+omega       0.2908;      // -   [origin=predictive method=lee-kesler]
+Tb          369.27;      // K   [origin=predictive method=joback]
+HvapTb      31559.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-79.68 0.85592 -0.000598 1.653e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 5; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-methylpiperidine" "piperidine, 1-methyl-" "methylpiperidine" "1-methylpiperidine solution" "n-methylpiperidin" "lk 20" "n-methyl piperidine" "1-methyl-piperidine" "1-methylpiperidine;" "17874-59-8 (hydrochloride)" "s724" );
+gibbsFormation
+{
+    dHf_298   -18820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     397.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=154680.0
+    phase     gas;
+}

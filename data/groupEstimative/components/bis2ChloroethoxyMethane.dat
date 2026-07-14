@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(2-chloroethoxy)methane  (C5H10Cl2O2, CAS 111-91-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis2ChloroethoxyMethane;
+formula     C5H10Cl2O2;
+CAS         111-91-1;
+InChIKey    NLXGURFLBLRZRO-UHFFFAOYSA-N;
+MW          173.033;      // g/mol [origin=calculated method=formula-sum]
+Tc          614.61;      // K   [origin=predictive method=joback]
+Pc          30.659;      // bar [origin=predictive method=joback]
+omega       0.5239;      // -   [origin=predictive method=lee-kesler]
+Tb          433.70;      // K   [origin=predictive method=joback]
+HvapTb      40314.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (75.125 0.366 -6.7e-05 -4.33e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2O; count 2; } { group CH2Cl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 5; } { group Cl; count 2; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloro-2-(2-chloroethoxymethoxy)ethane" "1,1′-[Methylenebis(oxy)]bis[2-chloroethane]" "1,7-dichloro-3,5-dioxaheptane" "Bis(2-chloroethyl) formal" "Bis(β-chloroethyl) formal" "Di(2-chloroethoxy)methane" "di-2-chloroethyl formal" "Ethane, 1,1′-[methylenebis(oxy)]bis[2-chloro-" "Formaldehyde bis(2-chloroethyl) acetal" "Formaldehyde bis(β-chloroethyl) acetal" "Methane, bis(2-chloroethoxy)-" "dichloroethylformal" );
+gibbsFormation
+{
+    dHf_298   -442450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     440.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-242640.0
+    phase     gas;
+}

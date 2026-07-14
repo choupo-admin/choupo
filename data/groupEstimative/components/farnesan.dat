@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: farnesan  (C15H32, CAS 3891-98-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        farnesan;
+formula     C15H32;
+CAS         3891-98-3;
+InChIKey    YFHFHLSMISYUAQ-UHFFFAOYSA-N;
+MW          212.421;      // g/mol [origin=calculated method=formula-sum]
+Tc          709.04;      // K   [origin=predictive method=joback]
+Pc          14.413;      // bar [origin=predictive method=joback]
+omega       0.6236;      // -   [origin=predictive method=lee-kesler]
+Tb          541.48;      // K   [origin=predictive method=joback]
+HvapTb      47820.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.793 1.4466 -0.0008018 1.658e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 7; } { group CH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 7; } { group CH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6,10-trimethyldodecane" "farnesane" "dodecane, 2,6,10-trimethyl-" "dodecane,2,6,10-trimethyl-" "2,6,10-trimethyldodecane;farnesane" );
+gibbsFormation
+{
+    dHf_298   -368770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     711.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=68100.0
+    phase     gas;
+}

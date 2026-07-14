@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (+)-epicatechin  (C15H14O6, CAS 35323-91-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        epicatechin;
+formula     C15H14O6;
+CAS         35323-91-2;
+InChIKey    PFTAWBLQPZVEMU-ZFWWWQNUSA-N;
+MW          290.271;      // g/mol [origin=calculated method=formula-sum]
+Tc          1310.29;      // K   [origin=predictive method=joback]
+Pc          68.301;      // bar [origin=predictive method=joback]
+omega       2.3179;      // -   [origin=predictive method=lee-kesler]
+Tb          1049.09;      // K   [origin=predictive method=joback]
+HvapTb      127219.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-126.75 1.9757 -0.0019479 7.681e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group ACH; count 5; } { group AC; count 2; } { group ACCH2; count 1; } { group OH; count 1; } { group ACOH; count 4; } { group CH-O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 7; } { group OH; count 1; } { group OH_phenol; count 4; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s,3s)-2-[3,4-bis(oxidanyl)phenyl]-3,4-dihydro-2h-chromene-3,5,7-triol" "ent-epicatechin" "(2s,3s)-2-(3,4-dihydroxyphenyl)-3,4-dihydro-2h-chromene-3,5,7-triol" "(2s,3s)-3,3',4',5,7-pentahydroxyflavan" "(2s,3s)-3',4',5,7-tetrahydroxyflavan-3-ol" "99182e3e-bccb-48bb-89bf-7ddc933d48ff" "(2s,3s)-2-(3,4-ddihydroxyphenyl)chroman-3,5,7-triol" "2h-1-benzopyran-3,5,7-triol, 2-(3,4-dihydroxyphenyl)-3,4-dihydro-, (2s-cis)-" );
+gibbsFormation
+{
+    dHf_298   -838510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     514.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-509870.0
+    phase     gas;
+}

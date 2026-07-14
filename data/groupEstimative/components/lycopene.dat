@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lycopene  (C40H56, CAS 502-65-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lycopene;
+formula     C40H56;
+CAS         502-65-8;
+InChIKey    OAIJSZIZWZSQBC-GYZMGTAESA-N;
+MW          536.888;      // g/mol [origin=calculated method=formula-sum]
+Tc          1436.17;      // K   [origin=predictive method=joback]
+Pc          5.304;      // bar [origin=predictive method=joback]
+omega       0.3558;      // -   [origin=predictive method=lee-kesler]
+Tb          1167.92;      // K   [origin=predictive method=joback]
+HvapTb      104728.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-215.366 4.0632 -0.00326 1.0954e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 10; } { group CH2; count 4; } { group CH=CH; count 5; } { group CH=C; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 10; } { group CH2; count 4; } { group dCH; count 18; } { group dC; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(6e,8e,10e,12e,14e,16e,18e,20e,22e,24e,26e)-2,6,10,14,19,23,27,31-octamethyldotriaconta-2,6,8,10,12,14,16,18,20,22,24,26,30-tridecaene" "all-trans-lycopene" "psi,psi-carotene" "trans-lycopene" "lycopene 7" "lycopene (van)" "lycopene, all-trans-" ".psi.,.psi.-carotene" "lyc" "lyco vit" "lycopene all-trans-" "ambotz502-65-8" );
+gibbsFormation
+{
+    dHf_298   576610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1595.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1260380.0
+    phase     gas;
+}

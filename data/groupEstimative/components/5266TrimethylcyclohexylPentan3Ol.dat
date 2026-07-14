@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-(2,6,6-trimethylcyclohexyl)pentan-3-ol  (C14H28O, CAS 60241-52-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5266TrimethylcyclohexylPentan3Ol;
+formula     C14H28O;
+CAS         60241-52-3;
+InChIKey    KFDLIAUEUFWVDE-UHFFFAOYSA-N;
+MW          212.377;      // g/mol [origin=calculated method=formula-sum]
+Tc          809.75;      // K   [origin=predictive method=joback]
+Pc          19.270;      // bar [origin=predictive method=joback]
+omega       0.8594;      // -   [origin=predictive method=lee-kesler]
+Tb          622.11;      // K   [origin=predictive method=joback]
+HvapTb      61709.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-109.947 1.73478 -0.0012742 4.159e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 6; } { group CH; count 3; } { group C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2,2,6-trimethylcyclohexyl)pentan-3-ol" "alpha-ethyl-2,2,6-trimethylcyclohexanepropanol" "cyclohexanepropanol, alpha-ethyl-2,2,6-trimethyl-" "1-[(1s,6s)-2,2,6-trimethylcyclohexyl]pentan-3-ol" "cyclohexanepropanol, .alpha.-ethyl-2,2,6-trimethyl-" );
+gibbsFormation
+{
+    dHf_298   -460920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     697.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-68720.0
+    phase     gas;
+}

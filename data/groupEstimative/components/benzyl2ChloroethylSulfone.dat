@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzyl 2-chloroethyl sulfone  (C9H11ClO2S, CAS 66998-67-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H11ClO2S (delta S+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        benzyl2ChloroethylSulfone;
+formula     C9H11ClO2S;
+CAS         66998-67-2;
+InChIKey    CKNUUVURUUCDGT-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          218.695;      // g/mol [origin=calculated method=formula-sum]
+Tc          634.57;      // K   [origin=predictive method=joback]
+Pc          35.347;      // bar [origin=predictive method=joback]
+omega       0.5986;      // -   [origin=predictive method=lee-kesler]
+Tb          448.63;      // K   [origin=predictive method=joback]
+HvapTb      54107.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-12.667 0.8259 -0.000492 9.48e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 1; } { group CH2Cl; count 1; } { group CH2SuCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } { group dO_oth; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloroethylsulfonylmethylbenzene" "1-{[(2-chloroethyl)sulphonyl]methyl}benzene" "benzene, [[(2-chloroethyl)sulfonyl]methyl]-" "[(2-chloroethanesulfonyl)methyl]benzene" "{[(2-chloroethyl)sulfonyl]methyl}benzene" "(((2-chloroethyl)sulphonyl)methyl)benzene" "1-{[(2-chloroethyl)sulfonyl]methyl}benzene" );
+gibbsFormation
+{
+    dHf_298   -503520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     692.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-376280.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9,10-dihydroxyoctadecanoic acid  (C18H36O4, CAS 120-87-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        910DihydroxyoctadecanoicAcid;
+formula     C18H36O4;
+CAS         120-87-6;
+InChIKey    VACHUYIREGFMSP-UHFFFAOYSA-N;
+MW          316.482;      // g/mol [origin=calculated method=formula-sum]
+Tc          1155.84;      // K   [origin=predictive method=joback]
+Pc          14.165;      // bar [origin=predictive method=joback]
+omega       1.2338;      // -   [origin=predictive method=lee-kesler]
+Tb          940.43;      // K   [origin=predictive method=joback]
+HvapTb      105408.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.656 1.84442 -0.0010952 2.496e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 14; } { group CH; count 2; } { group OH; count 2; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 14; } { group CH; count 2; } { group OH; count 2; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9,10-bis(oxidanyl)octadecanoic acid" "9,10-dihydroxystearate" "dioxystearinsaeure" "9,10-dihydroxystearic acid" "9,10-dihydroxystearinsaeure" "dhsa" "threo-9,10-dihydroxyoctadecanoic acid" "erythro-9,10-dihydroxyoctadecanoic acid" "9,10-dihydroxy stearic acid" "agn-pc-04y44j" "9,10-dhsa" "octadecanoic acid,10-dihydroxy-" );
+gibbsFormation
+{
+    dHf_298   -1080140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     992.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-521750.0
+    phase     gas;
+}

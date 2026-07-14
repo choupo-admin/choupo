@@ -2,7 +2,7 @@
   mheatx01_two_hot_one_cold
   =========================
 
-  Multi-stream heat exchanger (the Aspen MHeatX analogue): TWO hot water
+  Multi-stream heat exchanger (the commercial detailed-rating tools MHeatX analogue): TWO hot water
   streams are cooled by ONE cold water stream inside a single adiabatic
   shell --- the canonical multi-stream heat-recovery problem.
 
@@ -31,32 +31,7 @@
   outlet (320 K), so the composite curves never cross --- dT_min > 0.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    hot1
-    {
-        F            100.0 kmol/h;
-        T            380.0 K;
-        P            3.0 bar;
-        molarComposition { water 1.0; }
-    }
-
-    hot2
-    {
-        F            60.0 kmol/h;
-        T            360.0 K;
-        P            3.0 bar;
-        molarComposition { water 1.0; }
-    }
-
-    cold
-    {
-        F            340.0 kmol/h;
-        T            300.0 K;
-        P            3.0 bar;
-        molarComposition { water 1.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

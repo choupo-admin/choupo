@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isopulegyl acetate  (C12H20O2, CAS 89-49-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isopulegylAcetate;
+formula     C12H20O2;
+CAS         89-49-6;
+InChIKey    HLHIVJRLODSUCI-UHFFFAOYSA-N;
+MW          196.29;      // g/mol [origin=calculated method=formula-sum]
+Tc          743.35;      // K   [origin=predictive method=joback]
+Pc          21.061;      // bar [origin=predictive method=joback]
+omega       0.5005;      // -   [origin=predictive method=lee-kesler]
+Tb          539.15;      // K   [origin=predictive method=joback]
+HvapTb      48934.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-39.02 1.13806 -0.0005298 4.69e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 3; } { group CH2=C; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5-methyl-2-prop-1-en-2-yl-cyclohexyl) ethanoate" "isopulegol acetate" "neo-isopulegol acetate" "neo-iso-isopulegol acetate" "p-menth-8-en-3-yl acetate" "isopropenylcyclohexan-3-ol acetate" "2-isopropenyl-5-methylcyclohexyl acetate" "1-methyl-4-isopropenylcyclohexan-3-yl acetate" "5-methyl-2-(1-methylethenyl)cyclohexanol acetate" "cyclohexanol, 5-methyl-2-(1-methylethenyl), acetate" "cyclohexanol, 5-methyl-2-(1-methylethenyl)-, acetate" "cyclohexanol, 5-methyl-2-(1-methylethenyl)-, acetate, [1r-(1.alpha.,2.beta.,5.alpha.)]-" );
+gibbsFormation
+{
+    dHf_298   -479010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     550.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-171890.0
+    phase     gas;
+}

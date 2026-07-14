@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: alprenolol  (C15H23NO2, CAS 13655-52-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        alprenolol;
+formula     C15H23NO2;
+CAS         13655-52-2;
+InChIKey    PAZJSJFMUHDSTF-UHFFFAOYSA-N;
+MW          249.354;      // g/mol [origin=calculated method=formula-sum]
+Tc          928.55;      // K   [origin=predictive method=joback]
+Pc          20.736;      // bar [origin=predictive method=joback]
+omega       1.2114;      // -   [origin=predictive method=lee-kesler]
+Tb          735.03;      // K   [origin=predictive method=joback]
+HvapTb      76001.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.127 1.32924 -0.00075366 1.498e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group CH2=CH; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group CH2NH; count 1; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 1; } { group O; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(propan-2-ylamino)-3-(2-prop-2-enylphenoxy)propan-2-ol" "alfeprol" "yobir" "alprenololum" "alfeprol [russian]" "alpheprol" "alprenololum [inn-latin]" "aptine" "alprenolol [inn:ban]" "1-(o-allylphenoxy)-3-(isopropylamino)-2-propanol" "alprenolol (inn)" "apllobal" );
+gibbsFormation
+{
+    dHf_298   -243980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     706.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=108730.0
+    phase     gas;
+}

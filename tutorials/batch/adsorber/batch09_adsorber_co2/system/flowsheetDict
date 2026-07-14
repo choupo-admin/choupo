@@ -1,0 +1,70 @@
+/*---------------------------------------------------------------------------*\
+  batch09_adsorber_co2  --  closed, isothermal gas--solid uptake vessel.
+
+  2 mol of pure CO2 in a 0.01 m3 ideal-gas headspace over 1 kg of
+  regenerated zeolite 13X at 298.15 K.  Linear-driving-force kinetics on
+  the solid film (dq/dt = k*(q* - q), k = 0.05 1/s, equipment data, this
+  case's sample) against the competitive-Langmuir equilibrium record of
+  the pair catalogue (here a single pair, CO2/zeolite13X:
+  q_max = 5.0 mol/kg, b_298 = 9.0 1/bar, dH_ads = -45 kJ/mol).
+
+  The final state is FIXED BY INVENTORY, not by kinetics: with
+  n_gas = p V/(R T) and q = q_max b (p/1e5)/(1 + b p/1e5),
+
+      p V/(R T)  +  m_ads * q_max * b * (p/1e5)/(1 + b*(p/1e5))  =  n0
+
+  whose root at 298.15 K is (a2_vectors.py, 10 digits)
+
+      p_inf = 7229.128209 Pa      q_inf = 1.970838025 mol/kg
+      n_gas = 0.02916197467 mol   uptake = 1.970838025 mol (98.54 %)
+      tau (linearised at the equilibrium) = 0.4768 s
+
+  The run must reproduce these to the golden tolerances -- an independent
+  analytic anchor, not a mirror of the code.  The ODE state is ONLY q;
+  n_gas is algebraic (n_tot - m_ads*q), so the per-species closure column
+  closure_worst_rel in trajectory.csv is exact by construction (<= 1e-13).
+  Log: the unit announces the ideal-gas assumption, the initialLoading
+  default, the RK4 stiffness bound and the isosteric-KPI label at start-up.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        adsorber;
+        type        batchAdsorber;
+
+        initial
+        {
+            T            298.15 K;         // = T_setpoint (isothermal A2 mode)
+            V            0.01;             // m3 -- the GAS headspace volume
+            totalMoles   0.002;            // kmol of gas initially = 2 mol CO2
+            molarComposition { CO2 1.0; }
+            // P is a RESULT (ideal gas closes Duhem: n, T, V fix it).
+            // Declared here it would only be cross-checked against n*R*T/V
+            // (relative deviation > 1e-3 REFUSES); omitted, it is
+            // calculated and announced: P0 = 495791.4 Pa = 4.958 bar.
+            // initialLoading { CO2 0.0; }  // mol/kg; default 0 (regenerated
+            //                              // adsorbent), announced in the log.
+        }
+
+        operation
+        {
+            adsorbent    zeolite13X;       // by NAME -- curated pair catalogue
+                                           // (vendored under constant/ here:
+                                           // this case is self-contained)
+            m_ads        1.0 kg;           // adsorbent charge (equipment)
+            T_setpoint   298.15 K;         // isothermal -- the only A2 mode
+
+            kLDF                           // EQUIPMENT/SAMPLE data: lives in
+            {                              // the case, never in a standards .dat
+                basis    solidFilm;        // dq/dt = k*(q* - q)
+                scope    "1.6 mm 13X beads, batch RUN-2026-07-A, crushed sample";
+                source   "Glueckauf k = 15 De/rp^2, De = 5.9e-10 m2/s (estimated)";
+                k
+                {
+                    CO2  [0 0 -1 0 0]  0.05;   // 1/s  (bracket dims = inverseTime)
+                }
+            }
+        }
+    }
+);

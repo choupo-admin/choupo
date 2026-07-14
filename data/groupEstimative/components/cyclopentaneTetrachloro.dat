@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopentane, tetrachloro-  (C5H6Cl4, CAS 59808-78-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopentaneTetrachloro;
+formula     C5H6Cl4;
+CAS         59808-78-5;
+InChIKey    ZFMWDTNZPKDVBU-UHFFFAOYSA-N;
+MW          207.903;      // g/mol [origin=calculated method=formula-sum]
+Tc          692.87;      // K   [origin=predictive method=joback]
+Pc          32.100;      // bar [origin=predictive method=joback]
+omega       0.3055;      // -   [origin=predictive method=lee-kesler]
+Tb          464.99;      // K   [origin=predictive method=joback]
+HvapTb      43594.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.24 0.5582 -0.000291 3.92e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CHCl; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 4; } { group Cl; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4-tetrakis(chloranyl)cyclopentane" "tetrachlorocyclopentane" "1,2,3,4-tetrachlorocyclopentane" "cyclopentane, 1,2,3,4-tetrachloro-" "s694" );
+gibbsFormation
+{
+    dHf_298   -210030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     306.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-43080.0
+    phase     gas;
+}

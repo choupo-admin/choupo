@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: silane, (chloromethyl)dimethyl-  (C3H8ClSi, CAS 3144-74-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C3H8ClSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        silaneChloromethylDimethyl;
+formula     C3H8ClSi;
+CAS         3144-74-9;
+InChIKey    PAJFATIYVLZNFC-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+role        radical;
+MW          107.632;      // g/mol [origin=calculated method=formula-sum]
+Tc          481.51;      // K   [origin=predictive method=joback]
+Pc          38.151;      // bar [origin=predictive method=joback]
+omega       0.1729;      // -   [origin=predictive method=lee-kesler]
+Tb          306.37;      // K   [origin=predictive method=joback]
+HvapTb      26804.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (33.461 0.19254 4.76e-05 -7.51e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "chloromethyl(dimethyl)silicon" "(chloromethyl)dimethylsilane" "dimethyl(chloromethyl)silane" "chloromethyldimethylsilane" "chloromethyl dimethylsilane" );
+gibbsFormation
+{
+    dHf_298   -176800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     378.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-89930.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heptafluorobutyraldehyde ethyl hemiacetal  (C6H7F7O2, CAS 356-26-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heptafluorobutyraldehydeEthylHemiacetal;
+formula     C6H7F7O2;
+CAS         356-26-3;
+InChIKey    NPUHUJNJOILQJC-UHFFFAOYSA-N;
+MW          244.106;      // g/mol [origin=calculated method=formula-sum]
+Tc          576.22;      // K   [origin=predictive method=joback]
+Pc          25.793;      // bar [origin=predictive method=joback]
+omega       0.9168;      // -   [origin=predictive method=lee-kesler]
+Tb          436.24;      // K   [origin=predictive method=joback]
+HvapTb      38044.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.239 1.01052 -0.0008554 2.696e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group OH; count 1; } { group CH2O; count 1; } { group CF3; count 1; } { group CF2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group C; count 3; } { group F; count 7; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethoxy-2,2,3,3,4,4,4-heptakis(fluoranyl)butan-1-ol" "1-ethoxy-2,2,3,3,4,4,4-heptafluorobutan-1-ol" "heptafluorobutyl butyraldehyde, ethyl hemiacetal" "1-butanol, 1-ethoxy-2,2,3,3,4,4,4-heptafluoro-" "1-butanol,1-ethoxy-2,2,3,3,4,4,4-heptafluoro-" );
+gibbsFormation
+{
+    dHf_298   -1855920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     547.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1599770.0
+    phase     gas;
+}

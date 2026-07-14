@@ -30,6 +30,7 @@ License
 #include "ConstantEstimator.H"
 #include "DerivedClosures.H"
 
+#include "thermo/Database.H"
 #include "thermo/vaporPressure/AmbroseWalton.H"
 
 #include <chrono>
@@ -39,6 +40,7 @@ License
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <algorithm>
 #include <map>
 #include <sstream>
 #include <vector>
@@ -93,17 +95,52 @@ int EstimateComponent::run(const DictPtr& dict,
     if (estimator->inputKind() == ConstantEstimator::InputKind::PolymerGroups)
         return runPolymer(dict, comp, *estimator, verbosity);
 
-    if (!dict->found("groups"))
+    // GROUPS: from the op dict when given; otherwise from the COMPONENT'S OWN
+    // .dat (case-local first, else standards).  The decomposition is the
+    // CURATED MOLECULAR RECORD (forum #57: written by a human once, reviewed --
+    // not "identity", which nothing derives) -- it lives with the substance, so a
+    // component that declares `groups (...)` is estimable with no ceremony
+    // (the Aspen STRUCTURES idea, glass-box: estimation stays a curation act).
+    std::vector<ConstantEstimator::GroupSpec> specs;
+    if (dict->found("groups"))
+    {
+        for (const auto& e : dict->lookupDictList("groups"))
+            specs.push_back({ e->lookupWord("group"),
+                              static_cast<int>(e->lookupScalarOrDefault("count", 1.0)) });
+    }
+    else
+    {
+        // No groups in the op: read the COMPONENT'S OWN `jobackGroups {}`
+        // (case-local first, else standards).  The decomposition is the
+        // CURATED MOLECULAR RECORD (forum #57) -- it lives with the substance,
+        // like the formula and the sibling UNIFAC `groups{}` block -- so any
+        // component that declares it is estimable with no ceremony (the
+        // STRUCTURES idea, kept glass-box: estimation stays a curation act,
+        // never runtime).
+        // Canonical consumption (forum #67): Database::loadComponent is the
+        // overlay-aware resolution -- never a private re-implementation of the
+        // search path -- and Component::groupsFor("joback") is the ONE home of
+        // the decomposition (`groups { joback (...); unifac (...); }`).  The
+        // legacy `jobackGroups {}` map was retired from the five components
+        // that still carried it.
+        // Forum #69: no catch-all -- a malformed file or overlay failure must
+        // surface its REAL diagnostic, never be laundered into "no groups".
+        // (Creating a not-yet-existing component goes through the op's own
+        // transitional `groups (...)` input, which skips this path entirely.)
+        const Component c = database()->loadComponent(comp);
+        if (c.hasGroups("joback"))
+            for (const auto& [g, n] : c.groupsFor("joback"))
+                specs.push_back({ g, n });
+    }
+    if (specs.empty())
     {
         std::cerr << "estimateComponent '" << comp
-                  << "': no `groups ( {group; count;} ... )` list.\n";
+                  << "': no groups -- give `groups ( {group; count;} ... )` in the"
+                     " op (transitional creation input), or (better) declare\n"
+                     "  groups { joback ( { group CH3; count 2; } ... ); }\n"
+                     "in the component's .dat -- the ONE home of the decomposition.\n";
         return 1;
     }
-
-    std::vector<ConstantEstimator::GroupSpec> specs;
-    for (const auto& e : dict->lookupDictList("groups"))
-        specs.push_back({ e->lookupWord("group"),
-                          static_cast<int>(e->lookupScalarOrDefault("count", 1.0)) });
 
     bool ok = true; std::string gErr;
     const ConstantEstimate est = estimator->estimate(specs, ok, gErr);
@@ -211,7 +248,7 @@ int EstimateComponent::run(const DictPtr& dict,
         {
             fs::path outDir = fs::path("constant") / "components";
             std::error_code ec; fs::create_directories(outDir, ec);
-            outPath = (outDir / (comp + ".estimate-" + isoDateUtc() + ".dat")).string();
+            outPath = (outDir / (comp + ".estimated.dat")).string();   // ONE stable proposal, replaced per run
         }
         // POLICY: a proposal is a CASE-LOCAL artefact.  It must NEVER be written
         // into data/standards/ -- the official catalogue is FROZEN, managed and
@@ -307,7 +344,45 @@ int EstimateComponent::run(const DictPtr& dict,
                   << "    // a Psat model lands (fit an Antoine with choupoProps vaporPressureFit).\n"
                   << "    // Psat { model ?; }\n";
             f << "}\n\n";
-            f << "provenance\n{\n"
+
+            // The curated molecular record travels WITH the proposal (forum
+            // #57: groups are the component's curated group decomposition --
+            // without them in the file the estimate stops being falsifiable,
+            // and bin/curate/check_estimates.py has no recipe to recompute).
+            f << "groups { " << (model == "Joback" ? "joback" : model) << " (";
+            for (const auto& [g, n] : specs)
+                f << " { group " << g << "; count " << n << "; }";
+            f << " ); }\n\n";
+
+            // Structured per-value provenance (forum #67 contract) for the
+            // deterministically recomputable values this file carries -- a NEW
+            // proposal is drift-checkable from birth.  Fingerprint = the sorted
+            // group:count identity of the inputs.
+            std::string fp;
+            {
+                auto sorted = specs;
+                std::sort(sorted.begin(), sorted.end());
+                for (const auto& [g, n] : sorted)
+                    fp += (fp.empty() ? "" : ",") + g + ":" + std::to_string(n);
+            }
+            const std::string tblv = estimator->version();
+            auto provBlock = [&](const char* field)
+            {
+                f << "    " << field << "\n    {\n"
+                  << "        origin           estimated;\n"
+                  << "        method           \"" << model << "\";\n";
+                if (!tblv.empty())
+                    f << "        methodVersion    \"" << tblv << "\";\n";
+                f << "        input            joback;\n"
+                  << "        inputFingerprint \"" << fp << "\";\n"
+                  << "        uncertainty      { status unquantified; reason \"first-order group estimate -- review against data before design\"; }\n"
+                  << "    }\n";
+            };
+            f << "provenance\n{\n";
+            provBlock("Tb");
+            provBlock("Tc");
+            provBlock("Pc");
+            f << "\n"
               << "    method        \"Joback group contribution (Joback & Reid 1987)\";\n"
               << "    omega         \"Lee-Kesler correlation from (Tb, Tc, Pc)\";\n";
             if (fillPsat)
@@ -489,7 +564,7 @@ int EstimateComponent::runScalar(const DictPtr& dict, const std::string& comp,
         {
             fs::path outDir = fs::path("constant") / "components";
             std::error_code ec; fs::create_directories(outDir, ec);
-            outPath = (outDir / (comp + ".estimate-" + isoDateUtc() + ".dat")).string();
+            outPath = (outDir / (comp + ".estimated.dat")).string();   // ONE stable proposal, replaced per run
         }
         for (const auto& part : fs::path(outPath))
             if (part == "standards")
@@ -689,7 +764,7 @@ int EstimateComponent::runPolymer(const DictPtr& dict, const std::string& comp,
         {
             fs::path outDir = fs::path("constant") / "components";
             std::error_code ec; fs::create_directories(outDir, ec);
-            outPath = (outDir / (comp + ".estimate-" + isoDateUtc() + ".dat")).string();
+            outPath = (outDir / (comp + ".estimated.dat")).string();   // ONE stable proposal, replaced per run
         }
         for (const auto& part : fs::path(outPath))
             if (part == "standards")

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: azatadine dimaleate  (C28H30N2O8, CAS 3978-86-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        azatadineDimaleate;
+formula     C28H30N2O8;
+CAS         3978-86-7;
+InChIKey    SGHXFFAHXTZRQM-SPIKMXEPSA-N;
+MW          522.554;      // g/mol [origin=calculated method=formula-sum]
+Tc          2003.25;      // K   [origin=predictive method=joback]
+Pc          14.691;      // bar [origin=predictive method=joback]
+omega       1.0662;      // -   [origin=predictive method=lee-kesler]
+Tb          1603.34;      // K   [origin=predictive method=joback]
+HvapTb      163615.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-76.96 2.53608 -0.00148958 2.844e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH=CH; count 2; } { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group CH3N; count 1; } { group C5H3N; count 1; } { group COOH; count 4; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH; count 4; } { group CH2_ring; count 6; } { group dCH_ring; count 7; } { group dC_ring; count 6; } { group COOH; count 4; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z)-but-2-enedioic acid;11-(1-methylpiperidin-4-ylidene)-5,6-dihydrobenzo[1,2]cyclohepta[3,4-b]pyridine" "azatadine maleate" "idulian" "zadine" "6,11-dihydro-11-(1-methyl-4-piperidylidene)5h-benzo(5,6)cyclohepta(1,2-b)pyridine dimaleate" "11h-benzo(5,6)cyclohepta(1,2-b)pyridine, 5,6-dihydro-11-(1-methyl-4-piperidylidene)-, dimaleate" "5h-benzo(5,6)cyclohepta(1,2-b)pyridine, 6,11-dihydro-11-(1-methyl-4-piperidinylidene)-, (z)-2-butenedioate (1:2)" "6,11-dihydro-11-(1-methyl-4-piperidylidene)-5h-benzo(5,6)cyclohepta(1,2-b)pyridine maleate (1:2)" "optimine (tn)" "azatadine maleate (usp)" "azatadine maleate [usan]" "azatadine maleate [usan:usp]" );
+gibbsFormation
+{
+    dHf_298   -1251890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1359.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-723030.0
+    phase     gas;
+}

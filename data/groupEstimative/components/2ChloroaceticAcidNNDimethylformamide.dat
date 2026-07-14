@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloroacetic acid; n,n-dimethylformamide  (C5H10ClNO3, CAS 1726-08-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C5H10ClNO3 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2ChloroaceticAcidNNDimethylformamide;
+formula     C5H10ClNO3;
+CAS         1726-08-5;
+InChIKey    BESPYJZJWJSLDA-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          167.589;      // g/mol [origin=calculated method=formula-sum]
+Tc          687.52;      // K   [origin=predictive method=joback]
+Pc          34.930;      // bar [origin=predictive method=joback]
+omega       0.6068;      // -   [origin=predictive method=lee-kesler]
+Tb          487.20;      // K   [origin=predictive method=joback]
+HvapTb      48237.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (26.461 0.46224 -0.000192 2.2e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group COOH; count 1; } { group CH2Cl; count 1; } { group DMF-1; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group Cl; count 1; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranylethanoic acid;n,n-dimethylmethanamide" "acetic acid, chloro-, compd. with n,n-dimethylformamide (1:1)" "acetic acid, 2-chloro-, compd. with n,n-dimethylformamide (1:1)" "chloroacetic acid, compound with n,n-dimethylformamide (1:1)" "chloroacetic acid, n,n-dimethylformamide salt" "chloroacetic acid - n,n-dimethylformamide (1:1)" );
+gibbsFormation
+{
+    dHf_298   -480180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     641.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-314640.0
+    phase     gas;
+}

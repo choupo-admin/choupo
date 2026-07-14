@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,3-trimethylbutane  (C7H16, CAS 464-06-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        223Trimethylbutane;
+formula     C7H16;
+CAS         464-06-2;
+InChIKey    ZISSAWUMDACLOM-UHFFFAOYSA-N;
+MW          100.205;      // g/mol [origin=calculated method=formula-sum]
+Tc          535.02;      // K   [origin=predictive method=joback]
+Pc          28.812;      // bar [origin=predictive method=joback]
+omega       0.2340;      // -   [origin=predictive method=lee-kesler]
+Tb          356.09;      // K   [origin=predictive method=joback]
+HvapTb      29492.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.63 0.8006 -0.000532 1.435e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH; count 1; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH; count 1; } { group C; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "triptan" "triptane" "butane, 2,2,3-trimethyl-" "pentamethylethane" "2,3-trimethylbutane" "butane,2,3-trimethyl-" "2,2,3-trimethyl-butane" "2,2,3-trimethyl butane" "agn-pc-00o9ts" "butane,2,2,3-trimethyl-" );
+gibbsFormation
+{
+    dHf_298   -201840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     380.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=8460.0
+    phase     gas;
+}

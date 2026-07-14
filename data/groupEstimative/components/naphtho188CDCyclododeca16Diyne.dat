@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: naphtho(1,8',8:c,d)cyclododeca-1,6-diyne  (C19H16, CAS 87842-94-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        naphtho188CDCyclododeca16Diyne;
+formula     C19H16;
+CAS         87842-94-2;
+InChIKey    KMTZDSUZEKFULR-UHFFFAOYSA-N;
+MW          244.337;      // g/mol [origin=calculated method=formula-sum]
+Tc          1017.15;      // K   [origin=predictive method=joback]
+Pc          25.951;      // bar [origin=predictive method=joback]
+omega       0.5253;      // -   [origin=predictive method=lee-kesler]
+Tb          727.89;      // K   [origin=predictive method=joback]
+HvapTb      67998.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-82.44 1.4658 -0.00104216 2.9736e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group ACH; count 6; } { group AC; count 4; } { group C_C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tC; count 4; } { group CH2_ring; count 5; } { group dCH_ring; count 6; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "naphtho[1,8',8:c,d]cyclododeca-1,6-diyne" "7,8,14,15-tetradehydro-10,11,12,13-tetrahydro-9h-cyclododeca[de]naphthalene" );
+gibbsFormation
+{
+    dHf_298   594590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     603.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=758760.0
+    phase     gas;
+}

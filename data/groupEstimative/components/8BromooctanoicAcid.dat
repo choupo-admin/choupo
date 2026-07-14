@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-bromooctanoic acid  (C8H15BrO2, CAS 17696-11-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8BromooctanoicAcid;
+formula     C8H15BrO2;
+CAS         17696-11-6;
+InChIKey    BKJFDZSBZWHRNH-UHFFFAOYSA-N;
+MW          223.11;      // g/mol [origin=calculated method=formula-sum]
+Tc          792.05;      // K   [origin=predictive method=joback]
+Pc          29.926;      // bar [origin=predictive method=joback]
+omega       0.9298;      // -   [origin=predictive method=lee-kesler]
+Tb          594.31;      // K   [origin=predictive method=joback]
+HvapTb      57001.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.407 0.8528 -0.0005554 1.461e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group COOH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 7; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-bromanyloctanoic acid" "8-bromocaprylic acid" "octanoicacid, 8-bromo-" "octanoic acid, 8-bromo-" "omega-bromocaprylic acid" "caprylicacid, h-bromo- (4ci);8-bromocaprylic acid;w-bromooctanoicacid;" );
+gibbsFormation
+{
+    dHf_298   -532390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     571.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-313110.0
+    phase     gas;
+}

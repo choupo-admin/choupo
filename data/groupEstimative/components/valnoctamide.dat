@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: valnoctamide  (C8H17NO, CAS 4171-13-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        valnoctamide;
+formula     C8H17NO;
+CAS         4171-13-5;
+InChIKey    QRCJOCOSPZMDJY-UHFFFAOYSA-N;
+MW          143.23;      // g/mol [origin=calculated method=formula-sum]
+Tc          703.46;      // K   [origin=predictive method=joback]
+Pc          29.218;      // bar [origin=predictive method=joback]
+omega       0.6393;      // -   [origin=predictive method=lee-kesler]
+Tb          508.16;      // K   [origin=predictive method=joback]
+HvapTb      50013.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.102 0.80956 -0.0004425 8.496e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 2; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 2; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethyl-3-methyl-pentanamide" "valmethamide" "axiquel" "nirvanil" "valmetamide" "ethylmethyl valeramide" "2-ethyl-3-methylvaleramide" "valoctamidum" "valeramide, 2-ethyl-3-methyl-" "pentanamide, 2-ethyl-3-methyl-" "valnoctamide [usan:inn]" "valnoctamidum [inn-latin]" );
+gibbsFormation
+{
+    dHf_298   -297800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     526.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-50870.0
+    phase     gas;
+}

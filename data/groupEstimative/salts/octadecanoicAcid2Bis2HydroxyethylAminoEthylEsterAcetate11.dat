@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): octadecanoic acid, 2-[bis(2-hydroxyethyl)amino]ethyl ester,acetate(1:1)  (C26H53NO6, CAS 17329-61-2)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           octadecanoicAcid2Bis2HydroxyethylAminoEthylEsterAcetate11;
+formula        C26H53NO6;
+CAS            17329-61-2;
+InChIKey       SKADIAAODVDROI-UHFFFAOYSA-N;
+MW             475.711;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: octadecanoic acid, 2-[bis(2-hydroxyethyl)amino]ethyl ester,acetate(1:1)

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-mercaptoethyl methyl glutarate  (C8H14O4S, CAS 70942-32-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2MercaptoethylMethylGlutarate;
+formula     C8H14O4S;
+CAS         70942-32-4;
+InChIKey    IRVQVEXKPWNYRJ-UHFFFAOYSA-N;
+MW          206.256;      // g/mol [origin=calculated method=formula-sum]
+Tc          757.94;      // K   [origin=predictive method=joback]
+Pc          27.354;      // bar [origin=predictive method=joback]
+omega       0.7836;      // -   [origin=predictive method=lee-kesler]
+Tb          561.94;      // K   [origin=predictive method=joback]
+HvapTb      54953.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (61.325 0.68152 -0.0002446 -2.46e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH2COO; count 2; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group COO; count 2; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "o1-methyl o5-(2-sulfanylethyl) pentanedioate" "pentanedioic acid, 2-mercaptoethyl methyl ester" "pentanedioic acid, 1-(2-mercaptoethyl) 5-methyl ester" "2'-mercaptoethyl 4-carbomethoxybutanoate" "1-o-methyl 5-o-(2-sulfanylethyl) pentanedioate" "pentanedioic acid,1-(2-mercaptoethyl) 5-methyl ester" "pentanedioicacid, 2-mercaptoethyl methyl ester (9ci)" );
+gibbsFormation
+{
+    dHf_298   -804530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     632.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-574870.0
+    phase     gas;
+}

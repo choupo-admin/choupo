@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: agn-pc-00h1cz  (C10H9ClO2, CAS 14737-94-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        agnPc00h1cz;
+formula     C10H9ClO2;
+CAS         14737-94-1;
+InChIKey    OHXMZPBSQGEXEV-UHFFFAOYSA-N;
+MW          196.63;      // g/mol [origin=calculated method=formula-sum]
+Tc          783.60;      // K   [origin=predictive method=joback]
+Pc          30.123;      // bar [origin=predictive method=joback]
+omega       0.5341;      // -   [origin=predictive method=lee-kesler]
+Tb          554.77;      // K   [origin=predictive method=joback]
+HvapTb      51960.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.68 0.84682 -0.0005633 1.344e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH=C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group Cl_C=C_; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-chloranyl-3-phenyl-prop-2-enoate" "2-propenoic acid, 2-chloro-3-phenyl-, methyl ester" "2-propenoic acid, 2-chloro-3-phenyl-, methyl ester, (e)-" "2-propenoic acid, 2-chloro-3-phenyl-, methyl ester, (2z)-" );
+gibbsFormation
+{
+    dHf_298   -238790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     513.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-104900.0
+    phase     gas;
+}

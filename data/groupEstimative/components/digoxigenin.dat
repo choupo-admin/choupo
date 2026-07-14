@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: digoxigenin  (C23H34O5, CAS 1672-46-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        digoxigenin;
+formula     C23H34O5;
+CAS         1672-46-4;
+InChIKey    SHIBSTMRCDJXLN-KCZCNTNESA-N;
+MW          390.52;      // g/mol [origin=calculated method=formula-sum]
+Tc          1349.29;      // K   [origin=predictive method=joback]
+Pc          18.170;      // bar [origin=predictive method=joback]
+omega       1.5082;      // -   [origin=predictive method=lee-kesler]
+Tb          1101.83;      // K   [origin=predictive method=joback]
+HvapTb      120926.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-357.69 3.59674 -0.00338944 1.3423e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 9; } { group CH; count 6; } { group C; count 3; } { group CH=C; count 1; } { group OH; count 3; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 9; } { group CH_ring; count 6; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[(3s,5r,8r,9s,10s,12r,13s,14s,17r)-10,13-dimethyl-3,12,14-tris(oxidanyl)-1,2,3,4,5,6,7,8,9,11,12,15,16,17-tetradecahydrocyclopenta[a]phenanthren-17-yl]-2h-furan-5-one" "lanadigenin" "digoxigenine" "lanadigigenin" "3-beta,12,14-trioxy-digen-(20:22)-olid [german]" "3-beta,12-beta,14-trihydroxy-card-20(22)-enolide" "3-beta,12,14-trioxy-carden-(20:22)-olid [german]" "cardogenen-(20:22)-triol-(3-beta,12,14) [german]" "(3beta,5beta,12beta)-3,12,14-trihydroxycard-20(22)-enolide" "5-beta-card-20(22)-enolide, 3-beta,12-beta,14-trihydroxy-" "delta-sup(20:22)-3-beta,12-beta,14,21-tetrahydroxynorcholenic acid lactone" "5beta,20(22)-cardenolide-3beta,12beta,14-triol" );
+gibbsFormation
+{
+    dHf_298   -948150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     899.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-361780.0
+    phase     gas;
+}

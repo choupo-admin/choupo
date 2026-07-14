@@ -23,6 +23,14 @@
   polarization film model.  For research-grade modelling against a
   specific element, replace these values with regression fits to
   your own test-loop data.
+
+  Source (named public document):
+     DuPont Water Solutions, FilmTec SW30HR-380 Product Data Sheet
+     (public).  Standard test conditions there: 32 000 ppm NaCl,
+     55 bar (800 psi), 25 °C, pH 8, 8 % recovery — minimum salt
+     rejection 99.60 %, stabilized 99.70 %.  A_w / B_s below are
+     Choupo solution-diffusion fits reproducing that envelope,
+     NOT vendor-tabulated coefficients.
 \*---------------------------------------------------------------------------*/
 
 name           SW30HR;

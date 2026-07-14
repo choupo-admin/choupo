@@ -1,0 +1,6 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral fluorite; formula "CaF2"; masters ( { ion Ca; nu 1; } { ion F; nu 2; } );
+      logK25 -10.61; dH 10600; analytic ( 57.313 0 -3495 -22.714 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: Strubel, 1965, NJbM,M 83-95; Henry, 2018, PhD, Colorado School of Mines.";
+

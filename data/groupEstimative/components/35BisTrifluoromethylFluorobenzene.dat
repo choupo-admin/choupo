@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-bis(trifluoromethyl)fluorobenzene  (C8H3F7, CAS 35564-19-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35BisTrifluoromethylFluorobenzene;
+formula     C8H3F7;
+CAS         35564-19-3;
+InChIKey    ZBVDOILFQLAMEJ-UHFFFAOYSA-N;
+MW          232.098;      // g/mol [origin=calculated method=formula-sum]
+Tc          572.71;      // K   [origin=predictive method=joback]
+Pc          25.978;      // bar [origin=predictive method=joback]
+omega       0.4966;      // -   [origin=predictive method=lee-kesler]
+Tb          407.71;      // K   [origin=predictive method=joback]
+HvapTb      28691.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.0 0.9001 -0.00076692 2.427e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACF; count 1; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-fluoranyl-3,5-bis(trifluoromethyl)benzene" "1-fluoro-3,5-bis(trifluoromethyl)benzene" "1,3-bis(trifluoromethyl)-5-fluorobenzene" "3,5-bis-(trifluoromethyl)fluorobenzene" "benzene,1-fluoro-3,5-bis(trifluoromethyl)-" "benzene, 1-fluoro-3,5-bis(trifluoromethyl)-" "alpha,alpha,alpha,alpha',alpha',alpha',5-heptafluoro-m-xylene" "m-xylene, alpha,alpha,alpha,alpha',alpha',alpha',5-heptafluoro-" );
+gibbsFormation
+{
+    dHf_298   -1385130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     493.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1248360.0
+    phase     gas;
+}

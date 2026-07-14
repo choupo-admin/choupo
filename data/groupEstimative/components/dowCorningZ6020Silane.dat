@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dow corning z-6020 silane  (C8H22N2O3Si, CAS 1760-24-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H22N2O3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        dowCorningZ6020Silane;
+formula     C8H22N2O3Si;
+CAS         1760-24-3;
+InChIKey    PHQOGHDTIVQXHL-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          222.36;      // g/mol [origin=calculated method=formula-sum]
+Tc          756.77;      // K   [origin=predictive method=joback]
+Pc          22.959;      // bar [origin=predictive method=joback]
+omega       0.8612;      // -   [origin=predictive method=lee-kesler]
+Tb          574.00;      // K   [origin=predictive method=joback]
+HvapTb      58003.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (118.215 0.50616 0.0002444 -2.761e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH3O; count 3; } { group CH2NH2; count 1; } { group CH2NH; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group O; count 3; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n'-(3-trimethoxysilylpropyl)ethane-1,2-diamine" "n-[3-(trimethoxysilyl)propyl]ethylenediamine" "en-aptas" "3-(2-aminoethylamino)propyltrimethoxysilane" "aas-m" "[3-(2-aminoethylamino)propyl]trimethoxysilane" "n-(2-aminoethyl)-3-aminopropyltrimethoxysilane" "gf 91" "n-(3-trimethoxysilylpropyl)-ethylenediamine" "n-(3-(trimethoxysilyl)propyl)ethylenediamine" "[3-(2-aminoethyl)aminopropyl]trimethoxysilane" "n-(2-aminoethyl-3-aminopropyl)trimethoxysilane" );
+gibbsFormation
+{
+    dHf_298   -629470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     720.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-247440.0
+    phase     gas;
+}

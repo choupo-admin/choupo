@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  batch14_transport_only / system/controlDict
+
+  Time control for the PURE-TRANSPORT diagnostic (k_LDF = 0 declared): the
+  tracer front arrives at the mean residence time eps L / u = 4.0 s, so
+  endTime 8 s fully saturates the outlet (c_out/c_in -> 1) and the
+  conservative-FV identity INT(1 - c_out/c_in)dt = eps L / u = 4.0 s can
+  be pinned alongside the Ogata-Banks t_50.
+
+  timeStepping FIXED on purpose: this case exercises the explicit-RK4 path
+  and its PRINTED Gershgorin criterion (advection 100 + dispersion 160 +
+  LDF 0 1/s at N = 200 -> dt <= 0.005346 s; the unit REFUSES a deltaT
+  above the bound).  deltaT 0.005 sits just inside; sampling = every step.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Pure transport (k = 0) on the batch13 bed, N = 200: t_50 vs the Ogata-Banks analytic ADE solution (gate G1) under fixed RK4 with the Gershgorin bound printed term by term";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         8;        // s   (front at eps L/u = 4 s; outlet saturates)
+deltaT          0.005;    // s   (RK4; bound printed = 0.005346 s at N = 200)
+writeInterval   1;        // s   (trajectory row + <t>/bed.profile each 1 s)
+timeStepping    fixed;    // explicit RK4 -- the CFL lesson, refused if broken

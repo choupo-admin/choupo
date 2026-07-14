@@ -9,13 +9,15 @@
   rises above 1 by ~6 mol/kg --- the textbook NaCl signature, from a closed form.
 
   NOTE on the two L_phi columns: pitzer_nacl.csv reports L_phi_fit and
-  L_phi_anchored, and they are IDENTICAL in every row.  That is illustrative,
-  not a coincidence: the relative apparent molar enthalpy L_phi here is
-  derived from the same anchored tau(T) and is calorimetrically UNCALIBRATED
-  (no separate fit to heat-of-dilution data yet), so the "fit" column simply
-  reproduces the "anchored" one.  Calibrating L_phi against Parker, NSRDS-NBS 2
-  (1965) is the intended next step; until then treat the two columns as one.
-  The gamma_pm / phi / a_w values are physically sound and need no caveat.
+  L_phi_anchored, and their SPLIT is the lesson.  The pair now carries
+  Silvester-Pitzer dX/dT slots CALORIMETRICALLY FITTED to Parker, NSRDS-NBS 2
+  (1965) Table XIV A (rel-AAD 2.5 %, m 0.1-6; bin/curate/fit_lphi_pitzer.py):
+  the fit column tracks the measured heat-of-dilution curve -- the sign change
+  near 1 mol/kg, the deep negative branch to -480 cal/mol -- while the
+  anchored column (slots zeroed, Gibbs-Helmholtz-consistent but uncalibrated)
+  misses it entirely.  The validation block below pins the AAD vs the same
+  curated Parker series, golden-locked.  The gamma_pm / phi / a_w values come
+  from the untouched 25 C surface and are identical in both.
 \*---------------------------------------------------------------------------*/
 operations
 (
@@ -29,6 +31,7 @@ operations
         // curated values themselves declare in constant/electrolyte/pairs.dat.
         source    "Appelo, Appl. Geochem. 55 (2015) 62";
         molality  { from 0.1; to 6.0; n 30; }
+        validation { dataset "constant/experiments/phiL_25C_parker1965.dat"; series nacl; }
         output    { file pitzer_nacl.csv; }
     }
 );

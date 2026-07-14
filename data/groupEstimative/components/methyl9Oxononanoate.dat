@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 9-oxononanoate  (C10H18O3, CAS 1931-63-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl9Oxononanoate;
+formula     C10H18O3;
+CAS         1931-63-1;
+InChIKey    JMLYDLZRFNYHHO-UHFFFAOYSA-N;
+MW          186.251;      // g/mol [origin=calculated method=formula-sum]
+Tc          709.68;      // K   [origin=predictive method=joback]
+Pc          22.697;      // bar [origin=predictive method=joback]
+omega       0.8086;      // -   [origin=predictive method=lee-kesler]
+Tb          535.28;      // K   [origin=predictive method=joback]
+HvapTb      51981.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (30.607 0.87352 -0.0004186 4.86e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CHO; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group OdCH_al; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 9-oxidanylidenenonanoate" "azelaaldehydic acid, methyl ester" "methyl azelaaldehydate" "methyl 8-formyloctanoate" "nonanoic acid, 9-oxo-, methyl ester" "9-oxo-nonanoic acid methyl ester" "methyl azelaaldehydrate" "9-oxononanoic acid methyl ester" "nonanoic acid, 9-oxo-,methyl ester" );
+gibbsFormation
+{
+    dHf_298   -652590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     615.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-376570.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methyl-1-phenyl-1-pentyn-3-ol  (C12H14O, CAS 1966-65-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Methyl1Phenyl1Pentyn3Ol;
+formula     C12H14O;
+CAS         1966-65-0;
+InChIKey    MTBIBEIZKLZPIM-UHFFFAOYSA-N;
+MW          174.243;      // g/mol [origin=calculated method=formula-sum]
+Tc          820.71;      // K   [origin=predictive method=joback]
+Pc          31.992;      // bar [origin=predictive method=joback]
+omega       0.7515;      // -   [origin=predictive method=lee-kesler]
+Tb          598.79;      // K   [origin=predictive method=joback]
+HvapTb      62117.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-43.549 1.07494 -0.00077026 2.1778e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group OH; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group C; count 1; } { group tC; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-methyl-1-phenyl-pent-1-yn-3-ol" "1-pentyn-3-ol, 3-methyl-1-phenyl-" "3-methyl-1-phenylpent-1-yn-3-ol" "agn-pc-04stsq" "1-phenyl-3-methyl-1-pentyn-3-ol" "1-pentyn-3-ol,3-methyl-1-phenyl-" "1-pentyn-3-ol, 3-methyl-1-phenyl-, (+)-" "timtec-bb sbb008968;timtec-bb sbb008969;1-phenyl-4-methyl-1-pentyn-3-ol;1-phenyl-3-methyl-1-pentyn-3-ol;4-methyl-1-phenyl-pent-1-yn-3-ol;4-methyl-1-phenyl-1-pentyn-3-ol;3-methyl-1-phenyl-1-pentyn-3-ol;3-methyl-1-phenylpent-1-yn-3-ol" );
+gibbsFormation
+{
+    dHf_298   56840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     500.77;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=231390.0
+    phase     gas;
+}

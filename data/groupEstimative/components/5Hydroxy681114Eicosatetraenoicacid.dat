@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-hydroxy-6,8,11,14-eicosatetraenoicacid  (C20H32O3, CAS 72255-35-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Hydroxy681114Eicosatetraenoicacid;
+formula     C20H32O3;
+CAS         72255-35-7;
+InChIKey    KGIJOOYOSFUGPC-UHFFFAOYSA-N;
+MW          320.473;      // g/mol [origin=calculated method=formula-sum]
+Tc          1116.32;      // K   [origin=predictive method=joback]
+Pc          13.310;      // bar [origin=predictive method=joback]
+omega       1.2182;      // -   [origin=predictive method=lee-kesler]
+Tb          911.09;      // K   [origin=predictive method=joback]
+HvapTb      93401.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-63.811 2.07452 -0.0015056 4.537e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 9; } { group CH; count 1; } { group CH=CH; count 4; } { group OH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 9; } { group CH; count 1; } { group dCH; count 8; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-oxidanylicosa-6,8,11,14-tetraenoic acid" "6,8,11,14-eicosatetraenoic acid, 5-hydroxy-" "agn-pc-00krjq" "(?5-hete" "5(s)-hete lipid maps ms standard" "6,8,11,14-eicosatetraenoicacid, 5-hydroxy-" "6,8,11,14-eicosatetraenoicacid, 5-hydroxy-, (6e,8z,11z,14z)-" "6,8,11,14-eicosatetraenoicacid, 5-hydroxy-, (e,z,z,z)-; (?a'a a'a currency)-5-hete; (?a'a a'a currency)-5-hydroxyeicosa-6e,8z,11z,14z-tetraenomicacid; 5-hete; 5-hydroxyeicosa-6,8,11,14-tetraenoic acid" );
+gibbsFormation
+{
+    dHf_298   -495030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1003.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-44770.0
+    phase     gas;
+}

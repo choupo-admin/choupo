@@ -49,9 +49,16 @@ units
 
         reactions
         (
-            init_H2_O2
-            branch_H_O2  branch_O_H2  prop_OH_H2  branch_O_H2O
-            recomb_H_O2_M  ho2_H_branch  ho2_H_recombine  recomb_H_OH_M
+            2O_M_O2_M  O_H_M_OH_M  O_H2_H_OH
+            O_HO2_OH_O2  O_H2O2_OH_HO2  H_O2_M_HO2_M
+            H_2O2_HO2_O2  H_O2_H2O_HO2_H2O  H_O2_N2_HO2_N2
+            H_O2_O_OH  2H_M_H2_M  2H_H2_2H2
+            2H_H2O_H2_H2O  H_OH_M_H2O_M  H_HO2_O_H2O
+            H_HO2_O2_H2  H_HO2_2OH  H_H2O2_HO2_H2
+            H_H2O2_OH_H2O  OH_H2_H_H2O  2OH_M_H2O2_M
+            2OH_O_H2O  OH_HO2_O2_H2O  OH_H2O2_HO2_H2O
+            OH_H2O2_HO2_H2O_dup2  2HO2_O2_H2O2  2HO2_O2_H2O2_dup2
+            OH_HO2_O2_H2O_dup2
         );
     }
 );

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-Methyltetrahydrothiophene  (C5H10S, CAS 1795-09-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methyltetrahydrothiophene;
+formula     C5H10S;
+CAS         1795-09-1;
+InChIKey    AJPGNQYBSTXCJE-UHFFFAOYSA-N;
+MW          102.195;      // g/mol [origin=calculated method=formula-sum]
+Tc          592.22;      // K   [origin=predictive method=joback]
+Pc          43.056;      // bar [origin=predictive method=joback]
+omega       0.2124;      // -   [origin=predictive method=lee-kesler]
+Tb          377.11;      // K   [origin=predictive method=joback]
+HvapTb      32793.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-40.32 0.62493 -0.0003943 9.66e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylthiolane" "(±)-2-methylthiolane" "2-methylthiacyclopentane" "2-methylthiophane" "tetrahydro-2-methylthiophene" "thiophene, tetrahydro-2-methyl-" "tetrahydrothiophene, 2-methyl-" "(+/-)-2-METHYLTHIOLANE" "2-METHYLTETRAHYDROTHIOPHENE, (+/-)-" "thiophene, tetrahydromethyl-" "2-methylthi-olane" "2-methyl-tetrahydro-thiophene" );
+gibbsFormation
+{
+    dHf_298   -40790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     350.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=67630.0
+    phase     gas;
+}

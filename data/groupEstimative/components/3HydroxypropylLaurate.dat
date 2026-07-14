@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-hydroxypropyl laurate  (C15H30O3, CAS 10108-22-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3HydroxypropylLaurate;
+formula     C15H30O3;
+CAS         10108-22-2;
+InChIKey    CVYRIYSTCBFCIE-UHFFFAOYSA-N;
+MW          258.402;      // g/mol [origin=calculated method=formula-sum]
+Tc          859.30;      // K   [origin=predictive method=joback]
+Pc          15.247;      // bar [origin=predictive method=joback]
+omega       1.1896;      // -   [origin=predictive method=lee-kesler]
+Tb          693.20;      // K   [origin=predictive method=joback]
+HvapTb      73070.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.953 1.40802 -0.000728 1.2e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 12; } { group OH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 13; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-oxidanylpropyl dodecanoate" "dodecanoic acid, 3-hydroxypropyl ester" "3-hydroxypropyl dodecanoate" "lauric acid, 3-hydroxypropyl ester" "lauric acid, 3-hydroxypropyl ester (8ci)" );
+gibbsFormation
+{
+    dHf_298   -822440.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     842.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-371770.0
+    phase     gas;
+}

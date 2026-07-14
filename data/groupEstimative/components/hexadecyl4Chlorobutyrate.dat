@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexadecyl 4-chlorobutyrate  (C20H39ClO2, CAS 68516-31-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexadecyl4Chlorobutyrate;
+formula     C20H39ClO2;
+CAS         68516-31-4;
+InChIKey    AIPUZHUOTILFRS-UHFFFAOYSA-N;
+MW          346.98;      // g/mol [origin=calculated method=formula-sum]
+Tc          927.20;      // K   [origin=predictive method=joback]
+Pc          9.951;      // bar [origin=predictive method=joback]
+omega       0.8969;      // -   [origin=predictive method=lee-kesler]
+Tb          752.85;      // K   [origin=predictive method=joback]
+HvapTb      71906.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.008 1.85582 -0.00099 1.787e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 16; } { group CH2COO; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 18; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexadecyl 4-chloranylbutanoate" "hexadecyl 4-chlorobutanoate" "butanoic acid, 4-chloro-, hexadecyl ester" "butanoic acid, 4-chloro, hexadecyl ester" );
+gibbsFormation
+{
+    dHf_298   -789150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1019.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-204780.0
+    phase     gas;
+}

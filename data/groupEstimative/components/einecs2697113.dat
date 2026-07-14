@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: einecs 269-711-3  (C24H48N2O4, CAS 68310-43-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        einecs2697113;
+formula     C24H48N2O4;
+CAS         68310-43-0;
+InChIKey    JRYIVRMKRNIHLE-KVVVOXFISA-N;
+MW          428.658;      // g/mol [origin=calculated method=formula-sum]
+Tc          1449.77;      // K   [origin=predictive method=joback]
+Pc          9.250;      // bar [origin=predictive method=joback]
+omega       0.5849;      // -   [origin=predictive method=lee-kesler]
+Tb          1146.18;      // K   [origin=predictive method=joback]
+HvapTb      122731.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (22.538 2.30684 -0.0011323 1.5436e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 16; } { group CH=CH; count 1; } { group OH; count 1; } { group CH2NH; count 1; } { group COOH; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 18; } { group dCH; count 2; } { group OH; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethanoic acid;(z)-n-[2-(2-hydroxyethylamino)ethyl]octadec-9-enamide" "9-octadecenamide, n-(2-((2-hydroxyethyl)amino)ethyl)-, (9z)-, monoacetate (salt)" "n-(2-((2-hydroxyethyl)amino)ethyl)oleamidemonoacetate" "acetic acid; (z)-n-[2-(2-hydroxyethylamino)ethyl]octadec-9-enamide" );
+gibbsFormation
+{
+    dHf_298   -1041230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1403.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-304210.0
+    phase     gas;
+}

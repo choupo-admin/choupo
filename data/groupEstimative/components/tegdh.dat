@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tegdh  (C22H42O7, CAS 70729-68-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tegdh;
+formula     C22H42O7;
+CAS         70729-68-9;
+InChIKey    SSKNCQWPZQCABD-UHFFFAOYSA-N;
+MW          418.571;      // g/mol [origin=calculated method=formula-sum]
+Tc          1086.93;      // K   [origin=predictive method=joback]
+Pc          8.800;      // bar [origin=predictive method=joback]
+omega       0.8379;      // -   [origin=predictive method=lee-kesler]
+Tb          886.66;      // K   [origin=predictive method=joback]
+HvapTb      86610.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (110.208 1.79464 -0.0006508 -2.8e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 13; } { group CH2COO; count 2; } { group CH2O; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 18; } { group O; count 3; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-(2-heptanoyloxyethoxy)ethoxy]ethoxy]ethyl heptanoate" "tetraethylene glycol diheptanoate" "tetraethylene glycol di-n-heptanoate" "tetraethylene glycol-di-n-heptanoate" "oxybis(ethane-2,1-diyloxyethane-2,1-diyl) bisheptanoate" "13-oxo-3,6,9,12-tetraoxanonadec-1-yl heptanoate (non-preferred name)" "heptanoic acid, 1,1'-(oxybis(2,1-ethanediyloxy-2,1-ethanediyl)) ester" "heptanoic acid, 1,1'-[oxybis(2,1-ethanediyloxy-2,1-ethanediyl)] ester" "13-oxo-3,6,9,12-tetraoxanonadec-1-yl heptanoate" );
+gibbsFormation
+{
+    dHf_298   -1528630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1149.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-801380.0
+    phase     gas;
+}

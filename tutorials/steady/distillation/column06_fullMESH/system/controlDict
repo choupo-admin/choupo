@@ -1,0 +1,12 @@
+application   choupoSolve;
+description   "Full-MESH (Naphtali-Sandholm) distillation -- energy-consistent V_j/L_j, seeded from the CMO solution (benzene/toluene; compare column02)";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    profiles       { }     // per-stage T, x_i, y_i down the column
+    spreadsheet    { }     // coloured .ods (streams + balances + profile)
+}

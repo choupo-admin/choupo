@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-methylheptafluorotoluene  (C8H3F7, CAS 778-35-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Methylheptafluorotoluene;
+formula     C8H3F7;
+CAS         778-35-8;
+InChIKey    JBZHWNXMZYBXDQ-UHFFFAOYSA-N;
+MW          232.098;      // g/mol [origin=calculated method=formula-sum]
+Tc          585.09;      // K   [origin=predictive method=joback]
+Pc          24.362;      // bar [origin=predictive method=joback]
+omega       0.5958;      // -   [origin=predictive method=lee-kesler]
+Tb          425.88;      // K   [origin=predictive method=joback]
+HvapTb      31973.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (51.37 0.59582 -0.000394 9.61e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 1; } { group ACCH3; count 1; } { group ACF; count 4; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 1; } { group dC_ring; count 6; } { group F; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,4,5-tetrakis(fluoranyl)-3-methyl-6-(trifluoromethyl)benzene" "1,2,4,5-tetrafluoro-3-methyl-6-(trifluoromethyl)benzene" ".alpha.,.alpha.,.alpha.,2,3,5,6-heptafluoro-p-xylene" "alpha,alpha,alpha,2,3,5,6-heptafluoro-p-xylene" "4-methyl-2,3,5,6-tetrafluorobenzotrifluoride" "2,3,5,6-tetrafluoro-4-methyl-1-(trifluoromethyl)benzene" "benzene,1,2,4,5-tetrafluoro-3-methyl-6-(trifluoromethyl)-" "p-xylene, a,a,a,2,3,5,6-heptafluoro- (7ci,8ci); a,a,a,2,3,5,6-heptafluoro-p-xylene" );
+gibbsFormation
+{
+    dHf_298   -1410790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     513.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1280090.0
+    phase     gas;
+}

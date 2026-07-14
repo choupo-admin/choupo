@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetramethyl 1,2,3,4-benzenetetracarboxylate  (C14H14O8, CAS 3451-02-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetramethyl1234Benzenetetracarboxylate;
+formula     C14H14O8;
+CAS         3451-02-3;
+InChIKey    QDJPGDCRLZYJGQ-UHFFFAOYSA-N;
+MW          310.258;      // g/mol [origin=calculated method=formula-sum]
+Tc          1004.10;      // K   [origin=predictive method=joback]
+Pc          19.648;      // bar [origin=predictive method=joback]
+omega       1.1644;      // -   [origin=predictive method=lee-kesler]
+Tb          794.42;      // K   [origin=predictive method=joback]
+HvapTb      80648.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (100.79 0.85728 -0.00018948 -1.222e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group ACH; count 2; } { group AC; count 4; } { group COO; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetramethyl benzene-1,2,3,4-tetracarboxylate" "1,2,3,4-benzenetetracarboxylic acid, tetramethyl ester" );
+gibbsFormation
+{
+    dHf_298   -1399290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     781.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1090960.0
+    phase     gas;
+}

@@ -1,0 +1,35 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  VALIDATION -- Naphtali & Sandholm, AIChE Journal 17(1), 148-153 (1971),
+  DOI 10.1002/aic.690170130, Problem 2 (ideal hydrocarbon distillation).
+  20 plates; liquid feed (T = 30 F = 272.04 K, 500 mol each of nC4/iC5/nC5) on
+  plate 10; reflux ratio 1000; 80% recovered in bottoms (B = 1200).  A liquid
+  sidestream on plate 1 (condenser) takes 30% of the reflux.
+
+  EQUIVALENT SPEC (same internal flows, no condenser sidestream): the distillate
+  and the sidestream leave the total condenser with the SAME composition, so they
+  are combined into ONE top product of 300 with reflux R = L1/300 = 996.68/300 =
+  3.3223.  This gives identical L1 = 996.68 and V2 = 1296.68, hence the same column.
+
+  Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top ~ 99.97% nC4;
+  plate T 29.7 F (top) -> 77.0 F (reboiler) ~ 272.0 -> 298.2 K.
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+units
+(
+    {
+        name        column07;
+        type        distillationColumn;
+        model       fullMESH;
+        in          feed;
+        outputs     ( distillate  bottoms );   // emit the products as flowsheet streams
+        operation
+        {
+            nStages        20;
+            feedStage      10;
+            refluxRatio    3.3223;
+            distillateRate 300.0 kmol/h;   // D + condenser sidestream (combined)
+            feedQuality    1.0;            // liquid feed
+            P              1.01325 bar;
+        }
+    }
+);

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: anthraniloyllycoctonine  (C32H46N2O8, CAS 22413-78-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        anthraniloyllycoctonine;
+formula     C32H46N2O8;
+CAS         22413-78-1;
+InChIKey    NNDHDYDFEDRMGH-NZWBZCBHSA-N;
+MW          586.726;      // g/mol [origin=calculated method=formula-sum]
+Tc          1762.22;      // K   [origin=predictive method=joback]
+Pc          10.617;      // bar [origin=predictive method=joback]
+omega       0.6657;      // -   [origin=predictive method=lee-kesler]
+Tb          1389.36;      // K   [origin=predictive method=joback]
+HvapTb      145564.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-371.858 4.7392 -0.00442316 1.7523e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CH; count 9; } { group C; count 4; } { group ACH; count 4; } { group AC; count 1; } { group OH; count 2; } { group CH3O; count 4; } { group CH2N; count 1; } { group ACNH2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 2; } { group CH2_ring; count 5; } { group CH_ring; count 9; } { group C_ring; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 2; } { group O; count 4; } { group COO; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "monoanthraniloyllycoctonine" "(+)-anthranoyllycoctonine" "o(sup 14)-methyldelectine" "inuline" "lycoctonine, anthraniloyl- (6ci,7ci)" "aconitane-7,8-diol, 4-(((2-aminobenzoyl)oxy)methyl)-20-ethyl-1,6,14,16-tetramethoxy-, (1-alpha,6-beta,14-alpha,16-beta)-" "lycoctonine, monoanthranilate (ester)" "lycoctonine, monoanthranilate (ester) (8ci)" );
+gibbsFormation
+{
+    dHf_298   -1172670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     995.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-216870.0
+    phase     gas;
+}

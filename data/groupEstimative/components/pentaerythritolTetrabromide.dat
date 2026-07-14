@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentaerythritol tetrabromide  (C5H8Br4, CAS 3229-00-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentaerythritolTetrabromide;
+formula     C5H8Br4;
+CAS         3229-00-3;
+InChIKey    OYSVBCSOQFXYHK-UHFFFAOYSA-N;
+MW          387.735;      // g/mol [origin=calculated method=formula-sum]
+Tc          826.27;      // K   [origin=predictive method=joback]
+Pc          50.802;      // bar [origin=predictive method=joback]
+omega       0.6693;      // -   [origin=predictive method=lee-kesler]
+Tb          575.41;      // K   [origin=predictive method=joback]
+HvapTb      51168.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.634 0.7574 -0.0007056 2.566e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group C; count 1; } { group Br; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group C; count 1; } { group Br; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-bis(bromanyl)-2,2-bis(bromomethyl)propane" "pentaerythrityl tetrabromide" "tetra(bromomethyl)methane" "tetrakis(bromomethyl)methane" "pentaerythrityl bromide" "tetrabromoneopentane" "1,3-dibromo-2,2-bis(bromomethyl)propane" "propane, 1,3-dibromo-2,2-bis(bromomethyl)-" "ethanol, 2-chloro-,1,1'-carbonate" "2,2-bis(bromomethyl)-1,3-dibromopropane" "propane,3-dibromo-2,2-bis(bromomethyl)-" );
+gibbsFormation
+{
+    dHf_298   -49960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     516.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=51340.0
+    phase     gas;
+}

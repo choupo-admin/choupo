@@ -12,30 +12,16 @@
   real liquid `bottoms` -- not a total vaporiser.
 \*---------------------------------------------------------------------------*/
 
-children    ( flash1  flash2 );
+sectors    ( flash1  flash2 );
 
-boundary
-{
-    inlets   ( feed );
-    outlets  ( vapor1  vapor2  bottoms );
-}
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            365.0 K;
-        P              1.0 bar;
-        molarComposition  { benzene 0.50;  toluene 0.50; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 connections
-(
-    { from feed;            to flash1/feed;  }   // boundary inlet -> child
-    { from flash1/liquid;   to flash2/feed;  }   // child -> child (flash1's liquid re-flashed hotter -> 2nd real V/L split)
-    { from flash1/vapor;    to vapor1;       }   // child -> boundary outlet
-    { from flash2/vapor;    to vapor2;       }
-    { from flash2/liquid;   to bottoms;      }
-);
+{
+    feed    { to flash1/feed; }
+    liquid1 { from flash1/liquid;  to flash2/feed; }
+    vapor1  { from flash1/vapor; }
+    vapor2  { from flash2/vapor; }
+    bottoms { from flash2/liquid; }
+}

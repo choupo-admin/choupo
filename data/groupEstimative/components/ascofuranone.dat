@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ascofuranone  (C23H29ClO5, CAS 38462-04-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C23H29ClO5 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        ascofuranone;
+formula     C23H29ClO5;
+CAS         38462-04-3;
+InChIKey    VGYPZLGWVQQOST-JUERRSSISA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          420.93;      // g/mol [origin=calculated method=formula-sum]
+Tc          1308.28;      // K   [origin=predictive method=joback]
+Pc          15.962;      // bar [origin=predictive method=joback]
+omega       1.2385;      // -   [origin=predictive method=lee-kesler]
+Tb          1056.25;      // K   [origin=predictive method=joback]
+HvapTb      106724.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-112.007 2.5212 -0.0022625 8.712e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 1; } { group CH=C; count 2; } { group AC; count 1; } { group ACCH3; count 1; } { group ACCH2; count 1; } { group ACOH; count 2; } { group CH2CO; count 1; } { group CHO; count 1; } { group CH-O; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 3; } { group dCH; count 2; } { group dC; count 2; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dC_ring; count 6; } { group Cl; count 1; } { group OH_phenol; count 2; } { group O_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-chloranyl-5-[(2e,6e)-7-[(2s)-5,5-dimethyl-4-oxidanylidene-oxolan-2-yl]-3-methyl-octa-2,6-dienyl]-2-methyl-4,6-bis(oxidanyl)benzaldehyde" "ascofuranon" "benzaldehyde, 3-chloro-4,6-dihydroxy-2-methyl-5-(3-methyl-7-(tetrahydro-5,5-dimethyl-4-oxo-2-furanyl)-2,6-octadienyl)-, (s-(e,e))-" "5-chloro-3-[(2e,6e)-7-[(2s)-5,5-dimethyl-4-oxooxolan-2-yl]-3-methylocta-2,6-dienyl]-2,4-dihydroxy-6-methylbenzaldehyde" );
+gibbsFormation
+{
+    dHf_298   -609300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     919.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-92930.0
+    phase     gas;
+}

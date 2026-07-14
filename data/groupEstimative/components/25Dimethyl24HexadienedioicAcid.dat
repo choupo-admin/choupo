@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,5-dimethyl-2,4-hexadienedioic acid  (C8H10O4, CAS 20514-41-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        25Dimethyl24HexadienedioicAcid;
+formula     C8H10O4;
+CAS         20514-41-4;
+InChIKey    HVMNFKUBOVSQCO-UHFFFAOYSA-N;
+MW          170.164;      // g/mol [origin=calculated method=formula-sum]
+Tc          901.96;      // K   [origin=predictive method=joback]
+Pc          34.848;      // bar [origin=predictive method=joback]
+omega       1.0853;      // -   [origin=predictive method=lee-kesler]
+Tb          681.74;      // K   [origin=predictive method=joback]
+HvapTb      67806.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.93 0.90524 -0.0007288 2.384e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH=C; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH; count 2; } { group dC; count 2; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,5-dimethylhexa-2,4-dienedioic acid" "(2z,4z)-2,5-dimethylhexa-2,4-dienedioic acid" "2,4-hexadienedioic acid, 2,5-dimethyl-" "alpha,alpha`-dimethyl-trans, trans-muconic acid" "2,4-hexadienedioicacid, 2,5-dimethyl-, (e,e)- (8ci,9ci)" );
+gibbsFormation
+{
+    dHf_298   -694130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     552.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-528000.0
+    phase     gas;
+}

@@ -280,7 +280,7 @@ int Absorber::solve(const DictPtr& dict,
     if (verbosity >= 2)
     {
         std::cout << "\n========================  Absorber (Kremser)  ====================\n"
-                  << "  Stages (theoretical, HARDWARE):  N = " << N << "\n"
+                  << "  Stages: N = " << N << "   (THEORETICAL equilibrium stages -- the case-declared hardware count)\n"
                   << "  Gas feed   V = " << std::scientific << std::setprecision(4) << V_in
                   << " kmol/s  (bottom, " << std::fixed << std::setprecision(1) << T_gas << " K)\n"
                   << "  Solvent    L = " << std::scientific << std::setprecision(4) << L_in

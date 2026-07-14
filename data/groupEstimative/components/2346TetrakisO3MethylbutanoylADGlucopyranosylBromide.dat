@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,4,6-tetrakis-o-(3-methylbutanoyl)-|a-d-glucopyranosyl bromide  (C26H43BrO9, CAS 63450-56-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2346TetrakisO3MethylbutanoylADGlucopyranosylBromide;
+formula     C26H43BrO9;
+CAS         63450-56-6;
+InChIKey    XHEMOGVYDWZQQH-ABNLYDASSA-N;
+MW          579.525;      // g/mol [origin=calculated method=formula-sum]
+Tc          1378.23;      // K   [origin=predictive method=joback]
+Pc          8.030;      // bar [origin=predictive method=joback]
+omega       0.7128;      // -   [origin=predictive method=lee-kesler]
+Tb          1119.58;      // K   [origin=predictive method=joback]
+HvapTb      111684.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (57.825 2.32966 -0.0009419 -1e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 8; } { group CH2; count 1; } { group CH; count 8; } { group CH2COO; count 4; } { group CH-O; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2; count 5; } { group CH; count 4; } { group CH_ring; count 5; } { group Br; count 1; } { group O_ring; count 1; } { group COO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(2r,3r,4s,5r,6s)-6-bromanyl-3,4,5-tris(3-methylbutanoyloxy)oxan-2-yl]methyl 3-methylbutanoate" "d-glucopyranosyl bromide, tetrakis(3-methylbutanoate)" "d-glucopyranosyl bromide, 2,3,4,6-tetrakis(3-methylbutanoate)" "[(2r,3r,4s,5r,6s)-6-bromo-3,4,5-tris(3-methylbutanoyloxy)oxan-2-yl]methyl 3-methylbutanoate" );
+gibbsFormation
+{
+    dHf_298   -2002920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1135.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1161390.0
+    phase     gas;
+}

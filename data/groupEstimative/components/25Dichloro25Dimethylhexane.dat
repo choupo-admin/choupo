@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,5-dichloro-2,5-dimethylhexane  (C8H16Cl2, CAS 6223-78-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        25Dichloro25Dimethylhexane;
+formula     C8H16Cl2;
+CAS         6223-78-5;
+InChIKey    HSTAGCWQAIXJQM-UHFFFAOYSA-N;
+MW          183.116;      // g/mol [origin=calculated method=formula-sum]
+Tc          652.21;      // K   [origin=predictive method=joback]
+Pc          24.459;      // bar [origin=predictive method=joback]
+omega       0.3266;      // -   [origin=predictive method=lee-kesler]
+Tb          451.04;      // K   [origin=predictive method=joback]
+HvapTb      39580.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-27.548 1.02908 -0.0007958 2.458e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?46:2
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 2; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,5-bis(chloranyl)-2,5-dimethyl-hexane" "dichlorodimethylhexane" "2,5-dichlor-2,5-dimethylhexan" "2,5-dimethyl-2,5-dichlorohexane" "2,5-dichloro-2,5-dimethyl-hexane" "hexane, 2,5-dichloro-2,5-dimethyl-" "hexane,5-dichloro-2,5-dimethyl-" "hexane,2,5-dichloro-2,5-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -257430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     456.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1700.0
+    phase     gas;
+}

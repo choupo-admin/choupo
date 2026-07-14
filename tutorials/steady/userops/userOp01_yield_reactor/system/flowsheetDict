@@ -17,16 +17,7 @@
   two are isomers (same MW), the mass balance closes to 100 %.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            1.0 kmol/h;
-        T          320.0 K;
-        P            1.01325 bar;
-        molarComposition  { neoPentane 1.0;  nPentane 0.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

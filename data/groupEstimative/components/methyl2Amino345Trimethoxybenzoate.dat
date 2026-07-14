@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 2-amino-3,4,5-trimethoxybenzoate  (C11H15NO5, CAS 5035-82-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl2Amino345Trimethoxybenzoate;
+formula     C11H15NO5;
+CAS         5035-82-5;
+InChIKey    UPVUQELOASQBMY-UHFFFAOYSA-N;
+MW          241.243;      // g/mol [origin=calculated method=formula-sum]
+Tc          907.51;      // K   [origin=predictive method=joback]
+Pc          25.201;      // bar [origin=predictive method=joback]
+omega       1.0171;      // -   [origin=predictive method=lee-kesler]
+Tb          695.89;      // K   [origin=predictive method=joback]
+HvapTb      70282.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (124.58 0.54948 4.656e-05 -1.649e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 1; } { group AC; count 4; } { group CH3O; count 3; } { group ACNH2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group O; count 3; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-azanyl-3,4,5-trimethoxy-benzoate" "methyl 3,4,5-trimethoxyanthranilate" "benzoic acid, 2-amino-3,4,5-trimethoxy-, methyl ester" "anthranilic acid, 3,4,5-trimethoxy-, methyl ester" "benzoic acid,2-amino-3,4,5-trimethoxy-, methyl ester" );
+gibbsFormation
+{
+    dHf_298   -759870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     590.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-443290.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: undecyl acetate  (C13H26O2, CAS 1731-81-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        undecylAcetate;
+formula     C13H26O2;
+CAS         1731-81-3;
+InChIKey    CKQGCFFDQIFZFA-UHFFFAOYSA-N;
+MW          214.349;      // g/mol [origin=calculated method=formula-sum]
+Tc          721.46;      // K   [origin=predictive method=joback]
+Pc          16.511;      // bar [origin=predictive method=joback]
+omega       0.7727;      // -   [origin=predictive method=lee-kesler]
+Tb          555.26;      // K   [origin=predictive method=joback]
+HvapTb      51939.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (16.48 1.18404 -0.0005888 8.64e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 10; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "undecyl ethanoate" "1-undecanol, acetate" "n-undecyl acetate" "1-undecanol, 1-acetate" );
+gibbsFormation
+{
+    dHf_298   -628930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     713.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-251790.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7-chloroheptanoic acid  (C7H13ClO2, CAS 821-57-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        7ChloroheptanoicAcid;
+formula     C7H13ClO2;
+CAS         821-57-8;
+InChIKey    IGNBKLCFKTYIRI-UHFFFAOYSA-N;
+MW          164.629;      // g/mol [origin=calculated method=formula-sum]
+Tc          734.68;      // K   [origin=predictive method=joback]
+Pc          29.601;      // bar [origin=predictive method=joback]
+omega       0.7996;      // -   [origin=predictive method=lee-kesler]
+Tb          542.70;      // K   [origin=predictive method=joback]
+HvapTb      52725.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.016 0.7264 -0.00045 1.091e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group COOH; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-chloranylheptanoic acid" "chlorenanthic acid" "enantic acid, 7-chloro-" "heptanoic acid,7-chloro-" "7-chloroheptanoicacid;w-chloroheptanoic acid;" );
+gibbsFormation
+{
+    dHf_298   -553820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     515.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-347780.0
+    phase     gas;
+}

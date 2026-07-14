@@ -3,16 +3,7 @@
   toluene + H2 -> benzene + CH4, 75 % of the limiting reactant (toluene) per
   pass.  H2 is fed in excess (3:1), as in the real HDA.
 \*---------------------------------------------------------------------------*/
-streams
-{
-    feed
-    {
-        F            400.0 kmol/h;
-        T            900.0 K;
-        P            35.0  bar;
-        molarComposition { toluene 0.25;  H2 0.75;  benzene 0.0;  CH4 0.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 units
 (
     {

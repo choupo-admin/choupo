@@ -39,7 +39,7 @@ Description
             outerDict      -- outer driver (sweep / optim / fit / PE)  [opt]
             postDict       -- post-processing chain (sizing, costing)  [opt]
           constant/
-            thermoPackage  -- components + γ-φ models
+            propertyDict  -- components + γ-φ models
             reactions      -- named-reaction library                  [opt]
 
     Layer 1 (always):   one simulator pass via Flowsheet
@@ -55,19 +55,25 @@ Description
 #include "core/ResultEmitter.H"
 #include "core/Advisory.H"
 #include "core/SimulationResult.H"
+#include "streams/StreamOwnership.H"
+#include "streams/StreamStateIO.H"
 #include "core/ThermoResolution.H"
 #include "streams/StreamMass.H"
 #include "materials/MaterialRegistry.H"
 #include "thermo/henrysLaw/HenrysLawRegistry.H"
 #include "thermo/solution/SolutionRegistry.H"
 #include "thermo/membrane/MembraneRegistry.H"
+#include "thermo/adsorbent/AdsorbentRegistry.H"
 #include "thermo/utility/UtilityCatalogue.H"
 #include "outerDriver/OuterDriver.H"
 #include "postProcessing/PostProcessor.H"
 #include "reporting/Report.H"
 #include "reporting/UtilityAllocationReport.H"
+#include "thermo/PropertyContext.H"
 #include "io/SolutionWriter.H"
 #include "thermo/Database.H"
+#include "thermo/ThermoAnnounce.H"
+#include "thermo/ThermoPackageBuilder.H"
 #include "thermo/SaturationCurves.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
@@ -93,6 +99,7 @@ Description
 #include <algorithm>
 #include <cctype>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -116,14 +123,19 @@ void registerUserTypes();
 // --------------------------------------------------------------------------
 //   One simulator pass: load thermo + run flowsheet → SimulationResult.
 //   Reusable from the outer-driver layer (varies flowsheetDict each call).
+
 // --------------------------------------------------------------------------
 static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     const Database&    db,
     const DictPtr&     thermoDict,
+    const DictPtr&     packageDict,       // null => legacy thermoDict; non-null => builder
     const DictPtr&     solverDict,        // may be null
     const DictPtr&     reactionsDict,     // may be null
     int                verbosity,
-    const SolutionControl* solutionCtl = nullptr)  // null => feature OFF
+    const SolutionControl* solutionCtl = nullptr,  // null => feature OFF
+    bool               init0 = false,
+    bool               init0Force = false,
+    const StreamOverrides& overrides = StreamOverrides{})
 {
     // Fresh advisory sink for this pass (so a sweep/optim gets per-pass
     // advisories, and the result carries this pass's).  Cleared BEFORE the
@@ -133,14 +145,20 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     ThermoResolutionLog::instance().clear();   // per-pass binary-pair provenance
 
     ThermoPackage thermo;
-    thermo.readFromDict(thermoDict, db);
+    if (packageDict)
+        thermo = ThermoPackageBuilder::build(packageDict, db);   // Aspen path: case SELECTS a package
+    else
+        thermo.readFromDict(thermoDict, db);
 
     // Run-block (integrity teeth): refuse to SOLVE on an UNVERIFIED estimate of a
-    // REQUIRED property unless the thermoPackage opts in with `acceptUnverified true;`.
+    // REQUIRED property unless the package opts in with `acceptUnverified true;`.
     requireVerifiedOrThrow(thermo.auditFindings(),
-        thermoDict->lookupWordOrDefault("acceptUnverified", "false") == "true");
+        (packageDict ? packageDict : thermoDict)
+            ->lookupWordOrDefault("acceptUnverified", "false") == "true");
 
     Flowsheet flowsheet;
+    flowsheet.setStreamOverrides(overrides);
+    flowsheet.setInit0Mode    (init0, init0Force);
     flowsheet.setSolverDict   (solverDict);
     flowsheet.setReactionsDict(reactionsDict);
     flowsheet.setDatabase     (&db);          // per-unit thermo overrides
@@ -204,6 +222,7 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
 
     SimulationResult r;
     r.streams     = flowsheet.streams();
+    r.boundaryAliases = flowsheet.boundaryAliases();
     r.kpis        = flowsheet.unitKpis();
     r.topology    = flowsheet.topology();
     r.energyWires = flowsheet.energyWires();
@@ -223,6 +242,11 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     r.converged   = (rc == 0);
     r.advisories  = AdvisoryLog::instance().entries();   // drain this pass's advisories
     r.thermoResolution = ThermoResolutionLog::instance().entries();  // pair provenance
+
+    // D-c (forum #67/#69, shared impl per #73-3): announced on EVERY
+    // consumption, independent of verbosity.
+    if (announceProvenanceConsumption(r.thermoResolution))
+        r.advisories = AdvisoryLog::instance().entries();   // refresh
     r.componentNames.reserve(thermo.n());
     for (std::size_t i = 0; i < thermo.n(); ++i)
     {
@@ -290,7 +314,11 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     // We emit ONLY when EVERY unit in the flattened flowsheet is an
     // equilibrium-capable type (no turbine/compressor/pump in the path).
     static const std::set<std::string> kNonEquilibrium =
-        { "turbine", "compressor", "pump" };
+        { "turbine", "compressor", "pump",
+          // pass-5: a hydraulics/solids case has no business drawing a
+          // distillation diagram -- the txy sweep on pipe02 was pure noise.
+          "pipe", "pneumaticConveyor", "cyclone", "bagFilter",
+          "gasSolidSplitter", "solidDryer", "sprayDryer", "electricLoad" };
     bool equilibriumPhysics = !r.topology.empty();
     for (const auto& u : r.topology)
         if (kNonEquilibrium.count(u.type)) equilibriumPhysics = false;
@@ -299,6 +327,16 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
         && !thermo.phasesOfType("vapor").empty())
     {
         try {
+            // Announce the sweep BEFORE it runs: the bubble-T scan visits
+            // temperatures far from the operating point, so any model-range
+            // warnings it triggers (e.g. a Henry-pair Trange guard) must be
+            // attributable to THIS diagnostic, not to the case's own state.
+            if (verbosity >= 2)
+                std::cout << "[txy] scanning bubble/dew T across composition"
+                             " for the T-x-y diagram (an internal diagnostic"
+                             " sweep -- any model-range warnings below come"
+                             " from this scan, NOT your operating point).\n";
+
             BinaryTxy t = binaryTxy(thermo, r.streams.begin()->second.P, 31);
 
             // Guard (3): reject an envelope with any out-of-range vapour mole
@@ -309,7 +347,25 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
             for (scalar y : t.yDew)
                 if (y < -slack || y > 1.0 + slack) { yValid = false; break; }
 
-            if (yValid) r.txy = std::move(t);
+            // Guard (4): a bubble/dew T pinned at the bubble-T solver's
+            // bracket floor (200 K, SaturationCurves.cpp) for EVERY
+            // composition is a degenerate envelope --- the Newton never left
+            // the bound, so the flat "diagram" is a solver artefact, not
+            // physics.  Omit the block and say so.
+            constexpr scalar Tfloor = 200.0;
+            bool pinnedAtFloor = !t.Tbubble.empty();
+            for (std::size_t k = 0; k < t.Tbubble.size(); ++k)
+                if (t.Tbubble[k] > Tfloor + 0.01 || t.Tdew[k] > Tfloor + 0.01)
+                    { pinnedAtFloor = false; break; }
+            if (pinnedAtFloor)
+            {
+                if (verbosity >= 2)
+                    std::cout << "[txy] envelope degenerate: bubble/dew T"
+                                 " pinned at the 200 K solver floor for every"
+                                 " composition -- a solver artefact, not"
+                                 " physics; omitting the T-x-y block.\n";
+            }
+            else if (yValid) r.txy = std::move(t);
         } catch (const std::exception&) {
             // Some thermo combinations (e.g. azeotropes near pure-component
             // bounds) can fail the inner Newton; degrade silently.
@@ -347,7 +403,17 @@ try
     PostProcessor   ::registerBuiltins();
     Report          ::registerBuiltins();
 
-    const std::string caseDir = (argc > 1) ? argv[1] : ".";
+    // Flags: `-init0` materialises 0/ instead of solving (arch step 2);
+    // `--force` lets it regenerate existing internal/outlet estimates.
+    bool init0Mode = false, init0Force = false;
+    std::string caseDir = ".";
+    for (int a = 1; a < argc; ++a)
+    {
+        const std::string arg = argv[a];
+        if      (arg == "-init0" || arg == "--init0") init0Mode = true;
+        else if (arg == "--force")                    init0Force = true;
+        else caseDir = arg;
+    }
     if (!fs::exists(caseDir))
         throw std::runtime_error("Case directory does not exist: " + caseDir);
 
@@ -358,6 +424,11 @@ try
         dataRoot = fs::path(env) / "data";
     else if (fs::exists(launchCwd / "data" / "standards" / "components"))
         dataRoot = launchCwd / "data";
+    // Enter the case dir BEFORE constructing the Database.  A SEALED case
+    // (constant/propertyData/) is then detected -- caseHasSnapshot() walks up
+    // from HERE -- so the Database skips the catalogue-root requirement and the
+    // engine consults ONLY the case.  dataRoot stays absolute (from launchCwd).
+    fs::current_path(caseDir);
     Database db(dataRoot.empty() ? "" : dataRoot.string());
 
     // Load the materials and membranes registries from the same data root.
@@ -365,19 +436,19 @@ try
     {
         MaterialRegistry::loadFrom(dataRoot.string());
         MembraneRegistry::loadFrom(dataRoot.string());
+        AdsorbentRegistry::loadFrom(dataRoot.string());
         HenrysLawRegistry::loadFrom(dataRoot.string());
 
         SolutionRegistry::loadFrom(dataRoot.string());
         UtilityCatalogue::loadFrom(dataRoot.string());
     }
 
-    fs::current_path(caseDir);
     std::cout << "Case directory: " << fs::current_path().string() << "\n"
               << "Database root:  " << db.root() << "\n\n";
 
     // ---- Required dictionaries -----------------------------------------
     //  Cascade resolution (fractal): a sector / unit node may omit the
-    //  thermoPackage or controlDict it inherits from a PARENT folder level ---
+    //  propertyDict or controlDict it inherits from a PARENT folder level ---
     //  walk UP the tree until the file is found (capped, to stay within the
     //  plant).  The flowsheetDict is NEVER inherited: it IS the node.
     auto resolveUp = [](const std::string& rel) -> std::string {
@@ -406,7 +477,83 @@ try
         fs::exists("flowsheetDict") ? "flowsheetDict" : "system/flowsheetDict";
     auto flowsheetDict = Dictionary::fromFile(flowsheetPath);
     auto controlDict   = Dictionary::fromFile(resolveUp("system/controlDict"));
-    auto thermoDict    = Dictionary::fromFile(resolveUp("constant/thermoPackage"));
+
+    // Verbosity is read HERE (before any thermo load) so the 0-silent contract
+    // covers the LOAD phase too: the package/builder announcement chorus below
+    // is gated at >= 2, same threshold as the flash's seed line.
+    const int verbosity = static_cast<int>(controlDict->lookupScalarOrDefault("verbosity", 3));
+    thermoAnnounceLevel() = verbosity;
+
+    // Aspen property architecture: a case SELECTS a propertyPackage (the builder
+    // assembles the ThermoPackage from the new records, reads zero old salt files)
+    // XOR carries a thermoPackage (the legacy reader).  Mirrors choupoProps.
+    DictPtr thermoDict, packageDict;
+    {
+        // ONE name: constant/propertyDict (there are more properties than
+        // thermodynamics -- transport, chemistry, solids).  It accepts BOTH
+        // grammars, routed by content, so a simple case stays simple and a rich
+        // one gets the manifest:
+        //   - has `components` + `propertyMethods`  -> the full MANIFEST (builder);
+        //   - has `components`, no `propertyMethods` -> the FLAT form
+        //     (activityModel / equationOfState), read by the legacy reader;
+        //   - no `components`                        -> a SELECTOR (`package <name>;`).
+        // The old thermoPackage/propertyPackage names were retired with NO
+        // backward compatibility (0da8bcba) -- the engine reads only
+        // constant/propertyDict (matching the *Dict convention:
+        // flowsheetDict / solverDict / controlDict).
+        std::string pkgPath = resolveUp("constant/propertyDict");
+        bool deprecatedName = false;
+        if (!fs::exists(pkgPath))
+            pkgPath = resolveUp("constant/propertyDict");
+        if (!fs::exists(pkgPath))
+        {
+            const std::string legacy = resolveUp("constant/propertyDict");
+            if (fs::exists(legacy)) { pkgPath = legacy; deprecatedName = true; }
+        }
+        if (fs::exists(pkgPath))
+        {
+            auto sel = Dictionary::fromFile(pkgPath);
+            if (deprecatedName)
+                std::cout << "  [deprecated] constant/propertyDict -- rename it"
+                             " to constant/propertyDict (the property package"
+                             " is more than thermo).\n";
+            // A case-level propertyDict may itself `inherit` a parent context: a
+            // projected local unit run (choupo-project) points at the plant
+            // context this way, copying no property data.
+            if (sel->found("inherits"))
+            {
+                std::set<std::string> visited;
+                sel = resolvePropertyContext(
+                    fs::path(pkgPath).parent_path().string(), visited);
+            }
+            if (sel->found("components") && sel->found("propertyMethods"))
+            {
+                packageDict = sel;                       // rich MANIFEST -> builder
+                if (verbosity >= 2)
+                    std::cout << "Property package:  INLINE in the case"
+                                 "   (constant/propertyDict carries the full"
+                                 " manifest)\n";
+            }
+            else if (sel->found("components"))
+            {
+                thermoDict = sel;                        // FLAT form -> legacy reader
+                if (verbosity >= 2)
+                    std::cout << "Property package:  constant/propertyDict"
+                                 "   (flat form: activityModel/equationOfState)\n";
+            }
+            else
+            {
+                const std::string pkgName = sel->lookupWord("package");
+                const fs::path rec = fs::path(Database::currentRoot())
+                                   / "standards" / "propertyPackages" / (pkgName + ".dat");
+                packageDict = Dictionary::fromFile(rec.string());  // SELECTOR -> record
+                if (verbosity >= 2)
+                    std::cout << "Property package:  " << pkgName
+                              << "   (record: data/standards/propertyPackages/"
+                              << pkgName << ".dat)\n";
+            }
+        }
+    }
 
     // ---- CURATION-PHASE guard ------------------------------------------
     // A composite case (sectors via `children`) whose streams are not yet
@@ -414,9 +561,15 @@ try
     // CURATION phase -- there is nothing to simulate yet.  Say so clearly and
     // exit cleanly (a valid state, NOT an error), instead of throwing
     // "child inlet not cabled" from deep in the flattener.
-    if (flowsheetDict->found("children")
-        && (!flowsheetDict->found("connections")
-            || flowsheetDict->lookupDictList("connections").empty()))
+    bool connsEmpty = !flowsheetDict->found("connections");
+    if (!connsEmpty)
+    {
+        const auto& cv = flowsheetDict->entryValue("connections");
+        connsEmpty = std::holds_alternative<DictPtr>(cv)
+            ? std::get<DictPtr>(cv)->keys().empty()
+            : flowsheetDict->lookupDictList("connections").empty();
+    }
+    if (flowsheetDict->found("sectors") && connsEmpty)
     {
         std::cout <<
           "\n================================================================\n"
@@ -435,7 +588,7 @@ try
         solverDict = Dictionary::fromFile("system/solverDict");
 
     // reactions: the named-reaction library.  CASCADES UP the parent chain,
-    // SYMMETRICALLY with constant/thermoPackage and the component overlays --
+    // SYMMETRICALLY with constant/propertyDict and the component overlays --
     // so a branch of a fractal plant run STANDALONE
     // (./choupoSolve .../ChemicalPlantTutorial/FERMENTATION) still finds a
     // reaction (e.g. sucroseToEthanol) declared at a HIGHER folder level.
@@ -525,7 +678,8 @@ try
                       << ") -> instant dirs at the case root\n";
     }
 
-    const int verbosity = static_cast<int>(controlDict->lookupScalarOrDefault("verbosity", 3));
+    // (verbosity was read right after controlDict loaded, before the thermo
+    //  package announcements -- see above.)
     const std::string application =
         controlDict->lookupWordOrDefault("application", "choupoSolve");
     const std::string description =
@@ -550,10 +704,12 @@ try
               << "\n";
 
     // ---- Simulator functor reusable by outer driver --------------------
-    auto simulate = [&](const DictPtr& flowDictForRun) {
-        auto r = runSimulation(flowDictForRun, db, thermoDict,
+    auto simulate = [&](const DictPtr& flowDictForRun,
+                        const StreamOverrides& overrides) {
+        auto r = runSimulation(flowDictForRun, db, thermoDict, packageDict,
                                solverDict, reactionsDict, verbosity,
-                               haveSolutionCtl ? &solutionCtl : nullptr);
+                               haveSolutionCtl ? &solutionCtl : nullptr,
+                               false, false, overrides);
         // Size plant utilities for every duty HERE, so BOTH the direct path and
         // the outer-driver passes carry it.  The outer driver (DesignSpec /
         // recycle / sweep) emits the result JSON itself and previously skipped
@@ -570,7 +726,8 @@ try
     auto runReports = [&](SimulationResult& result) {
         if (!reportsDict || !result.converged) return;
         ThermoPackage thermoForReports;
-        thermoForReports.readFromDict(thermoDict, db);
+        if (packageDict) thermoForReports = ThermoPackageBuilder::build(packageDict, db);
+        else             thermoForReports.readFromDict(thermoDict, db);
         const bool postProc = (reportsLayout == "postProcessing");
         const fs::path reportsDir =
             fs::current_path() / (postProc ? "postProcessing" : "reports");
@@ -604,11 +761,99 @@ try
         for (auto& [rep, opts] : chain) rep->run(opts, rctx);
     };
 
+    // ---- converged/ writer (stream-state architecture, 2026-07-06) ------
+    //  Persist the converged steady state as one file per stream, canonical
+    //  componentFlows grammar, under converged/SECTOR/.../stream.  This is the
+    //  disk truth a topological drill-in materialises a child 0/ from
+    //  (docs/architecture/stream-state-architecture.md).  Only on convergence.
+    //  OWNERSHIP (arch doc 8.4): a stream lives FLAT under its owning SECTOR --
+    //  `<dir>/SECTOR/streamName` (no unit sub-path).  Internal / inter-sector /
+    //  external-outlet streams are owned by their PRODUCING sector; an external
+    //  inlet (a feed) by its CONSUMING sector.  Built from the flattened
+    //  topology: unit `SECTOR.op` -> its outputs owned by SECTOR; a feed (an
+    //  input produced by nobody) owned by the sector that consumes it.
+    auto sectorOwnedPaths = [](const SimulationResult& result)
+        -> std::map<std::string, fs::path>
+    {
+        // THE one rule is StreamOwnership::canonicalManifest (forum #83) --
+        // the same call the pre-solve reader makes, so the writer, the
+        // validator and the reader can never disagree about which file
+        // carries which stream.  Here we only project the result's names.
+        std::set<std::string> names;
+        for (const auto& [name, s] : result.streams)
+        { (void) s; names.insert(name); }
+        return StreamOwnership::canonicalManifest(
+            result.topology, names, result.boundaryAliases);
+    };
+
+    auto writeConverged = [&](const SimulationResult& result) {
+        if (!result.converged) return;
+        ThermoPackage tp;
+        if (packageDict) tp = ThermoPackageBuilder::build(packageDict, db);
+        else             tp.readFromDict(thermoDict, db);
+        const fs::path dir = fs::current_path() / "converged";
+        fs::remove_all(dir);                 // stale state must never linger
+        StreamStateIO::writeStateDir(result.streams, tp, dir, sectorOwnedPaths(result));
+        if (verbosity >= 2)
+            std::cout << "[state] wrote converged/ -- (sector-owned, componentFlows)\n";
+    };
+
+    // ---- 0/ COMPLETENESS validator (arch doc rule 8.2, no heuristics) ------
+    //  When the case ran from a `0/` state directory, the graph's stream IDs
+    //  must correspond EXACTLY to the state files: N declared streams == N files.
+    //  A MISSING file (a graph stream with no state) or an ORPHAN file (a state
+    //  with no graph stream) is FATAL -- the completeness contract.  Skipped for
+    //  the legacy streams{} path (no 0/).
+    auto validate0 = [&](const SimulationResult& result) -> bool {
+        if (!fs::exists("0") || !fs::is_directory("0")) return true;
+        auto owned = sectorOwnedPaths(result);              // stream -> 0/ path
+        std::set<std::string> expected, actual;
+        for (const auto& [nm, p] : owned) expected.insert(p.generic_string());
+        for (const auto& e : fs::recursive_directory_iterator("0"))
+        {
+            if (!e.is_regular_file() || e.path().filename() == "manifest.dat") continue;
+            std::ifstream probe(e.path());
+            std::string body((std::istreambuf_iterator<char>(probe)), {});
+            if (!StreamStateIO::looksLikeStreamState(body)) continue;  // not a state file
+            actual.insert(fs::relative(e.path(), "0").generic_string());
+        }
+        std::vector<std::string> missing, orphan;
+        for (const auto& x : expected) if (!actual.count(x)) missing.push_back(x);
+        for (const auto& x : actual)   if (!expected.count(x)) orphan.push_back(x);
+        if (missing.empty() && orphan.empty())
+        {
+            if (verbosity >= 2)
+                std::cout << "[state] 0/ complete: " << expected.size()
+                          << " graph stream IDs == " << actual.size() << " state files\n";
+            return true;
+        }
+        std::cerr << "\nERROR: 0/ COMPLETENESS violated (graph stream IDs != 0/ state files):\n";
+        for (const auto& m : missing) std::cerr << "  MISSING  0/" << m << "  (graph stream, no state file)\n";
+        for (const auto& o : orphan)  std::cerr << "  ORPHAN   0/" << o << "  (state file, no graph stream)\n";
+        return false;
+    };
+
     int finalRc = 0;
+
+    // ---- choupo-init0: materialise 0/ and leave.  No solve, no reports, no
+    //      converged/ writer, no result JSON -- this is a PREPARATION step.
+    if (init0Mode)
+    {
+        auto r = runSimulation(flowsheetDict, db, thermoDict, packageDict,
+                               solverDict, reactionsDict, verbosity,
+                               nullptr, true, init0Force);
+        return r.converged ? 0 : 1;
+    }
 
     if (outerDict)
     {
-        // Layer 2: outer driver controls the simulator
+        // Layer 2: outer driver controls the simulator.  (The old
+        // streams{}-steering guard is gone with the legacy reader: a dict
+        // carrying `streams {}` now REFUSES inside the Flowsheet itself.)
+        if (packageDict)
+            throw std::runtime_error("outerDriver + propertyPackage is not yet wired "
+                "(the driver varies the thermoPackage dict in-place; a builder-assembled "
+                "package carries no dict to mutate).  Use a thermoPackage for such cases.");
         auto driver = OuterDriver::New(outerDict);
         driver->setSimulator     (simulate);
         driver->setFlowsheetDict (flowsheetDict);
@@ -624,12 +869,14 @@ try
         {
             SimulationResult r = driver->finalResult();
             runReports(r);
+            if (!validate0(r)) finalRc = 1;
+            writeConverged(r);
         }
     }
     else
     {
         // Direct: one simulator pass
-        auto result = simulate(flowsheetDict);
+        auto result = simulate(flowsheetDict, StreamOverrides{});
         finalRc = result.converged ? 0 : 1;
 
         // Layer 3: optional post-processing on the result
@@ -641,6 +888,8 @@ try
 
         // Layer 3b: controlDict `reports {... }` chain.
         runReports(result);
+        if (!validate0(result)) finalRc = 1;
+        writeConverged(result);
 
         // (utility allocation now done inside `simulate` -- carried on every
         // pass, direct + outer -- so the GUI always has it.)

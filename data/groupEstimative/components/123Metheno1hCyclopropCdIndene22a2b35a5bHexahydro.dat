@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,3-metheno-1h-cycloprop[cd]indene,2,2a,2b,3,5a,5b-hexahydro-  (C10H10, CAS 26934-61-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        123Metheno1hCyclopropCdIndene22a2b35a5bHexahydro;
+formula     C10H10;
+CAS         26934-61-2;
+InChIKey    LMCKJCBKGXLUDT-UHFFFAOYSA-N;
+MW          130.19;      // g/mol [origin=calculated method=formula-sum]
+Tc          625.39;      // K   [origin=predictive method=joback]
+Pc          33.960;      // bar [origin=predictive method=joback]
+omega       0.3895;      // -   [origin=predictive method=lee-kesler]
+Tb          425.90;      // K   [origin=predictive method=joback]
+HvapTb      35924.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-206.21 1.6208 -0.00167428 6.734e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 8; } { group CH=CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 8; } { group dCH_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3-metheno-1h-cycloprop(cd)indene, 2,2a,2b,3,5a,5b-hexahydro-" );
+gibbsFormation
+{
+    dHf_298   141830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     -169.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=404400.0
+    phase     gas;
+}

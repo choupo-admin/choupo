@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tricyclo(3.2.1.03,6)octane  (C8H12, CAS 250-22-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tricyclo321036Octane;
+formula     C8H12;
+CAS         250-22-6;
+InChIKey    JMVZAUKRYGGVCX-UHFFFAOYSA-N;
+MW          108.184;      // g/mol [origin=calculated method=formula-sum]
+Tc          595.22;      // K   [origin=predictive method=joback]
+Pc          36.553;      // bar [origin=predictive method=joback]
+omega       0.2967;      // -   [origin=predictive method=lee-kesler]
+Tb          393.92;      // K   [origin=predictive method=joback]
+HvapTb      32660.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-144.05 1.1996 -0.001063 3.836e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group CH_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tricyclo[3.2.1.03,6]octane(7ci,8ci,9ci)" );
+gibbsFormation
+{
+    dHf_298   -4230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     134.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=203120.0
+    phase     gas;
+}

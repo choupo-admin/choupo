@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-dimethoxyphenyl isocyanate  (C9H9NO3, CAS 84370-87-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24DimethoxyphenylIsocyanate;
+formula     C9H9NO3;
+CAS         84370-87-6;
+InChIKey    WRAZHLRMDRTLOZ-UHFFFAOYSA-N;
+MW          179.175;      // g/mol [origin=calculated method=formula-sum]
+Tc          768.76;      // K   [origin=predictive method=joback]
+Pc          32.992;      // bar [origin=predictive method=joback]
+omega       0.6798;      // -   [origin=predictive method=lee-kesler]
+Tb          553.67;      // K   [origin=predictive method=joback]
+HvapTb      53580.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group CH3O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH3; count 2; } { group dCd; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-isocyanato-2,4-dimethoxy-benzene" "1-isocyanato-2,4-dimethoxybenzene" "2,4-dimethoxybenzenisocyanate" "benzene,1-isocyanato-2,4-dimethoxy-" "benzene, 1-isocyanato-2,4-dimethoxy-" "isocyanicacid, 2,4-dimethoxyphenyl ester (7ci);1-isocyanato-2,4-dimethoxybenzene;2,4-dimethoxyphenyl isocyanate;benzene, 1-isocyanato-2,4-dimethoxy-;" );
+// formation datum unavailable (element entropy missing): dHf_298=-285350.0 dGf_298=None

@@ -61,30 +61,8 @@ variables
                                       //    via A_needed = A constraint)
 }
 
-streams
-{
-    feed
-    {
-        T            295.0 K;
-        P            200.0 kPa;
-        massFlows
-        {
-            water    21375 kg/h;
-            sucrose   1125 kg/h;
-        }
-    }
-
-    utilitySteam_200kPa
-    {
-        F                $F_steam;          // initial estimate; the
-                                              //   DesignSpec adjusts it
-                                              //   to close the design.
-        P                200.0  kPa;
-        state            saturatedVapour;    // -> T_sat(200 kPa) ~ 393 K auto
-        molarComposition  { water 1.0; }
-        category         LP_steam_200kPa;    // utility tag for aggregation
-    }
-}
+// Stream STATE lives in 0/ (bin/choupo-init0); the designSpec knob is the
+// streams.<inlet>.F channel target declared in outerDict (forum #53).
 
 units
 (

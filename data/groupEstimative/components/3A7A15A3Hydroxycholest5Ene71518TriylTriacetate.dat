@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (3|a,7|a,15|a)-3-hydroxycholest-5-ene-7,15,18-triyl triacetate  (C33H52O7, CAS 12006-10-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3A7A15A3Hydroxycholest5Ene71518TriylTriacetate;
+formula     C33H52O7;
+CAS         12006-10-9;
+InChIKey    WZQINYCEPJKVHP-HOHADPCXSA-N;
+MW          560.772;      // g/mol [origin=calculated method=formula-sum]
+Tc          1557.71;      // K   [origin=predictive method=joback]
+Pc          7.416;      // bar [origin=predictive method=joback]
+omega       0.5350;      // -   [origin=predictive method=lee-kesler]
+Tb          1250.18;      // K   [origin=predictive method=joback]
+HvapTb      124795.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-223.736 3.91174 -0.00288164 9.01e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 10; } { group CH; count 9; } { group C; count 2; } { group CH=C; count 1; } { group OH; count 1; } { group CH3COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 7; } { group CH2; count 4; } { group CH; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 7; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(3r,7r,8r,9s,10r,13s,14s,15r,17r)-7,15-diacetyloxy-10-methyl-17-[(2r)-6-methylheptan-2-yl]-3-oxidanyl-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-13-yl]methyl ethanoate" "cholest-5-ene-3alpha,7beta,15beta,18-tetrol-7,15,18-triacetate" "cholest-5-ene-3,7,15,18-tetrol, 7,15,18-triacetate, (3alpha,7beta,15beta)-" "[(3r,7r,8r,9s,10r,13s,14s,15r,17r)-7,15-diacetyloxy-3-hydroxy-10-methyl-17-[(2r)-6-methylheptan-2-yl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-13-yl]methyl acetate" );
+gibbsFormation
+{
+    dHf_298   -1603590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1249.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-692530.0
+    phase     gas;
+}

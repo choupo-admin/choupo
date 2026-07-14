@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: etafenone  (C21H27NO2, CAS 90-54-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        etafenone;
+formula     C21H27NO2;
+CAS         90-54-0;
+InChIKey    OEGDFSLNGABBKJ-UHFFFAOYSA-N;
+MW          325.452;      // g/mol [origin=calculated method=formula-sum]
+Tc          1042.34;      // K   [origin=predictive method=joback]
+Pc          15.463;      // bar [origin=predictive method=joback]
+omega       1.0134;      // -   [origin=predictive method=lee-kesler]
+Tb          827.15;      // K   [origin=predictive method=joback]
+HvapTb      78753.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.544 1.81424 -0.00109686 2.3836e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group ACH; count 9; } { group AC; count 2; } { group ACCH2; count 1; } { group CH2CO; count 1; } { group CH2O; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group O; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[2-[2-(diethylamino)ethoxy]phenyl]-3-phenyl-propan-1-one" "etafenone hcl" "etafenonum" "etafenon" "etafenona" "etafenone (inn)" "etafenonum [inn-latin]" "2192-21-4 (hydrochloride)" "2'-(2-(diethylamino)ethoxy)-3-phenylpropiophenone" "1-[2-(2-diethylaminoethyloxy)phenyl]-3-phenylpropan-1-one" "1-{2-[2-(diethylamino)ethoxy]phenyl}-3-phenylpropan-1-one" "1-[2-[2-(diethylamino)ethoxy]phenyl]-3-phenyl-1-propanone; 2'-[2-(diethylamino)ethoxy]-3-phenylpropiophenone" );
+gibbsFormation
+{
+    dHf_298   -192450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     809.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=217990.0
+    phase     gas;
+}

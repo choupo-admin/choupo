@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,4-diacetylhexane-2,5-dione  (C10H14O4, CAS 5027-32-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34Diacetylhexane25Dione;
+formula     C10H14O4;
+CAS         5027-32-7;
+InChIKey    CSKRBHOAJUMOKJ-UHFFFAOYSA-N;
+MW          198.218;      // g/mol [origin=calculated method=formula-sum]
+Tc          847.64;      // K   [origin=predictive method=joback]
+Pc          27.412;      // bar [origin=predictive method=joback]
+omega       0.9715;      // -   [origin=predictive method=lee-kesler]
+Tb          643.00;      // K   [origin=predictive method=joback]
+HvapTb      64062.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.87 0.85368 -0.0004518 7.064e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 2; } { group CH3CO; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 2; } { group CdO; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4-diethanoylhexane-2,5-dione" "3,4-diacetyl-2,5-hexanedione" "sym-tetraacetylethane" "1,1,2,2-tetraacetylethane" "tetraacetylethane" "3,5-hexanedione" "bis(acetylacetone)" "2, 3,4-diacetyl-" "1,2,2-tetraacetylethane" "3,4-diacetyl-hexane-2,5-dione" "2,5-hexanedione,3,4-diacetyl-" );
+gibbsFormation
+{
+    dHf_298   -710610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     633.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-487240.0
+    phase     gas;
+}

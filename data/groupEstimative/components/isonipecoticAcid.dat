@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isonipecotic acid  (C6H11NO2, CAS 498-94-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isonipecoticAcid;
+formula     C6H11NO2;
+CAS         498-94-2;
+InChIKey    SRJOCJYGOFTFLH-UHFFFAOYSA-N;
+MW          129.159;      // g/mol [origin=calculated method=formula-sum]
+Tc          783.70;      // K   [origin=predictive method=joback]
+Pc          45.964;      // bar [origin=predictive method=joback]
+omega       0.6774;      // -   [origin=predictive method=lee-kesler]
+Tb          550.49;      // K   [origin=predictive method=joback]
+HvapTb      53301.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-46.65 0.7333 -0.0003956 6.49e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group CH2NH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group CH_ring; count 1; } { group COOH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "piperidine-4-carboxylic acid" "4-piperidinecarboxylic acid" "hexahydroisonicotinic acid" "4-carboxypiperidine" "isonicotinic acid, hexahydro-" "dl-isopipecolinic acid" "h-pic(4)-oh" "4-hexahydroisonicotinic acid" "acide isonipecotique [french]" "acide piperidine-carboxylique-4 [french]" "4-piperidinecarboxylic acid; hexahydroisonicotinic acid" "h-inp-oh" );
+gibbsFormation
+{
+    dHf_298   -425310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     406.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-232110.0
+    phase     gas;
+}

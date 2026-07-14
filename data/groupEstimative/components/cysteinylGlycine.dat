@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cysteinyl-glycine  (C5H10N2O3S, CAS 19246-18-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cysteinylGlycine;
+formula     C5H10N2O3S;
+CAS         19246-18-5;
+InChIKey    ZUKPVRWZDMRIEO-VKHMYHEASA-N;
+MW          178.206;      // g/mol [origin=calculated method=formula-sum]
+Tc          928.69;      // K   [origin=predictive method=joback]
+Pc          50.730;      // bar [origin=predictive method=joback]
+omega       1.2625;      // -   [origin=predictive method=lee-kesler]
+Tb          698.50;      // K   [origin=predictive method=joback]
+HvapTb      74060.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (28.792 0.6729 -0.0004197 9.386e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CHNH2; count 1; } { group COOH; count 1; } { group CH2SH; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group NH2; count 1; } { group NH; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[[(2r)-2-azanyl-3-sulfanyl-propanoyl]amino]ethanoic acid" "l-cysteinylglycine" "cys-gly" "n-l-cysteinylglycine" "n-cysteinyl glycine" "n-l-cysteinyl-glycine" "glycine, l-cysteinyl-" "n-cysteinyl-glycine;cys-gly" "2-[[(2r)-2-amino-3-sulfanylpropanoyl]amino]acetic acid" "glycine,n-l-cysteinyl- (7ci,8ci); glycine, n-cysteinyl- (6ci); cysteinylglycine;l-cysteinylglycine; n-l-cysteinylglycine" );
+gibbsFormation
+{
+    dHf_298   -488920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     575.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-298820.0
+    phase     gas;
+}

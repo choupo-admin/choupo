@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-hexenoic acid  (C6H10O2, CAS 1577-22-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5HexenoicAcid;
+formula     C6H10O2;
+CAS         1577-22-6;
+InChIKey    XUDOZULIAWNMIU-UHFFFAOYSA-N;
+MW          114.144;      // g/mol [origin=calculated method=formula-sum]
+Tc          672.10;      // K   [origin=predictive method=joback]
+Pc          36.159;      // bar [origin=predictive method=joback]
+omega       0.6582;      // -   [origin=predictive method=lee-kesler]
+Tb          479.07;      // K   [origin=predictive method=joback]
+HvapTb      45444.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.957 0.6046 -0.0003981 1.056e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2=CH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hex-5-enoic acid" "delta-hexenoic acid" "c6:1n-1" );
+gibbsFormation
+{
+    dHf_298   -392010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     438.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-256430.0
+    phase     gas;
+}

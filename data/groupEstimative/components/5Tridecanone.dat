@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-tridecanone  (C13H26O, CAS 30692-16-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Tridecanone;
+formula     C13H26O;
+CAS         30692-16-1;
+InChIKey    VCTJSLKBPLOIOT-UHFFFAOYSA-N;
+MW          198.35;      // g/mol [origin=calculated method=formula-sum]
+Tc          720.01;      // K   [origin=predictive method=joback]
+Pc          17.318;      // bar [origin=predictive method=joback]
+omega       0.7558;      // -   [origin=predictive method=lee-kesler]
+Tb          550.91;      // K   [origin=predictive method=joback]
+HvapTb      51278.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.57 1.21084 -0.0006647 1.3446e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 9; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 10; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tridecan-5-one" "n-butyl-n-octyl ketone" );
+gibbsFormation
+{
+    dHf_298   -424230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     689.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-70340.0
+    phase     gas;
+}

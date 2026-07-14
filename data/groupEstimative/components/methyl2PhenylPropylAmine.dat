@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl-(2-phenyl-propyl)-amine  (C10H15N, CAS 6152-73-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl2PhenylPropylAmine;
+formula     C10H15N;
+CAS         6152-73-4;
+InChIKey    AUFSOOYCQYDGES-UHFFFAOYSA-N;
+MW          149.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          715.92;      // K   [origin=predictive method=joback]
+Pc          29.992;      // bar [origin=predictive method=joback]
+omega       0.5099;      // -   [origin=predictive method=lee-kesler]
+Tb          504.81;      // K   [origin=predictive method=joback]
+HvapTb      46178.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-42.999 0.95704 -0.0006032 1.433e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 5; } { group ACCH; count 1; } { group CH3NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-methyl-2-phenyl-propan-1-amine" "methyl(2-phenylpropyl)amine" "n-methyl-2-phenylpropan-1-amine" "fenprometamina" "phenpromethadrine" "phenpromethaminum" "1-phenyl-1-methyl-2-methylamino-aethan" "benzeneethanamine, n,beta-dimethyl- (9ci)" );
+gibbsFormation
+{
+    dHf_298   34990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     470.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=232680.0
+    phase     gas;
+}

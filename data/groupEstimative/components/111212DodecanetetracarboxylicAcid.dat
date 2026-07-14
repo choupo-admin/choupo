@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,12,12-dodecanetetracarboxylic acid  (C16H26O8, CAS 68025-28-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111212DodecanetetracarboxylicAcid;
+formula     C16H26O8;
+CAS         68025-28-5;
+InChIKey    UTCXESIWEYTBMM-UHFFFAOYSA-N;
+MW          346.376;      // g/mol [origin=calculated method=formula-sum]
+Tc          1409.41;      // K   [origin=predictive method=joback]
+Pc          17.624;      // bar [origin=predictive method=joback]
+omega       1.4294;      // -   [origin=predictive method=lee-kesler]
+Tb          1146.84;      // K   [origin=predictive method=joback]
+HvapTb      119090.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.38 1.7388 -0.0011434 2.902e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group CH; count 2; } { group COOH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 10; } { group CH; count 2; } { group COOH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodecane-1,1,12,12-tetracarboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -1785210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     972.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1296680.0
+    phase     gas;
+}

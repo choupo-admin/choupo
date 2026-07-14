@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2-ethoxypropan-2-yl)benzene  (C11H16O, CAS 1712-74-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Ethoxypropan2YlBenzene;
+formula     C11H16O;
+CAS         1712-74-9;
+InChIKey    JNPNJMJXGPZCNE-UHFFFAOYSA-N;
+MW          164.248;      // g/mol [origin=calculated method=formula-sum]
+Tc          710.72;      // K   [origin=predictive method=joback]
+Pc          26.543;      // bar [origin=predictive method=joback]
+omega       0.4147;      // -   [origin=predictive method=lee-kesler]
+Tb          497.15;      // K   [origin=predictive method=joback]
+HvapTb      43470.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-39.989 1.03256 -0.0006666 1.623e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethoxypropan-2-ylbenzene" "cumyl ethyl ether" "benzene, (1-ethoxy-1-methylethyl)-" "alpha,alpha-dimethylbenzyl ethyl ether" "(1-ethoxy-1-methylethyl)benzene" "benzene,(1-ethoxy-1-methylethyl)-" "ether, a,a-dimethylbenzyl ethyl (6ci,7ci,8ci); cumyl ethyl ether" );
+gibbsFormation
+{
+    dHf_298   -174810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     450.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=51990.0
+    phase     gas;
+}

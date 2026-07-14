@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1-trimethyldisilane  (C3H9Si2, CAS 18365-32-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C3H9Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        111Trimethyldisilane;
+formula     C3H9Si2;
+CAS         18365-32-7;
+InChIKey    HUYHHHVTBNJNFM-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+role        radical;
+MW          101.275;      // g/mol [origin=calculated method=formula-sum]
+Tc          431.66;      // K   [origin=predictive method=joback]
+Pc          38.388;      // bar [origin=predictive method=joback]
+omega       0.1123;      // -   [origin=predictive method=lee-kesler]
+Tb          268.94;      // K   [origin=predictive method=joback]
+HvapTb      22419.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.57 0.18576 6.8e-05 -8.41e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethylsilylsilicon" "disilane, 1,1,1-trimethyl-" );
+gibbsFormation
+{
+    dHf_298   -161060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     364.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-78000.0
+    phase     gas;
+}

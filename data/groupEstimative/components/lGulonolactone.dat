@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: l-gulonolactone  (C6H10O6, CAS 1128-23-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lGulonolactone;
+formula     C6H10O6;
+CAS         1128-23-0;
+InChIKey    SXZYCXMUPBBULW-SKNVOMKLSA-N;
+MW          178.14;      // g/mol [origin=calculated method=formula-sum]
+Tc          936.42;      // K   [origin=predictive method=joback]
+Pc          54.951;      // bar [origin=predictive method=joback]
+omega       2.4106;      // -   [origin=predictive method=lee-kesler]
+Tb          760.78;      // K   [origin=predictive method=joback]
+HvapTb      101980.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.961 0.7588 -0.0004422 8.47e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 4; } { group OH; count 4; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group CH_ring; count 3; } { group OH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,4r,5r)-5-[(1s)-1,2-bis(oxidanyl)ethyl]-3,4-bis(oxidanyl)oxolan-2-one" "l-gulono-1,4-lactone" "gamma-gulonolactone" "l-gulonic acid gamma-lactone" "l-gulono-gamma-lactone" "l-(+)-gulono-1,4-lactone" "(3s,4r,5r)-5-((s)-1,2-dihydroxyethyl)-3,4-dihydroxydihydrofuran-2(3h)-one" "reduced ascorbic acid" "gulonic acid-1,4-lactone" "reduced ascorbate" "l-gulonic gamma-lactone" "l-gulono-1-4-lactone" );
+gibbsFormation
+{
+    dHf_298   -1066530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     460.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-815120.0
+    phase     gas;
+}

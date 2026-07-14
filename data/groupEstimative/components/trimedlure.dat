@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimedlure  (C12H21ClO2, CAS 12002-53-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trimedlure;
+formula     C12H21ClO2;
+CAS         12002-53-8;
+InChIKey    APMORJJNVZMVQK-UHFFFAOYSA-N;
+MW          232.748;      // g/mol [origin=calculated method=formula-sum]
+Tc          789.85;      // K   [origin=predictive method=joback]
+Pc          19.859;      // bar [origin=predictive method=joback]
+omega       0.5105;      // -   [origin=predictive method=lee-kesler]
+Tb          576.79;      // K   [origin=predictive method=joback]
+HvapTb      52613.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.92 1.29078 -0.0006968 1.086e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 2; } { group C; count 1; } { group CHCl; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group C; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 3; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tert-butyl 4-chloranyl-2-methyl-cyclohexane-1-carboxylate" "cyclohexanecarboxylic acid, 4(or 5)-chloro-2-methyl-, 1,1-dimethylethyl ester" "capilure" "pherocon mff" "agn-pc-00maug" "t-butyl 4(or 5)-chloro-2-methylcyclohexanecarboxylate" "tert-butyl 4-chloro-2-methylcyclohexane-1-carboxylate" "1,1-dimethylethyl 4(or 5)-chloro-2-methylcyclohexanecarboxylate" "tert-butyl (1r,2r,4s)-4-chloro-2-methylcyclohexane-1-carboxylate" "4-(or 5)chloro-2-methylcyclohexanecarboxylic acid, 1,1-dimethyl ester" "cyclohexanecarboxylic acid, 4-(or 5)-chloro-2-methyl-, tert-butyl ester" "cyclohexanecarboxylic acid, 4-chloro-2-methyl-, 2,2-dimethylethyl ester" );
+gibbsFormation
+{
+    dHf_298   -619140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     554.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-260270.0
+    phase     gas;
+}

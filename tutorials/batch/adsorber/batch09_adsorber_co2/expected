@@ -1,0 +1,28 @@
+# Reference KPIs (golden master).  REVIEWED against the INDEPENDENT analytic
+# anchors of the A2 spec (a2_vectors.py, 10 digits): the inventory-equilibrium
+# root p_inf = 7229.128209 Pa / q_inf = 1.970838025 mol/kg is the pin, not the
+# run's own output -- that is what makes this golden a gate, not a mirror.
+# kind   name      key         expected        reltol
+kpi     adsorber               P_final          7229.128209        1e-4
+kpi     adsorber               Q_ads_isosteric_kJ -88.68771114       1e-4
+kpi     adsorber               T_final          298.15             1e-4
+kpi     adsorber               closure_worst_rel 0                  1e-3
+kpi     adsorber               n_CO2_final      2.916197467e-05    1e-4
+kpi     adsorber               q_CO2_final      1.970838025        1e-4
+kpi     adsorber               t_end            600                1e-4
+kpi     adsorber               totalMoles_final 2.916197467e-05    1e-4
+kpi     adsorber               uptake_CO2_mol   1.970838025        1e-4
+kpi     campaign               element_C_closure_rel 0                  1e-3
+kpi     campaign               element_O_closure_rel 0                  1e-3
+kpi     campaign               element_worst_closure_rel 0                  1e-3
+kpi     campaign               energy_balance_available 0                  1e-4
+kpi     campaign               energy_records_invalid 0                  1e-4
+kpi     campaign               energy_records_valid 0                  1e-4
+kpi     campaign               mass_closure_rel 0                  1e-3
+kpi     campaign               mass_kg_external_out 0                  1e-4
+kpi     campaign               mass_kg_final    0.08802            1e-4
+kpi     campaign               mass_kg_initial  0.08802            1e-4
+kpi     campaign               mass_residual_kg 0                  1e-3
+kpi     campaign               transfers_H_invalid 0                  1e-4
+kpi     campaign               transfers_H_valid 0                  1e-4
+kpi     campaign               transfers_logged 0                  1e-4

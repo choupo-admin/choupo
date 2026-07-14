@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propenoic acid, telomer with 1-dodecanethiol and 2-propenenitrile  (C18H33NO2S, CAS 63747-59-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropenoicAcidTelomerWith1DodecanethiolAnd2Propenenitrile;
+formula     C18H33NO2S;
+CAS         63747-59-1;
+InChIKey    AUWSQVKOJHEBQL-UHFFFAOYSA-N;
+MW          327.527;      // g/mol [origin=calculated method=formula-sum]
+Tc          1132.89;      // K   [origin=predictive method=joback]
+Pc          11.809;      // bar [origin=predictive method=joback]
+omega       1.0243;      // -   [origin=predictive method=lee-kesler]
+Tb          918.05;      // K   [origin=predictive method=joback]
+HvapTb      89289.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (98.671 1.27432 -0.0002356 -1.693e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group CH2=CH; count 1; } { group COOH; count 1; } { group CH2SH; count 1; } { group ACRY; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 11; } { group dCH2; count 2; } { group dCH; count 2; } { group COOH; count 1; } { group CN; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodecane-1-thiol;prop-2-enenitrile;prop-2-enoic acid" "dodecane-1-thiol; prop-2-enenitrile; prop-2-enoic acid" );
+gibbsFormation
+{
+    dHf_298   -534140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1185.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-114500.0
+    phase     gas;
+}

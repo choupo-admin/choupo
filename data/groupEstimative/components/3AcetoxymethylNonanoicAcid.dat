@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(acetoxymethyl)nonanoic acid  (C12H22O4, CAS 68922-15-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3AcetoxymethylNonanoicAcid;
+formula     C12H22O4;
+CAS         68922-15-6;
+InChIKey    GDROPORAYQUYKG-UHFFFAOYSA-N;
+MW          230.304;      // g/mol [origin=calculated method=formula-sum]
+Tc          863.02;      // K   [origin=predictive method=joback]
+Pc          19.441;      // bar [origin=predictive method=joback]
+omega       1.0710;      // -   [origin=predictive method=lee-kesler]
+Tb          677.45;      // K   [origin=predictive method=joback]
+HvapTb      66489.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.307 1.14574 -0.0006102 1.02e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group CH; count 1; } { group CH3COO; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 7; } { group CH; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(acetyloxymethyl)nonanoic acid" "3-[(acetoxy)methyl]nonan-1-oic acid" "3-((acetoxy)methyl)nonan-1-oic acid" "nonanoic acid, 3-((acetyloxy)methyl)-" "nonanoic acid, 3-[(acetyloxy)methyl]-" "3-acetoxymethylnonanoic acid" "nonanoic acid,3-[(acetyloxy)methyl]-" );
+gibbsFormation
+{
+    dHf_298   -963840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     718.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-606560.0
+    phase     gas;
+}

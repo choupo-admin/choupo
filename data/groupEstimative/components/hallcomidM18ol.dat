@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hallcomid m 18ol  (C20H39NO, CAS 2664-42-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hallcomidM18ol;
+formula     C20H39NO;
+CAS         2664-42-8;
+InChIKey    GAXDEROCNMZYCS-QXMHVHEDSA-N;
+MW          309.538;      // g/mol [origin=calculated method=formula-sum]
+Tc          900.80;      // K   [origin=predictive method=joback]
+Pc          10.928;      // bar [origin=predictive method=joback]
+omega       0.9221;      // -   [origin=predictive method=lee-kesler]
+Tb          727.67;      // K   [origin=predictive method=joback]
+HvapTb      68861.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.806 2.01976 -0.0012419 3.0256e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 14; } { group CH=CH; count 1; } { group CON_CH3_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 14; } { group dCH; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z)-n,n-dimethyloctadec-9-enamide" "n,n-dimethyloleamide" "n,n-dimethyl oleylamide" "n,n-dimethyl-cis-9-octadecenamide" "9-octadecenamide, n,n-dimethyl-, (z)-" "9-octadecenamide, n,n-dimethyl-, (9z)-" "oleamide,n-dimethyl-" "oleamide, n,n-dimethyl- (8ci)" "(z)-n,n-dimethyl-9-octadecenamide" "9-octadecenamide,n-dimethyl-, (z)-" );
+gibbsFormation
+{
+    dHf_298   -383960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     971.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=179600.0
+    phase     gas;
+}

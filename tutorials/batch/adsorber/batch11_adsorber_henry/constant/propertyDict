@@ -1,0 +1,13 @@
+/*---------------------------------------------------------------------------*\
+  batch11_adsorber_henry / constant/propertyDict
+
+  Pure CO2 gas over a synthetic Henry-limit sorbent, isothermal: ideal
+  activity + ideal-gas EOS.  The linear isotherm record lives case-local
+  in constant/parameters/adsorption/equilibria/henrySorbent/ -- it is a
+  TEACHING record (the exact-solution gate), not catalogue data.
+\*---------------------------------------------------------------------------*/
+
+components       ( CO2 );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

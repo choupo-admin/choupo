@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl caproate  (C8H16O2, CAS 123-66-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylCaproate;
+formula     C8H16O2;
+CAS         123-66-0;
+InChIKey    SHZIWNPUGXLXDT-UHFFFAOYSA-N;
+MW          144.214;      // g/mol [origin=calculated method=formula-sum]
+Tc          612.60;      // K   [origin=predictive method=joback]
+Pc          25.482;      // bar [origin=predictive method=joback]
+omega       0.5491;      // -   [origin=predictive method=lee-kesler]
+Tb          440.86;      // K   [origin=predictive method=joback]
+HvapTb      40809.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.025 0.70904 -0.0003168 2.69e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl hexanoate" "hexanoic acid, ethyl ester" "ethyl hexoate" "capronic ether absolute" "caproic acid ethyl ester" "hexanoic acid ethyl ester" "ethyl hexanoate (caproate)" "acetic acid, butyl-, ethyl ester" "ethyl hexanoate (caproate) (natural)" "hexanoic acid, ethyl ester, mixt. with soybean oil epoxide" "ethyl butyl acetate" "caproic acid ethylester" );
+gibbsFormation
+{
+    dHf_298   -525730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     518.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-293890.0
+    phase     gas;
+}

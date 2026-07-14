@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methyl-5-phenylthiophene  (C11H10S, CAS 5069-26-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methyl5Phenylthiophene;
+formula     C11H10S;
+CAS         5069-26-1;
+InChIKey    NEKXRPVOSZHILM-UHFFFAOYSA-N;
+MW          174.261;      // g/mol [origin=calculated method=formula-sum]
+Tc          811.51;      // K   [origin=predictive method=joback]
+Pc          34.848;      // bar [origin=predictive method=joback]
+omega       0.4110;      // -   [origin=predictive method=lee-kesler]
+Tb          554.02;      // K   [origin=predictive method=joback]
+HvapTb      50642.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-41.46 0.91153 -0.00064778 1.803e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 5; } { group AC; count 1; } { group C4H2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-5-phenyl-thiophene" "nekxrpvoszhilm-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   184860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     433.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=278930.0
+    phase     gas;
+}

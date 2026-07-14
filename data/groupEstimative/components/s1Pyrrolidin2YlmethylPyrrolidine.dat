@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (s)-1-(pyrrolidin-2-ylmethyl)pyrrolidine  (C9H18N2, CAS 51207-66-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        s1Pyrrolidin2YlmethylPyrrolidine;
+formula     C9H18N2;
+CAS         51207-66-0;
+InChIKey    YLBWRMSQRFEIEB-VIFPVBQESA-N;
+MW          154.257;      // g/mol [origin=calculated method=formula-sum]
+Tc          717.59;      // K   [origin=predictive method=joback]
+Pc          34.971;      // bar [origin=predictive method=joback]
+omega       0.4870;      // -   [origin=predictive method=lee-kesler]
+Tb          497.47;      // K   [origin=predictive method=joback]
+HvapTb      45080.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-120.849 1.2688 -0.0008744 2.375e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 1; } { group CH2NH; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 1; } { group NH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[[(2s)-pyrrolidin-2-yl]methyl]pyrrolidine" "(s)-(+)-1-(2-pyrrolidinylmethyl)pyrrolidine" "1-[(2s)-pyrrolidin-2-ylmethyl]pyrrolidine" "[((2s)pyrrolidin-2-yl)methyl]pyrrolidine" "pyrrolidine,1-(2-pyrrolidinylmethyl)-, (s)-; (+)-1-(2-pyrrolidinylmethyl)pyrrolidine;(2s)-1-(2-pyrrolidinylmethyl)pyrrolidine;(2s)-2-((pyrrolidin-1-yl)methyl)pyrrolidine;(2s)-2-(pyrrolidin-1-ylmethyl)pyrrolidine;(s)-(+)-1-(2-pyrrolidinomethyl)pyrrolidine;(s)-(+)-1-(2-pyrrolidinylmethyl)pyrrolidine;(s)-(+)-1-[(pyrrolidin-2-yl)methyl]pyrrolidine; (s)-(+)-2-(1-pyrrolidinylmethyl)pyrrolidine;(s)-1-(2-pyrrolidinylmethyl)pyrrolidine;(s)-1-(2-pyrrolidinylmethyl)pyrrolidne;(s)-2-(1-pyrrolidinylmethyl)pyrrolidine;(s)-2-[(pyrrolidino)methyl]pyrrolidine; 1-((2s)-pyrrolidinylmethyl)pyrrolidine;1-[(2s)-2-pyrrolidinylmethyl]pyrrolidine" );
+gibbsFormation
+{
+    dHf_298   23710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     438.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=316300.0
+    phase     gas;
+}

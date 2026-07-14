@@ -42,3 +42,6 @@ idealGasHeatCapacity
     coefficients  (27.14   9.274e-3   -1.381e-5   7.645e-9);
     Trange        (250  1500);
 }
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( hydrogen );

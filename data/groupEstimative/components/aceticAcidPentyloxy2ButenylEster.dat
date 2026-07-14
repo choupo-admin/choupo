@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetic acid, (pentyloxy)-, 2-butenyl ester  (C11H20O3, CAS 72894-10-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        aceticAcidPentyloxy2ButenylEster;
+formula     C11H20O3;
+CAS         72894-10-1;
+InChIKey    QHBHZWFMPCJXIQ-UHFFFAOYSA-N;
+MW          200.278;      // g/mol [origin=calculated method=formula-sum]
+Tc          710.79;      // K   [origin=predictive method=joback]
+Pc          20.037;      // bar [origin=predictive method=joback]
+omega       0.7333;      // -   [origin=predictive method=lee-kesler]
+Tb          536.08;      // K   [origin=predictive method=joback]
+HvapTb      49855.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (29.616 0.95084 -0.0004528 5.52e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH=CH; count 1; } { group CH2COO; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group dCH; count 2; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "but-2-enyl 2-pentoxyethanoate" "acetic acid, 2-(pentyloxy)-, 2-buten-1-yl ester" );
+gibbsFormation
+{
+    dHf_298   -602650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     640.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-293410.0
+    phase     gas;
+}

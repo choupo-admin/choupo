@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bromoaspirin  (C9H7BrO4, CAS 1503-53-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bromoaspirin;
+formula     C9H7BrO4;
+CAS         1503-53-3;
+InChIKey    VRJBEVQGJOSGOX-UHFFFAOYSA-N;
+MW          259.055;      // g/mol [origin=calculated method=formula-sum]
+Tc          950.67;      // K   [origin=predictive method=joback]
+Pc          38.198;      // bar [origin=predictive method=joback]
+omega       1.0565;      // -   [origin=predictive method=lee-kesler]
+Tb          712.05;      // K   [origin=predictive method=joback]
+HvapTb      70234.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (27.6 0.69512 -0.00041232 7.66e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group CH3COO; count 1; } { group COOH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-acetyloxy-5-bromanyl-benzoic acid" "sedasprin" "2-(acetyloxy)-5-bromobenzoic acid" "5-bromosalicylic acid acetate" "5-bromoacetylsalicylic acid" "acetyl 5-bromosalicylic acid" "2-acetoxy-5-bromobenzoic acid" "benzoic acid, 2-(acetyloxy)-5-bromo-" "5-bromo-2-acetylsalicylic acid" "acetyl-5-bromosalicylic acid" "2-acetyloxy-5-bromobenzoic acid" "salicylic acid, 5-bromo-, acetate" );
+gibbsFormation
+{
+    dHf_298   -656720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     543.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-521910.0
+    phase     gas;
+}

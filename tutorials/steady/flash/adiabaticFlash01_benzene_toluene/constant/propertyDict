@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  adiabaticFlash01_benzene_toluene / constant/thermoPackage
+
+  Benzene (light) / toluene (heavy): the 40/60 sub-cooled liquid flashed
+  adiabatically from 380 K / 3 bar down to 1 atm.  Ideal models on both
+  sides: benzene-toluene is the textbook near-Raoult pair, so nothing is
+  lost -- this case teaches the adiabatic energy balance (Q = 0 fixes T
+  and V/F together), not activity-coefficient thermodynamics.
+\*---------------------------------------------------------------------------*/
+
+components       ( benzene  toluene );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

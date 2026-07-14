@@ -1,0 +1,23 @@
+/*----------------------------------------------------------*\
+  propertyData/manifest.dat -- records physically contained in THIS context.
+
+  sealed true means lookup may use this context and explicit `inherits`
+  ancestors only.  Installation-catalogue fallback is forbidden.
+\*----------------------------------------------------------*/
+
+propertyDataManifest
+{
+    defaultStandardSet  Choupo-2607;
+    importedAt          "2026-07-07";
+    sealed              true;
+
+    records
+    {
+        "parameters/activity/NRTL/LiCl-LiX_extractant.dat" { kind local; sha256 "94e77f29bebd99e8fb78d861283cd11d357012372a6de8a452e18ad560acc259"; }
+        "parameters/activity/NRTL/LiCl-kerosene_C12cut.dat" { kind local; sha256 "e59e5d657f5f76b16877ec374947518f8ffdd39d95a0d91bb0b1b01a37a7cbc6"; }
+        "parameters/activity/NRTL/LiCl-water.dat" { kind local; sha256 "af19533dc0dd70b506d49d22687e2a858e6fb6643433f22ad930442b77fbc1e8"; }
+        "parameters/activity/NRTL/LiX_extractant-water.dat" { kind local; sha256 "f0603f357eff8232e24df99178c9687d434a41163ae010eddd4bdef96a20f476"; }
+        "parameters/activity/NRTL/kerosene_C12cut-water.dat" { kind local; sha256 "9bd83b9ab434a4e8a8de6f1174af0b895304bf718a2d2d066eaa0b2e73325d66"; }
+        "propertyMethods/activity/NRTL.dat" { kind local; sha256 "b9723c6128e93f536c0bccab46c6471aaa37587a4b6f5c7d965bb70b115dab46"; }
+    }
+}

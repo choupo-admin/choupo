@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (9-chlorononyl)benzene  (C15H23Cl, CAS 27175-81-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        9ChlorononylBenzene;
+formula     C15H23Cl;
+CAS         27175-81-1;
+InChIKey    KFJDHWCTDWNJTP-UHFFFAOYSA-N;
+MW          238.799;      // g/mol [origin=calculated method=formula-sum]
+Tc          802.80;      // K   [origin=predictive method=joback]
+Pc          17.894;      // bar [origin=predictive method=joback]
+omega       0.6829;      // -   [origin=predictive method=lee-kesler]
+Tb          606.91;      // K   [origin=predictive method=joback]
+HvapTb      55645.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.761 1.3567 -0.0008438 2.018e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group ACH; count 5; } { group ACCH2; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 9; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9-chloranylnonylbenzene" "1-chloro-9-phenylnonane" "9-chlorononylbenzene" "benzene, (9-chlorononyl)-" );
+gibbsFormation
+{
+    dHf_298   -132140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     667.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=175900.0
+    phase     gas;
+}

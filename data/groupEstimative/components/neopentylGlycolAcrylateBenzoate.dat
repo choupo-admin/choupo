@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: neopentyl glycol acrylate benzoate  (C15H18O4, CAS 66671-22-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        neopentylGlycolAcrylateBenzoate;
+formula     C15H18O4;
+CAS         66671-22-5;
+InChIKey    MXBCLXAAEYWALK-UHFFFAOYSA-N;
+MW          262.305;      // g/mol [origin=calculated method=formula-sum]
+Tc          891.56;      // K   [origin=predictive method=joback]
+Pc          19.648;      // bar [origin=predictive method=joback]
+omega       0.8026;      // -   [origin=predictive method=lee-kesler]
+Tb          679.37;      // K   [origin=predictive method=joback]
+HvapTb      64108.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-21.298 1.34614 -0.0008289 1.679e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group CH2=CH; count 1; } { group ACH; count 5; } { group AC; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2,2-dimethyl-3-prop-2-enoyloxy-propyl) benzoate" "3-(benzoyloxy)-2,2-dimethylpropyl acrylate" "3-(acryloyloxy)-2,2-dimethylpropyl benzoate" "2-propenoic acid, 3-(benzoyloxy)-2,2-dimethylpropyl ester" "neopentyl glycol, monobenzoate monoacrylate" "(2,2-dimethyl-3-prop-2-enoyloxypropyl) benzoate" );
+gibbsFormation
+{
+    dHf_298   -634280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     692.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-342230.0
+    phase     gas;
+}

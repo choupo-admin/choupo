@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tridecane, 6-cyclohexyl-  (C19H38, CAS 13151-91-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tridecane6Cyclohexyl;
+formula     C19H38;
+CAS         13151-91-2;
+InChIKey    PPIIZJRNGJPCKQ-UHFFFAOYSA-N;
+MW          266.513;      // g/mol [origin=calculated method=formula-sum]
+Tc          835.64;      // K   [origin=predictive method=joback]
+Pc          12.495;      // bar [origin=predictive method=joback]
+omega       0.7147;      // -   [origin=predictive method=lee-kesler]
+Tb          653.43;      // K   [origin=predictive method=joback]
+HvapTb      57929.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-81.67 1.93684 -0.001094 2.24e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 15; } { group CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 10; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tridecan-6-ylcyclohexane" "(1-pentyloctyl)cyclohexane" "cyclohexane, (1-pentyloctyl)-" );
+gibbsFormation
+{
+    dHf_298   -386450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     856.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=131110.0
+    phase     gas;
+}

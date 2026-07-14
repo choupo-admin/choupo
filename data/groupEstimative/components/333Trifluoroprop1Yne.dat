@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3,3-trifluoroprop-1-yne  (C3HF3, CAS 661-54-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        333Trifluoroprop1Yne;
+formula     C3HF3;
+CAS         661-54-1;
+InChIKey    PRDFNJUWGIQQBW-UHFFFAOYSA-N;
+MW          94.035;      // g/mol [origin=calculated method=formula-sum]
+Tc          404.62;      // K   [origin=predictive method=joback]
+Pc          46.026;      // bar [origin=predictive method=joback]
+omega       0.1739;      // -   [origin=predictive method=lee-kesler]
+Tb          252.94;      // K   [origin=predictive method=joback]
+HvapTb      18383.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.74 0.3561 -0.00035633 1.3159e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH_C; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group tCH; count 1; } { group tC; count 1; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3,3-tris(fluoranyl)prop-1-yne" "3,3,3-trifluoropropyne" "(trifluoromethyl)acetylene" "3,3,3-trifluoro-1-propyne" "1-propyne, 3,3,3-trifluoro-" "trifluoromethylacetylene" "3,3,3-trifluoro-prop-1-yne" "1-propyne,3,3,3-trifluoro-" "propyne,3,3,3-trifluoro- (6ci,7ci,8ci); (trifluoromethyl)acetylene;1,1,1-trifluoro-2-propyne; 1,1,1-trifluoropropyne; 3,3,3-trifluoro-1-propyne;3,3,3-trifluoropropyne; trifluoromethylethyne" );
+gibbsFormation
+{
+    dHf_298   -410430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     298.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-384140.0
+    phase     gas;
+}

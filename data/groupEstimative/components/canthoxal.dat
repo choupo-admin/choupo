@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: canthoxal  (C11H14O2, CAS 5462-06-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        canthoxal;
+formula     C11H14O2;
+CAS         5462-06-6;
+InChIKey    VLFBSPUPYFTTNF-UHFFFAOYSA-N;
+MW          178.231;      // g/mol [origin=calculated method=formula-sum]
+Tc          763.50;      // K   [origin=predictive method=joback]
+Pc          27.906;      // bar [origin=predictive method=joback]
+omega       0.6400;      // -   [origin=predictive method=lee-kesler]
+Tb          553.58;      // K   [origin=predictive method=joback]
+HvapTb      51760.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.501 0.82764 -0.00042396 6.29e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH2; count 1; } { group CHO; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(4-methoxyphenyl)-2-methyl-propanal" "2-anisylpropional" "p-methoxyhydratropaldehyde" "2-methyl-3-(p-methoxyphenyl)propanal" "2-methyl-3-(4-methoxyphenyl)propionaldehyde" "3-(4-methoxyphenyl)-2-methylpropionaldehyde" "4-methoxy-alpha-methylbenzenepropanal" "p-methoxy-alpha-methylhydrocinnamaldehyde" "benzenepropanal, 4-methoxy-alpha-methyl-" "3-(p-methoxyphenyl)-2-methylpropionaldehyde" "benzenepropanal, 4-methoxy-.alpha.-methyl-" "2-methyl-3-(p-methoxyphenyl)-propanaldehyde" );
+gibbsFormation
+{
+    dHf_298   -268390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     492.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-62440.0
+    phase     gas;
+}

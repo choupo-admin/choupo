@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5,8-dichloroisoquinoline  (C9H5Cl2N, CAS 73075-59-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        58Dichloroisoquinoline;
+formula     C9H5Cl2N;
+CAS         73075-59-9;
+InChIKey    MIYJUWWLNPMRCD-UHFFFAOYSA-N;
+MW          198.046;      // g/mol [origin=calculated method=formula-sum]
+Tc          853.50;      // K   [origin=predictive method=joback]
+Pc          38.627;      // bar [origin=predictive method=joback]
+omega       0.5110;      // -   [origin=predictive method=lee-kesler]
+Tb          589.70;      // K   [origin=predictive method=joback]
+HvapTb      55848.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.2 0.70456 -0.0005497 1.725e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group C5H3N; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 5; } { group dC_ring; count 4; } { group Cl; count 2; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5,8-bis(chloranyl)isoquinoline" );
+gibbsFormation
+{
+    dHf_298   176880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     358.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=277890.0
+    phase     gas;
+}

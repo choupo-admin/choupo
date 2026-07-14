@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n'-ethane-1,2-diyldibenzamide  (C16H16N2O2, CAS 644-33-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNEthane12Diyldibenzamide;
+formula     C16H16N2O2;
+CAS         644-33-7;
+InChIKey    NWGGAHDZCNJXJA-UHFFFAOYSA-N;
+MW          268.316;      // g/mol [origin=calculated method=formula-sum]
+Tc          1064.28;      // K   [origin=predictive method=joback]
+Pc          26.570;      // bar [origin=predictive method=joback]
+omega       1.1874;      // -   [origin=predictive method=lee-kesler]
+Tb          827.12;      // K   [origin=predictive method=joback]
+HvapTb      82126.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-67.168 1.4624 -0.0009688 2.3312e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 2; } { group CONHCH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group CdO; count 2; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-(2-benzamidoethyl)benzamide" "n,n'-dibenzoylethylenediamine" "benzamide, n,n'-1,2-ethanediylbis-" "1, n,n'-dibenzoyl-" "benzamide,n'-ethylenebis-" "n,n'-ethylenebis(benzamide)" "ethylenediamine,n'-dibenzoyl-" "benzamide, n,n'-ethylenebis-" "n',n''-ethylene bis benzamide" "benzamide,n'-1,2-ethanediylbis-" "ethylenediamine, n,n'-dibenzoyl-" "n-[2-(benzoylamino)ethyl]benzamide" );
+gibbsFormation
+{
+    dHf_298   -18730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     701.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=229600.0
+    phase     gas;
+}

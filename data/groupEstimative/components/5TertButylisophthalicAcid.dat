@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-tert-butylisophthalic acid  (C12H14O4, CAS 2359-09-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5TertButylisophthalicAcid;
+formula     C12H14O4;
+CAS         2359-09-3;
+InChIKey    BJLUCDZIWWSFIB-UHFFFAOYSA-N;
+MW          222.24;      // g/mol [origin=calculated method=formula-sum]
+Tc          1032.27;      // K   [origin=predictive method=joback]
+Pc          28.536;      // bar [origin=predictive method=joback]
+omega       1.1878;      // -   [origin=predictive method=lee-kesler]
+Tb          798.59;      // K   [origin=predictive method=joback]
+HvapTb      78938.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-28.6 1.17336 -0.00084312 2.352e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group ACH; count 3; } { group AC; count 3; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-tert-butylbenzene-1,3-dicarboxylic acid" "5-tert butyl isophthalic acid" "5-(tert-butyl)isophthalic acid" "1,3-benzenedicarboxylic acid, 5-(1,1-dimethylethyl)-" "5-tert-butyl-1,3-benzenedicarboxylic acid" "isophthalic acid, 5-tert-butyl-" "5-(tert-butyl)benzene-1,3-dicarboxylic acid" "1,3-benzenedicarboxylicacid, 5-(1,1-dimethylethyl)-" "5-tert-butylisophthalic acid5-tert-butylphenyl-1,3-dicarboxylic acid" "isophthalicacid, 5-tert-butyl- (6ci,7ci,8ci);5-(1,1-dimethylethyl)-1,3-benzenedicarboxylic acid;5-tert-butyl-1,3-benzenedicarboxylicacid;5-tert-butylisophthalic acid;" );
+gibbsFormation
+{
+    dHf_298   -786710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     572.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-541670.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-diacetin  (C7H12O5, CAS 105-70-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13Diacetin;
+formula     C7H12O5;
+CAS         105-70-4;
+InChIKey    MPPODKLDCLFLKT-UHFFFAOYSA-N;
+MW          176.168;      // g/mol [origin=calculated method=formula-sum]
+Tc          743.38;      // K   [origin=predictive method=joback]
+Pc          31.562;      // bar [origin=predictive method=joback]
+omega       1.1265;      // -   [origin=predictive method=lee-kesler]
+Tb          567.94;      // K   [origin=predictive method=joback]
+HvapTb      62281.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (50.952 0.59914 -0.0002014 -3.28e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group OH; count 1; } { group CH3COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group OH; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3-acetyloxy-2-oxidanyl-propyl) ethanoate" "2-hydroxypropane-1,3-diyl diacetate" "1,2,3-propanetriol, 1,3-diacetate" "glycerol alpha,alpha'-diacetate" "1,2,3-propanetriol,1,3-diacetate" "(3-acetyloxy-2-hydroxypropyl) acetate" "acetin,1,3-di- (6ci,7ci,8ci); 1,3-diacetin; 1,3-diacetoxy-2-propanol; glycerine1,3-diacetate; glycerol 1,3-diacetate" );
+gibbsFormation
+{
+    dHf_298   -979880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     572.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-751940.0
+    phase     gas;
+}

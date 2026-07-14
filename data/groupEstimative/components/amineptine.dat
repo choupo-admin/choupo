@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: amineptine  (C22H27NO2, CAS 57574-09-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        amineptine;
+formula     C22H27NO2;
+CAS         57574-09-1;
+InChIKey    ONNOFKFOZAJDHT-UHFFFAOYSA-N;
+MW          337.463;      // g/mol [origin=calculated method=formula-sum]
+Tc          1202.34;      // K   [origin=predictive method=joback]
+Pc          16.444;      // bar [origin=predictive method=joback]
+omega       1.2376;      // -   [origin=predictive method=lee-kesler]
+Tb          968.70;      // K   [origin=predictive method=joback]
+HvapTb      93955.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-103.174 2.0949 -0.00144272 3.896e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group ACH; count 8; } { group AC; count 1; } { group ACCH2; count 2; } { group ACCH; count 1; } { group CH2NH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group COOH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-(6,11-dihydro-5h-dibenzo[1,2-a:1',2'-e][7]annulen-11-ylamino)heptanoic acid" "amineptin" "amineptino" "amineptinum" "amineptine [inn]" "amineptinum [inn-latin]" "amineptine (inn)" "survector (tn)" "7-((10,11-dihydro-5h-dibenzo(a,d)cyclohepten-5-yl)amino)heptanoic acid" "7-(10,11-dihydro-5h-dibenzo[a,d]cyclohepten-5-ylamino)heptanoic acid" "30272-08-3 (hydrochloride)" "10,11-dihydrodibenzo(a,d)cyclohept-5-enyl-7-aminoheptanoic acid" );
+gibbsFormation
+{
+    dHf_298   -271290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     791.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=146150.0
+    phase     gas;
+}

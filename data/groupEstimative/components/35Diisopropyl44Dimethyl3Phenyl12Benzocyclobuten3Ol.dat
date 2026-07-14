@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3',5'-diisopropyl-4,4-dimethyl-3-phenyl-1,2-benzocyclobuten-3-ol  (C22H28O, CAS 33574-16-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35Diisopropyl44Dimethyl3Phenyl12Benzocyclobuten3Ol;
+formula     C22H28O;
+CAS         33574-16-2;
+InChIKey    CTXNSPHJPSTTHQ-UHFFFAOYSA-N;
+MW          308.465;      // g/mol [origin=calculated method=formula-sum]
+Tc          1085.30;      // K   [origin=predictive method=joback]
+Pc          16.755;      // bar [origin=predictive method=joback]
+omega       1.0704;      // -   [origin=predictive method=lee-kesler]
+Tb          860.84;      // K   [origin=predictive method=joback]
+HvapTb      84137.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-179.26 2.52122 -0.00234748 9.327e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group C; count 2; } { group ACH; count 7; } { group AC; count 3; } { group ACCH; count 2; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH; count 2; } { group C_ring; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8,8-dimethyl-7-phenyl-3,5-di(propan-2-yl)bicyclo[4.2.0]octa-1,3,5-trien-7-ol" "7,7-dimethyl-8-phenyl-2,4-dipropan-2-yl-bicyclo[4.2.0]octa-1,3,5-trien-8-ol" );
+gibbsFormation
+{
+    dHf_298   -132450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     799.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=242750.0
+    phase     gas;
+}

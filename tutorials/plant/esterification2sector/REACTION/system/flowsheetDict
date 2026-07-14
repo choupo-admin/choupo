@@ -1,4 +1,0 @@
-/*--- REACTION SECTOR (a thermo region) -- a CONTAINER holding ONE unit op
-  (the CSTR `reactor`).  CURATION: no streams yet -- boundary + connections
-  are added in the WIRING phase. */
-children    ( reactor );

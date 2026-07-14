@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9-phenanthrenecarboxylic acid  (C15H10O2, CAS 837-45-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        9PhenanthrenecarboxylicAcid;
+formula     C15H10O2;
+CAS         837-45-6;
+InChIKey    LMFJKKGDLAICPF-UHFFFAOYSA-N;
+MW          222.243;      // g/mol [origin=calculated method=formula-sum]
+Tc          1016.95;      // K   [origin=predictive method=joback]
+Pc          31.633;      // bar [origin=predictive method=joback]
+omega       0.9605;      // -   [origin=predictive method=lee-kesler]
+Tb          762.91;      // K   [origin=predictive method=joback]
+HvapTb      73028.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-74.34 1.2743 -0.00103536 3.332e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 5; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 9; } { group dC_ring; count 5; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "phenanthrene-9-carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -107470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     456.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=37960.0
+    phase     gas;
+}

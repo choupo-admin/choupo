@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4''-diamino-p-terphenyl  (C18H16N2, CAS 3365-85-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44DiaminoPTerphenyl;
+formula     C18H16N2;
+CAS         3365-85-3;
+InChIKey    QBSMHWVGUPQNJJ-UHFFFAOYSA-N;
+MW          260.34;      // g/mol [origin=calculated method=formula-sum]
+Tc          1128.60;      // K   [origin=predictive method=joback]
+Pc          28.173;      // bar [origin=predictive method=joback]
+omega       0.9405;      // -   [origin=predictive method=lee-kesler]
+Tb          851.48;      // K   [origin=predictive method=joback]
+HvapTb      85758.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-59.31 1.4224 -0.00093468 2.268e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 4; } { group ACNH2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 12; } { group dC_ring; count 6; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[4-(4-aminophenyl)phenyl]aniline" "4,4''-diaminoterphenyl" "4,4'-diamino-p-terphenyl" "p-terphenyl, 4,4''-diamine" "1,1':4',1''-terphenyl-4,4''-diamine" "(1,1':4',1''-terphenyl)-4,4''-diamine" "[1,1':4',1''-terphenyl]-4,4''-diamine" "4,4-diamino-4-terphenyl" "4,4 -diamino-4-terphenyl" "4,4''-diamino-p-terpheny" "4-amino-4''-amino-p-terphenyl" "4-[4-(4-aminophenyl)phenyl]phenylamine" );
+gibbsFormation
+{
+    dHf_298   327910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     622.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=541920.0
+    phase     gas;
+}

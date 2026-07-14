@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perchlorofulvalene  (C10Cl8, CAS 6298-65-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perchlorofulvalene;
+formula     C10Cl8;
+CAS         6298-65-3;
+InChIKey    KWINUFZNQMNMJP-UHFFFAOYSA-N;
+MW          403.71;      // g/mol [origin=calculated method=formula-sum]
+Tc          1082.25;      // K   [origin=predictive method=joback]
+Pc          24.556;      // bar [origin=predictive method=joback]
+omega       0.8265;      // -   [origin=predictive method=lee-kesler]
+Tb          813.34;      // K   [origin=predictive method=joback]
+HvapTb      82146.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (145.97 0.4496 -0.000315 8.72e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group Cl_C=C_; count 8; } { group C=C; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 10; } { group Cl; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4-tetrakis(chloranyl)-5-[2,3,4,5-tetrakis(chloranyl)cyclopenta-2,4-dien-1-ylidene]cyclopenta-1,3-diene" "octachlorofulvalene" "octachloropentafulvalene" "2,2',3,3',4,4',5,5'-octachloro-1,1'-bi(cyclopenta-2,4-dien-1-ylidene)" "bicyclopentadienylidene, octachloro-" "1,3-cyclopentadiene, 1,2,3,4-tetrachloro-5-(2,3,4,5-tetrachloro- 2,4-cyclopentadiene-1-ylidene)-" "1,3-cyclopentadiene, 1,2,3,4-tetrachloro-5-(2,3,4,5-tetrachloro-2,4-cyclopentadien-1-ylidene)-" "bi-2, 2,2',3,3',4,4',5,5'-octachloro-" "1, 1,2,3,4-tetrachloro-5-(2,3,4,5-tetrachloro-2,4-cyclopentadien-1-ylidene)-" "1,2,3,4-tetrachloro-5-(2,3,4,5-tetrachlorocyclopenta-2,4-dien-1-ylidene)cyclopenta-1,3-diene" "octachlorobicyclopentadienylidene" "bicyclopentadienylidene, octachloro- (7ci)" );
+gibbsFormation
+{
+    dHf_298   -39810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     548.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=79900.0
+    phase     gas;
+}

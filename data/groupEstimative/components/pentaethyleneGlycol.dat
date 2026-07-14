@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentaethylene glycol  (C10H22O6, CAS 4792-15-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentaethyleneGlycol;
+formula     C10H22O6;
+CAS         4792-15-8;
+InChIKey    JLFNLZLINWHATN-UHFFFAOYSA-N;
+MW          238.28;      // g/mol [origin=calculated method=formula-sum]
+Tc          866.45;      // K   [origin=predictive method=joback]
+Pc          23.519;      // bar [origin=predictive method=joback]
+omega       1.6295;      // -   [origin=predictive method=lee-kesler]
+Tb          702.44;      // K   [origin=predictive method=joback]
+HvapTb      80852.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (106.38 0.769 -0.000137 -9.18e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2O; count 2; } { group C2H5O2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 10; } { group OH; count 2; } { group O; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-[2-(2-hydroxyethyloxy)ethoxy]ethoxy]ethoxy]ethanol" "3,6,9,12-tetraoxatetradecane-1,14-diol" "3,6,9,12-tetraoxatetradocane-1,14-diol" "1pe" "pentaglycol" "2-(2-{2-[2-(2-hydroxyethoxy)ethoxy]ethoxy}ethoxy)ethan-1-ol" "2-[2-[2-[2-(2-hydroxyethoxy)ethoxy]ethoxy]ethoxy]ethanol" "ho[ch2ch2o]5h" "edo-edo-edo-edo-edo" "1pe-1pe" "12p-12p" "2-[2-[2-[2-(2-hydroxy-ethoxy)-ethoxy]-ethoxy]-ethoxy]-ethanol" );
+gibbsFormation
+{
+    dHf_298   -1083070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     692.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-660320.0
+    phase     gas;
+}

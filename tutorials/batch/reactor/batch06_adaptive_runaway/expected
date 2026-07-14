@@ -1,0 +1,11 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     reactor                P_final          101300           1e-4
+kpi     reactor                T_final          428.221319512    1e-4
+kpi     reactor                n_aceticAcid_final 8.88140514762e-19 1e-4
+kpi     reactor                n_ethanol_final  1.10133235387e-34 1e-4
+kpi     reactor                n_ethylAcetate_final 0.00925          1e-4
+kpi     reactor                n_water_final    0.00925          1e-4
+kpi     reactor                t_end            600              1e-4
+kpi     reactor                totalMoles_final 0.0185           1e-4

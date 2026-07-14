@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: fulvene  (C6H6, CAS 497-20-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        fulvene;
+formula     C6H6;
+CAS         497-20-1;
+InChIKey    PGTKVMVZBBZCKQ-UHFFFAOYSA-N;
+MW          78.114;      // g/mol [origin=calculated method=formula-sum]
+Tc          556.26;      // K   [origin=predictive method=joback]
+Pc          45.043;      // bar [origin=predictive method=joback]
+omega       0.2270;      // -   [origin=predictive method=lee-kesler]
+Tb          354.31;      // K   [origin=predictive method=joback]
+HvapTb      30259.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.14 0.5025 -0.00036756 1.072e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 2; } { group CH2=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-methylidenecyclopenta-1,3-diene" "fulven" "1,3-cyclopentadiene, 5-methylene-" "5-methylene-1,3-cyclopentadiene" "fulveno" "agn-pc-0d76r4" "1,3-cyclopentadiene,5-methylene-" "fulvene(6ci,8ci); 5-methylene-1,3-cyclopentadiene; pentafulvene" );
+gibbsFormation
+{
+    dHf_298   113450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     280.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=156900.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-tetrasiloxanediol, 1,1,1,3,5,7,7,7-octamethyl-  (C8H26O5Si4, CAS 108909-17-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H26O5Si4 (delta Si+4; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        35Tetrasiloxanediol11135777Octamethyl;
+formula     C8H26O5Si4;
+CAS         108909-17-7;
+InChIKey    LDRYIWNADGOBAR-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          314.631;      // g/mol [origin=calculated method=formula-sum]
+Tc          812.49;      // K   [origin=predictive method=joback]
+Pc          18.373;      // bar [origin=predictive method=joback]
+omega       1.0635;      // -   [origin=predictive method=lee-kesler]
+Tb          639.86;      // K   [origin=predictive method=joback]
+HvapTb      75166.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (245.97 -0.18244 0.00152 -9.296e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 8; } { group OH; count 2; } { group Si; count 1; } { group SiO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group OH; count 2; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl-[methyl-(methyl-oxidanyl-trimethylsilyloxy-silyl)oxy-oxidanyl-silyl]oxy-silane" );
+gibbsFormation
+{
+    dHf_298   -1356050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1109.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-991200.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methyl-2-(3,7,7-trimethylbicyclo(4.1.0)hept-3-ene)-1,3-dioxolane  (C14H22O2, CAS 68891-89-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methyl2377Trimethylbicyclo410Hept3Ene13Dioxolane;
+formula     C14H22O2;
+CAS         68891-89-4;
+InChIKey    XKYYKRRWLSWDPX-UHFFFAOYSA-N;
+MW          222.328;      // g/mol [origin=calculated method=formula-sum]
+Tc          834.76;      // K   [origin=predictive method=joback]
+Pc          23.338;      // bar [origin=predictive method=joback]
+omega       0.5197;      // -   [origin=predictive method=lee-kesler]
+Tb          602.13;      // K   [origin=predictive method=joback]
+HvapTb      54067.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-207.31 2.16708 -0.00210604 8.651e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 3; } { group C; count 2; } { group CH=C; count 1; } { group FCH2O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 3; } { group CH_ring; count 3; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group O_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-2-(4,7,7-trimethyl-5-bicyclo[4.1.0]hept-3-enyl)-1,3-dioxolane" "1,3-dioxolane, 2-methyl-2-(3,7,7-trimethylbicyclo(4.1.0)hept-3-en-2-yl)-" "1,3-dioxolane, 2-methyl-2-(3,7,7-trimethylbicyclo[4.1.0]hept-3-en-2-yl)-" "2-methyl-2-(3,7,7-trimethylbicyclo(4.1.0)hept-3-en-2-yl)-1,3-dioxolane" );
+gibbsFormation
+{
+    dHf_298   -360260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     398.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=34640.0
+    phase     gas;
+}

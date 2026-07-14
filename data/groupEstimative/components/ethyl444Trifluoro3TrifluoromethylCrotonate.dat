@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 4,4,4-trifluoro-3-(trifluoromethyl)crotonate  (C7H6F6O2, CAS 1513-60-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl444Trifluoro3TrifluoromethylCrotonate;
+formula     C7H6F6O2;
+CAS         1513-60-6;
+InChIKey    CULZFNOUPBWSIZ-UHFFFAOYSA-N;
+MW          236.111;      // g/mol [origin=calculated method=formula-sum]
+Tc          564.25;      // K   [origin=predictive method=joback]
+Pc          23.565;      // bar [origin=predictive method=joback]
+omega       0.5859;      // -   [origin=predictive method=lee-kesler]
+Tb          411.18;      // K   [origin=predictive method=joback]
+HvapTb      31127.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.339 0.95632 -0.0007905 2.416e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH=C; count 1; } { group CF3; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 2; } { group dCH; count 1; } { group dC; count 1; } { group F; count 6; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 4,4,4-tris(fluoranyl)-3-(trifluoromethyl)but-2-enoate" "ethyl 4,4,4-trifluoro-3-(trifluoromethyl)but-2-enoate" "ethyl-4,4,4-trifluoro-3-(trifluoromethyl)crotonate" "ethyl 3,3-bis(trifluoromethyl)acrylate" "ethyl4,4,4-trifluoro-3-(trifluoromethyl)crotonate" "ethyl-4,4,4-trifluoro-3-(trifluoromethyl)-crotonate" "ethyl 4,4,4-trifluoro-3-(trifluoromethyl)-2-butenoate" "2-butenoic acid,4,4,4-trifluoro-3-(trifluoromethyl)-, ethyl ester" "crotonicacid, 4,4,4-trifluoro-3-(trifluoromethyl)-, ethyl ester (6ci,7ci,8ci);ethyl4,4,4-trifluoro-3-trifluoromethyl crotonate;ethyl b,b-bis(trifluoromethyl)acrylate;ethyl 4,4,4-trifluoro-3-(trifluoromethyl) crotonate;" );
+gibbsFormation
+{
+    dHf_298   -1591820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     581.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1393820.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,3,3,3-pentafluoropropyl methacrylate  (C7H7F5O2, CAS 45115-53-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22333PentafluoropropylMethacrylate;
+formula     C7H7F5O2;
+CAS         45115-53-5;
+InChIKey    CLISWDZSTWQFNX-UHFFFAOYSA-N;
+MW          218.121;      // g/mol [origin=calculated method=formula-sum]
+Tc          560.92;      // K   [origin=predictive method=joback]
+Pc          24.387;      // bar [origin=predictive method=joback]
+omega       0.5388;      // -   [origin=predictive method=lee-kesler]
+Tb          404.43;      // K   [origin=predictive method=joback]
+HvapTb      31316.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.761 0.90452 -0.0007132 2.06e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2=C; count 1; } { group CF3; count 1; } { group CF2; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,3-pentakis(fluoranyl)propyl 2-methylprop-2-enoate" "1h,1h-pentafluoropropyl methacrylate" "2,2,3,3,3-pentafluoropropyl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, 2,2,3,3,3-pentafluoropropyl ester" "1h,1h-pentafluoro-n-propyl methacrylate" "2,2,3,3,3-pentafluoro-n-propyl methacrylate" "1,1-dihydroperfluoropropylmethacrylate;1h,1h-pentafluoropropyl methacrylate;2,2,3,3,3-pentafluoropropylmethacrylate;m 1210;m 1210 (fluoro monomer);" );
+gibbsFormation
+{
+    dHf_298   -1387500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     551.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1191390.0
+    phase     gas;
+}

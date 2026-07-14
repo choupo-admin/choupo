@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-bromo-8-chloro-1-octyne  (C8H12BrCl, CAS 71487-12-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Bromo8Chloro1Octyne;
+formula     C8H12BrCl;
+CAS         71487-12-2;
+InChIKey    DKDDZXUBMOUAAD-UHFFFAOYSA-N;
+MW          223.538;      // g/mol [origin=calculated method=formula-sum]
+Tc          707.15;      // K   [origin=predictive method=joback]
+Pc          31.071;      // bar [origin=predictive method=joback]
+omega       0.4891;      // -   [origin=predictive method=lee-kesler]
+Tb          495.23;      // K   [origin=predictive method=joback]
+HvapTb      46374.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (34.256 0.659 -0.00041106 1.0608e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH2Cl; count 1; } { group Br; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group tC; count 2; } { group Cl; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-8-chloranyl-oct-1-yne" "1-octyne, 1-bromo-8-chloro-" "1-bromo-8-chlorooct-1-yne" );
+gibbsFormation
+{
+    dHf_298   74440.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     523.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=221670.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5.alpha.-androstane-3.alpha.,17.beta.-diol  (C19H32O2, CAS 1852-53-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5AlphaAndrostane3Alpha17BetaDiol;
+formula     C19H32O2;
+CAS         1852-53-5;
+InChIKey    CBMYJHIOYJEBSB-UHFFFAOYSA-N;
+MW          292.463;      // g/mol [origin=calculated method=formula-sum]
+Tc          1062.69;      // K   [origin=predictive method=joback]
+Pc          19.666;      // bar [origin=predictive method=joback]
+omega       1.2768;      // -   [origin=predictive method=lee-kesler]
+Tb          848.79;      // K   [origin=predictive method=joback]
+HvapTb      88220.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-306.6 2.91024 -0.002563 9.654e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 9; } { group CH; count 6; } { group C; count 2; } { group OH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 9; } { group CH_ring; count 6; } { group C_ring; count 2; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "10,13-dimethyl-2,3,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthrene-3,17-diol" "androstanediol" "androstane-3,17-diol" "3-beta,17-beta-androstanediol" "5" "a-androstane-3" "a,17" "a-diol" "3beta,17beta-androstanediol (van)" "(3" "a,5" "a,17" "a)-androstane-3,17-diol" "5-alpha-androstane-3-beta,17-beta-diol" "3-beta,17-beta-dihydroxy-5-alpha-androstane" "5.alpha.-androstane-3.beta.,17.beta.-diol" "5.beta.-androstane-3.alpha.,17.beta.-diol" "androstane-3,17-diol, (3.alpha.,5.beta.,17.beta.)-" );
+gibbsFormation
+{
+    dHf_298   -530430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     706.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-23860.0
+    phase     gas;
+}

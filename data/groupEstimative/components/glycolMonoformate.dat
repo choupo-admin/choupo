@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: glycol monoformate  (C3H6O3, CAS 628-35-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C3H6O3 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        glycolMonoformate;
+formula     C3H6O3;
+CAS         628-35-3;
+InChIKey    UKQJDWBNQNAJHB-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          90.078;      // g/mol [origin=calculated method=formula-sum]
+Tc          495.75;      // K   [origin=predictive method=joback]
+Pc          50.875;      // bar [origin=predictive method=joback]
+omega       0.5355;      // -   [origin=predictive method=lee-kesler]
+Tb          336.84;      // K   [origin=predictive method=joback]
+HvapTb      36578.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.048 0.3309 -0.0003228 1.31e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group OH; count 1; } { group HCOO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-hydroxyethyl methanoate" "2-hydroxyethyl formate" "1,2-ethanediol, monoformate" "ethylene glycol, monoformate" "1,2-ethanediol, 1-formate" "1, monoformate" "1,2-ethanediol monoformate" "ethylene glycol, monoformate (8ci)" );
+gibbsFormation
+{
+    dHf_298   -181030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     507.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-118480.0
+    phase     gas;
+}

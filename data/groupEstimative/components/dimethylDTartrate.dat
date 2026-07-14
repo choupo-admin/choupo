@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (-)-dimethyl d-tartrate  (C6H10O6, CAS 13171-64-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethylDTartrate;
+formula     C6H10O6;
+CAS         13171-64-7;
+InChIKey    PVRATXCXJDHJJN-IMJSIDKUSA-N;
+MW          178.14;      // g/mol [origin=calculated method=formula-sum]
+Tc          810.75;      // K   [origin=predictive method=joback]
+Pc          39.856;      // bar [origin=predictive method=joback]
+omega       1.6031;      // -   [origin=predictive method=lee-kesler]
+Tb          636.80;      // K   [origin=predictive method=joback]
+HvapTb      76346.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (55.47 0.54404 -0.0001806 -3.54e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 2; } { group OH; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 2; } { group OH; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dimethyl (2s,3s)-2,3-bis(oxidanyl)butanedioate" "dimethyl d-tartrate" "dimethyld-(-)-tartrate" "d-(-)-tartaric acid dimethyl ester" "dimethyl d-(-)-tartrate" "meso-tartaric acid, dimethyl ester" "dimethyl (s(r*,r*))-tartrate" "m318" "dimethyl (2s,3s)-2,3-dihydroxybutanedioate" "(2s,3s)-2,3-dihydroxybutanedioic acid dimethyl ester" "butanedioicacid, 2,3-dihydroxy-, dimethyl ester, [s-(r*,r*)]-;tartaric acid, dimethylester, d-(-)- (8ci);(s,s)-dimethyl tartrate;d-(-)-tartaric acid dimethylester;d-tartaric acid dimethyl ester;dimethyl (-)-d-tartrate;dimethyl(-)-tartrate;dimethyl d-tartrate;" );
+gibbsFormation
+{
+    dHf_298   -1116750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     575.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-899620.0
+    phase     gas;
+}

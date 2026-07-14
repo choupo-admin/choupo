@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopropyl 4-methoxydiphenylcarbinol  (C17H18O2, CAS 62587-03-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopropyl4Methoxydiphenylcarbinol;
+formula     C17H18O2;
+CAS         62587-03-5;
+InChIKey    SIRULVGQLZGELT-UHFFFAOYSA-N;
+MW          254.329;      // g/mol [origin=calculated method=formula-sum]
+Tc          996.67;      // K   [origin=predictive method=joback]
+Pc          25.533;      // bar [origin=predictive method=joback]
+omega       1.0350;      // -   [origin=predictive method=lee-kesler]
+Tb          765.01;      // K   [origin=predictive method=joback]
+HvapTb      76356.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-110.0 1.64902 -0.00120776 3.434e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group ACH; count 9; } { group AC; count 3; } { group OH; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclopropyl-(4-methoxyphenyl)-phenyl-methanol" "cyclopropyl(4-methoxyphenyl)phenylmethanol" "cyclopropyl-(4-methoxyphenyl)-phenylmethanol" "methanol, (cyclopropyl)(4-methoxyphenyl)phenyl-" );
+gibbsFormation
+{
+    dHf_298   -153020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     532.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=129220.0
+    phase     gas;
+}

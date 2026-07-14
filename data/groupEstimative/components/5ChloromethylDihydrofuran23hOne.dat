@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-(chloromethyl)dihydrofuran-2(3h)-one  (C5H7ClO2, CAS 39928-72-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5ChloromethylDihydrofuran23hOne;
+formula     C5H7ClO2;
+CAS         39928-72-8;
+InChIKey    HPLJEKXDAFHJPD-UHFFFAOYSA-N;
+MW          134.559;      // g/mol [origin=calculated method=formula-sum]
+Tc          614.30;      // K   [origin=predictive method=joback]
+Pc          39.062;      // bar [origin=predictive method=joback]
+omega       0.4223;      // -   [origin=predictive method=lee-kesler]
+Tb          416.39;      // K   [origin=predictive method=joback]
+HvapTb      38429.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.599 0.5817 -0.0003942 9.95e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 1; } { group CH2COO; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-(chloromethyl)oxolan-2-one" "agn-pc-00l1nk" "gamma-chloromethyl-gamma-butyrolactone" "5-(chloromethyl)-tetrahydro-furan-2-one" "5-(chloromethyl)dihydro-2(3h)-furanone" "2(3h)-furanone, 5-(chloromethyl)dihydro-" "5-(chloromethyl)-3,4,5-trihydrofuran-2-one" );
+gibbsFormation
+{
+    dHf_298   -406750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     345.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-270330.0
+    phase     gas;
+}

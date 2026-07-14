@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene-1,3-dicarboxylic acid;butane-1,4-diol;2,3-dimethylterephthalic acid;nonanedioic acid  (C31H42O14, CAS 56528-99-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzene13DicarboxylicAcidButane14Diol23DimethylterephthalicA;
+formula     C31H42O14;
+CAS         56528-99-5;
+InChIKey    LIYLWUFLWWNKOU-UHFFFAOYSA-N;
+MW          638.663;      // g/mol [origin=calculated method=formula-sum]
+Tc          3680.65;      // K   [origin=predictive method=joback]
+Pc          10.155;      // bar [origin=predictive method=joback]
+omega       -0.3920;      // -   [origin=predictive method=lee-kesler]
+Tb          2043.78;      // K   [origin=predictive method=joback]
+HvapTb      229024.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (124.731 2.30724 -0.00070884 -1.549e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 11; } { group ACH; count 6; } { group AC; count 4; } { group ACCH3; count 2; } { group OH; count 2; } { group COOH; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 11; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group OH; count 2; } { group COOH; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,3-benzenedicarboxylic acid, polymer with 1,4-butanediol, dimethyl 1,4-benzenedicarboxylate and nonanedioic acid" "benzene-1,3-dicarboxylic acid; butane-1,4-diol; 2,3-dimethylterephthalic acid; nonanedioic acid" "1,4-benzenedicarboxylic acid, dimethyl ester, 1,3-benzenedicarboxylic acid, 1,4-butanediol, nonanedioic acid polymer" );
+gibbsFormation
+{
+    dHf_298   -2996930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1869.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2254940.0
+    phase     gas;
+}

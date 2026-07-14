@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ac1l3nro  (C12H18, CAS 60606-96-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ac1l3nro;
+formula     C12H18;
+CAS         60606-96-4;
+InChIKey    MRCRJVMFYSQAOH-UHFFFAOYSA-N;
+MW          162.276;      // g/mol [origin=calculated method=formula-sum]
+Tc          707.81;      // K   [origin=predictive method=joback]
+Pc          27.240;      // bar [origin=predictive method=joback]
+omega       0.3931;      // -   [origin=predictive method=lee-kesler]
+Tb          491.78;      // K   [origin=predictive method=joback]
+HvapTb      41340.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-197.11 1.6944 -0.001399 4.724e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 6; } { group CH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -40490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     177.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=277740.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-bromo-2-methylaniline  (C7H8BrN, CAS 583-75-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Bromo2Methylaniline;
+formula     C7H8BrN;
+CAS         583-75-5;
+InChIKey    PCHYYOCUCGCSBU-UHFFFAOYSA-N;
+MW          186.052;      // g/mol [origin=calculated method=formula-sum]
+Tc          781.36;      // K   [origin=predictive method=joback]
+Pc          46.721;      // bar [origin=predictive method=joback]
+omega       0.5423;      // -   [origin=predictive method=lee-kesler]
+Tb          535.09;      // K   [origin=predictive method=joback]
+HvapTb      51852.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.9 0.57102 -0.00036892 9.29e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACCH3; count 1; } { group ACNH2; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-bromanyl-2-methyl-aniline" "4-bromo-o-toluidine" "2-amino-5-bromotoluene" "2-methyl-4-bromoaniline" "benzenamine, 4-bromo-2-methyl-" "o-toluidine, 4-bromo-" "5-bromo-2-aminotoluene" "4-bromo-2-methylbenzenamine" "4-bromo-2-methyl-phenylamine" "1-amino-4-bromo-2-methylbenzene" "4-bromo-2-methylphenylamine" "4-bromo-2-methylbenenamine" );
+gibbsFormation
+{
+    dHf_298   85900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     412.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=181980.0
+    phase     gas;
+}

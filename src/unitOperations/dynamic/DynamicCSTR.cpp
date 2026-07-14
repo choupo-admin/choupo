@@ -29,10 +29,12 @@ License
 #include "DynamicCSTR.H"
 #include "core/Constants.H"
 #include "streams/Composition.H"
+#include "unitOperations/reactor/ReactionHeat.H"
 
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <optional>
 #include <stdexcept>
 
 namespace Choupo {
@@ -64,9 +66,14 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
     T_in_ = inletDict->lookupScalar("T");
     z_in_ = readComposition(inletDict, thermo,
         "DynamicCSTR '" + name_ + "' inlet");
+    // Authoritative per-component molar flows (F, z become derived views).
+    nDotIn_.assign(z_in_.size(), 0.0);
+    for (std::size_t i = 0; i < z_in_.size(); ++i)
+        nDotIn_[i] = F_in_ * z_in_[i];
 
     // ---- Jacket -------------------------------------------------------
     auto opDict = unitDict->subDict("operation");
+    catalystLoading_ = opDict->lookupScalarOrDefault("catalystLoading", 0.0);  // kg/m^3
     UA_         = opDict->lookupScalarOrDefault("UA",       0.0);   // W/K
     T_jacket_   = opDict->lookupScalarOrDefault("T_jacket", T_);    // K
 
@@ -92,15 +99,43 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
         {
             r.comps.push_back(thermo.indexOf(s->lookupWord("component")));
             r.nu.push_back(s->lookupScalar("nu"));
-            r.order.push_back(s->lookupScalar("order"));
+            // A species with no `order` does not appear in the forward rate law -- the
+            // steady reactors have always read it that way, and a reaction library is
+            // shared between them.  Requiring it here made the same file legal in a CSTR
+            // and illegal in a batch vessel.
+            r.order.push_back(s->lookupScalarOrDefault("order", 0.0));
         }
         auto kin = rxn->subDict("kinetics");
-        if (kin->lookupWord("type") != "Arrhenius")
-            throw std::runtime_error("DynamicCSTR: only Arrhenius kinetics"
-                " supported (reaction '" + rn + "')");
-        r.A_pre = kin->lookupScalar("A");
-        r.Ea    = kin->lookupScalar("Ea");
-        r.dH    = rxn->lookupScalarOrDefault("dH_rxn", 0.0);
+        const std::string ktype = kin->lookupWord("type");
+        if (ktype == "LHHW")
+        {
+            r.lhhw = true;
+            r.law  = RateLaw::fromDict(rxn, thermo,
+                                       "DynamicCSTR: reaction '" + rn + "'");
+        }
+        else if (ktype == "Arrhenius")
+        {
+            r.A_pre = kin->lookupScalar("A");
+            r.Ea    = kin->lookupScalar("Ea");
+        }
+        else
+            throw std::runtime_error("DynamicCSTR: kinetics type must be `Arrhenius`"
+                " or `LHHW` (reaction '" + rn + "', got '" + ktype + "')");
+
+        // Heat of reaction on the ONE enthalpy base (elements/formation datum),
+        // resolved ONCE here through the shared helper.  When every reacting
+        // species carries gibbsFormation, dH_rxn(T) = Σ νᵢ·hᵢ(T) is authoritative
+        // and a present dict `dH_rxn` is cross-checked (mismatch warned, never
+        // silently overriding).  The dynamic reactor is always non-isothermal
+        // (it integrates T), so the heat of reaction is always consulted.  The
+        // ctrl toy components (compA/compB, no gibbsFormation) take the announced
+        // dict-override branch -- their numbers are unchanged.
+        std::optional<scalar> dictDH;
+        if (rxn->found("dH_rxn")) dictDH = rxn->lookupScalar("dH_rxn");
+        std::string heatSource;
+        r.dH = reactionHeat(thermo, r.comps, r.nu, T_, "liquid", dictDH,
+                            "DynamicCSTR '" + name_ + "' reaction '" + rn + "'",
+                            /*verbosity*/ 3, heatSource);
         reactions_.push_back(std::move(r));
     }
 
@@ -236,6 +271,22 @@ scalar DynamicCSTR::rateOfReaction_(const ReactionSpec& rxn,
                                     const sVector&       n,
                                     scalar               V) const
 {
+    // LHHW answers for itself: the shared RateLaw carries the basis (concentration
+    // or activity), the adsorption denominator and the reverse leg.  With conc in
+    // kmol/m^3, a `catalystLoading` in kg/m^3 turns a per-gram rate constant into
+    // the reactor's volumetric one exactly: mol/(g.s) x kg/m^3 = kmol/(m^3.s).
+    if (rxn.lhhw)
+    {
+        const std::size_t nc = n.size();
+        sVector conc(nc, 0.0), x(nc, 0.0);
+        scalar ntot = 0.0;
+        for (std::size_t j = 0; j < nc; ++j)
+        { conc[j] = std::max<scalar>(n[j], 0.0) / V; ntot += std::max<scalar>(n[j], 0.0); }
+        if (ntot > 0.0) for (std::size_t j = 0; j < nc; ++j) x[j] = std::max<scalar>(n[j], 0.0) / ntot;
+        const scalar cf = (catalystLoading_ > 0.0) ? catalystLoading_ : 1.0;
+        return cf * rxn.law.netRate(*thermo_, T, conc, x);
+    }
+
     const scalar k = rxn.A_pre * std::exp(-rxn.Ea / (constant::R * T));
     scalar r = k;
     for (std::size_t s = 0; s < rxn.comps.size(); ++s)
@@ -355,16 +406,24 @@ sVector DynamicCSTR::stateVector() const
 {
     sVector s = n_;
     s.push_back(T_);
+    s.push_back(F_in_);
+    for (auto z : z_in_) s.push_back(z);
     return s;
 }
 
 std::vector<std::string> DynamicCSTR::stateLabels() const
 {
     std::vector<std::string> labels;
-    labels.reserve(n_.size() + 1);
+    labels.reserve(2 * n_.size() + 2);
     for (std::size_t i = 0; i < n_.size(); ++i)
         labels.push_back("n_" + thermo_->comp(i).name());
     labels.push_back("T");
+    // Inlet DERIVED views (forum #103: an inlet-field disturbance must
+    // prove that F and z changed by the derived values, not merely that
+    // the reactor responded) -- constant columns for undisturbed cases.
+    labels.push_back("F_in");
+    for (std::size_t i = 0; i < n_.size(); ++i)
+        labels.push_back("z_in_" + thermo_->comp(i).name());
     return labels;
 }
 
@@ -394,6 +453,18 @@ ContinuousStream DynamicCSTR::inletStream() const
     return s;
 }
 
+void DynamicCSTR::applyInletFlows_()
+{
+    scalar F = 0.0;
+    for (auto v : nDotIn_) F += v;
+    F_in_ = F;
+    if (F > 0.0)
+        for (std::size_t i = 0; i < nDotIn_.size(); ++i)
+            z_in_[i] = nDotIn_[i] / F;
+    // F == 0: keep the last z (a temporarily shut feed has no composition
+    // of its own; the flows are authoritative and all zero).
+}
+
 void DynamicCSTR::setMV(const std::string& key, scalar value)
 {
     if (key == "T_jacket") { T_jacket_ = value; return; }
@@ -403,7 +474,75 @@ void DynamicCSTR::setMV(const std::string& key, scalar value)
         if (value < 0.0)
             throw std::runtime_error("DynamicCSTR '" + name_ + "': F_in"
                 " must be ≥ 0 (got " + std::to_string(value) + ")");
-        F_in_ = value;
+        // Total-flow MV: scales the authoritative component flows
+        // PROPORTIONALLY (composition preserved -- the historical F_in
+        // semantics, now stated).
+        if (F_in_ > 0.0)
+        {
+            const scalar f = value / F_in_;
+            for (auto& v : nDotIn_) v *= f;
+        }
+        else
+            for (std::size_t i = 0; i < nDotIn_.size(); ++i)
+                nDotIn_[i] = value * z_in_[i];
+        applyInletFlows_();
+        return;
+    }
+    // ---- Inlet-field actuators (forum #100.4/#101/#103) ------------------
+    if (key.rfind("moleFraction.", 0) == 0)
+    {
+        // ABSOLUTE mole fraction of one component; the OTHERS renormalise
+        // proportionally and the TOTAL molar flow F_in is held.  Validated
+        // hard: the disturbance never fabricates or destroys total feed.
+        const std::string nm = key.substr(std::string("moleFraction.").size());
+        const std::size_t c  = thermo_->indexOf(nm);
+        if (value < 0.0 || value > 1.0)
+            throw std::runtime_error("DynamicCSTR '" + name_ + "': "
+                + key + " must lie in [0, 1] (got "
+                + std::to_string(value) + ")");
+        const scalar F = F_in_;
+        scalar restOld = 0.0;
+        for (std::size_t i = 0; i < z_in_.size(); ++i)
+            if (i != c) restOld += z_in_[i];
+        if (restOld <= 0.0 && value < 1.0)
+            throw std::runtime_error("DynamicCSTR '" + name_ + "': "
+                + key + " = " + std::to_string(value) + " needs the OTHER"
+                " components renormalised proportionally, but they are all"
+                " zero in the current inlet -- there is no proportion to"
+                " preserve.  Use componentMolarFlow.<c> instead.");
+        sVector zNew(z_in_.size(), 0.0);
+        zNew[c] = value;
+        const scalar scale = (restOld > 0.0) ? (1.0 - value) / restOld : 0.0;
+        scalar sum = value;
+        for (std::size_t i = 0; i < z_in_.size(); ++i)
+        {
+            if (i == c) continue;
+            zNew[i] = z_in_[i] * scale;
+            sum += zNew[i];
+        }
+        if (std::abs(sum - 1.0) > 1.0e-12)
+            throw std::runtime_error("DynamicCSTR '" + name_ + "': "
+                + key + " renormalisation failed the machine-precision sum"
+                " check (sum = " + std::to_string(sum) + ")");
+        for (std::size_t i = 0; i < zNew.size(); ++i)
+            nDotIn_[i] = F * zNew[i];
+        applyInletFlows_();
+        return;
+    }
+    if (key.rfind("componentMolarFlow.", 0) == 0)
+    {
+        // ABSOLUTE molar flow of one component [kmol/s]; the others keep
+        // their flows, so F_in and z_in both change by DERIVED values --
+        // the disturbance never hides from the other components (#101).
+        const std::string nm =
+            key.substr(std::string("componentMolarFlow.").size());
+        const std::size_t c = thermo_->indexOf(nm);
+        if (value < 0.0)
+            throw std::runtime_error("DynamicCSTR '" + name_ + "': "
+                + key + " must be >= 0 kmol/s (got "
+                + std::to_string(value) + ")");
+        nDotIn_[c] = value;
+        applyInletFlows_();
         return;
     }
     DynamicUnitOperation::setMV(key, value);  // throws
@@ -435,7 +574,13 @@ scalar DynamicCSTR::getCV(const std::string& key) const
 
 std::vector<std::string> DynamicCSTR::availableMVs() const
 {
-    return { "T_jacket", "T_in", "F_in" };
+    std::vector<std::string> v = { "T_jacket", "T_in", "F_in" };
+    for (std::size_t i = 0; i < n_.size(); ++i)
+    {
+        v.push_back("moleFraction." + thermo_->comp(i).name());
+        v.push_back("componentMolarFlow." + thermo_->comp(i).name());
+    }
+    return v;
 }
 
 std::vector<std::string> DynamicCSTR::availableCVs() const

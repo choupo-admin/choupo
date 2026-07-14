@@ -1,23 +1,20 @@
 /*---------------------------------------------------------------------------*\
   solidDryer01_sugar / flowsheetDict   (LEAF node)
 
-  Wet solid: 10 kmol/h sucrose (3423 kg/h) carrying 38 kmol/h bound water
-  (~685 kg/h, X_in = 0.20 kg/kg).  Dried by air at 77 C, RH 0.10.
+  Wet sugar dried by a REAL hot-air STREAM (no airTemperature/RH parameters,
+  no phantom duty): the hot air BRINGS the heat (its sensible cooling) and
+  CARRIES AWAY the moisture (a humid exhaust).  Adiabatic -> the outlet T is a
+  RESULT; the plant energy balance closes with real streams.
+
+  Wet solid: 10 kmol/h sucrose (3423 kg/h) + 38 kmol/h bound water (X_in=0.20).
+  Hot air: 800 kmol/h at 420 K, DRY (2 mol% water -> RH ~0.4%) -- hot dry air,
+  like a real sugar dryer.  Its low RH sets a low GAB equilibrium moisture, so
+  the sugar dries to X_eq ~0.001 (~0.1 wt%); the exhaust leaves carrying the
+  evaporated water (838 > 800 kmol/h, the pickup visible in the molar balance).
 \*---------------------------------------------------------------------------*/
 name        solidDryer;
 type        solidDryer;
-operation   { airTemperature 350.0 K;  relativeHumidity 0.10; }
 
-boundary    { inlets ( wetSolid );  outlets ( drySolid  vapour ); }
+boundary    { inlets ( wetSolid  hotAir );  outlets ( drySolid  humidExhaust ); }
 
-streams
-{
-    wetSolid
-    {
-        F                  38.0 kmol/h;        // bound water (liquid)
-        T                  330.0 K;
-        P                  1.0 bar;
-        molarComposition  { water 1.0; }
-        solids { solidFlows { sucrose 3423.0 kg/h; } }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

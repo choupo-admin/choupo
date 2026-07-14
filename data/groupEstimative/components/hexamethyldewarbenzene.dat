@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexamethyldewarbenzene  (C12H18, CAS 7641-77-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexamethyldewarbenzene;
+formula     C12H18;
+CAS         7641-77-2;
+InChIKey    RVNQQZMIWZPGNA-UHFFFAOYSA-N;
+MW          162.276;      // g/mol [origin=calculated method=formula-sum]
+Tc          716.83;      // K   [origin=predictive method=joback]
+Pc          24.801;      // bar [origin=predictive method=joback]
+omega       0.4340;      // -   [origin=predictive method=lee-kesler]
+Tb          506.36;      // K   [origin=predictive method=joback]
+HvapTb      43062.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-135.73 1.67952 -0.001841 8.35e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group C; count 2; } { group C=C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group C_ring; count 2; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5,6-hexamethylbicyclo[2.2.0]hexa-2,5-diene" "dewar benzene, hexamethyl-" "2-butin hexamethyl-dewar-benzol [german]" "hexamethyl-bicyclo(2.2.0)hexa-2,5-dien [german]" "bicyclo(2.2.0)hexa-2,5-diene, hexamethyl-" "1,2,3,4,5,6-hexamethylbicyclo(2,2,0)hexa-2,5-diene" "bicyclo[2.2.0]hexa-2,5-diene, 1,2,3,4,5,6-hexamethyl-" "2-butin hexamethyl-dewar-benzol" "hexamethyl-bicyclo(2.2.0)hexa-2,5-dien" "1,2,3,4,2a,4a-hexamethyl-2a,4a-dihydrocyclobuta[1,2-a][4]annulene" "bicyclo[2.2.0]hexa-2,5-diene,hexamethyl- (7ci); 1,2,3,4,5,6-hexamethylbicyclo[2.2.0]hexa-2,5-diene;hexamethyl dewar benzene; hexamethylbicyclo[2.2.0]hexa-2,5-diene" );
+gibbsFormation
+{
+    dHf_298   -45250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     482.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=182080.0
+    phase     gas;
+}

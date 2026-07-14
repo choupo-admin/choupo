@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-butanediol-caprolacton-methylenedi-1,4-cyclohexylene isocyanate copolymer  (C25H42N2O6, CAS 53504-41-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14ButanediolCaprolactonMethylenedi14CyclohexyleneIsocyanateC;
+formula     C25H42N2O6;
+CAS         53504-41-9;
+InChIKey    ZECDNEGVMOSZJI-UHFFFAOYSA-N;
+MW          466.619;      // g/mol [origin=calculated method=formula-sum]
+Tc          1478.53;      // K   [origin=predictive method=joback]
+Pc          11.891;      // bar [origin=predictive method=joback]
+omega       1.0487;      // -   [origin=predictive method=lee-kesler]
+Tb          1200.03;      // K   [origin=predictive method=joback]
+HvapTb      132467.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH2; count 17; } { group CH; count 4; } { group OH; count 2; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:2
+    joback ( { group CH2; count 5; } { group dCd; count 2; } { group CH2_ring; count 13; } { group CH_ring; count 4; } { group OH; count 2; } { group COO; count 1; } { group dO_oth; count 2; } { group Nd; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butane-1,4-diol;1-isocyanato-4-[(4-isocyanatocyclohexyl)methyl]cyclohexane;oxepan-2-one" "butane-1,4-diol; 1-isocyanato-4-[(4-isocyanatocyclohexyl)methyl]cyclohexane; oxepan-2-one" "2-oxepanone 1,4-butanediol 1,1'-methylenebis(4-isocyanatocyclohexane) polymer" "1,4-butanediol, polymer with 1,1'-methylenebis(4-isocyanatocyclohexane) and 2-oxepanone" "2-oxepanone, 1,4-butanediol, 1,1'-methylene bis(4-isocyanatocyclohexane) polymer" "2-oxepanone, polymer with 1,4-butanediol and 1,1'-methylenebis(4-isocyanatocyclohexane)" "cyclohexane, 1,1'-methylenebis(4-isocyanato-, polymer with 1,4-butanediol and 2-oxepanone" );
+// formation datum unavailable (element entropy missing): dHf_298=-1266350.0 dGf_298=None

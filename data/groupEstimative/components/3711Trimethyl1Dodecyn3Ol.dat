@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,7,11-trimethyl-1-dodecyn-3-ol  (C15H28O, CAS 1604-35-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3711Trimethyl1Dodecyn3Ol;
+formula     C15H28O;
+CAS         1604-35-9;
+InChIKey    OWRXWSVBJIIORE-UHFFFAOYSA-N;
+MW          224.388;      // g/mol [origin=calculated method=formula-sum]
+Tc          797.15;      // K   [origin=predictive method=joback]
+Pc          17.610;      // bar [origin=predictive method=joback]
+omega       0.9242;      // -   [origin=predictive method=lee-kesler]
+Tb          620.99;      // K   [origin=predictive method=joback]
+HvapTb      63449.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-19.514 1.50658 -0.00099673 2.6639e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 6; } { group CH; count 2; } { group C; count 1; } { group OH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 6; } { group CH; count 2; } { group C; count 1; } { group tCH; count 1; } { group tC; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7,11-trimethyldodec-1-yn-3-ol" "3,7,11-trimethyldodecyn-3-ol" "1-dodecyn-3-ol, 3,7,11-trimethyl" "(3r,7s)-3,7,11-trimethyldodec-1-yn-3-ol" "(3s,7r)-3,7,11-trimethyldodec-1-yn-3-ol" "1-dodecyn-3-ol,3,7,11-trimethyl-" "2,6,10-trimethyl-11-docecyn-10-ol;2,6,10-trimethyl-11-dodecyn-10-ol; 3,7,11-trimethyl-1-dodecyn-3-ol;3,7,11-trimethyl-3-hydroxy-1-dodecyne" );
+gibbsFormation
+{
+    dHf_298   -232570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     702.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=159630.0
+    phase     gas;
+}

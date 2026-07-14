@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer binary ion-interaction parameters --- Ca(2+) / Cl(-) in aqueous
+  solution.
+  Role: the beta0 / beta1 / Cphi set (alpha1 2.0) of the Pitzer virial
+  expansion -- the cation-anion second and third virial coefficients behind
+  the mean activity and osmotic coefficients of the Ca-Cl pair, consumed by
+  the pitzer (single-salt VLE) and pitzerHMW (multi-ion speciation) activity
+  engines.
+  Carries a nonzero beta2 term (with alpha2) -- the extra short-range virial
+  used for strongly associating pairs.
+  Source: Appelo, Appl. Geochem. 55 (2015) 62 -- full provenance string in
+  the source entry below.
+\*-----------------------------------------------------------------------------*/
+recordType electrolytePairParameters;
+schemaVersion 1;
+
+model pitzer;
+
+pair { cation Ca; anion Cl; }
+
+parameters
+{
+    beta0 0.3159;
+    beta1 1.614;
+    beta2 -1.13;
+    Cphi 0.00014;
+    alpha1 2.0;
+    alpha2 12.0;
+}
+
+source "Appelo, Appl. Geochem. 55 (2015) 62";

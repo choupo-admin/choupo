@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): 2-propenoic acid, homopolymer, compd. with 2-ethyl-n-(2-ethylhexyl)-1-hexanamine  (C19H39NO2, CAS 123661-24-5)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           2PropenoicAcidHomopolymerCompdWith2EthylN2Ethylhexyl1Hexanam;
+formula        C19H39NO2;
+CAS            123661-24-5;
+InChIKey       HNJOCJNXYSUOBF-UHFFFAOYSA-N;
+MW             313.526;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: 2-propenoic acid, homopolymer, compd. with 2-ethyl-n-(2-ethylhexyl)-1-hexanamine

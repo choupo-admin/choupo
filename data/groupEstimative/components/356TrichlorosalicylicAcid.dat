@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5,6-trichlorosalicylic acid  (C7H3Cl3O3, CAS 40932-60-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        356TrichlorosalicylicAcid;
+formula     C7H3Cl3O3;
+CAS         40932-60-3;
+InChIKey    IIHCUZVBIMTHEB-UHFFFAOYSA-N;
+MW          241.448;      // g/mol [origin=calculated method=formula-sum]
+Tc          993.19;      // K   [origin=predictive method=joback]
+Pc          45.839;      // bar [origin=predictive method=joback]
+omega       1.1114;      // -   [origin=predictive method=lee-kesler]
+Tb          739.80;      // K   [origin=predictive method=joback]
+HvapTb      78771.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (39.87 0.6372 -0.00057724 2.11e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 1; } { group AC; count 1; } { group ACOH; count 1; } { group COOH; count 1; } { group ACCl; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 1; } { group dC_ring; count 5; } { group Cl; count 3; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,5-tris(chloranyl)-6-oxidanyl-benzoic acid" "2,3,5-trichloro-6-hydroxybenzoic acid" "benzoic acid, 2,3,5-trichloro-6-hydroxy-" "ghl.pd_mitscher_leg0.102" "3,5,6-trichloro-2-hydroxybenzoic acid" "l439" "salicylicacid, 3,5,6-trichloro- (7ci);2,3,5-trichloro-6-hydroxybenzoic acid;3,5,6-trichloro-2-hydroxybenzoic acid;3,5,6-trichlorosalicylic acid;" );
+gibbsFormation
+{
+    dHf_298   -560490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     483.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-442740.0
+    phase     gas;
+}

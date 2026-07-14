@@ -1,0 +1,13 @@
+/*---------------------------------------------------------------------------*\
+  userEstimate01_linear_tb / constant/thermoPackage
+
+  Water alone satisfies the package's need for one component; the case is
+  about USER CODE (the student's own linearTbEstimate op, compiled from
+  code/), which targets acetone purely through group increments and never
+  queries mixture thermodynamics.  Ideal / ideal-gas are inert defaults --
+  no phase equilibrium is posed anywhere in this case.
+\*---------------------------------------------------------------------------*/
+
+components       ( water );
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

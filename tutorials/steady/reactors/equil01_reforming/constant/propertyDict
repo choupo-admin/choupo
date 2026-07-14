@@ -1,0 +1,7 @@
+/*---------------------------------------------------------------------------*\
+  Reforming species -- CH4/H2O/CO/H2/CO2 at high T, ideal gas mixture.
+\*---------------------------------------------------------------------------*/
+
+components       ( CH4 water CO H2 CO2 );
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

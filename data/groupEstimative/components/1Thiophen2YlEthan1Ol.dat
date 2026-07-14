@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(thiophen-2-yl)ethan-1-ol  (C6H8OS, CAS 2309-47-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Thiophen2YlEthan1Ol;
+formula     C6H8OS;
+CAS         2309-47-9;
+InChIKey    WUNFIVTVJXZDDJ-UHFFFAOYSA-N;
+MW          128.189;      // g/mol [origin=calculated method=formula-sum]
+Tc          710.64;      // K   [origin=predictive method=joback]
+Pc          48.902;      // bar [origin=predictive method=joback]
+omega       0.7112;      // -   [origin=predictive method=lee-kesler]
+Tb          499.70;      // K   [origin=predictive method=joback]
+HvapTb      52865.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.7 0.61483 -0.00044522 1.295e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group OH; count 1; } { group C4H3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group OH; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-thiophen-2-ylethanol" "1-thiophen-2-yl-ethanol" "2-thiophenemethanol, " "a-methyl-" "2-thiophenemethanol, .alpha.-methyl-" "1-(2-thienyl)ethanol" "1-(thiophen-2-yl)ethanol" "2-thiophenemethanol, a-methyl-" "alpha-methylthiophene-2-methanol" "(?a'a a'a currency)-1-(2-thienyl)ethanol;1-(2-thienyl)ethanol; a-methyl-2-thiophenemethanol" );
+gibbsFormation
+{
+    dHf_298   -94510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     392.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-5210.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethylammonium acetate buffer  (C8H19NO2, CAS 5204-74-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triethylammoniumAcetateBuffer;
+formula     C8H19NO2;
+CAS         5204-74-0;
+InChIKey    AVBGNFCMKJOFIN-UHFFFAOYSA-N;
+MW          161.245;      // g/mol [origin=calculated method=formula-sum]
+Tc          730.39;      // K   [origin=predictive method=joback]
+Pc          25.328;      // bar [origin=predictive method=joback]
+omega       0.7474;      // -   [origin=predictive method=lee-kesler]
+Tb          541.99;      // K   [origin=predictive method=joback]
+HvapTb      52903.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (30.343 0.73238 -0.0001818 -6.78e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group CH2N; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group COOH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-diethylethanamine;ethanoic acid" "triethylammonium acetate solution" "teaa" "acetic acid, compd. with n,n-diethylethanamine (1:1)" "acetic acid - triethylamine solution 1:1" "acetic acid - triethylamine solution 2:1" "triethylamine : acetic acid 1:1 solution" "triethylamine : acetic acid 1:2 solution" "buffer solution 1 m ph 7.0 (volatile)" "acetic acid; n,n-diethylethanamine" "ethanamine, n,n-diethyl-, acetate" "n,n-diethylethanamine acetate (1:1)" );
+gibbsFormation
+{
+    dHf_298   -602810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     644.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-321410.0
+    phase     gas;
+}

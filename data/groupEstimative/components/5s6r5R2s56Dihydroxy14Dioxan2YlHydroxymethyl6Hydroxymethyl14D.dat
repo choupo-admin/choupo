@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (5s,6r)-5-[(r)-[(2s)-5,6-dihydroxy-1,4-dioxan-2-yl]-hydroxymethyl]-6-(hydroxymethyl)-1,4-dioxane-2,3-diol  (C10H18O10, CAS 99520-32-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5s6r5R2s56Dihydroxy14Dioxan2YlHydroxymethyl6Hydroxymethyl14D;
+formula     C10H18O10;
+CAS         99520-32-8;
+InChIKey    UPKPBSVFYMMHOG-ZNDUKEQKSA-N;
+MW          298.244;      // g/mol [origin=calculated method=formula-sum]
+Tc          1381.80;      // K   [origin=predictive method=joback]
+Pc          50.371;      // bar [origin=predictive method=joback]
+omega       2.0441;      // -   [origin=predictive method=lee-kesler]
+Tb          1104.59;      // K   [origin=predictive method=joback]
+HvapTb      154893.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.369 1.2634 -0.0005352 9.5e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 5; } { group OH; count 6; } { group CH-O; count 3; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 7; } { group OH; count 6; } { group O_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(5s,6r)-5-[(r)-[(2s)-5,6-bis(oxidanyl)-1,4-dioxan-2-yl]-oxidanyl-methyl]-6-(hydroxymethyl)-1,4-dioxane-2,3-diol" );
+gibbsFormation
+{
+    dHf_298   -1689450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     363.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1124170.0
+    phase     gas;
+}

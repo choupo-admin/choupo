@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-bromononane  (C9H19Br, CAS 693-58-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Bromononane;
+formula     C9H19Br;
+CAS         693-58-3;
+InChIKey    AYMUQTNXKPEMLM-UHFFFAOYSA-N;
+MW          207.155;      // g/mol [origin=calculated method=formula-sum]
+Tc          651.09;      // K   [origin=predictive method=joback]
+Pc          24.678;      // bar [origin=predictive method=joback]
+omega       0.5731;      // -   [origin=predictive method=lee-kesler]
+Tb          471.68;      // K   [origin=predictive method=joback]
+HvapTb      42063.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (2.898 0.89702 -0.0005372 1.3e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 8; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanylnonane" "n-nonyl bromide" "nonyl bromide" "nonane, 1-bromo-" "1-nonyl bromide" "1-n-nonyl bromide" "n-nonyl-1-bromide" "bromononane" "nonylbromide" "nonane, bromo-" "nonane,1-bromo" "1-bromo-n-nonane" );
+gibbsFormation
+{
+    dHf_298   -202760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     557.62;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=39220.0
+    phase     gas;
+}

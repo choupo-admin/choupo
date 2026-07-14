@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-diphenyltetramethyldisiloxane  (C16H22OSi2, CAS 56-33-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C16H22OSi2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        13Diphenyltetramethyldisiloxane;
+formula     C16H22OSi2;
+CAS         56-33-7;
+InChIKey    YQJPWWLJDNCSCN-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          286.521;      // g/mol [origin=calculated method=formula-sum]
+Tc          885.48;      // K   [origin=predictive method=joback]
+Pc          18.123;      // bar [origin=predictive method=joback]
+omega       0.4423;      // -   [origin=predictive method=lee-kesler]
+Tb          644.26;      // K   [origin=predictive method=joback]
+HvapTb      58760.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (27.67 0.89048 3.16e-05 -2.59e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group ACH; count 10; } { group AC; count 2; } { group Si; count 1; } { group SiO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[dimethyl(phenyl)silyl]oxy-dimethyl-phenyl-silane" "1,1,3,3-tetramethyl-1,3-diphenyldisiloxane" "bis(dimethylphenylsilyl)ether" "bis(phenyldimethylsilyl)oxide" "diphenyltetramethyldisiloxane" "bis(dimethylphenylsilyl)oxide" "1,3-diphenyl-1,1,3,3-tetramethyldisiloxane" "disiloxane, 1,1,3,3-tetramethyl-1,3-diphenyl-" "disiloxane, 1,3-diphenyl-1,1,3,3-tetramethyl-" "sym-tetramethyl-diphenyl-disiloxane" "tetramethyl-1,3-diphenyldisiloxane" "1,3,3-tetramethyl-1,3-diphenyldisiloxane" );
+gibbsFormation
+{
+    dHf_298   -255970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     830.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-5860.0
+    phase     gas;
+}

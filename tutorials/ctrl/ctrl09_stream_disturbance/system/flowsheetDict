@@ -1,0 +1,99 @@
+/*---------------------------------------------------------------------------*\
+  ctrl09_stream_disturbance  --  the inlet-field actuator, end to end.
+
+  The Signal controller targets the reactor's INLET FACE by field name
+  (`inletField componentMolarFlow.compA`) --- the only legal disturbance
+  surface (an outlet actuator is not even expressible).  The AUTHORITATIVE
+  inlet state is the per-component molar-flow vector; F_in and z_in are
+  DERIVED from it on every write, so a composition disturbance can never
+  hide inside a silent renormalisation (forum #101):
+
+      t < 600 s:  nA = 3.5e-5,  nB = 1.5e-5 kmol/s
+                  ->  F_in = 5.0e-5,  z_A = 0.70,  z_B = 0.30
+      t >= 600 s: nA stepped to 5.25e-5; nB UNTOUCHED at 1.5e-5
+                  ->  F_in = 6.75e-5,  z_A = 5.25/6.75 = 7/9 = 0.77778,
+                      z_B = 1.5/6.75  = 2/9 = 0.22222      (hand-derived)
+
+  The golden pins F_in and z_in_* finals to these fractions, and the
+  Signal value is the ABSOLUTE molar flow (announced at start-up).  The
+  reactor's own response (more A in, higher conversion load, T transient
+  against the PID) is the pedagogy; the CONTRACT is the derived pair.
+
+  The `moleFraction.<c>` sibling field instead holds F_in constant and
+  renormalises the OTHER components proportionally --- two explicit
+  semantics, each announced, never a guess.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        dynamicCSTR;
+
+        initial
+        {
+            T            330.0 K;
+            P            1.013 bar;
+            V            0.001;
+            totalMoles   0.012;
+            molarComposition  { compA 0.7;  compB 0.3; }
+        }
+
+        inlet
+        {
+            F            5.0e-5 kmol/s;
+            T            330.0 K;
+            molarComposition  { compA 0.7;  compB 0.3; }
+        }
+
+        operation
+        {
+            UA           50.0;
+            T_jacket     330.0 K;
+        }
+
+        reaction    compA_to_compB;
+    }
+);
+
+controllers
+(
+    {
+        name         FeedComp;
+        type         Signal;
+
+        actuator     { unit reactor;  inletField componentMolarFlow.compA; }
+
+        signal
+        {
+            type        step;
+            mean        3.5e-5;            // kmol/s of compA (= 0.7 x 5e-5)
+            step        1.75e-5;           // +50 % compA at tStep; compB untouched
+            tStep       600.0;             // s
+        }
+    }
+
+    {
+        name         TC1;
+        type         PID;
+
+        measurement  { unit reactor;  cv T; }
+        actuator     { unit reactor;  mv T_jacket; }
+
+        setpoint     350.0;
+
+        gains
+        {
+            Kp       4.0;
+            Ki       0.04;
+            Kd       0.0;
+        }
+
+        output
+        {
+            min      280.0;
+            max      420.0;
+            bias     330.0;
+        }
+    }
+);

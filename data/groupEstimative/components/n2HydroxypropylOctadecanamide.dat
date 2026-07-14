@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-(2-hydroxypropyl)octadecanamide  (C21H43NO2, CAS 35627-96-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        n2HydroxypropylOctadecanamide;
+formula     C21H43NO2;
+CAS         35627-96-4;
+InChIKey    QCTVGFNUKWXQNN-UHFFFAOYSA-N;
+MW          341.58;      // g/mol [origin=calculated method=formula-sum]
+Tc          1073.12;      // K   [origin=predictive method=joback]
+Pc          10.694;      // bar [origin=predictive method=joback]
+omega       1.0203;      // -   [origin=predictive method=lee-kesler]
+Tb          875.86;      // K   [origin=predictive method=joback]
+HvapTb      91813.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.443 2.08694 -0.0011821 2.4946e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 16; } { group CH; count 1; } { group OH; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 17; } { group CH; count 1; } { group OH; count 1; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-(2-oxidanylpropyl)octadecanamide" "n-(2-hydroxypropyl)stearamide" "octadecanamide, n-(2-hydroxypropyl)-" "stearic isopropanolamide" "stearamide mipa" "stearoyl isopropanolamide" "stearoyl monoisopropanolamide" "monoisopropanolamine stearic acid amide" );
+gibbsFormation
+{
+    dHf_298   -693390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1082.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-52850.0
+    phase     gas;
+}

@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): l-cysteine, compd. with pentanedial(1:4)  (C23H39NO10S, CAS 63149-34-8)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           lCysteineCompdWithPentanedial14;
+formula        C23H39NO10S;
+CAS            63149-34-8;
+InChIKey       FYBLLTVZEMQDNU-AUNMYQSKSA-N;
+MW             521.622;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   5;              // van't Hoff factor for pi = nu R T c
+dissociatesTo  { l-cysteine 1; pentanedial 4; }   // DRAFT constituents from the name -- verify & map to real components/ions

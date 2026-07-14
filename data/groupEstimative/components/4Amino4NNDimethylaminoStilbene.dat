@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-amino-4'-(n,n-dimethylamino)stilbene  (C16H18N2, CAS 22525-43-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Amino4NNDimethylaminoStilbene;
+formula     C16H18N2;
+CAS         22525-43-5;
+InChIKey    GCHSJPKVJSMRDX-UHFFFAOYSA-N;
+MW          238.334;      // g/mol [origin=calculated method=formula-sum]
+Tc          961.55;      // K   [origin=predictive method=joback]
+Pc          24.629;      // bar [origin=predictive method=joback]
+omega       0.7796;      // -   [origin=predictive method=lee-kesler]
+Tb          718.13;      // K   [origin=predictive method=joback]
+HvapTb      69728.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.25 1.45284 -0.00101472 2.762e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH=CH; count 1; } { group ACH; count 8; } { group AC; count 3; } { group CH3N; count 1; } { group ACNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[2-[4-(dimethylamino)phenyl]ethenyl]aniline" "benzenamine, 4-[2-(4-aminophenyl)ethenyl]-n,n-dimethyl-" "benzenamine, 4-(2-(4-aminophenyl)ethenyl)-n,n-dimethyl-" "4-[2-(4-dimethylaminophenyl)ethenyl]aniline" "benzenamine,4-[2-(4-aminophenyl)ethenyl]-n,n-dimethyl-" "4,4'-stilbenediamine,n,n-dimethyl- (6ci,7ci,8ci); 4-(n,n-dimethylamino)-4'-aminostilbene" );
+gibbsFormation
+{
+    dHf_298   295090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     615.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=546850.0
+    phase     gas;
+}

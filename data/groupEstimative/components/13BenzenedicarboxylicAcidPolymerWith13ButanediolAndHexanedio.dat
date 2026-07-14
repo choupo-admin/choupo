@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-benzenedicarboxylic acid, polymer with 1,3-butanediol and hexanedioic acid, isodecyl ester  (C28H46O10, CAS 81603-78-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13BenzenedicarboxylicAcidPolymerWith13ButanediolAndHexanedio;
+formula     C28H46O10;
+CAS         81603-78-3;
+InChIKey    KKZWAXWRLPIITK-UHFFFAOYSA-N;
+MW          542.666;      // g/mol [origin=calculated method=formula-sum]
+Tc          2200.50;      // K   [origin=predictive method=joback]
+Pc          9.216;      // bar [origin=predictive method=joback]
+omega       -0.0151;      // -   [origin=predictive method=lee-kesler]
+Tb          1552.93;      // K   [origin=predictive method=joback]
+HvapTb      172929.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (85.893 2.29046 -0.00082436 -6.63e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 12; } { group CH; count 2; } { group ACH; count 4; } { group AC; count 2; } { group OH; count 2; } { group CH2COO; count 1; } { group COOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 13; } { group CH; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 2; } { group COOH; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzene-1,3-dicarboxylic acid;butane-1,3-diol;6-(8-methylnonoxy)-6-oxidanylidene-hexanoic acid" );
+gibbsFormation
+{
+    dHf_298   -2302540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1642.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1542480.0
+    phase     gas;
+}

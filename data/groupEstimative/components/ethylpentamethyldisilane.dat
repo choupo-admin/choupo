@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethylpentamethyldisilane  (C7H20Si2, CAS 15063-64-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H20Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        ethylpentamethyldisilane;
+formula     C7H20Si2;
+CAS         15063-64-6;
+InChIKey    AIYNVZFMBDWFLW-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          160.407;      // g/mol [origin=calculated method=formula-sum]
+Tc          538.59;      // K   [origin=predictive method=joback]
+Pc          22.041;      // bar [origin=predictive method=joback]
+omega       0.1777;      // -   [origin=predictive method=lee-kesler]
+Tb          362.56;      // K   [origin=predictive method=joback]
+HvapTb      31764.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (78.161 0.25652 0.0004726 -3.623e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 1; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl-dimethyl-trimethylsilyl-silane" "disilane, ethylpentamethyl-" "1-ethyl-1,1,2,2,2-pentamethyldisilane" "ethyl-dimethyl-trimethylsilylsilane" "disilane,ethylpentamethyl- (8ci,9ci)" "disilane,1-ethyl-1,1,2,2,2-pentamethyl-" );
+gibbsFormation
+{
+    dHf_298   -411050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     681.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-201460.0
+    phase     gas;
+}

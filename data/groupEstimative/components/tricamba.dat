@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tricamba  (C8H5Cl3O3, CAS 2307-49-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tricamba;
+formula     C8H5Cl3O3;
+CAS         2307-49-5;
+InChIKey    WCLDITPGPXSPGV-UHFFFAOYSA-N;
+MW          255.475;      // g/mol [origin=calculated method=formula-sum]
+Tc          947.81;      // K   [origin=predictive method=joback]
+Pc          32.504;      // bar [origin=predictive method=joback]
+omega       0.9575;      // -   [origin=predictive method=lee-kesler]
+Tb          709.46;      // K   [origin=predictive method=joback]
+HvapTb      71055.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (87.68 0.45492 -0.00019724 1.01e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 1; } { group AC; count 2; } { group CH3O; count 1; } { group COOH; count 1; } { group ACCl; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group Cl; count 3; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,5-tris(chloranyl)-6-methoxy-benzoic acid" "metriben" "velsicol" "velsicol c" "banvel t" "tricamba [ansi]" "velsicol compound c" "2,3,5-trichloro-6-methoxybenzoic acid" "benzoic acid, 2,3,5-trichloro-6-methoxy-" "tricamba [ansi:iso]" "velsicol 58-cs-25" "o-anisic acid, 3,5,6-trichloro-" );
+gibbsFormation
+{
+    dHf_298   -547510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     501.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-394330.0
+    phase     gas;
+}

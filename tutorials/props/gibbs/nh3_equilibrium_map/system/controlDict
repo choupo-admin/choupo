@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "Ammonia equilibrium map (T x P): why Haber runs at 400-500 C and 150-300 bar";
+verbosity     3;

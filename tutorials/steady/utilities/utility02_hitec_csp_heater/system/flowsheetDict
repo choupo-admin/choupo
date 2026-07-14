@@ -28,22 +28,7 @@
   side.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    boilerFeed
-    {
-        F            80.0 kmol/h;
-        T            393.15 K;             // 120 C feedwater after deaerator
-        P            40.0 bar;
-        molarComposition { water 1.0; }
-    }
-
-    saltSupply
-    {
-        utility      hitecSalt;            // pulls components, state, P, T_in
-        F            300 kmol/h;            // loop circulation flow
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

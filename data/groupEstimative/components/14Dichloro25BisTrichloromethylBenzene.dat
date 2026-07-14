@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-dichloro-2,5-bis(trichloromethyl)benzene  (C8H2Cl8, CAS 2142-29-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14Dichloro25BisTrichloromethylBenzene;
+formula     C8H2Cl8;
+CAS         2142-29-2;
+InChIKey    RMXLFMXXVKFMFK-UHFFFAOYSA-N;
+MW          381.704;      // g/mol [origin=calculated method=formula-sum]
+Tc          996.48;      // K   [origin=predictive method=joback]
+Pc          26.084;      // bar [origin=predictive method=joback]
+omega       0.5615;      // -   [origin=predictive method=lee-kesler]
+Tb          717.24;      // K   [origin=predictive method=joback]
+HvapTb      70152.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (58.79 0.8124 -0.00074828 2.506e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 2; } { group CCl3; count 2; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-bis(chloranyl)-2,5-bis(trichloromethyl)benzene" "a," "a," "a," "a'," "a'," "a'-2,5-octachloro-p-xylene" "ambsclk-96" "1,5-bis(trichloromethyl)benzene" "benzene,4-dichloro-2,5-bis(trichloromethyl)-" "alpha,alpha,alpha,alpha',alpha',alpha'-2,5-octachloro-p-xylene" ".alpha.,.alpha.,.alpha.',.alpha.',.alpha.',2,5-octachloro-p-xylene" "p-xylene,.alpha.,.alpha.,.alpha.',.alpha.',.alpha.',2,5-octachloro-" );
+gibbsFormation
+{
+    dHf_298   -149750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     532.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=10240.0
+    phase     gas;
+}

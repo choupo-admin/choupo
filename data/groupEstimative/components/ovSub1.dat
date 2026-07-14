@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ov(sub 1)  (C21H14O4, CAS 100242-24-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ovSub1;
+formula     C21H14O4;
+CAS         100242-24-8;
+InChIKey    MLAIPUZEKYJFIL-UHFFFAOYSA-N;
+MW          330.339;      // g/mol [origin=calculated method=formula-sum]
+Tc          1272.22;      // K   [origin=predictive method=joback]
+Pc          30.558;      // bar [origin=predictive method=joback]
+omega       1.4278;      // -   [origin=predictive method=lee-kesler]
+Tb          1000.82;      // K   [origin=predictive method=joback]
+HvapTb      104931.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-110.73 1.969 -0.00173848 6.112e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 4; } { group ACOH; count 2; } { group C=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 12; } { group dC_ring; count 8; } { group OH_phenol; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(4-hydroxyphenyl)-7-oxidanyl-4-phenyl-chromen-2-one" "7-hydroxy-4-phenyl-3-(4-hydroxyphenyl)coumarin" "coumarin, 7-hydroxy-3-(p-hydroxyphenyl)-4-phenyl-" "2h-1-benzopyran-2-one,7-hydroxy-3-(4-hydroxyphenyl)-4-phenyl-" "2h-1-benzopyran-2-one, 7-hydroxy-3-(4-hydroxyphenyl)-4-phenyl-" "7-hydroxy-3-(4-hydroxyphenyl)-4-phenylchromen-2-one" );
+gibbsFormation
+{
+    dHf_298   -316410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     635.25;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-74810.0
+    phase     gas;
+}

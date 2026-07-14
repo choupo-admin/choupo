@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-bromanyl-2-(2-phenylethenyl)benzene  (C14H11Br, CAS 54737-45-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Bromanyl22PhenylethenylBenzene;
+formula     C14H11Br;
+CAS         54737-45-0;
+InChIKey    FRBANDMAHCQSMS-UHFFFAOYSA-N;
+MW          259.146;      // g/mol [origin=calculated method=formula-sum]
+Tc          913.40;      // K   [origin=predictive method=joback]
+Pc          31.071;      // bar [origin=predictive method=joback]
+omega       0.5650;      // -   [origin=predictive method=lee-kesler]
+Tb          648.58;      // K   [origin=predictive method=joback]
+HvapTb      58365.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.34 1.1747 -0.00088836 2.63e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group ACH; count 9; } { group AC; count 3; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 2; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   272850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     526.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=376730.0
+    phase     gas;
+}

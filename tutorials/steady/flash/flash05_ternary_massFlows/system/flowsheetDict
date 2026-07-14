@@ -50,20 +50,7 @@
   symmetrically.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        T            365.0 K;
-        P              1.0 bar;
-        massFlows
-        {
-            benzene   1500.0 kg/h;
-            toluene   2500.0 kg/h;
-            nHexane   1000.0 kg/h;
-        }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

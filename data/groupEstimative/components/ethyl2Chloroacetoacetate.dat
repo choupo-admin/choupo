@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 2-chloroacetoacetate  (C6H9ClO3, CAS 609-15-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl2Chloroacetoacetate;
+formula     C6H9ClO3;
+CAS         609-15-4;
+InChIKey    RDULEYWUGKOCMR-UHFFFAOYSA-N;
+MW          164.585;      // g/mol [origin=calculated method=formula-sum]
+Tc          681.70;      // K   [origin=predictive method=joback]
+Pc          32.467;      // bar [origin=predictive method=joback]
+omega       0.6084;      // -   [origin=predictive method=lee-kesler]
+Tb          485.96;      // K   [origin=predictive method=joback]
+HvapTb      47100.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (41.411 0.50374 -0.0002129 2.56e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH3CO; count 1; } { group CHCl; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group Cl; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-chloranyl-3-oxidanylidene-butanoate" "ethyl 2-chloro-3-oxobutanoate" "ethyl-2-chloracetoacetate" "2-chloroacetoacetic acid ethyl ester" "butanoic acid, 2-chloro-3-oxo-, ethyl ester" "ethyl alpha-chloroacetoacetate" "ethyl2-chloroacetoacetate" "2-chloro-3-oxobutyric acid ethyl ester" "ethyl2-chloro-3-oxobutanoate" "2-chloro-3-oxobutanoic acid, ethyl ester" "acetoacetic acid, 2-chloro-, ethyl ester" "2-cl-ace" );
+gibbsFormation
+{
+    dHf_298   -618050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     491.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-454020.0
+    phase     gas;
+}

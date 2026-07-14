@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,5-pentanetriol  (C5H12O3, CAS 14697-46-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        125Pentanetriol;
+formula     C5H12O3;
+CAS         14697-46-2;
+InChIKey    WEAYWASEBDOLRG-UHFFFAOYSA-N;
+MW          120.148;      // g/mol [origin=calculated method=formula-sum]
+Tc          748.37;      // K   [origin=predictive method=joback]
+Pc          50.015;      // bar [origin=predictive method=joback]
+omega       1.8256;      // -   [origin=predictive method=lee-kesler]
+Tb          590.10;      // K   [origin=predictive method=joback]
+HvapTb      76373.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.534 0.5867 -0.0003426 7.72e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 1; } { group OH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group CH; count 1; } { group OH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentane-1,2,5-triol" "1,4,5-pentanetriol" "1,5-pentanetriol" "agn-pc-01ynwc" );
+gibbsFormation
+{
+    dHf_298   -608500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     493.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-421680.0
+    phase     gas;
+}

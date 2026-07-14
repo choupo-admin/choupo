@@ -1,0 +1,35 @@
+/*---------------------------------------------------------------------------*\
+  lithiumBrinePlant / constant/propertyDict
+
+  Root property context.  No `inherits`: this is the top of the explicit
+  property-context chain.
+
+  The root provides the global component universe and molecular default.
+  Real sectors override only what differs.
+\*---------------------------------------------------------------------------*/
+
+recordType    propertyDict;
+schemaVersion 1;
+
+components
+(
+    water
+    NaCl
+    LiCl
+    kerosene_C12cut
+    LiX_extractant
+    Li2CO3
+    CH4
+    O2
+    N2
+    CO
+    CO2
+    H2
+);
+
+propertyMethods
+{
+    liquid activity.ideal;
+    vapour builtin.idealGas;
+    solid  builtin.saltEquilibrium;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-chloro-2,5-diisopropylbenzene  (C12H17Cl, CAS 49841-53-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Chloro25Diisopropylbenzene;
+formula     C12H17Cl;
+CAS         49841-53-4;
+InChIKey    DAQRAOORRPJOKE-UHFFFAOYSA-N;
+MW          196.718;      // g/mol [origin=calculated method=formula-sum]
+Tc          762.97;      // K   [origin=predictive method=joback]
+Pc          22.893;      // bar [origin=predictive method=joback]
+omega       0.4793;      // -   [origin=predictive method=lee-kesler]
+Tb          547.35;      // K   [origin=predictive method=joback]
+HvapTb      49515.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.8 0.96458 -0.00055292 1.153e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group ACH; count 3; } { group ACCH; count 2; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-1,4-di(propan-2-yl)benzene" "2-chloro-1,4-di(propan-2-yl)benzene" );
+gibbsFormation
+{
+    dHf_298   -103720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     519.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=126500.0
+    phase     gas;
+}

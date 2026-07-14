@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetracontane  (C40H82, CAS 4181-95-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetracontane;
+formula     C40H82;
+CAS         4181-95-7;
+InChIKey    KUPLEGDPSCCPJI-UHFFFAOYSA-N;
+MW          563.096;      // g/mol [origin=calculated method=formula-sum]
+Tc          1492.04;      // K   [origin=predictive method=joback]
+Pc          3.909;      // bar [origin=predictive method=joback]
+omega       -0.2740;      // -   [origin=predictive method=lee-kesler]
+Tb          1114.80;      // K   [origin=predictive method=joback]
+HvapTb      104634.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-33.472 3.80384 -0.0021522 4.648e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 38; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 38; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-tetracontane" "ai3-36490" "tetracontane, analytical standard" "ntetracontane" "tetracontane; n-tetracontane" "HY-W540509" "ls-15432" "NS00049183" "Q151239" "c4f1723f-8a7b-4248-a951-73f06de9834e" "C40" "nc40" );
+gibbsFormation
+{
+    dHf_298   -868930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1714.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=285920.0
+    phase     gas;
+}

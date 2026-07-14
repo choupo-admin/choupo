@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-vinylbenzo-18-crown-6  (C18H26O6, CAS 39557-71-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Vinylbenzo18Crown6;
+formula     C18H26O6;
+CAS         39557-71-6;
+InChIKey    WMBFARVSOWVDII-UHFFFAOYSA-N;
+MW          338.4;      // g/mol [origin=calculated method=formula-sum]
+Tc          1144.69;      // K   [origin=predictive method=joback]
+Pc          21.256;      // bar [origin=predictive method=joback]
+omega       0.8630;      // -   [origin=predictive method=lee-kesler]
+Tb          873.38;      // K   [origin=predictive method=joback]
+HvapTb      88110.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-40.6 1.5305 -0.00046442 -1.173e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2=CH; count 1; } { group ACH; count 3; } { group AC; count 3; } { group FCH2O; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group dCH; count 1; } { group CH2_ring; count 10; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "20-ethenyl-2,5,8,11,14,17-hexaoxabicyclo[16.4.0]docosa-1(18),19,21-triene" "4'-vinylbenzo-18-crown-6" "4 inverted exclamation marka-vinylbenzo-18-crown-6" "18-ethenyl-2,3,5,6,8,9,11,12,14,15-decahydro-1,4,7,10,13,16-benzohexaoxacyclooctadecine" "18-vinyl-1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16-hexadecahydrobenzo[a][18]annul ene" "18-vinyl-2,3,5,6,8,9,11,12,14,15-decahydrobenzo[b][1,4,7,10,13,16]hexaoxacyclooctadecine" );
+gibbsFormation
+{
+    dHf_298   -854770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     637.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-323890.0
+    phase     gas;
+}

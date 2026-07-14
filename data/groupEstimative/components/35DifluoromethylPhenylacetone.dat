@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-difluoromethyl)phenylacetone  (C11H8F6O, CAS 85068-34-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35DifluoromethylPhenylacetone;
+formula     C11H8F6O;
+CAS         85068-34-4;
+InChIKey    VLRWCHKOSBUGMB-UHFFFAOYSA-N;
+MW          270.172;      // g/mol [origin=calculated method=formula-sum]
+Tc          710.67;      // K   [origin=predictive method=joback]
+Pc          21.795;      // bar [origin=predictive method=joback]
+omega       0.7121;      // -   [origin=predictive method=lee-kesler]
+Tb          530.95;      // K   [origin=predictive method=joback]
+HvapTb      42932.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.459 1.14532 -0.00089502 2.6376e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 3; } { group AC; count 3; } { group CH2CO; count 1; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 6; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[3,5-bis(trifluoromethyl)phenyl]propan-1-one" "3',5'-bis(trifluoromethyl)propiophenone" "3,5-bis(trifluoromethyl)propiophenone" "1-(3,5-bis(trifluoromethyl)phenyl)propan-1-one" "1-propanone, 1-[3,5-bis(trifluoromethyl)phenyl]-" "vlrwchkosbugmb-uhfffaoysa-" "3',5'-bis(trifluoromethyl)propiophenone 98%" "1-[3,5-bis(trifluoromethyl)phenyl]-1-propanone" );
+gibbsFormation
+{
+    dHf_298   -1363520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     604.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1157210.0
+    phase     gas;
+}

@@ -47,6 +47,9 @@ Description
 
 #pragma once
 
+#include "core/Origin.H"
+
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -62,7 +65,73 @@ struct PairResolution
     std::string source;      // the file actually loaded, or "inline" / "ideal-default"
     std::string provSource;  // the file's provenance.source ("placeholder"/"literature"/
                              // "fitted"/...) when present, else "" (e.g. ideal-default)
+
+    // ---- P1 audit fields (forum #67/#69): typed, riding the same record, and
+    //      NEVER read by the hot numerical path -- they exist for the run
+    //      header, the result JSON, the gap report and mode-evaluate.
+    // RANKING AND POLICY USE ONLY `origin` (the typed tier); `provSource` stays
+    // as the raw source label during migration and never outranks the type.
+    Origin                           origin = Origin::unattributed;
+    std::string                      method;
+    std::string                      methodVersion;  // STABLE id, never a path
+    ValidityDomain                   validity;
+    std::optional<PromotionOverride> promotedDespite;
 };
+
+// ---- Shared audit emission (forum #73-3): ONE implementation of the P1
+//      audit-detail JSON fragment, consumed by EVERY result emitter
+//      (choupoSolve's ResultEmitter and choupoProps's main) -- the contract is
+//      per CONSUMPTION, never per binary, and a second diverging formatter is
+//      how fields silently rot.  Takes the caller's own string-escaper so the
+//      two emitters keep their quoting conventions.
+template <class Esc>
+inline std::string pairResolutionAuditJson(const PairResolution& p, Esc esc)
+{
+    std::string out;
+    out += ", \"origin\": " + esc(originToWord(p.origin));
+    if (!p.method.empty())        out += ", \"method\": " + esc(p.method);
+    if (!p.methodVersion.empty()) out += ", \"methodVersion\": " + esc(p.methodVersion);
+    if (p.validity.any())
+    {
+        out += ", \"validity\": {";
+        bool first = true;
+        auto rng = [&](const char* k, const Range& r2)
+        {
+            out += std::string(first ? " " : ", ") + "\"" + k + "\": { \"min\": "
+                 + std::to_string(r2.lo) + ", \"max\": " + std::to_string(r2.hi) + " }";
+            first = false;
+        };
+        if (p.validity.temperature) rng("temperature", *p.validity.temperature);
+        if (p.validity.pressure)    rng("pressure",    *p.validity.pressure);
+        if (!p.validity.composition.empty())
+        {
+            out += std::string(first ? " " : ", ") + "\"composition\": {";
+            bool f2 = true;
+            for (const auto& [c, r2] : p.validity.composition)
+            {
+                out += std::string(f2 ? " " : ", ") + esc(c) + ": { \"min\": "
+                     + std::to_string(r2.lo) + ", \"max\": " + std::to_string(r2.hi) + " }";
+                f2 = false;
+            }
+            out += " }"; first = false;
+        }
+        if (!p.validity.note.empty())
+        { out += std::string(first ? " " : ", ") + "\"note\": " + esc(p.validity.note); first = false; }
+        out += " }";
+    }
+    if (p.promotedDespite)
+        out += ", \"promotedDespite\": { \"identifiable\": "
+             + std::to_string(p.promotedDespite->identifiable)
+             + ", \"reason\": " + esc(p.promotedDespite->reason)
+             + ", \"by\": "     + esc(p.promotedDespite->by)
+             + ", \"date\": "   + esc(p.promotedDespite->date) + " }";
+    return out;
+}
+
+// The ALWAYS-ON consumption announcement (forum #67 D-c): compact stdout line
+// + persistent advisory for predictive parameters and overridden promotions.
+// Returns true when anything was announced (callers may refresh advisories).
+bool announceProvenanceConsumption(const std::vector<PairResolution>& entries);
 
 class ThermoResolutionLog
 {

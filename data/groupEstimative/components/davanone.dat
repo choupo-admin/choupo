@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (+)-davanone  (C15H24O2, CAS 20482-11-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        davanone;
+formula     C15H24O2;
+CAS         20482-11-5;
+InChIKey    FJKKZNIYYVEYOL-SNPRPXQTSA-N;
+MW          236.355;      // g/mol [origin=calculated method=formula-sum]
+Tc          845.94;      // K   [origin=predictive method=joback]
+Pc          18.822;      // bar [origin=predictive method=joback]
+omega       0.6583;      // -   [origin=predictive method=lee-kesler]
+Tb          634.75;      // K   [origin=predictive method=joback]
+HvapTb      58017.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-109.149 1.80078 -0.0014764 5.2496e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group CH2=CH; count 1; } { group CH=C; count 1; } { group CH2CO; count 1; } { group CH-O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 2; } { group dC; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group O_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-2-[(2s,5r)-5-ethenyl-5-methyl-oxolan-2-yl]-6-methyl-hept-5-en-3-one" "davanone" "davadone d" "(2s)-2-[(2s,5r)-5-ethenyl-5-methyloxolan-2-yl]-6-methylhept-5-en-3-one" "5-hepten-3-one, 6-methyl-2-(tetrahydro-5-methyl-5-vinyl-2-furyl)-, ( )-" );
+gibbsFormation
+{
+    dHf_298   -314550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     667.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=40800.0
+    phase     gas;
+}

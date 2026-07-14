@@ -1,0 +1,60 @@
+/*---------------------------------------------------------------------------*\
+  hxWorkflow2_rate_designed   --   PART 2 of 2: RATE the designed exchanger
+  ==========================================================================
+  THE HEAT-EXCHANGER DESIGN WORKFLOW (the standard design sequence), part 2.
+
+  Part 1 (heatExchanger03_design_sizing) gave the engine a DUTY TARGET (cool
+  the hot shell 330 -> 315 K) and it SIZED the bundle: 105 tubes, shell ID 0.306 m (Kern/Sinnott, 2-pass U-tube).  That is the detailed-design step.
+
+  Part 2 -- THIS case -- is the detailed-rating / checking step: take the
+  DESIGNED geometry as a FIXED given (`model geometry;`) and RATE it -- confirm
+  it delivers the target outlet, and read the honest pressure drop.  This is
+  the verification a real project always does after sizing: the design loop
+  used a bundle correlation for the shell diameter and rounded the tube count
+  UP, so the rated exchanger is slightly OVER-surfaced -- the outlet comes out
+  a touch below 315 K (good: margin), and that is what you check here.
+
+  OFF-DESIGN (try it): drop the cold-tube flow F to ~6000 kmol/h and re-run --
+  less coolant -> the hot stream leaves WARMER than 315 K, and the shell dP
+  falls.  That is the rating question ("will my exchanger cope when the plant
+  turns down?") the design step cannot answer.  The geometry is now FIXED; only
+  the performance moves.
+
+  Numbers are RESULTS pinned by --record.  Same clean water-water service, same
+  Gnielinski (tube) + Kern (shell) correlations, single-phase, 2-pass U-tube (1-2 eps-NTU).
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+units
+(
+    {
+        name        hx;
+        type        heatExchanger;
+        model       geometry;
+        inputs      ( hotShell  coldTube );
+        outputs     ( hotOut  coldOut );
+
+        operation
+        {
+            flow        counter;
+            tubeStream  coldTube;
+
+            // the geometry DESIGNED in Part 1 (146 tubes, 0.306 m shell) --
+            // here a FIXED given, to be rated.
+            geometry
+            {
+                tubeID         0.016 m;
+                tubeOD         0.019 m;
+                tubeLength     4.88  m;
+                nTubes         105;
+                passes         2;
+                shellID        0.306 m;
+                baffleSpacing  0.305 m;
+                tubePitch      0.025 m;
+                tubePattern    triangular;   // (square = cleanable lanes, lower dP)
+                wallMaterial   carbonSteel;
+            }
+            tubeSide  { model Gnielinski; }
+            shellSide { model Kern;       }
+        }
+    }
+);

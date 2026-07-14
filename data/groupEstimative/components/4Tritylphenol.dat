@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-tritylphenol  (C25H20O, CAS 978-86-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Tritylphenol;
+formula     C25H20O;
+CAS         978-86-9;
+InChIKey    NIPKXTKKYSKEON-UHFFFAOYSA-N;
+MW          336.434;      // g/mol [origin=calculated method=formula-sum]
+Tc          1247.00;      // K   [origin=predictive method=joback]
+Pc          22.125;      // bar [origin=predictive method=joback]
+omega       0.9278;      // -   [origin=predictive method=lee-kesler]
+Tb          955.71;      // K   [origin=predictive method=joback]
+HvapTb      92066.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-188.85 2.3436 -0.00188916 5.933e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group ACH; count 19; } { group AC; count 4; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH_ring; count 19; } { group dC_ring; count 5; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(triphenylmethyl)phenol" "4-triphenylmethylphenol" "phenol, 4-(triphenylmethyl)-" "p-cresol, .alpha.,.alpha.,.alpha.-triphenyl-" "p-tritylphenol" "4-hydroxytetraphenylmethane" "4-[tri(phenyl)methyl]phenol" "4-(2-benzhydrylphenyl)phenol" "nipkxtkkyskeon-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   200730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     691.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=457480.0
+    phase     gas;
+}

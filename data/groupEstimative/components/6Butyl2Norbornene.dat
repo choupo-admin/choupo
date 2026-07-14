@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-butyl-2-norbornene  (C11H18, CAS 22094-81-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Butyl2Norbornene;
+formula     C11H18;
+CAS         22094-81-1;
+InChIKey    YSWATWCBYRBYBO-UHFFFAOYSA-N;
+MW          150.265;      // g/mol [origin=calculated method=formula-sum]
+Tc          660.20;      // K   [origin=predictive method=joback]
+Pc          25.354;      // bar [origin=predictive method=joback]
+omega       0.4130;      // -   [origin=predictive method=lee-kesler]
+Tb          463.52;      // K   [origin=predictive method=joback]
+HvapTb      40061.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-98.997 1.25852 -0.00090048 2.644e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 3; } { group CH=CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group dCH_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-butylbicyclo[2.2.1]hept-2-ene" "bicyclo[2.2.1]hept-2-ene, 5-butyl-" "bicyclo(2.2.1)hept-2-ene, 5-butyl-" "5-butyl-2-norbornene" "agn-pc-03dhwr" "5-butylbicyclo(2.2.1)-2-heptene" "bicyclo[2.2.1]hept-2-ene,5-butyl-" "2-norbornene,5-butyl- (6ci,8ci); 5-butyl-2-norbornene; 5-butylbicyclo[2.2.1]hept-2-ene" );
+gibbsFormation
+{
+    dHf_298   -93490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     344.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=173390.0
+    phase     gas;
+}

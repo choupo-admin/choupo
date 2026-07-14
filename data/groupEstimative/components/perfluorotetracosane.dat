@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perfluorotetracosane  (C24F50, CAS 1766-41-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perfluorotetracosane;
+formula     C24F50;
+CAS         1766-41-2;
+InChIKey    AXFFGMPNSZVEDX-UHFFFAOYSA-N;
+MW          1238.164;      // g/mol [origin=calculated method=formula-sum]
+Tc          832.53;      // K   [origin=predictive method=joback]
+Pc          3.539;      // bar [origin=predictive method=joback]
+omega       -0.2752;      // -   [origin=predictive method=lee-kesler]
+Tb          634.70;      // K   [origin=predictive method=joback]
+HvapTb      -2936.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-301.73 5.893 -0.006225 2.28e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CF3; count 2; } { group CF2; count 22; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 24; } { group F; count 50; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,24-pentacontakis(fluoranyl)tetracosane" "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,24-pentacontafluorotetracosane" "tetracosane,1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,24-pentacontafluoro-" );
+gibbsFormation
+{
+    dHf_298   -10554190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1742.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-9521140.0
+    phase     gas;
+}

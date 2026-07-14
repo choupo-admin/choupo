@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: deoxybenzoin  (C14H12O, CAS 451-40-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        deoxybenzoin;
+formula     C14H12O;
+CAS         451-40-1;
+InChIKey    OTKCEEWUXHVZQI-UHFFFAOYSA-N;
+MW          196.249;      // g/mol [origin=calculated method=formula-sum]
+Tc          873.98;      // K   [origin=predictive method=joback]
+Pc          29.633;      // bar [origin=predictive method=joback]
+omega       0.6049;      // -   [origin=predictive method=lee-kesler]
+Tb          627.15;      // K   [origin=predictive method=joback]
+HvapTb      58056.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-70.289 1.148 -0.0007815 1.9736e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 2; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-diphenylethanone" "2-phenylacetophenone" "ethanone, 1,2-diphenyl-" "benzyl phenyl ketone" "acetophenone, 2-phenyl-" "desoxybenzoin" "benzoin, deoxy-" "1,2-diphenylethan-1-one" "phenyl benzyl ketone" "1,2-diphenyl-ethanone" "agn-pc-0cnlus" "deoxybenzoin; benzyl phenyl ketone; alpha-phenylacetophenone" );
+gibbsFormation
+{
+    dHf_298   28190.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     515.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=162900.0
+    phase     gas;
+}

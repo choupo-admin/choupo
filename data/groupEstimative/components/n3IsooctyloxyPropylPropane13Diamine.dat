@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-(3-(isooctyloxy)propyl)propane-1,3-diamine  (C14H32N2O, CAS 27215-25-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        n3IsooctyloxyPropylPropane13Diamine;
+formula     C14H32N2O;
+CAS         27215-25-4;
+InChIKey    HEVQBLROGBPURW-UHFFFAOYSA-N;
+MW          244.423;      // g/mol [origin=calculated method=formula-sum]
+Tc          839.78;      // K   [origin=predictive method=joback]
+Pc          15.987;      // bar [origin=predictive method=joback]
+omega       1.0104;      // -   [origin=predictive method=lee-kesler]
+Tb          664.60;      // K   [origin=predictive method=joback]
+HvapTb      65857.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.261 1.41464 -0.000722 1.216e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 1; } { group CH2O; count 1; } { group CH2NH2; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 11; } { group CH; count 1; } { group O; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n'-[3-(6-methylheptoxy)propyl]propane-1,3-diamine" "n-{3-[(6-methylheptyl)oxy]propyl}propane-1,3-diamine" "n-[3-(isooctyloxy)propyl]propane-1,3-diamine" "1,3-propanediamine, n-(3-(isooctyloxy)propyl)-" "1,3-propanediamine, n-[3-(isooctyloxy)propyl]-" "1,3-propanediamine,n-[3-(isooctyloxy)propyl]-" );
+gibbsFormation
+{
+    dHf_298   -382530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     795.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=115400.0
+    phase     gas;
+}

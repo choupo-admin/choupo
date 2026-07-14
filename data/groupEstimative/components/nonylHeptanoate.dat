@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nonyl heptanoate  (C16H32O2, CAS 98841-69-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nonylHeptanoate;
+formula     C16H32O2;
+CAS         98841-69-1;
+InChIKey    XCQXSYSIKVLBKE-UHFFFAOYSA-N;
+MW          256.43;      // g/mol [origin=calculated method=formula-sum]
+Tc          788.70;      // K   [origin=predictive method=joback]
+Pc          13.233;      // bar [origin=predictive method=joback]
+omega       0.8619;      // -   [origin=predictive method=lee-kesler]
+Tb          623.90;      // K   [origin=predictive method=joback]
+HvapTb      58617.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (13.753 1.46904 -0.000752 1.221e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 12; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 13; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -690850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     830.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-226530.0
+    phase     gas;
+}

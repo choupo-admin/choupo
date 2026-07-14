@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-dicyclopropylethenylcyclopropane  (C11H16, CAS 23603-63-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Dicyclopropylethenylcyclopropane;
+formula     C11H16;
+CAS         23603-63-6;
+InChIKey    UZDUVEFMUMEKSH-UHFFFAOYSA-N;
+MW          148.249;      // g/mol [origin=calculated method=formula-sum]
+Tc          692.94;      // K   [origin=predictive method=joback]
+Pc          29.959;      // bar [origin=predictive method=joback]
+omega       0.3748;      // -   [origin=predictive method=lee-kesler]
+Tb          475.54;      // K   [origin=predictive method=joback]
+HvapTb      39857.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-171.71 1.5214 -0.0013213 4.668e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 3; } { group CH=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclopropane, 1,1',1-(1-ethenyl-2-ylidene)tris-" ""cyclopropane,1,1',1""-(1-ethenyl-2-ylidene)tris-"" );
+gibbsFormation
+{
+    dHf_298   55460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     302.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=295660.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1,2,2,3,3-heptafluoro-5-iodopentane  (C5H4F7I, CAS 1513-88-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1112233Heptafluoro5Iodopentane;
+formula     C5H4F7I;
+CAS         1513-88-8;
+InChIKey    TZNRRNKRZXHADL-UHFFFAOYSA-N;
+MW          323.973;      // g/mol [origin=calculated method=formula-sum]
+Tc          559.58;      // K   [origin=predictive method=joback]
+Pc          25.559;      // bar [origin=predictive method=joback]
+omega       0.4098;      // -   [origin=predictive method=lee-kesler]
+Tb          392.34;      // K   [origin=predictive method=joback]
+HvapTb      26490.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.748 0.9778 -0.0009598 3.431e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group I; count 1; } { group CF3; count 1; } { group CF2; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group C; count 3; } { group F; count 7; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2,3,3-heptakis(fluoranyl)-5-iodanyl-pentane" "1h,1h,2h,2h-perfluoropentyl iodide" "perfluoroalkyl(c2-c18)ethyl iodide" "heptafluoro-5-iodopentane" "2-(perfluoropropyl)ethyl iodide" "1-iodo-2-(perfluoropropyl)ethane" "perfluoro-c2-18-alkylethyl iodides" "1h,1h,2h,2h-heptafluoro-1-iodopentane" "1-iodo-3,3,4,4,5,5,5-heptafluoropentane" "alkyl iodides, c4-20, gamma-omega-perfluoro" "pentane,1,1,1,2,2,3,3-heptafluoro-5-iodo-" );
+gibbsFormation
+{
+    dHf_298   -1468680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     511.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1305810.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isobornyl methacrylate  (C14H22O2, CAS 7534-94-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isobornylMethacrylate;
+formula     C14H22O2;
+CAS         7534-94-3;
+InChIKey    IAXXETNIOYFMLW-UHFFFAOYSA-N;
+MW          222.328;      // g/mol [origin=calculated method=formula-sum]
+Tc          797.88;      // K   [origin=predictive method=joback]
+Pc          20.642;      // bar [origin=predictive method=joback]
+omega       0.5404;      // -   [origin=predictive method=lee-kesler]
+Tb          583.59;      // K   [origin=predictive method=joback]
+HvapTb      50653.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-180.82 2.08198 -0.0020168 8.258e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 2; } { group C; count 2; } { group CH2=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4,7,7-trimethyl-3-bicyclo[2.2.1]heptanyl) 2-methylprop-2-enoate" "methacrylic acid isobornyl ester" "2-propenoic acid, 2-methyl-, (1r,2r,4r)-1,7,7-trimethylbicyclo(2.2.1)hept-2-yl ester, rel-" "2-propenoic acid, 2-methyl-, (1r,2r,4r)-1,7,7-trimethylbicyclo[2.2.1]hept-2-yl ester, rel-" "(1r,2s)-1,7,7-trimethylbicyclo[2.2.1]hept-2-yl 2-methylprop-2-enoate" "methacrylic acid, isobornyl ester" "o797" "exo-1,7,7-trimethylbicyclo(2.2.1)hept-2-yl methacrylate" "(1,7,7-trimethyl-6-bicyclo[2.2.1]heptanyl) 2-methylprop-2-enoate" "1,7,7-trimethylbicyclo[2.2.1]hept-2-yl 2-methylprop-2-enoate" "(1s,2s,4r)-1,7,7-trimethylbicyclo[2.2.1]hept-2-yl 2-methylprop-2-enoate" "2-propenoic acid, 2-methyl-, 1,7,7-trimethylbicyclo(2.2.1)hept-2-yl ester, exo-" );
+gibbsFormation
+{
+    dHf_298   -404690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     637.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-81080.0
+    phase     gas;
+}

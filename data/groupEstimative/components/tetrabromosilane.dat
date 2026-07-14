@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrabromosilane  (Br4Si, CAS 7789-66-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula Br4Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        tetrabromosilane;
+formula     Br4Si;
+CAS         7789-66-4;
+InChIKey    AIFMYMZGQVTROK-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          347.701;      // g/mol [origin=calculated method=formula-sum]
+Tc          736.18;      // K   [origin=predictive method=joback]
+Pc          88.665;      // bar [origin=predictive method=joback]
+omega       0.4062;      // -   [origin=predictive method=lee-kesler]
+Tb          465.64;      // K   [origin=predictive method=joback]
+HvapTb      41628.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (76.47 -0.0496 0.000153 -9.2e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group Br; count 4; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group Br; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetrakis(bromanyl)silane" "silicon tetrabromide" "silane, tetrabromo-" "silicon(iv) bromide" "sibr4" "silicon bromide" "siliconbromide (sibr4) (6ci,8ci);perbromosilane;silicon bromide;silicontetrabromide;tetrabromosilane;silicon bromide; silicon bromide (sibr4); silicon tetrabromide;silicon tetrabromide;" );
+gibbsFormation
+{
+    dHf_298   -49630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     486.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-98360.0
+    phase     gas;
+}

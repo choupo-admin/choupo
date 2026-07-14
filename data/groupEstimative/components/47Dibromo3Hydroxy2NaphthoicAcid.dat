@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,7-dibromo-3-hydroxy-2-naphthoic acid  (C11H6Br2O3, CAS 1779-10-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        47Dibromo3Hydroxy2NaphthoicAcid;
+formula     C11H6Br2O3;
+CAS         1779-10-8;
+InChIKey    WNMKUIQCIRAXBN-UHFFFAOYSA-N;
+MW          345.974;      // g/mol [origin=calculated method=formula-sum]
+Tc          1142.23;      // K   [origin=predictive method=joback]
+Pc          53.513;      // bar [origin=predictive method=joback]
+omega       1.4327;      // -   [origin=predictive method=lee-kesler]
+Tb          870.33;      // K   [origin=predictive method=joback]
+HvapTb      89030.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-17.5 1.0695 -0.00101316 3.809e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 5; } { group ACOH; count 1; } { group COOH; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 4; } { group dC_ring; count 6; } { group Br; count 2; } { group OH_phenol; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,7-bis(bromanyl)-3-oxidanyl-naphthalene-2-carboxylic acid" "1,6-dibromo-2-hydroxynaphthalene-3-carboxylic acid" "4,7-dibromo-3-hydroxynaphthalene-2-carboxylic acid" "1,6-dibromo-2-naphthol-3-carboxylic acid" "2-naphthalenecarboxylic acid, 4,7-dibromo-3-hydroxy-" "2-naphthoic acid,7-dibromo-3-hydroxy-" "2-naphthalenecarboxylic acid,7-dibromo-3-hydroxy-" "2-naphthoic acid, 4,7-dibromo-3-hydroxy-" "2-naphthalenecarboxylicacid, 4,7-dibromo-3-hydroxy-" );
+gibbsFormation
+{
+    dHf_298   -352100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     532.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-237980.0
+    phase     gas;
+}

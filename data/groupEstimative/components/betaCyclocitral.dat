@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: beta-cyclocitral  (C10H16O, CAS 432-25-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        betaCyclocitral;
+formula     C10H16O;
+CAS         432-25-7;
+InChIKey    MOQGCGNUWBPGTQ-UHFFFAOYSA-N;
+MW          152.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          721.22;      // K   [origin=predictive method=joback]
+Pc          29.282;      // bar [origin=predictive method=joback]
+omega       0.4723;      // -   [origin=predictive method=lee-kesler]
+Tb          505.97;      // K   [origin=predictive method=joback]
+HvapTb      45468.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-74.02 1.16736 -0.00098 3.677e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group C; count 1; } { group CHO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group dC_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6,6-trimethylcyclohexene-1-carbaldehyde" "b-cyclocitral" "1-cyclohexene-1-carboxaldehyde, 2,6,6-trimethyl-" ".beta.-cyclocitral" "2,6,6-trimethyl-1-cyclohexene-1-carboxaldehyde" "cyclohexenecarboxaldehyde, 2,6,6-trimethyl-" "2,6,6-trimethylcyclohex-1-ene-1-carbaldehyde" "pentadeuterio-" "a-cyclocitral" "cyclocitral" "alpha(beta)-cyclocitral" "2,6,6-trimethylcyclohexenecarbaldehyde" "1-formyl-2,6,6-trimethyl-1-cyclohexene" );
+gibbsFormation
+{
+    dHf_298   -230910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     553.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-36540.0
+    phase     gas;
+}

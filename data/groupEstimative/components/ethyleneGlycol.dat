@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethylene glycol  (C2H6O2, CAS 107-21-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyleneGlycol;
+formula     C2H6O2;
+CAS         107-21-1;
+InChIKey    LYCAIKOWRPUZTN-UHFFFAOYSA-N;
+MW          62.068;      // g/mol [origin=calculated method=formula-sum]
+Tc          589.55;      // K   [origin=predictive method=joback]
+Pc          66.530;      // bar [origin=predictive method=joback]
+omega       1.1211;      // -   [origin=predictive method=lee-kesler]
+Tb          429.72;      // K   [origin=predictive method=joback]
+HvapTb      53404.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.652 0.2618 -0.0001458 3.22e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group _CH2OH_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethane-1,2-diol" "1,2-ethanediol" "glycol" "monoethylene glycol" "glycol alcohol" "ethylene alcohol" "2-hydroxyethanol" "1,2-dihydroxyethane" "polyethylene glycol" "fridex" "tescol" "ethylene dihydrate" );
+gibbsFormation
+{
+    dHf_298   -389070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     335.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-307680.0
+    phase     gas;
+}

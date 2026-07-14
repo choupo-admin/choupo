@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (4r,5r)-4,5-diethoxycarbonyl-2,2-dimethyl dioxolane  (C11H18O6, CAS 59779-75-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4r5r45Diethoxycarbonyl22DimethylDioxolane;
+formula     C11H18O6;
+CAS         59779-75-8;
+InChIKey    MCNKHXZIPATURB-UHFFFAOYSA-N;
+MW          246.259;      // g/mol [origin=calculated method=formula-sum]
+Tc          828.98;      // K   [origin=predictive method=joback]
+Pc          22.187;      // bar [origin=predictive method=joback]
+omega       0.8275;      // -   [origin=predictive method=lee-kesler]
+Tb          627.80;      // K   [origin=predictive method=joback]
+HvapTb      62402.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.248 1.30388 -0.0009068 2.692e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 1; } { group CH-O; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH_ring; count 2; } { group C_ring; count 1; } { group O_ring; count 2; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "diethyl 2,2-dimethyl-1,3-dioxolane-4,5-dicarboxylate" "l-tartaric acid, [2,3-(o)-isopropylidene)-, diethyl ester" );
+gibbsFormation
+{
+    dHf_298   -1133890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     518.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-735600.0
+    phase     gas;
+}

@@ -6,16 +6,7 @@
   Properties box (transient tinkering) and re-run, or edit it here.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            380.0 K;        // T_feed
-        P            3.0 bar;          // P_feed
-        molarComposition  { benzene 0.40;  toluene 0.60; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

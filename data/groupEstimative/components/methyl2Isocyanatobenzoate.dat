@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 2-isocyanatobenzoate  (C9H7NO3, CAS 1793-07-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl2Isocyanatobenzoate;
+formula     C9H7NO3;
+CAS         1793-07-3;
+InChIKey    ATFKBWNEVZUSKC-UHFFFAOYSA-N;
+MW          177.159;      // g/mol [origin=calculated method=formula-sum]
+Tc          784.32;      // K   [origin=predictive method=joback]
+Pc          35.137;      // bar [origin=predictive method=joback]
+omega       0.6784;      // -   [origin=predictive method=lee-kesler]
+Tb          562.07;      // K   [origin=predictive method=joback]
+HvapTb      55505.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 4; } { group AC; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH3; count 1; } { group dCd; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-carbomethoxyphenyl isocyanate" "2-methoxycarbonylphenyl isocyanate" "2-(methoxycarbonyl)phenyl isocyanate" "2-isocyanatobenzoic acid methyl ester" "benzoic acid,2-isocyanato-, methyl ester" "benzoicacid, o-isocyanato-, methyl ester (7ci,8ci); 2-(carbomethoxy)phenyl isocyanate;2-(methoxycarbonyl)phenyl isocyanate; 2-isocyanatobenzoic acid methyl ester;methyl 2-isocyanatobenzoate; o-carbomethoxyphenyl isocyanate" );
+// formation datum unavailable (element entropy missing): dHf_298=-326720.0 dGf_298=None

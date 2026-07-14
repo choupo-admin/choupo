@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1-dibromoethane  (C2H4Br2, CAS 557-91-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Dibromoethane;
+formula     C2H4Br2;
+CAS         557-91-5;
+InChIKey    APQIUTYORBAGEZ-UHFFFAOYSA-N;
+MW          187.862;      // g/mol [origin=calculated method=formula-sum]
+Tc          593.29;      // K   [origin=predictive method=joback]
+Pc          62.590;      // bar [origin=predictive method=joback]
+omega       0.3212;      // -   [origin=predictive method=lee-kesler]
+Tb          377.24;      // K   [origin=predictive method=joback]
+HvapTb      32528.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.77 0.27612 -0.000231 8.03e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1-bis(bromanyl)ethane" "ethane, 1,1-dibromo-" "ethylidene dibromide" "ethylidene bromide" "1,1-dibromoethane;ethylidene dibromide" );
+gibbsFormation
+{
+    dHf_298   -37230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     326.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-7840.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9-phenylnonan-1-ol  (C15H24O, CAS 3208-26-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        9Phenylnonan1Ol;
+formula     C15H24O;
+CAS         3208-26-2;
+InChIKey    AAOYEEWVNUXGDK-UHFFFAOYSA-N;
+MW          220.356;      // g/mol [origin=calculated method=formula-sum]
+Tc          844.69;      // K   [origin=predictive method=joback]
+Pc          20.019;      // bar [origin=predictive method=joback]
+omega       1.0702;      // -   [origin=predictive method=lee-kesler]
+Tb          661.66;      // K   [origin=predictive method=joback]
+HvapTb      67939.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-39.361 1.3839 -0.0008538 2.026e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group ACH; count 5; } { group ACCH2; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 9; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9-phenyl-1-nonanol" "benzenenonanol" "1-nonanol,9-phenyl- (7ci,8ci);9-phenyl-1-nonanol;9-phenylnonanol;" );
+gibbsFormation
+{
+    dHf_298   -268630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     684.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=51010.0
+    phase     gas;
+}

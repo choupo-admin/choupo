@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ionone lights  (C30H48O3, CAS 96508-09-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        iononeLights;
+formula     C30H48O3;
+CAS         96508-09-7;
+InChIKey    VGZYZFNYRFFDOK-ZCXXITTBSA-N;
+MW          456.711;      // g/mol [origin=calculated method=formula-sum]
+Tc          1329.85;      // K   [origin=predictive method=joback]
+Pc          7.593;      // bar [origin=predictive method=joback]
+omega       0.7162;      // -   [origin=predictive method=lee-kesler]
+Tb          1086.07;      // K   [origin=predictive method=joback]
+HvapTb      103115.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-64.357 2.7094 -0.00154074 3.3618e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 8; } { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group CH=CH; count 2; } { group CH=C; count 3; } { group CH3CO; count 2; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 10; } { group CH2; count 3; } { group dCH; count 6; } { group dC; count 2; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group CdO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4e,6e)-7,11-dimethyldodeca-4,6,10-trien-3-one;propan-2-one;(e)-4-(2,6,6-trimethylcyclohex-2-en-1-yl)but-3-en-2-one" "4,6,10-dodecatrien-3-one, 7,11-dimethyl-, reaction products with acetone, ionone fraction" );
+gibbsFormation
+{
+    dHf_298   -678680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1538.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-59200.0
+    phase     gas;
+}

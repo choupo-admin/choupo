@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  membrane10_dspmde_divalent / constant/thermoPackage
+
+  Water (solvent) + three salts fed to parallel NF270 elements: NaCl (1:1
+  monovalent), CaCl2 (2:1 mixed) and MgSO4 (2:2 divalent), chosen to
+  expose the DSPM-DE rejection ordering MgSO4 > CaCl2 > NaCl.  The charge
+  physics (Donnan + Born exclusion, ion radii/D0) is case-local data read
+  by the membrane's poreModel tier; at these 5 mM dilutions the ideal
+  activity / ideal-gas blocks below are loader stubs.
+\*---------------------------------------------------------------------------*/
+
+components       ( water  NaCl  CaCl2  MgSO4 );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

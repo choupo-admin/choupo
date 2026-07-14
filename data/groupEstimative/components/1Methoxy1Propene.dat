@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-methoxy-1-propene  (C4H8O, CAS 4188-68-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Methoxy1Propene;
+formula     C4H8O;
+CAS         4188-68-5;
+InChIKey    QHMVQKOXILNZQR-UHFFFAOYSA-N;
+MW          72.107;      // g/mol [origin=calculated method=formula-sum]
+Tc          490.80;      // K   [origin=predictive method=joback]
+Pc          40.725;      // bar [origin=predictive method=joback]
+omega       0.2509;      // -   [origin=predictive method=lee-kesler]
+Tb          317.70;      // K   [origin=predictive method=joback]
+HvapTb      26866.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.57 0.34064 -0.0001666 2.9e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH=CH; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methoxyprop-1-ene" "(z)-1-methoxyprop-1-ene" "1-propene, 1-methoxy-, (e)-" "1-propene, methoxy-" );
+gibbsFormation
+{
+    dHf_298   -140890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     316.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-41980.0
+    phase     gas;
+}

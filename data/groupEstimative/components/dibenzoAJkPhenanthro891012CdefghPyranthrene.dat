@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dibenzo(a,jk)phenanthro(8,9,10,12-cdefgh)pyranthrene  (C44H20, CAS 70346-75-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dibenzoAJkPhenanthro891012CdefghPyranthrene;
+formula     C44H20;
+CAS         70346-75-7;
+InChIKey    ZZBAIFNSSHILSC-UHFFFAOYSA-N;
+MW          548.644;      // g/mol [origin=calculated method=formula-sum]
+Tc          1809.66;      // K   [origin=predictive method=joback]
+Pc          13.071;      // bar [origin=predictive method=joback]
+omega       1.2024;      // -   [origin=predictive method=lee-kesler]
+Tb          1477.04;      // K   [origin=predictive method=joback]
+HvapTb      139596.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-278.73 3.782 -0.0038318 1.5152e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 20; } { group AC; count 24; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 20; } { group dC_ring; count 24; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dibenzo[a,jk]phenanthro[8,9,10,12-cdefgh]pyranthrene" );
+gibbsFormation
+{
+    dHf_298   1224410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     376.5;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1577080.0
+    phase     gas;
+}

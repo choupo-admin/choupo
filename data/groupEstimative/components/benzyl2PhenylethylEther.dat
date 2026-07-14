@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzyl 2-phenylethyl ether  (C15H16O, CAS 54894-37-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzyl2PhenylethylEther;
+formula     C15H16O;
+CAS         54894-37-0;
+InChIKey    MTWBNQBGOBEJKB-UHFFFAOYSA-N;
+MW          212.292;      // g/mol [origin=calculated method=formula-sum]
+Tc          849.97;      // K   [origin=predictive method=joback]
+Pc          24.678;      // bar [origin=predictive method=joback]
+omega       0.6014;      // -   [origin=predictive method=lee-kesler]
+Tb          618.58;      // K   [origin=predictive method=joback]
+HvapTb      55946.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-53.057 1.2078 -0.0007436 1.635e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group ACCH2; count 2; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenylethoxymethylbenzene" "phenethyloxymethylbenzene" "[(2-phenylethoxy)methyl]benzene" "((2-phenylethoxy)methyl)benzene" "benzene, ((2-phenylethoxy)methyl)-" "benzene, [(2-phenylethoxy)methyl]-" "benzene,[(2-phenylethoxy)methyl]-" "ether,benzyl phenethyl (7ci); benzyl 2-phenylethyl ether; benzyl phenethyl ether;[(2-phenylethoxy)methyl]benzene" );
+gibbsFormation
+{
+    dHf_298   -12090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     538.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=195240.0
+    phase     gas;
+}

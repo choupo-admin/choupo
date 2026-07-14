@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-phenoxyethyl methacrylate  (C12H14O3, CAS 10595-06-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PhenoxyethylMethacrylate;
+formula     C12H14O3;
+CAS         10595-06-9;
+InChIKey    CEXQWAAGPPNOQF-UHFFFAOYSA-N;
+MW          206.241;      // g/mol [origin=calculated method=formula-sum]
+Tc          787.30;      // K   [origin=predictive method=joback]
+Pc          24.900;      // bar [origin=predictive method=joback]
+omega       0.6635;      // -   [origin=predictive method=lee-kesler]
+Tb          578.04;      // K   [origin=predictive method=joback]
+HvapTb      53809.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.302 0.92682 -0.0004798 6.44e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2=C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH2O; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenoxyethyl 2-methylprop-2-enoate" "2-phenoxyethyl  methacrylate" "ethylene glycol phenyl ether methacrylate" "2-propenoic acid, 2-methyl-, 2-phenoxyethyl ester" "methacrylic acid, 2-phenoxyethyl ester" ".beta.-phenoxyethyl methacrylate" "2-propenoic acid,2-methyl-, 2-phenoxyethyl ester" "methacrylicacid, 2-phenoxyethyl ester (7ci);2-phenoxyethyl methacrylate;light acrylatepo;light ester po;phenoxyethyl methacrylate;sr 340;sartomer 340;sartomersr 340;" );
+gibbsFormation
+{
+    dHf_298   -388340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     570.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-173510.0
+    phase     gas;
+}

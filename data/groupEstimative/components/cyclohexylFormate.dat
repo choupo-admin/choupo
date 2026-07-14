@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclohexyl formate  (C7H12O2, CAS 4351-54-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H12O2 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        cyclohexylFormate;
+formula     C7H12O2;
+CAS         4351-54-6;
+InChIKey    VUXKVKAHWOVIDN-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          128.171;      // g/mol [origin=calculated method=formula-sum]
+Tc          555.69;      // K   [origin=predictive method=joback]
+Pc          35.728;      // bar [origin=predictive method=joback]
+omega       0.1720;      // -   [origin=predictive method=lee-kesler]
+Tb          355.73;      // K   [origin=predictive method=joback]
+HvapTb      29232.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-88.58 0.799 -0.000591 1.784e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH; count 1; } { group HCOO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 5; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclohexyl methanoate" "formic acid, cyclohexyl ester" "cyclohexanol, formate" "formic acid cyclohexyl ester" );
+gibbsFormation
+{
+    dHf_298   -57040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     581.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=76470.0
+    phase     gas;
+}

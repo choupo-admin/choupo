@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-diiodoethane  (C2H4I2, CAS 624-73-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Diiodoethane;
+formula     C2H4I2;
+CAS         624-73-7;
+InChIKey    GBBZLMLLFVFKJM-UHFFFAOYSA-N;
+MW          281.854;      // g/mol [origin=calculated method=formula-sum]
+Tc          684.10;      // K   [origin=predictive method=joback]
+Pc          47.301;      // bar [origin=predictive method=joback]
+omega       0.2108;      // -   [origin=predictive method=lee-kesler]
+Tb          431.64;      // K   [origin=predictive method=joback]
+HvapTb      38792.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.452 0.2718 -0.0002478 9.24e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group I; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group I; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-bis(iodanyl)ethane" "ethane, 1,2-diiodo-" "ethylene diiodide" "ethylene iodide" "1,2-diiodoethane;diiodoethane;ethylene iodide;" );
+gibbsFormation
+{
+    dHf_298   69130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     345.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=82200.0
+    phase     gas;
+}

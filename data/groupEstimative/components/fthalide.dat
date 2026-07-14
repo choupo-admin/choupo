@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: fthalide  (C8H2Cl4O2, CAS 27355-22-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        fthalide;
+formula     C8H2Cl4O2;
+CAS         27355-22-2;
+InChIKey    NMWKWBPNKPGATC-UHFFFAOYSA-N;
+MW          271.902;      // g/mol [origin=calculated method=formula-sum]
+Tc          885.02;      // K   [origin=predictive method=joback]
+Pc          32.283;      // bar [origin=predictive method=joback]
+omega       0.7488;      // -   [origin=predictive method=lee-kesler]
+Tb          645.03;      // K   [origin=predictive method=joback]
+HvapTb      63813.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (64.24 0.5564 -0.0004628 1.512e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 1; } { group ACCH2; count 1; } { group ACCl; count 4; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group dC_ring; count 6; } { group Cl; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4,5,6,7-tetrakis(chloranyl)-3h-2-benzofuran-1-one" "rabcide" "4,5,6,7-tetrachlorophthalide" "phthalide, 4,5,6,7-tetrachloro-" "kf-32" "4,5,6,7-tetrachlorophthalidefthalide" "4,5,6,7-tetrachloro-phthalide" "1(3h)-isobenzofuranone, 4,5,6,7-tetrachloro-" "phh" "4,5,6,7-tetrachloro-3h-isobenzofuran-1-one" "tetrachlorophthalide" "4,5,6,7-tetrachloro-1(3h)-isobenzofuranone" );
+gibbsFormation
+{
+    dHf_298   -304050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     427.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-184690.0
+    phase     gas;
+}

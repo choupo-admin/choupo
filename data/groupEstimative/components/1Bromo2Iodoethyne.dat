@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-bromo-2-iodoethyne  (C2BrI, CAS 26395-29-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Bromo2Iodoethyne;
+formula     C2BrI;
+CAS         26395-29-9;
+InChIKey    LKVRROKBWNSECY-UHFFFAOYSA-N;
+MW          230.826;      // g/mol [origin=calculated method=formula-sum]
+Tc          681.85;      // K   [origin=predictive method=joback]
+Pc          69.099;      // bar [origin=predictive method=joback]
+omega       0.1955;      // -   [origin=predictive method=lee-kesler]
+Tb          413.66;      // K   [origin=predictive method=joback]
+HvapTb      38006.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (38.51 0.1212 -0.00014566 6.558e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group I; count 1; } { group Br; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tC; count 2; } { group Br; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanyl-2-iodanyl-ethyne" "1-bromo-2-iodoacetylene" "brc.equiv.ci" "bromoiodoacetylene" );
+gibbsFormation
+{
+    dHf_298   290890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     312.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=241200.0
+    phase     gas;
+}

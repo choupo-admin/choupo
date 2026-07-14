@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzyl 4-hydroxyphenyl ketone  (C14H12O2, CAS 2491-32-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzyl4HydroxyphenylKetone;
+formula     C14H12O2;
+CAS         2491-32-9;
+InChIKey    JBQTZLNCDIFCCO-UHFFFAOYSA-N;
+MW          212.248;      // g/mol [origin=calculated method=formula-sum]
+Tc          962.12;      // K   [origin=predictive method=joback]
+Pc          35.096;      // bar [origin=predictive method=joback]
+omega       0.8604;      // -   [origin=predictive method=lee-kesler]
+Tb          707.77;      // K   [origin=predictive method=joback]
+HvapTb      71070.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-79.209 1.3026 -0.00103786 3.3046e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 9; } { group AC; count 2; } { group ACOH; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(4-hydroxyphenyl)-2-phenyl-ethanone" "acetophenone, 4'-hydroxy-2-phenyl-" "1-(4-hydroxyphenyl)-2-phenylethanone" "1-(4-hydroxyphenyl)-2-phenylethan-1-one" "ethanone, 1-(4-hydroxyphenyl)-2-phenyl-" "4'-hydroxydeoxybenzoin" "4'-hydroxy-2-phenylacetophenone" "ethanone,1-(4-hydroxyphenyl)-2-phenyl-" "4 inverted exclamation marka-hydroxydeoxybenzoin" "4 inverted exclamation marka-hydroxy-2-phenylacetophenone" );
+gibbsFormation
+{
+    dHf_298   -149120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     541.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=8280.0
+    phase     gas;
+}

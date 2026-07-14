@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(heptyloxy)benzoic acid  (C14H20O3, CAS 15872-42-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4HeptyloxyBenzoicAcid;
+formula     C14H20O3;
+CAS         15872-42-1;
+InChIKey    ZRVIYEJYXIDATJ-UHFFFAOYSA-N;
+MW          236.311;      // g/mol [origin=calculated method=formula-sum]
+Tc          925.15;      // K   [origin=predictive method=joback]
+Pc          21.158;      // bar [origin=predictive method=joback]
+omega       1.0365;      // -   [origin=predictive method=lee-kesler]
+Tb          719.51;      // K   [origin=predictive method=joback]
+HvapTb      69270.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.656 1.18302 -0.00066356 1.292e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group ACH; count 4; } { group AC; count 2; } { group CH2O; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 6; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-heptoxybenzoic acid" "4-heptyloxybenzoic acid" "4-n-heptyloxybenzoic acid" "4-heptyloxybenzoicacid" "p-heptyloxybenzoic acid" "p-(heptyloxy)benzoic acid" "benzoic acid, 4-(heptyloxy)-" "4-(heptyloxy)benzoic acid acid" "p-heptoxybenzoic acid" "4-(heptyloxy)benzoate" "4-heptyloxy-benzoic acid" "4-n-heptyl-oxybenzoic acid" );
+gibbsFormation
+{
+    dHf_298   -589720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     653.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-279130.0
+    phase     gas;
+}

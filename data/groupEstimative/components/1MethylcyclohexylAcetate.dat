@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-methylcyclohexyl acetate  (C9H16O2, CAS 30232-11-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1MethylcyclohexylAcetate;
+formula     C9H16O2;
+CAS         30232-11-2;
+InChIKey    VVDZWMOQABVVHC-UHFFFAOYSA-N;
+MW          156.225;      // g/mol [origin=calculated method=formula-sum]
+Tc          697.83;      // K   [origin=predictive method=joback]
+Pc          29.959;      // bar [origin=predictive method=joback]
+omega       0.4199;      // -   [origin=predictive method=lee-kesler]
+Tb          483.53;      // K   [origin=predictive method=joback]
+HvapTb      42313.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-95.48 1.21804 -0.0009848 3.464e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group C; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 5; } { group C_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1-methylcyclohexyl) ethanoate" "cyclohexanol, methyl-, acetate" "cyclohexanol, methyl-, 1-acetate" "methylcyclohexyl acetate" "(1-methylcyclohexyl) acetate" "cyclohexanol, methyl-,1-acetate" "cyclohexanol, 1-methyl-, acetate" "cyclohexanol,methyl-, acetate (6ci,7ci,8ci,9ci); methylcyclohexyl acetate" );
+gibbsFormation
+{
+    dHf_298   -476810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     596.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-266510.0
+    phase     gas;
+}

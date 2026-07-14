@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: $l^{1}-oxidanylmethanal  (CHO2, CAS 2564-86-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        l1Oxidanylmethanal;
+formula     CHO2;
+CAS         2564-86-5;
+InChIKey    JRCLCXAVSVCEQC-UHFFFAOYSA-N;
+role        radical;
+MW          45.017;      // g/mol [origin=calculated method=formula-sum]
+
+aliases     ( "formyloxidanyl" );
+// formation datum unavailable (element entropy missing): dHf_298=None dGf_298=None

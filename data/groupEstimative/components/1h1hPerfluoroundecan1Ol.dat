@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1h,1h-perfluoroundecan-1-ol  (C11H3F21O, CAS 307-46-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1h1hPerfluoroundecan1Ol;
+formula     C11H3F21O;
+CAS         307-46-0;
+InChIKey    MPAMAEMOVKLPRB-UHFFFAOYSA-N;
+MW          550.102;      // g/mol [origin=calculated method=formula-sum]
+Tc          613.03;      // K   [origin=predictive method=joback]
+Pc          11.593;      // bar [origin=predictive method=joback]
+omega       0.9866;      // -   [origin=predictive method=lee-kesler]
+Tb          495.83;      // K   [origin=predictive method=joback]
+HvapTb      26642.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-118.639 2.5886 -0.0026674 9.661e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group OH; count 1; } { group CF3; count 1; } { group CF2; count 9; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 10; } { group F; count 21; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,11-henicosakis(fluoranyl)undecan-1-ol" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,11-heneicosafluoro-1-undecanol" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,11-henicosafluoroundecan-1-ol" "1h,1h-perfluoroundecanol" "1h,1h-perfluoro-1-undecanol" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,11-henicosafluoro-1-hydroxyundecane" "2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,11-henicosafluoro-1-undecanol" "1h,1h-perfluoroundecan-1-ol;2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,11-heneicosafluoro-1-undecanol;1h,1h-perfluoro-1-undecanol;2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,11-henicosafluoroundecan-1-ol;" );
+gibbsFormation
+{
+    dHf_298   -4628410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     912.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-4157690.0
+    phase     gas;
+}

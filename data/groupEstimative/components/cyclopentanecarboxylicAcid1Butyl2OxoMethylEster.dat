@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopentanecarboxylic acid, 1-butyl-2-oxo-, methyl ester  (C11H18O3, CAS 61777-25-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclopentanecarboxylicAcid1Butyl2OxoMethylEster;
+formula     C11H18O3;
+CAS         61777-25-1;
+InChIKey    PCQRMMUKFFTANR-UHFFFAOYSA-N;
+MW          198.262;      // g/mol [origin=calculated method=formula-sum]
+Tc          807.14;      // K   [origin=predictive method=joback]
+Pc          24.777;      // bar [origin=predictive method=joback]
+omega       0.6634;      // -   [origin=predictive method=lee-kesler]
+Tb          592.84;      // K   [origin=predictive method=joback]
+HvapTb      50840.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-55.747 1.24934 -0.000896 2.871e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group C; count 1; } { group CH2CO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH2_ring; count 3; } { group C_ring; count 1; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 1-butyl-2-oxidanylidene-cyclopentane-1-carboxylate" "2-butyl-2-carbomethoxycyclopentanone" "methyl 1-butyl-2-oxocyclopentanecarboxylate" "methyl 1-butyl-2-oxocyclopentane-1-carboxylate" );
+gibbsFormation
+{
+    dHf_298   -649630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     576.08;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-360160.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heptylbenzene  (C13H20, CAS 1078-71-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heptylbenzene;
+formula     C13H20;
+CAS         1078-71-3;
+InChIKey    LBNXAWYDQUGHGX-UHFFFAOYSA-N;
+MW          176.303;      // g/mol [origin=calculated method=formula-sum]
+Tc          720.40;      // K   [origin=predictive method=joback]
+Pc          21.938;      // bar [origin=predictive method=joback]
+omega       0.5349;      // -   [origin=predictive method=lee-kesler]
+Tb          523.72;      // K   [origin=predictive method=joback]
+HvapTb      46808.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-42.834 1.15992 -0.0007146 1.69e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group ACH; count 5; } { group ACCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 6; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzene, heptyl-" "n-heptylbenzene" "heptane, 1-phenyl-" "heptane, 1(or 7)-phenyl-" "heptyl-benzene" "heptane, 1-phenyl- (8ci)" );
+gibbsFormation
+{
+    dHf_298   -75120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     555.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=170990.0
+    phase     gas;
+}

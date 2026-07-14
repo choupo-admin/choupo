@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(2,2-dimethylcyclobutyl)ethanone;ethanenitrile  (C10H17NO, CAS 28353-00-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        122DimethylcyclobutylEthanoneEthanenitrile;
+formula     C10H17NO;
+CAS         28353-00-6;
+InChIKey    BIWCKUYHBDDXBY-UHFFFAOYSA-N;
+MW          167.252;      // g/mol [origin=calculated method=formula-sum]
+Tc          816.40;      // K   [origin=predictive method=joback]
+Pc          23.542;      // bar [origin=predictive method=joback]
+omega       0.5586;      // -   [origin=predictive method=lee-kesler]
+Tb          592.33;      // K   [origin=predictive method=joback]
+HvapTb      53997.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-40.44 1.06118 -0.0007067 2.1446e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group C; count 1; } { group CH3CO; count 1; } { group CH3CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group CdO; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2,2-dimethylcyclobutyl)ethanone; ethanenitrile" "acetonitrile; 1-(2,2-dimethylcyclobutyl)ethanone" "(1s,3s)-3-acetyl-2,2-dimethylcyclobutane acetonitrile" );
+gibbsFormation
+{
+    dHf_298   -247510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     642.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-31730.0
+    phase     gas;
+}

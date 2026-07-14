@@ -4,14 +4,15 @@
   to show thermal runaway:
 
     * T_0 = 320 K (kinetics very slow: k_0 ~ 3.7e-4 s^-1, tau_0 ~ 2700 s).
-    * dH_rxn = -30 kJ/mol of ethanol (exotherm sized so the equimolar
-      charge lifts T by ~125 K at full conversion -> plateau ~445 K).
+    * dH_rxn = -26.06 kJ/mol of ethanol, computed from the species'
+      gibbsFormation (elements datum); lifts T ~108 K at full conversion
+      (320 -> 428 K), enough to show the runaway.
     * Equimolar ethanol + acetic acid charge; ethyl acetate + water are
       the products.  Mass-conserving, so the energy balance is clean.
 
   Expected qualitative trajectory:
 
-         T |          _______ plateau (~450 K)
+         T |          _______ plateau (~428 K)
            |        _/
            |      _/
            |    _/
@@ -29,7 +30,7 @@
   the database), so the result extrapolates linearly above the nominal
   liquidHeatCapacity Trange (280-373 K) without numerical pathology
   --- consistent with a pedagogical demonstration, not a quantitative
-  prediction at 450 K.
+  prediction at 428 K.
 \*---------------------------------------------------------------------------*/
 
 units

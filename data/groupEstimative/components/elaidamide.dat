@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: elaidamide  (C18H35NO, CAS 4303-70-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        elaidamide;
+formula     C18H35NO;
+CAS         4303-70-2;
+InChIKey    FATBGEAMYMYZAF-UHFFFAOYSA-N;
+MW          281.484;      // g/mol [origin=calculated method=formula-sum]
+Tc          923.55;      // K   [origin=predictive method=joback]
+Pc          12.995;      // bar [origin=predictive method=joback]
+omega       1.0081;      // -   [origin=predictive method=lee-kesler]
+Tb          742.00;      // K   [origin=predictive method=joback]
+HvapTb      73007.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.806 1.76772 -0.0010639 2.5236e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 14; } { group CH=CH; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 14; } { group dCH; count 2; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "octadec-9-enamide" "9-octadecenamide" "cis-9-octadecenamide" "sleepamide" "18:1 amide" "octadec-9-enamide;" "cis -9,10-octadecenoamide" "oda" "9-octadecenamide,(z)-;oleamide (6ci,8ci);(z)-9-octadecenamide;9-cis-oleamide;alflow 10e;alflow e 10;amide o;armoslip cp;armoslip cp-p;atmer sa 1758fd;oleamide (oleic acid amide);oleamide;atmer sa 1759fd;crodamide or;crodamide vrx;denon sl 1;diamid m 309;diamid o;diamid o 200;fatty amide o-n;finawax o;kemamide o;kemamide u;kemamide vo;neutron p;oleic acid amide;pp 5926;slip-eze;unislip 1757;unislip 1758;unislip 1759;unislip4407;cis-9-10-octadecenoamide;cis-stearyl amido-9-ene;oleic acidamide;" );
+gibbsFormation
+{
+    dHf_298   -376420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     928.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=118430.0
+    phase     gas;
+}

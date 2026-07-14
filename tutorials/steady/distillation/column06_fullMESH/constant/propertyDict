@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  column06_fullMESH / constant/thermoPackage
+
+  benzene (light) / toluene (heavy): the same near-ideal aromatic pair as
+  column01, kept deliberately identical --- Raoult + ideal gas at ~1 atm ---
+  so any difference in the answer could only come from the numerics.  The
+  point of the case is the simultaneous MESH Newton solver, validated
+  against the bubble-point solution on thermodynamics that are beyond doubt.
+\*---------------------------------------------------------------------------*/
+
+components       ( benzene  toluene );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

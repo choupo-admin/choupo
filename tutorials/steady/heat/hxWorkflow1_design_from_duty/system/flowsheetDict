@@ -1,0 +1,99 @@
+/*---------------------------------------------------------------------------*\
+  hxWorkflow1_design_from_duty   --   PART 1 of 2: DESIGN from the duty
+  ===================================================================
+  THE HEAT-EXCHANGER DESIGN WORKFLOW (the standard design sequence), part 1.
+  DESIGN mode (`model design;`) -- detailed sizing, glass-box.
+  Instead of GIVING the tube count and shell diameter (that is `model geometry;`,
+  the RATING problem: geometry -> U), here we give the DUTY TARGET (cool the hot
+  shell stream from 330 K to 315 K) and the engine SOLVES for the geometry:
+  fix the tube choices (OD/ID/length/pitch/passes/material), then find the number
+  of tubes -- and the shell diameter it implies (Kern/Sinnott bundle correlation,
+  the chosen pattern + passes) so the exchanger DELIVERS THE DUTY -- the
+  design loop sizes N by the eps-NTU duty (incl. the 1-2 penalty for a 2-pass
+  U-tube), not merely U*A = Q/LMTD, so the outlet actually reaches the target.
+  It then rates that designed bundle exactly like a given one (same Gnielinski
+  tube + Kern shell correlations) and reports U, area, and the pressure drop.
+
+  ------------------------------------------------------------------------
+  DO I HAVE TO SPECIFY EVERYTHING?  No -- and this is the whole point.  A HX
+  poses two OPPOSITE questions, and this is the DESIGN one:
+
+    * RATING  (`model geometry;`): you GIVE the full hardware (tube count,
+      shell diameter, ...) and ask "what outlet T do I get?".  The temperature
+      is a RESULT.
+    * DESIGN  (`model design;`, THIS case): you GIVE the outlet T you NEED and
+      ask "what hardware delivers it?".  The GEOMETRY is the result.
+
+  So HOW does the outlet reach the temperature you need?  You do NOT tune the
+  geometry by hand until it works.  You DECLARE the target and the engine sizes
+  the hardware to hit it.  Look at the two blocks below:
+
+    * `design { spec { stream hotShell; T 315 K; } }`  <-- WHAT YOU WANT: the
+      required outlet temperature.  THIS is where the final temperature is set.
+    * `geometry { tubeID ...; passes 2; tubePattern ...; wallMaterial ...; }`
+      <-- the FIXED CHOICES a designer commits to (a standard tube, the number
+      of passes, the layout, the metal).  Notice what is MISSING: there is NO
+      `nTubes` and NO `shellID`.  Those are exactly what the engine SOLVES.
+
+  So the student specifies the REQUIREMENT (the outlet T) + the design CHOICES
+  (tube size, passes, pattern, material) -- NOT the answer.  The engine returns
+  the tube count, the shell diameter, U, the pressure drop, and confirms the
+  outlet lands on the target.  You said "cool this to 315 K with 1/2-inch steel
+  tubes in a 2-pass U-tube"; it answers "then you need 105 tubes in a 0.31 m
+  shell -- here is U, the dP, and yes it leaves at 315 K".
+  ------------------------------------------------------------------------
+
+  This is the workflow that matches industrial practice: establish the DUTY,
+  THEN design the exchanger from it -- you do NOT invent the geometry up front.
+  (Standard practice splits this into a shortcut that gets the duty + a
+  detailed-design step that gets the geometry; Choupo's design mode folds both
+  into one honest step -- it computes the duty from your target and ANNOUNCES
+  it, then sizes.)  PART 2 (hxWorkflow2_rate_designed) then RATES the bundle
+  this case produced -- a detailed-rating step -- to verify it and probe
+  off-design (turn the coolant down and watch the outlet drift off the target;
+  the geometry is now FIXED, only the performance moves).
+
+  Water-water, clean service, 2-pass U-tube (the general arrangement).  Expect:
+  ~100 tubes, a ~0.3 m shell; rated U ~ 4000 W/(m2.K) (2 tube passes -> high
+  tube velocity), and the delivered hot outlet 315 K (the target, reproduced by
+  the 1-2 eps-NTU on the designed geometry).  Numbers are RESULTS pinned by
+  --record.  Single-phase; the 1-shell/2-tube-pass eps-NTU carries the built-in
+  LMTD F-correction (F<1), so a 2-pass needs more area than pure counter-current.
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+units
+(
+    {
+        name        hx;
+        type        heatExchanger;
+        model       design;
+        inputs      ( hotShell  coldTube );
+        outputs     ( hotOut  coldOut );
+
+        operation
+        {
+            flow        counter;
+            tubeStream  coldTube;
+
+            design
+            {
+                // the DUTY TARGET: cool the hot shell stream to 315 K
+                spec { stream hotShell; T 315.0 K; }
+            }
+            // the FIXED tube choices the designer commits to (the rest is solved)
+            geometry
+            {
+                tubeID         0.016 m;
+                tubeOD         0.019 m;
+                tubeLength     4.88  m;
+                passes         2;
+                baffleSpacing  0.305 m;
+                tubePitch      0.025 m;
+                tubePattern    triangular;   // (square = cleanable lanes, lower dP)
+                wallMaterial   carbonSteel;
+            }
+            tubeSide  { model Gnielinski; }
+            shellSide { model Kern;       }
+        }
+    }
+);

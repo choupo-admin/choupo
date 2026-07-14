@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-octene  (C8H16, CAS 111-66-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Octene;
+formula     C8H16;
+CAS         111-66-0;
+InChIKey    KWKAKUADMBZCLK-UHFFFAOYSA-N;
+MW          112.216;      // g/mol [origin=calculated method=formula-sum]
+Tc          546.16;      // K   [origin=predictive method=joback]
+Pc          26.461;      // bar [origin=predictive method=joback]
+omega       0.3790;      // -   [origin=predictive method=lee-kesler]
+Tb          379.32;      // K   [origin=predictive method=joback]
+HvapTb      32732.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.375 0.74382 -0.0004343 1.014e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH2=CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group dCH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oct-1-ene" "caprylene" "n-1-octene" "alpha-octene" "1-caprylene" ".alpha.-octene" "1-octylene" "octylene" "octene-1" "hexylethylene" "alpha-octylene" ".alpha.-octylene" );
+gibbsFormation
+{
+    dHf_298   -83020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     463.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=104320.0
+    phase     gas;
+}

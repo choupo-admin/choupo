@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7-hydroxyheptanoic acid  (C7H14O3, CAS 3710-42-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        7HydroxyheptanoicAcid;
+formula     C7H14O3;
+CAS         3710-42-7;
+InChIKey    PNAJBOZYCFSQDJ-UHFFFAOYSA-N;
+MW          146.186;      // g/mol [origin=calculated method=formula-sum]
+Tc          775.71;      // K   [origin=predictive method=joback]
+Pc          34.239;      // bar [origin=predictive method=joback]
+omega       1.2626;      // -   [origin=predictive method=lee-kesler]
+Tb          597.45;      // K   [origin=predictive method=joback]
+HvapTb      65019.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.416 0.7536 -0.00046 1.099e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group OH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-oxidanylheptanoic acid" "omega-hydroxy enanthoic acid" "7-hydroxyheptanoicacid;" "7-hydroxy-heptanoic acid" "heptanoic acid,7-hydroxy-" "heptanoic acid, 7-hydroxy-" );
+gibbsFormation
+{
+    dHf_298   -690310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     532.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-472670.0
+    phase     gas;
+}

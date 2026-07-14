@@ -1,0 +1,121 @@
+/*---------------------------------------------------------------------------*\
+  ammonia02_full_plant -- the complete Haber-Bosch plant, ~50 t/h NH3
+  =================================================================
+  makeup 25 bar ─[makeupComp 25->200]─┐
+                                      ▼
+                      recycle ─[recycleComp]─►[mixer]
+                                              │ mixed (cool)
+                                              ▼ cold side
+                                        [FEHE] ◄══ hot effluent (heat recovery)
+                                              │ preheatedFeed (~600 K)
+                                              ▼
+                          [converter] gibbsReactor  mode ADIABATIC
+                          N2+3H2<->2NH3 exothermic -> self-heats to ~720 K
+                                              │ hotEffluent
+                                              ▼ hot side of FEHE -> cooledEffluent
+                                        [waterCooler] (cooling water)
+                                              ▼ ~310 K
+                                        [separator] flash 250 K/200 bar (refrig.)
+                                          │        │
+                                      rawLiquid   unreactedGas
+                                          ▼            ▼
+                                    [letdown]    [purgeSplit]
+                                     │     │      │        │
+                              productNH3  gas   purge    recycle ──► (tear)
+
+  THE REACTOR HEAT.  N2+3H2->2NH3 is EXOTHERMIC -- there is NO external reactor
+  heating.  The converter runs ADIABATIC: the exotherm raises the gas T (feed
+  ~705 K in, ~848 K out), and the feed-effluent exchanger (FEHE) recovers that
+  heat to preheat the incoming feed to catalyst light-off.  Self-sustaining once
+  lit.  The compressors set the 200-bar synthesis pressure; the water cooler
+  (cooling-water utility) + refrigerated flash condense the NH3.  Every machine
+  is explicit and its duty/work is reported.
+
+  CAPACITY ~59 t/h NH3 (~1400 t/day) at 98.9% product purity -- a world-scale
+  single train.
+
+  DISSOLVED GASES BY HENRY'S LAW.  H2 and N2 are supercritical at the separator
+  (no physical Psat), so their dissolved amounts follow MEASURED Henry constants
+  (pairs H2-NH3 from Wiebe 1934, N2-NH3 from Larson & Black 1925 as evaluated in
+  IUPAC SDS Vol 5/6), with the SRK vapour fugacity at 200 bar: K = H(T)/(phi_V P).
+  The raw liquid carries ~0.5% H2 + 0.2% N2 -- physical, vs the ~13% a Psat
+  extrapolated above Tc used to fake.  KNOWN RESIDUAL: Ar has no measured Ar-NH3
+  Henry pair yet, so its dissolved ~1% is a Raoult-extrapolation artefact
+  (~7x over by analogy with N2) -- the product's main impurity is overstated.
+
+  THE SIMULATION STRATEGY (how you build a plant like this).
+  1. PICK THE THERMO BY THE PHYSICS, per phase ("the two worlds"): the 200-bar
+     GAS side needs real-gas fugacity -> a cubic EoS (SRK) declared once in the
+     package; the reactor folds phi into its equilibrium automatically.  The
+     DISSOLVED gases are supercritical solutes in a condensable solvent -> the
+     unsymmetric convention (Henry / Krichevsky-Kasarnovsky), NOT Raoult: pair
+     files H2-NH3 + N2-NH3 fitted to measured solubility, `solvent NH3;` in the
+     package, `role solute;` overlays on H2/N2 in this case's constant/.
+  2. TEAR THE LOOP WHERE INFORMATION FLOWS BACKWARD: one MASS tear (recycle,
+     guessed then Newton-converged) and one ENERGY tear (hotEffluent -- the
+     FEHE preheats the feed with the reactor's own product heat, so the
+     converter's outlet is needed upstream of the converter).  Both declared in
+     tearStreams; the solver announces every iteration.
+  3. LET THE EXOTHERM DO THE HEATING: the converter is ADIABATIC (mode
+     adiabatic; T is a guess, not a spec) -- the reaction self-heats
+     705 -> 848 K and the FEHE recycles that heat to light off the feed.  No
+     phantom reactor heater exists anywhere.
+  4. MAKE EVERY MACHINE EXPLICIT so it can be SIZED AND COSTED: compressors by
+     shaft power, exchangers by area, the converter + drums by vessel design
+     bases (space velocity / residence time) in system/postDict -> Guthrie
+     costs -> the DCF economics in constant/economics.  Every unit operation
+     carries its own sizing -- the doctrine.
+  5. VALIDATE AGAINST MEASUREMENT AT EVERY JOINT: the reactor equilibrium
+     against the ideal-vs-SRK shift (gibbs10), the dissolved gas against Wiebe
+     1934 / Larson-Black 1925 (x_H2 at 400 atm: 0.0287 computed vs 0.0282
+     measured), the balances against 100% element closure.
+
+  HONEST SIMPLIFICATIONS.  (1) The converter is a SINGLE adiabatic bed, so it
+  runs hotter (~575 C) than a real multi-bed converter with interbed quench
+  cooling (which stays near the 400-500 C equilibrium sweet spot for more NH3
+  per pass).  (2) The makeup compressor is one stage (real: multi-stage with
+  intercooling), so its discharge is hot.  (3) The let-down gas and the loop
+  pressure drops are as in ammonia01.  (4) `water` is in the package ONLY as the
+  cooling-water utility fluid (it is not a reaction species).
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+tearStreams        ( recycle  hotEffluent );
+recycleSolver       Newton;
+recycleTol          1e-5;
+recycleMaxIter      200;
+units
+(
+    { name makeupComp;  type compressor;  in makeup;   outputs ( compMakeup );
+      operation { W_shaft 24000 kW;  eta 0.78; } }
+
+    { name recycleComp; type compressor;  in recycle;  outputs ( compRecycle );
+      operation { W_shaft 4000 kW;   eta 0.80; } }
+
+    { name mixer;  type mixer;  inputs ( compMakeup  compRecycle );  outputs ( mixed ); }
+
+    { name FEHE;  type heatExchanger;  inputs ( hotEffluent  mixed );
+      outputs ( cooledEffluent  preheatedFeed );
+      operation { area 1500 m2;  U 550 W/m2/K;  flow counter; } }
+
+    { name converter;  type gibbsReactor;  in preheatedFeed;  outputs ( hotEffluent );
+      operation
+      {
+          mode adiabatic;  P 200 bar;  T 720 K;   // adiabatic: T is a RESULT, this is the outer-Newton guess
+          elements ( N  H  Ar );
+          species ( { name N2; atoms ( 2 0 0 ); } { name H2; atoms ( 0 2 0 ); }
+                    { name NH3; atoms ( 1 3 0 ); } { name Ar; atoms ( 0 0 1 ); } );
+      } }
+
+    { name waterCooler;  type heatExchanger;  inputs ( cooledEffluent  cw );
+      outputs ( chilledEffluent  cwOut );
+      operation { area 4000 m2;  U 700 W/m2/K;  flow counter; } }
+
+    { name separator;  type isothermalFlash;  in chilledEffluent;
+      outputs ( rawLiquid  unreactedGas );  operation { T 250 K;  P 200 bar; } }
+
+    { name letdown;  type isothermalFlash;  in rawLiquid;
+      outputs ( productNH3  letdownGas );  operation { T 250 K;  P 20 bar; } }
+
+    { name purgeSplit;  type splitter;  in unreactedGas;  outputs ( purge  recycle );
+      operation { fractions ( 0.03  0.97 ); } }
+);

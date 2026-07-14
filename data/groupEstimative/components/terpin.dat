@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: terpin  (C10H20O2, CAS 80-53-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        terpin;
+formula     C10H20O2;
+CAS         80-53-5;
+InChIKey    RBNWAMSGVWEHFP-UHFFFAOYSA-N;
+MW          172.268;      // g/mol [origin=calculated method=formula-sum]
+Tc          817.17;      // K   [origin=predictive method=joback]
+Pc          32.357;      // bar [origin=predictive method=joback]
+omega       1.1477;      // -   [origin=predictive method=lee-kesler]
+Tb          624.65;      // K   [origin=predictive method=joback]
+HvapTb      68885.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-129.75 1.53516 -0.001311 4.787e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group CH; count 1; } { group C; count 2; } { group OH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group C_ring; count 1; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methyl-4-(2-oxidanylpropan-2-yl)cyclohexan-1-ol" "p-menthane-1,8-diol" "trans-terpin" "1,8-terpin" "terpin monohydrate" "cyclohexanemethanol, 4-hydroxy-.alpha.,.alpha.,4-trimethyl-" "4-(2-hydroxyisopropyl)-1-methylcyclohexanol" "4-(2-hydroxypropan-2-yl)-1-methylcyclohexanol" "terpin, trans-" "cis-terpin hydrate" "terpin (van)" "terpin [ban]" );
+gibbsFormation
+{
+    dHf_298   -513720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     605.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-226230.0
+    phase     gas;
+}

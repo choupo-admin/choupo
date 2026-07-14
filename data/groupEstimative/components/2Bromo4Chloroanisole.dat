@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-bromo-4-chloroanisole  (C7H6BrClO, CAS 60633-25-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Bromo4Chloroanisole;
+formula     C7H6BrClO;
+CAS         60633-25-2;
+InChIKey    YJEMGEBDXDPBSP-UHFFFAOYSA-N;
+MW          221.478;      // g/mol [origin=calculated method=formula-sum]
+Tc          760.43;      // K   [origin=predictive method=joback]
+Pc          40.364;      // bar [origin=predictive method=joback]
+omega       0.4998;      // -   [origin=predictive method=lee-kesler]
+Tb          522.41;      // K   [origin=predictive method=joback]
+HvapTb      48006.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (37.8 0.45272 -0.00023492 3.61e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group CH3O; count 1; } { group ACCl; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanyl-4-chloranyl-1-methoxy-benzene" "2-bromo-4-chloro-1-methoxybenzene" "4-chloro-2-bromoanisole" "benzene, 2-bromo-4-chloro-1-methoxy-" "u386" "1-bromo-5-chloro-2-methoxybenzene;2-bromo-4-chloro-1-methoxybenzene;2-bromo-4-chloroanisole;4-chloro-2-bromoanisole;" );
+gibbsFormation
+{
+    dHf_298   -95850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     405.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1400.0
+    phase     gas;
+}

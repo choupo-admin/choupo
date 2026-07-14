@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octanedioic acid  (C8H14O4, CAS 505-48-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        octanedioicAcid;
+formula     C8H14O4;
+CAS         505-48-6;
+InChIKey    TYFQFVWCELRYAO-UHFFFAOYSA-N;
+MW          174.196;      // g/mol [origin=calculated method=formula-sum]
+Tc          872.25;      // K   [origin=predictive method=joback]
+Pc          30.592;      // bar [origin=predictive method=joback]
+omega       1.2170;      // -   [origin=predictive method=lee-kesler]
+Tb          673.66;      // K   [origin=predictive method=joback]
+HvapTb      67730.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.816 0.8654 -0.0005566 1.4e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "suberic acid" "cork acid" "1,8-octanedioic acid" "1,6-hexanedicarboxylic acid" "hexamethylenedicarboxylic acid" "octanedioc acid" "suberate" "1,6-dicarboxyhexane" "carboxylic acids, di-, c4-11" "octane-1,8-dioic acid" "korksaeure" "oktandisaeure" );
+gibbsFormation
+{
+    dHf_298   -908990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     573.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-671340.0
+    phase     gas;
+}

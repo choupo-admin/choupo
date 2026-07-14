@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  farelo_licl_range -- the LiCl Pitzer model REFITTED to reach saturation, using
+  Prof. Fatima Farelo's solubility measurement to calibrate the standard data.
+
+  Farelo, Fernandes & Avelino, J. Chem. Eng. Data 50 (2005) 1470 (DOI
+  10.1021/je050111j): LiCl saturation 19.7 mol/kg at 298 K (solid LiCl.H2O).
+
+  THE ARC.  The catalogue's earlier Li-Cl Pitzer parameters (Appelo 2014, fitted
+  to <6 mol/kg) blew up at high concentration (gamma_pm 774 at 19.7 m vs ~45
+  measured). Rather than declare defeat, the parameters were REFITTED to Hamer &
+  Wu (1972) gamma_pm + Farelo's saturation -- the measurement calibrating the
+  model. The key was a NEGATIVE Cphi that tames the high-m blow-up. The refit now
+  tracks LiCl gamma_pm to ~11% over 0.5-19 mol/kg, and the new LiCl.H2O mineral Ksp
+  reproduces Farelo's saturation. Crucially, the LiCl.H2O HYDRATE equilibrium
+  depends on the water activity a_w = 0.11 at 20 mol/kg -- which only the rigorous
+  HMW osmotic coefficient (not the phi=1 dilute approximation) gives correctly.
+  Measurement and model, each owning their part.
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "LiCl Pitzer REFITTED to Hamer-Wu + Farelo saturation: gamma_pm to ~11% over 0.5-19 mol/kg (was 774 at 19.7m), and the LiCl.H2O hydrate Ksp reproduces Farelo's 19.7 mol/kg via the HMW osmotic water activity (a_w=0.11).";
+verbosity     2;

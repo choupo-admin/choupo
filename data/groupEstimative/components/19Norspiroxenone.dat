@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 19-norspiroxenone  (C21H30O2, CAS 1235-13-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        19Norspiroxenone;
+formula     C21H30O2;
+CAS         1235-13-8;
+InChIKey    UVAQHLGVSKJLTI-XUDSTZEESA-N;
+MW          314.469;      // g/mol [origin=calculated method=formula-sum]
+Tc          1099.02;      // K   [origin=predictive method=joback]
+Pc          18.420;      // bar [origin=predictive method=joback]
+omega       0.7305;      // -   [origin=predictive method=lee-kesler]
+Tb          834.12;      // K   [origin=predictive method=joback]
+HvapTb      70037.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-316.35 2.96622 -0.00261334 9.812e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 9; } { group CH; count 4; } { group C; count 2; } { group CH=C; count 1; } { group CH2CO; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 11; } { group CH_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group O_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(8r,9s,10r,13s,14s,17r)-13-methylspiro[1,2,6,7,8,9,10,11,12,14,15,16-dodecahydrocyclopenta[a]phenanthrene-17,2'-oxolane]-3-one" "l 586.153" "2',3'-alpha-tetrahydrofuran-2'-spiro-17-(estr-4-en-3-one)" "spiro(estr-4-ene-17,2'(3'h)-furan)-3-one, 4',5'-dihydro-, (17r)-" "spiro(estr-4-ene-17,2'(3'h)-furan)-3-one, 4',5'-dihydro-,(17" "a)-" );
+gibbsFormation
+{
+    dHf_298   -362980.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     565.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=150020.0
+    phase     gas;
+}

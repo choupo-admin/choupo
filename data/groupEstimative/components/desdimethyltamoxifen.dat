@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: desdimethyltamoxifen  (C24H25NO, CAS 80234-20-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        desdimethyltamoxifen;
+formula     C24H25NO;
+CAS         80234-20-4;
+InChIKey    MCJKBWHDNUSJLW-VHXPQNKSSA-N;
+MW          343.47;      // g/mol [origin=calculated method=formula-sum]
+Tc          1186.36;      // K   [origin=predictive method=joback]
+Pc          16.769;      // bar [origin=predictive method=joback]
+omega       0.9774;      // -   [origin=predictive method=lee-kesler]
+Tb          932.61;      // K   [origin=predictive method=joback]
+HvapTb      89677.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-87.917 2.00612 -0.00132916 3.332e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 14; } { group AC; count 4; } { group CH2O; count 1; } { group CH2NH2; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dC; count 2; } { group dCH_ring; count 14; } { group dC_ring; count 4; } { group O; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[4-[(z)-1,2-diphenylbut-1-enyl]phenoxy]ethanamine" "n,n-didesmethyltamoxifen" "n,n-didesmethyl-tamoxifen" "ethanamine, 2-(4-(1,2-diphenyl-1-butenyl)phenoxy)-, (z)-" "desmethyl tamoxifen" "di-n-demethyltamoxifen" "n,n-didemethyltamoxifen" "n-des(dimethyl)tamoxifen" "n,n-didesmethyl tamoxifen" "2-[4-(1,2-diphenyl-but-1-enyl)-phenoxy]-ethylamine" "2-[4-[(1z)-1,2-diphenyl-1-butenyl]phenoxy]ethanamine" "(z)-1-[4-(2-aminoethoxy)phenyl]-1,2-diphenylbut-1-ene" );
+gibbsFormation
+{
+    dHf_298   158640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     813.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=503370.0
+    phase     gas;
+}

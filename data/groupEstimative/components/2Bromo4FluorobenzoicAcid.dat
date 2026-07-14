@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-bromo-4-fluorobenzoic acid  (C7H4BrFO2, CAS 1006-41-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Bromo4FluorobenzoicAcid;
+formula     C7H4BrFO2;
+CAS         1006-41-3;
+InChIKey    RRKPMLZRLKTDQV-UHFFFAOYSA-N;
+MW          219.009;      // g/mol [origin=calculated method=formula-sum]
+Tc          843.79;      // K   [origin=predictive method=joback]
+Pc          45.902;      // bar [origin=predictive method=joback]
+omega       0.8368;      // -   [origin=predictive method=lee-kesler]
+Tb          607.34;      // K   [origin=predictive method=joback]
+HvapTb      57558.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.1 0.5717 -0.00041452 1.155e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group COOH; count 1; } { group Br; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Br; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanyl-4-fluoranyl-benzoic acid" "4-fluoro-2-bromobenzoic acid" "2-bromo-4-fluorbenzoic acid" "benzoic acid, 2-bromo-4-fluoro-" "2-bromo-4-fluorobenzoicacid" "benzoicacid, 2-bromo-4-fluoro-" "rrkpmlzrlktdqv-uhfffaoysa-" "buttpark 18\02-85" "wt481" "l204" "1006-41-3 2-bromo-4-fluorobenzoic acid" "2-bromo-4-fluorobenzoicacid;4-fluoro-2-bromobenzoic acid;" );
+gibbsFormation
+{
+    dHf_298   -494270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     445.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-423190.0
+    phase     gas;
+}

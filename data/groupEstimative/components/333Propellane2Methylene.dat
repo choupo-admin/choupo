@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: [3.3.3]propellane, 2-methylene-  (C12H18, CAS 111917-14-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        333Propellane2Methylene;
+formula     C12H18;
+CAS         111917-14-7;
+InChIKey    JRBVAAGYBLRKMS-UHFFFAOYSA-N;
+MW          162.276;      // g/mol [origin=calculated method=formula-sum]
+Tc          744.82;      // K   [origin=predictive method=joback]
+Pc          31.280;      // bar [origin=predictive method=joback]
+omega       0.3575;      // -   [origin=predictive method=lee-kesler]
+Tb          507.23;      // K   [origin=predictive method=joback]
+HvapTb      40555.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-252.62 2.0701 -0.002225 9.648e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group C; count 2; } { group CH2=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 1; } { group CH2_ring; count 8; } { group C_ring; count 2; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3.3.3)-propellane, 2-methylene-" );
+gibbsFormation
+{
+    dHf_298   50130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     547.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=258020.0
+    phase     gas;
+}

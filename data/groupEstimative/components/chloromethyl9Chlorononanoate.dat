@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chloromethyl 9-chlorononanoate  (C10H18Cl2O2, CAS 80418-78-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chloromethyl9Chlorononanoate;
+formula     C10H18Cl2O2;
+CAS         80418-78-6;
+InChIKey    AAVUFTKCHHFPHZ-UHFFFAOYSA-N;
+MW          241.152;      // g/mol [origin=calculated method=formula-sum]
+Tc          741.12;      // K   [origin=predictive method=joback]
+Pc          19.806;      // bar [origin=predictive method=joback]
+omega       0.7611;      // -   [origin=predictive method=lee-kesler]
+Tb          561.48;      // K   [origin=predictive method=joback]
+HvapTb      54031.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (44.989 0.9126 -0.0004664 6.87e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH2COO; count 1; } { group CH2Cl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 9; } { group Cl; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "chloromethyl 9-chloranylnonanoate" "9-chlorononanoic acid, chloromethyl ester" "nonanoic acid, 9-chloro-, chloromethyl ester" );
+gibbsFormation
+{
+    dHf_298   -598490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     663.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-300910.0
+    phase     gas;
+}

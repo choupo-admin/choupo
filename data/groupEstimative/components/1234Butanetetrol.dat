@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,3,4-butanetetrol  (C4H10O4, CAS 149-32-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1234Butanetetrol;
+formula     C4H10O4;
+CAS         149-32-6;
+InChIKey    UNXHWFMMPAWVPI-UHFFFAOYSA-N;
+MW          122.12;      // g/mol [origin=calculated method=formula-sum]
+Tc          820.15;      // K   [origin=predictive method=joback]
+Pc          67.407;      // bar [origin=predictive method=joback]
+omega       2.3717;      // -   [origin=predictive method=lee-kesler]
+Tb          658.96;      // K   [origin=predictive method=joback]
+HvapTb      90438.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.052 0.5316 -0.0003218 7.46e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 2; } { group OH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 2; } { group OH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butane-1,2,3,4-tetrol" "dl-threitol" "erythrite" "erythrol" "erythrol (van)" "dl-1,2,3,4-butanetetrol" "l-threitol" "butane-1,2,3,4-tetraol" "antierythrite" "paycite" "1,2,3,4-butanetetrol, (2r,3s)-rel-" "1,2,3,4-butanetetrol, [s-(r*,r*)]-" );
+gibbsFormation
+{
+    dHf_298   -745370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     496.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-569360.0
+    phase     gas;
+}

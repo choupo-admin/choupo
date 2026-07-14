@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclohex-5-ene-1,2,3,4-tetrol  (C6H10O4, CAS 526-87-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclohex5Ene1234Tetrol;
+formula     C6H10O4;
+CAS         526-87-4;
+InChIKey    LRUBQXAKGXQBHA-UHFFFAOYSA-N;
+MW          146.142;      // g/mol [origin=calculated method=formula-sum]
+Tc          885.45;      // K   [origin=predictive method=joback]
+Pc          60.655;      // bar [origin=predictive method=joback]
+omega       2.2556;      // -   [origin=predictive method=lee-kesler]
+Tb          710.30;      // K   [origin=predictive method=joback]
+HvapTb      95460.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-21.41 0.6964 -0.00032628 2.86e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 4; } { group CH=CH; count 1; } { group OH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 4; } { group dCH_ring; count 2; } { group OH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "conduritol b" "conduritol d" "conduritol" "conduritol-e" "(1r,2s,3s,4r)-cyclohex-5-ene-1,2,3,4-tetrol" "5-cyclohexene-1,2,3,4-tetrol, (1r,2r,3r,4r)-" "agn-pc-00fs29" "(1r,2r,3s,4s)-rel-5-cyclohexene-1,2,3,4-tetrol" "5-(1alpha,2beta,3beta,4alpha)-1,2,3,4-cyclohexenetetrol" "5-(1.alpha.,2.beta.,3.beta.,4.alpha.,)-1,2,3,4-cyclohexenetetrol" "5-cyclohexene-1,2,3,4-tetrol,(1a,2b,3a,4b)-(?a'a a'a currency)-;5-cyclohexene-1,2,3,4-tetrol,trans-1,2,cis-1,3,trans-1,4-(?a'a a'a currency)- (8ci);5-cyclohexene-1,2,3,4-tetrol, (1a,2b,3a,4b)-;conduritol b;" );
+gibbsFormation
+{
+    dHf_298   -725010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     398.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-516360.0
+    phase     gas;
+}

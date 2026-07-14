@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-hydroxyhexanoic acid  (C6H12O3, CAS 6064-63-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2HydroxyhexanoicAcid;
+formula     C6H12O3;
+CAS         6064-63-7;
+InChIKey    NYHNVHGFPZAZGA-UHFFFAOYSA-N;
+MW          132.159;      // g/mol [origin=calculated method=formula-sum]
+Tc          757.23;      // K   [origin=predictive method=joback]
+Pc          38.819;      // bar [origin=predictive method=joback]
+omega       1.1809;      // -   [origin=predictive method=lee-kesler]
+Tb          574.13;      // K   [origin=predictive method=joback]
+HvapTb      62405.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.643 0.66452 -0.0004088 9.75e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-oxidanylhexanoic acid" "2-hydroxycaproic acid" "dl-2-hydroxycaproic acid" "dl-2-hydroxyhexanoic acid" "dl-alpha-hydroxycaproic acid" "2-hydroxy-hexanoic acid" "dl-2-hydroxy caproic acid" "2-hydroxyhexanoate" "hydroxycaproate" "hydroxyhexanoate" "2-hydroxycaproate" "dl-hydroxycaproate" );
+gibbsFormation
+{
+    dHf_298   -674950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     484.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-483530.0
+    phase     gas;
+}

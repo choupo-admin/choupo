@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Tartaric-acid plant -- the WINE ROUTE chemistry, as a reactor train.
+
+    bitartrate (KHT) ─┐
+                      ▼
+    lime Ca(OH)2 ─► M1 mixer ─► R1 precipitation ─► (CaTartrate + KOH)
+                                                          │
+    H2SO4 ──────────────────────► M2 mixer ◄─────────────┘
+                                     ▼
+                                  R2 acidulation ─► product (tartaricAcid + gypsum)
+
+  R1:  KHC4H4O6 + Ca(OH)2  -> CaC4H4O6 + KOH + H2O
+  R2:  CaC4H4O6 + H2SO4    -> C4H6O6(tartaric acid) + CaSO4(gypsum)
+
+  SCOPE (honest).  This demonstrates the REACTION chemistry and closes the MASS
+  balance.  The physical solid-liquid SEPARATIONS of the real process -- filtering
+  the calcium-tartrate cake from the mother liquor, and the gypsum from the acid --
+  are NOT modelled: Choupo treats the precipitate as a dissolved nonvolatile, not a
+  solid phase, so there is no F_solid_mass for a filter to capture (a precipitator /
+  solid-phase reactor is a roadmap feature). The ENERGY balance also refuses on the
+  solid calcium tartrate (its formation datum is omitted -- no curated dissolution
+  enthalpy). The solution-chemistry of the acidulation liquor (Pitzer, gypsum
+  saturation) lives in tutorials/props/electrolyte/tartaricAcid_acidulation.
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+units
+(
+    { name M1; type mixer;             inputs ( bitartrate lime ); outputs ( slurry ); }
+    { name R1; type conversionReactor; in slurry;   outputs ( precipOut ); reaction precipitation; operation { conversion 0.95; } }
+    { name M2; type mixer;             inputs ( precipOut sulfuric ); outputs ( acidFeed ); }
+    { name R2; type conversionReactor; in acidFeed;  outputs ( product ); reaction acidulation; operation { conversion 0.97; } }
+);

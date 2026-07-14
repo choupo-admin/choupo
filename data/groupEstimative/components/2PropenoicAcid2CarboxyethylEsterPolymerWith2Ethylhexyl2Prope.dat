@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propenoic acid, 2-carboxyethyl ester, polymer with 2-ethylhexyl 2-propenoate and methyl 2-propenoate  (C21H34O8, CAS 99343-89-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2PropenoicAcid2CarboxyethylEsterPolymerWith2Ethylhexyl2Prope;
+formula     C21H34O8;
+CAS         99343-89-2;
+InChIKey    XUULDJSVJMLNIO-UHFFFAOYSA-N;
+MW          414.495;      // g/mol [origin=calculated method=formula-sum]
+Tc          1215.31;      // K   [origin=predictive method=joback]
+Pc          9.939;      // bar [origin=predictive method=joback]
+omega       0.9625;      // -   [origin=predictive method=lee-kesler]
+Tb          992.65;      // K   [origin=predictive method=joback]
+HvapTb      99915.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (135.607 1.41876 -0.0001497 -2.873e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 7; } { group CH; count 1; } { group CH2=CH; count 3; } { group COOH; count 1; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 7; } { group CH; count 1; } { group dCH2; count 3; } { group dCH; count 3; } { group COOH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethylhexyl prop-2-enoate;methyl prop-2-enoate;3-prop-2-enoyloxypropanoic acid" );
+gibbsFormation
+{
+    dHf_298   -1631110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1372.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1097520.0
+    phase     gas;
+}

@@ -84,6 +84,13 @@ export interface StreamResult {
    *  per bin (sums to 1).  Absent for solid-bearing streams whose
    *  producer does not compute one (e.g. equilibrium crystalliser). */
   psd?: { diameter: number[]; massFrac: number[] };
+  /** Components genuinely PRESENT in this stream that carry NO elements-datum
+   *  enthalpy (no gibbsFormation, no aqueous-ion reference).  When non-empty,
+   *  H / H_kW are absent BY MISSING DATA, not by composition -- the energy
+   *  balance must REFUSE and name these, never silently skip the stream.
+   *  Absent for fully-curated streams (and for run logs from an older solver
+   *  that did not yet emit the field). */
+  H_missing?: string[];
 }
 
 export interface ConvergenceCurve {
@@ -102,6 +109,10 @@ export interface OperationResult {
   name: string;
   type: string;
   diagnostics: { [key: string]: number };
+  /** The op's OWN ranking of its answer (which diagnostic keys are the
+   *  headline) -- emitted by the engine's headline(); shown first/emphasised
+   *  in the Results epilogue.  Absent = show all equally. */
+  headline?: string[];
   /** The WHY behind the decision: model used, author rationale, source
    *  ("fitted"/"literature"/"assumed"/"undeclared"). Feeds the decision ledger. */
   provenance?: { [key: string]: string };
@@ -149,6 +160,28 @@ export interface ValidationBlock {
  *  (".../SEPARATION/constant/..." vs ".../standards/...").  `provSource` is the
  *  file's own provenance.source ("placeholder"/"literature"/"fitted"/...).
  *  Feeds the foundation navigator + pair-coverage matrix. */
+export type PairOrigin =
+  | "literature" | "regressed" | "predictive" | "estimated"
+  | "assumed" | "placeholder" | "unattributed";
+
+export interface Range { min: number; max: number; }
+
+export interface ValidityDomain {
+  temperature?: Range;
+  pressure?: Range;
+  composition?: Record<string, Range>;
+  note?: string;
+}
+
+/** The auditable record of a human promoting past a diagnostic (E2):
+ *  reason and authorship travel to every consumer, never reduced to a flag. */
+export interface PromotionOverride {
+  identifiable: number;
+  reason: string;
+  by: string;
+  date: string;
+}
+
 export interface PairResolution {
   model: string;
   i: string;
@@ -157,6 +190,14 @@ export interface PairResolution {
   status: string;
   source: string;
   provSource: string;
+  /** The TYPED provenance class (forum #77/#79): ranking/badge policy uses
+   *  THIS.  provSource stays the raw source label / legacy detail.  All audit
+   *  fields are optional: absent on results emitted before they existed. */
+  origin?: PairOrigin;
+  method?: string;
+  methodVersion?: string;
+  validity?: ValidityDomain;
+  promotedDespite?: PromotionOverride;
 }
 
 /** Per-component thermo coverage: which capabilities the loaded data provides,
@@ -200,6 +241,17 @@ export interface UnitProfile {
   xAxis: string;
   columns: { [name: string]: number[] };
   markers?: ProfileMarker[];
+}
+
+/** One fired event of a batch campaign (the sequence/Gantt feed). */
+export interface TimelineEvent {
+  t: number;
+  kind: "recipe" | "status";
+  action: string;      // transfer | setParameter | <status name>
+  detail: string;      // pre-formatted human line
+  trigger: string;     // "time" | "when: <unit.q op v>" | "" (status)
+  from: string;        // acting unit (transfer source / setParameter unit / status unit)
+  to: string;          // transfer destination; "" otherwise
 }
 
 /**
@@ -251,6 +303,12 @@ export interface RunResult {
    *  temperature level, or flagged carried.  Lets the GUI show "which
    *  utility, how much, how much €" next to the duty. */
   utilityAllocation?: UtilityAllocationRow[];
+  /** Batch campaign timeline: every recipe action that FIRED (with the
+   *  trigger that fired it -- the scheduled time or the tripped `when`
+   *  condition, verbatim) plus unit status events (a rectifier hitting
+   *  refluxMax).  `from` is the acting unit (the Gantt lane); `to` the
+   *  transfer destination.  Absent unless the run fired events. */
+  timeline?: TimelineEvent[];
   /** Solver "speak-up" advisories: a bound active at the converged solution, an
    *  equipment rating exceeded, an auto-initialised tear, a thermo model used
    *  outside its fitted range, an omitted electrolyte enthalpy channel.  The

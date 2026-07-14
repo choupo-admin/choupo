@@ -1,21 +1,11 @@
-streams
-{
-    feed
-    {
-        F                  100.0 kmol/h;
-        T                  298.15 K;
-        P                    1.0 bar;
-        molarComposition  { water 0.95;  NaCl 0.05; }   // ~ 3 mol/kg brine
-    }
-    saturatedSteam130C
-    {
-        F                   45.0 kmol/h;
-        P                    2.7 bar;
-        state            saturatedVapour;
-        molarComposition  { water 1.0; }
-        category         HP_steam_2.7bar;
-    }
-}
+/*---------------------------------------------------------------------------*\
+  evaporator07_nacl_enrtl / flowsheetDict
+  Single-effect NaCl evaporator whose boiling-point elevation comes from the
+  eNRTL water activity (a_w), not the ideal K_b*m -- the SAME flowsheet as
+  evaporator06, with only the electrolyte model swapped (pitzer -> eNRTL):
+  run both and compare the BPE the two G^E surfaces predict.
+\*---------------------------------------------------------------------------*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 units
 (
     {

@@ -134,6 +134,24 @@ int GibbsReactor::solve(const DictPtr& dict,
     prob.thermo = &thermo;
     prob.A = A; prob.b = b; prob.nIn = nIn; prob.compIdx = compIdx;
     prob.condensable = condensable; prob.P = P;
+    // temperature approach to equilibrium (forum-ratified 2026-07-02):
+    // chemistry at T+dT, physical state at T.  Announced LOUD here AND at
+    // the point of consumption (a KPI carries it into every results block --
+    // the "dT=50 survived in a copied dict for months" accident).
+    prob.dTapproach = operDict->found("temperatureApproach")
+                    ? operDict->lookupScalar("temperatureApproach") : 0.0;
+    if (prob.dTapproach != 0.0)
+        std::cout << "  [gibbs] temperatureApproach = " << prob.dTapproach
+                  << " K: REACTION equilibrium evaluated at T "
+                  << (prob.dTapproach > 0 ? "+ " : "- ")
+                  << std::abs(prob.dTapproach)
+                  << " K; enthalpy, Psat and the energy balance stay at the"
+                     " physical T.\n"
+                     "          This is an EMPIRICAL closeness-to-equilibrium"
+                     " parameter (calibrated, never predicted); 0 = true"
+                     " equilibrium.  GLOBAL: it cannot resolve per-reaction"
+                     " approaches (e.g. WGS vs methanol), and at high P it"
+                     " will absorb missing fugacity corrections.\n";
 
     scalar N0 = 0.0; for (auto v : nIn) N0 += v;
 
@@ -277,6 +295,8 @@ int GibbsReactor::solve(const DictPtr& dict,
 
     for (std::size_t j = 0; j < M; ++j)
         kpis_["lambda_" + elems[j]] = eq.pi[j] * RT_final;
+    if (prob.dTapproach != 0.0)
+        kpis_["temperatureApproach_K"] = prob.dTapproach;
     for (std::size_t i = 0; i < N; ++i)
         kpis_["y_" + specNames[i]] = (Ng > 0.0) ? eq.nGas[i] / Ng : 0.0;
     if (eq.twoPhase && Nl > 0.0)

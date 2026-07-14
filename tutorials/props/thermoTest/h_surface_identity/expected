@@ -1,0 +1,20 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    h_identity             benzene_anchor298_rel 0.000e+00          1e-4
+diag    h_identity             benzene_dhgas_vs_cpig_rel 7.289e-11          1e-4
+diag    h_identity             benzene_dhliq_vs_cpliq_rel 4.729e-13          1e-4
+diag    h_identity             benzene_kirchhoff_rel 2.058e-10          1e-4
+diag    h_identity             ethanol_anchor298_rel 1.694e-16          1e-4
+diag    h_identity             ethanol_dhgas_vs_cpig_rel 3.826e-11          1e-4
+diag    h_identity             ethanol_dhliq_vs_cpliq_rel 1.907e-11          1e-4
+diag    h_identity             ethanol_kirchhoff_rel 1.287e-10          1e-4
+diag    h_identity             toluene_anchor298_rel 0.000e+00          1e-4
+diag    h_identity             toluene_dhgas_vs_cpig_rel 6.085e-11          1e-4
+diag    h_identity             toluene_dhliq_vs_cpliq_rel 1.854e-13          1e-4
+diag    h_identity             toluene_kirchhoff_rel 2.214e-10          1e-4
+diag    h_identity             water_anchor298_rel 6.529e-16          1e-4
+diag    h_identity             water_dhgas_vs_cpig_rel 3.627e-11          1e-4
+diag    h_identity             water_dhliq_vs_cpliq_rel 6.168e-12          1e-4
+diag    h_identity             water_kirchhoff_rel 1.857e-11          1e-4
+diag    h_identity             worst_rel_err    2.214e-10          1e-4

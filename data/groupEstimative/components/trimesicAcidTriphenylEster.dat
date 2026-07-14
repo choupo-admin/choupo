@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimesic acid, triphenyl ester  (C27H18O6, CAS 7383-70-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trimesicAcidTriphenylEster;
+formula     C27H18O6;
+CAS         7383-70-2;
+InChIKey    ZNOKZTBEFWQAHD-UHFFFAOYSA-N;
+MW          438.435;      // g/mol [origin=calculated method=formula-sum]
+Tc          1375.86;      // K   [origin=predictive method=joback]
+Pc          15.987;      // bar [origin=predictive method=joback]
+omega       1.2161;      // -   [origin=predictive method=lee-kesler]
+Tb          1108.70;      // K   [origin=predictive method=joback]
+HvapTb      108345.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-52.45 1.9698 -0.00115192 1.91e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 18; } { group AC; count 6; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 18; } { group dC_ring; count 6; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "triphenyl benzene-1,3,5-tricarboxylate" "1,3,5-benzenetricarboxylic acid, triphenyl ester" );
+gibbsFormation
+{
+    dHf_298   -629270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     923.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-324270.0
+    phase     gas;
+}

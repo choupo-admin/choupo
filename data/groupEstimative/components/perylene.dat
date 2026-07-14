@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perylene  (C20H12, CAS 198-55-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perylene;
+formula     C20H12;
+CAS         198-55-0;
+InChIKey    CSHWQDPOILHKBI-UHFFFAOYSA-N;
+MW          252.316;      // g/mol [origin=calculated method=formula-sum]
+Tc          1030.87;      // K   [origin=predictive method=joback]
+Pc          26.084;      // bar [origin=predictive method=joback]
+omega       0.7840;      // -   [origin=predictive method=lee-kesler]
+Tb          767.04;      // K   [origin=predictive method=joback]
+HvapTb      70300.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-129.61 1.7068 -0.00154668 5.576e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 12; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "peri-dinaphthalene" "perilene" "dibenz[de,kl]anthracene" "alpha-perylene" "dibenz(de,kl)anthracene" "perylen" "u738" );
+gibbsFormation
+{
+    dHf_298   464810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     372.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=621880.0
+    phase     gas;
+}

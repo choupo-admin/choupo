@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzene-1,3-diamine;benzene-1,4-diamine;terephthalic acid  (C20H22N4O4, CAS 57062-05-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzene13DiamineBenzene14DiamineTerephthalicAcid;
+formula     C20H22N4O4;
+CAS         57062-05-2;
+InChIKey    MFJKUEZOBKMAPO-UHFFFAOYSA-N;
+MW          382.42;      // g/mol [origin=calculated method=formula-sum]
+Tc          1639.48;      // K   [origin=predictive method=joback]
+Pc          26.031;      // bar [origin=predictive method=joback]
+omega       1.8018;      // -   [origin=predictive method=lee-kesler]
+Tb          1336.12;      // K   [origin=predictive method=joback]
+HvapTb      146408.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (42.69 1.4254 -0.00044588 -1.058e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 12; } { group AC; count 2; } { group ACNH2; count 4; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 12; } { group dC_ring; count 6; } { group COOH; count 2; } { group NH2; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-benzenedicarboxylic acid, polymer with 1,3-benzenediamine and 1,4-benzenediamine" "benzene-1,3-diamine; benzene-1,4-diamine; terephthalic acid" );
+gibbsFormation
+{
+    dHf_298   -569570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1125.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-205680.0
+    phase     gas;
+}

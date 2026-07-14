@@ -1,0 +1,43 @@
+// [propertyData snapshot] provenance { kind standard; standardSet Choupo-2607; record "phases/solid/sylvite.dat"; }
+/*--------------------------------*- Choupo -*-----------------------*\
+  Solid phase: sylvite -- crystalline KCl for the PBE crystalliser
+  (rho_p + volume shape factor k_v, cubic habit).
+
+  Provenance
+    This phase record is the single home of KCl crystal geometry/density.
+    Primary: rho_p 1988 kg/m3 is the standard sylvite crystal density
+    (1.988 g/cm3, consistent with the KCl rock-salt structure);
+    primary re-citation pending (IST review).
+    k_v = 1 is the geometric cube definition V = k_v L^3
+    (no external source needed).
+\*---------------------------------------------------------------------------*/
+
+recordType solidPhase;
+schemaVersion 1;
+
+name    sylvite;
+formula "KCl";
+
+component KCl;
+
+rho_p
+{
+    value 1988.0;
+    unit  kg/m3;
+}
+
+shape
+{
+    habit cube;
+
+    k_v
+    {
+        value 1.0;
+        basis "cube, V = k_v L^3";
+    }
+}
+
+notes
+{
+    purpose "Solid crystal phase for KCl (sylvite).";
+}

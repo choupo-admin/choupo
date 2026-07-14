@@ -1,0 +1,107 @@
+/*---------------------------------------------------------------------------*\
+  ctrl08_prbs_ident  --  PRBS identification experiment (forum #100.4/#101).
+
+  The classic system-identification input: a pseudo-random binary sequence
+  on the inlet temperature, T_in = 320 +/- 10 K, driven by a MAXIMAL-LENGTH
+  Fibonacci LFSR --- n = 4 registers, canonical taps (4 3), DECLARED seed 1,
+  period 2^4 - 1 = 15 bits of 120 s each (1800 s per full period).
+
+  Why a PRBS and not ctrl06's sine: one sinusoid excites ONE frequency; the
+  PRBS is broadband (its autocorrelation approximates an impulse), so a
+  single record carries the information for a full low-order model fit.
+  And unlike real "random" noise it is DETERMINISTIC: seed + taps declared
+  in this dict reproduce the experiment bit for bit, run after run.
+
+  THE HAND-DERIVED SEQUENCE (the exact-sequence contract of #101): with the
+  frozen convention (output = s_n; feedback = XOR of taps; shift s_1 <-
+  feedback; seed LSB -> s_1), n=4 / taps (4 3) / seed 1 gives
+
+      0 0 0 1 0 0 1 1 0 1 0 1 1 1 1      (bits k = 0..14, then repeats)
+
+  -- walk it yourself: state 0001 -> 0010 -> 0100 -> 1001 -> 0011 -> 0110
+  -> 1101 -> 1010 -> 0101 -> 1011 -> 0111 -> 1111 -> 1110 -> 1100 -> 1000
+  -> 0001 (back at the seed after EXACTLY 15 steps: maximal).  The run's
+  announce line prints these same first bits; the initialiser REFUSES any
+  tap set whose cycle is not exactly 2^n - 1.
+
+  The PID (same tuning as ctrl06) holds the reactor at 350 K against the
+  binary disturbance; the trajectory's T_in column IS the PRBS, and the
+  reactor response is the identification record.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        dynamicCSTR;
+
+        initial
+        {
+            T            320.0 K;
+            P            1.013 bar;
+            V            0.001;
+            totalMoles   0.012;
+            molarComposition  { compA 1.0;  compB 0.0; }
+        }
+
+        inlet
+        {
+            F            5.0e-5 kmol/s;
+            T            320.0 K;             // the PRBS drives it from t=0
+            molarComposition  { compA 1.0;  compB 0.0; }
+        }
+
+        operation
+        {
+            UA           50.0;
+            T_jacket     320.0 K;
+        }
+
+        reaction    compA_to_compB;
+    }
+);
+
+controllers
+(
+    {
+        name         FeedPRBS;
+        type         Signal;
+
+        actuator     { unit reactor;  mv T_in; }
+
+        signal
+        {
+            type        prbs;
+            mean        320.0 K;
+            amplitude   10.0 K;            // T_in = 310 or 330 K
+            bitPeriod   120.0;             // s per bit
+            registers   4;                 // period 2^4 - 1 = 15 bits
+            seed        1;                 // DECLARED -- repeatable; 0 refused
+            // taps (4 3);                 // omitted: canonical prbsTaps-1
+        }
+    }
+
+    {
+        name         TC1;
+        type         PID;
+
+        measurement  { unit reactor;  cv T; }
+        actuator     { unit reactor;  mv T_jacket; }
+
+        setpoint     350.0;
+
+        gains
+        {
+            Kp       4.0;
+            Ki       0.04;
+            Kd       0.0;
+        }
+
+        output
+        {
+            min      280.0;
+            max      420.0;
+            bias     320.0;
+        }
+    }
+);

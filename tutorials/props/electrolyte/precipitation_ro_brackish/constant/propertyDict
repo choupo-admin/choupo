@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  precipitation_ro_brackish / constant/thermoPackage
+
+  Water only: the solvent basis for a props-bench run.  This package is a
+  loader-satisfying stub -- the brackish-water chemistry (Davies aqueous
+  speciation + the SI = 0 equilibrium-precipitation active set for
+  calcite and gypsum) runs inside the propsDict ops on the case-local
+  constant/electrolyte catalogue, not on the ideal models below.
+\*---------------------------------------------------------------------------*/
+
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }

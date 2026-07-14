@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: naphthalene, 1,2,3,4-tetrahydro-5-isobutyl-  (C14H20, CAS 5458-54-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        naphthalene1234Tetrahydro5Isobutyl;
+formula     C14H20;
+CAS         5458-54-8;
+InChIKey    SCVJXLBUIXMLNA-UHFFFAOYSA-N;
+MW          188.314;      // g/mol [origin=calculated method=formula-sum]
+Tc          794.42;      // K   [origin=predictive method=joback]
+Pc          23.451;      // bar [origin=predictive method=joback]
+omega       0.5096;      // -   [origin=predictive method=lee-kesler]
+Tb          571.80;      // K   [origin=predictive method=joback]
+HvapTb      50364.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-78.129 1.30964 -0.00086732 2.282e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group ACH; count 3; } { group ACCH2; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group CH2_ring; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-(2-methylpropyl)-1,2,3,4-tetrahydronaphthalene" "naphthalene,2,3,4-tetrahydro-5-isobutyl-" );
+gibbsFormation
+{
+    dHf_298   -37000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     545.07;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=214070.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,4-difluorophenylacetonitrile  (C8H5F2N, CAS 658-99-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34Difluorophenylacetonitrile;
+formula     C8H5F2N;
+CAS         658-99-1;
+InChIKey    GNPYERUNJMDEFQ-UHFFFAOYSA-N;
+MW          153.131;      // g/mol [origin=calculated method=formula-sum]
+Tc          730.57;      // K   [origin=predictive method=joback]
+Pc          30.864;      // bar [origin=predictive method=joback]
+omega       0.5746;      // -   [origin=predictive method=lee-kesler]
+Tb          519.90;      // K   [origin=predictive method=joback]
+HvapTb      45846.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.491 0.5243 -0.00031032 6.46e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group CH2CN; count 1; } { group ACF; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[3,4-bis(fluoranyl)phenyl]ethanenitrile" "3,4-difluorobenzyl cyanide" "2-(3,4-difluorophenyl)acetonitrile" "nc1r cf df" "(3,4-difluorophenyl)acetonitrile" "benzeneacetonitrile, 3,4-difluoro-" "2-(3,4-difluorophenyl)ethanenitrile" "8-99-1 3,4-difluorobenzyl cyanide" "658-99-1 3,4-difluorobenzyl cyanide" "l428" );
+gibbsFormation
+{
+    dHf_298   -222200.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     418.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-146810.0
+    phase     gas;
+}

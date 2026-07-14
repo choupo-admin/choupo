@@ -47,6 +47,7 @@ License
   default).  Workspaces don't duplicate each other's purpose.
 \*---------------------------------------------------------------------------*/
 
+import { compositeMembers } from "../case/toGraph.js";
 import { useMemo, useState } from "react";
 import {
   ActionIcon,
@@ -816,7 +817,7 @@ function walkChildren(
   depth: number,
   rawFiles: Record<string, string>,
 ): void {
-  const children = fs["children"];
+  const children = compositeMembers(fs);
   if (!Array.isArray(children)) return;
   for (const cv of children as JsonValue[]) {
     const childName = String(cv);
@@ -824,7 +825,7 @@ function walkChildren(
     const childFs = readChildFlowsheet(rawFiles, prefix ? prefix.replaceAll(".", "/") + "/" + childName : childName);
     if (!childFs) continue;
 
-    if (Array.isArray(childFs["children"])) {
+    if (compositeMembers(childFs).length > 0) {
       // Sector group
       const group: TreeGroup = { kind: "group", label: childName, children: [] };
       walkChildren(group.children, childFs, childPrefix, depth + 1, rawFiles);

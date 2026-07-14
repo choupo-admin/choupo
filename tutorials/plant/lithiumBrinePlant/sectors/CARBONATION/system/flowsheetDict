@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  CARBONATION sector: Li2CO3 hot-precipitation subdomain.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    precipitator
+);
+
+connections
+{
+    carbLiquor { to precipitator/carbLiquor; }
+    slurry     { from precipitator/slurry; }
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: levoglucosan, triacetate  (C12H16O8, CAS 13242-55-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        levoglucosanTriacetate;
+formula     C12H16O8;
+CAS         13242-55-2;
+InChIKey    BAKQMOSGYGQJOJ-UHFFFAOYSA-N;
+MW          288.252;      // g/mol [origin=calculated method=formula-sum]
+Tc          917.48;      // K   [origin=predictive method=joback]
+Pc          21.394;      // bar [origin=predictive method=joback]
+omega       1.0053;      // -   [origin=predictive method=lee-kesler]
+Tb          710.73;      // K   [origin=predictive method=joback]
+HvapTb      72790.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.94 1.17656 -0.0004988 -2.9e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 4; } { group CH3COO; count 3; } { group CH-O; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 1; } { group CH_ring; count 5; } { group O_ring; count 2; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3,4-diacetyloxy-6,8-dioxabicyclo[3.2.1]octan-2-yl) ethanoate" "2,3-di(acetyloxy)-6,8-dioxabicyclo[3.2.1]oct-4-yl acetate" ".beta.-d-glucopyranose, 1,6-anhydro-, triacetate" "triacetyllevoglucosan" "idosan triacetate" "galactosan triacetate" "triacetyl-d-mannosan" "1,6-anhydro-beta-d-glucose triacetate" "triacetyl d-galactosan(1,5).beta.(1,3)" ".beta.-d-glucopyranose,6-anhydro-, triacetate" "1,6-anhydro-.beta.-d-glucopyranose triacetate" "beta-d-glucopyranose, 1,6-anhydro-, triacetate" );
+gibbsFormation
+{
+    dHf_298   -1434590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     406.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-979020.0
+    phase     gas;
+}

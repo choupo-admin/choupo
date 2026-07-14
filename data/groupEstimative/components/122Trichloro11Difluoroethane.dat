@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,2-trichloro-1,1-difluoroethane  (C2HCl3F2, CAS 354-21-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        122Trichloro11Difluoroethane;
+formula     C2HCl3F2;
+CAS         354-21-2;
+InChIKey    FQAMAOOEZDRHHB-UHFFFAOYSA-N;
+MW          169.376;      // g/mol [origin=calculated method=formula-sum]
+Tc          540.50;      // K   [origin=predictive method=joback]
+Pc          39.856;      // bar [origin=predictive method=joback]
+omega       0.2710;      // -   [origin=predictive method=lee-kesler]
+Tb          352.52;      // K   [origin=predictive method=joback]
+HvapTb      29883.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.77 0.3695 -0.000354 1.222e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CHCl2; count 1; } { group CClF2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group C; count 1; } { group F; count 2; } { group Cl; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,2-tris(chloranyl)-1,1-bis(fluoranyl)ethane" "ethane, 1,2,2-trichloro-1,1-difluoro-" "difluorotrichloroethane" "f 122 (halocarbon)" "1,1,2-trichloro-2,2-difluoroethane" "1,1-difluoro-1,2,2-trichloroethane" "ethane, 1,1-difluoro-1,2,2-trichloro-" "trichlorodifluoroethane" "ethane, trichlorodifluoro-" "fqamaooezdrhhb-uhfffaoysa-" "1,2,2-trichloro-1,1-difluoro-ethane" );
+gibbsFormation
+{
+    dHf_298   -538080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     349.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-459050.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,7-dichloroheptane  (C7H14Cl2, CAS 821-76-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        17Dichloroheptane;
+formula     C7H14Cl2;
+CAS         821-76-1;
+InChIKey    PSEMXLIZFGUOGC-UHFFFAOYSA-N;
+MW          169.089;      // g/mol [origin=calculated method=formula-sum]
+Tc          613.49;      // K   [origin=predictive method=joback]
+Pc          25.925;      // bar [origin=predictive method=joback]
+omega       0.4693;      // -   [origin=predictive method=lee-kesler]
+Tb          434.62;      // K   [origin=predictive method=joback]
+HvapTb      39946.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (22.307 0.6824 -0.0003978 9.01e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH2Cl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 7; } { group Cl; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,7-bis(chloranyl)heptane" "heptane, 1,7-dichloro-" "heptane,7-dichloro-" "heptamethylene chloride" "heptamethylene dichloride" );
+gibbsFormation
+{
+    dHf_298   -219290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     495.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-15800.0
+    phase     gas;
+}

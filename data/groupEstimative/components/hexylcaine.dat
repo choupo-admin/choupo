@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexylcaine  (C16H23NO2, CAS 532-77-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexylcaine;
+formula     C16H23NO2;
+CAS         532-77-4;
+InChIKey    DKLKMKYDWHYZTD-UHFFFAOYSA-N;
+MW          261.365;      // g/mol [origin=calculated method=formula-sum]
+Tc          946.98;      // K   [origin=predictive method=joback]
+Pc          20.812;      // bar [origin=predictive method=joback]
+omega       0.8188;      // -   [origin=predictive method=lee-kesler]
+Tb          719.86;      // K   [origin=predictive method=joback]
+HvapTb      67370.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-88.649 1.59432 -0.000916 1.672e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 2; } { group ACH; count 5; } { group AC; count 1; } { group CH2NH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(cyclohexylamino)propan-2-yl benzoate" "hexylcainum" "cyclaine" "hexilcaina" "hexylcainum [inn-latin]" "hexylcaine [inn]" "osmocaine" "1-(cyclohexylamino)-2-propanol benzoate (ester)" "(2-cyclohexylamino-1-methylethyl) benzoate" "532-76-3 (hydrochloride)" "2-propanol, 1-(cyclohexylamino)-, benzoate (ester)" "brd-a97730597-003-03-2" );
+gibbsFormation
+{
+    dHf_298   -351810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     724.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-2720.0
+    phase     gas;
+}

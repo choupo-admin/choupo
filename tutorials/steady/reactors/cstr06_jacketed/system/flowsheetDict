@@ -1,0 +1,37 @@
+/*---------------------------------------------------------------------------*\
+  cstr06_jacketed  --  the same esterification as cstr04, now with a COOLING
+  JACKET instead of an adiabatic wall.
+
+  The energy balance gains one term, and only one:
+
+      H_out(T) = H_in + UA (T_coolant - T_out)
+
+  There is still NO dH_rxn source: on the elements datum the heat of reaction is
+  already inside H.  What the jacket does is remove some of it, so the outlet
+  settles BELOW the adiabatic 431.96 K of cstr04.
+
+  Check it by hand from the printed KPIs:  Q_kW should equal UA (T_c - T_out),
+  and it is NEGATIVE -- heat leaves the reactor.  Cool harder (raise UA, lower
+  T_coolant) and the outlet slides down the generation curve; cool too hard and
+  the reactor extinguishes.  Nothing here is switched on by a flag; it is the
+  same one equation in T, with one more term.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        cstr;
+        in          feed;
+        outputs     ( reactorOut );
+        operation
+        {
+            V_R          0.005;         // m^3
+            thermalMode  heatExchange;  // a cooling jacket
+            UA           25;            // W/K   -- overall coefficient x area
+            T_coolant    320;           // K
+            T_guess      400;           // K
+        }
+        reactions   ( esterification_etac );
+    }
+);

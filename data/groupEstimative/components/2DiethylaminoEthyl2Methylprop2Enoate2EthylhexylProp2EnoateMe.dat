@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(diethylamino)ethyl 2-methylprop-2-enoate;2-ethylhexyl prop-2-enoate;methyl 2-methylprop-2-enoate  (C26H47NO6, CAS 67874-96-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2DiethylaminoEthyl2Methylprop2Enoate2EthylhexylProp2EnoateMe;
+formula     C26H47NO6;
+CAS         67874-96-8;
+InChIKey    GZQYBVDQFLWIBO-UHFFFAOYSA-N;
+MW          469.663;      // g/mol [origin=calculated method=formula-sum]
+Tc          1193.83;      // K   [origin=predictive method=joback]
+Pc          7.176;      // bar [origin=predictive method=joback]
+omega       0.6524;      // -   [origin=predictive method=lee-kesler]
+Tb          973.74;      // K   [origin=predictive method=joback]
+HvapTb      96084.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (116.389 1.96674 -0.0004663 -2.148e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 7; } { group CH2; count 8; } { group CH; count 1; } { group CH2=CH; count 1; } { group CH2=C; count 2; } { group CH2N; count 1; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 7; } { group CH2; count 9; } { group CH; count 1; } { group dCH2; count 3; } { group dCH; count 1; } { group dC; count 2; } { group COO; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-propenoic acid, 2-methyl-, 2-(diethylamino)ethyl ester, polymer with 2-ethylhexyl 2-propenoate and methyl 2-methyl-2-propenoate" "2-diethylaminoethyl 2-methylprop-2-enoate; 2-ethylhexyl prop-2-enoate; methyl 2-methylprop-2-enoate" );
+gibbsFormation
+{
+    dHf_298   -1336090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1522.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-617830.0
+    phase     gas;
+}

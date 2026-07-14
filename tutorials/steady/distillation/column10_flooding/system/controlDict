@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "The same column, built too narrow: every tray floods -- and it still converges";
+verbosity     3;

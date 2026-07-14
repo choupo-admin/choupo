@@ -1,0 +1,5 @@
+application choupoBatch;
+description "A4 F2: 400 ppm uptake, Ergun must approach the A3 constant-velocity limit";
+verbosity 2;
+startTime 0; endTime 1000; deltaT 0.05; writeInterval 100;
+timeStepping adaptive;

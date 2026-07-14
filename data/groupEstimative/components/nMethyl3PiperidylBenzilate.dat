@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methyl-3-piperidyl benzilate  (C20H23NO3, CAS 3321-80-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethyl3PiperidylBenzilate;
+formula     C20H23NO3;
+CAS         3321-80-0;
+InChIKey    ZBEILXWHVSVDBN-UHFFFAOYSA-N;
+MW          325.408;      // g/mol [origin=calculated method=formula-sum]
+Tc          1119.02;      // K   [origin=predictive method=joback]
+Pc          21.003;      // bar [origin=predictive method=joback]
+omega       1.2165;      // -   [origin=predictive method=lee-kesler]
+Tb          885.45;      // K   [origin=predictive method=joback]
+HvapTb      89756.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-148.05 2.10662 -0.0014742 3.793e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group ACH; count 10; } { group AC; count 2; } { group OH; count 1; } { group CH3N; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group OH; count 1; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1-methylpiperidin-3-yl) 2-oxidanyl-2,2-diphenyl-ethanoate" "1-methyl-3-piperidyl benzilate" "benzilic acid, 1-methyl-3-piperidyl ester" "alpha-hydroxy-alpha-phenylbenzeneacetic acid, 1-methyl-3-piperidinyl ester" "benzeneacetic acid, .alpha.-hydroxy-.alpha.-phenyl-, 1-methyl-3-piperidinyl ester" "1-methylpiperidin-3-yl 2-hydroxy-2,2-diphenylacetate" "(1-methylpiperidin-3-yl) 2-hydroxy-2,2-diphenylacetate" "benzeneacetic acid, a-hydroxy-a-phenyl-, 1-methyl-3-piperidinylester" "benzeneacetic acid, alpha-hydroxy-alpha-phenyl-, 1-methyl-3-piperidinyl ester" "benzeneacetic acid, alpha-hydroxy-alpha-phenyl-, 1-methyl-3-piperidinyl ester (9ci)" "benzilicacid, 1-methyl-3-piperidyl ester (6ci,7ci,8ci); 3-piperidinol, 1-methyl-,benzilate (ester) (8ci); 1-methyl-3-piperidyl benzilate; 3-npb; jb 336;n-methyl-3-hydroxypiperidine benzilate; n-methyl-3-piperidyl benzilate" );
+gibbsFormation
+{
+    dHf_298   -333320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     751.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=45320.0
+    phase     gas;
+}

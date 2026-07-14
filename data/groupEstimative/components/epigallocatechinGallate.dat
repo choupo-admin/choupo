@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (-)-epigallocatechin gallate  (C22H18O11, CAS 989-51-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        epigallocatechinGallate;
+formula     C22H18O11;
+CAS         989-51-5;
+InChIKey    WMBWREPUVVBILR-WIYYLYMNSA-N;
+MW          458.375;      // g/mol [origin=calculated method=formula-sum]
+Tc          1867.52;      // K   [origin=predictive method=joback]
+Pc          92.101;      // bar [origin=predictive method=joback]
+omega       2.9747;      // -   [origin=predictive method=lee-kesler]
+Tb          1524.45;      // K   [origin=predictive method=joback]
+HvapTb      187861.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-182.58 3.0914 -0.00326034 1.3424e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group ACH; count 6; } { group AC; count 3; } { group ACCH2; count 1; } { group ACOH; count 8; } { group CH-O; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 1; } { group CH_ring; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 12; } { group OH_phenol; count 8; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(2r,3r)-5,7-bis(oxidanyl)-2-[3,4,5-tris(oxidanyl)phenyl]-3,4-dihydro-2h-chromen-3-yl] 3,4,5-tris(oxidanyl)benzoate" "egcg" "epigallocatechin gallate" "epigallocatechin 3-gallate" "epigallocatechin-3-gallate" "tea catechin" "teavigo" "catechin deriv." "(-)-epigallocatechin-3-o-gallate" "(-)-epigallocatechol gallate" "(-)-egcg" "epigallocatechol, 3-gallate, (-)-" );
+gibbsFormation
+{
+    dHf_298   -1620750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     786.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1130550.0
+    phase     gas;
+}

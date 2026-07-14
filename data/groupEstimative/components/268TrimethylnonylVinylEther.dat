@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,6,8-trimethylnonyl vinyl ether  (C14H28O, CAS 10141-19-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        268TrimethylnonylVinylEther;
+formula     C14H28O;
+CAS         10141-19-2;
+InChIKey    SSOZLSNWPFIHKP-UHFFFAOYSA-N;
+MW          212.377;      // g/mol [origin=calculated method=formula-sum]
+Tc          708.87;      // K   [origin=predictive method=joback]
+Pc          15.835;      // bar [origin=predictive method=joback]
+omega       0.6329;      // -   [origin=predictive method=lee-kesler]
+Tb          537.70;      // K   [origin=predictive method=joback]
+HvapTb      47334.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.625 1.26838 -0.0006593 1.165e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 3; } { group CH2=CH; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 5; } { group CH; count 3; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethenoxy-2,6,8-trimethyl-nonane" "vinyl 2,6,8-trimethylnonyl ether" "ether, 2,6,8-trimethylnonyl vinyl" "1-ethenoxy-2,6,8-trimethylnonane" "1-(ethenyloxy)-2,6,8-trimethylnonane" );
+gibbsFormation
+{
+    dHf_298   -354920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     679.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=42520.0
+    phase     gas;
+}

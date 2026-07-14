@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2'-methylenebis[4-(2-phenylpropan-2-yl)phenol]  (C31H32O2, CAS 71113-22-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        22Methylenebis42Phenylpropan2YlPhenol;
+formula     C31H32O2;
+CAS         71113-22-9;
+InChIKey    FXSDWJLBJPYRKD-UHFFFAOYSA-N;
+MW          436.595;      // g/mol [origin=calculated method=formula-sum]
+Tc          1463.05;      // K   [origin=predictive method=joback]
+Pc          15.211;      // bar [origin=predictive method=joback]
+omega       1.1885;      // -   [origin=predictive method=lee-kesler]
+Tb          1180.34;      // K   [origin=predictive method=joback]
+HvapTb      118464.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-199.099 3.07508 -0.00250964 8.199e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group C; count 2; } { group ACH; count 16; } { group AC; count 5; } { group ACCH2; count 1; } { group ACOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 1; } { group C; count 2; } { group dCH_ring; count 16; } { group dC_ring; count 8; } { group OH_phenol; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[[2-oxidanyl-5-(2-phenylpropan-2-yl)phenyl]methyl]-4-(2-phenylpropan-2-yl)phenol" "2,2'-methylenebis[4-(1-methyl-1-phenylethyl)phenol]" "2,2'-methylenebis(4-(1-methyl-1-phenylethyl)phenol)" "phenol, 2,2'-methylenebis(4-(1-methyl-1-phenylethyl)-" "phenol, 2,2'-methylenebis[4-(1-methyl-1-phenylethyl)-" "phenol,2,2'-methylenebis[4-(1-methyl-1-phenylethyl)-" "2,2a'a inverted exclamation marka'a -methylenebis[4-(1-methyl-1-phenylethyl)phenol]" "2-[[2-hydroxy-5-(2-phenylpropan-2-yl)phenyl]methyl]-4-(2-phenylpropan-2-yl)phenol" );
+gibbsFormation
+{
+    dHf_298   -132110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     900.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=336960.0
+    phase     gas;
+}

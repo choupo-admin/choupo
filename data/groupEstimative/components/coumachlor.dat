@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: coumachlor  (C19H15ClO4, CAS 81-82-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        coumachlor;
+formula     C19H15ClO4;
+CAS         81-82-3;
+InChIKey    DEKWZWCFHUABHE-UHFFFAOYSA-N;
+MW          342.775;      // g/mol [origin=calculated method=formula-sum]
+Tc          1186.85;      // K   [origin=predictive method=joback]
+Pc          23.496;      // bar [origin=predictive method=joback]
+omega       1.2957;      // -   [origin=predictive method=lee-kesler]
+Tb          938.62;      // K   [origin=predictive method=joback]
+HvapTb      95932.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.519 1.68802 -0.00134702 4.2826e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 8; } { group AC; count 2; } { group ACCH; count 1; } { group OH; count 1; } { group CH3CO; count 1; } { group ACCl; count 1; } { group C=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 6; } { group Cl; count 1; } { group OH_phenol; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[1-(4-chlorophenyl)-3-oxidanylidene-butyl]-4-oxidanyl-chromen-2-one" "ratilan" "tomorin" "p-chlorowarfarin" "cumachloor [dutch]" "cumachlor [german]" "coumachlore [french]" "coumachlor [iso:bsi]" "coumachlore [iso-french]" "3-(alpha-acetonyl-4-chlorobenzyl)-4-hydroxycoumarin" "3-(alpha-acetonyl-p-chlorobenzyl)-4-hydroxycoumarin" "3-(1-(4-chlorophenyl)-3-oxobutyl)-4-hydroxycoumarin" );
+gibbsFormation
+{
+    dHf_298   -467950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     687.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-192730.0
+    phase     gas;
+}

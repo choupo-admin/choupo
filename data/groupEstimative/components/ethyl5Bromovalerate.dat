@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 5-bromovalerate  (C7H13BrO2, CAS 14660-52-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl5Bromovalerate;
+formula     C7H13BrO2;
+CAS         14660-52-7;
+InChIKey    AFRWBGJRWRHQOV-UHFFFAOYSA-N;
+MW          209.083;      // g/mol [origin=calculated method=formula-sum]
+Tc          673.21;      // K   [origin=predictive method=joback]
+Pc          30.323;      // bar [origin=predictive method=joback]
+omega       0.6294;      // -   [origin=predictive method=lee-kesler]
+Tb          484.14;      // K   [origin=predictive method=joback]
+HvapTb      45018.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (30.125 0.65222 -0.0003338 4.91e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH2COO; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 5-bromanylpentanoate" "ethyl 5-bromopentanoate" "ethyl omega-bromovalerate" "pentanoic acid, 5-bromo-, ethyl ester" "5-bromovaleric acid ethyl ester" "5-bromopentanoic acid ethyl ester" "afrwbgjrwrhqov-uhfffaoysa-" "q078" "valericacid, 5-bromo-, ethyl ester (6ci,7ci,8ci);5-bromopentanoate ethyl ester;5-bromopentanoic acid ethyl ester;5-bromovaleric acid ethyl ester;ethyl5-bromopentanoate;ethyl d-bromovalerate;" );
+gibbsFormation
+{
+    dHf_298   -478760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     530.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-287990.0
+    phase     gas;
+}

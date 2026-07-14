@@ -1,7 +1,0 @@
-components       ( NH3 );
-
-activityModel    { model ideal; }
-equationOfState  { model idealGas; }
-
-// Liquid viscosity (Andrade) comes from NH3.dat; the property
-// viscosity_liquid requires the per-op transport block below.

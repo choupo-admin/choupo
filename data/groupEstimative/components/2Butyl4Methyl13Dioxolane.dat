@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-butyl-4-methyl-1,3-dioxolane  (C8H16O2, CAS 74094-60-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Butyl4Methyl13Dioxolane;
+formula     C8H16O2;
+CAS         74094-60-3;
+InChIKey    WTZJUXYVLRJTMQ-UHFFFAOYSA-N;
+MW          144.214;      // g/mol [origin=calculated method=formula-sum]
+Tc          639.93;      // K   [origin=predictive method=joback]
+Pc          28.999;      // bar [origin=predictive method=joback]
+omega       0.4476;      // -   [origin=predictive method=lee-kesler]
+Tb          447.15;      // K   [origin=predictive method=joback]
+HvapTb      42370.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-24.287 0.86304 -0.0004556 7.79e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group CH-O; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH2_ring; count 1; } { group CH_ring; count 2; } { group O_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "pentanal propyleneglycol acetal" "1,3-dioxolane, 2-butyl-4-methyl-" "1,3-dioxolane,2-butyl-4-methyl-" "2-butyl-4-methyl-1,3-dioxolane;2-butyl-4-methyl-1,3-dioxolane;1,3-dioxolane, 2-butyl-4-methyl-;pentanal propyleneglycol acetal;" );
+gibbsFormation
+{
+    dHf_298   -432310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     272.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-126920.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acrylamide, methacrylic acid, methyl acrylate polymer  (C11H17NO5, CAS 51890-90-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        acrylamideMethacrylicAcidMethylAcrylatePolymer;
+formula     C11H17NO5;
+CAS         51890-90-5;
+InChIKey    VNOPSNUINNKRAY-UHFFFAOYSA-N;
+MW          243.259;      // g/mol [origin=calculated method=formula-sum]
+Tc          993.23;      // K   [origin=predictive method=joback]
+Pc          22.568;      // bar [origin=predictive method=joback]
+omega       1.1036;      // -   [origin=predictive method=lee-kesler]
+Tb          774.13;      // K   [origin=predictive method=joback]
+HvapTb      80696.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (109.72 0.60624 0.0001813 -2.8784e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2=CH; count 2; } { group CH2=C; count 1; } { group COOH; count 1; } { group COO; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 3; } { group dCH; count 2; } { group dC; count 1; } { group CdO; count 1; } { group COOH; count 1; } { group COO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl prop-2-enoate;2-methylprop-2-enoic acid;prop-2-enamide" "methyl prop-2-enoate; 2-methylprop-2-enoic acid; prop-2-enamide" "2-propenoic acid, 2-methyl-, polymer with methyl 2-propenoate and 2-propenamide" );
+gibbsFormation
+{
+    dHf_298   -873450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     964.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-629560.0
+    phase     gas;
+}

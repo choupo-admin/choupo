@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-amino-4-chlorobenzotrifluoride  (C7H5ClF3N, CAS 121-50-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Amino4Chlorobenzotrifluoride;
+formula     C7H5ClF3N;
+CAS         121-50-6;
+InChIKey    VKTTYIXIDXWHKW-UHFFFAOYSA-N;
+MW          195.568;      // g/mol [origin=calculated method=formula-sum]
+Tc          714.54;      // K   [origin=predictive method=joback]
+Pc          35.221;      // bar [origin=predictive method=joback]
+omega       0.5495;      // -   [origin=predictive method=lee-kesler]
+Tb          500.94;      // K   [origin=predictive method=joback]
+HvapTb      46055.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (4.4 0.7008 -0.00053892 1.565e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group ACNH2; count 1; } { group ACCl; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 3; } { group Cl; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-5-(trifluoromethyl)aniline" "2-chloro-5-(trifluoromethyl)aniline" "fast orange rd oil" "benzenamine, 2-chloro-5-(trifluoromethyl)-" "fast orange salt rd" "orange salt nrd" "2-chloro-5-trifluoromethylaniline" "fast orange rd salt" "daito orange salt rd" "diazo fast orange rd" "fast orange salt rda" "fast orange salt rdn" );
+gibbsFormation
+{
+    dHf_298   -553250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     451.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-425860.0
+    phase     gas;
+}

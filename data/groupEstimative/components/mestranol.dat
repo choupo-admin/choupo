@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: mestranol  (C21H26O2, CAS 72-33-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        mestranol;
+formula     C21H26O2;
+CAS         72-33-3;
+InChIKey    IMSSROKUHAOUJS-MJCUULBUSA-N;
+MW          310.437;      // g/mol [origin=calculated method=formula-sum]
+Tc          1075.70;      // K   [origin=predictive method=joback]
+Pc          19.824;      // bar [origin=predictive method=joback]
+omega       1.0476;      // -   [origin=predictive method=lee-kesler]
+Tb          841.34;      // K   [origin=predictive method=joback]
+HvapTb      82050.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-226.01 2.64214 -0.00245325 9.6549e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 2; } { group C; count 2; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group CH3O; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(8r,9s,13s,14s,17r)-17-ethynyl-3-methoxy-13-methyl-7,8,9,11,12,14,15,16-octahydro-6h-cyclopenta[a]phenanthren-17-ol" "norquen" "ovastol" "ethynylestradiol 3-methyl ether" "mestranolum" "menophase" "ee(sub3)me" "3-methylethynylestradiol" "ee3me" "3-methoxyethynylestradiol" "delta-mve" "3-o-methylethynylestradiol" );
+gibbsFormation
+{
+    dHf_298   -59850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     710.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=331990.0
+    phase     gas;
+}

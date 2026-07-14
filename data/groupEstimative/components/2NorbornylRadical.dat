@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-norbornyl radical  (C7H11, CAS 30967-37-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        2NorbornylRadical;
+formula     C7H11;
+CAS         30967-37-4;
+InChIKey    WVKPYYLOFMTDHB-UHFFFAOYSA-N;
+role        radical;
+MW          95.165;      // g/mol [origin=calculated method=formula-sum]
+Tc          581.22;      // K   [origin=predictive method=joback]
+Pc          39.705;      // bar [origin=predictive method=joback]
+omega       0.2507;      // -   [origin=predictive method=lee-kesler]
+Tb          377.09;      // K   [origin=predictive method=joback]
+HvapTb      31320.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-105.19 0.933 -0.00074464 2.429e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH2_ring; count 4; } { group CH_ring; count 2; } { group dCH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bicyclo[2.2.1]hept-2-yl" );
+gibbsFormation
+{
+    dHf_298   -19480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     249.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=132440.0
+    phase     gas;
+}

@@ -22,23 +22,7 @@
   i_lim (and i/i_lim), the ohmic drop and the stack voltage/power.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    diluateFeed
-    {
-        F            5.0 mol/s;
-        T            298.15 K;
-        P            1.5 bar;
-        molarComposition { water 0.996409;  Na 0.001795;  Cl 0.001795; }
-    }
-    concentrateFeed
-    {
-        F            5.0 mol/s;
-        T            298.15 K;
-        P            1.5 bar;
-        molarComposition { water 0.982301;  Na 0.008850;  Cl 0.008850; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

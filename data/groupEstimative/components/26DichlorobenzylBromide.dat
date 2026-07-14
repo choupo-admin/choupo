@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,6-dichlorobenzyl bromide  (C7H5BrCl2, CAS 20443-98-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        26DichlorobenzylBromide;
+formula     C7H5BrCl2;
+CAS         20443-98-5;
+InChIKey    PDFGFQUSSYSWNI-UHFFFAOYSA-N;
+MW          239.921;      // g/mol [origin=calculated method=formula-sum]
+Tc          783.52;      // K   [origin=predictive method=joback]
+Pc          39.357;      // bar [origin=predictive method=joback]
+omega       0.4818;      // -   [origin=predictive method=lee-kesler]
+Tb          537.42;      // K   [origin=predictive method=joback]
+HvapTb      49981.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.191 0.5227 -0.00036632 9.99e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACCH2; count 1; } { group ACCl; count 2; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(bromomethyl)-1,3-bis(chloranyl)benzene" "alpha-bromo-2,6-dichlorotoluene" "2-(bromomethyl)-1,3-dichlorobenzene" "2,6-dichlorobenzylbromide" "benzene, 2-(bromomethyl)-1,3-dichloro-" "1-bromomethyl-2,6-dichlorobenzene" ".alpha.-bromo-2,6-dichlorotoluene" "toluene, alpha-bromo-2,6-dichloro-" "2,6 dichloro benzyl bromide" "a-bromo-2,6-dichlorotoluene" "dichlorobenzyl(2,6-) bromide" "2-(bromomethyl)-1,3-dichloro-benzene" );
+gibbsFormation
+{
+    dHf_298   20630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     427.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=91670.0
+    phase     gas;
+}

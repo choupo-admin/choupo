@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dl-isoserine  (C3H7NO3, CAS 565-71-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dlIsoserine;
+formula     C3H7NO3;
+CAS         565-71-9;
+InChIKey    BMYNFMYTOJXKLE-UHFFFAOYSA-N;
+MW          105.093;      // g/mol [origin=calculated method=formula-sum]
+Tc          776.84;      // K   [origin=predictive method=joback]
+Pc          62.988;      // bar [origin=predictive method=joback]
+omega       1.2806;      // -   [origin=predictive method=lee-kesler]
+Tb          578.02;      // K   [origin=predictive method=joback]
+HvapTb      66368.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.861 0.4414 -0.000289 7.28e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group OH; count 1; } { group CH2NH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-azanyl-2-oxidanyl-propanoic acid" "isoserine" "3-amino-2-hydroxypropanoic acid" "propanoic acid, 3-amino-2-hydroxy-" "h-dl-isoser-oh" "( inverted exclamation marka)-3-amino-2-hydroxypropionic acid" "(+/-)-3-amino-2-hydroxypropionic acid" "2-hydroxy-beta-alanine" "agn-pc-04y203" "2-hydroxy-3-aminopropanoic acid" "dl-2-hydroxy-3-aminopropionic acid" "dl-3-amino-2-hydroxypropionic acid" );
+gibbsFormation
+{
+    dHf_298   -579240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     418.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-442340.0
+    phase     gas;
+}

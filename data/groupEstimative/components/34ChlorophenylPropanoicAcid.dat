@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(4-chlorophenyl)propanoic acid  (C9H9ClO2, CAS 2019-34-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34ChlorophenylPropanoicAcid;
+formula     C9H9ClO2;
+CAS         2019-34-3;
+InChIKey    BBSLOKZINKEUCR-UHFFFAOYSA-N;
+MW          184.619;      // g/mol [origin=calculated method=formula-sum]
+Tc          848.84;      // K   [origin=predictive method=joback]
+Pc          34.039;      // bar [origin=predictive method=joback]
+omega       0.7927;      // -   [origin=predictive method=lee-kesler]
+Tb          620.12;      // K   [origin=predictive method=joback]
+HvapTb      60115.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.408 0.778 -0.00052296 1.335e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 4; } { group ACCH2; count 1; } { group COOH; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(4-chlorophenyl)propionic acid" "p-chlorohydrocinnamic acid" "4-chlorophenylpropionic acid" "benzenepropanoic acid, 4-chloro-" "3-(p-chlorophenyl)propionic acid" "3-(4-chlorophenyl)-propionic acid" "3-(4-chloro-phenyl)-propionic acid" "4-chlorobenzenepropanoic acid" "b-(p-chlorophenyl)propionic acid" "4-chlorohydrocinnamic acid" "3-(p-chlorophenyl) propionic acid" "3-(4'-chlorophenyl)propionic acid" );
+gibbsFormation
+{
+    dHf_298   -370040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     480.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-228160.0
+    phase     gas;
+}

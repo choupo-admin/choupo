@@ -1,4 +1,0 @@
-components       ( water  NaCl );
-
-activityModel    { model  ideal; }
-equationOfState  { model  idealGas; }

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-o-methyl-d-glucopyranose  (C7H14O6, CAS 3370-81-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3OMethylDGlucopyranose;
+formula     C7H14O6;
+CAS         3370-81-8;
+InChIKey    SCBBSJMAPKXHAH-QTSLKERKSA-N;
+MW          194.183;      // g/mol [origin=calculated method=formula-sum]
+Tc          958.41;      // K   [origin=predictive method=joback]
+Pc          45.964;      // bar [origin=predictive method=joback]
+omega       2.2549;      // -   [origin=predictive method=lee-kesler]
+Tb          778.72;      // K   [origin=predictive method=joback]
+HvapTb      104005.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.661 0.75472 -0.0002131 -5.54e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 4; } { group OH; count 4; } { group CH3O; count 1; } { group CH-O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH_ring; count 5; } { group OH; count 4; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3r,4s,5r,6r)-6-(hydroxymethyl)-4-methoxy-oxane-2,3,5-triol" "3-o-methylglucose" "d-glucopyranose, 3-o-methyl-" "3-o-methylglucopyranose" "d-glucoyranose, 3-o-methyl-" "glucopyranose, 3-o-methyl-, d-" "(3r,4s,5r,6r)-6-(hydroxymethyl)-4-methoxyoxane-2,3,5-triol" "(4s,5s,3r,6r)-6-(hydroxymethyl)-4-methoxy-2h-3,4,5,6-tetrahydropyran-2,3,5-tri ol" );
+gibbsFormation
+{
+    dHf_298   -1087990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     392.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-736730.0
+    phase     gas;
+}

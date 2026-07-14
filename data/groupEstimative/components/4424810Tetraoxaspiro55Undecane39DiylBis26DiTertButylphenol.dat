@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4'-(2,4,8,10-tetraoxaspiro(5.5)undecane-3,9-diyl)bis(2,6-di-tert-butylphenol)  (C35H52O6, CAS 41715-24-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4424810Tetraoxaspiro55Undecane39DiylBis26DiTertButylphenol;
+formula     C35H52O6;
+CAS         41715-24-6;
+InChIKey    PWIVQRVFDLNJPF-UHFFFAOYSA-N;
+MW          568.795;      // g/mol [origin=calculated method=formula-sum]
+Tc          1665.82;      // K   [origin=predictive method=joback]
+Pc          9.520;      // bar [origin=predictive method=joback]
+omega       0.9198;      // -   [origin=predictive method=lee-kesler]
+Tb          1360.20;      // K   [origin=predictive method=joback]
+HvapTb      138814.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-256.13 4.25284 -0.00350436 1.1946e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 12; } { group C; count 5; } { group ACH; count 4; } { group AC; count 4; } { group ACCH; count 2; } { group ACOH; count 2; } { group FCH2O; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 12; } { group C; count 4; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 8; } { group OH_phenol; count 2; } { group O_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6-ditert-butyl-4-[3-(3,5-ditert-butyl-4-oxidanyl-phenyl)-2,4,8,10-tetraoxaspiro[5.5]undecan-9-yl]phenol" "4,4'-(2,4,8,10-tetraoxaspiro[5.5]undecane-3,9-diyl)bis(2,6-di-tert-butylphenol)" "phenol, 4,4'-(2,4,8,10-tetraoxaspiro(5.5)undecane-3,9-diyl)bis(2,6-bis(1,1-dimethylethyl)-" "phenol, 4,4'-(2,4,8,10-tetraoxaspiro[5.5]undecane-3,9-diyl)bis[2,6-bis(1,1-dimethylethyl)-" "2,6-ditert-butyl-4-[9-(3,5-ditert-butyl-4-hydroxyphenyl)-2,4,8,10-tetraoxaspiro[5.5]undecan-3-yl]phenol" );
+gibbsFormation
+{
+    dHf_298   -1146470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     920.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-164440.0
+    phase     gas;
+}

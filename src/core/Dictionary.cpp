@@ -33,6 +33,8 @@ License
 #include <cctype>
 #include <cmath>
 #include <fstream>
+#include <functional>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 
@@ -687,6 +689,13 @@ std::vector<DictPtr> Dictionary::lookupDictList(const std::string& key) const
         "': entry '" + key + "' is not a list of dictionaries");
 }
 
+bool Dictionary::hasDictList(const std::string& key) const
+{
+    auto it = entries_.find(key);
+    return it != entries_.end()
+        && std::holds_alternative<std::vector<DictPtr>>(it->second);
+}
+
 DictPtr Dictionary::subDict(const std::string& key) const
 {
     auto it = entries_.find(key);
@@ -746,6 +755,22 @@ scalar Dictionary::lookupScalar(const std::string& key,
             << " (" << it->second.toPretty() << ").  Check the unit"
                " suffix on this entry.";
         throw std::runtime_error(msg.str());
+    }
+
+    // A BARE pressure below 100 Pa is almost always a forgotten `bar`.  Writing
+    // `P 1.01325;` means 1.01 pascal -- a hard vacuum -- and the K-values then
+    // explode by five orders of magnitude while the run reports success.  This
+    // exact typo shipped in a tutorial and went unnoticed.  A raw number is
+    // still legal (Choupo's canonical unit is SI, and a real vacuum column
+    // belongs at 50 Pa), so this WARNS rather than refuses -- and it stays
+    // silent when the author declared a unit, because then they meant it.
+    if (it == entryDims_.end() && expectedDims == Dims::pressure
+        && v > 0.0 && v < 100.0)
+    {
+        std::cout << "  WARNING: '" << key << " " << v << ";' in dictionary '"
+                  << name_ << "' (" << source_ << ") carries NO unit, so it is "
+                  << v << " Pa -- a hard vacuum.  Did you mean `" << key << " "
+                  << v << " bar;`?  Declare the unit and this warning goes away.\n";
     }
     return v;
 }
@@ -864,5 +889,64 @@ DictPtr Dictionary::fromString(const std::string& text,
     }
     return root;
 }
+
+DictPtr Dictionary::deepCopy() const
+{
+    // Copy this node, then recurse; re-point varsDict on the copy's whole tree.
+    std::function<DictPtr(const Dictionary&, const DictPtr&)> rec =
+        [&](const Dictionary& src, const DictPtr& vars) -> DictPtr
+    {
+        auto out = std::make_shared<Dictionary>(src.name_);
+        out->source_    = src.source_;
+        out->entryDims_ = src.entryDims_;
+        out->order_     = src.order_;
+        for (const auto& [k, v] : src.entries_)
+        {
+            if (std::holds_alternative<DictPtr>(v))
+                out->entries_[k] = rec(*std::get<DictPtr>(v), vars);
+            else if (std::holds_alternative<std::vector<DictPtr>>(v))
+            {
+                std::vector<DictPtr> lst;
+                lst.reserve(std::get<std::vector<DictPtr>>(v).size());
+                for (const auto& d : std::get<std::vector<DictPtr>>(v))
+                    lst.push_back(rec(*d, vars));
+                out->entries_[k] = std::move(lst);
+            }
+            else
+                out->entries_[k] = v;      // scalar / word / lists / Reference: value types
+        }
+        out->varsDict_ = vars;
+        return out;
+    };
+
+    // The variables block itself is part of the tree when this node owns it
+    // (root case): deep-copy it FIRST so every node of the copy resolves $refs
+    // against the COPY, never the original.
+    DictPtr varsCopy;
+    if (varsDict_)
+        varsCopy = rec(*varsDict_, nullptr);
+    auto out = rec(*this, varsCopy);
+    // If the root carried its variables as an entry, point varsDict at the
+    // copied ENTRY (one tree, one truth) rather than the detached pre-copy.
+    if (varsCopy && out->entries_.count("variables")
+        && std::holds_alternative<DictPtr>(out->entries_.at("variables")))
+        out->setVarsDictRecursive_(std::get<DictPtr>(out->entries_.at("variables")));
+    return out;
+}
+
+void Dictionary::setVarsDictRecursive_(const DictPtr& v)
+{
+    varsDict_ = v;
+    for (auto& [k, val] : entries_)
+    {
+        (void) k;
+        if (std::holds_alternative<DictPtr>(val))
+            std::get<DictPtr>(val)->setVarsDictRecursive_(v);
+        else if (std::holds_alternative<std::vector<DictPtr>>(val))
+            for (auto& d : std::get<std::vector<DictPtr>>(val))
+                d->setVarsDictRecursive_(v);
+    }
+}
+
 
 } // namespace Choupo

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-adamantaneacetonitrile  (C12H17N, CAS 16269-13-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Adamantaneacetonitrile;
+formula     C12H17N;
+CAS         16269-13-9;
+InChIKey    DXQVPXCZIRQITG-UHFFFAOYSA-N;
+MW          175.275;      // g/mol [origin=calculated method=formula-sum]
+Tc          829.68;      // K   [origin=predictive method=joback]
+Pc          25.820;      // bar [origin=predictive method=joback]
+omega       0.5478;      // -   [origin=predictive method=lee-kesler]
+Tb          596.30;      // K   [origin=predictive method=joback]
+HvapTb      51235.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-190.919 1.7871 -0.0016894 6.631e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 3; } { group C; count 1; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(1-adamantyl)ethanenitrile" "2-(adamantan-1-yl)acetonitrile" "2-adamantanylethanenitrile" "tricyclo(3.3.1.13,7)decane-1-acetonitrile" "tricyclo[3.3.1.13,7]decane-1-acetonitrile" "agn-pc-04rhpk" "(adamant-1-yl)acetonitrile" "2-(1-adamantyl)acetonitrile" "ambap16269-13-9" "tricyclo[3.3.1.1~3,7~]dec-1-ylacetonitrile" "1-adamantaneacetonitrile(8ci);1-(cyanomethyl)adamantane;1-adamantylacetonitrile;" );
+gibbsFormation
+{
+    dHf_298   81010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     405.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=340290.0
+    phase     gas;
+}

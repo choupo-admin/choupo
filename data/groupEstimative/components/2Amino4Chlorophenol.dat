@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-amino-4-chlorophenol  (C6H6ClNO, CAS 95-85-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Amino4Chlorophenol;
+formula     C6H6ClNO;
+CAS         95-85-2;
+InChIKey    SWFNPENEBHAHEB-UHFFFAOYSA-N;
+MW          143.57;      // g/mol [origin=calculated method=formula-sum]
+Tc          810.40;      // K   [origin=predictive method=joback]
+Pc          58.361;      // bar [origin=predictive method=joback]
+omega       0.6728;      // -   [origin=predictive method=lee-kesler]
+Tb          559.12;      // K   [origin=predictive method=joback]
+HvapTb      59928.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.71 0.6587 -0.00058692 2.139e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACOH; count 1; } { group ACNH2; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group OH_phenol; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-azanyl-4-chloranyl-phenol" "5-chloro-2-hydroxyaniline" "fouramine py" "phenol, 2-amino-4-chloro-" "4-chloro-2-aminophenol" "p-chloro-o-aminophenol" "2-hydroxy-5-chloroaniline" "c.i. oxidation base 18" "2-amino-4-chloro-phenol" "4-chloro-2-amino phenol" "5471-76-1 (hydrochloride)" "2-amino-4-chlorophenol, pract" );
+gibbsFormation
+{
+    dHf_298   -101370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     388.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=2320.0
+    phase     gas;
+}

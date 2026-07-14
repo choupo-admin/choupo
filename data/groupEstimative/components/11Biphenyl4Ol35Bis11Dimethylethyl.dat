@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: [1,1'-biphenyl]-4-ol, 3,5-bis(1,1-dimethylethyl)-  (C20H26O, CAS 2668-47-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Biphenyl4Ol35Bis11Dimethylethyl;
+formula     C20H26O;
+CAS         2668-47-5;
+InChIKey    JIEWQZNTUPWNMX-UHFFFAOYSA-N;
+MW          282.427;      // g/mol [origin=calculated method=formula-sum]
+Tc          1041.29;      // K   [origin=predictive method=joback]
+Pc          18.595;      // bar [origin=predictive method=joback]
+omega       0.7803;      // -   [origin=predictive method=lee-kesler]
+Tb          794.68;      // K   [origin=predictive method=joback]
+HvapTb      76412.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-112.37 2.03332 -0.00159248 5.049e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group C; count 2; } { group ACH; count 7; } { group AC; count 4; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group C; count 2; } { group dCH_ring; count 7; } { group dC_ring; count 5; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6-ditert-butyl-4-phenyl-phenol" "3,5-di-tert-butylbiphenyl-4-ol" "2,6-di-tert-butyl-4-phenylphenol" "2,6-bis(1,1-dimethylethyl)-4-phenylphenol" "(1,1'-biphenyl)-4-ol, 3,5-bis(1,1-dimethylethyl)-" "2,6-ditert-butyl-4-phenylphenol" "2,6-bis(tert-butyl)-4-phenylphenol" );
+gibbsFormation
+{
+    dHf_298   -200820.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     658.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=174140.0
+    phase     gas;
+}

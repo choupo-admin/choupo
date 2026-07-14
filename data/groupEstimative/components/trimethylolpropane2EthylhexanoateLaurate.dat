@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trimethylolpropane 2-ethylhexanoate laurate  (C23H48O7, CAS 71077-02-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trimethylolpropane2EthylhexanoateLaurate;
+formula     C23H48O7;
+CAS         71077-02-6;
+InChIKey    YRDUUJLNRKMQSN-UHFFFAOYSA-N;
+MW          436.63;      // g/mol [origin=calculated method=formula-sum]
+Tc          1748.29;      // K   [origin=predictive method=joback]
+Pc          10.194;      // bar [origin=predictive method=joback]
+omega       0.2331;      // -   [origin=predictive method=lee-kesler]
+Tb          1295.32;      // K   [origin=predictive method=joback]
+HvapTb      150969.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (85.326 1.99186 -0.0006406 -8.75e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 16; } { group CH; count 2; } { group OH; count 3; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 16; } { group CH; count 2; } { group OH; count 3; } { group COOH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dodecanoic acid;2-ethylhexanoic acid;propane-1,2,3-triol" "dodecanoic acid, mixed esters with 2-ethylhexanoic acid and trimethylolpropane" "trimethylolpropane, triesters with 2-ethylhexanoic acid and dodecanoic acid" "dodecanoic acid; 2-ethylhexanoic acid; glycerol" "dodecanoic acid; 2-ethylhexanoic acid; propane-1,2,3-triol" );
+gibbsFormation
+{
+    dHf_298   -1909080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1507.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1169900.0
+    phase     gas;
+}

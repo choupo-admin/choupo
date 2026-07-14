@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-aminononadecane  (C19H41N, CAS 14130-05-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Aminononadecane;
+formula     C19H41N;
+CAS         14130-05-3;
+InChIKey    INAMEDPXUAWNKL-UHFFFAOYSA-N;
+MW          283.544;      // g/mol [origin=calculated method=formula-sum]
+Tc          876.97;      // K   [origin=predictive method=joback]
+Pc          11.223;      // bar [origin=predictive method=joback]
+omega       0.9208;      // -   [origin=predictive method=lee-kesler]
+Tb          706.85;      // K   [origin=predictive method=joback]
+HvapTb      68529.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.892 1.87072 -0.0010532 2.259e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 17; } { group CH2NH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 18; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "nonadecan-1-amine" "n-nonadecylamine" "nonadecylamine" "1-nonadecanamine" "amines, c16-22-alkyl" "(c16-c22)alkylamine" "nonadecylamine(6ci,7ci,8ci);1-nonadecylamine;" );
+gibbsFormation
+{
+    dHf_298   -401700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     947.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=175550.0
+    phase     gas;
+}

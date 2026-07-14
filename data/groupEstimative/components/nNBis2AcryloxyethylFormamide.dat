@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-bis(2-acryloxyethyl)formamide  (C11H15NO5, CAS 66028-30-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C11H15NO5 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        nNBis2AcryloxyethylFormamide;
+formula     C11H15NO5;
+CAS         66028-30-6;
+InChIKey    MUNQTANGTJVMDW-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          241.243;      // g/mol [origin=calculated method=formula-sum]
+Tc          726.87;      // K   [origin=predictive method=joback]
+Pc          21.877;      // bar [origin=predictive method=joback]
+omega       0.8111;      // -   [origin=predictive method=lee-kesler]
+Tb          549.94;      // K   [origin=predictive method=joback]
+HvapTb      53224.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.534 1.0312 -0.0006968 1.744e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2=CH; count 2; } { group CONCH3CH2; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group dCH2; count 2; } { group dCH; count 2; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[methanoyl(2-prop-2-enoyloxyethyl)amino]ethyl prop-2-enoate" "(formylimino)di-2,1-ethanediyl acrylate" "2-propenoic acid, 1,1'-((formylimino)di-2,1-ethanediyl) ester" "2-propenoic acid, 1,1'-[(formylimino)di-2,1-ethanediyl] ester" "(formylimino)di-2,1-ethanediyl diacrylate" "(formylimino)diethane-2,1-diyl bisprop-2-enoate" "2-propenoic acid, (formylimino)di-2,1-ethanediyl ester" "2-[formyl(2-prop-2-enoyloxyethyl)amino]ethyl prop-2-enoate" );
+gibbsFormation
+{
+    dHf_298   -510090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     774.78;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-248580.0
+    phase     gas;
+}

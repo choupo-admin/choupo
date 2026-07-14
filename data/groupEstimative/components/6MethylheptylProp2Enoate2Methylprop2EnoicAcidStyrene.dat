@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-methylheptyl prop-2-enoate; 2-methylprop-2-enoic acid; styrene  (C23H34O4, CAS 66251-45-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6MethylheptylProp2Enoate2Methylprop2EnoicAcidStyrene;
+formula     C23H34O4;
+CAS         66251-45-4;
+InChIKey    WAVAIRZAEWOAJL-UHFFFAOYSA-N;
+MW          374.521;      // g/mol [origin=calculated method=formula-sum]
+Tc          1169.41;      // K   [origin=predictive method=joback]
+Pc          10.835;      // bar [origin=predictive method=joback]
+omega       0.9600;      // -   [origin=predictive method=lee-kesler]
+Tb          948.53;      // K   [origin=predictive method=joback]
+HvapTb      91909.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (49.375 1.63936 -0.0004812 -1.22e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group CH2=CH; count 2; } { group CH2=C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 1; } { group dCH2; count 3; } { group dCH; count 2; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethenylbenzene;6-methylheptyl prop-2-enoate;2-methylprop-2-enoic acid" "ethenylbenzene, 2-propenoic acid, 2-propenoic acid, isooctyl ester polymer" );
+gibbsFormation
+{
+    dHf_298   -811090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1237.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-356080.0
+    phase     gas;
+}

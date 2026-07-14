@@ -1,0 +1,2 @@
+componentMolarFlows { phenol 0.2 kmol/h; chlorophenol 0.9 kmol/h; HCl 0.9 kmol/h; Cl2 0.1 kmol/h; }
+T 353 K;  P 101325 Pa;

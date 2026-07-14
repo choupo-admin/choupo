@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-bromopentan-1-ol  (C5H11BrO, CAS 34626-51-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Bromopentan1Ol;
+formula     C5H11BrO;
+CAS         34626-51-2;
+InChIKey    WJVQJXVMLRGNGA-UHFFFAOYSA-N;
+MW          167.046;      // g/mol [origin=calculated method=formula-sum]
+Tc          650.21;      // K   [origin=predictive method=joback]
+Pc          42.330;      // bar [origin=predictive method=joback]
+omega       0.8635;      // -   [origin=predictive method=lee-kesler]
+Tb          472.34;      // K   [origin=predictive method=joback]
+HvapTb      49838.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.825 0.551 -0.00035 9.22e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group OH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 5; } { group Br; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-bromanylpentan-1-ol" "5-bromo-1-pentanol" "1-pentanol, 5-bromo-" "5-bromo-pentan-1-ol" "5-bromopentanol;5-bromo-1-pentano" "5-bromo-1-pentanol;5-bromopentanol;" );
+gibbsFormation
+{
+    dHf_298   -272430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     452.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-131280.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,6-dibromo-2-naphthol  (C10H6Br2O, CAS 16239-18-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        16Dibromo2Naphthol;
+formula     C10H6Br2O;
+CAS         16239-18-2;
+InChIKey    VKESFYLPKHQOOA-UHFFFAOYSA-N;
+MW          301.965;      // g/mol [origin=calculated method=formula-sum]
+Tc          975.06;      // K   [origin=predictive method=joback]
+Pc          55.278;      // bar [origin=predictive method=joback]
+omega       0.8765;      // -   [origin=predictive method=lee-kesler]
+Tb          696.96;      // K   [origin=predictive method=joback]
+HvapTb      68978.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-35.49 0.9832 -0.0009532 3.659e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 4; } { group ACOH; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 5; } { group dC_ring; count 5; } { group Br; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,6-bis(bromanyl)naphthalen-2-ol" "1,6-dibromonaphthalen-2-ol" "2-naphthalenol, 1,6-dibromo-" "2-naphthol, 1,6-dibromo-" "1,6-dibromo-beta-naphthol" "2-naphthol,6-dibromo-" "2-naphthalenol,6-dibromo-" "1,6-dibromo-naphthalen-2-ol" "1,6-dibromo-.beta.-naphthol" "vkesfylpkhqooa-uhfffaoysa-" "1,6-dibromo-2-hydroxynaphthalene" );
+gibbsFormation
+{
+    dHf_298   30280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     446.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=107140.0
+    phase     gas;
+}

@@ -1,0 +1,34 @@
+/*---------------------------------------------------------------------------*\
+  The SAME esterification as cstr04, with a DIDACTIC twist: the activation
+  energy is raised to 100 kJ/mol and the pre-exponential retuned so that
+  k(350 K) is unchanged.  A steeper Arrhenius means a steeper "heat generated"
+  curve G(T) -- steep enough to overtake the "heat removed" line R(T) and cross
+  it back.  That is the whole mechanism of STEADY-STATE MULTIPLICITY, and it is
+  worth seeing on a reaction whose thermochemistry is real.
+
+      AcOH + EtOH  ->  EtOAc + H2O          (mass conserving, 106.121 g/mol)
+
+  The kinetics here are a teaching variant, NOT a measured rate law: they are
+  chosen to place the ignition window inside a temperature range the liquid
+  thermo can be trusted over.
+\*---------------------------------------------------------------------------*/
+
+esterification_etac
+{
+    limitingReactant   ethanol;
+
+    stoichiometry
+    (
+        { component aceticAcid;    nu -1;  order 0; }
+        { component ethanol;       nu -1;  order 1; }
+        { component ethylAcetate;  nu  1;  order 0; }
+        { component water;         nu  1;  order 0; }
+    );
+
+    kinetics
+    {
+        type   Arrhenius;
+        A      3.0e12;              // retuned so k(350 K) matches cstr04
+        Ea     1.0e5;               // J/mol -- the didactic steepening
+    }
+}

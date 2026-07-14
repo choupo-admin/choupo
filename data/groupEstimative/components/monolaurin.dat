@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: monolaurin  (C15H30O4, CAS 142-18-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        monolaurin;
+formula     C15H30O4;
+CAS         142-18-7;
+InChIKey    ARIWANIATODDMH-UHFFFAOYSA-N;
+MW          274.401;      // g/mol [origin=calculated method=formula-sum]
+Tc          961.97;      // K   [origin=predictive method=joback]
+Pc          16.511;      // bar [origin=predictive method=joback]
+omega       1.4102;      // -   [origin=predictive method=lee-kesler]
+Tb          784.94;      // K   [origin=predictive method=joback]
+HvapTb      89361.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.562 1.44792 -0.0007616 1.293e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 11; } { group CH; count 1; } { group OH; count 2; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 12; } { group CH; count 1; } { group OH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-bis(oxidanyl)propyl dodecanoate" "1-monolaurin" "lauricidin" "2,3-dihydroxypropyl dodecanoate" "glyceryl monolaurate" "laurin, 1-mono-" "1-monolauroyl-rac-glycerol" "dodecanoic acid, 2,3-dihydroxypropyl ester" "1-glyceryl laurate" "glycerol 1-laurate" "glycerol monolaurate" "2,3-dihydroxypropyl laurate" );
+gibbsFormation
+{
+    dHf_298   -979950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     883.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-511030.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: plexol b  (C13H21NO, CAS 97-43-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        plexolB;
+formula     C13H21NO;
+CAS         97-43-8;
+InChIKey    AOLMGCHTFOOEDQ-UHFFFAOYSA-N;
+MW          207.317;      // g/mol [origin=calculated method=formula-sum]
+Tc          836.39;      // K   [origin=predictive method=joback]
+Pc          25.405;      // bar [origin=predictive method=joback]
+omega       0.7243;      // -   [origin=predictive method=lee-kesler]
+Tb          618.53;      // K   [origin=predictive method=joback]
+HvapTb      61231.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-72.619 1.5048 -0.00118832 3.865e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group C; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group ACOH; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 1; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-tert-butyl-2-[(dimethylamino)methyl]phenol" "o-cresol, 4-tert-butyl-" "a-(dimethylamino)-" "2-((dimethylamino)methyl)-4-(1,1-dimethylethyl)phenol" "phenol, 2-((dimethylamino)methyl)-4-(1,1-dimethylethyl)-" "phenol, 2-[(dimethylamino)methyl]-4-(1,1-dimethylethyl)-" "2-[(dimethylamino)methyl]-4-(1,1-dimethylethyl)phenol" "4-tert-butyl-2-(dimethylaminomethyl)phenol" "o-cresol, 4-tert-butyl-.alpha.-(dimethylamino)-" "o-cresol, 4-tert-butyl-alpha-(dimethylamino)- (8ci)" );
+gibbsFormation
+{
+    dHf_298   -205120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     553.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=120360.0
+    phase     gas;
+}

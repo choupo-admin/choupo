@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methanol, tri-p-tolyl-  (C22H22O, CAS 3247-00-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methanolTriPTolyl;
+formula     C22H22O;
+CAS         3247-00-5;
+InChIKey    DNWQXZDDISHGRM-UHFFFAOYSA-N;
+MW          302.417;      // g/mol [origin=calculated method=formula-sum]
+Tc          1128.20;      // K   [origin=predictive method=joback]
+Pc          19.389;      // bar [origin=predictive method=joback]
+omega       1.0843;      // -   [origin=predictive method=lee-kesler]
+Tb          886.89;      // K   [origin=predictive method=joback]
+HvapTb      88763.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-95.11 1.83846 -0.00126768 3.341e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group ACH; count 12; } { group AC; count 3; } { group ACCH3; count 3; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tris(4-methylphenyl)methanol" ""4,4',4""-trimethyltrityl alcohol"" "4,4',4''-trimethyltrityl alcohol" "benzenemethanol, 4-methyl-.alpha.,.alpha.-bis(4-methylphenyl)-" "tri(p-tolyl)methanol" "tris(4-methylphenyl)methan-1-ol" "4,4''-trimethyltriphenylmethanol" "benzenemethanol,.alpha.-bis(4-methylphenyl)-" "benzenemethanol,4-methyl-a,a-bis(4-methylphenyl)-" );
+gibbsFormation
+{
+    dHf_298   16790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     687.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=308720.0
+    phase     gas;
+}

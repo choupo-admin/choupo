@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: xanthorrhizol  (C15H22O, CAS 30199-26-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        xanthorrhizol;
+formula     C15H22O;
+CAS         30199-26-9;
+InChIKey    FKWGCEDRLNNZOZ-GFCCVEGCSA-N;
+MW          218.34;      // g/mol [origin=calculated method=formula-sum]
+Tc          876.64;      // K   [origin=predictive method=joback]
+Pc          22.083;      // bar [origin=predictive method=joback]
+omega       0.7623;      // -   [origin=predictive method=lee-kesler]
+Tb          658.68;      // K   [origin=predictive method=joback]
+HvapTb      64586.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-54.828 1.47088 -0.00110202 3.497e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH=C; count 1; } { group ACH; count 3; } { group ACCH3; count 1; } { group ACCH; count 1; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-5-[(2r)-6-methylhept-5-en-2-yl]phenol" "(r)-5-(1,5-dimethyl-4-hexenyl)-o-cresol" "(-)-5-(1,5-dimethyl-4-hexenyl)-2-methylphenol" "(r)-5-(1-5-dimethyl-4-hexenyl)-2-methylphenol" "phenol, 5-(1,5-dimethyl-4-hexenyl)-2-methyl-, (-)-" "xanthorrizol" "phenol, 5-[(1r)-1,5-dimethyl-4-hexenyl]-2-methyl-" );
+gibbsFormation
+{
+    dHf_298   -203030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     633.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=92810.0
+    phase     gas;
+}

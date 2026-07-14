@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propene, 3,3,3-trifluoro-2-methyl-  (C4H5F3, CAS 374-00-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        propene333Trifluoro2Methyl;
+formula     C4H5F3;
+CAS         374-00-5;
+InChIKey    VJOAJCOCCYFXPR-UHFFFAOYSA-N;
+MW          110.078;      // g/mol [origin=calculated method=formula-sum]
+Tc          432.61;      // K   [origin=predictive method=joback]
+Pc          35.814;      // bar [origin=predictive method=joback]
+omega       0.2368;      // -   [origin=predictive method=lee-kesler]
+Tb          282.26;      // K   [origin=predictive method=joback]
+HvapTb      20161.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.63 0.52492 -0.00044 1.443e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2=C; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3,3-tris(fluoranyl)-2-methyl-prop-1-ene" "2-(trifluoromethyl)propene" "1-propene, 3,3,3-trifluoro-2-methyl-" "3,3,3-trifluoro-2-methylprop-1-ene" "snplahjptadtaetp@" "2-methyl-3,3,3-trifluoroprop-1-ene" "3,3,3-trifluoro-2-methyl-1-propene" "1-propene,3,3,3-trifluoro-2-methyl-" "propene,3,3,3-trifluoro-2-methyl- (6ci,7ci,8ci); 2-methyl-3,3,3-trifluoropropene;3,3,3-trifluoro-2-methyl-1-propene; 3,3,3-trifluoro-2-methylpropene" );
+gibbsFormation
+{
+    dHf_298   -607330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     359.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-519500.0
+    phase     gas;
+}

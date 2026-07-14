@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Equilibrium reactor (REquil): SMR + WGS to SIMULTANEOUS equilibrium at 1100 K";
+verbosity     3;

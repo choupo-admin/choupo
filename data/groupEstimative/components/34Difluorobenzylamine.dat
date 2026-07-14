@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,4-difluorobenzylamine  (C7H7F2N, CAS 72235-53-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        34Difluorobenzylamine;
+formula     C7H7F2N;
+CAS         72235-53-1;
+InChIKey    PHLZUDXEBCQHKM-UHFFFAOYSA-N;
+MW          143.136;      // g/mol [origin=calculated method=formula-sum]
+Tc          673.02;      // K   [origin=predictive method=joback]
+Pc          38.010;      // bar [origin=predictive method=joback]
+omega       0.5319;      // -   [origin=predictive method=lee-kesler]
+Tb          467.47;      // K   [origin=predictive method=joback]
+HvapTb      43783.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.891 0.5564 -0.00033032 7e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group CH2NH2; count 1; } { group ACF; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[3,4-bis(fluoranyl)phenyl]methanamine" "(3,4-difluorophenyl)methanamine" "3, 4-difluorobenzylamine" "3,4-difluorobenzyl amine" "(3,4-difluorophenyl)methylamine" "benzenemethanamine, 3,4-difluoro-" "z1r cf df" "phlzudxebcqhkm-uhfffaoysa-" "n621" "1-(3,4-difluorophenyl)methanamine" "(3,4-difluorophenyl)methanamine;3,4-difluorobenzenemethanamine" "(3,4-difluorophenyl)methylazanium;(3,4-difluorophenyl)methanamine;" );
+gibbsFormation
+{
+    dHf_298   -332650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     424.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-221960.0
+    phase     gas;
+}

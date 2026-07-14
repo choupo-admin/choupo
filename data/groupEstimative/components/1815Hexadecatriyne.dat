@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,8,15-hexadecatriyne  (C16H22, CAS 4580-43-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1815Hexadecatriyne;
+formula     C16H22;
+CAS         4580-43-2;
+InChIKey    FQMIMRQHPBBFQF-UHFFFAOYSA-N;
+MW          214.352;      // g/mol [origin=calculated method=formula-sum]
+Tc          751.57;      // K   [origin=predictive method=joback]
+Pc          18.937;      // bar [origin=predictive method=joback]
+omega       0.5531;      // -   [origin=predictive method=lee-kesler]
+Tb          554.92;      // K   [origin=predictive method=joback]
+HvapTb      53078.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (33.46 1.1862 -0.00074632 1.9496e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group CH_C; count 2; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 10; } { group tCH; count 2; } { group tC; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexadeca-1,8,15-triyne" );
+gibbsFormation
+{
+    dHf_298   482530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     689.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=732780.0
+    phase     gas;
+}

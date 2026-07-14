@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl octadec-9-enoate  (C22H42O2, CAS 142-77-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butylOctadec9Enoate;
+formula     C22H42O2;
+CAS         142-77-8;
+InChIKey    WIBFFTLQMKKBLZ-UHFFFAOYSA-N;
+MW          338.576;      // g/mol [origin=calculated method=formula-sum]
+Tc          941.01;      // K   [origin=predictive method=joback]
+Pc          9.335;      // bar [origin=predictive method=joback]
+omega       0.8585;      // -   [origin=predictive method=lee-kesler]
+Tb          765.34;      // K   [origin=predictive method=joback]
+HvapTb      71931.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.883 2.05904 -0.0011622 2.409e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 16; } { group CH=CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 17; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oleic acid n-butyl ester" "9-octadecenoic acid,butyl ester, (9e)-" "9-octadecenoicacid, butyl ester, (e)- (9ci); elaidic acid, butyl ester (6ci,8ci); butylelaidate" "kesscoflex bo;plasthall 914;wilmar butyloleate;witcizer 100;witcizer 101;n-butyl oleate;9-octadecenoicacid (z)-, butyl ester;oleic acid, butyl ester (6ci,7ci,8ci);advaplast 42;butyl (z)-9-octadecenoate;butyl cis-9-octadecenoate;hallco c503;kemester 4000;kessco 554;sinochem bot;" );
+gibbsFormation
+{
+    dHf_298   -697470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1057.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-95790.0
+    phase     gas;
+}

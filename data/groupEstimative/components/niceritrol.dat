@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: niceritrol  (C29H24N4O8, CAS 5868-05-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        niceritrol;
+formula     C29H24N4O8;
+CAS         5868-05-3;
+InChIKey    KUEUWHJGRZKESU-UHFFFAOYSA-N;
+MW          556.531;      // g/mol [origin=calculated method=formula-sum]
+Tc          1731.94;      // K   [origin=predictive method=joback]
+Pc          14.403;      // bar [origin=predictive method=joback]
+omega       1.2969;      // -   [origin=predictive method=lee-kesler]
+Tb          1414.29;      // K   [origin=predictive method=joback]
+HvapTb      142424.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-41.686 2.48484 -0.00150904 2.866e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group C; count 1; } { group C5H4N; count 4; } { group COO; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group C; count 1; } { group dCH_ring; count 16; } { group dC_ring; count 4; } { group COO; count 4; } { group Nd_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[3-pyridin-3-ylcarbonyloxy-2,2-bis(pyridin-3-ylcarbonyloxymethyl)propyl] pyridine-3-carboxylate" "perycit" "cardiolipol" "bufor" "pentaerythritol tetranicotinate" "sk 1 (pharmaceutical)" "niceritrolum [inn-latin]" "pentaerithritol tetranicotinate" "niceritrol [inn:ban:dcf:jan]" "3-pyridinecarboxylic acid, 2,2-bis(((3-pyridinylcarbonyl)oxy)methyl)-1,3-propanediyl ester" "nicotinic acid, neopentanetetrayl ester" "pentaerythritoltetranicotinate" );
+gibbsFormation
+{
+    dHf_298   -842480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1076.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-287500.0
+    phase     gas;
+}

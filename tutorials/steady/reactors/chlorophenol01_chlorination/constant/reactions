@@ -1,0 +1,14 @@
+/*--- Direct chlorination of phenol (the classic route):
+        C6H5OH + Cl2  ->  C6H4ClOH + HCl        (exothermic)
+      Kinetically controlled, essentially irreversible -> a conversion spec. ---*/
+chlorination
+{
+    stoichiometry
+    (
+        { component phenol;       nu -1; }
+        { component Cl2;          nu -1; }
+        { component chlorophenol; nu  1; }
+        { component HCl;          nu  1; }
+    );
+    limitingReactant  Cl2;
+}

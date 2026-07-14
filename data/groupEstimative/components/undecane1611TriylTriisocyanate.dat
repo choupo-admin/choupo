@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: undecane-1,6,11-triyl triisocyanate  (C14H21N3O3, CAS 70198-24-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        undecane1611TriylTriisocyanate;
+formula     C14H21N3O3;
+CAS         70198-24-2;
+InChIKey    VAGFVLBAZGSOAC-UHFFFAOYSA-N;
+MW          279.34;      // g/mol [origin=calculated method=formula-sum]
+Tc          905.78;      // K   [origin=predictive method=joback]
+Pc          18.388;      // bar [origin=predictive method=joback]
+omega       1.1586;      // -   [origin=predictive method=lee-kesler]
+Tb          719.49;      // K   [origin=predictive method=joback]
+HvapTb      74966.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH2; count 10; } { group CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:3
+    joback ( { group CH2; count 10; } { group CH; count 1; } { group dCd; count 3; } { group dO_oth; count 3; } { group Nd; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,6,11-triisocyanatoundecane" "undecane, 1,6,11-triisocyanato-" );
+// formation datum unavailable (element entropy missing): dHf_298=-353800.0 dGf_298=None

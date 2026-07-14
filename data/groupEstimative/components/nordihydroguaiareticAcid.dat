@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nordihydroguaiaretic acid  (C18H22O4, CAS 500-38-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nordihydroguaiareticAcid;
+formula     C18H22O4;
+CAS         500-38-9;
+InChIKey    HCZKYJDFEPMADG-UHFFFAOYSA-N;
+MW          302.37;      // g/mol [origin=calculated method=formula-sum]
+Tc          1243.12;      // K   [origin=predictive method=joback]
+Pc          35.771;      // bar [origin=predictive method=joback]
+omega       1.6610;      // -   [origin=predictive method=lee-kesler]
+Tb          986.40;      // K   [origin=predictive method=joback]
+HvapTb      111494.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-120.328 2.18624 -0.00204964 7.854e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 2; } { group ACH; count 6; } { group ACCH2; count 2; } { group ACOH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 2; } { group dCH_ring; count 6; } { group dC_ring; count 6; } { group OH_phenol; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[4-[3,4-bis(oxidanyl)phenyl]-2,3-dimethyl-butyl]benzene-1,2-diol" "ndga" "dihydronorguaiaretic acid" "norhydroguaiaretic acid" "nordihydroguairaretic acid" "norguaiaretic acid, dihydro-" "dinorguaiaretic acid, dihydro-" "4,4'-(2,3-dimethyltetramethylene)dipyrocatechol" "ndga, larrea divaricata" "1,2-benzenediol, 4,4'-(2,3-dimethyl-1,4-butanediyl)bis-" "nordihydroguaiaretic acid (unspecified)" "2,3-bis(3,4-dihydroxyphenylmethyl)butane" );
+gibbsFormation
+{
+    dHf_298   -661590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     731.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-297860.0
+    phase     gas;
+}

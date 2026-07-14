@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-dimethylamino-2,2-dimethyl-1-propanol  (C7H17NO, CAS 19059-68-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Dimethylamino22Dimethyl1Propanol;
+formula     C7H17NO;
+CAS         19059-68-8;
+InChIKey    PYEWZDAEJUUIJX-UHFFFAOYSA-N;
+MW          131.219;      // g/mol [origin=calculated method=formula-sum]
+Tc          629.68;      // K   [origin=predictive method=joback]
+Pc          31.526;      // bar [origin=predictive method=joback]
+omega       0.7705;      // -   [origin=predictive method=lee-kesler]
+Tb          461.15;      // K   [origin=predictive method=joback]
+HvapTb      48602.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-33.348 0.95258 -0.0006718 1.912e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group OH; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group C; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(dimethylamino)-2,2-dimethyl-propan-1-ol" "3-(dimethylamino)-2,2-dimethylpropan-1-ol" "1-propanol, 3-(dimethylamino)-2,2-dimethyl-" "dimethylaminoneopentanol" "1-propanol,2-dimethyl-" "pyewzdaejuuijx-uhfffaoysa-" "3-dimethylamino-2,2-dimethylpropan-1-ol" "1-propanol,3-(dimethylamino)-2,2-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -281260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     456.76;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-15140.0
+    phase     gas;
+}

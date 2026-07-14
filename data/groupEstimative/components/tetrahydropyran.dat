@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrahydropyran  (C5H10O, CAS 142-68-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrahydropyran;
+formula     C5H10O;
+CAS         142-68-7;
+InChIKey    DHXVGJBLRPWPCS-UHFFFAOYSA-N;
+MW          86.134;      // g/mol [origin=calculated method=formula-sum]
+Tc          572.25;      // K   [origin=predictive method=joback]
+Pc          46.340;      // bar [origin=predictive method=joback]
+omega       0.2420;      // -   [origin=predictive method=lee-kesler]
+Tb          365.17;      // K   [origin=predictive method=joback]
+HvapTb      31972.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-55.88 0.6244 -0.0003707 7.74e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 5; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oxane" "oxacyclohexane" "tetrahydro-2h-pyran" "pentamethylene oxide" "2h-pyran, tetrahydro-" "tetrahydropyrane" "pye" "tetrahydro-pyran" "2h-tetrahydropyran" "oxane (van)" );
+gibbsFormation
+{
+    dHf_298   -203870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     311.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-62740.0
+    phase     gas;
+}

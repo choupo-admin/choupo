@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2-bromopropyl)benzene  (C9H11Br, CAS 2114-39-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2BromopropylBenzene;
+formula     C9H11Br;
+CAS         2114-39-8;
+InChIKey    NVYOCAOZCSNIHR-UHFFFAOYSA-N;
+MW          199.091;      // g/mol [origin=calculated method=formula-sum]
+Tc          728.01;      // K   [origin=predictive method=joback]
+Pc          35.685;      // bar [origin=predictive method=joback]
+omega       0.4289;      // -   [origin=predictive method=lee-kesler]
+Tb          497.92;      // K   [origin=predictive method=joback]
+HvapTb      43951.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.689 0.82402 -0.0005716 1.55e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromanylpropylbenzene" "2-bromo-1-phenylpropane" "2-bromopropylbenzene" "benzene, (2-bromopropyl)-" "nvyocaozcsnihr-uhfffaoysa-" "(2-bromopropyl)benzene;(?a'a a'a currency)-2-bromo-1-phenylpropane;1-bromo-1-methyl-2-phenylethane; 1-phenyl-2-bromopropane;2-bromo-1-phenylpropane" );
+gibbsFormation
+{
+    dHf_298   28490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     441.67;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=149190.0
+    phase     gas;
+}

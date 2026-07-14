@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 2467027  (C19H16O, CAS 27343-29-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn2467027;
+formula     C19H16O;
+CAS         27343-29-9;
+InChIKey    CPSGQBYDXCPIHQ-UHFFFAOYSA-N;
+MW          260.336;      // g/mol [origin=calculated method=formula-sum]
+Tc          1065.51;      // K   [origin=predictive method=joback]
+Pc          23.611;      // bar [origin=predictive method=joback]
+omega       0.8194;      // -   [origin=predictive method=lee-kesler]
+Tb          802.38;      // K   [origin=predictive method=joback]
+HvapTb      70733.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-78.85 1.48402 -0.00103148 2.876e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 7; } { group AC; count 5; } { group ACCH3; count 1; } { group ACCH2; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 7; } { group dC_ring; count 7; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "11-methyl-3,4-dihydro-2h-chrysen-1-one" "1(2h)-chrysenone, 3,4-dihydro-11-methyl-" "1,2,3,4-tetrahydro-11-methylchrysen-1-one" "11-methyl-1-oxo-1,2,3,4-tetrahydrochrysene" "chrysene-11-methyl-1,2,3,4-tetrahydro-1-one" "chrysen-1-one, 1,2,3,4-tetrahydro-11-methyl-" "1(2h)-chrysenone,3,4-dihydro-11-methyl-" "11-methyl-1,2,3,4-tetrahydrochrysen-1-one" "1,2,3,4-tetrahydro-11-methylchrysen-1-one;11-methyl-1-oxo-1,2,3,4-tetrahydrochrysene; chrysene-11-methyl-1,2,3,4-tetrahydro-1-one" );
+gibbsFormation
+{
+    dHf_298   86580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     440.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=330060.0
+    phase     gas;
+}

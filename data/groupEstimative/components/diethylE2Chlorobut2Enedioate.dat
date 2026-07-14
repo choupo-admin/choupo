@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethyl (e)-2-chlorobut-2-enedioate  (C8H11ClO4, CAS 626-10-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diethylE2Chlorobut2Enedioate;
+formula     C8H11ClO4;
+CAS         626-10-8;
+InChIKey    VOEQTGMCAHZUNJ-UHFFFAOYSA-N;
+MW          206.622;      // g/mol [origin=calculated method=formula-sum]
+Tc          734.97;      // K   [origin=predictive method=joback]
+Pc          26.137;      // bar [origin=predictive method=joback]
+omega       0.7010;      // -   [origin=predictive method=lee-kesler]
+Tb          540.55;      // K   [origin=predictive method=joback]
+HvapTb      52639.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (45.452 0.68094 -0.0003287 2.8e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH=C; count 1; } { group Cl_C=C_; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group Cl; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "diethyl 2-chloranylbut-2-enedioate" "diethyl 2-chlorobut-2-enedioate" );
+gibbsFormation
+{
+    dHf_298   -751320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     592.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-544520.0
+    phase     gas;
+}

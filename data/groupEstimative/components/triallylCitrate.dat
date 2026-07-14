@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triallyl citrate  (C15H20O7, CAS 6299-73-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        triallylCitrate;
+formula     C15H20O7;
+CAS         6299-73-6;
+InChIKey    PLCFYBDYBCOLSP-UHFFFAOYSA-N;
+MW          312.318;      // g/mol [origin=calculated method=formula-sum]
+Tc          984.91;      // K   [origin=predictive method=joback]
+Pc          17.275;      // bar [origin=predictive method=joback]
+omega       1.3268;      // -   [origin=predictive method=lee-kesler]
+Tb          796.45;      // K   [origin=predictive method=joback]
+HvapTb      84578.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (37.325 1.3642 -0.0007793 1.299e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group C; count 1; } { group CH2=CH; count 3; } { group OH; count 1; } { group CH2COO; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 5; } { group C; count 1; } { group dCH2; count 3; } { group dCH; count 3; } { group OH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tris(prop-2-enyl) 2-oxidanylpropane-1,2,3-tricarboxylate" "citric acid, triallyl ester" "1,2,3-propanetricarboxylic acid, 2-hydroxy-, tri-2-propenyl ester" "1,2,3-propanetricarboxylic acid, 2-hydroxy-, 1,2,3-tri-2-propen-1-yl ester" "citric acid triallyl ester" "triprop-2-en-1-yl 2-hydroxypropane-1,2,3-tricarboxylate" "tris(prop-2-enyl) 2-hydroxypropane-1,2,3-tricarboxylate" "1,3-propanetricarboxylic acid, 2-hydroxy-, tri-2-propenyl ester" "1,2,3-propanetricarboxylicacid, 2-hydroxy-, 1,2,3-tri-2-propen-1-yl ester" );
+gibbsFormation
+{
+    dHf_298   -1089460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     892.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-726150.0
+    phase     gas;
+}

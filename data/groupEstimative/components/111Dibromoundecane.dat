@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,11-dibromoundecane  (C11H22Br2, CAS 16696-65-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111Dibromoundecane;
+formula     C11H22Br2;
+CAS         16696-65-4;
+InChIKey    SIBVHGAPHVRHMJ-UHFFFAOYSA-N;
+MW          314.105;      // g/mol [origin=calculated method=formula-sum]
+Tc          772.67;      // K   [origin=predictive method=joback]
+Pc          21.918;      // bar [origin=predictive method=joback]
+omega       0.7986;      // -   [origin=predictive method=lee-kesler]
+Tb          583.60;      // K   [origin=predictive method=joback]
+HvapTb      52950.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.271 1.1252 -0.0007174 1.879e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 11; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 11; } { group Br; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,11-bis(bromanyl)undecane" "undecamethylene dibromide" "1,11-dibromo-undecane" "undecane, 1,11-dibromo-" );
+gibbsFormation
+{
+    dHf_298   -217710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     686.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=70380.0
+    phase     gas;
+}

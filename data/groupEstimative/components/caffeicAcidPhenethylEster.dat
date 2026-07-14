@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: caffeic acid phenethyl ester  (C17H16O4, CAS 104594-70-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        caffeicAcidPhenethylEster;
+formula     C17H16O4;
+CAS         104594-70-9;
+InChIKey    SWUARLUWKZWEBQ-VQHVLOKHSA-N;
+MW          284.311;      // g/mol [origin=calculated method=formula-sum]
+Tc          1114.23;      // K   [origin=predictive method=joback]
+Pc          29.763;      // bar [origin=predictive method=joback]
+omega       1.2610;      // -   [origin=predictive method=lee-kesler]
+Tb          865.54;      // K   [origin=predictive method=joback]
+HvapTb      91381.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-86.988 1.7354 -0.00146532 4.986e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH=CH; count 1; } { group ACH; count 8; } { group AC; count 1; } { group ACCH2; count 1; } { group ACOH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group OH_phenol; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-phenylethyl (e)-3-[3,4-bis(oxidanyl)phenyl]prop-2-enoate" "phenethyl caffeate" "cape" "capeee" "phenylethyl caffeate" "phenethyl 3-(3,4-dihydroxyphenyl)acrylate" "caffeic acid 2-phenylethyl ester" "caffeic acid phenethyl ester, synthetic" "2-phenylethyl 3-(3,4-dihydroxyphenyl)-2-propenoate" "2-phenylethyl (2e)-3-(3,4-dihydroxyphenyl)prop-2-enoate" "2-propenoic acid, 3-(3,4-dihydroxyphenyl)-, 2-phenylethyl ester" "qap" );
+gibbsFormation
+{
+    dHf_298   -475830.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     702.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-222310.0
+    phase     gas;
+}

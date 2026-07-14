@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclohexaneethanol, 1-hydroxy-5-methyl-2-(1-methylethyl)-  (C12H24O2, CAS 54280-90-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclohexaneethanol1Hydroxy5Methyl21Methylethyl;
+formula     C12H24O2;
+CAS         54280-90-9;
+InChIKey    PXRXEDWPGDGPQZ-UHFFFAOYSA-N;
+MW          200.322;      // g/mol [origin=calculated method=formula-sum]
+Tc          851.96;      // K   [origin=predictive method=joback]
+Pc          25.151;      // bar [origin=predictive method=joback]
+omega       1.2549;      // -   [origin=predictive method=lee-kesler]
+Tb          668.53;      // K   [origin=predictive method=joback]
+HvapTb      73936.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-102.838 1.57876 -0.0011958 4.019e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 3; } { group C; count 1; } { group OH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 2; } { group C_ring; count 1; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2-hydroxyethyl)-5-methyl-2-propan-2-yl-cyclohexan-1-ol" "1-hydroxy-2-(isopropyl)-5-methylcyclohexylethanol" "1-(2-hydroxyethyl)-5-methyl-2-propan-2-ylcyclohexan-1-ol" "1-(2-hydroxyethyl)-2-(1-methylethyl)-5-methyl-1-cyclohexanol" );
+gibbsFormation
+{
+    dHf_298   -571870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     669.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-222380.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-dimethylamino-1-propyne  (C5H9N, CAS 7223-38-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Dimethylamino1Propyne;
+formula     C5H9N;
+CAS         7223-38-3;
+InChIKey    ILBIXZPOMJFOJP-UHFFFAOYSA-N;
+MW          83.134;      // g/mol [origin=calculated method=formula-sum]
+Tc          490.35;      // K   [origin=predictive method=joback]
+Pc          41.516;      // bar [origin=predictive method=joback]
+omega       0.2476;      // -   [origin=predictive method=lee-kesler]
+Tb          316.56;      // K   [origin=predictive method=joback]
+HvapTb      28625.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (1.431 0.50884 -0.00035673 1.0409e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH3N; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethylprop-2-yn-1-amine" "n,n-dimethylpropargylamine" "2-propyn-1-amine, n,n-dimethyl-" "1-dimethylamino-2-propyne" "n,n-dimethyl-2-propynylamine" "dimethyl(prop-2-yn-1-yl)amine" "n,n-dimethyl-2-propyn-1-amine" "dimethylprop-2-ynylamine" "dimethyl(prop-2-ynyl)amine" "2-propynylamine,n,n-dimethyl- (6ci,7ci,8ci); 1-dimethylaminoprop-2-yne;3-(dimethylamino)-1-propyne; 3-(dimethylamino)propyne; 3-(n,n-dimethylamino)-1-propyne;3-(n,n-dimethylamino)propyne; n,n-dimethyl-2-propyn-1-amine;n,n-dimethyl-2-propynamine; n,n-dimethyl-2-propynylamine;n,n-dimethyl-n-(2-propynyl)amine; n,n-dimethylpropargylamine;propargyldimethylamine" );
+gibbsFormation
+{
+    dHf_298   212900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     336.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=325070.0
+    phase     gas;
+}

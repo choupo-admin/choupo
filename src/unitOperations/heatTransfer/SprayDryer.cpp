@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SprayDryer.H"
+#include "atomizer/Atomizer.H"
 #include "solver/NewtonRaphson.H"
 #include "streams/StreamMass.H"
 
@@ -64,6 +65,10 @@ int SprayDryer::solve(const DictPtr& dict,
     const scalar F_air  = airDict->lookupScalar("F", Dims::molarFlow);    // kmol/s
     const scalar T_air  = airDict->lookupScalar("T", Dims::temperature);
     const scalar P_air  = airDict->lookupScalarOrDefault("P", 101325.0);
+    // Feed liquid pressure -- the pump head a pressure nozzle atomises against
+    // (dP = P_feed - chamber).  Absent -> equals the chamber (dP=0 from the stream,
+    // so a pressure nozzle falls back to its `deltaP` override).
+    const scalar P_feed = feedDict->lookupScalarOrDefault("P", P_air);
 
     auto readComp = [&](const DictPtr& sd) -> sVector
     {
@@ -102,14 +107,44 @@ int SprayDryer::solve(const DictPtr& dict,
     //  they are knobs, not specs.
     // -------------------------------------------------------------------
     auto oper = dict->subDict("operation");
-    const scalar Nrpm  = oper->lookupScalarOrDefault("wheelSpeed", 10000.0);  // rpm
-    const scalar Ddisk = oper->lookupScalar("wheelDiameter", Dims::length);   // m
-    const scalar muL   = oper->lookupScalarOrDefault("liquidViscosity", 1.0e-3);
+    // Liquid viscosity for atomisation: the SOLUTION mu_L from the property layer
+    // (its mixing rule -> a concentrated/viscous feed gives COARSER droplets),
+    // when a liquidViscosity model is declared; else the operation knob (default
+    // water, byte-stable for cases without a transport model).
+    scalar muL = oper->lookupScalarOrDefault("liquidViscosity", 1.0e-3);
+    std::string muLSource = "operation.liquidViscosity knob (default water 1e-3; no liquidViscosity model)";
+    if (thermo.hasLiquidViscosity())
+    {
+        try
+        {
+            muL = thermo.viscosityLiquid(T_feed, zFeed);
+            muLSource = "property layer mu_L(T_feed, x_feed) -- SOLUTION viscosity via the mixing rule";
+        }
+        catch (const std::exception&) { /* keep the knob fallback */ }
+    }
     const scalar nRR   = oper->lookupScalarOrDefault("spreadParameter", 2.2);  // Rosin-Rammler width
     const scalar Dch   = oper->lookupScalarOrDefault("chamberDiameter", 0.0);  // m  (drying chamber)
     const scalar Lch   = oper->lookupScalarOrDefault("chamberHeight",  0.0);   // m  (drying chamber)
     const std::string flowDir = oper->lookupWordOrDefault("flow", "co");       // co | counter current
-    if (Ddisk <= 0.0) throw std::runtime_error("SprayDryer: wheelDiameter must be > 0");
+    // The atomiser is a selectable sub-model: `operation { atomiser { model
+    // <rotary|pressureNozzle|twinFluid>; ...; } }`.  Absent -> the whole
+    // operation dict feeds the default rotary (reads wheelSpeed/wheelDiameter as
+    // before, byte-identical).  d32 is computed at the atomisation step below.
+    const DictPtr atomDict = oper->found("atomiser") ? oper->subDict("atomiser") : oper;
+    auto atomiser = Atomizer::New(atomDict);
+    // Chamber model (unit-level `model` slot): `lumped` (default -- inlet/outlet +
+    // a PSD) or `distributed` (the axial droplet trajectory -> profiles of gas
+    // humidity, particle moisture, diameter and temperature ALONG the chamber).
+    // Author-named chamber models (the Choupo convention, cf. distillation
+    // WangHenke): `marshall` = the lumped inlet/outlet short-cut (Marshall 1954);
+    // `langrishKockel` = the 1-D axial-profile trajectory with the Characteristic
+    // Drying Curve (Langrish & Kockel 2001); `chen` = the same 1-D trajectory with
+    // the Reaction Engineering Approach kinetics (Chen & Xie 1997 / Chen 2008) --
+    // a SMOOTH activation-energy rate, no critical-moisture break.  The descriptive
+    // `lumped`/`distributed` are accepted as aliases; default lumped.
+    const std::string dryerModel = dict->lookupWordOrDefault("model", "marshall");
+    const bool rea = (dryerModel == "chen");
+    const bool distributed = (dryerModel == "langrishKockel" || dryerModel == "distributed" || rea);
 
     // -------------------------------------------------------------------
     //  Identify, in the FEED, the volatile solvent and the non-volatile
@@ -168,7 +203,7 @@ int SprayDryer::solve(const DictPtr& dict,
         try
         {
             sigma = thermo.surfaceTension(T_feed, xLiq);
-            sigmaSource = "property layer  sigma(T_feed) of " + solv.name();
+            sigmaSource = "property layer sigma(T_feed) of " + solv.name() + " (Brock-Bird: OVERPREDICTS H-bonded liquids ~50%; d32 impact modest via the ^0.6 power)";
         }
         catch (const std::exception&)
         {
@@ -265,21 +300,22 @@ int SprayDryer::solve(const DictPtr& dict,
     const scalar T_out = energy_limited ? T_wb : T_air - Q / cp_air_W;
 
     // -------------------------------------------------------------------
-    //  Atomisation -- Friedman/Marshall rotary-disc correlation:
-    //      d32/D = 0.4 (Γ/(ρ_L N D²))^0.6 (μ_L/Γ)^0.2 (σ ρ_L D/Γ²)^0.1
-    //  Γ = feed mass flow per unit wetted perimeter (π D); N in rev/s.
-    //  The droplet then shrinks to the powder particle as solvent leaves:
+    //  Atomisation -- the SELECTED atomizer returns d32 from the liquid state
+    //  (mu_L, sigma, rho_L) + its own hardware.  The rotary default reproduces
+    //  the Friedman/Marshall rotary-disc d32 byte-for-byte.  The droplet then
+    //  shrinks to the powder particle as solvent leaves:
     //      d_p = d32 · (x_solid,mass · ρ_L / ρ_solid)^(1/3)
     // -------------------------------------------------------------------
     const scalar rho_L = (solv.Vliq() > 0.0) ? (MW_w / 1000.0) / solv.Vliq() : 1000.0;
-    const scalar N_rev = Nrpm / 60.0;                       // rev/s
-    const scalar Gamma = m_feed / (PI * Ddisk);             // kg/(m·s)
-    scalar d32 = 0.0;
-    if (Gamma > 0.0 && N_rev > 0.0)
-        d32 = 0.4 * Ddisk
-            * std::pow(Gamma / (rho_L * N_rev * Ddisk * Ddisk), 0.6)
-            * std::pow(muL / Gamma, 0.2)
-            * std::pow(sigma * rho_L * Ddisk / (Gamma * Gamma), 0.1);
+    scalar MW_air_in = 0.0;
+    for (std::size_t i = 0; i < n; ++i) MW_air_in += yAir[i] * thermo.comp(i).MW();
+    const scalar rho_air_in = (T_air > 0.0) ? P_air * MW_air_in / (R * T_air) : 1.2;
+    const Atomizer::Feed afeed { m_feed, rho_L, muL, sigma, rho_air_in, P_feed, P_air };
+    const Atomizer::DropletResult drop = atomiser->dropletSize(afeed);
+    const scalar d32 = drop.d32;
+    if (verbosity >= 2)
+        std::cout << "  [atomiser] " << atomiser->name() << ":  " << drop.note << "\n"
+                  << "  [atomiser mu_L] " << muLSource << "\n";
     const scalar rho_solid = (sol.rho_p() > 0.0) ? sol.rho_p() : 1500.0;
     const scalar d_part = (x_solid_mass > 0.0)
                         ? d32 * std::cbrt(x_solid_mass * rho_L / rho_solid) : d32;
@@ -337,6 +373,7 @@ int SprayDryer::solve(const DictPtr& dict,
     // -------------------------------------------------------------------
     const scalar X_in = (x_solid_mass > 0.0) ? (1.0 - x_solid_mass) / x_solid_mass : 0.0;
     scalar X_final = 0.0, X_eq = 0.0, X_cr = 0.0, a_w = 0.0, t_const = 0.0, k_fall = 0.0;
+    UnitProfile axialProfile;   // populated when `model distributed` (the chamber profiles)
 
     // Residence time = chamber height / particle fall velocity --- a RESULT
     // of the chamber HARDWARE (D, L), not a free parameter (the credo).  The
@@ -357,9 +394,24 @@ int SprayDryer::solve(const DictPtr& dict,
     // `dryingCurve` sub-dict --- kept SEPARATE from the equilibrium sorption
     // isotherm on the material.dat (the split: isotherm vs CDC).
     const bool hasDryCurve = dict->found("dryingCurve");
+    // Characteristic Drying Curve (Langrish & Kockel 2001): the normalised
+    // falling-rate N/Nc = f(Phi), Phi = (X-Xe)/(Xc-Xe), is a MATERIAL property.
+    // Choupo models it as a power law f = Phi^p; p = 1 is the linear (Lewis) curve
+    // and the default (byte-stable), p > 1 a material that resists the last water,
+    // p < 1 one that gives it up quickly -- fit p to the measured drying curve.
+    scalar cdcExp = 1.0, reaB = 20.0;
     if (hasDryCurve)
-        X_cr = dict->subDict("dryingCurve")->lookupScalarOrDefault("Xc", 0.0);
-    const bool phase2 = sol.hasSorption() && hasDryCurve && X_cr > 0.0
+    {
+        X_cr   = dict->subDict("dryingCurve")->lookupScalarOrDefault("Xc", 0.0);
+        cdcExp = dict->subDict("dryingCurve")->lookupScalarOrDefault("characteristicExponent", 1.0);
+        // REA (Chen) activation-energy decay: how fast the relative activation
+        // energy ΔEv/ΔEv,∞ rises as the free moisture falls (a MATERIAL parameter,
+        // fit to a measured curve).  Only read for `model chen`; the CDC ignores it.
+        reaB   = dict->subDict("dryingCurve")->lookupScalarOrDefault("activationDecay", 20.0);
+    }
+    // The REA (`model chen`) needs no critical moisture Xc -- its rate is smooth;
+    // it needs only the sorption isotherm (for X_eq and the bulk water activity).
+    const bool phase2 = sol.hasSorption() && hasDryCurve && (X_cr > 0.0 || rea)
                       && h > 0.0 && residence > 0.0;
     if (phase2)
     {
@@ -385,22 +437,126 @@ int SprayDryer::solve(const DictPtr& dict,
             ? 6.0 * h * (T_air - T_wb) / (dHv_kg * d * rho_L * x_solid_mass) : 0.0;
         k_fall = (X_cr > X_eq && Nc > 0.0) ? Nc / (X_cr - X_eq) : 0.0;
 
-        if (X_in > X_cr && Nc > 0.0)
+        // Falling-rate moisture after a time `dt` past the critical point, starting
+        // from `Xs`, integrating dX/dt = -Nc f(Phi) with the characteristic curve
+        // f = Phi^p (Langrish-Kockel).  p = 1 is the Lewis exponential (exact); a
+        // general p has the closed-form power-law solution.
+        auto fallX = [&](scalar Xs, scalar dt) -> scalar
+        {
+            if (k_fall <= 0.0 || X_cr <= X_eq) return std::max(Xs, X_eq);
+            const scalar Phi0 = std::max(0.0, (Xs - X_eq) / (X_cr - X_eq));
+            scalar Phi;
+            if (std::abs(cdcExp - 1.0) < 1.0e-9)
+                Phi = Phi0 * std::exp(-k_fall * dt);              // linear CDC -> exponential
+            else
+            {
+                const scalar base = std::pow(std::max(1.0e-300, Phi0), 1.0 - cdcExp)
+                                  - (1.0 - cdcExp) * k_fall * dt;
+                Phi = (base > 0.0) ? std::pow(base, 1.0 / (1.0 - cdcExp)) : 0.0;
+            }
+            return X_eq + (X_cr - X_eq) * Phi;
+        };
+
+        // REACTION ENGINEERING APPROACH (`model chen`; Chen & Xie 1997, Chen 2008).
+        // The relative drying rate N/Nc = psi is a SMOOTH function of moisture --
+        // no critical-moisture break.  The droplet surface carries a water activity
+        // a_w,s = exp(-dEv/(R Tp)); dEv is an apparent activation energy that rises
+        // from 0 (free water: surface saturated, a_w,s = 1, psi = 1) to dEv,inf at
+        // equilibrium (a_w,s = a_w,bulk, psi = 0).  dEv,inf = -R Tp ln(a_w,bulk).
+        // The relative curve dEv/dEv,inf = exp(-reaB (X - X_eq)) is a ONE-parameter
+        // reduction of Chen's material characteristic (fit reaB to a measured curve).
+        const scalar Rg     = 8.314462;
+        const scalar aw_b   = std::min(0.999, std::max(1.0e-3, a_w));   // bulk water activity
+        const scalar dEvInf = -Rg * T_wb * std::log(aw_b);             // J/mol, >= 0
+        auto reaPsi = [&](scalar X) -> scalar
+        {
+            const scalar dEv  = dEvInf * std::exp(-reaB * std::max(0.0, X - X_eq));
+            const scalar aw_s = std::exp(-dEv / (Rg * T_wb));          // surface water activity
+            return std::min(1.0, std::max(0.0, (aw_s - aw_b) / (1.0 - aw_b)));
+        };
+        // Integrate dX/dt = -Nc psi(X) from Xs over dt (RK4; psi has no closed form).
+        auto reaX = [&](scalar Xs, scalar dt) -> scalar
+        {
+            scalar X = Xs; const int NS = 240; const scalar hstep = dt / NS;
+            for (int i = 0; i < NS && X > X_eq; ++i)
+            {
+                const scalar k1 = -Nc * reaPsi(X);
+                const scalar k2 = -Nc * reaPsi(X + 0.5 * hstep * k1);
+                const scalar k3 = -Nc * reaPsi(X + 0.5 * hstep * k2);
+                const scalar k4 = -Nc * reaPsi(X + hstep * k3);
+                X += (hstep / 6.0) * (k1 + 2.0 * k2 + 2.0 * k3 + k4);
+            }
+            return std::max(X, X_eq);
+        };
+
+        if (rea)                                             // REA: one smooth rate, no Xc
+            X_final = reaX(X_in, residence);
+        else if (X_in > X_cr && Nc > 0.0)
         {
             t_const = (X_in - X_cr) / Nc;
             X_final = (residence <= t_const)
                 ? X_in - Nc * residence                              // still constant-rate
-              : (k_fall > 0.0
-                    ? X_eq + (X_cr - X_eq) * std::exp(-k_fall * (residence - t_const))
-                  : X_eq);                                         // falling-rate (Lewis)
+                : fallX(X_cr, residence - t_const);                  // falling-rate (CDC)
         }
         else  // already at/below critical -> straight falling-rate from X_in
         {
             const scalar Xstart = std::max(X_in, X_eq);
-            X_final = (k_fall > 0.0)
-                ? X_eq + (Xstart - X_eq) * std::exp(-k_fall * residence) : Xstart;
+            X_final = fallX(Xstart, residence);
         }
         X_final = std::max(X_final, X_eq);          // cannot dry below equilibrium
+
+        // -------------------------------------------------------------------
+        //  DISTRIBUTED model (`model distributed`): sample the droplet
+        //  trajectory ALONG the chamber and report the axial PROFILES a student
+        //  asked to SEE.  z = v_particle * t (co-current), t: 0 -> residence.
+        //  X(t) is the EXACT piecewise solution the lumped model integrates
+        //  (constant-rate linear, falling-rate Lewis exponential), so the
+        //  profile's endpoint equals X_final -- the lumped model made visible.
+        //  The gas water fraction and T_g interpolate with the drying progress
+        //  between the known inlet and outlet states; T_p sits at the wet-bulb in
+        //  the constant-rate period then rises toward T_g as the crust forms.
+        // -------------------------------------------------------------------
+        if (distributed)
+        {
+            const int NZ = 40;
+            const scalar span = std::max(1.0e-9, X_in - X_final);
+            for (int j = 0; j <= NZ; ++j)
+            {
+                const scalar t = (scalar(j) / NZ) * residence;
+                scalar Xz;
+                if (rea) Xz = reaX(X_in, t);                              // REA: smooth (RK4)
+                else if (X_in > X_cr && t <= t_const) Xz = X_in - Nc * t; // constant-rate
+                else
+                {
+                    const scalar t0 = (X_in > X_cr) ? t_const : 0.0;
+                    const scalar Xs = (X_in > X_cr) ? X_cr : std::max(X_in, X_eq);
+                    Xz = fallX(Xs, t - t0);                               // falling-rate (CDC)
+                }
+                Xz = std::max(Xz, X_eq);
+                const scalar frac = std::min(1.0, std::max(0.0, (X_in - Xz) / span));
+                const scalar yw   = yAir[iSolv] + (y_w_ex - yAir[iSolv]) * frac;
+                const scalar Tgz  = T_air + (T_out - T_air) * frac;
+                // Particle T: at the wet-bulb while the surface is wet, rising toward
+                // the gas as it dries.  REA measures "wetness" by psi (1->0); the CDC
+                // by the moisture position between Xc and X_eq.
+                const scalar wetness = rea
+                    ? reaPsi(Xz)
+                    : (Xz > X_cr ? 1.0 : (Xz - X_eq) / std::max(1.0e-9, X_cr - X_eq));
+                const scalar Tpz = T_wb + (Tgz - T_wb) * (1.0 - std::min(1.0, std::max(0.0, wetness)));
+                const scalar dz   = d * std::cbrt((1.0 + Xz) / (1.0 + X_in));
+                axialProfile.columns["z_m"].push_back((residence > 0.0) ? (t / residence) * Lch : 0.0);
+                axialProfile.columns["t_s"].push_back(t);
+                axialProfile.columns["X_moisture"].push_back(Xz);
+                axialProfile.columns["d_micron"].push_back(dz * 1.0e6);
+                axialProfile.columns["yWater_gas"].push_back(yw);
+                axialProfile.columns["T_gas"].push_back(Tgz);
+                axialProfile.columns["T_particle"].push_back(Tpz);
+            }
+            // Mark where the constant-rate period ends (X crosses Xc).
+            if (X_in > X_cr && residence > 0.0)
+                axialProfile.markers.push_back(
+                    { std::min(1.0, t_const / residence) * Lch, "Xc (constant -> falling rate)" });
+        }
     }
     // Residual moisture = the LARGER of the kinetic hold-up (residence time)
     // and the energy floor (solvent the air could not carry to saturation).
@@ -524,6 +680,8 @@ int SprayDryer::solve(const DictPtr& dict,
     kpis_["chamberHeight"]    = Lch;              // m  (HARDWARE)
     kpis_["v_gas"]            = v_gas;            // m/s superficial gas velocity
     kpis_["v_particle"]       = v_particle;       // m/s particle fall velocity
+    kpis_["wheelSpeed"]       = atomDict->lookupScalarOrDefault("wheelSpeed", 0.0);  // rpm (rotary; 0 otherwise)
+    kpis_["atomiserPower"]    = drop.power;       // W  shaft estimate (see the atomiser note for the split)
 
     // -------------------------------------------------------------------
     //  Profile: the powder PSD (mass fraction vs particle diameter) for
@@ -535,7 +693,15 @@ int SprayDryer::solve(const DictPtr& dict,
     for (auto dd : dCen) dmic.push_back(dd * 1.0e6);
     prof.columns["diameter_micron"] = dmic;
     prof.columns["massFrac"]        = mf;
-    profile_ = prof;
+    // `model distributed` reports the AXIAL chamber profiles (the trajectory);
+    // `model lumped` (default) the outlet particle-size distribution.
+    if (distributed && !axialProfile.columns.empty())
+    {
+        axialProfile.xAxis = "z_m";
+        profile_ = axialProfile;
+    }
+    else
+        profile_ = prof;
 
     // -------------------------------------------------------------------
     //  Report.
@@ -543,8 +709,7 @@ int SprayDryer::solve(const DictPtr& dict,
     if (verbosity >= 2)
     {
         std::cout << "\n=========================  Spray Dryer Result  ===================\n"
-                  << "  Atomiser (HARDWARE): wheel D = " << std::fixed << std::setprecision(3)
-                  << Ddisk << " m,  N = " << std::setprecision(0) << Nrpm << " rpm\n"
+                  << "  Atomiser:  " << atomiser->name() << "  --  " << drop.note << "\n"
                   << "  Air in:  " << std::setprecision(1) << T_air << " K ("
                   << (T_air - 273.15) << " °C),  " << std::scientific << std::setprecision(3)
                   << (F_air * 1000.0) << " mol/s\n"
@@ -576,7 +741,7 @@ int SprayDryer::solve(const DictPtr& dict,
                       << "  Nu = " << Nu << " -> h = " << std::setprecision(1) << h
                       << " W/(m²·K);  Sh = " << std::setprecision(2) << Sh
                       << " -> k_c = " << std::scientific << std::setprecision(3) << kc << " m/s\n"
-                      << "  Constant-rate drying time τ = " << std::fixed << std::setprecision(4)
+                      << "  Constant-rate time to evaporate ALL droplet water, tau_const = " << std::fixed << std::setprecision(4)
                       << tau_const << " s\n";
         else
             std::cout << "  (no transport block -> drying coefficients not computed;"
@@ -594,7 +759,7 @@ int SprayDryer::solve(const DictPtr& dict,
                       << "  ->  X_crit = " << X_cr << "  ->  X_eq(a_w=" << std::setprecision(3)
                       << a_w << ") = " << X_eq << " kg/kg\n"
                       << "  Residence " << std::setprecision(2) << residence
-                      << " s (constant-rate ends at " << std::setprecision(3) << t_const
+                      << " s (constant-rate period ENDS -- X reaches X_crit, falling rate takes over -- at " << std::setprecision(3) << t_const
                       << " s)  ->  X_final = " << X_final << " kg/kg  ("
                       << std::setprecision(2) << (100.0 * X_final / (1.0 + X_final))
                       << " wt% wet basis)\n"

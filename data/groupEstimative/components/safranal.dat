@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: safranal  (C10H14O, CAS 116-26-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        safranal;
+formula     C10H14O;
+CAS         116-26-7;
+InChIKey    SGAWOGXMMPSZPB-UHFFFAOYSA-N;
+MW          150.221;      // g/mol [origin=calculated method=formula-sum]
+Tc          722.56;      // K   [origin=predictive method=joback]
+Pc          30.457;      // bar [origin=predictive method=joback]
+omega       0.4713;      // -   [origin=predictive method=lee-kesler]
+Tb          505.13;      // K   [origin=predictive method=joback]
+HvapTb      45760.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-66.24 1.11136 -0.00096728 3.719e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group C; count 1; } { group CH=CH; count 1; } { group CHO; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6,6-trimethylcyclohexa-1,3-diene-1-carbaldehyde" "2,3-dihydro-2,2,6-trimethylbenzaldehyde" "dehydro-beta-cyclocitral" "1,3-cyclohexadiene-1-carboxaldehyde, 2,6,6-trimethyl-" "(2,6,6-trimethylcyclohexa-1,3-dienyl)methanal" "1,1,3-trimethyl-2-formylcyclohexa-2,4-diene" "2,6,6-trimethylcyclohexa-1,3-dienyl methanal" "2,6,6-trimethyl-1,3-cyclohexadienal" "sgawogxmmpszpb-uhfffaoysa-" "3,4-didehydro-7-apo-b-caroten-7-al" "2,3-dihydro-2,2,6-trimethyl-benzaldehyde" "2,6,6-trimethylcyclohexa-1,3-dienylmethanal" );
+gibbsFormation
+{
+    dHf_298   -173130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     516.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-6580.0
+    phase     gas;
+}

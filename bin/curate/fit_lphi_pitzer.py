@@ -36,7 +36,12 @@ def rho_kell(t):
     return num / (1.0 + 16.879850e-3*t)
 def eps_w(T):   return 78.45 * eps_mm(T-273.15) / eps_mm(25.0)
 def dh_factor(T):
-    return math.sqrt(rho_kell(T-273.15)/rho_kell(25.0)) * (78.45*298.15/(eps_w(T)*T))**1.5
+    # bit-for-bit replica of SolventProperties::debyeHuckelFactor (curated
+    # 2026-07-02 against Silvester & Pitzer 1977 Table II, quintic, 0-300 C)
+    Tc = 273.15 if T < 273.15 else (573.15 if T > 573.15 else T)
+    x = Tc - 298.15
+    return 1.0 + x*(1.67320874e-03 + x*(7.92300440e-06
+              + x*(3.05989121e-08 + x*(-2.51844044e-10 + x*7.57942218e-13))))
 
 # ---- PitzerSingleSalt replica (1:1, with T-slots) ----------------------------
 class Salt:
@@ -96,9 +101,27 @@ def fit(name, beta0, beta1, Cphi, lo=0.1, hi=6.0):
         meas=dict(load(name.lower())).get(m)
         if meas is not None:
             print(f"    m={m:4.1f}   fit {fitted.Lphi(m)/CAL:+8.1f}   meas {meas:+8.1f}  cal/mol")
-    print(f"  beyond the window: m=10 -> fit {fitted.Lphi(10.0)/CAL:+.0f} vs meas +903;"
-          f"  m=22 -> fit {fitted.Lphi(22.2024)/CAL:+.0f} vs meas +4260  (EXTRAPOLATION -- flag loud)")
+    if name.lower() == "naoh":
+        print(f"  beyond the window: m=10 -> fit {fitted.Lphi(10.0)/CAL:+.0f} vs meas +903;"
+              f"  m=22 -> fit {fitted.Lphi(22.2024)/CAL:+.0f} vs meas +4260  (EXTRAPOLATION -- flag loud)")
     return rel, p
 
-rel,_ = fit("NaOH", 0.0864, 0.253, 0.0044)     # Appelo 2014 25 C anchors
+# ---- CLI: fit any 1-1 salt whose Parker series is curated --------------------
+#   bin/curate/fit_lphi_pitzer.py NaOH            (default)
+#   bin/curate/fit_lphi_pitzer.py NaCl Na Cl      (series, cation, anion)
+# The 25 C anchors (beta0/beta1/Cphi) are read from the FROZEN pair .dat --
+# the fit only adds the T-slots, it never touches the 25 C surface.
+if len(sys.argv) >= 4:
+    series, cat, an = sys.argv[1], sys.argv[2], sys.argv[3]
+    pair = Path(__file__).resolve().parents[2] / (
+        "data/standards/parameters/electrolyte/pitzer/pairs/%s-%s.dat" % (cat, an))
+    txt = pair.read_text()
+    def anchor(k):
+        return float(re.search(r"\b%s\s+(-?[\d.eE+-]+);" % k, txt).group(1))
+    rel, p_ = fit(series, anchor("beta0"), anchor("beta1"), anchor("Cphi"))
+    print("\n  paste into %s:" % pair.name)
+    print("    dbeta0_dT %.6e;\n    dbeta1_dT %.6e;\n    dCphi_dT %.6e;" % tuple(p_))
+    print("    lphiValidityMax 6.0;\n    calorimetricFit true;")
+else:
+    rel, _ = fit("NaOH", 0.0864, 0.253, 0.0044)     # Appelo 2014 25 C anchors
 sys.exit(0 if rel < 5.0 else 1)

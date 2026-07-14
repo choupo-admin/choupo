@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cis-3-hexenyl isobutyrate  (C10H18O2, CAS 41519-23-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cis3HexenylIsobutyrate;
+formula     C10H18O2;
+CAS         41519-23-7;
+InChIKey    OSMAJVWUIUORGC-UHFFFAOYSA-N;
+MW          170.252;      // g/mol [origin=calculated method=formula-sum]
+Tc          670.93;      // K   [origin=predictive method=joback]
+Pc          22.398;      // bar [origin=predictive method=joback]
+omega       0.5779;      // -   [origin=predictive method=lee-kesler]
+Tb          490.34;      // K   [origin=predictive method=joback]
+HvapTb      44831.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.343 0.92496 -0.0005126 9.76e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group CH=CH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 1; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hex-3-enyl 2-methylpropanoate" "(e)-hex-3-enyl isobutyrate" "propanoic acid, 2-methyl-, (3z)-3-hexen-1-yl ester" "propanoic acid,2-methyl-, 3-hexen-1-yl ester" "propanoic acid,2-methyl-, (3e)-3-hexen-1-yl ester" "propanoicacid, 2-methyl-, (3e)-3-hexenyl ester (9ci); propanoic acid, 2-methyl-,3-hexenyl ester, (e)-; trans-3-hexenyl isobutyrate" "propanoicacid, 2-methyl-, (3z)-3-hexenyl ester (9ci); propanoic acid, 2-methyl-,3-hexenyl ester, (z)-; (3z)-hexenyl isobutanoate; (z)-3-hexen-1-yl isobutyrate;(z)-3-hexenyl isobutyrate; (z)-3-hexenylisobutyrate; ent 33348; cis-3-hexenyliso-butyrate; cis-3-hexenyl isobutyrate" "propanoicacid, 2-methyl-, 3-hexenyl ester (9ci); 3-hexenyl isobutanoate; 3-hexenylisobutyrate" );
+gibbsFormation
+{
+    dHf_298   -455070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     580.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-199270.0
+    phase     gas;
+}

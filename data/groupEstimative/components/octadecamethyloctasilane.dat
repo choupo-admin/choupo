@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: octadecamethyloctasilane  (C18H54Si8, CAS 3704-48-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C18H54Si8 (delta Si+8; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        octadecamethyloctasilane;
+formula     C18H54Si8;
+CAS         3704-48-1;
+InChIKey    VIUXNBMIWZHBFF-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          495.31;      // g/mol [origin=calculated method=formula-sum]
+Tc          814.44;      // K   [origin=predictive method=joback]
+Pc          6.554;      // bar [origin=predictive method=joback]
+omega       0.1276;      // -   [origin=predictive method=lee-kesler]
+Tb          622.64;      // K   [origin=predictive method=joback]
+HvapTb      58014.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (313.07 0.06456 0.002363 -1.5346e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 18; } { group Si; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 18; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[dimethyl(trimethylsilyl)silyl]-[[[[dimethyl(trimethylsilyl)silyl]-dimethyl-silyl]-dimethyl-silyl]-dimethyl-silyl]-dimethyl-silane" "[dimethyl(trimethylsilyl)silyl]-[[[[dimethyl(trimethylsilyl)silyl]-dimethylsilyl]-dimethylsilyl]-dimethylsilyl]-dimethylsilane" );
+gibbsFormation
+{
+    dHf_298   -1307810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1869.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-737400.0
+    phase     gas;
+}

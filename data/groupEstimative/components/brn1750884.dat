@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brn 1750884  (C10H24N2O2, CAS 3065-46-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brn1750884;
+formula     C10H24N2O2;
+CAS         3065-46-1;
+InChIKey    DMNIJELRGYXPHM-UHFFFAOYSA-N;
+MW          204.314;      // g/mol [origin=calculated method=formula-sum]
+Tc          658.34;      // K   [origin=predictive method=joback]
+Pc          20.364;      // bar [origin=predictive method=joback]
+omega       0.7680;      // -   [origin=predictive method=lee-kesler]
+Tb          498.12;      // K   [origin=predictive method=joback]
+HvapTb      46760.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.416 1.07528 -0.0005234 7.3e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH2O; count 2; } { group CH3N; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 6; } { group O; count 2; } { group N; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[2-(dimethylamino)ethoxy]ethoxy]-n,n-dimethyl-ethanamine" "ethane, bis(2-dimethylaminoethoxy)" "ethanamine, 2,2'-(1,2-ethanediylbis(oxy))bis(n,n-dimethyl-" "ethanamine, 2,2'-[1,2-ethanediylbis(oxy)]bis[n,n-dimethyl-" "bim-0020404.p001" "(2-{2-[2-(dimethylamino)ethoxy]ethoxy}ethyl)dimethylamine" "2,2'-[ethane-1,2-diylbis(oxy)]bis(n,n-dimethylethanamine)" "2-[2-(2-dimethylaminoethyloxy)ethoxy]-n,n-dimethylethanamine" );
+gibbsFormation
+{
+    dHf_298   -379110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     600.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=44880.0
+    phase     gas;
+}

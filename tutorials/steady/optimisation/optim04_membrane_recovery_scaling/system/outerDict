@@ -16,7 +16,7 @@ method  sqp;
 variables
 (
     {
-        path     variables.P_feed;
+        path     streams.feed.P;      // channel target (forum #53): the feed INLET pressure
         min      10.0 bar;
         max      30.0 bar;
         initial  14.0 bar;

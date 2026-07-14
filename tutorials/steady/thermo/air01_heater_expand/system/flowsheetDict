@@ -2,7 +2,7 @@
   air01_heater_expand  --  showcase for TRACK A predefined-mixture expansion.
 
   The thermoPackage lists `components ( air )`.  At load time the loader
-  splices `air` into N2 + O2 + Ar (see constant/thermoPackage).  A single
+  splices `air` into N2 + O2 + Ar (see constant/propertyDict).  A single
   heater then adds 5 kW to a 1 mol/s air stream at 1 bar, 298.15 K.  The air
   is gas (vf = 1), so the heater integrates the ideal-gas mixture H_ig over
   the three real components -> a correct MULTICOMPONENT result.
@@ -18,18 +18,7 @@
     path (Flowsheet / Composition), not in this case.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F             3.6 kmol/h;          // 1 mol/s
-        T           298.15 K;
-        P             1.0  bar;
-        vf            1.0;                  // air is a gas at 1 bar, 298 K
-        // Member fractions of `air` (matches the announced expansion).
-        molarComposition  { N2 0.7808;  O2 0.2095;  Ar 0.0093; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

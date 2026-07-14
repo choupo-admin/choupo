@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: solasodine  (C27H43NO2, CAS 126-17-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        solasodine;
+formula     C27H43NO2;
+CAS         126-17-0;
+InChIKey    KWVISVAMQJWJSZ-UHFFFAOYSA-N;
+MW          413.646;      // g/mol [origin=calculated method=formula-sum]
+Tc          1284.07;      // K   [origin=predictive method=joback]
+Pc          13.166;      // bar [origin=predictive method=joback]
+omega       1.0767;      // -   [origin=predictive method=lee-kesler]
+Tb          1036.88;      // K   [origin=predictive method=joback]
+HvapTb      100281.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-417.62 4.05238 -0.00363834 1.3971e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 9; } { group CH; count 7; } { group C; count 3; } { group CH=C; count 1; } { group OH; count 1; } { group CH-O; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 10; } { group CH_ring; count 8; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group O_ring; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "spirosol-5-en-3-ol" "solasod-5-en-3.beta.-ol" "purapuridine" "solancarpidine" "solasodin" "solanidine-s" "spirosol-5-en-3-ol,22.alpha.,25r)-" "solasod-5-en-3beta-ol" "solassodine" "spirosol-5-en-3-ol, (3.beta.,22.alpha.,25r)-" "agn-pc-00apkt" "solasod-5-en-3 beta-ol" );
+gibbsFormation
+{
+    dHf_298   -463020.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     752.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=286340.0
+    phase     gas;
+}

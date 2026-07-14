@@ -1,0 +1,34 @@
+/*---------------------------------------------------------------------------*\
+  A PARALLEL reaction network -- the selectivity a catalyst FIXES:
+
+        5 A --(wanted)--> 3 B          5 A --(side)--> 3 C
+
+  Both consume the same reactant.  There is no rate data and no equilibrium to
+  appeal to: the split is what the catalyst DOES, measured in the plant.  So the
+  extents are SPECIFIED -- one fractional conversion of A per reaction -- and the
+  reactor just applies the stoichiometry.  That is exactly what a stoichiometric
+  (conversion) reactor is for.
+
+  Mass conserves: 5 x 30 = 3 x 50 = 150 g on each leg (the toy molar masses force
+  the 5:3, not the physics).
+\*---------------------------------------------------------------------------*/
+
+a_to_b                  // 5 A -> 3 B    (the wanted product)
+{
+    limitingReactant   compA;
+    stoichiometry
+    (
+        { component compA;  nu -5; }
+        { component compB;  nu  3; }
+    );
+}
+
+a_to_c                  // 5 A -> 3 C    (the side product)
+{
+    limitingReactant   compA;
+    stoichiometry
+    (
+        { component compA;  nu -5; }
+        { component compC;  nu  3; }
+    );
+}

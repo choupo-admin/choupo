@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ag-g-78951  (C21H26O8, CAS 71243-43-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        agG78951;
+formula     C21H26O8;
+CAS         71243-43-1;
+InChIKey    UGARXVMUGRVLFE-UHFFFAOYSA-N;
+MW          406.431;      // g/mol [origin=calculated method=formula-sum]
+Tc          1347.59;      // K   [origin=predictive method=joback]
+Pc          14.017;      // bar [origin=predictive method=joback]
+omega       1.2754;      // -   [origin=predictive method=lee-kesler]
+Tb          1100.69;      // K   [origin=predictive method=joback]
+HvapTb      110019.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (34.264 1.80696 -0.00106652 2.14e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group CH2=C; count 2; } { group ACH; count 3; } { group AC; count 3; } { group CH2O; count 2; } { group COOH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 4; } { group C; count 1; } { group dCH2; count 2; } { group dC; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group COOH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[2,2-bis(prop-1-en-2-yloxymethyl)butoxycarbonyl]benzene-1,3-dicarboxylic acid" "1,2,4-benzenetricarboxylic acid 2,2-bis[(2-allyloxy)methyl]butyl ester" );
+gibbsFormation
+{
+    dHf_298   -1322910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     978.93;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-827680.0
+    phase     gas;
+}

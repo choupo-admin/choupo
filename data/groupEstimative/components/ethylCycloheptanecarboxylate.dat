@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl cycloheptanecarboxylate  (C10H18O2, CAS 32777-26-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylCycloheptanecarboxylate;
+formula     C10H18O2;
+CAS         32777-26-7;
+InChIKey    ADVNPUHITOJNRW-UHFFFAOYSA-N;
+MW          170.252;      // g/mol [origin=calculated method=formula-sum]
+Tc          720.52;      // K   [origin=predictive method=joback]
+Pc          26.488;      // bar [origin=predictive method=joback]
+omega       0.4791;      // -   [origin=predictive method=lee-kesler]
+Tb          510.44;      // K   [origin=predictive method=joback]
+HvapTb      45862.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-51.519 1.01152 -0.0004602 3.04e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group CH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethylcycloheptanecarboxylate" "cycloheptanecarboxylicacid, ethyl ester" "cycloheptanecarboxylic acid, ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -518850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     586.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-264700.0
+    phase     gas;
+}

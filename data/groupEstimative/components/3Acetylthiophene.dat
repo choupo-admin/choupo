@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-acetylthiophene  (C6H6OS, CAS 1468-83-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Acetylthiophene;
+formula     C6H6OS;
+CAS         1468-83-3;
+InChIKey    RNIDWJDZNNVFDY-UHFFFAOYSA-N;
+MW          126.173;      // g/mol [origin=calculated method=formula-sum]
+Tc          694.46;      // K   [origin=predictive method=joback]
+Pc          46.466;      // bar [origin=predictive method=joback]
+omega       0.4014;      // -   [origin=predictive method=lee-kesler]
+Tb          461.83;      // K   [origin=predictive method=joback]
+HvapTb      43320.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.95 0.54693 -0.00039292 1.1116e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3CO; count 1; } { group C4H3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 1; } { group CdO; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-thiophen-3-ylethanone" "methyl 3-thienyl ketone" "3-acetyl thiophene" "ethanone, 1-(3-thienyl)-" "1-thien-3-ylethanone" "methyl-3-thienyl ketone" "1-(3-thienyl)ethanone" "ketone, methyl 3-thienyl" "1-(thiophen-3-yl)ethanone" "1-(thien-3-yl)ethan-1-one" "1-oxo-1-(thien-3-yl)ethane" "1-(thiophen-3-yl)ethan-1-one" );
+gibbsFormation
+{
+    dHf_298   -49580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     377.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=5130.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: aleuritic acid  (C16H32O5, CAS 533-87-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        aleuriticAcid;
+formula     C16H32O5;
+CAS         533-87-9;
+InChIKey    MEHUJCGAYMDLEL-UHFFFAOYSA-N;
+MW          304.427;      // g/mol [origin=calculated method=formula-sum]
+Tc          1222.38;      // K   [origin=predictive method=joback]
+Pc          17.758;      // bar [origin=predictive method=joback]
+omega       1.3287;      // -   [origin=predictive method=lee-kesler]
+Tb          986.85;      // K   [origin=predictive method=joback]
+HvapTb      117635.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.453 1.6884 -0.0010168 2.356e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 13; } { group CH; count 2; } { group OH; count 3; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 13; } { group CH; count 2; } { group OH; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9,10,16-tris(oxidanyl)hexadecanoic acid" "9,10,16-trihydroxyhexadecanoic acid" "alpha-aleuritic acid" "erythro-aleuritic acid" "aleuritic acid (alpha)" "synthetic aleuritic acid" "dl-erythro-aleuritic acid" "(.+/-.)-aleuritic acid" "(+-)-erythro-aleuritic acid" "hexadecanoic acid, 9,10,16-trihydroxy-, (9r,10s)-rel-" "8,9,15-trihydroxypentadecane-1-carboxylic acid" "dl-erythro-9,10,16-trihydroxyhexadecanoic acid" );
+gibbsFormation
+{
+    dHf_298   -1191090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     965.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-675410.0
+    phase     gas;
+}

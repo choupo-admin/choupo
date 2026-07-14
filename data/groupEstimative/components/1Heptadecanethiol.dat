@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-heptadecanethiol  (C17H36S, CAS 53193-22-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Heptadecanethiol;
+formula     C17H36S;
+CAS         53193-22-9;
+InChIKey    FXOGYMXDUYOYKR-UHFFFAOYSA-N;
+MW          272.535;      // g/mol [origin=calculated method=formula-sum]
+Tc          824.30;      // K   [origin=predictive method=joback]
+Pc          12.884;      // bar [origin=predictive method=joback]
+omega       0.8323;      // -   [origin=predictive method=lee-kesler]
+Tb          651.42;      // K   [origin=predictive method=joback]
+HvapTb      60173.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (2.326 1.64612 -0.0009234 1.967e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 15; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 16; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "heptadecane-1-thiol" "heptadecyl mercaptan" );
+gibbsFormation
+{
+    dHf_298   -355730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     880.73;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=121650.0
+    phase     gas;
+}

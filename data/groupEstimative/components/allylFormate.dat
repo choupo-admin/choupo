@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: allyl formate  (C4H6O2, CAS 1838-59-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C4H6O2 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        allylFormate;
+formula     C4H6O2;
+CAS         1838-59-1;
+InChIKey    ZHHZHHSFKCANOC-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          86.09;      // g/mol [origin=calculated method=formula-sum]
+Tc          423.61;      // K   [origin=predictive method=joback]
+Pc          41.731;      // bar [origin=predictive method=joback]
+omega       0.1392;      // -   [origin=predictive method=lee-kesler]
+Tb          264.22;      // K   [origin=predictive method=joback]
+HvapTb      21455.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-23.239 0.3719 -0.0003697 1.505e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2=CH; count 1; } { group HCOO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "prop-2-enyl methanoate" "formic acid, allyl ester" "formic acid, 2-propenyl ester" "prop-2-enyl formate" "formic acid, 2-propen-1-yl ester" "prop-2-en-1-yl formate" "allylester kyseliny mravenci" "zhhzhhsfkcanoc-uhfffaoysa-" "formic acid, allyl ester (8ci)" "formic acid,2-propen-1-yl ester" "2-propenylformate; allylester kyseliny mravenci" );
+gibbsFormation
+{
+    dHf_298   75990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     490.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=114600.0
+    phase     gas;
+}

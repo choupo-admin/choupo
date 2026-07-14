@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethisterone  (C23H32O2, CAS 79-64-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethisterone;
+formula     C23H32O2;
+CAS         79-64-1;
+InChIKey    LVHOURKCKUYIGK-RGUJTQARSA-N;
+MW          340.507;      // g/mol [origin=calculated method=formula-sum]
+Tc          1183.25;      // K   [origin=predictive method=joback]
+Pc          16.838;      // bar [origin=predictive method=joback]
+omega       1.0226;      // -   [origin=predictive method=lee-kesler]
+Tb          934.00;      // K   [origin=predictive method=joback]
+HvapTb      86956.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-295.39 3.14108 -0.0029223 1.17468e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 6; } { group CH; count 4; } { group C; count 3; } { group CH=C; count 1; } { group OH; count 1; } { group CH2CO; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group tC; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 4; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(6s,8r,9s,10r,13s,14s,17s)-6,10,13-trimethyl-17-oxidanyl-17-prop-1-ynyl-2,6,7,8,9,11,12,14,15,16-decahydro-1h-cyclopenta[a]phenanthren-3-one" "dimethisteron" "dimethisterone anhydrous" "secrosteron" "lutogan" "dimetisterone [dcit]" "6a,21-dimethylethisterone" "dimethisterone [progestins]" "dimethisteronum [inn-latin]" "6-alpha,21-dimethylethisterone" "6-alpha-methyl-17-(1-propynyl)testosterone" "6-alpha-methyl-17-alpha-propynyltestosterone" );
+gibbsFormation
+{
+    dHf_298   -244270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     772.26;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=249400.0
+    phase     gas;
+}

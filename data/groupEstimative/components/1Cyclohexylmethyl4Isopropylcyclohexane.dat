@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(cyclohexylmethyl)-4-isopropylcyclohexane  (C16H30, CAS 54965-61-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Cyclohexylmethyl4Isopropylcyclohexane;
+formula     C16H30;
+CAS         54965-61-6;
+InChIKey    LHWJKUKEUOFSME-UHFFFAOYSA-N;
+MW          222.416;      // g/mol [origin=calculated method=formula-sum]
+Tc          820.00;      // K   [origin=predictive method=joback]
+Pc          17.818;      // bar [origin=predictive method=joback]
+omega       0.4626;      // -   [origin=predictive method=lee-kesler]
+Tb          599.67;      // K   [origin=predictive method=joback]
+HvapTb      51371.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-138.609 1.74744 -0.0009564 1.697e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 10; } { group CH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group CH2_ring; count 9; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(cyclohexylmethyl)-4-propan-2-yl-cyclohexane" "cyclohexane, 1-(cyclohexylmethyl)-4-(1-methylethyl)-" "4-isopropyldicyclohexylmethane" "1-(cyclohexylmethyl)-4-propan-2-ylcyclohexane" );
+gibbsFormation
+{
+    dHf_298   -290550.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     666.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=122590.0
+    phase     gas;
+}

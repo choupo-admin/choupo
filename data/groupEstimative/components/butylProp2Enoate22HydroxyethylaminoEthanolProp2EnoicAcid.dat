@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butyl prop-2-enoate;2-(2-hydroxyethylamino)ethanol;prop-2-enoic acid  (C14H27NO6, CAS 144437-83-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butylProp2Enoate22HydroxyethylaminoEthanolProp2EnoicAcid;
+formula     C14H27NO6;
+CAS         144437-83-2;
+InChIKey    JAIHBOBEKYWZIU-UHFFFAOYSA-N;
+MW          305.371;      // g/mol [origin=calculated method=formula-sum]
+Tc          1168.80;      // K   [origin=predictive method=joback]
+Pc          17.909;      // bar [origin=predictive method=joback]
+omega       1.4935;      // -   [origin=predictive method=lee-kesler]
+Tb          954.34;      // K   [origin=predictive method=joback]
+HvapTb      110371.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (105.197 1.02162 -4.14e-05 -2.432e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CH2=CH; count 2; } { group OH; count 2; } { group CH2NH; count 1; } { group COOH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 7; } { group dCH2; count 2; } { group dCH; count 2; } { group OH; count 2; } { group COOH; count 1; } { group COO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-propenoic acid, polymer with butyl 2-propenoate, compd. with 2,2'-iminobis(ethanol)" );
+gibbsFormation
+{
+    dHf_298   -1223210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1154.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-805370.0
+    phase     gas;
+}

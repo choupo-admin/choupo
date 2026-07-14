@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrahydrothiophen-3-one  (C4H6OS, CAS 1003-04-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrahydrothiophen3One;
+formula     C4H6OS;
+CAS         1003-04-9;
+InChIKey    DSXFPRKPFJRPIB-UHFFFAOYSA-N;
+MW          102.151;      // g/mol [origin=calculated method=formula-sum]
+Tc          668.26;      // K   [origin=predictive method=joback]
+Pc          54.066;      // bar [origin=predictive method=joback]
+omega       0.2918;      // -   [origin=predictive method=lee-kesler]
+Tb          426.72;      // K   [origin=predictive method=joback]
+HvapTb      35123.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.92 0.38811 -0.0001513 -1e-10);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2CO; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CdO_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "thiolan-3-one" "3-thiophanone" "dihydrothiophen-3(2h)-one" "3-oxotetrahydrothiophene" "3-thiacyclopentanone" "dihydro-3(2h)-thiophenone" "3(2h)-thiophenone, dihydro-" "3-tetrahydrothiophenone" "4,5-dihydro-3(2h)-thiophenone" "tetrahydrothiophene-3-one" "dihydro-3-(2h)-thiophenone" "4,5-dihydro-3(2h)thiophenone" );
+gibbsFormation
+{
+    dHf_298   -137510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     275.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-55670.0
+    phase     gas;
+}

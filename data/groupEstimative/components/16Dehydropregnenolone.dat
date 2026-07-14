@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 16-dehydropregnenolone  (C21H30O2, CAS 1162-53-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        16Dehydropregnenolone;
+formula     C21H30O2;
+CAS         1162-53-4;
+InChIKey    YLFRRPUBVUAHSR-RRPFGEQOSA-N;
+MW          314.469;      // g/mol [origin=calculated method=formula-sum]
+Tc          1102.66;      // K   [origin=predictive method=joback]
+Pc          17.834;      // bar [origin=predictive method=joback]
+omega       1.1090;      // -   [origin=predictive method=lee-kesler]
+Tb          873.86;      // K   [origin=predictive method=joback]
+HvapTb      85265.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-274.07 2.86026 -0.00257398 9.8536e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 7; } { group CH; count 4; } { group C; count 2; } { group CH=C; count 2; } { group OH; count 1; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 7; } { group CH_ring; count 4; } { group C_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 2; } { group OH; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[(3s,8r,9s,10r,13s,14s)-10,13-dimethyl-3-oxidanyl-2,3,4,7,8,9,11,12,14,15-decahydro-1h-cyclopenta[a]phenanthren-17-yl]ethanone" "16-dehydropregnolone" "delta(16)-pregnenolone" "3beta-hydroxypregna-5,16-dien-20-one" "(3beta)-3-hydroxypregna-5,16-dien-20-one" "5,16-pregnadien-3beta-ol-20-one" "(3" "a)-3-hydroxypregna-5,16-dien-20-one" "16,17-didehydropregnenolone" "delta16-pregnenolone" ".delta.16-pregnenolone" "pregna-5, 3.beta.-hydroxy-" "pregna-5, 3-hydroxy-, (3.beta.)-" );
+gibbsFormation
+{
+    dHf_298   -398760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     757.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=56960.0
+    phase     gas;
+}

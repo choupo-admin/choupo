@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2h-2,4a-methanonaphthalen-8(5h)-one, 1,3,4,6,7,8a-hexahydro-1,1,5,5-tetramethyl-  (C15H24O, CAS 23787-90-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2h24aMethanonaphthalen85hOne134678aHexahydro1155Tetramethyl;
+formula     C15H24O;
+CAS         23787-90-8;
+InChIKey    VCOCESNMLNDPLX-UHFFFAOYSA-N;
+MW          220.356;      // g/mol [origin=calculated method=formula-sum]
+Tc          875.73;      // K   [origin=predictive method=joback]
+Pc          22.376;      // bar [origin=predictive method=joback]
+omega       0.4907;      // -   [origin=predictive method=lee-kesler]
+Tb          630.76;      // K   [origin=predictive method=joback]
+HvapTb      49243.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-273.38 2.51678 -0.002603 1.13e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 2; } { group C; count 3; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 5; } { group CH_ring; count 2; } { group C_ring; count 3; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,8,8-tetramethyl-octahydro-1h-2,4a-methanonapthalene-10-one" "2,2,7,7-tetramethyltricyclo[6.2.1.01,6]undecan-5-one" "2h-2,4a-methanonaphthalen-8(5h)-one, hexahydro-1,1,5,5-tetramethyl-, (2.alpha.,4a.alpha.,8a.beta.)-" "isolongifolene ketone exo" "isolongifolene ketone" "2,2,7,7-tetramethyltricyclo(6.2.1.0(1,6))-undecan-5-one" "(2alpha,4aalpha,8alpha)-hexahydro-1,1,5,5-tetramethyl-2h-2,4a-methanonaphthalen-8(5h)-one" "(2alpha,4aalpha,8beta)-hexahydro-1,1,5,5-tetramethyl-2h-2,4a-methanonaphthalen-8(5h)-one" "(3s,6s,9s)-2,2,8,8-tetramethyl-octahydro-1h-2,4a-methanonapthalene-10-one" "1,3,4,6,7,8a-hexahydro-1,1,5,5-tetramethyl-2h-2,4a-methanophtalen-8(5h)-one + epimer" "2h-2,4a-methanonaphthalen-8(5h)-one, hexahydro-1,1,5,5-tetramethyl-, (2alpha,4aalpha,8abeta)-" "2h-2,4a-methanonaphthalen-8(5h)-one, hexahydro-1,1,5,5-tetramethyl-, (2alpha,4aalpha,8alpha)-" );
+gibbsFormation
+{
+    dHf_298   -279510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     554.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=78990.0
+    phase     gas;
+}

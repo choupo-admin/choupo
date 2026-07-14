@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: congressane  (C14H20, CAS 2292-79-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        congressane;
+formula     C14H20;
+CAS         2292-79-7;
+InChIKey    ZICQBHNGXDOVJF-UHFFFAOYSA-N;
+MW          188.314;      // g/mol [origin=calculated method=formula-sum]
+Tc          752.68;      // K   [origin=predictive method=joback]
+Pc          24.124;      // bar [origin=predictive method=joback]
+omega       0.4573;      // -   [origin=predictive method=lee-kesler]
+Tb          535.34;      // K   [origin=predictive method=joback]
+HvapTb      45224.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-238.11 2.0184 -0.001719 5.972e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 6; } { group CH_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "diamantane" "diadamantane" "pentacyclo[7.3.1.1(4,12).0(2,7).0(6,11)]tetradecane" "decahydro-3,5,1,7-(1,2,3,4)butanetetraylnaphthalene" "decahydro-3,5,1,7-[1,2,3,4]butanetetraylnaphthalene" "diamantine" "ambap2292-79-7" "3,5,1,7-(1,2,3,4)butanetetraylnaphthalene, decahydro-" "4,4'-methylene-1,1'-methylene-5,6'-cyclo-3,2'-bicyclohexane" "pentacyclo[7.3.1.1.(4,12).0(2,7).0(6,11)]tetradecane(diamantan)" "pentacyclo[7.3.1.14,12.02,7.06,11]tetradecane (non-preferred name)" );
+gibbsFormation
+{
+    dHf_298   -23150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     103.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=359720.0
+    phase     gas;
+}

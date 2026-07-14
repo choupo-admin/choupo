@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ccris 1995  (C20H13N, CAS 71382-50-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ccris1995;
+formula     C20H13N;
+CAS         71382-50-8;
+InChIKey    QJOLOLXLQSVYKH-UHFFFAOYSA-N;
+MW          267.331;      // g/mol [origin=calculated method=formula-sum]
+Tc          1072.86;      // K   [origin=predictive method=joback]
+Pc          27.070;      // bar [origin=predictive method=joback]
+omega       0.9221;      // -   [origin=predictive method=lee-kesler]
+Tb          809.96;      // K   [origin=predictive method=joback]
+HvapTb      76026.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-154.53 1.893 -0.0017564 6.514e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 7; } { group ACCH; count 1; } { group CHNH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH_ring; count 2; } { group dCH_ring; count 10; } { group dC_ring; count 8; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzo(a)pyrene-4,5-imine" "3b,4a-dihydro-4h-benzo(1,2)pyreno(4,5-b)azirine" "4h-benzo(1,2)pyreno(4,5-b)azirine, 3b,4a-dihydro-" );
+gibbsFormation
+{
+    dHf_298   509620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     230.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=756870.0
+    phase     gas;
+}

@@ -1,0 +1,10 @@
+/*--- Equimolar acid + alcohol at 333.15 K, the top of the authors' data range. ---*/
+
+componentMolarFlows
+{
+    methanol      0.5 kmol/h;
+    aceticAcid    0.5 kmol/h;
+}
+
+T               333.15 K;
+P               101325 Pa;

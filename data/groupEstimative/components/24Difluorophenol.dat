@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-difluorophenol  (C6H4F2O, CAS 367-27-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24Difluorophenol;
+formula     C6H4F2O;
+CAS         367-27-1;
+InChIKey    NVWVWEWVLBKPSM-UHFFFAOYSA-N;
+MW          130.093;      // g/mol [origin=calculated method=formula-sum]
+Tc          657.62;      // K   [origin=predictive method=joback]
+Pc          49.663;      // bar [origin=predictive method=joback]
+omega       0.5361;      // -   [origin=predictive method=lee-kesler]
+Tb          447.70;      // K   [origin=predictive method=joback]
+HvapTb      43268.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.91 0.6136 -0.00055592 2.051e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACOH; count 1; } { group ACF; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4-bis(fluoranyl)phenol" "phenol, 2,4-difluoro-" "2 4-difluorophenol" "phenol, 2,4-difluoro-;" "nvwvwewvlbkpsm-uhfffaoysa-" "sr-1c11" "d132" );
+gibbsFormation
+{
+    dHf_298   -511640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     366.99;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-441820.0
+    phase     gas;
+}

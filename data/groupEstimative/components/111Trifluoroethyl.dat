@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1-trifluoroethyl  (C2H2F3, CAS 3248-58-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        111Trifluoroethyl;
+formula     C2H2F3;
+CAS         3248-58-6;
+InChIKey    COLOHWPRNRVWPI-UHFFFAOYSA-N;
+role        radical;
+MW          83.032;      // g/mol [origin=calculated method=formula-sum]
+Tc          371.77;      // K   [origin=predictive method=joback]
+Pc          43.858;      // bar [origin=predictive method=joback]
+omega       0.1880;      // -   [origin=predictive method=lee-kesler]
+Tb          234.54;      // K   [origin=predictive method=joback]
+HvapTb      15650.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.03 0.325 -0.000287 9.5e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group C; count 1; } { group dCH2; count 1; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1-tris(fluoranyl)ethane" "2,2,2-trifluoroethyl radical" "1,1,1-trifluoroeth-2-yl" );
+gibbsFormation
+{
+    dHf_298   -614870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     288.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-567900.0
+    phase     gas;
+}

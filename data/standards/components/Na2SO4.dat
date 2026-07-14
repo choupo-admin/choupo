@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Sodium sulfate (Na2SO4), THENARDITE (anhydrous).  CAS 7757-82-6.
+
+  A NON-VOLATILE crystalline salt: never enters the vapour (K = 0).  Kraft
+  make-up chemical, Glauber-salt crystallisation and sulfate-scaling
+  exercises; the sodium-sulfate product of sulfuric-acid + caustic-soda
+  neutralisation.  Carries the solid-phase formation datum and a real solid
+  heat capacity.
+
+  This entry is the anhydrous THENARDITE; the decahydrate Glauber's salt
+  (Na2SO4.10H2O) is a distinct phase -- add it separately when needed.
+
+  PRIMARY: Wagman et al., NBS Tables of Chemical Thermodynamic Properties,
+  J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982) -- PUBLIC DOMAIN.
+\*---------------------------------------------------------------------------*/
+
+name        Na2SO4;
+formula     Na2SO4;
+CAS         7757-82-6;
+
+MW          142.036;           // kg/kmol  (anhydrous)
+
+role        nonvolatile;       // never goes to the vapour (K = 0)
+
+solid
+{
+    rho_p   2680.0;            // thenardite particle density [kg/m^3]
+}
+
+gibbsFormation
+{
+    dHf_298   -1387080;        // J/mol  [Wagman et al. NBS Tables 1982]
+    s_298     149.58;          // J/(mol*K) [Wagman 1982]
+    phase     solid;
+}
+
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = a0  [J/(mol*K)], constant
+    coefficients  ( 128.2 );           // Cp(298) [Wagman et al. NBS Tables 1982]
+    Trange        ( 298  600 );        // constant-Cp validity flag (near ambient)
+}
+
+provenance
+{
+    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982 (anhydrous thenardite)"; }
+    solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
+    rho_p { origin literature; method "thenardite mineralogical density ~2.68 g/cm3"; }
+}

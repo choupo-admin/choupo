@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cis,cis,cis-cyclononatriene  (C9H12, CAS 696-86-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cisCisCisCyclononatriene;
+formula     C9H12;
+CAS         696-86-6;
+InChIKey    CDCDYENGTKUCSR-UAOXYDSYSA-N;
+MW          120.195;      // g/mol [origin=calculated method=formula-sum]
+Tc          672.67;      // K   [origin=predictive method=joback]
+Pc          36.246;      // bar [origin=predictive method=joback]
+omega       0.2501;      // -   [origin=predictive method=lee-kesler]
+Tb          440.03;      // K   [origin=predictive method=joback]
+HvapTb      37758.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-68.86 0.8106 -0.00042484 5.66e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH=CH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group dCH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1z,4z,7z)-cyclonona-1,4,7-triene" "1,4,7-cyclononatriene, (z,z,z)-" );
+gibbsFormation
+{
+    dHf_298   430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     466.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=110640.0
+    phase     gas;
+}

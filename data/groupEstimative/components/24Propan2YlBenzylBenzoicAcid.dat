@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-[4-(propan-2-yl)benzyl]benzoic acid  (C17H18O2, CAS 71195-68-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24Propan2YlBenzylBenzoicAcid;
+formula     C17H18O2;
+CAS         71195-68-1;
+InChIKey    XPRRFYQYOQSCRG-UHFFFAOYSA-N;
+MW          254.329;      // g/mol [origin=calculated method=formula-sum]
+Tc          1035.44;      // K   [origin=predictive method=joback]
+Pc          22.229;      // bar [origin=predictive method=joback]
+omega       0.9698;      // -   [origin=predictive method=lee-kesler]
+Tb          796.95;      // K   [origin=predictive method=joback]
+HvapTb      76088.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-48.859 1.39874 -0.00090512 2.198e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group ACH; count 8; } { group AC; count 2; } { group ACCH2; count 1; } { group ACCH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[(4-propan-2-ylphenyl)methyl]benzoic acid" "benzoic acid, 2-((4-(1-methylethyl)phenyl)methyl)-" "benzoic acid, 2-[[4-(1-methylethyl)phenyl]methyl]-" "alpha-(p-isopropylphenyl)-o-toluic acid" );
+gibbsFormation
+{
+    dHf_298   -299640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     636.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-48530.0
+    phase     gas;
+}

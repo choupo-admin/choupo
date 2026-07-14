@@ -104,21 +104,23 @@ binary_for() {
     echo "${app:-choupoSolve}"
 }
 
-# --- run a case, echo its full stdout.  The case's exit code is published in
-#     the global RUN_RC (command substitution would otherwise swallow it -- and a
-#     non-zero exit is the very signal the honest gate must NOT lose: a crashed /
-#     aborted run, CLAUDE.md §10).
-RUN_RC=0
+# --- run a case, echo its full stdout.  The case's exit code is the function's
+#     RETURN status: callers run `out=$(run_case_raw ...); rc=$?`.  A first cut
+#     published it in a global RUN_RC set INSIDE the $(...) -- a subshell, so the
+#     assignment never reached the caller and the caller read the initial 0: the
+#     exit-code guard was DEAD (column04's validate0 failure sailed through as
+#     PASS).  The subshell's exit status is the one channel $(...) preserves.
 run_case_raw() {
-    local case_dir="$1" app="$2"
+    local case_dir="$1" app="$2" rc
     if [ "$app" = BUILDCODE ]; then
         if ! "$ROOT/bin/buildCode" "$case_dir" >/dev/null 2>&1; then
-            RUN_RC=1; echo "__BUILDFAIL__"; return
+            echo "__BUILDFAIL__"; return 1
         fi
-        "$case_dir/code/.build/choupoCase" "$case_dir" 2>&1; RUN_RC=$?
+        "$case_dir/code/.build/choupoCase" "$case_dir" 2>&1; rc=$?
     else
-        "$ROOT/$app" "$case_dir" 2>&1; RUN_RC=$?
+        "$ROOT/$app" "$case_dir" 2>&1; rc=$?
     fi
+    return "$rc"
 }
 
 # --- pull "key": value out of the line that defines `name` ({ ... } object)
@@ -270,6 +272,7 @@ auto_generate() {
     [ -z "$kpis_sec$streams_sec$opres_sec" ] && return 1
     {
         echo "# Reference KPIs (golden master, auto-recorded by runTests --record)."
+        echo "# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h."
         echo "# kind   name      key         expected        reltol"
         # streams: F of each
         printf '%s\n' "$streams_sec" | grep -P '"\w+": \{.*"F":' | while read -r line; do
@@ -349,6 +352,45 @@ KB_NAMES=(); EF_NAMES=()
 if [ "$#" -eq 0 ]; then
     audit_catalogue; nprob=$?
     if [ "$nprob" -eq 0 ]; then pass=$((pass+1)); else fail=$((fail+nprob)); fi
+    # Doctrine gate (forum #91/#95): user-facing teaching surfaces must not
+    # teach the retired grammars (streams{}, thermoPackage/propertyPackage
+    # filenames, fitBinaryPair) nor name competitors.  Full-sweep only, like
+    # the catalogue audit -- a property of the whole tree, not of one case.
+    if "$ROOT/bin/curate/check_doctrine.py" > /tmp/doctrine.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "doctrine-gate" "$(head -1 /tmp/doctrine.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (forbidden teaching -- run bin/curate/check_doctrine.py)\n" "doctrine-gate"
+        cat /tmp/doctrine.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/doctrine.$$
+
+    # Adsorption catalogue gate: pair records have one home, declared bases,
+    # provenance and an honest quality class.  In particular a historical
+    # teaching fit may not masquerade as directly measured literature data.
+    if "$ROOT/bin/curate/check_adsorption_tree.py" > /tmp/adsorption.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "adsorption-tree-gate" "$(head -1 /tmp/adsorption.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (adsorption catalogue contract -- run bin/curate/check_adsorption_tree.py)\n" "adsorption-tree-gate"
+        cat /tmp/adsorption.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/adsorption.$$
+
+    # One-enthalpy-surface gate (forum #103/#105): the retired H_stream
+    # blend must never re-enter a balance/duty/published .H; the surviving
+    # blend is legal only at AUTHORIZED-BLEND loci, LISTED by the gate.
+    if "$ROOT/bin/curate/check_h_surface.py" > /tmp/hsurface.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "h-surface-gate" "$(head -1 /tmp/hsurface.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (legacy enthalpy surface -- run bin/curate/check_h_surface.py)\n" "h-surface-gate"
+        cat /tmp/hsurface.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/hsurface.$$
 fi
 
 for case_dir in "${CASES[@]}"; do
@@ -371,7 +413,7 @@ for case_dir in "${CASES[@]}"; do
     fi
 
     app=$(binary_for "$case_dir")
-    out=$(run_case_raw "$case_dir" "$app"); rc=$RUN_RC
+    out=$(run_case_raw "$case_dir" "$app"); rc=$?
 
     if [ "$out" = "__BUILDFAIL__" ]; then
         printf "FAIL  %-40s  (compile failed)\n" "$name_short"; fail=$((fail+1)); continue

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-phenylallyl alcohol  (C9H10O, CAS 4393-06-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1PhenylallylAlcohol;
+formula     C9H10O;
+CAS         4393-06-0;
+InChIKey    MHHJQVRGRPHIMR-UHFFFAOYSA-N;
+MW          134.178;      // g/mol [origin=calculated method=formula-sum]
+Tc          723.94;      // K   [origin=predictive method=joback]
+Pc          38.627;      // bar [origin=predictive method=joback]
+omega       0.7469;      // -   [origin=predictive method=lee-kesler]
+Tb          520.62;      // K   [origin=predictive method=joback]
+HvapTb      53525.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.58 0.7998 -0.0005535 1.481e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 1; } { group ACH; count 5; } { group ACCH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-phenylprop-2-en-1-ol" "phenylvinylcarbinol" "1'-hydroxyallylbenzene" "alpha-vinylbenzyl alcohol" "2-propen-1-ol, 1-phenyl-" "benzyl alcohol, .alpha.-vinyl-" "benzenemethanol, .alpha.-ethenyl-" "(r)-1-phenyl-2-propen-1-ol" "vinylphenylcarbinol" "a-vinylbenzyl alcohol" "alpha-phenylallyl alcohol" ".alpha.-phenylallyl alcohol" );
+gibbsFormation
+{
+    dHf_298   -24640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     436.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=85890.0
+    phase     gas;
+}

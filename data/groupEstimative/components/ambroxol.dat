@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ambroxol  (C13H18Br2N2O, CAS 18683-91-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ambroxol;
+formula     C13H18Br2N2O;
+CAS         18683-91-5;
+InChIKey    JBDGDEWWOUBZPM-UHFFFAOYSA-N;
+MW          378.108;      // g/mol [origin=calculated method=formula-sum]
+Tc          1143.75;      // K   [origin=predictive method=joback]
+Pc          34.279;      // bar [origin=predictive method=joback]
+omega       1.5268;      // -   [origin=predictive method=lee-kesler]
+Tb          900.74;      // K   [origin=predictive method=joback]
+HvapTb      95540.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-32.649 1.3255 -0.00080428 1.752e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH; count 1; } { group ACH; count 2; } { group AC; count 2; } { group ACCH2; count 1; } { group OH; count 1; } { group CHNH; count 1; } { group ACNH2; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Br; count 2; } { group OH; count 1; } { group NH2; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[[2-azanyl-3,5-bis(bromanyl)phenyl]methylamino]cyclohexan-1-ol" "ambroxol [inn:ban]" "bisolvon metabolite viii" "ambroxolum [inn-latin]" "bromhexine-metabolite viii" "4-[(2-amino-3,5-dibromobenzyl)amino]cyclohexanol" "trans-4-((2-amino-3,5-dibromobenzyl)amino)cyclohexanol" "trans-4-((2-amino-3,5-dibromobenzyl)amine)cyclohexanol" "cyclohexanol, 4-((2-amino-3,5-dibromobenzyl)amino)- (e)-" "n-(2-amino-3,4-dibromocyclohexyl)-trans-4-aminocyclohexanol" "n-(trans-4-hydroxycyclohexyl)-(2-amino-3,5-dibromobenzyl)-amine" "n-(trans-p-hydroxycyclohexyl)-(2-amino-3,5-dibromobenzyl)amine" );
+gibbsFormation
+{
+    dHf_298   -87860.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     709.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=206500.0
+    phase     gas;
+}

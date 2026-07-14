@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phencyclidine-4-hydroxy analog  (C17H25NO, CAS 60232-85-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phencyclidine4HydroxyAnalog;
+formula     C17H25NO;
+CAS         60232-85-1;
+InChIKey    SLUMSLWGPLFKGY-UHFFFAOYSA-N;
+MW          259.393;      // g/mol [origin=calculated method=formula-sum]
+Tc          988.13;      // K   [origin=predictive method=joback]
+Pc          25.025;      // bar [origin=predictive method=joback]
+omega       0.9785;      // -   [origin=predictive method=lee-kesler]
+Tb          754.93;      // K   [origin=predictive method=joback]
+HvapTb      73969.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-227.95 2.2435 -0.0018162 6.109e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH; count 1; } { group C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group OH; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 9; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(1-phenylcyclohexyl)piperidin-4-ol" "1-(1-phenylcyclohexyl)-4-hydroxypiperidine" "4-piperidinol, 1[(1-phenyl)-1-cyclohexyl]-" "piperidine, 1-(1-phenylcyclohexyl)-4-hydroxy-" "4-hydroxyphencyclidine" "4-hydroxy phencyclidine" "1-(1-phenylcyclohexyl)-4-piperidinol" "1-(1-phenylcyclohexyl)piperidine-4-ol" "4-piperidinol,1-(1-phenylcyclohexyl)-" "1-(1-phenyl-cyclohexyl)-piperidin-4-ol" "4-piperidinol, 1-(1-phenylcyclohexyl)-" "4-hydroxy-1-(1-phenylcyclohexyl)piperidine" );
+gibbsFormation
+{
+    dHf_298   -112340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     767.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=234140.0
+    phase     gas;
+}

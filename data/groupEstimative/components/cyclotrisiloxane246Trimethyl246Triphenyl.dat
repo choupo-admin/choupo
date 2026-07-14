@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclotrisiloxane, 2,4,6-trimethyl-2,4,6-triphenyl-  (C21H24O3Si3, CAS 546-45-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C21H24O3Si3 (delta Si+3; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        cyclotrisiloxane246Trimethyl246Triphenyl;
+formula     C21H24O3Si3;
+CAS         546-45-2;
+InChIKey    HAURRGANAANPSQ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          408.675;      // g/mol [origin=calculated method=formula-sum]
+Tc          1131.80;      // K   [origin=predictive method=joback]
+Pc          16.458;      // bar [origin=predictive method=joback]
+omega       0.6402;      // -   [origin=predictive method=lee-kesler]
+Tb          856.58;      // K   [origin=predictive method=joback]
+HvapTb      83802.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.32 1.31196 -0.0002017 -2.35e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group ACH; count 15; } { group AC; count 3; } { group SiO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH_ring; count 15; } { group dC_ring; count 3; } { group O_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4,6-trimethyl-2,4,6-triphenyl-1,3,5,2,4,6-trioxatrisilinane" "cis-2,4,6-trimethyl-2,4,6-triphenylcyclotrisiloxane" "2,4,6-trimethyl-2,4,6-triphenylcyclotrisiloxane" "cyclotrisiloxane, 2,4,6-trimethyl-2,4,6-triphenyl-, (z)-" "1,3,5-trimethyl-1,3,5-triphenylcyclotrisiloxane" "(z)-2,4,6-trimethyl-2,4,6-triphenylcyclotrisiloxane" );
+gibbsFormation
+{
+    dHf_298   -404900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     832.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-41010.0
+    phase     gas;
+}

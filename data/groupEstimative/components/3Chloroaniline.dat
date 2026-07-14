@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-chloroaniline  (C6H6ClN, CAS 108-42-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Chloroaniline;
+formula     C6H6ClN;
+CAS         108-42-9;
+InChIKey    PNPCRKVUWYDDST-UHFFFAOYSA-N;
+MW          127.571;      // g/mol [origin=calculated method=formula-sum]
+Tc          716.77;      // K   [origin=predictive method=joback]
+Pc          47.042;      // bar [origin=predictive method=joback]
+omega       0.4227;      // -   [origin=predictive method=lee-kesler]
+Tb          478.50;      // K   [origin=predictive method=joback]
+HvapTb      46914.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.79 0.5041 -0.00033056 8.08e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group ACNH2; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-chloranylaniline" "m-chloroaniline" "benzenamine, 3-chloro-" "3-chlorobenzenamine" "m-chloraniline" "3-chlorophenylamine" "orange gc base" "m-chlorophenylamine" "m-aminochlorobenzene" "m-chloroaminobenzene" "aniline, m-chloro-" "fast orange gc base" );
+gibbsFormation
+{
+    dHf_298   75940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     362.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=156940.0
+    phase     gas;
+}

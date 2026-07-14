@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: delphinine  (C33H45NO9, CAS 561-07-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        delphinine;
+formula     C33H45NO9;
+CAS         561-07-9;
+InChIKey    REVYTWNGZDPRKE-UHFFFAOYSA-N;
+MW          599.721;      // g/mol [origin=calculated method=formula-sum]
+Tc          1615.28;      // K   [origin=predictive method=joback]
+Pc          9.216;      // bar [origin=predictive method=joback]
+omega       0.7461;      // -   [origin=predictive method=lee-kesler]
+Tb          1300.77;      // K   [origin=predictive method=joback]
+HvapTb      127215.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-373.439 4.74302 -0.0043762 1.7112e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 9; } { group C; count 4; } { group ACH; count 5; } { group AC; count 1; } { group OH; count 1; } { group CH3COO; count 1; } { group CH3O; count 4; } { group CH3N; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 9; } { group C_ring; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OH; count 1; } { group O; count 4; } { group COO; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-(acetyloxy)-13-hydroxy-1,6,16-trimethoxy-4-(methoxymethyl)-20-methylaconitan-14-yl benzoate" "aconitane-8,13,14-triol, 1,6,16-trimethoxy-4-(methoxymethyl)-20-methyl-, 8-acetate 14-benzoate, (1.alpha.,6.alpha.,14.alpha.,16.beta.)-" "aconitane-8,10,11-triol, 1,6,19-trimethoxy-4-(methoxymethyl)-16-methyl-, 8-acetate 10-benzoate, (1.alpha.,6.alpha.,10.alpha.,19.beta.)-" "aconitane-8,11-triol, 1,6,19-trimethoxy-4-(methoxymethyl)-16-methyl-, 8-acetate 10-benzoate, (1.alpha.,6.alpha.,10.alpha.,19.beta.)-" "aconitane-8,14-triol, 1,6,16-trimethoxy-4-(methoxymethyl)-20-methyl-, (1.alpha.,6.alpha.,14.alpha.,16.beta.)-" "aconitane-8,14-triol, 1,6,16-trimethoxy-4-(methoxymethyl)-20-methyl-, 8-acetate 14-benzoate, (1.alpha.,6.alpha.,14.alpha.,16.beta.)-" );
+gibbsFormation
+{
+    dHf_298   -1380680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     989.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-438820.0
+    phase     gas;
+}

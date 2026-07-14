@@ -1,0 +1,23 @@
+/* BPE NOTE (2026-07-02, a story in three acts): (1) frozen 25 C surface ->
+   BPE 5.07 K; (2) LINEAR calorimetric T-slots (Parker fit) -> 5.58 K -- the
+   25 C derivative extrapolated straight to the boil; (3) the FULL
+   Silvester & Pitzer 1977 T-functions (eqs 30-32, Table IV verbatim in
+   Na-Cl.dat) + A_phi(T) curated against their Table II -> BPE 5.06 K.
+   beta0(T) has a MAXIMUM near 150 C (their Fig 4): the linear slope
+   overshoots where the real curve has already bent over.  The lesson:
+   a first derivative is not a function -- validity windows are data. */
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+units
+(
+    {
+        name        evap;
+        type        evaporator;
+        inputs      ( feed  saturatedSteam130C );
+        outputs     ( concentrated  vapour  condensate );
+        operation
+        {
+            area        20.0 m2;
+            U         2000.0 W/m2/K;
+        }
+    }
+);

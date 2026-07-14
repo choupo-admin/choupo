@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-bromo-5-chloro-2-hydroxybenzaldehyde  (C7H4BrClO2, CAS 19652-32-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H4BrClO2 (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        3Bromo5Chloro2Hydroxybenzaldehyde;
+formula     C7H4BrClO2;
+CAS         19652-32-5;
+InChIKey    KNOYZLVIXXBBIB-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          235.461;      // g/mol [origin=calculated method=formula-sum]
+Tc          811.51;      // K   [origin=predictive method=joback]
+Pc          53.749;      // bar [origin=predictive method=joback]
+omega       0.6107;      // -   [origin=predictive method=lee-kesler]
+Tb          557.03;      // K   [origin=predictive method=joback]
+HvapTb      56237.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.12 0.6786 -0.00075528 3.207e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 2; } { group ACOH; count 1; } { group CHO; count 1; } { group ACCl; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 2; } { group dC_ring; count 4; } { group Cl; count 1; } { group Br; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-bromanyl-5-chloranyl-2-oxidanyl-benzaldehyde" "3-bromo-5-chlorosalicylaldehyde" "knoyzlvixxbbib-uhfffaoysa-" "2-bromo-4-chloro-6-formylphenol" "3-bromo-5-chloro-2-hydroxy-benzaldehyde" "l490" "3-bromo-5-chlorosalicylic aldehyde" "3-bromo-5-chloro-o-hydroxybenzaldehyde" "salicylaldehyde,3-bromo-5-chloro- (7ci,8ci);3-bromo-5-chloro-2-hydroxybenzaldehyde;" );
+gibbsFormation
+{
+    dHf_298   -64490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     501.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-7060.0
+    phase     gas;
+}

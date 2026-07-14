@@ -3,7 +3,7 @@
 
   Recover ETHANOL (the solute) from a dilute aqueous feed (WATER = the
   carrier) using BENZENE as the extracting SOLVENT.  This is the classic
-  Aspen "Extract" problem: a multistage counter-current liquid-liquid
+  liquid-liquid extraction problem: a multistage counter-current liquid-liquid
   cascade.
 
   Topology (the `extractor` unit op):
@@ -29,24 +29,7 @@
   massClosure (must be ~0).
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            298.15 K;
-        P            1.01325 bar;
-        molarComposition  { water 0.80;  ethanol 0.20; }   // dilute ethanol in water
-    }
-
-    solvent
-    {
-        F            120.0 kmol/h;
-        T            298.15 K;
-        P            1.01325 bar;
-        molarComposition  { benzene 1.0; }                 // fresh benzene
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

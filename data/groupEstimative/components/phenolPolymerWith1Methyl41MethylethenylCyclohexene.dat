@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenol, polymer with 1-methyl-4-(1-methylethenyl)cyclohexene  (C16H22O, CAS 65733-78-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenolPolymerWith1Methyl41MethylethenylCyclohexene;
+formula     C16H22O;
+CAS         65733-78-0;
+InChIKey    PDZGUDFYWJIFLV-UHFFFAOYSA-N;
+MW          230.351;      // g/mol [origin=calculated method=formula-sum]
+Tc          939.24;      // K   [origin=predictive method=joback]
+Pc          23.248;      // bar [origin=predictive method=joback]
+omega       0.6275;      // -   [origin=predictive method=lee-kesler]
+Tb          689.65;      // K   [origin=predictive method=joback]
+HvapTb      66925.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-74.17 1.43934 -0.00081284 1.536e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group CH2=C; count 1; } { group CH=C; count 1; } { group ACH; count 5; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 6; } { group dC_ring; count 2; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methyl-4-prop-1-en-2-yl-cyclohexene;phenol" "1-methyl-4-prop-1-en-2-ylcyclohexene; phenol" "phenol, 1-methyl-4-(1-methylethenyl)cyclohexene polymer" );
+gibbsFormation
+{
+    dHf_298   -198230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     730.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=70570.0
+    phase     gas;
+}

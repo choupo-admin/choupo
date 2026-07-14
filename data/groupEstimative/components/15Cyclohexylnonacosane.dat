@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 15-cyclohexylnonacosane  (C35H70, CAS 55521-27-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        15Cyclohexylnonacosane;
+formula     C35H70;
+CAS         55521-27-2;
+InChIKey    AIJFZFPWACJMNR-UHFFFAOYSA-N;
+MW          490.945;      // g/mol [origin=calculated method=formula-sum]
+Tc          1268.96;      // K   [origin=predictive method=joback]
+Pc          5.248;      // bar [origin=predictive method=joback]
+omega       0.2577;      // -   [origin=predictive method=lee-kesler]
+Tb          1019.51;      // K   [origin=predictive method=joback]
+HvapTb      93545.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-96.214 3.45684 -0.0019644 4.144e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 31; } { group CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 26; } { group CH; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "nonacosan-15-ylcyclohexane" "cyclohexane, 1-(1-tetradecylpentadecyl)-" );
+gibbsFormation
+{
+    dHf_298   -716690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1479.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=265830.0
+    phase     gas;
+}

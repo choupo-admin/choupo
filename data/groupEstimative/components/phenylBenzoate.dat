@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenyl benzoate  (C13H10O2, CAS 93-99-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        phenylBenzoate;
+formula     C13H10O2;
+CAS         93-99-2;
+InChIKey    FCJSHPDYVMKCHI-UHFFFAOYSA-N;
+MW          198.221;      // g/mol [origin=calculated method=formula-sum]
+Tc          854.85;      // K   [origin=predictive method=joback]
+Pc          30.899;      // bar [origin=predictive method=joback]
+omega       0.5778;      // -   [origin=predictive method=lee-kesler]
+Tb          608.62;      // K   [origin=predictive method=joback]
+HvapTb      56491.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-51.33 1.0262 -0.0006512 1.374e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 10; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzoic acid phenyl ester" "benzoic acid, phenyl ester" "diphenylcarboxylate" "phenol, benzoate" "phenol, benzoate (7ci)" "cyclohexanecarboxylic acid, phenyl ester;" "u010" );
+gibbsFormation
+{
+    dHf_298   -155870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     500.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-26970.0
+    phase     gas;
+}

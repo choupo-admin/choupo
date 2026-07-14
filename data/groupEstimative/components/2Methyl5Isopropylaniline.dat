@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-methyl-5-isopropylaniline  (C10H15N, CAS 2051-53-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Methyl5Isopropylaniline;
+formula     C10H15N;
+CAS         2051-53-8;
+InChIKey    YKWALWNGEXPARQ-UHFFFAOYSA-N;
+MW          149.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          760.18;      // K   [origin=predictive method=joback]
+Pc          30.457;      // bar [origin=predictive method=joback]
+omega       0.5281;      // -   [origin=predictive method=lee-kesler]
+Tb          537.13;      // K   [origin=predictive method=joback]
+HvapTb      51707.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.7 0.82376 -0.00046392 9.4e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group ACH; count 3; } { group ACCH3; count 1; } { group ACCH; count 1; } { group ACNH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-5-propan-2-yl-aniline" "p-cymen-2-amine" "o-toluidine, 5-isopropyl-" "5-isopropyl-2-methylaniline" "2-methyl-5-propan-2-ylaniline" "5-isopropyl-o-toluidine" "carvacrylamine" "2-cymidine" "2-amino-p-cymene" "p-cymene, 2-amino-" "aniline, 5-isopropyl-2-methyl-" "ykwalwngexparq-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -7630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     468.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=190480.0
+    phase     gas;
+}

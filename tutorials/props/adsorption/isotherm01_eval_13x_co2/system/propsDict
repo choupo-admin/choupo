@@ -1,0 +1,21 @@
+/*  One isothermEval operation: the curated CO2/zeolite13X langmuir record on
+    a 3-T x 4-p grid (K, Pa -- grid values are RAW canonical SI), with the
+    unit-invariance twin (gate d) declared case-locally in constant/.
+    Temperatures match the Jaschik 2020 dataset the FIT tutorial
+    (isotherm02_fit_jaschik) regresses -- eval here, fit there.  */
+operations
+(
+    {
+        name       eval_13x_co2;
+        type       isothermEval;
+        adsorbent  zeolite13X;
+        adsorbate  CO2;
+        grid
+        {
+            T ( 293.15 313.15 333.15 );          // K
+            p ( 1.0e3 1.0e4 5.0e4 1.0e5 );       // Pa (0.01 .. 1 bar)
+        }
+        unitTwin   zeolite13X_paTwin;            // gate (d): bar vs Pa basis
+        output   { file isotherm_13x_co2.csv; }
+    }
+);

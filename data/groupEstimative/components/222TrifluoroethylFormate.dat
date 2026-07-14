@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,2,2-trifluoroethyl formate  (C3H3F3O2, CAS 32042-38-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C3H3F3O2 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        222TrifluoroethylFormate;
+formula     C3H3F3O2;
+CAS         32042-38-9;
+InChIKey    CAFROQYMUICGNO-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          128.049;      // g/mol [origin=calculated method=formula-sum]
+Tc          375.36;      // K   [origin=predictive method=joback]
+Pc          38.579;      // bar [origin=predictive method=joback]
+omega       0.1818;      // -   [origin=predictive method=lee-kesler]
+Tb          239.24;      // K   [origin=predictive method=joback]
+HvapTb      16152.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-25.539 0.4581 -0.0005134 2.099e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group HCOO; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 1; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,2-tris(fluoranyl)ethyl methanoate" "tfef" "formic acid 2,2,2-trifluoroethyl ester" "ethanol,2,2,2-trifluoro-, formate (8ci,9ci);2,2,2-trifluoroethyl formate;" );
+gibbsFormation
+{
+    dHf_298   -625880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     512.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-563250.0
+    phase     gas;
+}

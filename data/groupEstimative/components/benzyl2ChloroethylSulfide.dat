@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzyl 2-chloroethyl sulfide  (C9H11ClS, CAS 4332-51-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzyl2ChloroethylSulfide;
+formula     C9H11ClS;
+CAS         4332-51-8;
+InChIKey    UQSMMTFBNJUPGW-UHFFFAOYSA-N;
+MW          186.697;      // g/mol [origin=calculated method=formula-sum]
+Tc          773.99;      // K   [origin=predictive method=joback]
+Pc          31.883;      // bar [origin=predictive method=joback]
+omega       0.4655;      // -   [origin=predictive method=lee-kesler]
+Tb          538.41;      // K   [origin=predictive method=joback]
+HvapTb      49106.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.707 0.78109 -0.0004772 1.028e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH2Cl; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloroethylsulfanylmethylbenzene" "2-chloroethyl benzyl sulfide" "2-benzylthioethyl chloride" "sulfide, benzyl 2-chloroethyl" "benzyl beta-chloroethyl sulfide" "alpha-(2-chloroethylthio)toluene" "(((2-chloroethyl)thio)methyl)benzene" "benzene, (((2-chloroethyl)thio)methyl)" "benzene,[[(2-chloroethyl)thio]methyl]-" );
+gibbsFormation
+{
+    dHf_298   33570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     494.97;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=158500.0
+    phase     gas;
+}

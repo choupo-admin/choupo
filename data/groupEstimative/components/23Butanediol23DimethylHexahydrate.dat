@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3-butanediol, 2,3-dimethyl-, hexahydrate  (C6H26O8, CAS 6091-58-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C6H26O8 (delta H+12O+6; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        23Butanediol23DimethylHexahydrate;
+formula     C6H26O8;
+CAS         6091-58-3;
+InChIKey    LEQNJUZEJVNIIP-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          226.266;      // g/mol [origin=calculated method=formula-sum]
+Tc          689.27;      // K   [origin=predictive method=joback]
+Pc          21.674;      // bar [origin=predictive method=joback]
+omega       0.7063;      // -   [origin=predictive method=lee-kesler]
+Tb          514.78;      // K   [origin=predictive method=joback]
+HvapTb      59716.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-40.93 0.89348 -0.000707 2.236e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group C; count 2; } { group OH; count 2; } { group H2O; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group C; count 2; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-dimethylbutane-2,3-diol;hexahydrate" "pinacol hydrate" "pinacone hydrate" "pinacol hexahydrate" "pinacol hexahydrate [mi]" "agn-pc-02p5rj" "2,3-butanediol, 2,3-dimethyl-, hydrate (1:6)" );
+gibbsFormation
+{
+    dHf_298   -489130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1813.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-268320.0
+    phase     gas;
+}

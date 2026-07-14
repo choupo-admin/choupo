@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: p-tolylsilatrane  (C13H19NO3Si, CAS 37905-22-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C13H19NO3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        pTolylsilatrane;
+formula     C13H19NO3Si;
+CAS         37905-22-9;
+InChIKey    PRBBCDUTXWBPNJ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          265.384;      // g/mol [origin=calculated method=formula-sum]
+Tc          907.26;      // K   [origin=predictive method=joback]
+Pc          27.759;      // bar [origin=predictive method=joback]
+omega       0.6491;      // -   [origin=predictive method=lee-kesler]
+Tb          659.02;      // K   [origin=predictive method=joback]
+HvapTb      64297.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-74.17 1.33512 -0.00071566 1.035e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group ACH; count 4; } { group AC; count 1; } { group ACCH3; count 1; } { group CH2O; count 3; } { group CH2N; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 6; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O_ring; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-(4-methylphenyl)-4,6,11-trioxa-1-aza-5-silabicyclo[3.3.3]undecane" "1-p-tolylsilatrane" "1-(p-methylphenyl)-silatrane" "1-p-tolilosilatranu [polish]" "2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undecane, 1-(p-tolyl)-" "1-(p-tolyl)-2,8,9-trioxa-5-aza-1-silabicyclo(3.3.3)undecane" "1-p-tolilosilatranu" "1-(4-methylphenyl)-2,8,9-trioxa-5-aza-1-silabicyclo[3.3.3]undecane" );
+gibbsFormation
+{
+    dHf_298   -358880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     502.38;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=9640.0
+    phase     gas;
+}

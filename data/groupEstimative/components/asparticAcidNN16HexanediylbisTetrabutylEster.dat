@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: aspartic acid, n,n'-1,6-hexanediylbis-, tetrabutyl ester  (C30H56N2O8, CAS 175385-79-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        asparticAcidNN16HexanediylbisTetrabutylEster;
+formula     C30H56N2O8;
+CAS         175385-79-2;
+InChIKey    OZOXAOCEHYZYHH-UIOOFZCWSA-N;
+MW          572.784;      // g/mol [origin=calculated method=formula-sum]
+Tc          1600.84;      // K   [origin=predictive method=joback]
+Pc          6.139;      // bar [origin=predictive method=joback]
+omega       0.0644;      // -   [origin=predictive method=lee-kesler]
+Tb          1218.34;      // K   [origin=predictive method=joback]
+HvapTb      124098.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (71.47 2.79888 -0.0013334 1.374e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 16; } { group CH; count 2; } { group CH2COO; count 2; } { group CH2NH; count 2; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 20; } { group CH; count 2; } { group COO; count 4; } { group NH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dibutyl (2s)-2-[6-[[(2s)-1,4-dibutoxy-1,4-bis(oxidanylidene)butan-2-yl]amino]hexylamino]butanedioate" "aspartic acid, n,n'-1,6-hexanediylbis-, 1,1',4,4'-tetrabutyl ester" );
+gibbsFormation
+{
+    dHf_298   -1835270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1591.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-865860.0
+    phase     gas;
+}

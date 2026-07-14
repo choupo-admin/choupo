@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclopentasiloxane, 2,4,6,8,10-pentaethenyl-2,4,6,8,10-pentamethyl-  (C15H30O5Si5, CAS 17704-22-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C15H30O5Si5 (delta Si+5; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        cyclopentasiloxane246810Pentaethenyl246810Pentamethyl;
+formula     C15H30O5Si5;
+CAS         17704-22-2;
+InChIKey    ZBXBDQPVXIIXJS-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          430.825;      // g/mol [origin=calculated method=formula-sum]
+Tc          907.23;      // K   [origin=predictive method=joback]
+Pc          12.056;      // bar [origin=predictive method=joback]
+omega       0.4625;      // -   [origin=predictive method=lee-kesler]
+Tb          687.90;      // K   [origin=predictive method=joback]
+HvapTb      70220.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (198.57 0.4411 0.001054 -8.075e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2=CH; count 5; } { group SiO; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group dCH2; count 5; } { group dCH; count 5; } { group O_ring; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,4,6,8,10-pentakis(ethenyl)-2,4,6,8,10-pentamethyl-1,3,5,7,9,2,4,6,8,10-pentaoxapentasilecane" "2,4,6,8,10-pentamethyl-2,4,6,8,10-pentavinylcyclopentasiloxane" "methylvinylsiloxane cyclic pentamer" "cyclopentasiloxane, 2,4,6,8,10-pentaethenyl-2,4,6,8,10-pentamethyl-;2,4,6,8,10-pentaethenyl-2,4,6,8,10-pentamethyl-1,3,5,7,9,2,4,6,8,10-pentaoxapentasilecane;methylvinylsiloxane cyclic pentamer;" );
+gibbsFormation
+{
+    dHf_298   -863060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1085.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-395520.0
+    phase     gas;
+}

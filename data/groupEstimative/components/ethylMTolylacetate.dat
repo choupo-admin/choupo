@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl m-tolylacetate  (C11H14O2, CAS 40061-55-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylMTolylacetate;
+formula     C11H14O2;
+CAS         40061-55-0;
+InChIKey    RVIWPVAVHHVQIR-UHFFFAOYSA-N;
+MW          178.231;      // g/mol [origin=calculated method=formula-sum]
+Tc          748.95;      // K   [origin=predictive method=joback]
+Pc          26.218;      // bar [origin=predictive method=joback]
+omega       0.5873;      // -   [origin=predictive method=lee-kesler]
+Tb          541.16;      // K   [origin=predictive method=joback]
+HvapTb      50425.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.308 0.85564 -0.00044416 6.32e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 4; } { group AC; count 1; } { group ACCH3; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-(3-methylphenyl)ethanoate" "ethyl meta-tolylacetate" "ethyl 2-(3-methylphenyl)acetate" "ethyl 3-methylphenylacetate" "ethyl 2-(m-tolyl)acetate" "m-tolylacetic acid ethyl ester" "rviwpvavhhvqir-uhfffaoysa-" "3-methylphenylacetic acid ethyl ester" "benzeneacetic acid,3-methyl-, ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -362590.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     523.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-165850.0
+    phase     gas;
+}

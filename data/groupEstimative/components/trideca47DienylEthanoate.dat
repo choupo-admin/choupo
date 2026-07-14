@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trideca-4,7-dienyl ethanoate  (C15H26O2, CAS 57981-60-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trideca47DienylEthanoate;
+formula     C15H26O2;
+CAS         57981-60-9;
+InChIKey    LELQZCNRZHLYFG-UHFFFAOYSA-N;
+MW          238.371;      // g/mol [origin=calculated method=formula-sum]
+Tc          785.80;      // K   [origin=predictive method=joback]
+Pc          15.391;      // bar [origin=predictive method=joback]
+omega       0.7891;      // -   [origin=predictive method=lee-kesler]
+Tb          609.34;      // K   [origin=predictive method=joback]
+HvapTb      56307.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-13.702 1.41404 -0.0008652 2.05e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 8; } { group CH=CH; count 2; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 8; } { group dCH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e,z)-trideca-4,7-dien-1-yl acetate" "(z,e)-trideca-4,7-dien-1-yl acetate" "4,7-tridecadien-1-ol, acetate, (4z,7e)-" "4,7-tridecadien-1-ol, 1-acetate, (4z,7e)-" "trans,cis-4,7-tridecadienyl acetate" "4,7-tridecadien-1-ol,1-acetate, (4e,7z)-" "4,7-tridecadien-1-ol,acetate, (4e,7z)- (9ci); 4,7-tridecadien-1-ol, acetate, (z,e)-;(4e,7z)-tridecadienyl acetate; (e,z)-4,7-tridecadienyl acetate; ptm 1;trideca-4e,7z-dien-1-yl acetate; trans-4,cis-7-tridecadien-1-ol acetate;trans-4,cis-7-tridecadienyl acetate" );
+gibbsFormation
+{
+    dHf_298   -435770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     778.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-74510.0
+    phase     gas;
+}

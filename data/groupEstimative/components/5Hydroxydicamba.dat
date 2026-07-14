@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-hydroxydicamba  (C8H6Cl2O4, CAS 7600-50-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Hydroxydicamba;
+formula     C8H6Cl2O4;
+CAS         7600-50-2;
+InChIKey    XYHBJALHMANCCC-UHFFFAOYSA-N;
+MW          237.032;      // g/mol [origin=calculated method=formula-sum]
+Tc          989.77;      // K   [origin=predictive method=joback]
+Pc          41.463;      // bar [origin=predictive method=joback]
+omega       1.1848;      // -   [origin=predictive method=lee-kesler]
+Tb          747.67;      // K   [origin=predictive method=joback]
+HvapTb      79022.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (51.57 0.66222 -0.00050024 1.591e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 1; } { group AC; count 2; } { group ACOH; count 1; } { group CH3O; count 1; } { group COOH; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 5; } { group Cl; count 2; } { group OH_phenol; count 1; } { group O; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,5-bis(chloranyl)-6-methoxy-3-oxidanyl-benzoic acid" "2,5-dichloro-3-hydroxy-6-methoxybenzoic acid" "benzoic acid, 2,5-dichloro-3-hydroxy-6-methoxy-" "2,5-dichlor-3-hydroxy-6-methoxybenzoes" "o-anisic acid, 3,6-dichloro-5-hydroxy-" );
+gibbsFormation
+{
+    dHf_298   -697610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     500.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-527390.0
+    phase     gas;
+}

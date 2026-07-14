@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chlorocyclobutane  (C4H7Cl, CAS 1120-57-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chlorocyclobutane;
+formula     C4H7Cl;
+CAS         1120-57-6;
+InChIKey    STJYMUBZVMSMBP-UHFFFAOYSA-N;
+MW          90.55;      // g/mol [origin=calculated method=formula-sum]
+Tc          537.21;      // K   [origin=predictive method=joback]
+Pc          45.408;      // bar [origin=predictive method=joback]
+omega       0.2044;      // -   [origin=predictive method=lee-kesler]
+Tb          339.56;      // K   [origin=predictive method=joback]
+HvapTb      28968.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-43.22 0.5319 -0.000388 1.148e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CHCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "chloranylcyclobutane" "cyclobutyl chloride" "cyclobutane, chloro-" "chloro-cyclobutane" "chlorocyclobutane," "chlorocyclobutane;cyclobutyl chloride" );
+gibbsFormation
+{
+    dHf_298   -74990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     274.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=19520.0
+    phase     gas;
+}

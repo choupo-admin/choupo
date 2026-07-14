@@ -81,7 +81,26 @@ inline double vWater(double T)
 // Relative Debye-Huckel factor f(T) = (rho/rho25)^0.5 (eps25 T25 / (eps T))^1.5,
 // = 1 at 25 C.  Multiplies the reference A_DH (eNRTL, mole-fraction) or A_phi
 // (Pitzer, molality) so both stay byte-identical at 25 C and move physically off it.
+// A_phi(T)/A_phi(298.15 K), CURATED against the evaluated Debye-Huckel
+// table of Silvester & Pitzer, J. Phys. Chem. 81 (1977) 1822, Table II
+// (0-300 C on the water saturation line).  Quintic in (T - 298.15) with the
+// constant term pinned to EXACTLY 1 at 25 C (the reference surface every
+// 25 C golden sits on); max |dev| vs the table 0.17 % over 0-300 C.
+// The earlier closed form sqrt(rho)/(eps T)^1.5 was built on 0-100 C fits of
+// eps(T)/rho(T) and drifted to +67 % at 300 C -- kept below for reference.
+// Outside 273-573 K the polynomial is NOT data-backed: callers clamp to the
+// endpoints (announce validity at the op level; a quintic extrapolates
+// violently).
 inline double debyeHuckelFactor(double T)
+{
+    const double Tc = (T < 273.15) ? 273.15 : (T > 573.15 ? 573.15 : T);
+    const double x  = Tc - 298.15;
+    return 1.0 + x*(1.67320874e-03 + x*(7.92300440e-06
+              + x*(3.05989121e-08 + x*(-2.51844044e-10 + x*7.57942218e-13))));
+}
+
+// the pre-2026-07-02 closed form (0-100 C fits; reference only)
+inline double debyeHuckelFactorLowT(double T)
 {
     constexpr double T25 = 298.15, eps25 = 78.45;
     const double rhoRatio = rhoWaterKell(T - 273.15) / rhoWaterKell(25.0);

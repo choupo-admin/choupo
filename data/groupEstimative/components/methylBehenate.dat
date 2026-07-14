@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl behenate  (C23H46O2, CAS 929-77-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylBehenate;
+formula     C23H46O2;
+CAS         929-77-1;
+InChIKey    QSQLTHHMFHEFIY-UHFFFAOYSA-N;
+MW          354.619;      // g/mol [origin=calculated method=formula-sum]
+Tc          960.84;      // K   [origin=predictive method=joback]
+Pc          8.545;      // bar [origin=predictive method=joback]
+omega       0.8147;      // -   [origin=predictive method=lee-kesler]
+Tb          784.06;      // K   [origin=predictive method=joback]
+HvapTb      74199.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.39 2.13404 -0.0011328 2.054e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 19; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 20; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl docosanoate" "docosanoic acid, methyl ester" "behenic acid, methyl ester" "docosanoic acid methyl ester" "behenic acid methyl ester" "docosanoic acid,methyl ester" "a+/-a(3/4)xooiea(1/4)xo yen" "docosanoic acid methyl ester (fame mix)" "c444918b-abde-4650-8507-da7e3aac54eb" "paragraph signthorne(r) paragraph signthornea(1/4)xo yen" "paragraph signthorne(r) paragraph signthornieea(1/4)xo yen" );
+gibbsFormation
+{
+    dHf_298   -835330.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1103.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-167590.0
+    phase     gas;
+}

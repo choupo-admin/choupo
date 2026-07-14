@@ -95,6 +95,7 @@ mv "$dist/index.html" "$dist/app/index.html"   # the APP lives at /app
 cp "$src/index.html" "$dist/index.html"         # the LANDING lives at /
 cp "$src"/*.svg "$dist/" 2>/dev/null || true
 cp "$src"/*.png "$dist/" 2>/dev/null || true    # landing logo (logo2.png) + any raster art
+cp "$src"/*.webp "$dist/" 2>/dev/null || true   # compressed landing product imagery
 cp "$src/sw.js" "$dist/" 2>/dev/null || true    # offline service worker (scope /)
 
 echo "[runSite] serving the site at $URL  (landing / , app /app)"

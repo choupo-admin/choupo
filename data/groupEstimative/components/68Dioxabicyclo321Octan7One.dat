@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6,8-dioxabicyclo[3.2.1]octan-7-one  (C6H8O3, CAS 5257-20-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        68Dioxabicyclo321Octan7One;
+formula     C6H8O3;
+CAS         5257-20-5;
+InChIKey    FDTQYEHORIQWRC-UHFFFAOYSA-N;
+MW          128.127;      // g/mol [origin=calculated method=formula-sum]
+Tc          640.71;      // K   [origin=predictive method=joback]
+Pc          42.275;      // bar [origin=predictive method=joback]
+omega       0.4661;      // -   [origin=predictive method=lee-kesler]
+Tb          435.53;      // K   [origin=predictive method=joback]
+HvapTb      40693.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-60.32 0.8178 -0.0006345 1.93e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group CH-O; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CH_ring; count 2; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-hydroxytetrahydropyran-2-carboxylic acid lactone" "7,8-dioxabicyclo(3.2.1)octan-6-one" "6,8-dioxabicyclo(3.2.1)octan-7-one" "pyran-2-carboxylic acid, tetrahydro-6-hydroxy-, gamma-lactone" "2h-pyran-2-carboxylic acid, tetrahydro-6-hydroxy-, gamma-lactone" "6,8-dioxabicyclo[3.2.1]octan-7-one, (1s)-" "pyran-2-carboxylic acid, .gamma.-lactone" "2h-pyran-2-carboxylic acid, .gamma.-lactone" "7-oxy-6, 8-dioxabicyclo-(3,2,1) - octane" "-2-carboxylic acid, tetrahydro-6-hydroxy-, .gamma.-lactone" "6,8-dioxabicyclo[3.2.1]octan-7-one; 2h-pyran-2-carboxylic acid, tetrahydro-6-hydroxy-, .gamma.-lactone; 6, {8-dioxabicyclo[3.2.1]octan-7-one}; 6-hydroxytetrahydropyran-2-carboxylic acid lactone; pyran" );
+gibbsFormation
+{
+    dHf_298   -470850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     209.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-275350.0
+    phase     gas;
+}

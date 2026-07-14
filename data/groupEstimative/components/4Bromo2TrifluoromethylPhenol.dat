@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-bromo-2-(trifluoromethyl)phenol  (C7H4BrF3O, CAS 50824-04-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Bromo2TrifluoromethylPhenol;
+formula     C7H4BrF3O;
+CAS         50824-04-9;
+InChIKey    PDPGERGWEOJVDC-UHFFFAOYSA-N;
+MW          241.006;      // g/mol [origin=calculated method=formula-sum]
+Tc          758.12;      // K   [origin=predictive method=joback]
+Pc          46.151;      // bar [origin=predictive method=joback]
+omega       0.6821;      // -   [origin=predictive method=lee-kesler]
+Tb          532.78;      // K   [origin=predictive method=joback]
+HvapTb      49816.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.01 0.8844 -0.00086992 3.286e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 2; } { group ACOH; count 1; } { group Br; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 3; } { group Br; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-bromanyl-2-(trifluoromethyl)phenol" "4-bromo-2-trifluoromethylphenol" "4-bromo-2-(trifluoromethyl)benzenol" "5-bromo-2-hydroxybenzotrifluoride" "o-cresol, 4-bromo-alpha,alpha,alpha-trifluoro-" "bromotrifluoromethylbenzenol" "4-bromo-2-trifluoromethyl-phenol" "4-bromo-2-(trifluoromethyl)benzenol;4-bromo-2-(trifluoromethyl)phenol;" );
+gibbsFormation
+{
+    dHf_298   -710810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     449.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-611050.0
+    phase     gas;
+}

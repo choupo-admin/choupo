@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-hydroxy-4-(methylthio)butyric acid  (C5H10O3S, CAS 583-91-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Hydroxy4MethylthioButyricAcid;
+formula     C5H10O3S;
+CAS         583-91-5;
+InChIKey    ONFOSYPQQXJWGS-UHFFFAOYSA-N;
+MW          150.192;      // g/mol [origin=calculated method=formula-sum]
+Tc          821.50;      // K   [origin=predictive method=joback]
+Pc          44.922;      // bar [origin=predictive method=joback]
+omega       1.2247;      // -   [origin=predictive method=lee-kesler]
+Tb          620.03;      // K   [origin=predictive method=joback]
+HvapTb      66996.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (26.152 0.56391 -0.0003142 5.8e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } { group CH3S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group OH; count 1; } { group COOH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-methylsulfanyl-2-oxidanyl-butanoic acid" "alimet" "desmeninol" "mha acid" "butanoic acid, 2-hydroxy-4-(methylthio)-" "mha-fa" "methionine hydroxy analog" "2-hydroxy-4-(methylthio)butanoic acid" "dl-2-hydroxy-4-methylthiobuttersaeure" "2-hydroxy-4-(methylthio) butanoic acid" "2-hydroxy-4-(methylsulfanyl)butanoic acid" "butyric acid, 2-hydroxy-4-(methylthio)-" );
+gibbsFormation
+{
+    dHf_298   -612440.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     506.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-458830.0
+    phase     gas;
+}

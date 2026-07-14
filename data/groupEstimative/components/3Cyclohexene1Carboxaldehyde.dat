@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-cyclohexene-1-carboxaldehyde  (C7H10O, CAS 100-50-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Cyclohexene1Carboxaldehyde;
+formula     C7H10O;
+CAS         100-50-5;
+InChIKey    DCFDVJPDXYGCOK-UHFFFAOYSA-N;
+MW          110.156;      // g/mol [origin=calculated method=formula-sum]
+Tc          639.60;      // K   [origin=predictive method=joback]
+Pc          40.312;      // bar [origin=predictive method=joback]
+omega       0.3683;      // -   [origin=predictive method=lee-kesler]
+Tb          427.13;      // K   [origin=predictive method=joback]
+HvapTb      38617.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-49.9 0.7094 -0.00041828 8.38e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group CH=CH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclohex-3-ene-1-carbaldehyde" "4-formylcyclohexene" "1,2,3,6-tetrahydrobenzaldehyde" "cyclohexene-4-carboxaldehyde" "1-formyl-3-cyclohexene" "3-cyclohexen-1-aldehyde" "1-cyclohexene-4-carboxaldehyde" "cyclohexenecarbaldehyde" "cyclohexenecarboxaldehyde" "benzaldehyde, tetrahydro-" "tetrahydrobenzaldehyde" "delta1-tetrahydrobenzaldehyde" );
+gibbsFormation
+{
+    dHf_298   -161290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     379.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-37050.0
+    phase     gas;
+}

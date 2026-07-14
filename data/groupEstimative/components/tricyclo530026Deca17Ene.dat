@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tricyclo[5.3.0.0(2.6)]deca-1(7)-ene  (C10H14, CAS 82834-02-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tricyclo530026Deca17Ene;
+formula     C10H14;
+CAS         82834-02-4;
+InChIKey    JZIWNLCIOSSFNE-UHFFFAOYSA-N;
+MW          134.222;      // g/mol [origin=calculated method=formula-sum]
+Tc          686.02;      // K   [origin=predictive method=joback]
+Pc          33.645;      // bar [origin=predictive method=joback]
+omega       0.3810;      // -   [origin=predictive method=lee-kesler]
+Tb          466.68;      // K   [origin=predictive method=joback]
+HvapTb      39690.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-131.61 1.2484 -0.001043 3.584e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 2; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 6; } { group CH_ring; count 2; } { group dC_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tricyclo(5.3.0.0(2.6))deca-1(7)-ene" "agn-pc-03e9q7" "cyclobuta[1,2:3,4]dicyclopentene, 1,2,3,3a,4,5,6,6b-octahydro-" );
+gibbsFormation
+{
+    dHf_298   17690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     287.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=221880.0
+    phase     gas;
+}

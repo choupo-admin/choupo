@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5,6-dimethoxy-1-indanone  (C11H12O3, CAS 2107-69-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        56Dimethoxy1Indanone;
+formula     C11H12O3;
+CAS         2107-69-9;
+InChIKey    IHMQOBPGHZFGLC-UHFFFAOYSA-N;
+MW          192.214;      // g/mol [origin=calculated method=formula-sum]
+Tc          847.97;      // K   [origin=predictive method=joback]
+Pc          30.057;      // bar [origin=predictive method=joback]
+omega       0.7004;      // -   [origin=predictive method=lee-kesler]
+Tb          616.97;      // K   [origin=predictive method=joback]
+HvapTb      53631.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (33.13 0.67414 -0.00021428 -2.46e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 3; } { group ACCH2; count 1; } { group CH2CO; count 1; } { group CH3O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 2; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group O; count 2; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5,6-dimethoxy-2,3-dihydroinden-1-one" "1h-inden-1-one, 2,3-dihydro-5,6-dimethoxy-" "5,6-dimethoxyindan-1-on" "5,6-dimethoxyindan-1-one" "5,6-dimethoxy-indan-1-one" "5,6-dimethoxy-2,3-dihydro-1h-inden-1-one" "am845" "5,6-dimethoxyindan-1-one;5,6-dimethoxy-2,3-dihydroinden-1-one;2,3-dihydro-5,6-dimethoxy-1h-inden-1-one;1h-inden-1-one,2,3-dihydro-5,6-dimethoxy-;5,6-dimethoxy indanone;5,6-dimethoxy-1-indelene-1-one;" );
+gibbsFormation
+{
+    dHf_298   -377250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     355.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-138870.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-phenyl-2,4-pentadienoic acid  (C11H10O2, CAS 1552-94-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Phenyl24PentadienoicAcid;
+formula     C11H10O2;
+CAS         1552-94-9;
+InChIKey    FEIQOMCWGDNMHM-KBXRYBNXSA-N;
+MW          174.199;      // g/mol [origin=calculated method=formula-sum]
+Tc          866.78;      // K   [origin=predictive method=joback]
+Pc          32.653;      // bar [origin=predictive method=joback]
+omega       0.7552;      // -   [origin=predictive method=lee-kesler]
+Tb          631.79;      // K   [origin=predictive method=joback]
+HvapTb      59436.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-64.78 1.0607 -0.000846 2.68e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 2; } { group ACH; count 5; } { group AC; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 4; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2e,4e)-5-phenylpenta-2,4-dienoic acid" "5-phenylpenta-2,4-dienoic acid" "2,4-pentadienoic acid, 5-phenyl-" "beta-styrylacrylic acid" "(e,e)-cinnamylideneacetic acid" "2,4-pentadienoic acid, 5-phenyl-," "sdccgmls-0066886.p001" "(2e,4e)-5-phenyl-penta-2,4-dienoic acid" "penta-2,4-dienoic acid, 5-phenyl-, (e,e)-" "4-phenyl-1,3-butadiene-1-carboxylic acid" "brd-k12345912-001-02-3" "2,4-pentadienoic acid, 5-phenyl- (van) (8ci)(9ci)" );
+gibbsFormation
+{
+    dHf_298   -149670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     518.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-29320.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tolpropamine  (C18H23N, CAS 5632-44-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tolpropamine;
+formula     C18H23N;
+CAS         5632-44-0;
+InChIKey    CINROOONPHQHPO-UHFFFAOYSA-N;
+MW          253.389;      // g/mol [origin=calculated method=formula-sum]
+Tc          905.30;      // K   [origin=predictive method=joback]
+Pc          19.019;      // bar [origin=predictive method=joback]
+omega       0.6911;      // -   [origin=predictive method=lee-kesler]
+Tb          681.78;      // K   [origin=predictive method=joback]
+HvapTb      62531.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-79.358 1.62636 -0.00106656 2.66e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group ACH; count 9; } { group AC; count 1; } { group ACCH3; count 1; } { group ACCH; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethyl-3-(4-methylphenyl)-3-phenyl-propan-1-amine" "benzenepropanamine, n,n,4-trimethyl-.gamma.-phenyl-" "n,n-dimethyl-3-(4-methylphenyl)-3-phenylpropan-1-amine" "pragman" "tolpropamina" "tolpropaminum" "tolpropamine (inn)" "tolpropaminum [inn-latin]" "3339-11-5 (hydrochloride)" "n,n-4-trimethyl-gamma-phenylbenzenepropanamine" "[3-(4-methylphenyl)-3-(2-pyridyl)propyl]dimethylamine" );
+gibbsFormation
+{
+    dHf_298   108990.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     644.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=424210.0
+    phase     gas;
+}

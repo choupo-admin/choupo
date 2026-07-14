@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-bis(trifluoromethyl)benzyl chloride  (C9H5ClF6, CAS 75462-59-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35BisTrifluoromethylBenzylChloride;
+formula     C9H5ClF6;
+CAS         75462-59-8;
+InChIKey    OINTXXMBRBLMHH-UHFFFAOYSA-N;
+MW          262.577;      // g/mol [origin=calculated method=formula-sum]
+Tc          647.97;      // K   [origin=predictive method=joback]
+Pc          23.795;      // bar [origin=predictive method=joback]
+omega       0.5463;      // -   [origin=predictive method=lee-kesler]
+Tb          468.75;      // K   [origin=predictive method=joback]
+HvapTb      36119.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.109 0.9901 -0.00082532 2.58e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group CH2Cl; count 1; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 6; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(chloromethyl)-3,5-bis(trifluoromethyl)benzene" "3,5-bis-(trifluoromethyl)benzyl chloride" "3,5-di(trifluoromethyl)benzyl chloride" "3, 5-bis(trifluoromethyl)benzyl chloride" "3,5-bis(trifluoromethyl)-1-(chloromethyl)benzene" "1,3-bis(trifluoromethyl)-5-(chloromethyl)benzene" "3,5-bis(trifluoromethyl)benzylchloride" "3,5-bis(trifluoromethyl) benzyl chloride" "n622" "1-chloromethyl-3,5-bis(trifluoromethyl)benzene" "1-(chloromethyl)-3,5-bis(trifluoromethyl)benzene;" "1-(chloromethyl)-3,5-bis-(trifluoromethyl)benzene" );
+gibbsFormation
+{
+    dHf_298   -1225400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     533.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1057060.0
+    phase     gas;
+}

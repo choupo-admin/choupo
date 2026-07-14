@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-mercapto-1,2-propanediol  (C3H8O2S, CAS 96-27-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Mercapto12Propanediol;
+formula     C3H8O2S;
+CAS         96-27-5;
+InChIKey    PJUIMOJAAPLTRJ-UHFFFAOYSA-N;
+MW          108.155;      // g/mol [origin=calculated method=formula-sum]
+Tc          695.90;      // K   [origin=predictive method=joback]
+Pc          64.000;      // bar [origin=predictive method=joback]
+omega       1.2377;      // -   [origin=predictive method=lee-kesler]
+Tb          515.02;      // K   [origin=predictive method=joback]
+HvapTb      61979.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (23.952 0.39 -0.0002258 4.92e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 1; } { group OH; count 2; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH; count 1; } { group OH; count 2; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-sulfanylpropane-1,2-diol" "monothioglycerol" "1-thioglycerol" "thioglycerin" "thioglycerine" "thiovanol" "thioglycerol" "alpha-thioglycerol" "glycerol-1-thiol" "1-mercaptoglycerol" "1-monothioglycerol" "alpha-thiolglycerol" );
+gibbsFormation
+{
+    dHf_298   -376510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     427.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-272310.0
+    phase     gas;
+}

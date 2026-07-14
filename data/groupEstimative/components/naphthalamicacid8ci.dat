@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: naphthalamicacid (8ci)  (C12H9NO3, CAS 5811-88-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        naphthalamicacid8ci;
+formula     C12H9NO3;
+CAS         5811-88-1;
+InChIKey    GRVIMBYDMARKEZ-UHFFFAOYSA-N;
+MW          215.208;      // g/mol [origin=calculated method=formula-sum]
+Tc          1052.47;      // K   [origin=predictive method=joback]
+Pc          38.340;      // bar [origin=predictive method=joback]
+omega       1.2197;      // -   [origin=predictive method=lee-kesler]
+Tb          801.69;      // K   [origin=predictive method=joback]
+HvapTb      82097.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-26.32 1.0269 -0.00076014 2.1836e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 6; } { group AC; count 4; } { group COOH; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 6; } { group dC_ring; count 4; } { group CdO; count 1; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-aminocarbonylnaphthalene-1-carboxylic acid" "8-(aminocarbonyl)-1-naphthoic acid" "8-carbamoylnaphthalene-1-carboxylic acid" "8-carbamoylnaphthalenecarboxylic acid" "8-carbamoyl-1-naphthalenecarboxylic acid" "8-carboxynaphthalene-1-carboxamide" "1-naphthalenecarboxylicacid, 8-(aminocarbonyl)-" );
+gibbsFormation
+{
+    dHf_298   -315410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     527.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-156420.0
+    phase     gas;
+}

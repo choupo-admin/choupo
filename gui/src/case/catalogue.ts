@@ -18,6 +18,7 @@
 
 import type { JsonDict } from "../dict/index.js";
 import { parse, toJson } from "../dict/index.js";
+import proposedRaw from "virtual:proposed-component-catalogue";
 
 export type ComponentKind = "volatile" | "nonvolatile" | "fragment";
 
@@ -88,18 +89,14 @@ export const CATALOGUE: ComponentMeta[] = Object.values(RAW)
   .filter((m): m is ComponentMeta => m !== null)
   .sort((a, b) => a.name.localeCompare(b.name));
 
-// The UNVERIFIED data/proposed/ tier — bulk-ingested / estimated components a
-// student must review + promote.  Globbed exactly like the standard catalogue,
-// tagged origin="proposed" so the browser shows them in a clearly-marked,
-// separate section (the engine loads them too, with a loud [proposed] warning).
-const PROPOSED_RAW = import.meta.glob("../../../data/proposed/components/*.dat", {
-  query: "?raw",
-  import: "default",
-  eager: true,
-}) as Record<string, string>;
+// The UNVERIFIED data/proposed/ tier -- bulk-ingested / estimated components a
+// student must review + promote. The build plugin aggregates the raw .dat
+// strings into ONE virtual module so a broad catalogue does not create hundreds
+// of Rollup modules. Parsing and classification remain here, on the same path as
+// standards and case-local components.
 
 /** Every PROPOSED (unverified) component, sorted by name. */
-export const PROPOSED_CATALOGUE: ComponentMeta[] = Object.values(PROPOSED_RAW)
+export const PROPOSED_CATALOGUE: ComponentMeta[] = proposedRaw
   .map((body) => metaFromDat(body, "proposed"))
   .filter((m): m is ComponentMeta => m !== null)
   .sort((a, b) => a.name.localeCompare(b.name));

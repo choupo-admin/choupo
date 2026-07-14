@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3-diphenylhexamethyltrisiloxane  (C18H28O2Si3, CAS 797-77-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C18H28O2Si3 (delta Si+3; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        33Diphenylhexamethyltrisiloxane;
+formula     C18H28O2Si3;
+CAS         797-77-3;
+InChIKey    QBNMGMSLXRJOOX-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          360.675;      // g/mol [origin=calculated method=formula-sum]
+Tc          948.70;      // K   [origin=predictive method=joback]
+Pc          13.944;      // bar [origin=predictive method=joback]
+omega       0.5006;      // -   [origin=predictive method=lee-kesler]
+Tb          713.84;      // K   [origin=predictive method=joback]
+HvapTb      65916.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (92.17 0.81112 0.0004486 -5.072e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group ACH; count 10; } { group AC; count 2; } { group Si; count 1; } { group SiO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "diphenyl-bis(trimethylsilyloxy)silane" "1,1,1,5,5,5-hexamethyl-3,3-diphenyltrisiloxane;1,1,1,5,5,5-hexamethyl-3,3-diphenyl-trisiloxane;3,3-diphenyl-1,1,1,5,5,5-hexamethyl-trisiloxane;trisiloxane,1,1,1,5,5,5-hexamethyl-3,3-diphenyl-;3,3-diphenylhexamethyltrisiloxane;hexamethyl-3,3-diphenyltrisiloxane;3,3-diphenylhexamethyltrisiloxane 97%" );
+gibbsFormation
+{
+    dHf_298   -541090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1046.3;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-198780.0
+    phase     gas;
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1h,1h,2h,2h-perfluorodecyltrimethoxysilane  (C13H13F17O3Si, CAS 83048-65-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C13H13F17O3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        1h1h2h2hPerfluorodecyltrimethoxysilane;
+formula     C13H13F17O3Si;
+CAS         83048-65-1;
+InChIKey    HJIMAFKWSKZMBK-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          568.295;      // g/mol [origin=calculated method=formula-sum]
+Tc          655.40;      // K   [origin=predictive method=joback]
+Pc          9.467;      // bar [origin=predictive method=joback]
+omega       0.7623;      // -   [origin=predictive method=lee-kesler]
+Tb          527.45;      // K   [origin=predictive method=joback]
+HvapTb      27799.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (16.152 2.05006 -0.0015888 4.323e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH3O; count 3; } { group CF3; count 1; } { group CF2; count 7; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 8; } { group F; count 17; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heptadecakis(fluoranyl)decyl-trimethoxy-silane" "3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heptadecafluorodecyl(trimethoxy)silane" "silane, (3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heptadecafluorodecyl)trimethoxy-" "trimethoxy(1h,1h,2h,2h-perfluorodecyl)silane" "1h,1h,2h,2h-heptadecafluorodecyltrimethoxysilane" "trimethoxy(1h,1h,2h,2h-heptadecafluorodecyl)silane" "(3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,10-heptadecafluorodecyl)trimethoxysilane" );
+gibbsFormation
+{
+    dHf_298   -4223800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1050.6;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3650230.0
+    phase     gas;
+}

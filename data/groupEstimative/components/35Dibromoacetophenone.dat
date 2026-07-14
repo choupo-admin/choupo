@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3',5'-dibromoacetophenone  (C8H6Br2O, CAS 14401-73-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35Dibromoacetophenone;
+formula     C8H6Br2O;
+CAS         14401-73-1;
+InChIKey    NHFJDRRYVMJBRJ-UHFFFAOYSA-N;
+MW          277.943;      // g/mol [origin=calculated method=formula-sum]
+Tc          860.40;      // K   [origin=predictive method=joback]
+Pc          45.408;      // bar [origin=predictive method=joback]
+omega       0.6831;      // -   [origin=predictive method=lee-kesler]
+Tb          605.47;      // K   [origin=predictive method=joback]
+HvapTb      56618.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.05 0.61432 -0.00043262 1.1886e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group CH3CO; count 1; } { group Br; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Br; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-[3,5-bis(bromanyl)phenyl]ethanone" "1-(3,5-dibromophenyl)ethanone" "3,5-dibromoacetophenone" "acetophenone, 3',5'-dibromo-" "1-(3,5-dibromo-phenyl)-ethanone" "1-acetyl-3,5-dibromobenzene" "ethanone, 1-(3,5-dibromophenyl)-" "1-(3,5-dibromophenyl)ethan-1-one" );
+gibbsFormation
+{
+    dHf_298   -54780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     477.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=9350.0
+    phase     gas;
+}

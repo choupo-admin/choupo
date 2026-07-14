@@ -59,8 +59,17 @@ public:
     // Load from a dictionary representing a single component file.
     void readFromDict(const DictPtr& dict);
 
+    // Mint a bare IDENTITY component (name + MW + role), for the Aspen
+    // ThermoPackageBuilder: it assembles a package from the NEW-format records,
+    // and readFromDict above parses only the OLD inline form (`MW 58.44;`).  The
+    // role carries volatility (a nonvolatile salt has K_i = 0 and is not counted
+    // as a volatile by the evaporator/flash) -- the apparent record declares it.
+    static Component identity(const std::string& name, scalar MW,
+                              const std::string& role = "volatile");
+
     // ---- Identification ----------------------------------------------------
     const std::string& name()    const { return name_;    }
+    const std::vector<std::string>& aliases() const { return aliases_; }
     const std::string& formula() const { return formula_; }
     const std::string& cas()     const { return cas_;     }
 
@@ -130,6 +139,14 @@ public:
     bool   hasSolid() const { return hasSolid_; }
     scalar rho_p()    const { return rho_p_; }   // particle density [kg/m^3]
     scalar k_v()      const { return k_v_; }     // volume shape factor [-]
+    // The ThermoPackageBuilder loads these from the apparent record's linked
+    // phases/solid record into the identity salt (the MSMPR/PSD crystalliser reads
+    // them); for a readFromDict component they come from the `solid {}` block.
+    void   setSolid(scalar rho_p, scalar k_v) { rho_p_ = rho_p; k_v_ = k_v; }
+    // Set the liquid heat capacity from a `liquidHeatCapacity {}` dict (the
+    // builder loads it from the apparent record into the identity salt -- needed
+    // by the liquid sensible-enthalpy path in mixed-solvent / recycle cases).
+    void   setLiquidCp(const DictPtr& d);
 
     // ---- Sublimation reference state (the solid-vapour P-T anchor) ---------
     // Optional `sublimation { tripleT <K>; tripleP <Pa>; Hfus <J/mol>;
@@ -170,6 +187,10 @@ public:
     bool   hasSolubility() const { return !solubilityCoeffs_.empty(); }
     scalar c_sat(scalar T_K) const;            // kg solute / kg solvent
     scalar dHcryst() const { return dHcryst_; } // J/mol released on crystallising
+    // Provenance of dHcryst: "" = unstated, "asserted"/"disabled" = a DECLARED
+    // simplification (an intentional value, e.g. 0, that is NOT measured -- the
+    // crystalliser announces it so a false zero cannot pass as chemistry).
+    const std::string& dHcrystOrigin() const { return dHcrystOrigin_; }
 
     // ---- Electrolyte: salt dissociation map (electrolyte activity) -----------
     // Optional `electrolyte { cation Na; anion Cl; solubility 6.144; }` block on a
@@ -179,8 +200,6 @@ public:
     bool   hasElectrolyteSpec()  const { return hasElec_; }
     const std::string& electrolyteCation() const { return elecCation_; }
     const std::string& electrolyteAnion()  const { return elecAnion_; }
-    scalar electrolyteSolubility() const { return elecSolubility_; }
-    scalar electrolyteDissolutionEnthalpy() const { return elecDHsolution_; }  // J/mol; 0 if absent
     scalar relativePermittivity() const { return relPermittivity_; }  // 0 if absent
 
     // ---- Transport: Fuller diffusion volume -----------------------
@@ -276,6 +295,11 @@ public:
     // because Joback groups != UNIFAC groups.  It is the RECIPE a group-
     // contribution estimator / UNIFAC consumes (so the decomposition lives ONCE
     // with the compound, not re-typed per case).  Empty if the .dat omits it.
+    // UNIQUAC structural parameters (van der Waals r, q) -- intrinsic, glass-box.
+    scalar rUniquac()  const { return rUq_; }
+    scalar qUniquac()  const { return qUq_; }
+    bool   hasUniquac() const { return rUq_ > 0.0 && qUq_ > 0.0; }
+
     bool hasGroups(const std::string& method) const { return groups_.count(method) > 0; }
     const std::vector<std::pair<std::string, int>>& groupsFor(const std::string& method) const
     {
@@ -292,6 +316,7 @@ public:
 
 private:
     std::string name_, formula_, cas_;
+    std::vector<std::string> aliases_;   // friendly aliases (C4H10 for nButane, ...)
     scalar      MW_      = 0.0;
     scalar      Tc_      = 0.0;
     scalar      Pc_      = 0.0;
@@ -339,11 +364,10 @@ private:
     // Solubility: optional `solubility { coefficients (...); dHcryst; }`.
     std::vector<scalar> solubilityCoeffs_;   // c_sat(T) = Σ a_i (T-273.15)^i [kg/kg]
     scalar      dHcryst_  = 0.0;          // J/mol released on crystallising
+    std::string dHcrystOrigin_;          // "asserted"/"disabled" = declared simplification
 
     bool        hasElec_  = false;       // salt carries an electrolyte{} block
-    std::string elecCation_, elecAnion_; // ion names -> electrolyte/{ions,pairs}.dat
-    scalar      elecSolubility_ = 0.0;   // measured m_sat [mol/kg]
-    scalar      elecDHsolution_ = 0.0;   // enthalpy of solution [J/mol]; Ksp(T) van't Hoff
+    std::string elecCation_, elecAnion_; // ion names, derived from dissociatesTo
     scalar      relPermittivity_ = 0.0;  // dielectric constant (mixed-solvent eNRTL)
 
     // Transport: Fuller diffusion volume Σv; 0 if not declared.
@@ -364,6 +388,11 @@ private:
     // Per-value provenance, parsed-if-present (side-channel; never the hot path).
     std::map<std::string, OriginInfo> provenanceMap_;
     std::map<std::string, std::vector<std::pair<std::string, int>>> groups_;
+
+    // UNIQUAC van der Waals structural parameters (intrinsic; `uniquac { r; q; }`).
+    // 0 when absent -> the case must supply them, else UNIQUAC throws.
+    scalar rUq_ = 0.0;
+    scalar qUq_ = 0.0;
 };
 
 } // namespace Choupo

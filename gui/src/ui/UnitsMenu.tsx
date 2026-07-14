@@ -27,7 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  Choupo GUI -- Units menu in the TopBar
+  Choupo GUI -- Display menu (units + significant figures) in the TopBar
 
   Lets the student switch the displayed units for pressure / temperature /
   flow without re-running the solver.  The simulator output stays in
@@ -40,8 +40,8 @@ License
   needs the per-component molar masses to make the switch.
 \*---------------------------------------------------------------------------*/
 
-import { ActionIcon, Box, Button, Group, Menu, Text, Tooltip } from "@mantine/core";
-import { IconRuler, IconCheck } from "@tabler/icons-react";
+import { ActionIcon, Box, Button, Group, Menu, NumberInput, Text, Tooltip } from "@mantine/core";
+import { IconAdjustments, IconCheck } from "@tabler/icons-react";
 
 import {
   PRESETS,
@@ -97,10 +97,10 @@ export function UnitsMenu() {
         <ActionIcon
           variant="subtle"
           size="lg"
-          aria-label="Display units"
-          title={`Display units: ${summary}`}
+          aria-label="Display settings"
+          title={`Display: ${summary}`}
         >
-          <IconRuler size={18} />
+          <IconAdjustments size={18} />
         </ActionIcon>
       </Menu.Target>
 
@@ -219,6 +219,32 @@ export function UnitsMenu() {
               {n}
             </Button>
           ))}
+        </Group>
+
+        <Menu.Divider />
+        <Menu.Label>Pinch grid — minor-stream cutoff</Menu.Label>
+        <Group gap={8} px="sm" py={4} align="flex-start" wrap="nowrap">
+          <NumberInput
+            value={prefs.pinchParetoPct}
+            onChange={(v) =>
+              setPrefs({
+                pinchParetoPct:
+                  typeof v === "number" ? Math.max(0, Math.min(50, v)) : 5,
+              })
+            }
+            min={0}
+            max={50}
+            step={1}
+            w={90}
+            size="xs"
+            suffix=" %"
+            aria-label="Pinch grid minor-stream cutoff (% of process duty)"
+          />
+          <Text size="xs" c="dimmed" style={{ flex: 1 }}>
+            of the total process duty — smaller streams are omitted from the
+            grid DRAWING (announced in its footer); the targets and matches
+            always count every stream.  0 % draws all.
+          </Text>
         </Group>
       </Menu.Dropdown>
     </Menu>

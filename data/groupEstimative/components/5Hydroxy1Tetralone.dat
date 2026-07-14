@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-hydroxy-1-tetralone  (C10H10O2, CAS 28315-93-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5Hydroxy1Tetralone;
+formula     C10H10O2;
+CAS         28315-93-7;
+InChIKey    YPPZCRZRQHFRBH-UHFFFAOYSA-N;
+MW          162.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          883.88;      // K   [origin=predictive method=joback]
+Pc          45.043;      // bar [origin=predictive method=joback]
+omega       0.7011;      // -   [origin=predictive method=lee-kesler]
+Tb          624.18;      // K   [origin=predictive method=joback]
+HvapTb      58447.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-59.6 0.9695 -0.00072592 2.261e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group ACOH; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-oxidanyl-3,4-dihydro-2h-naphthalen-1-one" "1-tetralon-5-ol" "5-hydroxy-3,4-dihydro-2h-naphthalen-1-one" "5-hydroy-1-tetraione" "1(2h)-naphthalenone, 3,4-dihydro-5-hydroxy-" "1,2,3,4-tetrahydro-5-hydroxynaphthalen-1-one" "5-hydroxy-2,3,4-trihydronaphthalen-1-one" "3,4-dihydro-5-hydroxy-1(2h)-naphthalenone" "5-hydroxy-1,2,3,4-tetrahydronaphthalen-1-one" "5-hydroxytetralin-1-one" "yppzcrzrqhfrbh-uhfffaoysa-" "am888" );
+gibbsFormation
+{
+    dHf_298   -252700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     352.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-84750.0
+    phase     gas;
+}

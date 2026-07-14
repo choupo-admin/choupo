@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl caffeate  (C10H10O4, CAS 3843-74-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylCaffeate;
+formula     C10H10O4;
+CAS         3843-74-1;
+InChIKey    OCNYGKNIVPVPPX-HWKANZROSA-N;
+MW          194.186;      // g/mol [origin=calculated method=formula-sum]
+Tc          918.45;      // K   [origin=predictive method=joback]
+Pc          44.922;      // bar [origin=predictive method=joback]
+omega       1.0303;      // -   [origin=predictive method=lee-kesler]
+Tb          678.70;      // K   [origin=predictive method=joback]
+HvapTb      73523.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-46.72 1.14932 -0.00105332 3.898e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH=CH; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACOH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl (e)-3-[3,4-bis(oxidanyl)phenyl]prop-2-enoate" "methyl 3,4-dihydroxycinnamate" "methylcaffeate" "caffeic acid, methyl ester" "methyl (2e)-3-(3,4-dihydroxyphenyl)prop-2-enoate" "methyl 3-(3,4-dihydroxyphenyl)acrylate" "(e)-methyl 3-(3,4-dihydroxyphenyl)acrylate" "caffeic acid methyl ester" "(e)-methyl-3-(3,4-dihydroxyphenyl)acrylate" "methyl 1-(3',4'-dihydroxyphenyl)propenate" "methyl (e)-3-(3,4-dihydroxyphenyl)prop-2-enoate" "(e)-3-(3,4-dihydroxyphenyl)propenoic acid methyl ester" );
+gibbsFormation
+{
+    dHf_298   -567880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     536.74;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-393660.0
+    phase     gas;
+}

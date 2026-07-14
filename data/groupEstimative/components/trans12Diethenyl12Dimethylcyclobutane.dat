@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trans-1,2-diethenyl-1,2-dimethylcyclobutane  (C10H16, CAS 19465-00-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trans12Diethenyl12Dimethylcyclobutane;
+formula     C10H16;
+CAS         19465-00-0;
+InChIKey    ZASXJRHZTCKIAK-UHFFFAOYSA-N;
+MW          136.238;      // g/mol [origin=calculated method=formula-sum]
+Tc          635.59;      // K   [origin=predictive method=joback]
+Pc          28.233;      // bar [origin=predictive method=joback]
+omega       0.2768;      // -   [origin=predictive method=lee-kesler]
+Tb          428.58;      // K   [origin=predictive method=joback]
+HvapTb      33988.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-161.59 1.61244 -0.0017496 7.798e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 2; } { group CH2=CH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 2; } { group dCH; count 2; } { group CH2_ring; count 2; } { group C_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-bis(ethenyl)-1,2-dimethyl-cyclobutane" "1,2-bis(ethenyl)-1,2-dimethylcyclobutane" );
+gibbsFormation
+{
+    dHf_298   77910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     562.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=238960.0
+    phase     gas;
+}

@@ -83,6 +83,12 @@ public:
     // Concrete classes populate as appropriate (e.g. "n_points", "fit_chisq").
     virtual std::map<std::string, scalar> diagnostics() const { return {}; }
 
+    // The op's OWN ranking of its answer: which diagnostic keys are the
+    // headline (shown first / emphasised in the GUI's Results epilogue).
+    // Default empty = no ranking, every diagnostic shown equally.  Keys the
+    // run did not produce are simply ignored downstream.
+    virtual std::vector<std::string> headline() const { return {}; }
+
     // Optional setters used by ops that need to RE-BUILD the thermoPackage
     // each iteration (e.g. `fitParameters` mutates pair coefficients and
     // needs to re-construct ThermoPackage with the new values).  Ops that

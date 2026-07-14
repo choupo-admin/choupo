@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  model4_speciation_scaling / constant/thermoPackage
+
+  Water, the SOLVENT, is the package's only component: the multi-ion broth
+  (Na+, Cl-, Ca+2, SO4-2, the CaSO4aq ion pair) lives in the speciate op's
+  own totals, and its activity model is declared THERE -- pitzerHMW,
+  mandatory at I ~ 3.3 mol/kg where Davies is invalid.  This package only
+  carries the solvent basis; it never touches the ion activities.
+\*---------------------------------------------------------------------------*/
+
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }

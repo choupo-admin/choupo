@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-adamantaneethanol  (C12H20O, CAS 6240-11-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Adamantaneethanol;
+formula     C12H20O;
+CAS         6240-11-5;
+InChIKey    ZBIDZPHRNBZTLT-UHFFFAOYSA-N;
+MW          180.291;      // g/mol [origin=calculated method=formula-sum]
+Tc          788.16;      // K   [origin=predictive method=joback]
+Pc          29.187;      // bar [origin=predictive method=joback]
+omega       0.8467;      // -   [origin=predictive method=lee-kesler]
+Tb          586.40;      // K   [origin=predictive method=joback]
+HvapTb      57436.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-202.628 1.8863 -0.0017508 6.792e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH; count 3; } { group C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 3; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(1-adamantyl)ethanol" "2-adamantan-1-ylethanol" "2-(adamantan-1-yl)ethanol" "1-adamantanethanol" "tricyclo[3.3.1.1(3,7)-]decane-1-ethanol" "1-adamantane ethanol" "2-adamantanylethan-1-ol" "1-(2-hydroxyethyl)adamantane" "ambap6240-11-5" "tricyclo[3.3.1.13,7]decane-1-ethanol" "2-(tricyclo(3.3.1.1'3,7)dec-1-yl)ethanol" );
+gibbsFormation
+{
+    dHf_298   -236100.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     450.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=70290.0
+    phase     gas;
+}

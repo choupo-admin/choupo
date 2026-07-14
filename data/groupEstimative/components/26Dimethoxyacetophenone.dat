@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2',6'-dimethoxyacetophenone  (C10H12O3, CAS 2040-04-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        26Dimethoxyacetophenone;
+formula     C10H12O3;
+CAS         2040-04-2;
+InChIKey    XEUGKOFTNAYMMX-UHFFFAOYSA-N;
+MW          180.203;      // g/mol [origin=calculated method=formula-sum]
+Tc          776.36;      // K   [origin=predictive method=joback]
+Pc          29.282;      // bar [origin=predictive method=joback]
+omega       0.6740;      // -   [origin=predictive method=lee-kesler]
+Tb          563.75;      // K   [origin=predictive method=joback]
+HvapTb      53020.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (46.85 0.60156 -0.00017662 -3.514e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group CH3CO; count 1; } { group CH3O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group O; count 2; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2,6-dimethoxyphenyl)ethanone" "2,6-dimethoxyacetophenone" "acetophenone, 2',6'-dimethoxy-" "1-(2,6-dimethoxyphenyl)ethan-1-one" "1-acetyl-2,6-dimethoxybenzene" "1-(2,6-dimethoxy-phenyl)-ethanone" "ethanone,1-(2,6-dimethoxyphenyl)-" "ethanone, 1-(2,6-dimethoxyphenyl)-" "p363" "ethanone, 1-(2,6-dimethoxyphenyl)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   -413160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     476.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-212450.0
+    phase     gas;
+}

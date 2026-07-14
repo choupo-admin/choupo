@@ -1,4 +1,4 @@
-Choupo — copyright (C) 2026 Vítor Geraldes and contributors.
+Choupo — copyright (C) 2026 Vítor Geraldes.
 Source code, cases, tests, and machine-readable examples are licensed under
 GNU GPL-3.0-or-later (LICENSE). See LICENSES/README.md for the licence map.
 The Choupo name and marks are a
@@ -6,17 +6,17 @@ trademark of TalentGround Lda. (TRADEMARKS.md).  Data files under data/ are
 multi-licensed per component with primary citations.
 
 Choupo
-Copyright (C) 2026 Vítor Geraldes and contributors
+Copyright (C) 2026 Vítor Geraldes
 
-The Choupo guides/manuals under docs/ are copyright (C) 2026 Vítor Geraldes
-and Pedro Mendes. Their prose, figures, and explanatory text are licensed
+The Choupo guides/manuals under docs/ are copyright (C) 2026 by their named
+authors. Their prose, figures, and explanatory text are licensed
 under Creative Commons Attribution-ShareAlike 4.0 International
 (CC BY-SA 4.0; https://creativecommons.org/licenses/by-sa/4.0/), except where
 noted. Code excerpts, Choupo case files, and other machine-readable examples
 included in the guides are licensed under GPL-3.0-or-later, the same licence
-as the Choupo source code. The guides/manuals are authored, curated, and
-editorially maintained by Vítor Geraldes and Pedro Mendes -- except the
-Developer Guide, authored by Vítor Geraldes alone; project
+as the Choupo source code. The Properties Guide and Theory Guide are authored
+by Vítor Geraldes, Pedro Mendes, and Miguel Rodrigues. The Developer Guide and
+the remaining manuals are authored by Vítor Geraldes alone; project
 contributors are credited for code, cases, tests, models, and executable
 examples, not as guide authors.
 
@@ -24,7 +24,7 @@ This product was conceived and architected by Vítor Geraldes. Substantial
 parts of the initial implementation, documentation, and tutorial corpus were
 produced with assistance from Anthropic Claude Code using Claude Opus/Fable
 models. The published project is human-curated, reviewed, corrected, and
-maintained by Vítor Geraldes and Pedro Mendes (see AUTHORS).
+maintained by Vítor Geraldes (see AUTHORS).
 
 This program is free software: you may redistribute it and/or modify the
 GPL-covered parts
@@ -45,14 +45,19 @@ reference data under `data/standards/` is an AGGREGATION of independently-licens
 datasets; each data file carries its own provenance header (primary source,
 method, licence).  The third-party datasets bundled here, and their licences, are:
 
-* UNIFAC group-contribution parameters (`data/standards/unifac/`) and selected
-  pure-component constants / binary interaction parameters
-  Compiled in the ChemSep database, (c) Harry Kooijman & Ross Taylor, under the
-  Artistic License 2.0 (FSF-listed, GPL-compatible).  PRIMARY sources cited per
-  table: original/VLE UNIFAC of Hansen, Rasmussen, Fredenslund, Schiller &
-  Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352; DECHEMA VLE Data Collection.
-  Imported by bin/curate/ into Choupo dict form (values unchanged; names
-  tokenizer-sanitised).  The ChemSep simulator code is NOT used or bundled.
+* Binary interaction parameters (NRTL / UNIQUAC / Wilson) and full UNIFAC
+  group-contribution tables imported from the ChemSep database and its upstream
+  DECHEMA primary sources.
+  RELEASE POLICY (Choupo-2607): because a clear licence extending redistribution
+  rights to the *values* (as distinct from the ChemSep simulator code) was not
+  established, the published release does **NOT** redistribute these values.
+  They are simply NOT shipped; where broad coverage is useful the release
+  instead provides Choupo's OWN group-contribution ESTIMATES under
+  `data/groupEstimative/` (self-generated Joback / Lee-Kesler values, clearly
+  flagged as estimates), carrying zero third-party numeric values.  A case that needs such a pair supplies it locally or regresses it
+  from its own data.  This retires the earlier "compiled under Artistic 2.0"
+  attribution, which overstated the licence coverage of the values; the
+  definitive per-file enumeration is produced by the snapshot allowlist gate.
 
 * Henry's-law constants (`data/standards/henrysLaw/`)
   Sander, R. (2015), "Compilation of Henry's law constants (version 4.0) for

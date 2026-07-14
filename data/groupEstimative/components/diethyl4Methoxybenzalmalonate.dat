@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethyl 4-methoxybenzalmalonate  (C15H18O5, CAS 6768-23-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diethyl4Methoxybenzalmalonate;
+formula     C15H18O5;
+CAS         6768-23-6;
+InChIKey    KUBLMWHFTKNBHL-UHFFFAOYSA-N;
+MW          278.304;      // g/mol [origin=calculated method=formula-sum]
+Tc          925.11;      // K   [origin=predictive method=joback]
+Pc          19.036;      // bar [origin=predictive method=joback]
+omega       0.9349;      // -   [origin=predictive method=lee-kesler]
+Tb          717.36;      // K   [origin=predictive method=joback]
+HvapTb      69184.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (32.092 1.13756 -0.00054226 4.81e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH=C; count 1; } { group ACH; count 4; } { group AC; count 2; } { group CH3O; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "diethyl 2-[(4-methoxyphenyl)methylidene]propanedioate" "para-methoxybenzylidenemalonic acid, diethyl ester" "diethyl(4-methoxybenzylidene)malonate" "propanedioic acid, [(4-methoxyphenyl)methylene]-, diethyl ester" "propanedioic acid, ((4-methoxyphenyl)methylene)-, diethyl ester" "propanedioic acid, 2-((4-methoxyphenyl)methylene)-, 1,3-diethyl ester" "propanedioic acid, 2-[(4-methoxyphenyl)methylene]-, 1,3-diethyl ester" "diethylmalonate,4-meo benzal" "diethylmethoxyphenylmethylenemalonate" "diethyl (p-methoxybenzylidene)malonate" "diethyl 2-(4-methoxybenzylidene)malonate" "u904" );
+gibbsFormation
+{
+    dHf_298   -787220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     730.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-475870.0
+    phase     gas;
+}

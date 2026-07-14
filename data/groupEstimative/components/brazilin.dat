@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brazilin  (C16H14O5, CAS 474-07-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brazilin;
+formula     C16H14O5;
+CAS         474-07-7;
+InChIKey    UWHUTZOCTZJUKC-JKSUJKDBSA-N;
+MW          286.283;      // g/mol [origin=calculated method=formula-sum]
+Tc          1257.83;      // K   [origin=predictive method=joback]
+Pc          58.094;      // bar [origin=predictive method=joback]
+omega       2.0580;      // -   [origin=predictive method=lee-kesler]
+Tb          999.44;      // K   [origin=predictive method=joback]
+HvapTb      115820.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-200.37 2.3451 -0.0025799 1.1073e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group ACH; count 5; } { group AC; count 2; } { group ACCH2; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group ACOH; count 3; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 7; } { group OH; count 1; } { group OH_phenol; count 3; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(6as,11br)-7,11b-dihydro-6h-indeno[2,1-c]chromene-3,6a,9,10-tetrol" "brasilin" "braziletto" "superbresiline" "hypernic extract" "limawood extract" "pernambuco extract" "brasiline" "natural red 24" "7,11b-dihydrobenz(b)indeno(1,2-d)pyran-3,6a,9,10(6h)-tetrol" "benz(b)indeno(1,2-d)pyran-3,6a,9,10(6h)-tetrol, 7,11b-dihydro-, (6as,11br)-" "(+)-brazilin" );
+gibbsFormation
+{
+    dHf_298   -572610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     502.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-269290.0
+    phase     gas;
+}

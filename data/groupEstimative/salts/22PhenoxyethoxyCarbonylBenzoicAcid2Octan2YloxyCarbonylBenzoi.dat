@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): 2-[(2-phenoxyethoxy)carbonyl]benzoic acid- 2-[(octan-2-yloxy)carbonyl]benzoic acid(1:1)  (C32H36O9, CAS 69043-96-5)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           22PhenoxyethoxyCarbonylBenzoicAcid2Octan2YloxyCarbonylBenzoi;
+formula        C32H36O9;
+CAS            69043-96-5;
+InChIKey       BFQKMQSUZIZHSZ-UHFFFAOYSA-N;
+MW             564.631;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: 2-[(2-phenoxyethoxy)carbonyl]benzoic acid- 2-[(octan-2-yloxy)carbonyl]benzoic acid(1:1)

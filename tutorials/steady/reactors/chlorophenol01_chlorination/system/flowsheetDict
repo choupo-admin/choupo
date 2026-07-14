@@ -1,0 +1,32 @@
+/*---------------------------------------------------------------------------*\
+  chlorophenol01_chlorination -- the CLASSIC chlorophenol process.
+
+  Direct chlorination of phenol with chlorine gas -- the industrial route to
+  the chlorophenols (here the mono, 4-chlorophenol):
+
+      chlorinator :  C6H5OH + Cl2  ->  C6H4ClOH + HCl   (exothermic, ~-130 kJ/mol)
+      separator   :  a flash at 80 C, 1 atm splits the volatile HCl (+ excess Cl2)
+                     off the liquid phenol / chlorophenol.
+
+  Feed: 1.1 kmol/h phenol + 1.0 kmol/h Cl2 (slight phenol excess -> Cl2 limiting).
+  phenol + 4-chlorophenol are JOBACK ESTIMATES (glass-box, unvalidated).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        chlorinator;
+        type        conversionReactor;
+        in          feed;
+        outputs     ( crude );
+        operation   { conversion 0.90;  T 353 K; }    // 90 % of the limiting Cl2, at 80 C
+        reaction    chlorination;
+    }
+    {
+        name        separator;
+        type        isothermalFlash;
+        in          crude;
+        outputs     ( product  offgas );               // liquid (phenol+4-CP) / vapour (HCl+Cl2)
+        operation   { T 353 K;  P 101325 Pa; }
+    }
+);

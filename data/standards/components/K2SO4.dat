@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Potassium sulfate (K2SO4), ARCANITE.  CAS 7778-80-5.
+
+  A NON-VOLATILE crystalline salt: never enters the vapour (K = 0).
+  Potash-fertiliser (SOP) production, Mannheim-process and sulfate
+  crystallisation exercises.  Carries the solid-phase formation datum and a
+  real solid heat capacity.
+
+  PRIMARY: Wagman et al., NBS Tables of Chemical Thermodynamic Properties,
+  J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982) -- PUBLIC DOMAIN.
+\*---------------------------------------------------------------------------*/
+
+name        K2SO4;
+formula     K2SO4;
+CAS         7778-80-5;
+
+MW          174.259;           // kg/kmol
+
+role        nonvolatile;       // never goes to the vapour (K = 0)
+
+solid
+{
+    rho_p   2660.0;            // arcanite particle density [kg/m^3]
+}
+
+gibbsFormation
+{
+    dHf_298   -1437790;        // J/mol  [Wagman et al. NBS Tables 1982]
+    s_298     175.56;          // J/(mol*K) [Wagman 1982]
+    phase     solid;
+}
+
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = a0  [J/(mol*K)], constant
+    coefficients  ( 131.46 );          // Cp(298) [Wagman et al. NBS Tables 1982]
+    Trange        ( 298  600 );        // constant-Cp validity flag (near ambient)
+}
+
+provenance
+{
+    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982"; }
+    solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
+    rho_p { origin literature; method "arcanite mineralogical density ~2.66 g/cm3"; }
+}

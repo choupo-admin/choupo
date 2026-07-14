@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-cyclohexyl-1-propyne  (C9H14, CAS 18736-95-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Cyclohexyl1Propyne;
+formula     C9H14;
+CAS         18736-95-3;
+InChIKey    IWDWSCMNLSLHKQ-UHFFFAOYSA-N;
+MW          122.211;      // g/mol [origin=calculated method=formula-sum]
+Tc          662.66;      // K   [origin=predictive method=joback]
+Pc          33.920;      // bar [origin=predictive method=joback]
+omega       0.2327;      // -   [origin=predictive method=lee-kesler]
+Tb          434.07;      // K   [origin=predictive method=joback]
+HvapTb      38209.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-53.34 0.83112 -0.00045466 8.448e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group tC; count 2; } { group CH2_ring; count 5; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "prop-1-ynylcyclohexane" "1-propynylcyclohexane" );
+gibbsFormation
+{
+    dHf_298   97530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     447.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=252150.0
+    phase     gas;
+}

@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tris(trimethylsiloxy)silane  (C9H27O3Si4, CAS 1873-89-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C9H27O3Si4 (delta Si+4; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        trisTrimethylsiloxySilane;
+formula     C9H27O3Si4;
+CAS         1873-89-8;
+InChIKey    XAASNKQYFKTYTR-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+role        radical;
+MW          295.652;      // g/mol [origin=calculated method=formula-sum]
+Tc          660.09;      // K   [origin=predictive method=joback]
+Pc          15.152;      // bar [origin=predictive method=joback]
+omega       0.3233;      // -   [origin=predictive method=lee-kesler]
+Tb          477.68;      // K   [origin=predictive method=joback]
+HvapTb      43887.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (214.07 -0.05232 0.001319 -8.287e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group CH3; count 9; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tris(trimethylsilyloxy)silicon" "1,1,5,5,5-hexamethyl-3-((trimethylsilyl)oxy)trisiloxane" "trisiloxane,1,1,1,5,5,5-hexamethyl-3-(trimethylsiloxy)- (6ci,7ci,8ci);" );
+gibbsFormation
+{
+    dHf_298   -1016420.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     992.48;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-656760.0
+    phase     gas;
+}

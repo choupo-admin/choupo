@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): diethylaniline, phthalic acid salt (1:1)  (C18H21NO4, CAS 69847-39-8)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           diethylanilinePhthalicAcidSalt11;
+formula        C18H21NO4;
+CAS            69847-39-8;
+InChIKey       RJILSGJGSRJKDS-UHFFFAOYSA-N;
+MW             315.369;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+dissociatesTo  { diethylaniline 1; phthalic acid 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

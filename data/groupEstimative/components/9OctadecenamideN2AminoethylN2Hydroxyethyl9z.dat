@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9-octadecenamide, n-(2-aminoethyl)-n-(2-hydroxyethyl)-, (9z)-  (C22H44N2O2, CAS 93-81-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        9OctadecenamideN2AminoethylN2Hydroxyethyl9z;
+formula     C22H44N2O2;
+CAS         93-81-2;
+InChIKey    ZCIHUYWGDQQFCS-UHFFFAOYSA-N;
+MW          368.606;      // g/mol [origin=calculated method=formula-sum]
+Tc          1152.20;      // K   [origin=predictive method=joback]
+Pc          10.624;      // bar [origin=predictive method=joback]
+omega       0.9861;      // -   [origin=predictive method=lee-kesler]
+Tb          938.14;      // K   [origin=predictive method=joback]
+HvapTb      100633.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-22.842 2.30562 -0.0014245 3.4716e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 15; } { group CH=CH; count 1; } { group OH; count 1; } { group CH2NH2; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 18; } { group dCH; count 2; } { group OH; count 1; } { group CdO; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-(2-azanylethyl)-n-(2-hydroxyethyl)octadec-9-enamide" );
+gibbsFormation
+{
+    dHf_298   -543680.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1151.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=126070.0
+    phase     gas;
+}

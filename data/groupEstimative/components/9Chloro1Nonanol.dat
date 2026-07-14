@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9-chloro-1-nonanol  (C9H19ClO, CAS 51308-99-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        9Chloro1Nonanol;
+formula     C9H19ClO;
+CAS         51308-99-7;
+InChIKey    XZWFEAMFGGBZOX-UHFFFAOYSA-N;
+MW          178.7;      // g/mol [origin=calculated method=formula-sum]
+Tc          699.60;      // K   [origin=predictive method=joback]
+Pc          24.338;      // bar [origin=predictive method=joback]
+omega       0.9716;      // -   [origin=predictive method=lee-kesler]
+Tb          535.13;      // K   [origin=predictive method=joback]
+HvapTb      56692.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.889 0.8996 -0.0005166 1.147e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group OH; count 1; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 9; } { group Cl; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9-chloranylnonan-1-ol" "9-chlorononan-1-ol" "1-nonanol, 9-chloro-" "9-chlorononan-1-ol;9-chlorononanol;" );
+gibbsFormation
+{
+    dHf_298   -397060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     590.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-123850.0
+    phase     gas;
+}

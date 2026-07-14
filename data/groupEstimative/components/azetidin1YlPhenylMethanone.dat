@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: azetidin-1-yl(phenyl)methanone  (C10H11NO, CAS 3420-62-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        azetidin1YlPhenylMethanone;
+formula     C10H11NO;
+CAS         3420-62-0;
+InChIKey    SIHXFQDBQGKMHX-UHFFFAOYSA-N;
+MW          161.204;      // g/mol [origin=calculated method=formula-sum]
+Tc          761.54;      // K   [origin=predictive method=joback]
+Pc          37.963;      // bar [origin=predictive method=joback]
+omega       0.5708;      // -   [origin=predictive method=lee-kesler]
+Tb          532.80;      // K   [origin=predictive method=joback]
+HvapTb      49141.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-99.62 1.1482 -0.0009209 2.8916e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "azetidine, 1-benzoyl-" "azetidine, 1-benzoyl-," );
+gibbsFormation
+{
+    dHf_298   34890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     433.98;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=196050.0
+    phase     gas;
+}

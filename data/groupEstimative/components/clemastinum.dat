@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: clemastinum  (C21H26ClNO, CAS 15686-51-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        clemastinum;
+formula     C21H26ClNO;
+CAS         15686-51-8;
+InChIKey    YNNUSGIPVFPVBX-UHFFFAOYSA-N;
+MW          343.895;      // g/mol [origin=calculated method=formula-sum]
+Tc          1057.37;      // K   [origin=predictive method=joback]
+Pc          16.404;      // bar [origin=predictive method=joback]
+omega       0.8175;      // -   [origin=predictive method=lee-kesler]
+Tb          818.49;      // K   [origin=predictive method=joback]
+HvapTb      75181.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-121.848 2.11614 -0.00148156 3.977e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group ACH; count 9; } { group AC; count 2; } { group CH2O; count 1; } { group CH3N; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group C; count 1; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 9; } { group dC_ring; count 3; } { group Cl; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[1-(4-chlorophenyl)-1-phenyl-ethoxy]ethyl]-1-methyl-pyrrolidine" "1-methyl-2-[2-(a-methyl-p-chlorobenzhydryloxy)ethyl]pyrrolidine" "pyrrolidine, 2-[2-[1-(4-chlorophenyl)-1-phenylethoxy]ethyl]-1-methyl-" "fuyosyosin" "2-[2-[1-(4-chlorophenyl)-1-phenylethoxy]ethyl]-1-methylpyrrolidine" "2-{2-[1-(4-chlorophenyl)-1-phenylethoxy]ethyl}-1-methylpyrrolidine" "pyrrolidine, 2-[2-[1-(4-chlorophenyl)-1-phenylethoxy]ethyl]-1-methyl-, [r-(r*,r*)]-" "alphamin free base" );
+gibbsFormation
+{
+    dHf_298   -37720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     706.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=386470.0
+    phase     gas;
+}

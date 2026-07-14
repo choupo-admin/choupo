@@ -33,6 +33,7 @@ License
 #include "UNIQUAC.H"
 #include "Wilson.H"
 #include "ElectrolyteActivity.H"
+#include "thermo/Component.H"
 
 #include <stdexcept>
 
@@ -51,52 +52,58 @@ void ActivityModel::registerModel(const std::string& name, Factory f)
 
 std::unique_ptr<ActivityModel>
 ActivityModel::New(const DictPtr& dict,
-                     const std::vector<std::string>& names)
+                     const std::vector<Component>& components)
 {
     const std::string modelName = dict->lookupWord("model");
     auto it = registry().find(modelName);
     if (it == registry().end())
         throw std::runtime_error("Unknown activity model '" + modelName + "'");
-    return it->second(dict, names);
+    return it->second(dict, components);
+}
+
+// Component LABELS from the resolved components -- for the name-only models that
+// need only labels for their pair lookups (NRTL/UNIFAC/UNIQUAC).  Models that
+// need component DATA (Wilson's Vliq, the salt's electrolyte{}) take the whole
+// vector and self-configure in their constructors -- no post-construction dance.
+static std::vector<std::string> namesOf(const std::vector<Component>& comps)
+{
+    std::vector<std::string> ns; ns.reserve(comps.size());
+    for (const auto& c : comps) ns.push_back(c.name());
+    return ns;
 }
 
 void ActivityModel::registerBuiltins()
 {
     registerModel("ideal",
-        [](const DictPtr&, const std::vector<std::string>& names)
+        [](const DictPtr&, const std::vector<Component>& comps)
             -> std::unique_ptr<ActivityModel>
-        { return std::make_unique<IdealSolution>(names.size()); });
+        { return std::make_unique<IdealSolution>(comps.size()); });
 
     registerModel("NRTL",
-        [](const DictPtr& d, const std::vector<std::string>& names)
+        [](const DictPtr& d, const std::vector<Component>& comps)
             -> std::unique_ptr<ActivityModel>
-        { return std::make_unique<NRTL>(d, names); });
+        { return std::make_unique<NRTL>(d, namesOf(comps)); });
 
     registerModel("Wilson",
-        [](const DictPtr& d, const std::vector<std::string>& names)
+        [](const DictPtr& d, const std::vector<Component>& comps)
             -> std::unique_ptr<ActivityModel>
-        { return std::make_unique<Wilson>(d, names); });
+        { return std::make_unique<Wilson>(d, comps); });   // self-sets molar volumes
 
-    // Electrolyte activity: pitzer / eNRTL are options of THIS slot (each also
-    // exposes the ElectrolyteModel interface; configured by ThermoPackage).
-    registerModel("pitzer",
-        [](const DictPtr&, const std::vector<std::string>& names)
-            -> std::unique_ptr<ActivityModel>
-        { return std::make_unique<ElectrolyteActivity>(names, "pitzer"); });
-    registerModel("eNRTL",
-        [](const DictPtr&, const std::vector<std::string>& names)
-            -> std::unique_ptr<ActivityModel>
-        { return std::make_unique<ElectrolyteActivity>(names, "eNRTL"); });
+    // Electrolyte activity (pitzer / eNRTL) is NO LONGER an activityModel option:
+    // an electrolyte case SELECTS a propertyPackage and the ThermoPackageBuilder
+    // assembles the ElectrolyteActivity directly (the legacy configure()/(comps,model)
+    // ctor path was retired 2026-06-30).  A thermoPackage `activityModel { model
+    // pitzer; }` now fails loudly at ActivityModel::New -- which is correct.
 
     registerModel("UNIFAC",
-        [](const DictPtr& d, const std::vector<std::string>& names)
+        [](const DictPtr& d, const std::vector<Component>& comps)
             -> std::unique_ptr<ActivityModel>
-        { return std::make_unique<UNIFAC>(d, names); });
+        { return std::make_unique<UNIFAC>(d, namesOf(comps)); });
 
     registerModel("UNIQUAC",
-        [](const DictPtr& d, const std::vector<std::string>& names)
+        [](const DictPtr& d, const std::vector<Component>& comps)
             -> std::unique_ptr<ActivityModel>
-        { return std::make_unique<UNIQUAC>(d, names); });
+        { return std::make_unique<UNIQUAC>(d, namesOf(comps)); });
 }
 
 } // namespace Choupo

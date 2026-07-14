@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-bis(trifluoromethyl)benzamide  (C9H5F6NO, CAS 22227-26-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35BisTrifluoromethylBenzamide;
+formula     C9H5F6NO;
+CAS         22227-26-5;
+InChIKey    YNOPIKHMZIOWHS-UHFFFAOYSA-N;
+MW          257.133;      // g/mol [origin=calculated method=formula-sum]
+Tc          751.20;      // K   [origin=predictive method=joback]
+Pc          27.906;      // bar [origin=predictive method=joback]
+omega       0.8052;      // -   [origin=predictive method=lee-kesler]
+Tb          557.72;      // K   [origin=predictive method=joback]
+HvapTb      49121.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.15 1.0172 -0.00082962 2.5096e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group CF3; count 2; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 6; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,5-di(trifluoromethyl)benzamide" "3,5-bis(trifluoromethyl)-benzamide" "ynopikhmziowhs-uhfffaoysa-" "3,5-bis(trifluoromethyl)benzamide;" "benzamide,3,5-bis(trifluoromethyl)-" );
+gibbsFormation
+{
+    dHf_298   -1288450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     578.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1107600.0
+    phase     gas;
+}

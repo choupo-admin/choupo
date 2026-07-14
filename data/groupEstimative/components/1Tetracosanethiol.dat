@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-tetracosanethiol  (C24H50S, CAS 16331-24-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Tetracosanethiol;
+formula     C24H50S;
+CAS         16331-24-1;
+InChIKey    BVPRDJDJPZQSIU-UHFFFAOYSA-N;
+MW          370.724;      // g/mol [origin=calculated method=formula-sum]
+Tc          994.74;      // K   [origin=predictive method=joback]
+Pc          8.363;      // bar [origin=predictive method=joback]
+omega       0.7934;      // -   [origin=predictive method=lee-kesler]
+Tb          811.58;      // K   [origin=predictive method=joback]
+HvapTb      75755.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.037 2.31112 -0.0013042 2.8e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 22; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 23; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetracosane-1-thiol" "1-tetracosanthiol" "agn-pc-00mu48" );
+gibbsFormation
+{
+    dHf_298   -500210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1153.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=180590.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,1-trifluorobutane  (C4H7F3, CAS 460-34-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        111Trifluorobutane;
+formula     C4H7F3;
+CAS         460-34-4;
+InChIKey    LDRPULCXZDDSGE-UHFFFAOYSA-N;
+MW          112.094;      // g/mol [origin=calculated method=formula-sum]
+Tc          430.12;      // K   [origin=predictive method=joback]
+Pc          33.881;      // bar [origin=predictive method=joback]
+omega       0.2842;      // -   [origin=predictive method=lee-kesler]
+Tb          285.70;      // K   [origin=predictive method=joback]
+HvapTb      20751.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.948 0.54502 -0.0004148 1.251e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 1; } { group F; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1-tris(fluoranyl)butane" "1,1,1-trifluorobutane;" "butane,1,1,1-trifluoro-" "butane, 1,1,1-trifluoro-" );
+gibbsFormation
+{
+    dHf_298   -722970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     368.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-598790.0
+    phase     gas;
+}

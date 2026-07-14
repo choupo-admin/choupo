@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-bromo-2-butanone  (C4H7BrO, CAS 816-40-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Bromo2Butanone;
+formula     C4H7BrO;
+CAS         816-40-0;
+InChIKey    CCXQVBSQUQCEEO-UHFFFAOYSA-N;
+MW          151.003;      // g/mol [origin=calculated method=formula-sum]
+Tc          610.98;      // K   [origin=predictive method=joback]
+Pc          46.277;      // bar [origin=predictive method=joback]
+omega       0.4529;      // -   [origin=predictive method=lee-kesler]
+Tb          411.15;      // K   [origin=predictive method=joback]
+HvapTb      37679.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.802 0.39402 -0.0002465 6.146e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2CO; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group Br; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanylbutan-2-one" "1-bromobutan-2-one" "2-butanone, 1-bromo-" "bromomethyl ethyl ketone" "1-bromobutanone" "(bromomethyl)ethyl ketone" "1-bromobutan-2-one  min." "1-bromo-2-butanone (stabilized with calcium carbonate)" "1-bromo-2-butanone;2-oxobutyl bromide;bromomethyl ethyl ketone;1-bromobutan-2-one;1-bromo-2-butanone;" );
+gibbsFormation
+{
+    dHf_298   -212140.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     389.55;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-131800.0
+    phase     gas;
+}

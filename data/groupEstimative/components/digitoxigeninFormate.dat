@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: digitoxigenin formate  (C24H34O5, CAS 1250-96-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C24H34O5 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        digitoxigeninFormate;
+formula     C24H34O5;
+CAS         1250-96-0;
+InChIKey    CYFZCSUWVQGZIF-ZXRSHIDQSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          402.531;      // g/mol [origin=calculated method=formula-sum]
+Tc          1154.24;      // K   [origin=predictive method=joback]
+Pc          15.011;      // bar [origin=predictive method=joback]
+omega       1.0548;      // -   [origin=predictive method=lee-kesler]
+Tb          921.44;      // K   [origin=predictive method=joback]
+HvapTb      87730.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-394.62 3.65834 -0.00359144 1.4595e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 10; } { group CH; count 5; } { group C; count 3; } { group CH=C; count 1; } { group OH; count 1; } { group HCOO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2_ring; count 10; } { group CH_ring; count 5; } { group C_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(3s,5r,10s,13r,14s,17r)-10,13-dimethyl-14-oxidanyl-17-(5-oxidanylidene-2h-furan-3-yl)-1,2,3,4,5,6,7,8,9,11,12,15,16,17-tetradecahydrocyclopenta[a]phenanthren-3-yl] methanoate" "3-formyl-digitoxigenin" "3-beta,14-dihydroxy-5-beta-card-20(22)-enolide 3-formate" "5-beta-card-20(22)-enolide, 3-beta,14-dihydroxy-, 3-formate" "card-20(22)-enolide, 3-(formyloxy)-14-hydroxy-, (3-beta,5-beta)-" "[(3s,5r,10s,13r,14s,17r)-14-hydroxy-10,13-dimethyl-17-(5-oxo-2h-furan-3-yl)-1,2,3,4,5,6,7,8,9,11,12,15,16,17-tetradecahydrocyclopenta[a]phenanthren-3-yl] formate" );
+gibbsFormation
+{
+    dHf_298   -567540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1062.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-28050.0
+    phase     gas;
+}

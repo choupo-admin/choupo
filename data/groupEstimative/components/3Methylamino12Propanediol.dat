@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-methylamino-1,2-propanediol  (C4H11NO2, CAS 40137-22-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Methylamino12Propanediol;
+formula     C4H11NO2;
+CAS         40137-22-2;
+InChIKey    WOMTYMDHLQTCHY-UHFFFAOYSA-N;
+MW          105.137;      // g/mol [origin=calculated method=formula-sum]
+Tc          690.27;      // K   [origin=predictive method=joback]
+Pc          51.240;      // bar [origin=predictive method=joback]
+omega       1.3897;      // -   [origin=predictive method=lee-kesler]
+Tb          525.21;      // K   [origin=predictive method=joback]
+HvapTb      63904.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (6.942 0.53392 -0.0003064 6.6e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH; count 1; } { group OH; count 2; } { group CH3NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group OH; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(methylamino)propane-1,2-diol" "3-methylaminopropane-1,2-diol" "womtymdhlqtchy-uhfffaoysa-" "(2,3-dihydroxypropyl)methylamine;1-(methylamino)-2,3-propanediol;1-(n-methylamino)propane-2,3-diol;2,3-dihydroxy-n-methylpropylamine;3-(methylamino)-1,2-propanediol;methyl(2,3-dihydroxypropyl)amine;n-methyl-2,3-dihydroxy-1-propanamine;n-methyl-2,3-dihydroxypropylamine;n-methyl-n-(2,3-dihydroxypropyl)amine;n-methyl-b,g-dihydroxypropylamine;n-methylglycerylamine;" );
+gibbsFormation
+{
+    dHf_298   -382160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     444.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-203890.0
+    phase     gas;
+}

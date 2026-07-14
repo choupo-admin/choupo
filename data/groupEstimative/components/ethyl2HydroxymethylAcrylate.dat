@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl 2-(hydroxymethyl)acrylate  (C6H10O3, CAS 10029-04-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethyl2HydroxymethylAcrylate;
+formula     C6H10O3;
+CAS         10029-04-6;
+InChIKey    SYGAXBISYRORDR-UHFFFAOYSA-N;
+MW          130.143;      // g/mol [origin=calculated method=formula-sum]
+Tc          657.97;      // K   [origin=predictive method=joback]
+Pc          36.731;      // bar [origin=predictive method=joback]
+omega       0.8818;      // -   [origin=predictive method=lee-kesler]
+Tb          483.84;      // K   [origin=predictive method=joback]
+HvapTb      52446.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (25.452 0.53292 -0.0002636 3.21e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH2=C; count 1; } { group OH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-(hydroxymethyl)prop-2-enoate" "ethyl 2-(hydroxymethyl)-2-propenoate" "2-(hydroxymethyl)acrylic acid ethyl ester" "ethyl alpha-(hydroxymethyl) acrylate" "2-(hydroxymethyl)-acrylic acid ethyl ester" "2-(hydroxymethyl)-2-propenoic acid ethyl ester" "2-propenoic acid, 2-(hydroxymethyl)-, ethyl ester" "2-propenoic acid, 2-(hydroxymethyl)-, ethyl ester (9ci)" "acrylicacid, 2-(hydroxymethyl)-, ethyl ester (8ci);hydracrylic acid, 2-methylene-,ethyl ester (7ci);ethyl 2-(hydroxymethyl)acrylate;ethyl2-hydroxymethyl-2-propenoate;ethyl a-(hydroxymethyl)acrylate;ethyl a-hydroxymethacrylate;rhma-e;2-propenoic acid,2-(hydroxymethyl)-, ethyl ester;" );
+gibbsFormation
+{
+    dHf_298   -521040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     483.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-368260.0
+    phase     gas;
+}

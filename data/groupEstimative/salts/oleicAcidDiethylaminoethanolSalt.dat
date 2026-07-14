@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): oleic acid, diethylaminoethanol salt  (C24H49NO3, CAS 67923-77-7)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           oleicAcidDiethylaminoethanolSalt;
+formula        C24H49NO3;
+CAS            67923-77-7;
+InChIKey       VIWSULSDRVLYMN-KVVVOXFISA-N;
+MW             399.66;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+dissociatesTo  { oleic acid 1; diethylaminoethanol 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

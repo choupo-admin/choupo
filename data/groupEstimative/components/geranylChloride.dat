@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: geranyl chloride  (C10H17Cl, CAS 5389-87-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        geranylChloride;
+formula     C10H17Cl;
+CAS         5389-87-7;
+InChIKey    WLAUCMCTKPXDIY-JXMROGBWSA-N;
+MW          172.696;      // g/mol [origin=calculated method=formula-sum]
+Tc          665.64;      // K   [origin=predictive method=joback]
+Pc          22.654;      // bar [origin=predictive method=joback]
+omega       0.4334;      // -   [origin=predictive method=lee-kesler]
+Tb          473.91;      // K   [origin=predictive method=joback]
+HvapTb      42315.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-21.057 1.00046 -0.0007128 2.152e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH=C; count 2; } { group CH2Cl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group dCH; count 2; } { group dC; count 2; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2e)-1-chloranyl-3,7-dimethyl-octa-2,6-diene" "1-chloro-3,7-dimethylocta-2,6-diene" "(e)-1-chloro-3,7-dimethyl-2,6-octadiene" "(e)-1-chloro-3,7-dimethylocta-2,6-diene" "trans-1-chloro-3,7-dimethyl-2,6-octadiene" "(2e)-1-chloro-3,7-dimethylocta-2,6-diene" "2,6-octadiene, 1-chloro-3,7-dimethyl-, (e)-" );
+gibbsFormation
+{
+    dHf_298   -50610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     557.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=164730.0
+    phase     gas;
+}

@@ -1,0 +1,17 @@
+recordType modelSpecies;   // model species — summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+
+name    Mn;
+ion     "Mn+2";
+charge  +2;
+
+MW { value 54.938; unit g/mol;}
+
+aqueousThermo
+{
+    hfAq { value -220750; unit J/mol;}
+    sAq  { value -73.6;  unit J/mol/K;}
+    cpAq { value 50.0; unit J/mol/K;}
+}
+
+source "+formation: Wagman 1982";

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloroethyl phenyl sulfide  (C8H9ClS, CAS 5535-49-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2ChloroethylPhenylSulfide;
+formula     C8H9ClS;
+CAS         5535-49-9;
+InChIKey    QDXIHHOPZFCEAP-UHFFFAOYSA-N;
+MW          172.67;      // g/mol [origin=calculated method=formula-sum]
+Tc          755.78;      // K   [origin=predictive method=joback]
+Pc          35.643;      // bar [origin=predictive method=joback]
+omega       0.4159;      // -   [origin=predictive method=lee-kesler]
+Tb          515.53;      // K   [origin=predictive method=joback]
+HvapTb      46880.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.798 0.68609 -0.0004228 9.09e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 1; } { group CH2Cl; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Cl; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloroethylsulfanylbenzene" "[(2-chloroethyl)sulfanyl]benzene" "2-(phenylthio)ethyl chloride" "benzene, [(2-chloroethyl)thio]-" "(2-chloroethylthio)benzene" "(2-chloroethyl)thiobenzene" "2-chloroethylphenyl sulfide" "2-chloro-1-phenylthioethane" "2-chloroethyl phenyl sulphide" "((2-chloroethyl)thio)benzene" "benzene, ((2-chloroethyl)thio)- (9ci)" );
+gibbsFormation
+{
+    dHf_298   54210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     456.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=150080.0
+    phase     gas;
+}

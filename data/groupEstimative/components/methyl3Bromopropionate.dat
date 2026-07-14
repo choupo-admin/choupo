@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 3-bromopropionate  (C4H7BrO2, CAS 3395-91-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl3Bromopropionate;
+formula     C4H7BrO2;
+CAS         3395-91-3;
+InChIKey    KQEVIFKPZOGBMZ-UHFFFAOYSA-N;
+MW          167.002;      // g/mol [origin=calculated method=formula-sum]
+Tc          610.58;      // K   [origin=predictive method=joback]
+Pc          42.831;      // bar [origin=predictive method=joback]
+omega       0.4764;      // -   [origin=predictive method=lee-kesler]
+Tb          415.50;      // K   [origin=predictive method=joback]
+HvapTb      38340.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (32.852 0.36722 -0.0001706 1.34e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2COO; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 3-bromanylpropanoate" "methyl 3-bromopropanoate" "propanoic acid, 3-bromo-, methyl ester" "methyl beta-bromopropionate" "propionic acid, 3-bromo-, methyl ester" "beta-bromopropionic acid, methyl ester" "3-bromopropanoic acid methyl ester" "methyl .beta.-bromopropionate" "3-bromopropionic acid methyl ester" "3-bromo-propionic acid methyl ester" ".beta.-bromopropionic acid, methyl ester" "propionic acid, 3-bromo-, methyl ester (8ci)" );
+gibbsFormation
+{
+    dHf_298   -416840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     414.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-313250.0
+    phase     gas;
+}

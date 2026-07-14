@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: trilaurin  (C39H74O6, CAS 538-24-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        trilaurin;
+formula     C39H74O6;
+CAS         538-24-9;
+InChIKey    VMPHSYLJUKZBJJ-UHFFFAOYSA-N;
+MW          639.015;      // g/mol [origin=calculated method=formula-sum]
+Tc          1780.82;      // K   [origin=predictive method=joback]
+Pc          4.099;      // bar [origin=predictive method=joback]
+omega       -0.3649;      // -   [origin=predictive method=lee-kesler]
+Tb          1266.14;      // K   [origin=predictive method=joback]
+HvapTb      124241.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (41.982 3.55036 -0.0018172 2.811e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 29; } { group CH; count 1; } { group CH2COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 32; } { group CH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3-di(dodecanoyloxy)propyl dodecanoate" "glycerol trilaurate" "glyceryl trilaurate" "glyceryl tridodecanoate" "tridodecanoin" "glycerin trilaurate" "laurin, tri-" "lauric acid triglyceride" "1,2,3-trilauroylglycerol" "lauric acid triglycerin ester" "1,2,3-tridodecanoylglycerol" "dodecanoic acid, 1,2,3-propanetriyl ester" );
+gibbsFormation
+{
+    dHf_298   -1805410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1819.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-656050.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dotriacontane, 3,7,11,15,18,22,26,30-octamethyl-  (C40H82, CAS 84296-10-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dotriacontane37111518222630Octamethyl;
+formula     C40H82;
+CAS         84296-10-6;
+InChIKey    WEHKMXJXZKAYRJ-UHFFFAOYSA-N;
+MW          563.096;      // g/mol [origin=calculated method=formula-sum]
+Tc          1434.69;      // K   [origin=predictive method=joback]
+Pc          4.010;      // bar [origin=predictive method=joback]
+omega       -0.1380;      // -   [origin=predictive method=lee-kesler]
+Tb          1111.28;      // K   [origin=predictive method=joback]
+HvapTb      101530.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-46.928 3.8512 -0.0021778 4.608e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 10; } { group CH2; count 22; } { group CH; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 10; } { group CH2; count 22; } { group CH; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7,11,15,18,22,26,30-octamethyldotriacontane" "agn-pc-00o0xv" );
+gibbsFormation
+{
+    dHf_298   -911170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1637.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=266400.0
+    phase     gas;
+}

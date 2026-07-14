@@ -1,0 +1,6 @@
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species FeOH3m; ion "Fe(OH)3-"; z -1; masters ( { ion Fe; nu 1; } { ion H; nu -3; } ); nuWater 3;
+      logK25 -31; dH 126775.2; source "USGS PHREEQC phreeqc.dat (public domain)";
+

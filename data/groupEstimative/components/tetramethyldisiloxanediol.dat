@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetramethyldisiloxanediol  (C4H14O3Si2, CAS 1118-15-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C4H14O3Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        tetramethyldisiloxanediol;
+formula     C4H14O3Si2;
+CAS         1118-15-6;
+InChIKey    PFEAZKFNWPIFCV-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          166.323;      // g/mol [origin=calculated method=formula-sum]
+Tc          668.82;      // K   [origin=predictive method=joback]
+Pc          35.643;      // bar [origin=predictive method=joback]
+omega       1.0121;      // -   [origin=predictive method=lee-kesler]
+Tb          500.70;      // K   [origin=predictive method=joback]
+HvapTb      60854.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (116.97 -0.02372 0.000686 -4.332e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group OH; count 2; } { group Si; count 1; } { group SiO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group OH; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[dimethyl(oxidanyl)silyl]oxy-dimethyl-oxidanyl-silane" "tetramethyl-1,3-disiloxanediol" "1,1,3,3-tetramethyldisiloxane-1,3-diol" "tetramethyldisiloxane-1,3-diol" "1,3-disiloxanediol, 1,1,3,3-tetramethyl-" "1,3-dihydroxytetramethyldisiloxane" "1,1,3,3-tetramethyl-1,3-disiloxanediol" "1,3-disiloxanediol, tetramethyl- (6ci,7ci)" "1,3-dihydroxy-1,1,3,3-tetramethyl-1,3-disiloxane" "1,3-disiloxanediol,1,1,3,3-tetramethyl-" "hydroxy-[hydroxy(dimethyl)silyl]oxy-dimethylsilane" "1,3-disiloxanediol,tetramethyl- (6ci,7ci); 1,1,3,3-tetramethyl-1,3-dihydroxydisiloxane;1,1,3,3-tetramethyl-1,3-disiloxanediol; 1,1,3,3-tetramethyldisiloxane-1,3-diol;1,3-dihydroxy-1,1,3,3-tetramethyl-1,3-disiloxane;1,3-dihydroxy-1,1,3,3-tetramethyldisiloxane;1,3-dihydroxytetramethyldisiloxane; tetramethyldisiloxane-1,3-diol;tetramethyldisiloxanediol" );
+gibbsFormation
+{
+    dHf_298   -785810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     677.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-605360.0
+    phase     gas;
+}

@@ -1,0 +1,69 @@
+/*---------------------------------------------------------------------------*\
+  column09_tray_hydraulics  --  column01, asked the question a converged MESH
+  solution never answers: CAN THE TRAYS PASS THE TRAFFIC?
+
+  A converged column tells you what separates.  It says nothing about whether
+  the vapour rising through the holes will carry the liquid up with it
+  (entrainment flooding), whether the liquid will back up the downcomer until
+  it reaches the tray above (downcomer flooding), or whether it will simply
+  rain through the holes instead of bubbling (weeping).  A column that floods
+  separates nothing, and the stage equations never notice.
+
+  Add an `hydraulics {}` block and the column runs a RATING pass on its own
+  converged profile.  Two modes, the same equations in opposite directions:
+
+    * give `diameter` -> RATING.  How close to flood is each tray?
+    * omit `diameter` -> DESIGN.  What diameter keeps every tray at or below
+                         `floodFraction` of its flooding velocity?  The widest
+                         tray sets the column.  That is this case.
+
+  Nothing here is guessed.  The orifice coefficient C_o is a chart in the
+  literature (Liebson, Kelley & Bullington 1957, against hole-area ratio and
+  plate-thickness/hole-diameter); it is a DECLARED number you own, printed back
+  at you.  The weep-point constant K2 is a chart too -- leave it out and the
+  column tells you the weep check was not performed rather than inventing it.
+
+  Read the printed table.  The flow parameter F_LV climbs below the feed (more
+  liquid, less vapour per unit mass), which lowers Fair's capacity parameter and
+  therefore the flooding velocity -- yet the stripping trays are not the tight
+  ones here, because the vapour volumetric flow falls faster than the capacity.
+  The column is sized by whichever tray loses that argument.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        column09;
+        type        distillationColumn;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        15;
+            feedStage      8;
+            refluxRatio    2.0;
+            distillateRate 50.0 kmol/h;
+            feedQuality    1.0;
+            P              1.01325 bar;
+
+            hydraulics
+            {
+                trayType               sieve;
+                // diameter            1.2;      // uncomment -> RATING mode
+                traySpacing            0.50;     // m
+                weirHeight             0.050;    // m
+                holeDiameter           5.0e-3;   // m
+                holeAreaFraction       0.10;     // A_holes / A_active
+                downcomerAreaFraction  0.12;     // A_downcomer / A_tower
+                weirLengthFraction     0.77;     // l_weir / D  (goes with 0.12)
+                orificeCoefficient     0.84;     // C_o -- read off the Liebson chart
+                floodFraction          0.80;     // design target
+                K2                     30.7;     // weep chart at h_w + h_ow ~ 60 mm
+            }
+        }
+
+        compositionTol   1e-7;
+        maxOuterIter     200;
+    }
+);

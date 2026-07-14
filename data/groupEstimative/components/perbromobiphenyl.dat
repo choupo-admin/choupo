@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perbromobiphenyl  (C12Br10, CAS 13654-09-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perbromobiphenyl;
+formula     C12Br10;
+CAS         13654-09-6;
+InChIKey    AQPHBYQUCKHJLT-UHFFFAOYSA-N;
+MW          943.172;      // g/mol [origin=calculated method=formula-sum]
+Tc          1577.92;      // K   [origin=predictive method=joback]
+Pc          73.302;      // bar [origin=predictive method=joback]
+omega       2.0438;      // -   [origin=predictive method=lee-kesler]
+Tb          1238.92;      // K   [origin=predictive method=joback]
+HvapTb      117828.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (149.07 0.773 -0.000735 2.746e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 12; } { group Br; count 10; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 12; } { group Br; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5-pentakis(bromanyl)-6-[2,3,4,5,6-pentakis(bromanyl)phenyl]benzene" "decabromobiphenyl" "berkflam b 10" "flammex b 10" "biphenyl, decabromo-" "decabromo-1,1'-biphenyl" "1,1'-biphenyl, 2,2',3,3',4,4',5,5',6,6'-decabromo-" "2,2',3,3',4,4',5,5',6,6'-decabromobiphenyl" "perbromo-1,1'-biphenyl" "1,1'-biphenyl,2,2',3,3',4,4',5,5',6,6'-decabromo-" "1,2,3,4,5-pentabromo-6-(2,3,4,5,6-pentabromophenyl)benzene" "biphenyl,decabromo- (7ci,8ci);2,2',3,3',4,4',5,5',6,6'-decabromobiphenyl;adine 0102;berkflam b 10;decabromobiphenyl;flammex b 10;pbb 209;perbromobiphenyl;rbf102;1,1'-biphenyl, 2,2',3,3',4,4',5,5',6,6'-decabromo-;" );
+gibbsFormation
+{
+    dHf_298   330650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     859.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=321880.0
+    phase     gas;
+}

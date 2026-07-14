@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2h-pyran, tetrahydro-2-[(13z)-13-octadecen-3-ynyloxy]-  (C23H40O2, CAS 67616-77-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2hPyranTetrahydro213z13Octadecen3Ynyloxy;
+formula     C23H40O2;
+CAS         67616-77-7;
+InChIKey    IKDNHCGPZFTPQH-UHFFFAOYSA-N;
+MW          348.571;      // g/mol [origin=calculated method=formula-sum]
+Tc          1005.14;      // K   [origin=predictive method=joback]
+Pc          10.856;      // bar [origin=predictive method=joback]
+omega       0.8640;      // -   [origin=predictive method=lee-kesler]
+Tb          807.92;      // K   [origin=predictive method=joback]
+HvapTb      76251.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-37.427 2.11492 -0.00117516 2.3498e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 15; } { group CH; count 1; } { group CH=CH; count 1; } { group CH2O; count 1; } { group FCH2O; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 13; } { group dCH; count 2; } { group tC; count 2; } { group CH2_ring; count 4; } { group CH_ring; count 1; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-octadec-13-en-3-ynoxyoxane" "2h-pyran, tetrahydro-2-[(13z)-13-octadecen-3-yn-1-yloxy]-" );
+gibbsFormation
+{
+    dHf_298   -338430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     946.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=259130.0
+    phase     gas;
+}

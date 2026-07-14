@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl cumyl ether  (C10H14O, CAS 935-67-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylCumylEther;
+formula     C10H14O;
+CAS         935-67-1;
+InChIKey    MRFQFQYRTNGOCZ-UHFFFAOYSA-N;
+MW          150.221;      // g/mol [origin=calculated method=formula-sum]
+Tc          691.16;      // K   [origin=predictive method=joback]
+Pc          29.377;      // bar [origin=predictive method=joback]
+omega       0.3664;      // -   [origin=predictive method=lee-kesler]
+Tb          474.27;      // K   [origin=predictive method=joback]
+HvapTb      41244.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-39.08 0.93756 -0.0006122 1.504e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methoxypropan-2-ylbenzene" "benzene, (1-methoxy-1-methylethyl)-" "(1-methoxy-1-methylethyl)benzene" "methyl alpha,alpha-dimethylbenzyl ether" "2-methoxy-2-phenylpropane" "(2-methoxypropan-2-yl)benzene" "alpha,alpha-dimethylbenzyl methyl ether" "ether, .alpha.,.alpha.-dimethylbenzyl methyl" );
+gibbsFormation
+{
+    dHf_298   -154170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     411.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=43570.0
+    phase     gas;
+}

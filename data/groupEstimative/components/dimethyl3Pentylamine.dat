@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethyl-3-pentylamine  (C7H17N, CAS 18636-94-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethyl3Pentylamine;
+formula     C7H17N;
+CAS         18636-94-7;
+InChIKey    SUEKSPIQGIMSQM-UHFFFAOYSA-N;
+MW          115.22;      // g/mol [origin=calculated method=formula-sum]
+Tc          538.17;      // K   [origin=predictive method=joback]
+Pc          28.173;      // bar [origin=predictive method=joback]
+omega       0.3799;      // -   [origin=predictive method=lee-kesler]
+Tb          371.76;      // K   [origin=predictive method=joback]
+HvapTb      32831.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.848 0.79868 -0.0004728 1.09e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethylpentan-3-amine" "agn-pc-03razl" "3-pentanamine, n,n-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   -125560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     435.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=116400.0
+    phase     gas;
+}

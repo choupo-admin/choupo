@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tritetracontane  (C43H88, CAS 7098-21-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tritetracontane;
+formula     C43H88;
+CAS         7098-21-7;
+InChIKey    PKBVGJFKBPLWOD-UHFFFAOYSA-N;
+MW          605.177;      // g/mol [origin=calculated method=formula-sum]
+Tc          1657.43;      // K   [origin=predictive method=joback]
+Pc          3.499;      // bar [origin=predictive method=joback]
+omega       -0.4311;      // -   [origin=predictive method=lee-kesler]
+Tb          1183.44;      // K   [origin=predictive method=joback]
+HvapTb      111312.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-36.199 4.08884 -0.0023154 5.005e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 41; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 41; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "62479d2d-191f-4ebb-85e5-9bfeab9bb03c" "Q18456290" "C43" "nc43" "n-c43" );
+gibbsFormation
+{
+    dHf_298   -930850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1830.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=311180.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-cyclopentyl-1-propyne  (C8H12, CAS 116279-08-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Cyclopentyl1Propyne;
+formula     C8H12;
+CAS         116279-08-4;
+InChIKey    VBTCAHMANZTRMG-UHFFFAOYSA-N;
+MW          108.184;      // g/mol [origin=calculated method=formula-sum]
+Tc          595.70;      // K   [origin=predictive method=joback]
+Pc          36.377;      // bar [origin=predictive method=joback]
+omega       0.2362;      // -   [origin=predictive method=lee-kesler]
+Tb          388.04;      // K   [origin=predictive method=joback]
+HvapTb      33517.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-51.089 0.8016 -0.00053473 1.4189e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group tCH; count 1; } { group tC; count 1; } { group CH2_ring; count 4; } { group CH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "prop-2-ynylcyclopentane" "2-propynylcyclopentane" "cyclopentylpropyne" "3-cyclopentylprop-1-yne" "agn-pc-0cj5qp" "cyclopentane,2-propyn-1-yl-" "1-deuterio-1-prop-2-ynylcyclopentane" "cyclopentane,2-propynyl- (9ci); 3-cyclopentyl-1-propyne; 3-cyclopentylpropyne;prop-2-ynylcyclopentane; propargylcyclopentane" );
+gibbsFormation
+{
+    dHf_298   143930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     386.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=276100.0
+    phase     gas;
+}

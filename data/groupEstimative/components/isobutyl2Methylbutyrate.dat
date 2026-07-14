@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isobutyl 2-methylbutyrate  (C9H18O2, CAS 2445-67-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isobutyl2Methylbutyrate;
+formula     C9H18O2;
+CAS         2445-67-2;
+InChIKey    NWZQCEQAPBRMFX-UHFFFAOYSA-N;
+MW          158.241;      // g/mol [origin=calculated method=formula-sum]
+Tc          640.80;      // K   [origin=predictive method=joback]
+Pc          23.542;      // bar [origin=predictive method=joback]
+omega       0.5319;      // -   [origin=predictive method=lee-kesler]
+Tb          462.86;      // K   [origin=predictive method=joback]
+HvapTb      42259.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (16.752 0.81588 -0.0003776 3.78e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylpropyl 2-methylbutanoate" "isobutyl 2-methylbutanoate" "butanoic acid, 2-methyl-, 2-methylpropyl ester" "iso-butyl-2-methylbutyrate" "butyric acid, 2-methyl-, isobutyl ester" "we(3:0(2me)/4:0(2me))" "butyricacid, 2-methyl-, isobutyl ester (7ci,8ci);2-methylpropyl 2-methylbutyrate;isobutyl 2-methylbutanoate;isobutyl 2-methylbutyrate;" );
+gibbsFormation
+{
+    dHf_298   -556930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     538.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-290350.0
+    phase     gas;
+}

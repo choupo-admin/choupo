@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 8-chloro-1-octyne  (C8H13Cl, CAS 24088-97-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        8Chloro1Octyne;
+formula     C8H13Cl;
+CAS         24088-97-9;
+InChIKey    HQHUHJPIECZMCX-UHFFFAOYSA-N;
+MW          144.642;      // g/mol [origin=calculated method=formula-sum]
+Tc          593.14;      // K   [origin=predictive method=joback]
+Pc          28.444;      // bar [origin=predictive method=joback]
+omega       0.3891;      // -   [origin=predictive method=lee-kesler]
+Tb          410.19;      // K   [origin=predictive method=joback]
+HvapTb      37645.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (22.286 0.6767 -0.00042773 1.1139e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH2Cl; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group tCH; count 1; } { group tC; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "8-chloranyloct-1-yne" "1-octyne, 8-chloro-" "8-chlorooct-1-yne" "1-chloro-7-octyne;8-chloro-1-octyne" );
+gibbsFormation
+{
+    dHf_298   67710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     470.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=227620.0
+    phase     gas;
+}

@@ -1,0 +1,43 @@
+/*---------------------------------------------------------------------------*\
+  cstr07_lhhw_methylAcetate  --  an isothermal CSTR packed with Amberlyst 15.
+
+  The rate constants are reported per GRAM of dry catalyst, so the reactor needs
+  to know how much catalyst a cubic metre of it holds: `catalystLoading`.  It is
+  a declared, visible number, not a fudge -- change the packing and the reactor
+  changes with it.
+
+  Run it and read the KPI `k_esterification_meoac` against the conversion: the
+  forward rate constant says one thing, the adsorption denominator says another,
+  and the outlet is where they settle.
+
+  This reactor is KINETICALLY limited, which is the point -- if it sat at
+  equilibrium the denominator would be invisible.  Sweep V_R and watch it climb
+  to the activity-based equilibrium and stop:
+
+      V_R = 0.005 m3   X = 49.02 %      <- this case
+      V_R = 0.020 m3   X = 63.74 %
+      V_R = 0.100 m3   X = 72.92 %
+      V_R = 1.000 m3   X = 76.18 %      <- equilibrium
+
+  The plateau is not asserted anywhere in the dict.  It is where k1 a'_HOAc
+  a'_MeOH = k-1 a'_MeOAc a'_H2O, i.e. exactly the K_a = 25.50 that the authors'
+  own Eq 17 recovers from the same four rate constants and four adsorption
+  constants at 333.15 K.  Two independent equations of the paper agreeing is a
+  cheap and honest check that the parameters were entered right.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        cstr;
+        in          feed;
+        outputs     ( reactorOut );
+        operation
+        {
+            V_R              0.005;    // m^3
+            catalystLoading  400;      // kg dry resin per m^3 of bed
+        }
+        reactions   ( esterification_meoac );
+    }
+);

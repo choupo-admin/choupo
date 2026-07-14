@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-dimethyltetravinyldisiloxane  (C10H18OSi2, CAS 16045-78-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C10H18OSi2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        13Dimethyltetravinyldisiloxane;
+formula     C10H18OSi2;
+CAS         16045-78-6;
+InChIKey    BKPKTOIGWIYKJZ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          210.423;      // g/mol [origin=calculated method=formula-sum]
+Tc          628.40;      // K   [origin=predictive method=joback]
+Pc          19.458;      // bar [origin=predictive method=joback]
+omega       0.2880;      // -   [origin=predictive method=lee-kesler]
+Tb          440.34;      // K   [origin=predictive method=joback]
+HvapTb      38172.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (88.97 0.39824 0.0003288 -3.118e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2=CH; count 4; } { group Si; count 1; } { group SiO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 4; } { group dCH; count 4; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[bis(ethenyl)-methyl-silyl]oxy-bis(ethenyl)-methyl-silane" "1,3-dimethyl-1,1,3,3-tetravinyldisiloxane" "disiloxane,1,1,3,3-tetraethenyl-1,3-dimethyl-" "[bis(ethenyl)-methylsilyl]oxy-bis(ethenyl)-methylsilane" );
+gibbsFormation
+{
+    dHf_298   -103470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     791.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=70160.0
+    phase     gas;
+}

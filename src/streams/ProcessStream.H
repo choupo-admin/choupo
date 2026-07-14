@@ -104,6 +104,13 @@ struct ProcessStream
     // formation enthalpy).  Filled post-solve alongside H.
     scalar      H_flow_kW = 0.0;
     bool        H_flow_valid = false;
+    // Components genuinely PRESENT in this stream (z_i > 0 or s_i > 0) that
+    // carry NO elements-datum enthalpy (no gibbsFormation, no aqueous-ion
+    // reference).  Non-empty => H / H_flow_kW are missing BY MISSING DATA, not
+    // by composition -- so the energy-balance report / GUI energy plot must
+    // REFUSE and name these, never silently drop the stream (the no-silent-
+    // crutch credo).  Empty for every fully-curated stream.  Filled post-solve.
+    std::vector<std::string> H_missing;
     // ---- Solid phase -------------------------------------------
     // Particulate solids carried alongside the fluid, indexed by the SAME
     // components as `z` --- so a species can be BOTH dissolved (z[i]) and

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-azabicyclo[4.4.4]tetradecane  (C13H25N, CAS 75197-24-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Azabicyclo444Tetradecane;
+formula     C13H25N;
+CAS         75197-24-9;
+InChIKey    SLUZUVDMWMNTQW-UHFFFAOYSA-N;
+MW          195.35;      // g/mol [origin=calculated method=formula-sum]
+Tc          790.08;      // K   [origin=predictive method=joback]
+Pc          25.000;      // bar [origin=predictive method=joback]
+omega       0.4323;      // -   [origin=predictive method=lee-kesler]
+Tb          557.52;      // K   [origin=predictive method=joback]
+HvapTb      47914.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-161.89 1.6238 -0.000967 1.984e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 11; } { group CH; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 12; } { group CH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-azabicyclo(4.4.4)tetradecane" "out-6h-1-azabicyclo[4.4.4]tetradecane" );
+gibbsFormation
+{
+    dHf_298   -121300.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     679.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=213870.0
+    phase     gas;
+}

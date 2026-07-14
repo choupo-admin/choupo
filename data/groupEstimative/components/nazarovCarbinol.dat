@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nazarov carbinol  (C7H10O, CAS 690-94-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nazarovCarbinol;
+formula     C7H10O;
+CAS         690-94-8;
+InChIKey    OYWGYGPXPDGOGH-UHFFFAOYSA-N;
+MW          110.156;      // g/mol [origin=calculated method=formula-sum]
+Tc          651.39;      // K   [origin=predictive method=joback]
+Pc          40.210;      // bar [origin=predictive method=joback]
+omega       0.5792;      // -   [origin=predictive method=lee-kesler]
+Tb          454.39;      // K   [origin=predictive method=joback]
+HvapTb      48041.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.09 0.65884 -0.00048996 1.5018e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C; count 1; } { group CH2=CH; count 1; } { group OH; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group tC; count 2; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methylhex-5-en-3-yn-2-ol" "dimethyl(vinyl)ethynylcarbinol" "nazarov's carbinol" "2-methyl-5-hexen-3-yn-2-ol" "5-hexen-3-yn-2-ol, 2-methyl-" "dimethyl(vinylethynyl)carbinol" "2-methyl-hex-5-en-3-yn-2-ol" "5-hexen-3-yn-2-ol,2-methyl-" "4-penten-2-yn-1-ol, 1,1-dimethyl-" "4-penten-2-yn-1-ol, 1,1-dimethyl- (7ci)" "4-penten-2-yn-1-ol,1,1-dimethyl- (7ci); 1,1-dimethylbut-4-en-2-yn-1-ol;2-methyl-3-hexyn-5-en-2-ol; 2-methyl-5-hexen-3-yn-2-ol; 5-methyl-1-hexen-3-yn-5-ol;dimethyl(vinylethynyl)carbinol; nazarov carbinol; nazarov's carbinol" );
+gibbsFormation
+{
+    dHf_298   48940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     407.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=164720.0
+    phase     gas;
+}

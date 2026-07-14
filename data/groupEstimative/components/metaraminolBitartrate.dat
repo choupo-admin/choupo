@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: metaraminol bitartrate  (C13H19NO8, CAS 33402-03-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        metaraminolBitartrate;
+formula     C13H19NO8;
+CAS         33402-03-8;
+InChIKey    VENXSELNXQXCNT-IJYXXVHRSA-N;
+MW          317.294;      // g/mol [origin=calculated method=formula-sum]
+Tc          1537.47;      // K   [origin=predictive method=joback]
+Pc          42.663;      // bar [origin=predictive method=joback]
+omega       2.1143;      // -   [origin=predictive method=lee-kesler]
+Tb          1244.07;      // K   [origin=predictive method=joback]
+HvapTb      153570.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (13.9 1.39742 -0.00084876 1.793e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH; count 2; } { group ACH; count 4; } { group ACCH; count 1; } { group OH; count 3; } { group ACOH; count 1; } { group CHNH2; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 4; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OH; count 3; } { group OH_phenol; count 1; } { group COOH; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-[(1r,2s)-2-azanyl-1-oxidanyl-propyl]phenol;(2r,3r)-2,3-bis(oxidanyl)butanedioic acid" "araminum" "levicor" "metaramin" "levicor ampullen" "araminum ampullen" "pressonex bitartrate" "l-metraminol bitartrate" "aramine (sympathominetic)" "(-)-metaraminol bitartrate" "metaradrine bitartrate" "metaraminol tartrate (1:1)" );
+gibbsFormation
+{
+    dHf_298   -1508610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     962.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1129980.0
+    phase     gas;
+}

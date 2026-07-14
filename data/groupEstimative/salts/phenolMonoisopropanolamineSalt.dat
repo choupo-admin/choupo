@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): phenol, monoisopropanolamine salt  (C9H15NO2, CAS 68213-80-9)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           phenolMonoisopropanolamineSalt;
+formula        C9H15NO2;
+CAS            68213-80-9;
+InChIKey       QZNXAYBIEPQEHN-UHFFFAOYSA-N;
+MW             169.224;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+dissociatesTo  { phenol 1; monoisopropanolamine 1; }   // DRAFT constituents from the name -- verify & map to real components/ions

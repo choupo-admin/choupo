@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-diisocyanato-2-methyl-benzene;isocyanatobenzene  (C16H11N3O3, CAS 67712-19-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13Diisocyanato2MethylBenzeneIsocyanatobenzene;
+formula     C16H11N3O3;
+CAS         67712-19-0;
+InChIKey    ADHKYARPMKGTFO-UHFFFAOYSA-N;
+MW          293.282;      // g/mol [origin=calculated method=formula-sum]
+Tc          1079.71;      // K   [origin=predictive method=joback]
+Pc          25.303;      // bar [origin=predictive method=joback]
+omega       1.0483;      // -   [origin=predictive method=lee-kesler]
+Tb          830.41;      // K   [origin=predictive method=joback]
+HvapTb      85976.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group ACH; count 8; } { group AC; count 3; } { group ACCH3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:3
+    joback ( { group CH3; count 1; } { group dCd; count 3; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group dO_oth; count 3; } { group Nd; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzene, 1,3-diisocyanatomethyl-, polymer with isocyanatobenzene" "1,3-diisocyanato-2-methylbenzene; isocyanatobenzene" "1,3-diisocyanato-2-methyl-benzene; isocyanatobenzene" );
+// formation datum unavailable (element entropy missing): dHf_298=-51300.0 dGf_298=None

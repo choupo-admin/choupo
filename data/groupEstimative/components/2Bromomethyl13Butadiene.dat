@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(bromomethyl)-1,3-butadiene  (C5H7Br, CAS 23691-13-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Bromomethyl13Butadiene;
+formula     C5H7Br;
+CAS         23691-13-6;
+InChIKey    KWEFLUDPRLSSTJ-UHFFFAOYSA-N;
+MW          147.015;      // g/mol [origin=calculated method=formula-sum]
+Tc          570.67;      // K   [origin=predictive method=joback]
+Pc          42.166;      // bar [origin=predictive method=joback]
+omega       0.3019;      // -   [origin=predictive method=lee-kesler]
+Tb          373.40;      // K   [origin=predictive method=joback]
+HvapTb      31899.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.861 0.4769 -0.0003677 1.19e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2=CH; count 1; } { group CH2=C; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH2; count 2; } { group dCH; count 1; } { group dC; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(bromomethyl)buta-1,3-diene" "1,3-butadiene, 2-(bromomethyl)-" "kwefludprlsstj-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   120870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     388.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=172670.0
+    phase     gas;
+}

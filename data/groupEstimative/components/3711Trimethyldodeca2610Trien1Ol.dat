@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,7,11-trimethyldodeca-2,6,10-trien-1-ol  (C15H26O, CAS 4602-84-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3711Trimethyldodeca2610Trien1Ol;
+formula     C15H26O;
+CAS         4602-84-0;
+InChIKey    CRDAMVZIKSXKFV-UHFFFAOYSA-N;
+MW          222.372;      // g/mol [origin=calculated method=formula-sum]
+Tc          826.37;      // K   [origin=predictive method=joback]
+Pc          17.434;      // bar [origin=predictive method=joback]
+omega       0.9671;      // -   [origin=predictive method=lee-kesler]
+Tb          647.10;      // K   [origin=predictive method=joback]
+HvapTb      65777.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.075 1.52258 -0.0010809 3.247e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 5; } { group CH=C; count 3; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 5; } { group dCH; count 3; } { group dC; count 3; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6,10-dodecatrien-1-ol, 3,7,11-trimethyl-, (2e,6z)-" "2,6,10-dodecatrien-1-ol, 3,7,11-trimethyl-, (2z,6z)-" "agn-pc-04y22v" "2,6,10-dodecatrien-1-ol,3,7,11-trimethyl-(farnesol) (7ci);2,6,10-dodecatrien-1-ol, 3,7,11-trimethyl-,(e,e)- (8ci);(2e,6e)-farnesol;(e)-b-farnesol;2,6,10-dodecatrien-1-ol,3,7,11-trimethyl-, (2e,6e)-;2,6-di-trans-farnesol;2-trans,6-trans-farnesol;3,7,11-trimethyldodeca-2-trans,6-trans,10-trien-1-ol;inhibitor a2;all-e-farnesol;all-trans-farnesol;trans,trans-farnesol;trans-farnesol;" );
+gibbsFormation
+{
+    dHf_298   -182870.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     758.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=153610.0
+    phase     gas;
+}

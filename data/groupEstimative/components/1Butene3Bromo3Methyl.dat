@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-butene, 3-bromo-3-methyl-  (C5H9Br, CAS 865-58-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Butene3Bromo3Methyl;
+formula     C5H9Br;
+CAS         865-58-7;
+InChIKey    YDQUAHYQNTZSBU-UHFFFAOYSA-N;
+MW          149.031;      // g/mol [origin=calculated method=formula-sum]
+Tc          576.00;      // K   [origin=predictive method=joback]
+Pc          40.673;      // bar [origin=predictive method=joback]
+omega       0.2577;      // -   [origin=predictive method=lee-kesler]
+Tb          373.61;      // K   [origin=predictive method=joback]
+HvapTb      31193.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.93 0.62284 -0.0005143 1.717e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C; count 1; } { group CH2=CH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group C; count 1; } { group dCH2; count 1; } { group dCH; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-bromanyl-3-methyl-but-1-ene" );
+gibbsFormation
+{
+    dHf_298   -3520.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     358.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=96220.0
+    phase     gas;
+}

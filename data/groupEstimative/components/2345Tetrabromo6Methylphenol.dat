@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,4,5-tetrabromo-6-methylphenol  (C7H4Br4O, CAS 576-55-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2345Tetrabromo6Methylphenol;
+formula     C7H4Br4O;
+CAS         576-55-6;
+InChIKey    GGIDUULRWQOXLR-UHFFFAOYSA-N;
+MW          423.724;      // g/mol [origin=calculated method=formula-sum]
+Tc          1038.81;      // K   [origin=predictive method=joback]
+Pc          70.144;      // bar [origin=predictive method=joback]
+omega       1.0857;      // -   [origin=predictive method=lee-kesler]
+Tb          751.62;      // K   [origin=predictive method=joback]
+HvapTb      74854.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (43.66 0.65932 -0.000662 2.675e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 4; } { group ACCH3; count 1; } { group ACOH; count 1; } { group Br; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dC_ring; count 6; } { group Br; count 4; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,4,5-tetrakis(bromanyl)-6-methyl-phenol" "3,4,5,6-tetrabromo-o-cresol" "satinasept" "tetrabromo-o-cresol" "o-cresol, tetrabromo-" "desderman" "remanol" "deodorant richter/k" "phenol, 2,3,4,5-tetrabromo-6-methyl-" "o-cresol, 3,4,5,6-tetrabromo-" "2-methyl-3,4,5,6-tetrabromophenol" "3,4,5,6-tetrabromo-2-methylphenol" );
+gibbsFormation
+{
+    dHf_298   -69150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     528.2;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-15390.0
+    phase     gas;
+}

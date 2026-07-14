@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-ethylhexan-1-ol;1-(2-oxidanylpropoxy)propan-2-ol  (C14H32O4, CAS 69882-14-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Ethylhexan1Ol12OxidanylpropoxyPropan2Ol;
+formula     C14H32O4;
+CAS         69882-14-0;
+InChIKey    XLLILOOHPVNODZ-UHFFFAOYSA-N;
+MW          264.406;      // g/mol [origin=calculated method=formula-sum]
+Tc          1002.67;      // K   [origin=predictive method=joback]
+Pc          17.849;      // bar [origin=predictive method=joback]
+omega       1.4952;      // -   [origin=predictive method=lee-kesler]
+Tb          818.96;      // K   [origin=predictive method=joback]
+HvapTb      98335.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (67.307 1.18418 -0.0003128 -8.87e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 6; } { group CH; count 2; } { group OH; count 2; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 7; } { group CH; count 3; } { group OH; count 3; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-hexanol, 2-ethyl-, polymer with 1,1'-oxybis(2-propanol)" );
+gibbsFormation
+{
+    dHf_298   -1048660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     944.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-560540.0
+    phase     gas;
+}

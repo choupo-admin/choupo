@@ -50,6 +50,7 @@ License
   class number.
 \*---------------------------------------------------------------------------*/
 
+import { compositeMembers } from "../case/toGraph.js";
 import { parse, toJson } from "../dict/index.js";
 import type { JsonDict } from "../dict/index.js";
 import { rootCaseAndPath } from "../cases/tutorials.js";
@@ -100,32 +101,54 @@ export function globalStreamNumbering(
   const uf = new UnionFind();
   const raw = rootRawFiles ?? {};
 
-  const walk = (fs: JsonDict, path: string): void => {
-    const children = fs["children"];
+  const walk = (fs: JsonDict, path: string, physPath: string): void => {
+    const children = compositeMembers(fs);
     if (!Array.isArray(children)) return;  // leaf / flat: its streams live in the parent's connections
-    const conns = (fs["connections"] ?? []) as JsonDict[];
-    for (const c of conns) {
-      const from = String(c["from"] ?? "");
-      const to = String(c["to"] ?? "");
-      if (!from || !to) continue;
-      const qf = qual(path, from), qt = qual(path, to);
-      uf.find(qf); uf.find(qt);   // register (records order)
-      uf.union(qf, qt);
+    // Normalise both connection grammars to edges {name, from, to}: named-edge
+    // dict `connections { liquor { from A; to B; } }` OR legacy anonymous list.
+    const rawConns = fs["connections"];
+    const edges: { name: string; from: string; to: string }[] = [];
+    if (Array.isArray(rawConns)) {
+      for (const c of rawConns as JsonDict[])
+        edges.push({ name: "", from: String(c["from"] ?? ""), to: String(c["to"] ?? "") });
+    } else if (rawConns && typeof rawConns === "object") {
+      for (const [name, v] of Object.entries(rawConns as JsonDict))
+        if (v && typeof v === "object" && !Array.isArray(v))
+          edges.push({ name, from: String((v as JsonDict)["from"] ?? ""), to: String((v as JsonDict)["to"] ?? "") });
+    }
+    for (const e of edges) {
+      if (e.name) {
+        // Named edge: the edge NAME (qualified) IS the stream identity.  Union
+        // its endpoints to it, so `EXTRACTION/liquor` (a root endpoint) merges
+        // with the SECTOR's own edge `liquor` (qualifies to the same string).
+        const id = qual(path, e.name);
+        uf.find(id);
+        if (e.from) uf.union(id, qual(path, e.from));
+        if (e.to) uf.union(id, qual(path, e.to));
+      } else {
+        if (!e.from || !e.to) continue;    // legacy anonymous list
+        const qf = qual(path, e.from), qt = qual(path, e.to);
+        uf.find(qf); uf.find(qt);
+        uf.union(qf, qt);
+      }
     }
     for (const child of children as string[]) {
-      const base = `${path ? path + "/" : ""}${child}`;
-      // The tutorial registry stores a sub-flowsheet under `<child>/flowsheetDict`
-      // (relative to the case root); some re-rooting paths add a `system/` segment.
-      // Try BOTH -- with only the `system/` form the walk never descended into a
-      // sector, so every unit->unit pipe inside a sector (50%+ of a fractal
-      // plant's streams) registered nowhere and showed no PFD number.
-      const text = raw[`${base}/flowsheetDict`] ?? raw[`${base}/system/flowsheetDict`];
+      // Resolve the child's PHYSICAL folder (separate from the qualification
+      // path): `<phys>/<child>`, `<phys>/sectors/<child>` (a real sector), or
+      // `<phys>/unitOperations/<child>` (a dignified unit) -- mirroring the
+      // engine's resolveMemberBase.  The `system/` and lean forms are both tried.
+      const pfx = physPath ? physPath + "/" : "";
+      let text: string | undefined, childPhys = "";
+      for (const b of [`${pfx}${child}`, `${pfx}sectors/${child}`, `${pfx}unitOperations/${child}`]) {
+        const t = raw[`${b}/flowsheetDict`] ?? raw[`${b}/system/flowsheetDict`];
+        if (t !== undefined) { text = t; childPhys = b; break; }
+      }
       if (!text) continue;
       const childFs = parseFlowsheet(text, `${child}/flowsheetDict`);
-      if (childFs && Array.isArray(childFs["children"])) walk(childFs, qual(path, child));
+      if (childFs && compositeMembers(childFs).length > 0) walk(childFs, qual(path, child), childPhys);
     }
   };
-  walk(rootFlowsheet, "");
+  walk(rootFlowsheet, "", "");
 
   // Number the classes in first-seen order (root feeds/streams first, then
   // sector internals in walk order) -- deterministic for a given plant.
@@ -165,7 +188,7 @@ export function streamNumberResolver(
   viewRawFiles?: { [rel: string]: string },
 ): (name: string) => number | undefined {
   const rp = rootCaseAndPath(tutorialName);
-  if (rp && rp.rootFiles.flowsheet && Array.isArray((rp.rootFiles.flowsheet as JsonDict)["children"])) {
+  if (rp && rp.rootFiles.flowsheet && compositeMembers(rp.rootFiles.flowsheet as JsonDict).length > 0) {
     const g = globalStreamNumbering(rp.rootFiles.flowsheet, rp.rootFiles.rawFiles);
     return (name: string) => g(rp.subPath, name);
   }

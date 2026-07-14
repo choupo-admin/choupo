@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-(2-hydroxyethyl)isonicotinamide  (C8H10N2O2, CAS 6265-74-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        n2HydroxyethylIsonicotinamide;
+formula     C8H10N2O2;
+CAS         6265-74-3;
+InChIKey    QVPWDPDVDVVXIB-UHFFFAOYSA-N;
+MW          166.18;      // g/mol [origin=calculated method=formula-sum]
+Tc          872.53;      // K   [origin=predictive method=joback]
+Pc          45.286;      // bar [origin=predictive method=joback]
+omega       1.2400;      // -   [origin=predictive method=lee-kesler]
+Tb          659.24;      // K   [origin=predictive method=joback]
+HvapTb      71749.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-16.788 0.80086 -0.00051216 1.2256e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group OH; count 1; } { group C5H4N; count 1; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group OH; count 1; } { group CdO; count 1; } { group NH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-(2-hydroxyethyl)pyridine-4-carboxamide" "4-pyridinecarboxamide, n-(2-hydroxyethyl)-" "4-pyridinecarboxamide, n-2-hydroxyethyl-" "n-(2-hydroxyethyl)-4-pyridinecarboxamide" "n-(2-hydroxyethyl)-4-pyridylcarboxamide" "4-pyridinecarboxamide, n-(2-hydroxyethyl)-;" );
+gibbsFormation
+{
+    dHf_298   -150470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     492.14;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=29590.0
+    phase     gas;
+}

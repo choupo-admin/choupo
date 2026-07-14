@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,7-dimethyloctyl formate  (C11H22O2, CAS 68214-06-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C11H22O2 (delta C+1H+1O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        37DimethyloctylFormate;
+formula     C11H22O2;
+CAS         68214-06-2;
+InChIKey    AGARWNGUJKCDII-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          186.295;      // g/mol [origin=calculated method=formula-sum]
+Tc          593.71;      // K   [origin=predictive method=joback]
+Pc          19.824;      // bar [origin=predictive method=joback]
+omega       0.4213;      // -   [origin=predictive method=lee-kesler]
+Tb          426.82;      // K   [origin=predictive method=joback]
+HvapTb      36931.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-29.975 1.06876 -0.000734 2.154e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 2; } { group HCOO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,7-dimethyloctyl methanoate" "1-octanol, 3,7-dimethyl-, formate" "1-octanol, 3,7-dimethyl-, 1-formate" "3,7-dimethyl-1-octyl formate" "3,7-dimethyl-6-octenyl formate" "we(8:1(6)(3me,7me)/1:0)" );
+gibbsFormation
+{
+    dHf_298   -204480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     748.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=80820.0
+    phase     gas;
+}

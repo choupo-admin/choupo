@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,5-bis(trifluoromethyl)isocyanate  (C9H3F6NO, CAS 16588-74-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        35BisTrifluoromethylIsocyanate;
+formula     C9H3F6NO;
+CAS         16588-74-2;
+InChIKey    NRSSOFNMWSJECS-UHFFFAOYSA-N;
+MW          255.117;      // g/mol [origin=calculated method=formula-sum]
+Tc          681.07;      // K   [origin=predictive method=joback]
+Pc          26.598;      // bar [origin=predictive method=joback]
+omega       0.6705;      // -   [origin=predictive method=lee-kesler]
+Tb          497.99;      // K   [origin=predictive method=joback]
+HvapTb      41266.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 3; } { group CF3; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group C; count 2; } { group dCd; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 6; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-isocyanato-3,5-bis(trifluoromethyl)benzene" "3,5-bis(trifluoromethyl)phenylisocyanate" "3,5-bis(trifluoromethyl)phenyl isocyanate" "3,5-bis(trifluoromethyl)benzenisocyanate" "3,5-bis(trifluoromethyl)phenylisocyanate;" "3,5-di(trifluoromethyl)phenylisocyanate" "isocyanic acid 3,5-bis(trifluoromethyl)phenyl ester" );
+// formation datum unavailable (element entropy missing): dHf_298=-1215070.0 dGf_298=None

@@ -1,5 +1,9 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: n-Hexane  (C6H14, CAS 110-54-3)
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
+           coefficients, Cp polynomials and the ideal-gas formation datum
+           (dHf_298/s_298, JANAF convention) are individual literature
+           values -- primary re-citation pending (IST review).
 \*---------------------------------------------------------------------------*/
 
 name        nHexane;

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methostenol  (C28H48O, CAS 481-25-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methostenol;
+formula     C28H48O;
+CAS         481-25-4;
+InChIKey    LMYZQUNLYGJIHI-SPONXPENSA-N;
+MW          400.691;      // g/mol [origin=calculated method=formula-sum]
+Tc          1187.67;      // K   [origin=predictive method=joback]
+Pc          9.926;      // bar [origin=predictive method=joback]
+omega       0.9112;      // -   [origin=predictive method=lee-kesler]
+Tb          965.79;      // K   [origin=predictive method=joback]
+HvapTb      91753.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-301.357 3.62762 -0.00294884 1.041e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 10; } { group CH; count 8; } { group C; count 2; } { group CH=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 3; } { group CH; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 6; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,4s,5s,9r,10s,13r,14r,17r)-4,10,13-trimethyl-17-[(2r)-6-methylheptan-2-yl]-2,3,4,5,6,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-ol" "4alpha-methyl-5alpha-cholest-7-en-3beta-ol" "4-methylcholest-7-en-3-ol" "lophenol" "cholest-7-en-3-ol, 4-methyl-, (3beta,4alpha,5alpha)-" "4" "a-methyl-5" "a-cholesta-7-en-3" "a-ol" "4-alpha-methyl-5-alpha-cholest-7-en-3-beta-ol" "4-alpha-methyl-5-alpha" "4alpha-methyl-cholest-7-en-3beta-ol" );
+gibbsFormation
+{
+    dHf_298   -528210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     943.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=204190.0
+    phase     gas;
+}

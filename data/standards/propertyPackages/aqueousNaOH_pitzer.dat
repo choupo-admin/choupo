@@ -1,0 +1,46 @@
+/*---------------------------------------------------------------------------*\
+  propertyPackage aqueousNaOH_pitzer -- the declarative thermo MANIFEST a case selects
+  (`package aqueousNaOH_pitzer;` in its constant/propertyPackage, or copy this record
+  inline into the case for the self-contained form).
+  Components: water NaOH.  Liquid method: electrolyte.pitzer (the world);
+  the ThermoPackageBuilder loads + verifies every declared parameter file and
+  announces the assembly in the run log.  Grammar: the 2026-07-04 forum
+  (models per PHASE, conventions per GROUP, parameters per PAIR, all cited).
+\*---------------------------------------------------------------------------*/
+recordType propertyPackage;
+schemaVersion 1;
+
+name aqueousNaOH_pitzer;
+
+components ( water NaOH );
+
+chemistry
+{
+    salts ( sodiumHydroxide );
+
+    activeSaltEquilibriumData
+    {
+        sodiumHydroxide measuredSolubilityAnchor;
+    }
+}
+
+propertyMethods
+{
+    liquid electrolyte.pitzer;
+    vapour builtin.idealGas;
+    solid  builtin.saltEquilibrium;
+}
+
+parameters
+{
+    pitzerPairs
+    {
+        Na-OH "data/standards/parameters/electrolyte/pitzer/pairs/Na-OH.dat";
+    }
+}
+
+
+notes
+{
+    purpose "Aspen-like NaOH Pitzer package (calorimetrically fitted Na-OH pair -> heat-of-dilution L_phi).";
+}

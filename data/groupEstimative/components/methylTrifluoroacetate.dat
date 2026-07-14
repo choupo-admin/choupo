@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl trifluoroacetate  (C3H3F3O2, CAS 431-47-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylTrifluoroacetate;
+formula     C3H3F3O2;
+CAS         431-47-0;
+InChIKey    VMVNZNXAVJHNDJ-UHFFFAOYSA-N;
+MW          128.049;      // g/mol [origin=calculated method=formula-sum]
+Tc          477.61;      // K   [origin=predictive method=joback]
+Pc          38.245;      // bar [origin=predictive method=joback]
+omega       0.3769;      // -   [origin=predictive method=lee-kesler]
+Tb          321.04;      // K   [origin=predictive method=joback]
+HvapTb      25932.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (19.37 0.39522 -0.0002658 5.61e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CF3; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 1; } { group F; count 3; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2,2,2-tris(fluoranyl)ethanoate" "trifluoroacetic acid methyl ester" "methyltrifluoroacetate" "methyl 2,2,2-trifluoroacetate" "acetic acid, trifluoro-, methyl ester" "2,2,2-trifluoromethylacetate" "acetic acid, 2,2,2-trifluoro-, methyl ester" "tfamt" "methyl 2,2,2-trifluoroethanoate" "acetic acid, trifluoro-, methyl ester;methyl 2,2,2-trifluoroacetate;2,2,2-trifluoroacetic acid methyl ester a'a pounda'a trifluoroacetic acid methyl ester a'a pounda'a(c);mthyl trifluoroacetate;" );
+gibbsFormation
+{
+    dHf_298   -1019610.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     380.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-917580.0
+    phase     gas;
+}

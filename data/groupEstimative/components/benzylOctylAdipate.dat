@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzyl octyl adipate  (C21H32O4, CAS 3089-55-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzylOctylAdipate;
+formula     C21H32O4;
+CAS         3089-55-2;
+InChIKey    DECACTMEFWAFRE-UHFFFAOYSA-N;
+MW          348.483;      // g/mol [origin=calculated method=formula-sum]
+Tc          1017.94;      // K   [origin=predictive method=joback]
+Pc          11.948;      // bar [origin=predictive method=joback]
+omega       1.0107;      // -   [origin=predictive method=lee-kesler]
+Tb          823.20;      // K   [origin=predictive method=joback]
+HvapTb      79430.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (0.712 1.81032 -0.0009606 1.5e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 9; } { group ACH; count 5; } { group ACCH2; count 1; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 12; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "o1-octyl o6-(phenylmethyl) hexanedioate" "hexanedioic acid, octyl phenylmethyl ester" "benzyl octyl hexanedioate" "6-o-benzyl 1-o-octyl hexanedioate" "hexanedioic acid,1-octyl 6-(phenylmethyl) ester" "hexanedioic acid, 1-octyl 6-(phenylmethyl) ester" "hexanedioic acid o1-octyl ester o6-(phenylmethyl) ester" "adipicacid, benzyl octyl ester (6ci,7ci,8ci); hexanedioic acid, octyl phenylmethylester (9ci); adimoll bo; benzyl octyl adipate" );
+gibbsFormation
+{
+    dHf_298   -874800.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     970.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-382390.0
+    phase     gas;
+}

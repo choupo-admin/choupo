@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7-aminoheptanoic acid  (C7H15NO2, CAS 929-17-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        7AminoheptanoicAcid;
+formula     C7H15NO2;
+CAS         929-17-9;
+InChIKey    XDOLZJYETYVRKV-UHFFFAOYSA-N;
+MW          145.202;      // g/mol [origin=calculated method=formula-sum]
+Tc          774.31;      // K   [origin=predictive method=joback]
+Pc          32.878;      // bar [origin=predictive method=joback]
+omega       0.9380;      // -   [origin=predictive method=lee-kesler]
+Tb          577.80;      // K   [origin=predictive method=joback]
+HvapTb      58981.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (7.616 0.7815 -0.000473 1.111e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group CH2NH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-azanylheptanoic acid" "7-aminoenanthic acid" "aminoenanthic acid" "7-aminoheptanoicacid" "amino-enanthylic acid" "7-aminooenanthic acid" "omega-aminoenantic acid" "7-amino-heptanoic acid" "omega-aminoheptanoic acid" "aek" "7-aminohepentanoic acid" "zeta-aminoheptanoic acid" );
+gibbsFormation
+{
+    dHf_298   -504290.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     533.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-269400.0
+    phase     gas;
+}

@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  ctrl06_sine_disturbance / constant/thermoPackage
+
+  Two abstract species: compA (the reactant; its first-order exotherm sets
+  the reactor temperature the PID defends against the sinusoidal T_in
+  forcing) and compB (the product).  Ideal + idealGas: the lesson is the
+  forced frequency response — one point of a Bode plot per run — not
+  thermodynamics; the thermo layer only supplies Cp and density for the
+  dynamic energy balance.
+\*---------------------------------------------------------------------------*/
+
+components       ( compA  compB );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

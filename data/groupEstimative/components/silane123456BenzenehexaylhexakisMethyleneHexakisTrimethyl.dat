@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: silane, (1,2,3,4,5,6-benzenehexaylhexakis(methylene))hexakis(trimethyl-  (C30H66Si6, CAS 64131-87-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C30H66Si6 (delta Si+6; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        silane123456BenzenehexaylhexakisMethyleneHexakisTrimethyl;
+formula     C30H66Si6;
+CAS         64131-87-9;
+InChIKey    DHKCULIHTZBLSJ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          595.368;      // g/mol [origin=calculated method=formula-sum]
+Tc          1159.38;      // K   [origin=predictive method=joback]
+Pc          4.805;      // bar [origin=predictive method=joback]
+omega       0.2930;      // -   [origin=predictive method=lee-kesler]
+Tb          945.98;      // K   [origin=predictive method=joback]
+HvapTb      89724.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (258.116 1.24056 0.0011846 -1.0564e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 18; } { group ACCH2; count 6; } { group Si; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 18; } { group CH2; count 6; } { group dC_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethyl-[[2,3,4,5,6-pentakis(trimethylsilylmethyl)phenyl]methyl]silane" );
+gibbsFormation
+{
+    dHf_298   -1153070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1946.18;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-362580.0
+    phase     gas;
+}

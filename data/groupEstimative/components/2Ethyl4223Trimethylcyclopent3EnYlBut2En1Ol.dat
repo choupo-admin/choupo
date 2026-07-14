@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-ethyl-4-(2,2,3-trimethylcyclopent-3-en-yl)-but-2-en-1-ol  (C14H24O, CAS 28219-61-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Ethyl4223Trimethylcyclopent3EnYlBut2En1Ol;
+formula     C14H24O;
+CAS         28219-61-6;
+InChIKey    KHQDWCKZXLWDNM-UHFFFAOYSA-N;
+MW          208.345;      // g/mol [origin=calculated method=formula-sum]
+Tc          822.20;      // K   [origin=predictive method=joback]
+Pc          20.661;      // bar [origin=predictive method=joback]
+omega       0.8974;      // -   [origin=predictive method=lee-kesler]
+Tb          631.13;      // K   [origin=predictive method=joback]
+HvapTb      63226.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-100.877 1.66938 -0.00137914 5.03e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 1; } { group C; count 1; } { group CH=C; count 2; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-ethyl-4-(2,2,3-trimethylcyclopent-3-en-1-yl)but-2-en-1-ol" "2-buten-1-ol, 2-ethyl-4-(2,2,3-trimethyl-3-cyclopenten-1-yl)-" "agn-pc-03hktf" "2-buten-1-ol,2-ethyl-4-(2,2,3-trimethyl-3-cyclopenten-1-yl)-" "2-ethyl-4-(2,2,3-trimethyl-3-cyclopenten-1-yl)-2-buten-1-ol;2-ethyl-4-(2',2',3-trimethylcyclopent-3'-enyl)but-2-enol;bacdanol;bangalol;dartanol;finanol;levosandol;radjanol;sanjinol;" );
+gibbsFormation
+{
+    dHf_298   -275400.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     674.69;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=45530.0
+    phase     gas;
+}

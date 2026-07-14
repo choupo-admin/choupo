@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dichloroisoproterenol  (C11H15Cl2NO, CAS 59-61-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dichloroisoproterenol;
+formula     C11H15Cl2NO;
+CAS         59-61-0;
+InChIKey    VKMGSWIFEHZQRS-UHFFFAOYSA-N;
+MW          248.147;      // g/mol [origin=calculated method=formula-sum]
+Tc          911.66;      // K   [origin=predictive method=joback]
+Pc          26.958;      // bar [origin=predictive method=joback]
+omega       1.1342;      // -   [origin=predictive method=lee-kesler]
+Tb          704.25;      // K   [origin=predictive method=joback]
+HvapTb      74789.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (14.081 0.98654 -0.00059792 1.327e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group ACH; count 3; } { group ACCH; count 1; } { group OH; count 1; } { group CH2NH; count 1; } { group ACCl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 2; } { group OH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(3,4-dichlorophenyl)-2-(propan-2-ylamino)ethanol" "dichlorisoproterenol" "dichloroisoprenaline" "dichlorisoprenaline [german]" "1-(3,4-dichlorophenyl)-2-isopropylaminoethanol" "3,4-dichlor-isoproterenol [german]" "beta-hydroxy-n-isopropyl-3,4-dichlorophenethylamine" "3,4-dichloro-alpha-(isopropylaminomethyl)benzyl alcohol" "n-(beta-(3,4-dichlorophenyl)-beta-hydroxyethyl)isopropylamine" "3,4-dichloro-alpha-(((1-methylethyl)amino)methyl)benzenemethanol" "benzyl alcohol, 3,4-dichloro-alpha-((isopropylamino)methyl)-" "dichlorisoprenaline" );
+gibbsFormation
+{
+    dHf_298   -197580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     605.06;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=58720.0
+    phase     gas;
+}

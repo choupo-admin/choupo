@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-undecanol  (C11H24O, CAS 112-42-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Undecanol;
+formula     C11H24O;
+CAS         112-42-5;
+InChIKey    KJIOQYGWTQBHNH-UHFFFAOYSA-N;
+MW          172.312;      // g/mol [origin=calculated method=formula-sum]
+Tc          701.55;      // K   [origin=predictive method=joback]
+Pc          21.003;      // bar [origin=predictive method=joback]
+omega       0.9927;      // -   [origin=predictive method=lee-kesler]
+Tb          543.46;      // K   [origin=predictive method=joback]
+HvapTb      56759.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.82 1.08282 -0.000605 1.295e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 10; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "undecan-1-ol" "undecanol" "n-undecanol" "hendecyl alcohol" "1-hendecanol" "n-undecyl alcohol" "tip-nip" "hendecanoic alcohol" "n-undecan-1-ol" "alcohol c-11" "decyl carbinol" "n-hendecylenic alcohol" );
+gibbsFormation
+{
+    dHf_298   -422600.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     635.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-95080.0
+    phase     gas;
+}

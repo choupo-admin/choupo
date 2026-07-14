@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (2-bromoethoxy)-tert-butyldimethylsilane  (C8H19BrOSi, CAS 86864-60-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H19BrOSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2BromoethoxyTertButyldimethylsilane;
+formula     C8H19BrOSi;
+CAS         86864-60-0;
+InChIKey    JBKINHFZTVLNEM-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          239.228;      // g/mol [origin=calculated method=formula-sum]
+Tc          667.73;      // K   [origin=predictive method=joback]
+Pc          24.147;      // bar [origin=predictive method=joback]
+omega       0.3977;      // -   [origin=predictive method=lee-kesler]
+Tb          469.39;      // K   [origin=predictive method=joback]
+HvapTb      41245.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (45.652 0.6585 -0.0001288 -8.2e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 5; } { group CH2; count 1; } { group C; count 1; } { group CH2O; count 1; } { group Br; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2; count 2; } { group C; count 1; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-bromoethyloxy-tert-butyl-dimethyl-silane" "2-bromoethoxy-t-butyl dimethylsilane" "(2-bromoethoxy)(tert-butyl)dimethylsilane" "2-(t-butyldimethylsiloxy)ethylbromide" "(2-bromo-ethoxy)-tert-butyl-dimethyl-silane" "agn-pc-0dahvk" "2-bromoethoxy-tert-butyldimethylsilane" "2-bromoethoxy-tert-butyl-dimethylsilane" "silane, (2-bromoethoxy)(1,1-dimethylethyl)dimethyl-" "2-bromo-1-(1,1,2,2-tetramethyl-1-silapropoxy)ethane" "2-buten-1-ol,4-[(tetrahydro-2h-pyran-2-yl)oxy]-, (z)-;(z)-4-[(tetrahydropyranyl)oxy]-2-buten-1-ol; cis-2-butene-1,4-diolmonotetrahydropyranyl ether" );
+gibbsFormation
+{
+    dHf_298   -434710.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     617.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-176120.0
+    phase     gas;
+}

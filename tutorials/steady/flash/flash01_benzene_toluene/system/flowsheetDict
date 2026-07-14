@@ -1,17 +1,13 @@
 /*---------------------------------------------------------------------------*\
-  flowsheetDict  --  topology (streams + units + connections)
+  flash01_benzene_toluene  --  THE first tutorial: isothermal flash of a
+  40/60 benzene/toluene feed (100 kmol/h) at 370 K, 1 bar, ideal Raoult
+  K-values (K_i = Psat_i/P).  370 K sits inside the two-phase window
+  (bubble ~368 K, dew ~374 K), so the feed splits into a benzene-enriched
+  vapour and a toluene-enriched liquid -- the Rachford-Rice solve is
+  printed iteration by iteration at verbosity 3.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F            100.0 kmol/h;
-        T            370.0 K;
-        P              1.0 bar;
-        molarComposition  { benzene 0.40;  toluene 0.60; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

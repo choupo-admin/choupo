@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-oxa-6-thiacyclodeca-3,8-diyne  (C8H8OS, CAS 127793-16-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Oxa6Thiacyclodeca38Diyne;
+formula     C8H8OS;
+CAS         127793-16-2;
+InChIKey    NENVKWPSERARAT-UHFFFAOYSA-N;
+MW          152.211;      // g/mol [origin=calculated method=formula-sum]
+Tc          783.08;      // K   [origin=predictive method=joback]
+Pc          48.025;      // bar [origin=predictive method=joback]
+omega       0.2525;      // -   [origin=predictive method=lee-kesler]
+Tb          499.64;      // K   [origin=predictive method=joback]
+HvapTb      48766.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.67 0.62421 -0.00036832 7.986e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group FCH2O; count 1; } { group C_C; count 2; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tC; count 4; } { group CH2_ring; count 4; } { group O_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,4,8,9-tetradehydro-2,5,7,10-tetrahydro-1,6-oxathiecine" );
+gibbsFormation
+{
+    dHf_298   324070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     421.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=407980.0
+    phase     gas;
+}

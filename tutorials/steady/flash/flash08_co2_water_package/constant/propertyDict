@@ -1,0 +1,29 @@
+/*---------------------------------------------------------------------------*\
+  constant/propertyPackage -- THE CASE'S OWN THERMO MANIFEST (inline form).
+  Components, methods, solution structure and parameter sources all HERE, in
+  the case, readable: the self-contained form.  (`package <name>;` instead
+  selects a shared catalogue record.)  The log announces the assembly:
+  [builder] the per-group rungs, [henry] the pair constants + source.
+\*---------------------------------------------------------------------------*/
+components ( water CO2 );
+propertyMethods
+{
+    liquid solution.henryDilute;   // water on the Raoult rung,
+    vapour builtin.idealGas;       //   CO2 on the infinite-dilution Henry rung
+}
+solution
+{
+    solvent water;
+    solutes ( CO2 );
+}
+parameters
+{
+    // Parameter HOMES: Henry pairs live in data/standards/henrysLaw/ (a
+    // top-level catalogue); EoS kij under data/standards/parameters/eos/kij/
+    // -- different KINDS, different homes, both declared+verified here.
+    henryPairs
+    {
+        // Sander (2015) compilation, CC-BY
+        CO2-water "data/standards/henrysLaw/CO2-water.dat";
+    }
+}

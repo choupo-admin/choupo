@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclodecanone  (C10H18O, CAS 1502-06-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclodecanone;
+formula     C10H18O;
+CAS         1502-06-3;
+InChIKey    SXOZDDAFVJANJP-UHFFFAOYSA-N;
+MW          154.253;      // g/mol [origin=calculated method=formula-sum]
+Tc          785.58;      // K   [origin=predictive method=joback]
+Pc          30.693;      // bar [origin=predictive method=joback]
+omega       0.3711;      // -   [origin=predictive method=lee-kesler]
+Tb          537.52;      // K   [origin=predictive method=joback]
+HvapTb      43527.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-61.8 0.8957 -0.000227 -8.7e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 9; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclodecanon" "cyclodecan-1-one" "sxozddafvjanjp-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -337410.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     558.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-105510.0
+    phase     gas;
+}

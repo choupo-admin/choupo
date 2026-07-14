@@ -1,21 +1,5 @@
 /*---------------------------------------------------------------------------*\
-  Case-local NRTL parameters for ethanol(1) + water(2)
-
-  In a real research workflow this file would carry the parameters that
-  result from a fit against THIS case's experimental data.  For now we
-  use the same DECHEMA literature values as the standards file, so the
-  case reproduces the flash02 result identically.
-
-  When a fit runs (see tutorials/fitNRTL01_ethanol_water), the
-  output is written next to this file as
-
-      ethanol-water.fit-<date>.dat
-
-  and the user manually promotes it by
-
-      mv ethanol-water.fit-<date>.dat ethanol-water.dat
-
-  The unsuffixed file is what the simulator loads.
+  NRTL binary interaction parameters --- ethanol(1) + water(2)
 \*---------------------------------------------------------------------------*/
 
 components  ( ethanol  water );
@@ -34,14 +18,14 @@ parameters
 
 provenance
 {
-    source        literature;
-    citation      "Gmehling & Onken, DECHEMA Vol I Part 1";
+    origin        literature;
+    citation      "Gmehling & Onken, DECHEMA Chemistry Data Series Vol. I Part 1, ethanol-water VLE-IG bank";
     fitData       "<not refit>";
-    fitDate       "<literature>";
-    algorithm     "<n/a>";
-    chi2          "<n/a>";
+    fitDate       "<literature, regressed ca. 1977>";
+    algorithm     "<not reported in source>";
+    chi2          "<not reported>";
     nDataPoints   0;
-    validityRange { Tmin 298.0; Tmax 373.0; }
-    author        "V. Geraldes, 2026";
-    notes         "Case-local copy of the standards file.  Replace with own fit when ready.";
+    validity { temperature { min 298.0 K; max 373.0 K; } }
+    author        "Curated from DECHEMA by V. Geraldes, 2026";
+    notes         "Widely used reference set for ethanol-water VLE at atmospheric pressure. Predicts the minimum-boiling azeotrope at x_ethanol ~ 0.894 (T_b ~ 351.4 K).";
 }

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(pentyloxy)phenyl 4-propylcyclohexanecarboxylate  (C21H32O3, CAS 67679-52-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4PentyloxyPhenyl4Propylcyclohexanecarboxylate;
+formula     C21H32O3;
+CAS         67679-52-1;
+InChIKey    IPMUTUVKXHUGPA-UHFFFAOYSA-N;
+MW          332.484;      // g/mol [origin=calculated method=formula-sum]
+Tc          1016.39;      // K   [origin=predictive method=joback]
+Pc          13.147;      // bar [origin=predictive method=joback]
+omega       0.8966;      // -   [origin=predictive method=lee-kesler]
+Tb          807.26;      // K   [origin=predictive method=joback]
+HvapTb      75215.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-44.564 1.83804 -0.00090276 1.088e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 9; } { group CH; count 2; } { group ACH; count 4; } { group AC; count 2; } { group CH2O; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 6; } { group CH2_ring; count 4; } { group CH_ring; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4-pentoxyphenyl) 4-propylcyclohexane-1-carboxylate" "cyclohexanecarboxylic acid, 4-propyl-, 4-(pentyloxy)phenyl ester" "ipmutuvkxhugpa-uhfffaoysa-" "p-pentyloxyphenyl trans-4-propylcyclohexanecarboxylate" "cyclohexanecarboxylic acid, 4-propyl-, 4-(pentyloxy)phenyl ester, trans-" );
+gibbsFormation
+{
+    dHf_298   -667230.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     851.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-169910.0
+    phase     gas;
+}

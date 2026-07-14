@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzyl-methoxymethyl-trimethylsilanylmethyl-amine  (C13H23NOSi, CAS 93102-05-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C13H23NOSi (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        benzylMethoxymethylTrimethylsilanylmethylAmine;
+formula     C13H23NOSi;
+CAS         93102-05-7;
+InChIKey    RPZAAFUKDPKTKP-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          237.418;      // g/mol [origin=calculated method=formula-sum]
+Tc          758.59;      // K   [origin=predictive method=joback]
+Pc          19.338;      // bar [origin=predictive method=joback]
+omega       0.5631;      // -   [origin=predictive method=lee-kesler]
+Tb          559.98;      // K   [origin=predictive method=joback]
+HvapTb      51555.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.793 1.01448 -0.0003014 -6.56e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group CH3O; count 1; } { group CH2N; count 1; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-(methoxymethyl)-1-phenyl-n-(trimethylsilylmethyl)methanamine" "n-(methoxymethyl)-n-(trimethylsilylmethyl)benzylamine" "n-benzyl-1-methoxy-n-((trimethylsilyl)methyl)methanamine" "n-benzyl-n-(methoxymethyl)-n-trimethylsilylmethylamine" "n-(methoxymethyl)-n-(trimethylsilyl)methyl(phenyl)" "benzyl(methoxymethyl)[(trimethylsilyl)methyl]amine" "n-methoxymethyl-n-(trimethylsilylmethyl)benzylamine" "n-(methoxymethyl)(phenyl)-n-((trimethylsilyl)methyl)methanamine" "n-benzyl-1-methoxy-n-[(trimethylsilyl)methyl]methanamine" "n-(methoxymethyl)-n-(trimethylsilylmethyl)-benzylamine" "n-benzyl-n-methoxymethyl-n-(trimethylsilyl)methylamine" "n-benzyl-n-(methoxymethyl)-n-trimethylsilyl-methylamine" );
+gibbsFormation
+{
+    dHf_298   -251430.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     709.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=72010.0
+    phase     gas;
+}

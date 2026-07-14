@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzeneacetic acid, (tetrahydrofuranyl)methyl ester  (C13H16O3, CAS 5421-00-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzeneaceticAcidTetrahydrofuranylMethylEster;
+formula     C13H16O3;
+CAS         5421-00-1;
+InChIKey    WFCXNQRMOLKRMG-UHFFFAOYSA-N;
+MW          220.268;      // g/mol [origin=calculated method=formula-sum]
+Tc          851.40;      // K   [origin=predictive method=joback]
+Pc          26.057;      // bar [origin=predictive method=joback]
+omega       0.6774;      // -   [origin=predictive method=lee-kesler]
+Tb          624.17;      // K   [origin=predictive method=joback]
+HvapTb      58982.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-60.588 1.2338 -0.0007335 1.427e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 1; } { group ACH; count 5; } { group AC; count 1; } { group CH2COO; count 1; } { group FCH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH2_ring; count 3; } { group CH_ring; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oxolan-2-ylmethyl 2-phenylethanoate" "tetrahydrofuran-2-ylmethyl phenylacetate" "benzeneacetic acid, (tetrahydro-2-furanyl)methyl ester" "oxolan-2-ylmethyl 2-phenylacetate" "(tetrahydrofuryl)methyl phenylacetate" "tetrahydrofurfuryl phenylacetate" "phenylacetic acid, 2-tetrahydrofurylmethyl ester" "benzeneacetic acid, (tetrahydrofuranyl)methyl ester (9ci)" );
+gibbsFormation
+{
+    dHf_298   -463920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     505.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-188950.0
+    phase     gas;
+}

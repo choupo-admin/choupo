@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-heptadienoic acid, 6-methyl-, ethyl ester, (2e,4e)-  (C10H16O2, CAS 112182-00-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24HeptadienoicAcid6MethylEthylEster2e4e;
+formula     C10H16O2;
+CAS         112182-00-0;
+InChIKey    SFUYOPHWNDIHFL-UHFFFAOYSA-N;
+MW          168.236;      // g/mol [origin=calculated method=formula-sum]
+Tc          683.33;      // K   [origin=predictive method=joback]
+Pc          23.542;      // bar [origin=predictive method=joback]
+omega       0.5430;      // -   [origin=predictive method=lee-kesler]
+Tb          494.50;      // K   [origin=predictive method=joback]
+HvapTb      44789.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-10.839 0.94496 -0.0005964 1.45e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group CH=CH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 1; } { group CH; count 1; } { group dCH; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 6-methylhepta-2,4-dienoate" );
+gibbsFormation
+{
+    dHf_298   -337850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     574.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-119050.0
+    phase     gas;
+}

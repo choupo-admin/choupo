@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-oxa-6-thiacycloheptadecan-17-one  (C15H28O2S, CAS 1899-05-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Oxa6Thiacycloheptadecan17One;
+formula     C15H28O2S;
+CAS         1899-05-4;
+InChIKey    BFQGVDDCANBDQU-UHFFFAOYSA-N;
+MW          272.447;      // g/mol [origin=calculated method=formula-sum]
+Tc          972.99;      // K   [origin=predictive method=joback]
+Pc          20.736;      // bar [origin=predictive method=joback]
+omega       0.5413;      // -   [origin=predictive method=lee-kesler]
+Tb          711.50;      // K   [origin=predictive method=joback]
+HvapTb      64489.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-81.15 1.45061 -0.0004351 -1.123e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 12; } { group CH2COO; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 14; } { group COO; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -605730.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1032.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-271830.0
+    phase     gas;
+}

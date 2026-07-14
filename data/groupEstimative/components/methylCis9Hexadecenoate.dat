@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl cis-9-hexadecenoate  (C17H32O2, CAS 10030-74-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylCis9Hexadecenoate;
+formula     C17H32O2;
+CAS         10030-74-7;
+InChIKey    IZFGRAGOVZCUFB-UHFFFAOYSA-N;
+MW          268.441;      // g/mol [origin=calculated method=formula-sum]
+Tc          820.64;      // K   [origin=predictive method=joback]
+Pc          12.819;      // bar [origin=predictive method=joback]
+omega       0.8642;      // -   [origin=predictive method=lee-kesler]
+Tb          650.94;      // K   [origin=predictive method=joback]
+HvapTb      60801.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.338 1.58404 -0.0008902 1.814e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 11; } { group CH=CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 12; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl hexadec-9-enoate" "methyl (e)-hexadec-9-enoate" "palmitelaidic acid methyl ester" "9-hexadecenoic acid methyl ester" "9-hexadecenoic acid, methyl ester" "methyl trans-9-hexadecenoate;methyl palmitelaidate;c16:1 (trans-9) methyl ester;delta 9 trans hexadecenoic acid methyl ester;palmitelaidic acid methyl ester;trans-9-hexadecenoic acid-methyl ester;methyl palmitelaidate, standard for gc;palmitelaidic acid methyl ester 99%" );
+gibbsFormation
+{
+    dHf_298   -594270.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     862.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-137890.0
+    phase     gas;
+}

@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexanediol, adipic acid, 4,4'-methylenebis(cyclohexyl isocyanate)polymer  (C27H46N2O8, CAS 67859-52-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexanediolAdipicAcid44MethylenebisCyclohexylIsocyanatePolyme;
+formula     C27H46N2O8;
+CAS         67859-52-3;
+InChIKey    PQCSNKUSKJVMOQ-UHFFFAOYSA-N;
+MW          526.671;      // g/mol [origin=calculated method=formula-sum]
+Tc          1918.39;      // K   [origin=predictive method=joback]
+Pc          10.247;      // bar [origin=predictive method=joback]
+omega       0.3774;      // -   [origin=predictive method=lee-kesler]
+Tb          1458.20;      // K   [origin=predictive method=joback]
+HvapTb      162886.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 17; } { group CH; count 5; } { group OH; count 2; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:2
+    joback ( { group CH3; count 1; } { group CH2; count 9; } { group CH; count 1; } { group dCd; count 2; } { group CH2_ring; count 8; } { group CH_ring; count 4; } { group OH; count 2; } { group COOH; count 2; } { group dO_oth; count 2; } { group Nd; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "hexanedioic acid;hexane-1,1-diol;1-isocyanato-4-[(4-isocyanatocyclohexyl)methyl]cyclohexane" "hexanedioic acid; hexane-1,1-diol; 1-isocyanato-4-[(4-isocyanatocyclohexyl)methyl]cyclohexane" );
+// formation datum unavailable (element entropy missing): dHf_298=-1776990.0 dGf_298=None

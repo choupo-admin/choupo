@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-butenedioic acid (2z)-, 1,4-dimethyl ester, polymer with ethenol and ethenyl acetate  (C12H18O7, CAS 68957-99-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2ButenedioicAcid2z14DimethylEsterPolymerWithEthenolAndEtheny;
+formula     C12H18O7;
+CAS         68957-99-3;
+InChIKey    NGPLOGKOIMPPJS-GSBNXNDCSA-N;
+MW          274.269;      // g/mol [origin=calculated method=formula-sum]
+Tc          932.45;      // K   [origin=predictive method=joback]
+Pc          18.854;      // bar [origin=predictive method=joback]
+omega       1.1881;      // -   [origin=predictive method=lee-kesler]
+Tb          741.32;      // K   [origin=predictive method=joback]
+HvapTb      80412.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (134.97 0.58106 0.0003244 -3.821e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2=CH; count 2; } { group CH=CH; count 1; } { group OH; count 1; } { group CH3COO; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group dCH2; count 2; } { group dCH; count 4; } { group OH; count 1; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dimethyl (z)-but-2-enedioate;ethenol;ethenyl ethanoate" "2-butenedioic acid (2z)-, dimethyl ester, polymer with ethenol and ethenyl acetate" );
+gibbsFormation
+{
+    dHf_298   -1250240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1027.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-971390.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 7-methoxycoumarin  (C10H8O3, CAS 531-59-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        7Methoxycoumarin;
+formula     C10H8O3;
+CAS         531-59-9;
+InChIKey    LIIALPBMIOVAHH-UHFFFAOYSA-N;
+MW          176.171;      // g/mol [origin=calculated method=formula-sum]
+Tc          772.37;      // K   [origin=predictive method=joback]
+Pc          33.999;      // bar [origin=predictive method=joback]
+omega       0.6454;      // -   [origin=predictive method=lee-kesler]
+Tb          551.98;      // K   [origin=predictive method=joback]
+HvapTb      51613.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.88 0.76892 -0.000521 1.332e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 1; } { group ACH; count 3; } { group AC; count 3; } { group CH3O; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 3; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7-methoxychromen-2-one" "herniarin" "ayapanin" "herniarine" "methylumbelliferone" "coumarin, 7-methoxy-" "2h-1-benzopyran-2-one, 7-methoxy-" "methoxycourmarin, 7-" "7-methoxy-2h-chromen-2-one" "7-methoxy-2h-1-benzopyran-2-one" "methyl umbelliferyl ether" "7-methoxy-1-benzopyran-2-one" );
+gibbsFormation
+{
+    dHf_298   -328560.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     384.12;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-178380.0
+    phase     gas;
+}

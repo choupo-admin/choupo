@@ -1,0 +1,17 @@
+/* recovery -- ethanol/water distillation recovery column.
+   Process model and operating configuration only.  (Thermodynamics: see
+   constant/propertyDict.) */
+type        distillationColumn;
+model       simultaneous;
+operation
+{
+    nStages          20;
+    feedStage        10;
+    refluxRatio      2.0;
+    distillateRate   85 kmol/h;
+    feedQuality      1.0;
+    P                1.01325 bar;
+}
+
+inputs   ( finalLiquor );
+outputs  ( recoveredEthanol  stillage );

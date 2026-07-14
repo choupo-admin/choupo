@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethylsilanediol  (C2H8O2Si, CAS 1066-42-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C2H8O2Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        dimethylsilanediol;
+formula     C2H8O2Si;
+CAS         1066-42-8;
+InChIKey    XCLIHDJZGPCUBT-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          92.169;      // g/mol [origin=calculated method=formula-sum]
+Tc          596.20;      // K   [origin=predictive method=joback]
+Pc          55.196;      // bar [origin=predictive method=joback]
+omega       0.9618;      // -   [origin=predictive method=lee-kesler]
+Tb          431.12;      // K   [origin=predictive method=joback]
+HvapTb      53698.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (52.47 0.05564 0.000269 -1.85e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group OH; count 2; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group OH; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dimethyl-bis(oxidanyl)silane" "silanediol, dimethyl-" "silanediol, 1,1-dimethyl-" "poly(dimethylsiloxane), hydroxy terminated" "dihydroxydimethylsilane" "dihydroxy(dimethyl)silane" "si(oh)2me2" "(ch3)2si(oh)2" "18090-13-6 (di-na salt)" "18268-74-1 (di-k salt)" );
+gibbsFormation
+{
+    dHf_298   -500690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     462.16;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-412440.0
+    phase     gas;
+}

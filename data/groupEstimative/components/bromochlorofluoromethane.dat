@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bromochlorofluoromethane  (CHBrClF, CAS 593-98-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bromochlorofluoromethane;
+formula     CHBrClF;
+CAS         593-98-6;
+InChIKey    YNKZSBSRKWVMEZ-UHFFFAOYSA-N;
+MW          147.371;      // g/mol [origin=calculated method=formula-sum]
+Tc          515.00;      // K   [origin=predictive method=joback]
+Pc          57.479;      // bar [origin=predictive method=joback]
+omega       0.2680;      // -   [origin=predictive method=lee-kesler]
+Tb          324.90;      // K   [origin=predictive method=joback]
+HvapTb      27435.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (27.47 0.1615 -0.000142 4.89e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group Br; count 1; } { group HCClF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH; count 1; } { group F; count 1; } { group Cl; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bromanyl-chloranyl-fluoranyl-methane" "methane, bromochlorofluoro-" "methane, bromochlorofluoro-, (s)-" "bromo-chloro-fluoromethane" "agn-pc-03zyrm" "r 21b1" );
+gibbsFormation
+{
+    dHf_298   -254770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     301.59;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-237320.0
+    phase     gas;
+}

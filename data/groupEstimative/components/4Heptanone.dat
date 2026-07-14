@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-heptanone  (C7H14O, CAS 123-19-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Heptanone;
+formula     C7H14O;
+CAS         123-19-3;
+InChIKey    HCFAJYNVAYBARA-UHFFFAOYSA-N;
+MW          114.188;      // g/mol [origin=calculated method=formula-sum]
+Tc          590.28;      // K   [origin=predictive method=joback]
+Pc          29.959;      // bar [origin=predictive method=joback]
+omega       0.4762;      // -   [origin=predictive method=lee-kesler]
+Tb          413.63;      // K   [origin=predictive method=joback]
+HvapTb      37922.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.884 0.64084 -0.0003383 6.306e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 3; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "heptan-4-one" "dipropyl ketone" "butyrone" "propyl ketone" "di-n-propyl ketone" "4-heptanone (natural)" "4-oxoheptane" );
+gibbsFormation
+{
+    dHf_298   -300390.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     455.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-120860.0
+    phase     gas;
+}

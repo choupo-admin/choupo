@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bromopropylate  (C17H16Br2O3, CAS 18181-80-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bromopropylate;
+formula     C17H16Br2O3;
+CAS         18181-80-1;
+InChIKey    FOANIXZHAMJWOI-UHFFFAOYSA-N;
+MW          428.12;      // g/mol [origin=calculated method=formula-sum]
+Tc          1176.41;      // K   [origin=predictive method=joback]
+Pc          26.137;      // bar [origin=predictive method=joback]
+omega       1.3841;      // -   [origin=predictive method=lee-kesler]
+Tb          930.93;      // K   [origin=predictive method=joback]
+HvapTb      94584.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.85 1.52934 -0.00108292 2.846e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group C; count 1; } { group ACH; count 8; } { group AC; count 4; } { group OH; count 1; } { group Br; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group C; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group Br; count 2; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propan-2-yl 2,2-bis(4-bromophenyl)-2-oxidanyl-ethanoate" "phenisobromolate" "neoron" "isopropyl 4,4'-dibromobenzilate" "folbex va" "ascarol 2e" "isopropyl bromobenzilate" "isopropyl dibromobenzilate" "bromopropylate [ansi:bsi:iso]" "nanogen index code bst (1-012)" "4,4'-dibromobenzilic acid isopropyl ester" "benzilic acid, 4,4'-dibromo-, isopropyl ester" );
+gibbsFormation
+{
+    dHf_298   -374970.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     748.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-120330.0
+    phase     gas;
+}

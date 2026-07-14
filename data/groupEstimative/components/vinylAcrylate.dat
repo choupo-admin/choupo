@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: vinyl acrylate  (C5H6O2, CAS 2177-18-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        vinylAcrylate;
+formula     C5H6O2;
+CAS         2177-18-6;
+InChIKey    BLCTWBJQROOONQ-UHFFFAOYSA-N;
+MW          98.101;      // g/mol [origin=calculated method=formula-sum]
+Tc          547.43;      // K   [origin=predictive method=joback]
+Pc          38.627;      // bar [origin=predictive method=joback]
+omega       0.3528;      // -   [origin=predictive method=lee-kesler]
+Tb          365.58;      // K   [origin=predictive method=joback]
+HvapTb      32791.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (17.77 0.384 -0.0001994 2.6e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2=CH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH2; count 2; } { group dCH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethenyl prop-2-enoate" "2-propenoic acid, ethenyl ester" "acrylic acid, vinyl ester" "ethenyl 2-propenoate" "acrylic acid vinyl ester" "2-propenoic acid, ethenyl ester, homopolymer" "acrylic acid, vinyl ester (6ci,7ci,8ci)" "blctwbjqrooonq-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -212950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     392.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-143470.0
+    phase     gas;
+}

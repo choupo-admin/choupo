@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl chlorodifluoroacetate  (C3H3ClF2O2, CAS 1514-87-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methylChlorodifluoroacetate;
+formula     C3H3ClF2O2;
+CAS         1514-87-0;
+InChIKey    AWUPLMYXZJKHEG-UHFFFAOYSA-N;
+MW          144.501;      // g/mol [origin=calculated method=formula-sum]
+Tc          534.75;      // K   [origin=predictive method=joback]
+Pc          38.627;      // bar [origin=predictive method=joback]
+omega       0.3777;      // -   [origin=predictive method=lee-kesler]
+Tb          359.20;      // K   [origin=predictive method=joback]
+HvapTb      31134.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (26.17 0.39022 -0.0002698 5.95e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group COO; count 1; } { group CClF2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group C; count 1; } { group F; count 2; } { group Cl; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-chloranyl-2,2-bis(fluoranyl)ethanoate" "methyl 2-chloro-2,2-difluoroacetate" "chlorodifluoroacetic acid methyl ester" "methyl chloro(difluoro)acetate" "acetic acid, chlorodifluoro-, methyl ester" "acetic acid, 2-chloro-2,2-difluoro-, methyl ester" "methyl difluorochloroacetic acid" "awuplmyxzjkheg-uhfffaoysa-" "methyl-2-chloro-2,2-difluoroacetate" "chloro-difluoro-acetic acid methyl ester" "2-chloro-2,2-difluoro-1-methoxyethan-1-one" "aceticacid, chlorodifluoro-, methyl ester (6ci,8ci,9ci);chlorodifluoroacetic acidmethyl ester;methyl 2-chloro-2,2-difluoroacetate;" );
+gibbsFormation
+{
+    dHf_298   -839240.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     382.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-734700.0
+    phase     gas;
+}

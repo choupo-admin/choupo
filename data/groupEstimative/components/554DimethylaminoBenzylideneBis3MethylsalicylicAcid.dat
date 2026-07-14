@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5,5'-(4-(dimethylamino)benzylidene)bis(3-methylsalicylic) acid  (C25H25NO6, CAS 10143-03-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        554DimethylaminoBenzylideneBis3MethylsalicylicAcid;
+formula     C25H25NO6;
+CAS         10143-03-0;
+InChIKey    JUJMADKPHJCRMU-UHFFFAOYSA-N;
+MW          435.476;      // g/mol [origin=calculated method=formula-sum]
+Tc          1642.49;      // K   [origin=predictive method=joback]
+Pc          20.327;      // bar [origin=predictive method=joback]
+omega       1.6050;      // -   [origin=predictive method=lee-kesler]
+Tb          1340.80;      // K   [origin=predictive method=joback]
+HvapTb      143393.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-71.07 2.38528 -0.00186832 5.974e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 8; } { group AC; count 5; } { group ACCH3; count 2; } { group ACCH; count 1; } { group ACOH; count 2; } { group CH3N; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 1; } { group dCH_ring; count 8; } { group dC_ring; count 10; } { group OH_phenol; count 2; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-[(3-carboxy-5-methyl-4-oxidanyl-phenyl)-[4-(dimethylamino)phenyl]methyl]-3-methyl-2-oxidanyl-benzoic acid" "benzoic acid, 3,3'-((4-(dimethylamino)phenyl)methylene)bis(6-hydroxy-5-methyl-" "benzoic acid, 3,3'-[[4-(dimethylamino)phenyl]methylene]bis[6-hydroxy-5-methyl-" "5-[(3-carboxy-4-hydroxy-5-methylphenyl)-(4-dimethylaminophenyl)methyl]-2-hydroxy-3-methylbenzoic acid" );
+gibbsFormation
+{
+    dHf_298   -900000.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     945.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-440020.0
+    phase     gas;
+}

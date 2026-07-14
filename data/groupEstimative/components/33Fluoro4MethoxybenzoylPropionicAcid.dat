@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(3-fluoro-4-methoxybenzoyl)propionic acid  (C11H11FO4, CAS 347-63-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33Fluoro4MethoxybenzoylPropionicAcid;
+formula     C11H11FO4;
+CAS         347-63-7;
+InChIKey    SNRFVYKMDZSFED-UHFFFAOYSA-N;
+MW          226.203;      // g/mol [origin=calculated method=formula-sum]
+Tc          921.68;      // K   [origin=predictive method=joback]
+Pc          28.203;      // bar [origin=predictive method=joback]
+omega       1.1214;      // -   [origin=predictive method=lee-kesler]
+Tb          708.99;      // K   [origin=predictive method=joback]
+HvapTb      69183.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (31.132 0.82232 -0.00043102 6.516e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 3; } { group AC; count 2; } { group CH2CO; count 1; } { group CH3O; count 1; } { group COOH; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group O; count 1; } { group CdO; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(3-fluoranyl-4-methoxy-phenyl)-4-oxidanylidene-butanoic acid" "4-(3-fluoro-4-methoxyphenyl)-4-oxobutanoic acid" "3-(3-fluoro-para-anisoyl)-propionic acid" "3-(3-fluoro-4-methoxybenzoyl)propanoic acid" "benzenebutanoic acid,3-fluoro-4-methoxy-g-oxo-" "4-(3-fluoro-4-methoxyphenyl)-4-oxobutyric acid" );
+gibbsFormation
+{
+    dHf_298   -847960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     588.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-637750.0
+    phase     gas;
+}

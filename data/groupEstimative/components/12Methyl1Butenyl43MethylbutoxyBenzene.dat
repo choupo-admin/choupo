@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(2-methyl-1-butenyl)-4-(3-methylbutoxy)benzene  (C16H24O, CAS 68921-99-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Methyl1Butenyl43MethylbutoxyBenzene;
+formula     C16H24O;
+CAS         68921-99-3;
+InChIKey    RJGKXOFFZNQAGM-UHFFFAOYSA-N;
+MW          232.367;      // g/mol [origin=calculated method=formula-sum]
+Tc          826.51;      // K   [origin=predictive method=joback]
+Pc          17.507;      // bar [origin=predictive method=joback]
+omega       0.6524;      // -   [origin=predictive method=lee-kesler]
+Tb          623.36;      // K   [origin=predictive method=joback]
+HvapTb      56208.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-21.317 1.34808 -0.00078906 1.737e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 1; } { group CH=C; count 1; } { group ACH; count 4; } { group AC; count 2; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 3; } { group CH; count 1; } { group dCH; count 1; } { group dC; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2-methylbut-1-enyl)-4-(3-methylbutoxy)benzene" "4-(2-methylbut-1-enyl)-1-(3-methylbutoxy)benzene" "benzene, 1-(2-methyl-1-buten-1-yl)-4-(3-methylbutoxy)-" );
+gibbsFormation
+{
+    dHf_298   -178580.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     657.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=150850.0
+    phase     gas;
+}

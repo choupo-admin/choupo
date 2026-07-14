@@ -24,14 +24,14 @@ parameters
 
 provenance
 {
-    source        estimated;
+    origin        assumed;   // null coefficients = the IDEALITY ASSUMPTION (see notes), not an estimate
     citation      "Ideal-mixture assumption; well-supported by VLE data for benzene-toluene at 1 atm";
     fitData       "<not refit>";
     fitDate       "<n/a>";
     algorithm     "<n/a>";
     chi2          "<n/a>";
     nDataPoints   0;
-    validityRange { Tmin 353.0; Tmax 384.0; }
+    validity { temperature { min 353.0 K; max 384.0 K; } }
     author        "V. Geraldes, 2026";
     notes         "Equivalent to Raoult's law. Use the simpler activityModel { model ideal; } in most cases; this NRTL set is provided for studies that want NRTL machinery active with a known trivial case.";
 }

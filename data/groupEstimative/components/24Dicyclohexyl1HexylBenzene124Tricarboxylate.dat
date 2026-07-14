@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-dicyclohexyl 1-hexyl benzene-1,2,4-tricarboxylate  (C27H38O6, CAS 110475-01-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24Dicyclohexyl1HexylBenzene124Tricarboxylate;
+formula     C27H38O6;
+CAS         110475-01-9;
+InChIKey    LUVTVPLLIUIVOH-UHFFFAOYSA-N;
+MW          458.595;      // g/mol [origin=calculated method=formula-sum]
+Tc          1309.52;      // K   [origin=predictive method=joback]
+Pc          10.514;      // bar [origin=predictive method=joback]
+omega       0.9934;      // -   [origin=predictive method=lee-kesler]
+Tb          1067.76;      // K   [origin=predictive method=joback]
+HvapTb      102375.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-81.945 2.45072 -0.00122032 1.337e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 15; } { group CH; count 2; } { group ACH; count 3; } { group AC; count 3; } { group COO; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 5; } { group CH2_ring; count 10; } { group CH_ring; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group COO; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "o2,o4-dicyclohexyl o1-hexyl benzene-1,2,4-tricarboxylate" "1,2,4-benzenetricarboxylic acid, mixed cyclohexyl and hexyl esters" "2-o,4-o-dicyclohexyl 1-o-hexyl benzene-1,2,4-tricarboxylate" );
+gibbsFormation
+{
+    dHf_298   -1230220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1181.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-612600.0
+    phase     gas;
+}

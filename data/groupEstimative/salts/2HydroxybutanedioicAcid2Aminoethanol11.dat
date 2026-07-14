@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component (SALT): 2-hydroxybutanedioic acid- 2-aminoethanol(1:1)  (C6H13NO6, CAS 29868-01-7)
+  ELECTROLYTE FORM -- NOT a Joback estimate (a salt has no single molecular
+  Tc/Pc/Cp).  Like data/standards/components/NaCl.dat: nonvolatile, with a
+  van't Hoff dissociation and a dissociatesTo map.  Formation lives PER
+  constituent/ion, never as a component gibbsFormation block.
+\*---------------------------------------------------------------------------*/
+
+name           2HydroxybutanedioicAcid2Aminoethanol11;
+formula        C6H13NO6;
+CAS            29868-01-7;
+InChIKey       VBDYEDRMGZAREE-UHFFFAOYSA-N;
+MW             195.171;          // g/mol [origin=calculated method=formula-sum]
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for pi = nu R T c
+// dissociatesTo { ... }  -- TODO (curation): name did not parse into clean
+//   constituents; identify them by hand from: 2-hydroxybutanedioic acid- 2-aminoethanol(1:1)

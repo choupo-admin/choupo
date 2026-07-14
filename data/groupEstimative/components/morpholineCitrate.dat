@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: morpholine citrate  (C10H17NO8, CAS 62038-11-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        morpholineCitrate;
+formula     C10H17NO8;
+CAS         62038-11-3;
+InChIKey    MUAWWROODCFBEM-UHFFFAOYSA-N;
+MW          279.245;      // g/mol [origin=calculated method=formula-sum]
+Tc          1298.08;      // K   [origin=predictive method=joback]
+Pc          37.454;      // bar [origin=predictive method=joback]
+omega       2.0790;      // -   [origin=predictive method=lee-kesler]
+Tb          1055.00;      // K   [origin=predictive method=joback]
+HvapTb      117029.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.068 1.192 -0.0005873 5.25e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group C; count 1; } { group OH; count 1; } { group COOH; count 3; } { group Morpholine; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group C; count 1; } { group CH2_ring; count 4; } { group OH; count 1; } { group O_ring; count 1; } { group COOH; count 3; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "morpholine;2-oxidanylpropane-1,2,3-tricarboxylic acid" "citric acid, morpholine salt" "morpholine, 2-hydroxy-1,2,3-propanetricarboxylate" "morpholine, 2-hydroxy-1,2,3-propanetricarboxylate (1:?)" "2-hydroxypropane-1,2,3-tricarboxylic acid; morpholine" );
+gibbsFormation
+{
+    dHf_298   -1592670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     778.92;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1203400.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(4-fluorophenyl)ethanol  (C8H9FO, CAS 403-41-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14FluorophenylEthanol;
+formula     C8H9FO;
+CAS         403-41-8;
+InChIKey    PSDSORRYQPTKSV-UHFFFAOYSA-N;
+MW          140.157;      // g/mol [origin=calculated method=formula-sum]
+Tc          698.39;      // K   [origin=predictive method=joback]
+Pc          38.340;      // bar [origin=predictive method=joback]
+omega       0.7849;      // -   [origin=predictive method=lee-kesler]
+Tb          505.31;      // K   [origin=predictive method=joback]
+HvapTb      51814.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.29 0.67712 -0.00042556 9.95e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 4; } { group ACCH; count 1; } { group OH; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-fluoro-alpha-methylbenzyl alcohol" "1-(4-fluorophenyl)ethan-1-ol" "p-fluorophenylmethylcarbinol" "4-fluorophenylmethylcarbinol" "1-(4-fluorophenyl)-1-ethanol" "1-(p-fluorophenyl)ethanol" "1-(4-fluoro-phenyl)-ethanol" "4-fluorophenyl methyl carbinol" "p-fluoro-a-methylbenzyl alcohol" "p-fluoro-alpha-methylbenzyl alcohol" "alpha-methyl-4-fluorobenzyl alcohol" "4-fluoromethyl-alpha-methylbenzyl alcohol" );
+gibbsFormation
+{
+    dHf_298   -337010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     428.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-214810.0
+    phase     gas;
+}

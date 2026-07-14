@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-octen-1-yne  (C8H12, CAS 42104-42-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Octen1Yne;
+formula     C8H12;
+CAS         42104-42-7;
+InChIKey    FCNAWUZWKZOHKE-UHFFFAOYSA-N;
+MW          108.184;      // g/mol [origin=calculated method=formula-sum]
+Tc          561.32;      // K   [origin=predictive method=joback]
+Pc          31.350;      // bar [origin=predictive method=joback]
+omega       0.2990;      // -   [origin=predictive method=lee-kesler]
+Tb          376.92;      // K   [origin=predictive method=joback]
+HvapTb      33218.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.787 0.68992 -0.00049113 1.4979e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH=CH; count 1; } { group CH_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group dCH; count 2; } { group tCH; count 1; } { group tC; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "oct-3-en-1-yne" );
+gibbsFormation
+{
+    dHf_298   200670.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     430.54;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=319770.0
+    phase     gas;
+}

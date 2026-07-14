@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oxazolidine e  (C7H13NO2, CAS 7747-35-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        oxazolidineE;
+formula     C7H13NO2;
+CAS         7747-35-5;
+InChIKey    ZRCMGIXRGFOXNT-UHFFFAOYSA-N;
+MW          143.186;      // g/mol [origin=calculated method=formula-sum]
+Tc          659.17;      // K   [origin=predictive method=joback]
+Pc          41.785;      // bar [origin=predictive method=joback]
+omega       0.4688;      // -   [origin=predictive method=lee-kesler]
+Tb          448.76;      // K   [origin=predictive method=joback]
+HvapTb      41395.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-141.059 1.39732 -0.0014238 5.87e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group C; count 1; } { group FCH2O; count 2; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 4; } { group C_ring; count 1; } { group O_ring; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "7a-ethyl-1,3,5,7-tetrahydro-[1,3]oxazolo[3,4-c][1,3]oxazole" "5-ethyl-1-aza-3,7-dioxabicyclo[3.3.0]octane" "7a-ethyldihydro-1h,3h,5h-oxazolo(3,4-c)oxazole" "1h,3h,5h-oxazolo[3,4-c]oxazole, 7a-ethyldihydro-" "dihydro-7a-ethyloxazolo[3,4-c]oxazole" "5-ethyl-3,7-dioxa-1-azabicyclo[3.3.0]octane" "7-ethylbicyclooxazolidine" "1h,3h,5h-oxazolo(3,4-c)oxazole, 7a-ethyldihydro-" "oxazolidine-e" "oxaban e" "zoldine ze" "neosyn tx" );
+gibbsFormation
+{
+    dHf_298   -209260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     293.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=58220.0
+    phase     gas;
+}

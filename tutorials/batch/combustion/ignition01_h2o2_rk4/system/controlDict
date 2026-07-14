@@ -3,7 +3,11 @@
   integrated with EXPLICIT RK4 -- the FAILURE half of the stiffness lesson.
 
   A stoichiometric H2/O2 charge diluted in N2 is held in a closed rigid vessel
-  at 1100 K.  A slow initiation seeds radicals; chain branching then runs away.
+  at 1100 K.  KINETICS ARE REAL: the GRI-Mech 3.0 H/O subsystem (28 reactions,
+  verbatim; see constant/reactions).  With the NASA-7 Cp overrides (constant/
+  components/ -- the catalogue poly3 fits stop at 1500 K) the stiff run gives
+  tau_ign ~ 16 us (max dT/dt; 1100 K, 5 bar) and T_final = 2785 K (constant-V
+  flame).  A slow initiation seeds radicals; chain branching then runs away.
   This is the SAME problem as the sibling case ignition01_h2o2 (which uses the
   stiff Rosenbrock23 solver), but here the solver is explicit RK4 at the same
   deltaT (1e-5 s).
@@ -19,16 +23,16 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoBatch;
-description   "Adiabatic constant-V H2/O2 ignition at 1100 K (SYNTHETIC kinetics, curated thermo); EXPLICIT RK4 -- fails on the stiff chemistry (the lesson)";
+description   "Adiabatic constant-V H2/O2 ignition at 1100 K (GRI-Mech 3.0 H/O kinetics, curated thermo); EXPLICIT RK4 -- fails on the stiff chemistry (the lesson)";
 
 verbosity     3;
 
 // ---- Time integration ----
 startTime       0;          // s
-endTime         1.0e-2;       // s
-deltaT          1.0e-5;     // s   (explicit RK4 takes this as a fixed step and
+endTime         2.0e-4;      // s  (GRI kinetics ignite ~20x faster than the old synthetic set)
+deltaT          1.0e-6;     // s   (explicit RK4 takes this as a fixed step and
                             //      cannot survive the stiff chemistry at it --
                             //      that is the point; the stiff sibling
                             //      ignition01_h2o2 sub-steps adaptively within
                             //      each deltaT and does survive)
-writeInterval   1.0e-4;     // s   (trajectory snapshot)
+writeInterval   1.0e-6;     // s   (resolves the ~us-scale induction ramp)

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-methylbenzyl acetate  (C10H12O2, CAS 2216-45-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4MethylbenzylAcetate;
+formula     C10H12O2;
+CAS         2216-45-7;
+InChIKey    WDCUPFMSLUIQBH-UHFFFAOYSA-N;
+MW          164.204;      // g/mol [origin=calculated method=formula-sum]
+Tc          729.36;      // K   [origin=predictive method=joback]
+Pc          28.999;      // bar [origin=predictive method=joback]
+omega       0.5374;      // -   [origin=predictive method=lee-kesler]
+Tb          518.28;      // K   [origin=predictive method=joback]
+HvapTb      48199.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.399 0.76064 -0.00038976 5.13e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group ACCH3; count 1; } { group ACCH2; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(4-methylphenyl)methyl ethanoate" "p-methylbenzyl acetate" "p-xylyl acetate" "p-tolubenzyl acetate" "4-methylbenzyl ethanoate" "(4-methylphenyl)methyl acetate" "p-acetoxymethyltoluene" "p-xylene, alpha-acetoxy" "benzenemethanol, 4-methyl-, acetate" "p-methylbenzyl alcohol acetate" "4-methylbenzenemethanol acetate" "benzenemethanol, 4-methyl-, 1-acetate" );
+gibbsFormation
+{
+    dHf_298   -341950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     484.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-174270.0
+    phase     gas;
+}

@@ -102,6 +102,7 @@ export function McCabePlot(
   // KNOBS (the consequence you feel continuously).
   const [R, setR] = useState(2.0);
   const [q, setQ] = useState(1.0);
+  const [eff, setEff] = useState(1.0);     // Murphree tray efficiency E_MV (1 = ideal stages)
   const [useFactor, setUseFactor] = useState(false); // R vs R/R_min binding
   const [tab, setTab] = useState<"construction" | "sensitivity">("construction");
 
@@ -124,8 +125,8 @@ export function McCabePlot(
 
   // When the "× R_min" binding is on, the slider sets R/R_min; convert to R.
   const effectiveR = useFactor ? Math.max(0, R) * rMinForQ : R;
-  const spec: MccabeSpec = { xF, xD, xW, R: effectiveR, q, totalCondenser, partialReboiler: true };
-  const res: MccabeResult = useMemo(() => buildMccabe(curve, spec), [curve, xF, xD, xW, effectiveR, q, totalCondenser]);
+  const spec: MccabeSpec = { xF, xD, xW, R: effectiveR, q, totalCondenser, partialReboiler: true, efficiency: eff };
+  const res: MccabeResult = useMemo(() => buildMccabe(curve, spec), [curve, xF, xD, xW, effectiveR, q, totalCondenser, eff]);
 
   // approach-to-pinch: 0 (far) → 1 (at the cliff).  Fills + reddens.
   const approach = res.rMin > 1e-9 ? Math.max(0, Math.min(1, res.rMin / Math.max(effectiveR, res.rMin))) : 0;
@@ -215,6 +216,11 @@ export function McCabePlot(
         <SetField label={`x_D (${compA})`} value={xD} onChange={(v) => setXD(clamp(v, xF + 0.01, 0.999))} />
         <SetField label={`x_W (${compA})`} value={xW} onChange={(v) => setXW(clamp(v, 0.001, xF - 0.01))} />
         <SetField label={`x_F (${compA})`} value={xF} onChange={(v) => setXF(clamp(v, xW + 0.01, xD - 0.01))} />
+        <Tooltip label="Murphree tray efficiency E_MV: each tray reaches only this fraction of the way to equilibrium, so the staircase steps to a pseudo-curve (dashed) and more trays are needed. E_MV = 1 is ideal stages. Overall column efficiency is the O'Connell correlation E_o ≈ 0.49·(α·μ_L)^-0.245 (~0.5 typical)." multiline w={300} withArrow>
+          <span style={{ display: "inline-block" }}>
+            <SetField label="E_MV (tray eff.)" value={eff} onChange={(v) => setEff(clamp(v, 0.1, 1))} />
+          </span>
+        </Tooltip>
         <Tooltip label="total condenser: the distillate is liquid of composition x_D (no equilibrium stage).  partial condenser: the condenser IS one equilibrium stage — the count goes up by exactly one." multiline w={280} withArrow>
           <Switch size="xs" checked={!totalCondenser} label="partial condenser (+1 stage)"
             onChange={(e) => setTotalCondenser(!e.currentTarget.checked)} styles={{ label: { fontSize: 11 } }} />
@@ -228,6 +234,11 @@ export function McCabePlot(
         energy-rigorous staging (CMO relaxed) the MESH <code>distillationColumn</code> is the truth; the
         Fenske/Underwood closed forms in <code>shortcutColumn</code> are the matching shortcut anchors for
         N_min / R_min.
+        {eff < 0.999 && (
+          <> {" "}With Murphree efficiency E_MV = {eff.toFixed(2)} the staircase steps to the dashed
+          pseudo-curve, so N is the count of ACTUAL trays; the overall column efficiency is the
+          famous O'Connell correlation E_o ≈ 0.49·(α·μ_L)^−0.245 (~0.5 typical).</>
+        )}
       </Text>
     </Stack>
   );
@@ -305,6 +316,16 @@ function ConstructionPlot(
       x: [xW, fi.x], y: [xW, fi.y],
       line: { color: PLOT_COLORS.warm2, width: 2 }, hoverinfo: "skip",
     });
+    // Murphree pseudo-equilibrium curve (drawn only when E_MV < 1): the staircase
+    // steps to THIS curve, not the real y*(x), so more (shorter) trays appear.
+    if (res.pseudoCurve) {
+      data.push({
+        type: "scatter", mode: "lines", name: `pseudo-eq (E_MV = ${res.efficiency.toFixed(2)})`,
+        x: res.pseudoCurve.map((p) => p.x), y: res.pseudoCurve.map((p) => p.y),
+        line: { color: PLOT_COLORS.series[2], width: 1.6, dash: "dash" },
+        hovertemplate: `pseudo-eq<br>x: %{x:.3f}<br>y: %{y:.3f}<extra></extra>`,
+      });
+    }
     // the staircase
     data.push({
       type: "scatter", mode: "lines", name: `staircase — N = ${fmtN(res.nStages)}`,

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-phenylbutyraldehyde  (C10H12O, CAS 16251-77-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Phenylbutyraldehyde;
+formula     C10H12O;
+CAS         16251-77-7;
+InChIKey    MYHGOWDLVRDUFA-UHFFFAOYSA-N;
+MW          148.205;      // g/mol [origin=calculated method=formula-sum]
+Tc          717.69;      // K   [origin=predictive method=joback]
+Pc          32.100;      // bar [origin=predictive method=joback]
+omega       0.5105;      // -   [origin=predictive method=lee-kesler]
+Tb          503.30;      // K   [origin=predictive method=joback]
+HvapTb      46462.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.389 0.85532 -0.0005476 1.307e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 5; } { group ACCH; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-phenylbutanal" "benzenepropanal, .beta.-methyl-" "3-phenyl-mutanal" "3-methyl-3-phenylpropanal" "benzenepropanal, ss-methyl-" "agn-pc-00fs2s" "benzenepropanal, beta-methyl-" ".+/-.-3-phenylbutyraldehyde" "(3r)-1-deuterio-3-phenylbutan-1-one" );
+gibbsFormation
+{
+    dHf_298   -104060.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     448.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=43770.0
+    phase     gas;
+}

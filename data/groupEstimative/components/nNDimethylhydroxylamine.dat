@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n,n-dimethylhydroxylamine  (C2H7NO, CAS 5725-96-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nNDimethylhydroxylamine;
+formula     C2H7NO;
+CAS         5725-96-2;
+InChIKey    VMESOKCXSYNAKD-UHFFFAOYSA-N;
+MW          61.084;      // g/mol [origin=calculated method=formula-sum]
+Tc          511.05;      // K   [origin=predictive method=joback]
+Pc          57.392;      // bar [origin=predictive method=joback]
+omega       0.6242;      // -   [origin=predictive method=lee-kesler]
+Tb          349.98;      // K   [origin=predictive method=joback]
+HvapTb      38768.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-4.33 0.35174 -0.000228 5.98e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group OH; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methanamine, n-hydroxy-n-methyl-" "n,n-dimethylhydroxyamine" "16645-06-0 (hydrochloride)" );
+gibbsFormation
+{
+    dHf_298   -169310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     300.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-60080.0
+    phase     gas;
+}

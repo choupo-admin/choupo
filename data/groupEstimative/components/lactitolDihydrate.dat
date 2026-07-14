@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lactitol dihydrate  (C12H28O13, CAS 81025-03-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C12H28O13 (delta H+4O+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        lactitolDihydrate;
+formula     C12H28O13;
+CAS         81025-03-8;
+InChIKey    VAOUPFUEMFJHKI-MTURKXFLSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          380.343;      // g/mol [origin=calculated method=formula-sum]
+Tc          2044.75;      // K   [origin=predictive method=joback]
+Pc          36.509;      // bar [origin=predictive method=joback]
+omega       0.2935;      // -   [origin=predictive method=lee-kesler]
+Tb          1352.26;      // K   [origin=predictive method=joback]
+HvapTb      196978.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (33.843 1.4233 -0.0006499 5.11e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH; count 7; } { group OH; count 9; } { group H2O; count 2; } { group CH-O; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group CH; count 4; } { group CH_ring; count 5; } { group OH; count 9; } { group O; count 1; } { group O_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s,3r,4r,5r)-4-[(2s,3r,4s,5r,6r)-6-(hydroxymethyl)-3,4,5-tris(oxidanyl)oxan-2-yl]oxyhexane-1,2,3,5,6-pentol;dihydrate" "4-o-beta-d-galactopyranosyl-d-glucitol dihydrate" "4-o-beta-d-galactopyranosyl-d-sorbitol dihydrate" "d-glucitol, 4-o-beta-d-galactopyranosyl-, dihydrate" "glucitol, 4-o-beta-d-galactopyranosyl-, d-, dihydrate" "lactitol (dihydrate)" "c12h24o11.2h2o" "(2s,3r,4r,5r)-4-[(2s,3r,4s,5r,6r)-3,4,5-trihydroxy-6-(hydroxymethyl)oxan-2-yl]oxyhexane-1,2,3,5,6-pentol dihydrate" );
+gibbsFormation
+{
+    dHf_298   -1973460.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1269.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1388490.0
+    phase     gas;
+}

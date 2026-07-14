@@ -40,7 +40,7 @@ is essentially exact — the UNIQUAC fit is doing its job.
 
 ## The parameters (full provenance — no fabrication)
 
-`constant/thermoPackage` carries the **LLE-specific UNIQUAC** for
+`constant/propertyDict` carries the **LLE-specific UNIQUAC** for
 water/1-butanol, cited per value:
 
 - **Primary source:** J.G.M. Winkelman, G.N. Kraai, H.J. Heeres, *"Binary,

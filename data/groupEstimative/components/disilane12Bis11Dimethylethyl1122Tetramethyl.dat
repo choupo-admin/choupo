@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: disilane, 1,2-bis(1,1-dimethylethyl)-1,1,2,2-tetramethyl-  (C12H30Si2, CAS 63262-93-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C12H30Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        disilane12Bis11Dimethylethyl1122Tetramethyl;
+formula     C12H30Si2;
+CAS         63262-93-1;
+InChIKey    LPRFMFOJUGMAJA-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          230.542;      // g/mol [origin=calculated method=formula-sum]
+Tc          663.46;      // K   [origin=predictive method=joback]
+Pc          15.117;      // bar [origin=predictive method=joback]
+omega       0.2277;      // -   [origin=predictive method=lee-kesler]
+Tb          470.50;      // K   [origin=predictive method=joback]
+HvapTb      40302.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.67 0.9832 -0.000143 -1.59e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 10; } { group C; count 2; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 10; } { group C; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tert-butyl-[tert-butyl(dimethyl)silyl]-dimethyl-silane" "tert-butyl-[tert-butyl(dimethyl)silyl]-dimethylsilane" );
+gibbsFormation
+{
+    dHf_298   -531750.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     798.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-153680.0
+    phase     gas;
+}

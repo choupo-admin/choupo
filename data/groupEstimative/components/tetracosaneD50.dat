@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetracosane-d50  (C24D50, CAS 16416-32-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C24D50 (delta D+50H-50; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        tetracosaneD50;
+formula     C24D50;
+CAS         16416-32-3;
+InChIKey    POOSGDOYLQNASK-KNUOVWDMSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          388.964;      // g/mol [origin=calculated method=formula-sum]
+Tc          918.31;      // K   [origin=predictive method=joback]
+Pc          8.062;      // bar [origin=predictive method=joback]
+omega       0.7534;      // -   [origin=predictive method=lee-kesler]
+Tb          748.72;      // K   [origin=predictive method=joback]
+HvapTb      69018.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.928 2.28384 -0.0012818 2.744e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 22; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 22; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,24-pentacontadeuteriotetracosane" );
+gibbsFormation
+{
+    dHf_298   -538690.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1090.86;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=151200.0
+    phase     gas;
+}

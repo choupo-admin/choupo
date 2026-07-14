@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl methacrylate-d8  (C5D8O2, CAS 35233-69-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C5D8O2 (delta D+8H-8; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        methylMethacrylateD8;
+formula     C5D8O2;
+CAS         35233-69-3;
+InChIKey    VVQNEPGJFQJSBK-MGGKGRBPSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          108.165;      // g/mol [origin=calculated method=formula-sum]
+Tc          550.45;      // K   [origin=predictive method=joback]
+Pc          36.910;      // bar [origin=predictive method=joback]
+omega       0.3497;      // -   [origin=predictive method=lee-kesler]
+Tb          368.78;      // K   [origin=predictive method=joback]
+HvapTb      33541.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.07 0.40394 -0.0001788 1.04e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trideuteriomethyl 3,3-dideuterio-2-(trideuteriomethyl)prop-2-enoate" "methyl-d3 methacrylate-d5" "perdeutero(methyl methacrylate)" "2-propenoic-3,3-d2 acid, 2-(methyl-d3)-, methyl-d3 ester" "de320" "methyl methacrylate-d8 99.50 atom % d" "(2h3)methyl (3,3,alpha,alpha,alpha-2h5)methacrylate" );
+gibbsFormation
+{
+    dHf_298   -348170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     393.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-239860.0
+    phase     gas;
+}

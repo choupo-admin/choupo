@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-tert-butyl-2-chlorophenol  (C10H13ClO, CAS 98-28-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4TertButyl2Chlorophenol;
+formula     C10H13ClO;
+CAS         98-28-2;
+InChIKey    PRLINSMUYJWPBL-UHFFFAOYSA-N;
+MW          184.663;      // g/mol [origin=calculated method=formula-sum]
+Tc          813.22;      // K   [origin=predictive method=joback]
+Pc          33.374;      // bar [origin=predictive method=joback]
+omega       0.5721;      // -   [origin=predictive method=lee-kesler]
+Tb          574.88;      // K   [origin=predictive method=joback]
+HvapTb      56895.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-46.31 1.10266 -0.00093292 3.224e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group ACH; count 3; } { group AC; count 1; } { group ACOH; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group C; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-tert-butyl-2-chloranyl-phenol" "2-chloro-4-tert-butylphenol" "crufomate metabolite" "phenol, 2-chloro-4-(1,1-dimethylethyl)-" "phenol, 4-tert-butyl-2-chloro-" "4-(tert-butyl)-2-chlorophenol" "prlinsmuyjwpbl-uhfffaoysa-" "phenol, chloro-4-(1,1-dimethylethyl)-" "phenol, 4-tert-butyl-2-chloro- (8ci)" );
+gibbsFormation
+{
+    dHf_298   -226470.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     453.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-27610.0
+    phase     gas;
+}

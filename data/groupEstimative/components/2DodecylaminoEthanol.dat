@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-(dodecylamino)ethanol  (C14H31NO, CAS 16613-87-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2DodecylaminoEthanol;
+formula     C14H31NO;
+CAS         16613-87-9;
+InChIKey    HCYSJBICYOIBLS-UHFFFAOYSA-N;
+MW          229.408;      // g/mol [origin=calculated method=formula-sum]
+Tc          825.13;      // K   [origin=predictive method=joback]
+Pc          16.565;      // bar [origin=predictive method=joback]
+omega       1.1969;      // -   [origin=predictive method=lee-kesler]
+Tb          662.27;      // K   [origin=predictive method=joback]
+HvapTb      69873.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-5.757 1.44402 -0.0008168 1.757e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 12; } { group OH; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 13; } { group OH; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-dodecyl-amino ethanol" "amides, c12-18, n-(hydroxyethyl)" "2-(dodecylamino)ethan-1-ol" "n-(2-hydroxyethyl)(c12-18)alkylcarboxylic acid amide" "2-dodecylamino-ethanol" "ethanol,2-(dodecylamino)-" "ethanol, 2-(dodecylamino)-" "(2-hydroxyethyl)laurylamine;2-(dodecylamino)ethanol; 2-(laurylamino)ethanol; 2-(n-dodecylamino)ethanol;dodecyl(2-hydroxyethyl)amine; dodecylethanolamine;n-(2-hydroxyethyl)dodecylamine; n-dodecyl-n-(2-hydroxyethyl)amine;n-dodecylethanolamine; n-laurylethanolamine" );
+gibbsFormation
+{
+    dHf_298   -431050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     792.88;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=19570.0
+    phase     gas;
+}

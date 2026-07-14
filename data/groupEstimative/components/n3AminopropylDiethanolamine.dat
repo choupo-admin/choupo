@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-(3-aminopropyl)diethanolamine  (C7H18N2O2, CAS 4985-85-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        n3AminopropylDiethanolamine;
+formula     C7H18N2O2;
+CAS         4985-85-7;
+InChIKey    FKJVYOFPTRGCSP-UHFFFAOYSA-N;
+MW          162.233;      // g/mol [origin=calculated method=formula-sum]
+Tc          795.36;      // K   [origin=predictive method=joback]
+Pc          36.686;      // bar [origin=predictive method=joback]
+omega       1.6357;      // -   [origin=predictive method=lee-kesler]
+Tb          629.09;      // K   [origin=predictive method=joback]
+HvapTb      77218.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (2.907 0.9226 -0.0005738 1.401e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group OH; count 2; } { group CH2NH2; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 7; } { group OH; count 2; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[3-azanylpropyl(2-hydroxyethyl)amino]ethanol" "aminopropyldiethanolamine" "2,2'-[(3-aminopropyl)imino]diethanol" "(3-aminopropyl)diethanolamine" "n,n-bis[(hydroxyethyl)trimethylene]diamine" "ethanol, 2,2'-[(3-aminopropyl)imino]bis-" "n,n-bis(2-hydroxyethyl)-1,3-diaminopropane" "n,n-bis(hydroxyethyl)trimethylenediamine" "n,n-bis(2-hydroxyethyl)-1,3-propanediamine" "2-[(3-amino-propyl)-(2-hydroxy-ethyl)-amino]-ethanol" "2,2'-((3-aminopropyl)imino)diethanol" "ethanol, 2,2'-((3-aminopropyl)imino)bis-" );
+gibbsFormation
+{
+    dHf_298   -390950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     598.11;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-88350.0
+    phase     gas;
+}

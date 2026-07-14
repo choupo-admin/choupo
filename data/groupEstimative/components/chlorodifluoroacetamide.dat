@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: chlorodifluoroacetamide  (C2H2ClF2NO, CAS 354-28-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        chlorodifluoroacetamide;
+formula     C2H2ClF2NO;
+CAS         354-28-9;
+InChIKey    PSAKKOKLSDIKEK-UHFFFAOYSA-N;
+MW          129.49;      // g/mol [origin=calculated method=formula-sum]
+Tc          602.12;      // K   [origin=predictive method=joback]
+Pc          51.166;      // bar [origin=predictive method=joback]
+omega       0.4823;      // -   [origin=predictive method=lee-kesler]
+Tb          404.50;      // K   [origin=predictive method=joback]
+HvapTb      38888.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.52 0.3839 -0.0003347 1.0666e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CClF2; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group F; count 2; } { group Cl; count 1; } { group CdO; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranyl-2,2-bis(fluoranyl)ethanamide" "2-chloro-2,2-difluoroacetamide" "difluorochloroacetamide" "acetamide, 2-chloro-2,2-difluoro-" "snylgqdjptadtaetp@" "acetamide,2-difluoro-" );
+gibbsFormation
+{
+    dHf_298   -580110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     370.15;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-495220.0
+    phase     gas;
+}

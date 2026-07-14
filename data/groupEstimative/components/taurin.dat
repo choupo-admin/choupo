@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: taurin  (C15H20O3, CAS 23522-05-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        taurin;
+formula     C15H20O3;
+CAS         23522-05-6;
+InChIKey    RSDQBPGKMDFRHH-MJVIGCOGSA-N;
+MW          248.322;      // g/mol [origin=calculated method=formula-sum]
+Tc          933.73;      // K   [origin=predictive method=joback]
+Pc          21.433;      // bar [origin=predictive method=joback]
+omega       0.7525;      // -   [origin=predictive method=lee-kesler]
+Tb          702.29;      // K   [origin=predictive method=joback]
+HvapTb      60877.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-117.55 1.72966 -0.0013518 4.595e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 3; } { group C; count 1; } { group CH2CO; count 1; } { group C=C; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group C_ring; count 1; } { group dC_ring; count 2; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3s,3as,5ar,9bs)-3,5a,9-trimethyl-3a,4,5,7,8,9b-hexahydro-3h-benzo[g][1]benzofuran-2,6-dione" "barrelierin" "gracilin" "(3s,3as,5ar,9bs)-3,5a,9-trimethyl-3a,5,5a,7,8,9b-hexahydronaphtho[1,2-b]furan-2,6(3h,4h)-dione" "eudesm-4-en-12-oic acid, 6-hydroxy-1-oxo-, gamma-lactone" "3,5,5a,7,8,9b-hexahydro-3,5a,9-trimethylnaphtho(1,2-b)furan-2,6(3h,4h)-dione (3s-(3alpha,3aalpha,5abeta,9bbeta))-" "naphtho(1,2-b)furan-2,6(3h,4h)-dione, 3,5,5a,7,8,9b-hexahydro-3,5a,9-trimethyl-, (3s-(3alpha,3aalpha,5abeta,9bbeta))-" "eudesm-4-en-12-oicacid, 6-hydroxy-1-oxo-, g-lactone (8ci); naphtho[1,2-b]furan-2,6(3h,4h)-dione,3a,5,5a,7,8,9b-hexahydro-3,5a,9-trimethyl-, [3s-(3a,3aa,5ab,9bb)]-; barrelierin; dibicor; gracilin; taurin" "naphtho[1,2-b]furan-2,6(3h,4h)-dione,3a,5,5a,7,8,9b-hexahydro-3,5a,9-trimethyl-, (3s,3as,5ar,9bs)-" );
+gibbsFormation
+{
+    dHf_298   -572090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     459.29;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-201990.0
+    phase     gas;
+}

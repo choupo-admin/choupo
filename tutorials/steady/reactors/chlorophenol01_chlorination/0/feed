@@ -1,0 +1,8 @@
+/*--- Chlorophenol feed: phenol (liquid) + chlorine (gas). ---*/
+componentMolarFlows
+{
+    phenol   1.1 kmol/h;
+    Cl2      1.0 kmol/h;
+}
+T               298.15 K;
+P               101325 Pa;

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: naphtho[2,3-g]chrysene  (C26H16, CAS 196-64-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        naphtho23GChrysene;
+formula     C26H16;
+CAS         196-64-5;
+InChIKey    JBHIIKGZANVCJJ-UHFFFAOYSA-N;
+MW          328.414;      // g/mol [origin=calculated method=formula-sum]
+Tc          1210.19;      // K   [origin=predictive method=joback]
+Pc          20.327;      // bar [origin=predictive method=joback]
+omega       0.9553;      // -   [origin=predictive method=lee-kesler]
+Tb          935.98;      // K   [origin=predictive method=joback]
+HvapTb      86594.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-154.67 2.1384 -0.00183724 6.296e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 16; } { group AC; count 10; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 16; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "naphtho(2,3-g)chrysene" );
+gibbsFormation
+{
+    dHf_298   566030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     493.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=775180.0
+    phase     gas;
+}

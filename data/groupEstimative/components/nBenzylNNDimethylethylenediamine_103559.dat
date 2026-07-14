@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n'-benzyl-n,n-dimethylethylenediamine  (C11H18N2, CAS 103-55-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nBenzylNNDimethylethylenediamine;
+formula     C11H18N2;
+CAS         103-55-9;
+InChIKey    LLSJAFHDYCTFCM-UHFFFAOYSA-N;
+MW          178.279;      // g/mol [origin=calculated method=formula-sum]
+Tc          741.27;      // K   [origin=predictive method=joback]
+Pc          26.791;      // bar [origin=predictive method=joback]
+omega       0.6566;      // -   [origin=predictive method=lee-kesler]
+Tb          540.57;      // K   [origin=predictive method=joback]
+HvapTb      50835.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-52.917 1.17004 -0.000767 1.931e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } { group CH2NH; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n',n'-dimethyl-n-(phenylmethyl)ethane-1,2-diamine" "1,2-ethanediamine, n,n-dimethyl-n'-(phenylmethyl)-" "n1-benzyl-n2,n2-dimethyl-1,2-ethanediamine" "n,n-dimethyl-n'-benzylethylenediamine" "1,2-ethanediamine, n1,n1-dimethyl-n2-(phenylmethyl)-" "2-benzylaminoethyldimethylamine" "benzyl[2-(dimethylamino)ethyl]amine" "dimethyl{2-[benzylamino]ethyl}amine" "1, n,n-dimethyl-n'-(phenylmethyl)-" "n'-benzyl-n,n-dimethylethane-1,2-diamine" "n-benzyl-n',n'-dimethylethane-1,2-diamine" "n'-benzyl-n,n-dimethyl-ethylenediamine" );
+gibbsFormation
+{
+    dHf_298   87160.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     534.8;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=354320.0
+    phase     gas;
+}

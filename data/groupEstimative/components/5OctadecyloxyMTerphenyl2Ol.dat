@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5'-(octadecyloxy)-m-terphenyl-2'-ol  (C36H50O2, CAS 63671-76-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        5OctadecyloxyMTerphenyl2Ol;
+formula     C36H50O2;
+CAS         63671-76-1;
+InChIKey    JJHKARPEMHIIQC-UHFFFAOYSA-N;
+MW          514.794;      // g/mol [origin=calculated method=formula-sum]
+Tc          1500.26;      // K   [origin=predictive method=joback]
+Pc          7.807;      // bar [origin=predictive method=joback]
+omega       0.6691;      // -   [origin=predictive method=lee-kesler]
+Tb          1216.32;      // K   [origin=predictive method=joback]
+HvapTb      119306.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-86.373 3.15952 -0.00203948 5.222e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 16; } { group ACH; count 12; } { group AC; count 5; } { group ACOH; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 17; } { group dCH_ring; count 12; } { group dC_ring; count 6; } { group OH_phenol; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-octadecoxy-2,6-diphenyl-phenol" "2,6-diphenyl-4-octadecyloxyphenol" "(1,1':3',1''-terphenyl)-2'-ol, 5'-(octadecyloxy)-" "[1,1':3',1''-terphenyl]-2'-ol, 5'-(octadecyloxy)-" "4-octadecoxy-2,6-diphenylphenol" );
+gibbsFormation
+{
+    dHf_298   -409250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1264.42;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=310590.0
+    phase     gas;
+}

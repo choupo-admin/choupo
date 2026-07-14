@@ -1,0 +1,21 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.277777777778     1e-4
+stream  hydrogen               F                0.145276064457     1e-4
+stream  tailgas                F                0.13250171332      1e-4
+kpi     h2psa                  Dq_CH4           0.0260273101613    1e-4
+kpi     h2psa                  Dq_CO            0.0367785976251    1e-4
+kpi     h2psa                  Dq_CO2           1.74280135323      1e-4
+kpi     h2psa                  Dq_H2            0.0186248522203    1e-4
+kpi     h2psa                  Dq_N2            0.00987823175641   1e-4
+kpi     h2psa                  eta_used         0.8                1e-4
+kpi     h2psa                  pressureRatio    16.6666666667      1e-4
+kpi     h2psa                  productivity     0.0715324198173    1e-4
+kpi     h2psa                  purgeRatio       0.15               1e-4
+kpi     h2psa                  purity_H2        0.984779152498     1e-4
+kpi     h2psa                  recovery_H2      0.735762032407     1e-4
+kpi     h2psa                  selectivity_CH4_H2 1.39745055979      1e-4
+kpi     h2psa                  selectivity_CO2_H2 93.5739694799      1e-4
+kpi     h2psa                  selectivity_CO_H2 1.97470547364      1e-4
+kpi     h2psa                  selectivity_N2_H2 0.530379067687     1e-4
+kpi     h2psa                  tailgas_purity_CO2 0.377353611112     1e-4

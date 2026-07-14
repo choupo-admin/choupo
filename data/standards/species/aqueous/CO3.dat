@@ -1,0 +1,16 @@
+recordType modelSpecies;   // model species — summoned by a property method; never placed in a flowsheet
+schemaVersion 1;
+
+name    CO3;
+ion     "CO3-2";
+charge  -2;
+
+MW { value 60.01; unit g/mol;}
+
+aqueousThermo
+{
+    hfAq { value -677140; unit J/mol;}
+    sAq  { value -56.9;  unit J/mol/K;}
+}
+
+source "hfAq+sAq Wagman 1982";

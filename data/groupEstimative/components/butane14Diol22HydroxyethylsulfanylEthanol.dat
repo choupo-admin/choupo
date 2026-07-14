@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: butane-1,4-diol;2-(2-hydroxyethylsulfanyl)ethanol  (C8H20O4S, CAS 70815-28-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        butane14Diol22HydroxyethylsulfanylEthanol;
+formula     C8H20O4S;
+CAS         70815-28-0;
+InChIKey    USTZJWJWDNHAOJ-UHFFFAOYSA-N;
+MW          212.304;      // g/mol [origin=calculated method=formula-sum]
+Tc          1006.45;      // K   [origin=predictive method=joback]
+Pc          35.054;      // bar [origin=predictive method=joback]
+omega       2.0983;      // -   [origin=predictive method=lee-kesler]
+Tb          821.54;      // K   [origin=predictive method=joback]
+HvapTb      107229.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (77.198 0.68799 -7.8e-05 -1.216e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group OH; count 4; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 8; } { group OH; count 4; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4-butanediol, polymer with 2,2'-thiobis(ethanol)" );
+gibbsFormation
+{
+    dHf_298   -887120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     840.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-602440.0
+    phase     gas;
+}

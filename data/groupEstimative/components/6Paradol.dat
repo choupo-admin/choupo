@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-paradol  (C17H26O3, CAS 27113-22-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Paradol;
+formula     C17H26O3;
+CAS         27113-22-0;
+InChIKey    CZNLTCTYLMYLHL-UHFFFAOYSA-N;
+MW          278.392;      // g/mol [origin=calculated method=formula-sum]
+Tc          980.95;      // K   [origin=predictive method=joback]
+Pc          18.278;      // bar [origin=predictive method=joback]
+omega       1.1240;      // -   [origin=predictive method=lee-kesler]
+Tb          777.13;      // K   [origin=predictive method=joback]
+HvapTb      78544.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.232 1.54384 -0.00099182 2.6096e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group ACH; count 3; } { group AC; count 1; } { group ACCH2; count 1; } { group ACOH; count 1; } { group CH2CO; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 8; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(3-methoxy-4-oxidanyl-phenyl)decan-3-one" "paradol" "[6]-paradol" "5-paradol" "3-decanone, 1-(4-hydroxy-3-methoxyphenyl)-" "1-(4-hydroxy-3-methoxyphenyl)decan-3-one" "1-(4-hydroxy-3-methoxyphenyl)-3-decanone" "paradol" "27113-22-0" "[6]-paradol" "1-(4-hydroxy-3-methoxy-phenyl)decan-3-one" "brd-k84571636-001-01-4" );
+gibbsFormation
+{
+    dHf_298   -591260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     770.04;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-193500.0
+    phase     gas;
+}

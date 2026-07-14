@@ -130,7 +130,7 @@ int GridSweepDriver::run()
 
             SimulationResult result;
             bool converged = true;
-            try { result = simulator_(clone); }
+            try { result = simulator_(clone, StreamOverrides{}); }
             catch (const std::exception& e)
             {
                 std::cerr << "  [point " << pt << "  A=" << va << " B=" << vb

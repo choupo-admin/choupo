@@ -1,0 +1,17 @@
+/*---------------------------------------------------------------------------*\
+  FINISHING property context.
+\*---------------------------------------------------------------------------*/
+
+recordType    propertyDict;
+schemaVersion 1;
+
+inherits "../../../constant";
+
+components ( water N2 O2 CO2 Li2CO3 );
+
+propertyMethods
+{
+    liquid activity.ideal;
+    vapour builtin.idealGas;
+    solid  builtin.saltEquilibrium;
+}

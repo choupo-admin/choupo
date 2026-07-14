@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-pyridinemethanol, 1,2,3,6-tetrahydro-1-methyl-  (C7H13NO, CAS 36166-75-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Pyridinemethanol1236Tetrahydro1Methyl;
+formula     C7H13NO;
+CAS         36166-75-3;
+InChIKey    XCZCVUOQSMDKQW-UHFFFAOYSA-N;
+MW          127.187;      // g/mol [origin=calculated method=formula-sum]
+Tc          675.46;      // K   [origin=predictive method=joback]
+Pc          40.777;      // bar [origin=predictive method=joback]
+omega       0.8120;      // -   [origin=predictive method=lee-kesler]
+Tb          488.47;      // K   [origin=predictive method=joback]
+HvapTb      51418.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-53.219 0.86942 -0.00060304 1.663e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH=C; count 1; } { group OH; count 1; } { group CH3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH2_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1-methyl-3,6-dihydro-2h-pyridin-4-yl)methanol" "1,2,3,6-tetrahydro-1-methylpyridine-4-methanol" "(1-methyl-1,2,3,6-tetrahydropyridin-4-yl)methanol" "4-pyridinemethanol, 1, 2, 3, 6-tetrahydro-1-methyl-" "(1-methyl-1, 2, 3, 6-tetrahydropyridin-4-yl)methanol;" );
+gibbsFormation
+{
+    dHf_298   -145380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     444.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=46610.0
+    phase     gas;
+}

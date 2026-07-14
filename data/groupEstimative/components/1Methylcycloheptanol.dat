@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-methylcycloheptanol  (C8H16O, CAS 3761-94-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Methylcycloheptanol;
+formula     C8H16O;
+CAS         3761-94-2;
+InChIKey    XFFKAYOHINCUNU-UHFFFAOYSA-N;
+MW          128.215;      // g/mol [origin=calculated method=formula-sum]
+Tc          704.79;      // K   [origin=predictive method=joback]
+Pc          38.151;      // bar [origin=predictive method=joback]
+omega       0.6404;      // -   [origin=predictive method=lee-kesler]
+Tb          498.88;      // K   [origin=predictive method=joback]
+HvapTb      49531.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-119.81 1.20222 -0.001009 3.715e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 6; } { group C_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-methylcycloheptan-1-ol" "1-methylcycloheptanol-1" "cycloheptanol, 1-methyl-" "1-methyl cycloheptanol" "1-methyl-cycloheptanol" "cycloheptanol,1-methyl-" );
+gibbsFormation
+{
+    dHf_298   -297280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     577.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-113480.0
+    phase     gas;
+}

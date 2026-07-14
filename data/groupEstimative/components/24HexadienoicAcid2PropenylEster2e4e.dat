@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,4-hexadienoic acid, 2-propenyl ester, (2e,4e)-  (C9H12O2, CAS 7493-75-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        24HexadienoicAcid2PropenylEster2e4e;
+formula     C9H12O2;
+CAS         7493-75-6;
+InChIKey    CVNZYQJBZIJLCL-UHFFFAOYSA-N;
+MW          152.193;      // g/mol [origin=calculated method=formula-sum]
+Tc          659.46;      // K   [origin=predictive method=joback]
+Pc          26.819;      // bar [origin=predictive method=joback]
+omega       0.5028;      // -   [origin=predictive method=lee-kesler]
+Tb          468.74;      // K   [origin=predictive method=joback]
+HvapTb      42281.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.239 0.82402 -0.0005617 1.51e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2=CH; count 1; } { group CH=CH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dCH; count 5; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "prop-2-enyl hexa-2,4-dienoate" "allyl 2,4-hexadienoate" "2,4-hexadienoic acid, 2-propen-1-yl ester, (2e,4e)-" "sorbic acid, allyl ester;2,4-hexadienoic acid, 2-propenyl ester, (e,e)-;allyl 2,4-hexadienoate;allyl hexa-2,4-dienoate;2-propenyl 2,4-hexadienoate, trans,trans-;prop-2-enyl (2e,4e)-hexa-2,4-dienoate;2-propenyl 2,4-hexadienoate, (e,e)-;" );
+gibbsFormation
+{
+    dHf_298   -186500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     540.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-37190.0
+    phase     gas;
+}

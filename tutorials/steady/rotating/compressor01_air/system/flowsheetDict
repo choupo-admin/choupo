@@ -30,16 +30,7 @@
   in a DesignSpec that manipulates $W_shaft with target compressor.P_out.
 \*---------------------------------------------------------------------------*/
 
-streams
-{
-    feed
-    {
-        F             3.6 kmol/h;        // = 1 mol/s
-        T           298.15 K;            // 25 degC
-        P             1.0  bar;
-        molarComposition  { N2 0.79;  O2 0.21; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloro-1,4-diaminobenzene  (C6H7ClN2, CAS 615-66-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chloro14Diaminobenzene;
+formula     C6H7ClN2;
+CAS         615-66-7;
+InChIKey    MGLZGLAFFOMWPB-UHFFFAOYSA-N;
+MW          142.586;      // g/mol [origin=calculated method=formula-sum]
+Tc          805.65;      // K   [origin=predictive method=joback]
+Pc          49.874;      // bar [origin=predictive method=joback]
+omega       0.6101;      // -   [origin=predictive method=lee-kesler]
+Tb          556.01;      // K   [origin=predictive method=joback]
+HvapTb      58217.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.0 0.5065 -0.00030692 6.69e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACNH2; count 2; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group Cl; count 1; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-chloranylbenzene-1,4-diamine" "2-chlorobenzene-1,4-diamine" "ursol brown o" "1,4-benzenediamine, 2-chloro-" "2-chloro-p-phenylenediamine" "3-chloro-4-aminoaniline" "o-chloro-p-phenylenediamine" "2-chloro-4-phenylenediamine" "1,4-diamino-2-chlorobenzene" "2-chloro-1,4-benzenediamine" "p-phenylenediamine, 2-chloro-" "2-chloro-p-phenylene diamine" );
+gibbsFormation
+{
+    dHf_298   98260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     407.57;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=213760.0
+    phase     gas;
+}

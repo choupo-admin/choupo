@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 2-bromopropionate  (C4H7BrO2, CAS 5445-17-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl2Bromopropionate;
+formula     C4H7BrO2;
+CAS         5445-17-0;
+InChIKey    ACEONLNNWKIPTM-UHFFFAOYSA-N;
+MW          167.002;      // g/mol [origin=calculated method=formula-sum]
+Tc          614.85;      // K   [origin=predictive method=joback]
+Pc          43.283;      // bar [origin=predictive method=joback]
+omega       0.4424;      // -   [origin=predictive method=lee-kesler]
+Tb          415.06;      // K   [origin=predictive method=joback]
+HvapTb      37952.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (31.17 0.37314 -0.0001738 1.29e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group Br; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group Br; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl 2-bromanylpropanoate" "methyl 2-bromopropanoate" "methyl .alpha.-bromopropionate" "propanoic acid, 2-bromo-, methyl ester" "methyl (2r)-2-bromopropanoate" "methyl 2-bromo-propionate" "methyl alpha-bromopropionate" "2-bromopropionic acid methyl ester" "propionic acid, 2-bromo-, methyl ester" "propanoic acid, 2-bromo-, methyl ester, (.+/-.)-" );
+gibbsFormation
+{
+    dHf_298   -422120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     404.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-315690.0
+    phase     gas;
+}

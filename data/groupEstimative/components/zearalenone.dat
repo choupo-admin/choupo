@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: zearalenone  (C18H22O5, CAS 17924-92-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        zearalenone;
+formula     C18H22O5;
+CAS         17924-92-4;
+InChIKey    MBMQEIFVQACCCH-QBODLPLBSA-N;
+MW          318.369;      // g/mol [origin=calculated method=formula-sum]
+Tc          1232.69;      // K   [origin=predictive method=joback]
+Pc          26.272;      // bar [origin=predictive method=joback]
+omega       1.2734;      // -   [origin=predictive method=lee-kesler]
+Tb          966.17;      // K   [origin=predictive method=joback]
+HvapTb      97691.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-67.39 1.68922 -0.00097636 1.939e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group CH; count 1; } { group CH=CH; count 1; } { group ACH; count 2; } { group AC; count 2; } { group ACOH; count 2; } { group CH2CO; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2_ring; count 6; } { group CH_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 4; } { group OH_phenol; count 2; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2e,11s)-11-methyl-15,17-bis(oxidanyl)-12-oxabicyclo[12.4.0]octadeca-1(14),2,15,17-tetraene-7,13-dione" "(-)-zearalenone" "trans-zearalenone" "(s)-zearalenone" "(10s)-zearalenone" "mycotoxin f2" "(s)-(-)-zearalenone" "f-2 toxin" "zenone" "6-(10-hydroxy-6-oxo-trans-1-undecenyl)-beta-resorcylic acid lactone" "zearalenone solution" "(3s,11e)-14,16-dihydroxy-3-methyl-3,4,5,6,9,10-hexahydro-1h-2-benzoxacyclotetradecine-1,7(8h)-dione" );
+gibbsFormation
+{
+    dHf_298   -911930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     781.81;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-532730.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl homovanillate  (C11H14O4, CAS 60563-13-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylHomovanillate;
+formula     C11H14O4;
+CAS         60563-13-5;
+InChIKey    AWPMWZHWVKXADV-UHFFFAOYSA-N;
+MW          210.229;      // g/mol [origin=calculated method=formula-sum]
+Tc          859.90;      // K   [origin=predictive method=joback]
+Pc          30.156;      // bar [origin=predictive method=joback]
+omega       0.9210;      // -   [origin=predictive method=lee-kesler]
+Tb          644.20;      // K   [origin=predictive method=joback]
+HvapTb      65849.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.272 0.94704 -0.00058952 1.415e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group ACH; count 3; } { group AC; count 2; } { group ACOH; count 1; } { group CH2COO; count 1; } { group CH3O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } { group O; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-(3-methoxy-4-oxidanyl-phenyl)ethanoate" "ethyl 4-hydroxy-3-methoxyphenylacetate" "ethyl 2-(4-hydroxy-3-methoxyphenyl)acetate" "awpmwzhwvkxadv-uhfffaoysa-" "ethyl 4-hydroxy-3-methoxyphenyl acetate" "2-(4-hydroxy-3-methoxyphenyl)acetic acid ethyl ester" "benzeneacetic acid,4-hydroxy-3-methoxy-, ethyl ester" "4-hydroxy-3-methoxyphenylacetic acid ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -672120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     560.91;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-425470.0
+    phase     gas;
+}

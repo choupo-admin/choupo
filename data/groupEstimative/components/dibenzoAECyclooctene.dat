@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dibenzo[a,e]cyclooctene  (C16H12, CAS 262-89-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dibenzoAECyclooctene;
+formula     C16H12;
+CAS         262-89-5;
+InChIKey    VGQWCQNHAMVTJY-UHFFFAOYSA-N;
+MW          204.272;      // g/mol [origin=calculated method=formula-sum]
+Tc          905.71;      // K   [origin=predictive method=joback]
+Pc          28.843;      // bar [origin=predictive method=joback]
+omega       0.5297;      // -   [origin=predictive method=lee-kesler]
+Tb          643.00;      // K   [origin=predictive method=joback]
+HvapTb      58064.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-96.61 1.3028 -0.00097868 2.864e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 2; } { group ACH; count 8; } { group AC; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 12; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dibenzo[2,1-a:2',1'-f][8]annulene" "cycloocta[1,2,5,6]dibenzene;cycloocta[a,e]dibenzene; dibenzo[a,e]cyclooctatetraene;sym-dibenzocyclooctatetraene" );
+gibbsFormation
+{
+    dHf_298   279090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     451.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=405680.0
+    phase     gas;
+}

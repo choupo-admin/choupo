@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetrabenzo[a,cd,j,lm]perylene  (C34H18, CAS 191-53-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        tetrabenzoACdJLmPerylene;
+formula     C34H18;
+CAS         191-53-7;
+InChIKey    KUYLRUBFWCGZHL-UHFFFAOYSA-N;
+MW          426.518;      // g/mol [origin=calculated method=formula-sum]
+Tc          1459.25;      // K   [origin=predictive method=joback]
+Pc          16.418;      // bar [origin=predictive method=joback]
+omega       1.2342;      // -   [origin=predictive method=lee-kesler]
+Tb          1175.50;      // K   [origin=predictive method=joback]
+HvapTb      110036.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-208.45 2.8592 -0.00269252 1.0046e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 18; } { group AC; count 16; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 18; } { group dC_ring; count 16; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "tetrabenzo(a,cd,j,lm)perylene" "4,5:11,12-dibenzperopyrene" "4,5:11,12-dibenzoperopyrene" "4,5:11,12-dibenzoperopyrene;4,5:11,2-dibenzperopyrene" );
+gibbsFormation
+{
+    dHf_298   848790.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     454.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=1122080.0
+    phase     gas;
+}

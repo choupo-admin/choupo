@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzenehexol  (C6H6O6, CAS 608-80-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzenehexol;
+formula     C6H6O6;
+CAS         608-80-0;
+InChIKey    VWPUAXALDFFXJW-UHFFFAOYSA-N;
+MW          174.108;      // g/mol [origin=calculated method=formula-sum]
+Tc          1118.67;      // K   [origin=predictive method=joback]
+Pc          325.822;      // bar [origin=predictive method=joback]
+omega       2.3799;      // -   [origin=predictive method=lee-kesler]
+Tb          842.30;      // K   [origin=predictive method=joback]
+HvapTb      108648.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-104.29 1.482 -0.001939 9.092e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACOH; count 6; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 6; } { group OH_phenol; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzene-1,2,3,4,5,6-hexol" "hexahydroxybenzene" "1,2,3,4,5,6-benzenehexol" "benzene, hexahydroxy-" );
+gibbsFormation
+{
+    dHf_298   -983030.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     448.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-806040.0
+    phase     gas;
+}

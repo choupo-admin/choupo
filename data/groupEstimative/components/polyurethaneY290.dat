@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: polyurethane y-290  (C27H36N2O10, CAS 27083-55-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        polyurethaneY290;
+formula     C27H36N2O10;
+CAS         27083-55-2;
+InChIKey    JQMXDQWOHHBPHB-UHFFFAOYSA-N;
+MW          548.589;      // g/mol [origin=calculated method=formula-sum]
+Tc          2517.30;      // K   [origin=predictive method=joback]
+Pc          13.242;      // bar [origin=predictive method=joback]
+omega       -0.0400;      // -   [origin=predictive method=lee-kesler]
+Tb          1677.96;      // K   [origin=predictive method=joback]
+HvapTb      202562.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH2; count 8; } { group ACH; count 8; } { group AC; count 3; } { group ACCH2; count 1; } { group OH; count 2; } { group COOH; count 2; } { group _CH2OH_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:2
+    joback ( { group CH2; count 11; } { group dCd; count 2; } { group dCH_ring; count 8; } { group dC_ring; count 4; } { group OH; count 4; } { group COOH; count 2; } { group dO_oth; count 2; } { group Nd; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "butane-1,4-diol;ethane-1,2-diol;hexanedioic acid;1-isocyanato-4-[(4-isocyanatophenyl)methyl]benzene" "texin 519a" "tpu 2t" "pu 7" "pu 8" "adipic acid, polymer with 1,4-butanediol, ethylene glycol and methylenedi-p-phenyleneisocyanate" "adipic acid, ethylene glycol, 1,4-butanediol, p,p'-diphenylmethane diisocyanate polymer" "bis(4-isocyanatophenyl)methane, polymer with adipic acid, 1,4-butanediol, and ethylene glycol" "diphenylmethane, 4,4'-diisocyanate, adipic acid, 1,4-butanediol, ethylene glycol polymer" "diphenylmethane-4,4'-diisocyanate, adipic acid, 1,4-butanediol, ethylene glycol polymer" "diphenylmethane-4,4'-diisocyanate, adipic acid, ethylene glycol, 1,4-butanediol polymer" "ethylene glycol, adipic acid, 1,4-butanediol, 4,4'-methylenediphenylene isocyanate polymer" );
+// formation datum unavailable (element entropy missing): dHf_298=-1805630.0 dGf_298=None

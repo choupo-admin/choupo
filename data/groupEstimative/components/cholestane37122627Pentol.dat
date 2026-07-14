@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cholestane-3,7,12,26,27-pentol  (C27H48O5, CAS 2952-70-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cholestane37122627Pentol;
+formula     C27H48O5;
+CAS         2952-70-7;
+InChIKey    JNMALBXXJSWZQY-BBBUMGABSA-N;
+MW          452.676;      // g/mol [origin=calculated method=formula-sum]
+Tc          1703.08;      // K   [origin=predictive method=joback]
+Pc          12.782;      // bar [origin=predictive method=joback]
+omega       0.5341;      // -   [origin=predictive method=lee-kesler]
+Tb          1298.15;      // K   [origin=predictive method=joback]
+HvapTb      154671.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-289.485 3.73106 -0.002985 1.0326e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 12; } { group CH; count 10; } { group C; count 2; } { group OH; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 5; } { group CH; count 2; } { group CH2_ring; count 7; } { group CH_ring; count 8; } { group C_ring; count 2; } { group OH; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3r,5r,7r,8r,9s,10s,12s,13r,14s,17r)-17-[(2r)-6-(hydroxymethyl)-7-oxidanyl-heptan-2-yl]-10,13-dimethyl-2,3,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthrene-3,7,12-triol" "5alpha-cholestane-3alpha,7alpha,12alpha,26,27-pentol" "5beta-cholestane-3alpha,7-alpha,12alpha,26,27-pentol" "(3" "a,5" "a,7" "a,12" "a)-cholestane-3,7,12,26,27-pentol" "cyprinol" "cholestane-3,7,12,26,27-pentol, (3alpha,5alpha,7alpha,12alpha)-" "5alpha-cyprinol" "3alpha,7alpha,12alpha,26,27-pentahydroxy-5alpha-cholestane" "(3r,5r,7r,8r,9s,10s,12s,13r,14s,17r)-17-[(2r)-7-hydroxy-6-(hydroxymethyl)heptan-2-yl]-10,13-dimethyl-2,3,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydro-1h-cyclopenta[a]phenanthrene-3,7,12-triol" );
+gibbsFormation
+{
+    dHf_298   -1203480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1066.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-387260.0
+    phase     gas;
+}

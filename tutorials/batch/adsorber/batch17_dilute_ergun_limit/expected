@@ -1,0 +1,9 @@
+# A4 F2: at 400 ppm, t_b5 differs from constant-velocity A3 by 0.031%.
+# kind   name    key                         expected          reltol
+kpi     legacy t_breakthrough_5pct_CO2      373.706923746     2e-5
+kpi     ergun  t_breakthrough_5pct_CO2      373.819840914     2e-5
+kpi     legacy t_50_CO2                     691.597682330     2e-5
+kpi     ergun  t_50_CO2                     691.598159617     2e-5
+kpi     ergun  carrier_fabricated_mol       0                 1e-10
+kpi     ergun  physical_mass_closure_rel    0                 1e-10
+kpi     ergun  mass_closure_CO2             0                 1e-10

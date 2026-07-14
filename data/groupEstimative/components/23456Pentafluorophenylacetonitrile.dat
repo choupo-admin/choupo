@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,4,5,6-pentafluorophenylacetonitrile  (C8H2F5N, CAS 653-30-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        23456Pentafluorophenylacetonitrile;
+formula     C8H2F5N;
+CAS         653-30-5;
+InChIKey    YDNOJUAQBFXZCR-UHFFFAOYSA-N;
+MW          207.101;      // g/mol [origin=calculated method=formula-sum]
+Tc          717.43;      // K   [origin=predictive method=joback]
+Pc          25.508;      // bar [origin=predictive method=joback]
+omega       0.7551;      // -   [origin=predictive method=lee-kesler]
+Tb          532.65;      // K   [origin=predictive method=joback]
+HvapTb      45381.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (80.661 0.3812 -0.0001584 6.7e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 1; } { group CH2CN; count 1; } { group ACF; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dC_ring; count 6; } { group F; count 5; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2,3,4,5,6-pentakis(fluoranyl)phenyl]ethanenitrile" "pentafluorophenylacetonitrile" "(pentafluorophenyl)acetonitrile" "2-(2,3,4,5,6-pentafluorophenyl)acetonitrile" "2-(2,3,4,5,6-pentafluorophenyl)ethanenitrile" "ydnojuaqbfxzcr-uhfffaoysa-" "pentafluorophenylacetonitrile 98%" "2,3,4,5,6-pentafluorobenzyl cyanide" "l015" "(2,3,4,5,6-pentafluorophenyl)acetonitrile" "benzeneacetonitrile, 2,3,4,5,6-pentafluoro-" "2-(2,3,4,5,6-pentafluoro-phenyl)-acetonitrile" );
+gibbsFormation
+{
+    dHf_298   -844940.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     494.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-760130.0
+    phase     gas;
+}

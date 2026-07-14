@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: androstan-3-one, 17-(acetyloxy)-  (C21H32O3, CAS 1164-91-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        androstan3One17Acetyloxy;
+formula     C21H32O3;
+CAS         1164-91-6;
+InChIKey    ILCTUFVQFCIIDS-UHFFFAOYSA-N;
+MW          332.484;      // g/mol [origin=calculated method=formula-sum]
+Tc          1084.94;      // K   [origin=predictive method=joback]
+Pc          15.283;      // bar [origin=predictive method=joback]
+omega       0.7802;      // -   [origin=predictive method=lee-kesler]
+Tb          840.90;      // K   [origin=predictive method=joback]
+HvapTb      71277.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-263.1 2.83566 -0.0023278 8.277e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group CH; count 5; } { group C; count 2; } { group CH2CO; count 1; } { group CH3COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 9; } { group CH_ring; count 5; } { group C_ring; count 2; } { group CdO_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(10,13-dimethyl-3-oxidanylidene-1,2,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydrocyclopenta[a]phenanthren-17-yl) ethanoate" "3-oxoandrostan-17-yl acetate" "5.alpha.,17.beta.-dihydrotestosterone ethanoate" "androstanolone acetate" "dihydrotestosterone acetate" "agn-pc-00gmaj" "5.alpha.-androstan-3-one, acetate" "5.alpha.-dihydrotestosterone acetate" "(5beta,17beta)-3-oxoandrostan-17-yl acetate" "(5alpha,17alpha)-3-oxoandrostan-17-yl acetate" "(8xi,9xi,14xi,17beta)-3-oxoandrostan-17-yl acetate" "(10,13-dimethyl-3-oxo-1,2,4,5,6,7,8,9,11,12,14,15,16,17-tetradecahydrocyclopenta[a]phenanthren-17-yl) acetate" );
+gibbsFormation
+{
+    dHf_298   -701890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     697.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-158630.0
+    phase     gas;
+}

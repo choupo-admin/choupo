@@ -138,6 +138,10 @@ export function WelcomeScreen() {
             onClick={() => fire("choupo:welcome:open-zip")}>
             Open case (.zip)
           </Button>
+          <Button leftSection={<IconFolderOpen size={16} />} variant="default"
+            onClick={() => fire("choupo:welcome:open-folder")}>
+            Open case folder
+          </Button>
           {reopen && (
             <Button leftSection={<IconHistory size={16} />} variant="subtle"
               onClick={() => void reopenLastCase()}
@@ -156,12 +160,21 @@ export function WelcomeScreen() {
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm">
             {SUGGESTED.map((t) => (
               <Paper key={t.id} withBorder p="md" radius="md"
+                role="button"
+                tabIndex={0}
+                aria-label={`Open tutorial: ${t.title}`}
                 style={{
                   cursor: "pointer",
                   background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))",
                   transition: "background 120ms, border-color 120ms, transform 120ms",
                 }}
                 onClick={() => loadTutorial(t.id, { intro: true })}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    loadTutorial(t.id, { intro: true });
+                  }
+                }}
                 onMouseEnter={(e) => {
                   const el = e.currentTarget as HTMLElement;
                   el.style.borderColor = "var(--mantine-color-accent-5)";
@@ -187,9 +200,9 @@ export function WelcomeScreen() {
         </Stack>
 
         <Text size="sm" c="dimmed" ta="center" maw={640}>
-          <b style={{ color: "var(--mantine-color-text)" }}>Help build the glass-box simulator
-          chemical engineers deserve</b> — models, tutorials, tests, validation data, new unit
-          operations. Public source and community forum <b>coming soon</b>.
+          <b style={{ color: "var(--mantine-color-text)" }}>Help improve the glass-box simulator
+          chemical engineers deserve</b> — report a bug or suggest a model, tutorial, validation
+          dataset, or unit operation. Development remains maintainer-led.
         </Text>
 
         <Text size="xs" c="dimmed" ta="center" maw={620}>

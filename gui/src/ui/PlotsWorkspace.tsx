@@ -71,9 +71,11 @@ import { ProfilePlot } from "./plotting/ProfilePlot.js";
 import { TrajectoryPlot } from "./plotting/TrajectoryPlot.js";
 import { TxyPlot } from "./plotting/TxyPlot.js";
 import { CsvAutoPlot, dropPointColumn } from "./plotting/CsvAutoPlot.js";
+import { GanttPlot } from "./plotting/GanttPlot.js";
 
 type PlotKey =
   | "trajectory"
+  | "gantt"
   | "massBalance"
   | "energyBalance"
   | "txy"
@@ -117,6 +119,7 @@ export function PlotsWorkspace() {
     const hasProfile = (result?.profiles?.length ?? 0) > 0;
     const hasConvergence = (result?.convergence.length ?? 0) > 0;
     const hasTrajectory = Boolean(result?.trajectory);
+    const hasTimeline = (result?.timeline?.length ?? 0) > 0;
     return [
       {
         label: "Balance",
@@ -143,6 +146,8 @@ export function PlotsWorkspace() {
             hint: "1-D internal state of a unit (PFR axial sweep, column stages, PSD)." },
           { key: "trajectory", label: "Trajectory", available: hasTrajectory,
             hint: "Time-series state; emitted only by choupoBatch / choupoCtrl runs." },
+          { key: "gantt", label: "Campaign sequence", available: hasTimeline,
+            hint: "The batch recipe as a Gantt: one lane per vessel, every FIRED action at its instant (transfers as arrows), unit status events flagged.  Hover a mark for the engine's detail line and the trigger that fired it." },
         ],
       },
       {
@@ -208,6 +213,8 @@ export function PlotsWorkspace() {
   const activePlot = (() => {
     switch (view) {
       case "trajectory":  return result.trajectory  ? <TrajectoryPlot data={result.trajectory} /> : null;
+      case "gantt":       return result.timeline
+        ? <GanttPlot timeline={result.timeline} {...(result.kpis ? { kpis: result.kpis } : {})} /> : null;
       case "massBalance": return (
         <MassBalancePlot
           streams={result.streams}

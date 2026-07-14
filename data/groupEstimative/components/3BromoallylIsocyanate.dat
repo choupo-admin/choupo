@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-bromoallyl isocyanate  (C4H4BrNO, CAS 101652-13-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3BromoallylIsocyanate;
+formula     C4H4BrNO;
+CAS         101652-13-5;
+InChIKey    FSSOZQYOMJZDRW-OWOJBTEDSA-N;
+MW          161.986;      // g/mol [origin=calculated method=formula-sum]
+Tc          638.20;      // K   [origin=predictive method=joback]
+Pc          50.514;      // bar [origin=predictive method=joback]
+omega       0.4706;      // -   [origin=predictive method=lee-kesler]
+Tb          428.11;      // K   [origin=predictive method=joback]
+HvapTb      40423.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH=CH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH2; count 1; } { group dCH; count 2; } { group dCd; count 1; } { group Br; count 1; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(e)-1-bromanyl-3-isocyanato-prop-1-ene" "isocyanic acid, 3-bromoallyl ester" "(e)-1-bromo-3-isocyanatoprop-1-ene" );
+// formation datum unavailable (element entropy missing): dHf_298=12250.0 dGf_298=None

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2,4-trimethylcyclohexane  (C9H18, CAS 2234-75-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        124Trimethylcyclohexane;
+formula     C9H18;
+CAS         2234-75-5;
+InChIKey    VCJPCEVERINRSG-UHFFFAOYSA-N;
+MW          126.243;      // g/mol [origin=calculated method=formula-sum]
+Tc          613.87;      // K   [origin=predictive method=joback]
+Pc          26.488;      // bar [origin=predictive method=joback]
+omega       0.2699;      // -   [origin=predictive method=lee-kesler]
+Tb          415.73;      // K   [origin=predictive method=joback]
+HvapTb      35439.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-59.02 0.92796 -0.000436 4.91e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 3; } { group CH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2_ring; count 3; } { group CH_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cyclohexane, 1,2,4-trimethyl-" "cyclohexane, 1,2,4-trimethyl-, trans,cis-" "1,4-trimethylcyclohexane" "cyclohexane,2,4-trimethyl-" "1,2,4-trimethyl cyclohexane" "cyclohexane, 1,2,4-trimethyl-, (1.alpha.,2.beta.,4.beta.)-" "cyclohexane, 1,2,4-trimethyl-, (1r,2r,4r)-rel-" "1,2,4-trimethylcyclohexane mixture of isomers" "1,2,4-trimethylcyclohexane, mixture of isomers" "cyclohexane, 1,2,4-trimethyl- (8ci)(9ci)" "cyclohexane, 1,2,4-trimethyl-, (1alpha,2beta,4beta)-" );
+gibbsFormation
+{
+    dHf_298   -215450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     391.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=33930.0
+    phase     gas;
+}

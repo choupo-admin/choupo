@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-hexadecylnaphthalene  (C26H40, CAS 2657-43-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Hexadecylnaphthalene;
+formula     C26H40;
+CAS         2657-43-4;
+InChIKey    CGYPQNMWMIAYLF-UHFFFAOYSA-N;
+MW          352.606;      // g/mol [origin=calculated method=formula-sum]
+Tc          1043.81;      // K   [origin=predictive method=joback]
+Pc          10.059;      // bar [origin=predictive method=joback]
+omega       0.8755;      // -   [origin=predictive method=lee-kesler]
+Tb          845.12;      // K   [origin=predictive method=joback]
+HvapTb      78048.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-71.795 2.33172 -0.00149148 3.799e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 14; } { group ACH; count 7; } { group AC; count 2; } { group ACCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 15; } { group dCH_ring; count 7; } { group dC_ring; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "naphthalene, 2-hexadecyl-" "hexadecane, 1-(2-naphthyl)-" );
+gibbsFormation
+{
+    dHf_298   -163840.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     947.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=377470.0
+    phase     gas;
+}

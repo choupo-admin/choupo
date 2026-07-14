@@ -50,6 +50,7 @@ License
 
 import {
   ActionIcon,
+  Anchor,
   Alert,
   Badge,
   Group,
@@ -67,9 +68,12 @@ import { IconAlertTriangle, IconExternalLink, IconInfoCircle, IconX } from "@tab
 import { popOutFileHtml } from "./filePopOut.js";
 import { classifyPhase, PHASE_LABEL } from "./plotting/palette.js";
 import { findRunStream, popOutSingleStream } from "./streamPopOut.js";
+import { HeatExchangerDatasheet } from "./HeatExchangerDatasheet.js";
+import { theoryLink } from "../case/modelDocs.js";
 import { useMemo } from "react";
 
 import { boundaryForStream } from "../case/modelBoundary.js";
+import { compositeMembers, unitFolderNames } from "../case/toGraph.js";
 import {
   operationSchemaFor,
   type OperationField,
@@ -77,6 +81,7 @@ import {
 } from "../case/operationSchemas.js";
 import type { StreamSpec, UnitSpec } from "../case/types.js";
 import type { JsonDict, JsonValue } from "../dict/index.js";
+import { parse, toJson } from "../dict/index.js";
 import { parseScalarString } from "../dict/json.js";
 import { lookupUnit, affineToK } from "../dict/units.js";
 
@@ -157,10 +162,50 @@ export function PropertyPanel() {
       // Composite flowsheet: no `units`, only `children` (sectors).
       // React Flow still emits unit:<sector> ids for the sector nodes,
       // so we end up here.  Show the sector's file listing instead.
-      const children = (flowsheet["children"] ?? []) as string[];
+      const children = compositeMembers(flowsheet);
       if (children.includes(name)) {
+        // A child is EITHER a leaf UNIT OP (its own dignified folder, `type ...`)
+        // or a composite SECTOR (`children ( ... )`).  A leaf is NOT a "fractal
+        // sub-flowsheet" -- it is one unit op that happens to carry its own
+        // folder, so show it as a UNIT (operation + KPIs), not as a sector.
+        const childText = caseFiles.rawFiles?.[`${name}/system/flowsheetDict`]
+                       ?? caseFiles.rawFiles?.[`${name}/flowsheetDict`];
+        if (childText) {
+          try {
+            const cd = toJson(parse(childText, { sourceName: name })) as JsonDict;
+            if (typeof cd["type"] === "string" && !Array.isArray(cd["sectors"]) && unitFolderNames(cd).length === 0) {
+              const leaf: UnitSpec = {
+                name,
+                type: String(cd["type"]),
+                in: [], outputs: [],
+                operation: (cd["operation"] ?? {}) as JsonDict,
+              };
+              return <UnitDetails unit={leaf} kpis={runKpis?.[name]} />;
+            }
+          } catch { /* unparseable -> fall through to the sector view */ }
+        }
         return <FolderDetails name={name} kind="sector"
           files={listFilesUnder(caseFiles, name)} />;
+      }
+      // FLAT single-unit (leaf) form: type/operation/boundary at the top level,
+      // no `units` array -- so the loop above found nothing.  Synthesize the
+      // UnitSpec the SAME way toGraph's readLeaf does (name defaults to "unit"),
+      // so the unit panel (with its Theory link + KPIs) shows for single-unit
+      // tutorials too.  Its KPIs may be emitted under a solver name (not the
+      // view name), so fall back to the sole entry when there is exactly one.
+      if (flowsheet["type"] && name === String(flowsheet["name"] ?? "unit")) {
+        const boundary = (flowsheet["boundary"] ?? {}) as JsonDict;
+        const leaf: UnitSpec = {
+          name,
+          type: String(flowsheet["type"]),
+          in: (boundary["inlets"] ?? []) as string[],
+          outputs: (boundary["outlets"] ?? []) as string[],
+          operation: (flowsheet["operation"] ?? {}) as JsonDict,
+        };
+        const kEntries = runKpis ? Object.values(runKpis) : [];
+        const kpis = runKpis?.[name]
+          ?? (kEntries.length === 1 ? kEntries[0] : undefined);
+        return <UnitDetails unit={leaf} kpis={kpis} />;
       }
       return null;
     }
@@ -308,8 +353,15 @@ function UnitDetails({
   // so `unit.operation` is undefined here --- default to {} so the schema
   // rows still render (all "unset") instead of crashing on `op[f.key]`.
   const operation = unit.operation ?? {};
+  // A heatExchanger in `model geometry;` or `model design;` COMPUTES U and the
+  // area (from the bundle) -- they are RESULTS, not inputs -- so the eps-NTU
+  // schema's "area / U required" must not fire there (it is the epsNTU-mode
+  // contract only).
+  const hxComputed = unit.type === "heatExchanger"
+    && (unit.model === "geometry" || unit.model === "design");
   const missingRequired = schema
-    ? schema.fields.filter((f) => f.required && operation[f.key] === undefined)
+    ? schema.fields.filter((f) => f.required && operation[f.key] === undefined
+        && !(hxComputed && (f.key === "area" || f.key === "U")))
   : [];
   return (
     <Stack gap="md">
@@ -323,7 +375,18 @@ function UnitDetails({
             {unit.type}
           </Badge>
         </Group>
+        {unit.type && (
+          <Anchor href={theoryLink(unit.type)} target="_blank" rel="noopener"
+            c="accent.4" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+            <IconExternalLink size={13} />
+            <Text size="xs">Theory — the section deriving this unit</Text>
+          </Anchor>
+        )}
       </Stack>
+
+      {unit.type === "heatExchanger" && kpis && (
+        <HeatExchangerDatasheet unit={unit} kpis={kpis} />
+      )}
 
       {missingRequired.length > 0 && (
         <Alert
@@ -543,6 +606,18 @@ function StreamDetails({
                   </Table.Td>
                 </Table.Tr>
               )}
+              {runStream?.H !== undefined && (
+                <Table.Tr>
+                  <Table.Td><Text size="sm" ff="monospace">H</Text></Table.Td>
+                  <Table.Td><Text size="sm" ff="monospace">{(runStream.H / 1000).toFixed(2)} kJ/mol</Text></Table.Td>
+                </Table.Tr>
+              )}
+              {runStream?.H_kW !== undefined && (
+                <Table.Tr>
+                  <Table.Td><Text size="sm" ff="monospace">Ḣ</Text></Table.Td>
+                  <Table.Td><Text size="sm" ff="monospace">{formatSig(runStream.H_kW)} kW</Text></Table.Td>
+                </Table.Tr>
+              )}
             </Table.Tbody>
           </Table>
         </Stack>
@@ -562,13 +637,22 @@ function StreamDetails({
             ...(runStream && vf !== undefined
               ? [{ k: "vf", v: `${formatSig(vf)}  (${PHASE_LABEL[classifyPhase(runStream)]})` }]
               : []),
+            // Stream enthalpy at the elements/formation datum: H specific
+            // [kJ/mol] and the flow rate Ḣ = F·H [kW] the energy balance reads.
+            ...(runStream?.H !== undefined
+              ? [{ k: "H", v: `${(runStream.H / 1000).toFixed(2)} kJ/mol` }]
+              : []),
+            ...(runStream?.H_kW !== undefined
+              ? [{ k: "Ḣ", v: `${formatSig(runStream.H_kW)} kW` }]
+              : []),
           ]}
         />
       )}
       {boundary && (
-        <Text size="xs" ff="monospace" c={boundary.refused ? "red.5" : "dimmed"}>
+        <Text size="xs" ff="monospace" c={boundary.refused ? "yellow.7" : "dimmed"}>
           {boundary.refused
-            ? <>model boundary: <Text span fw={700}>REFUSED</Text> — {boundary.reason ?? "speciation change"}</>
+            ? <>model boundary {boundary.producer}→{boundary.consumer}: ΔH not carried across
+                {" "}— {boundary.reason ?? "the two models share no common enthalpy reference here"}</>
             : <>model boundary {boundary.producer}→{boundary.consumer}: ΔH{" "}
                 {boundary.dH_kJ_per_mol?.toFixed(3) ?? "—"} kJ/mol
                 {" "}({boundary.dH_kW?.toFixed(2) ?? "—"} kW), implied ΔT{" "}
@@ -1147,7 +1231,7 @@ function listFilesUnder(cf: import("../case/types.js").CaseFiles,
     if (cf.outerDict) builtin.push("system/outerDict");
     if (cf.postDict) builtin.push("system/postDict");
   } else if (prefix === "constant") {
-    builtin.push("constant/thermoPackage");
+    builtin.push("constant/propertyDict");
     if (cf.reactions) builtin.push("constant/reactions");
   }
   out.push(...builtin);

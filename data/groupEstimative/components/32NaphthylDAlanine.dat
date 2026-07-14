@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-(2-naphthyl)-d-alanine  (C13H13NO2, CAS 76985-09-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        32NaphthylDAlanine;
+formula     C13H13NO2;
+CAS         76985-09-6;
+InChIKey    JPZXHKDZASGCLU-GFCCVEGCSA-N;
+MW          215.252;      // g/mol [origin=calculated method=formula-sum]
+Tc          1010.25;      // K   [origin=predictive method=joback]
+Pc          32.616;      // bar [origin=predictive method=joback]
+omega       1.0655;      // -   [origin=predictive method=lee-kesler]
+Tb          765.28;      // K   [origin=predictive method=joback]
+HvapTb      76527.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-50.569 1.2153 -0.00090348 2.637e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 7; } { group AC; count 2; } { group ACCH2; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r)-2-azanyl-3-naphthalen-2-yl-propanoic acid" "d-3-(2-naphthyl)-alanine" "(2r)-2-amino-3-naphthalen-2-ylpropanoic acid" "(r)-alpha-amino-2-naphthalenepropionic acid" "(2r)-2-amino-3-(2-naphthyl)propanoic acid" "(r)-2-amino-3-naphthalene-2-yl-propionic acid" "3-naphth-2-yl-d-phenylalanine" "beta-naphthyl-d-ala" "h-d-2-nal-oh?hcl" "beta-2-naphthyl-d-alanine" "2-d-naphthylalanine" "d-2-naphthylalanine" );
+gibbsFormation
+{
+    dHf_298   -217280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     536.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-11890.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-dimethylaminopyridine  (C7H10N2, CAS 5683-33-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Dimethylaminopyridine;
+formula     C7H10N2;
+CAS         5683-33-0;
+InChIKey    PSHKMPUSSFXUIA-UHFFFAOYSA-N;
+MW          122.171;      // g/mol [origin=calculated method=formula-sum]
+Tc          674.45;      // K   [origin=predictive method=joback]
+Pc          41.091;      // bar [origin=predictive method=joback]
+omega       0.3961;      // -   [origin=predictive method=lee-kesler]
+Tb          452.58;      // K   [origin=predictive method=joback]
+HvapTb      41705.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-38.01 0.7476 -0.00051006 1.368e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH3N; count 1; } { group C5H4N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group N; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethylpyridin-2-amine" "2-dimethylaminopyridin" "dimethylamino-2 pyridine" "2-(dimethylamino)pyridine" "2-dimethylaminopyridine cobalt complex" "2-pyridinamine, n,n-dimethyl-" "dimethylaminopyridin" "pyridine, 2-dimethylamino-" "dimethylaminopyridine" "dimethylamino pyridine" "dimethyl-2-pyridylamine" "(dimethylamino)-2-pyridine" );
+gibbsFormation
+{
+    dHf_298   149040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     351.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=308300.0
+    phase     gas;
+}

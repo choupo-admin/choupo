@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pentanal  (C5H10O, CAS 110-62-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pentanal;
+formula     C5H10O;
+CAS         110-62-3;
+InChIKey    HGBOYTHUEUWSSQ-UHFFFAOYSA-N;
+MW          86.134;      // g/mol [origin=calculated method=formula-sum]
+Tc          535.62;      // K   [origin=predictive method=joback]
+Pc          37.916;      // bar [origin=predictive method=joback]
+omega       0.4059;      // -   [origin=predictive method=lee-kesler]
+Tb          362.66;      // K   [origin=predictive method=joback]
+HvapTb      33444.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (9.743 0.45332 -0.0002412 4.62e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "valeraldehyde" "n-pentanal" "n-valeraldehyde" "valeric aldehyde" "amylaldehyde" "valeral" "butyl formal" "valeryl aldehyde" "valeric acid aldehyde" "valerianic aldehyde" "valerylaldehyde" "amyl aldehyde" );
+gibbsFormation
+{
+    dHf_298   -232110.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     369.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-108300.0
+    phase     gas;
+}

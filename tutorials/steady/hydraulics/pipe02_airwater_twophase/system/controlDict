@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Gas-liquid two-phase pressure drop: air (N2) + water in a horizontal 0.05 m x 10 m line, Lockhart-Martinelli. The two-phase path activates automatically because the feed flashes two-phase (0 < V/F < 1).";
+verbosity     3;
+reports { streamTable { }  massBalance { } }

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2(5h)-furanone, 5,5-dimethyl-  (C6H8O2, CAS 20019-64-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        25hFuranone55Dimethyl;
+formula     C6H8O2;
+CAS         20019-64-1;
+InChIKey    YNKQMZRTPPVLLL-UHFFFAOYSA-N;
+MW          112.128;      // g/mol [origin=calculated method=formula-sum]
+Tc          600.55;      // K   [origin=predictive method=joback]
+Pc          40.159;      // bar [origin=predictive method=joback]
+omega       0.3689;      // -   [origin=predictive method=lee-kesler]
+Tb          401.24;      // K   [origin=predictive method=joback]
+HvapTb      35411.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-69.61 0.90584 -0.00094808 4.046e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group C; count 1; } { group CH=CH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group C_ring; count 1; } { group dCH_ring; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5,5-dimethylfuran-2-one" "4,4-dimethyl-2-buten-4-olide" "5,5-dimethyl-2(5h)-furanone" );
+gibbsFormation
+{
+    dHf_298   -338630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     382.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-225510.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,3-butadiyne, 1-bromo-  (C4HBr, CAS 6088-90-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13Butadiyne1Bromo;
+formula     C4HBr;
+CAS         6088-90-0;
+InChIKey    YTIPSWQGFYSLMS-UHFFFAOYSA-N;
+MW          128.956;      // g/mol [origin=calculated method=formula-sum]
+Tc          589.34;      // K   [origin=predictive method=joback]
+Pc          66.639;      // bar [origin=predictive method=joback]
+omega       0.1769;      // -   [origin=predictive method=lee-kesler]
+Tb          356.40;      // K   [origin=predictive method=joback]
+HvapTb      32943.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (38.78 0.1783 -0.00016899 6.787e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group Br; count 1; } { group CH_C; count 1; } { group C_C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tCH; count 1; } { group tC; count 3; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromanylbuta-1,3-diyne" "1-bromobuta-1,3-diyne" );
+gibbsFormation
+{
+    dHf_298   464640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     304.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=422990.0
+    phase     gas;
+}

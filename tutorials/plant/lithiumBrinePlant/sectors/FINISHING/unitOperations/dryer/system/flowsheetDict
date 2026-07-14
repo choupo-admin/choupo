@@ -1,0 +1,6 @@
+name dryer; type evaporativeDryer;
+
+// The streams this operation consumes and produces (sequential-modular:
+// a unit is defined by its streams; the sector wires them, the unit names them).
+inputs   ( slurry hotAir );
+outputs  ( product humidExhaust );

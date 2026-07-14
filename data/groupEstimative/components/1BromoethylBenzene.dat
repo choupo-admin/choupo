@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (1-bromoethyl)benzene  (C8H9Br, CAS 585-71-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1BromoethylBenzene;
+formula     C8H9Br;
+CAS         585-71-7;
+InChIKey    CRRUGYDDEMGVDY-UHFFFAOYSA-N;
+MW          185.064;      // g/mol [origin=calculated method=formula-sum]
+Tc          709.22;      // K   [origin=predictive method=joback]
+Pc          40.159;      // bar [origin=predictive method=joback]
+omega       0.3797;      // -   [origin=predictive method=lee-kesler]
+Tb          475.04;      // K   [origin=predictive method=joback]
+HvapTb      41725.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-31.78 0.72902 -0.0005172 1.431e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 5; } { group ACCH; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-bromoethylbenzene" "benzene, (1-bromoethyl)-" "1-phenylethyl bromide" "1-bromo-1-phenylethane" "1-phenyl-1-bromoethane" "alpha-methylbenzyl bromide" ".alpha.-methylbenzyl bromide" "alpha-phenethyl bromide" "alpha-phenylethyl bromide" "(alpha-bromoethyl)benzene" "benzene, (1-bromoethyl)-, (r)-" "benzene-d5, (1-bromoethyl-1,2,2,2-d4)-" );
+gibbsFormation
+{
+    dHf_298   49130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     402.72;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=140770.0
+    phase     gas;
+}

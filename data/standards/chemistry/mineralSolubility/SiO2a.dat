@@ -1,0 +1,6 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral SiO2a; formula "SiO2"; masters ( { ion H4SiO4; nu 1; } ); nuWater -2;
+      logK25 -2.71; dH 13974.6; analytic ( -0.26 0 -731 ); source "USGS PHREEQC phreeqc.dat (public domain)";
+

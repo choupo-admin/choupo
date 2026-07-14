@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-diiodobutane  (C4H8I2, CAS 53161-72-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Diiodobutane;
+formula     C4H8I2;
+CAS         53161-72-1;
+InChIKey    MIAAQPQIWLWRSI-UHFFFAOYSA-N;
+MW          309.908;      // g/mol [origin=calculated method=formula-sum]
+Tc          726.71;      // K   [origin=predictive method=joback]
+Pc          37.271;      // bar [origin=predictive method=joback]
+omega       0.2717;      // -   [origin=predictive method=lee-kesler]
+Tb          476.96;      // K   [origin=predictive method=joback]
+HvapTb      42856.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.952 0.46772 -0.0003598 1.157e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group I; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group CH; count 1; } { group I; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2-bis(iodanyl)butane" );
+gibbsFormation
+{
+    dHf_298   22570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     413.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=96600.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ergost-7-en-3-ol  (C28H48O, CAS 17105-75-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ergost7En3Ol;
+formula     C28H48O;
+CAS         17105-75-8;
+InChIKey    PUGBZUWUTZUUCP-UHFFFAOYSA-N;
+MW          400.691;      // g/mol [origin=calculated method=formula-sum]
+Tc          1193.73;      // K   [origin=predictive method=joback]
+Pc          10.188;      // bar [origin=predictive method=joback]
+omega       0.9262;      // -   [origin=predictive method=lee-kesler]
+Tb          970.02;      // K   [origin=predictive method=joback]
+HvapTb      91674.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-308.978 3.66002 -0.00300744 1.0687e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 10; } { group CH; count 8; } { group C; count 2; } { group CH=C; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 3; } { group CH2_ring; count 8; } { group CH_ring; count 5; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "17-(5,6-dimethylheptan-2-yl)-10,13-dimethyl-2,3,4,5,6,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-ol" "gamma-ergostenol" "7-ergostenol" ".gamma.-ergostenol" "agn-pc-00bllq" "ergost-7-en-3.beta.-ol" "5-alpha-ergost-7-en-3-beta-ol" "ergost-7-en-3-ol, (3.beta.)-" "ergost-7-en-3-ol, (3.beta.,5.alpha.)-" "(3s,5s,9r,10s,13r,17r)-17-[(2r,5s)-5,6-dimethylheptan-2-yl]-10,13-dimethyl-2,3,4,5,6,9,11,12,14,15,16,17-dodecahydro-1h-cyclopenta[a]phenanthren-3-ol" );
+gibbsFormation
+{
+    dHf_298   -513150.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     975.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=209460.0
+    phase     gas;
+}

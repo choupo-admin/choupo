@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: amylmetacresol  (C12H18O, CAS 1300-94-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        amylmetacresol;
+formula     C12H18O;
+CAS         1300-94-3;
+InChIKey    CKGWFZQGEQJZIL-UHFFFAOYSA-N;
+MW          178.275;      // g/mol [origin=calculated method=formula-sum]
+Tc          798.61;      // K   [origin=predictive method=joback]
+Pc          27.556;      // bar [origin=predictive method=joback]
+omega       0.7183;      // -   [origin=predictive method=lee-kesler]
+Tb          586.44;      // K   [origin=predictive method=joback]
+HvapTb      58258.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-36.546 1.16004 -0.00084952 2.653e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group ACH; count 3; } { group ACCH3; count 1; } { group ACCH2; count 1; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 4; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-methyl-2-pentyl-phenol" "5-methyl-2-pentylphenol" "6-amyl-m-cresol" "6-pentyl-m-cresol" "6-n-amyl-m-cresol" "6-n-pentyl-m-cresol" "amylmetacresolum" "m-cresol, 6-pentyl-" "amylmetacresolum [latin]" "amilmetacresol" "5-methyl-2-n-pentylphenol" "amylmetacresol [inn:ban]" );
+gibbsFormation
+{
+    dHf_298   -243260.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     537.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1680.0
+    phase     gas;
+}

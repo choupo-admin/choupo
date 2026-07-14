@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 9,9'-spirobifluorene  (C25H16, CAS 159-66-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        99Spirobifluorene;
+formula     C25H16;
+CAS         159-66-0;
+InChIKey    SNFCXVRWFNAHQX-UHFFFAOYSA-N;
+MW          316.403;      // g/mol [origin=calculated method=formula-sum]
+Tc          1173.90;      // K   [origin=predictive method=joback]
+Pc          21.816;      // bar [origin=predictive method=joback]
+omega       0.8758;      // -   [origin=predictive method=lee-kesler]
+Tb          895.28;      // K   [origin=predictive method=joback]
+HvapTb      81120.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-229.07 2.4934 -0.00245324 9.63e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group ACH; count 16; } { group AC; count 8; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C_ring; count 1; } { group dCH_ring; count 16; } { group dC_ring; count 8; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "9,9'-spirobi[fluorene]" "9,9'-spirobi[9h-fluorene]" "9,9'-spirobi(9h-fluorene)" "9,9-spirobi[9h-fluorene]" "bh779" "9,9 inverted exclamation mark -spirobi-fluorene" "9,9'-spirobifluorene(7ci,8ci);9,9-spirobifluorene;bis(2,2'-biphenylene)methane;spirobifluorene;spiro-difluorene;" );
+gibbsFormation
+{
+    dHf_298   552890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     511.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=754960.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,4-diaminotetrafluorobenzene  (C6H4F4N2, CAS 1198-64-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        14Diaminotetrafluorobenzene;
+formula     C6H4F4N2;
+CAS         1198-64-7;
+InChIKey    FVFYRXJKYAVFSB-UHFFFAOYSA-N;
+MW          180.104;      // g/mol [origin=calculated method=formula-sum]
+Tc          732.29;      // K   [origin=predictive method=joback]
+Pc          38.868;      // bar [origin=predictive method=joback]
+omega       0.8018;      // -   [origin=predictive method=lee-kesler]
+Tb          530.60;      // K   [origin=predictive method=joback]
+HvapTb      52550.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (72.37 0.3684 -0.000151 5.6e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACNH2; count 2; } { group ACF; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dC_ring; count 6; } { group F; count 4; } { group NH2; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,5,6-tetrakis(fluoranyl)benzene-1,4-diamine" "1,4-diamino-2,3,5,6-tetrafluorobenzene" "2,3,5,6-tetrafluorobenzene-1,4-diamine" "tetrafluoro-p-phenylenediamine" "2,3,5,6-tetrafluoro-1,4-phenylenediamine" "1,4-benzenediamine, 2,3,5,6-tetrafluoro-" "tetrafluorobenzene-1,4-diamine" "p-phenylenediamine,3,5,6-tetrafluoro-" "1,4-benzenediamine, 2,3,5,6-tetrafluoro" "2,3,5,6-tetrafluorophenylene-1,4-diamine" "p-phenylenediamine, 2,3,5,6-tetrafluoro-" );
+gibbsFormation
+{
+    dHf_298   -704850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     482.43;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-582440.0
+    phase     gas;
+}

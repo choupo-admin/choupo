@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Database.H"
+#include "ThermoAnnounce.H"
 
 #include <iostream>
 
@@ -46,9 +47,28 @@ std::string Database::resolveRoot(const std::string& explicitRoot) const
             && fs::is_directory(p / "standards" / "components");
     };
 
+    // A fully SELF-CONTAINED case (Choupo-2607 data strategy) carries its own
+    // constant/propertyData/ snapshot and needs NO installation catalogue --
+    // so an absent standards/ must not stop the run.  Detect the snapshot by
+    // walking UP from the cwd; when present, accept a catalogue-less root (the
+    // relocation test: move the case anywhere, hide the catalogue, it still runs).
+    auto caseHasSnapshot = []() -> bool
+    {
+        fs::path p = fs::current_path();
+        for (int up = 0; up < 8; ++up)
+        {
+            if (fs::exists(p / "constant" / "propertyData" / "manifest.dat"))
+                return true;
+            fs::path par = p.parent_path();
+            if (par == p) break;
+            p = par;
+        }
+        return false;
+    };
+
     if (!explicitRoot.empty())
     {
-        if (check(explicitRoot)) return explicitRoot;
+        if (check(explicitRoot) || caseHasSnapshot()) return explicitRoot;
         throw std::runtime_error("Database: explicit root '" + explicitRoot
             + "' does not contain a 'components/' sub-directory");
     }
@@ -109,14 +129,54 @@ Component Database::loadComponent(const std::string& name) const
             p = p.parent_path();
         }
     }
-    fs::path standard  = fs::path(root_) / "standards" / "components" / (name + ".dat");
-    // Third tier (LOWEST precedence): data/proposed/ holds UNVERIFIED, student-
+    // CASE SNAPSHOT (Choupo-2607 data strategy): a frozen copy under
+    // constant/propertyData/components/<name>.dat, walking UP the cascade, is the
+    // BASE instead of the installation catalogue -- the run reads the case's own
+    // copy.  Opt-in by file presence; the case-local constant/components/ overlay
+    // (sample-specific data) still wins on top.  Absent -> the catalogue base.
+    fs::path snapshot;
+    {
+        fs::path p = fs::current_path();
+        for (int up = 0; up < 8; ++up)
+        {
+            fs::path cand = p / "constant" / "propertyData" / "components" / (name + ".dat");
+            if (fs::exists(cand)) { snapshot = cand; break; }
+            fs::path par = p.parent_path();
+            if (par == p) break;
+            p = par;
+        }
+    }
+    // SEALED (Choupo-2607): a manifest with sealed true FORBIDS the catalogue.
+    bool sealed = false;
+    {
+        fs::path q = fs::current_path();
+        for (int u = 0; u < 8; ++u)
+        {
+            fs::path m = q / "constant" / "propertyData" / "manifest.dat";
+            if (fs::exists(m))
+            {
+                auto d = Dictionary::fromFile(m.string());
+                if (d->found("propertyDataManifest"))
+                    sealed = d->subDict("propertyDataManifest")
+                              ->lookupWordOrDefault("sealed", "false") == "true";
+                break;
+            }
+            fs::path par = q.parent_path(); if (par == q) break; q = par;
+        }
+    }
+    if (sealed && snapshot.empty() && caseLocal.empty())
+        throw std::runtime_error("SEALED snapshot: component '" + name
+            + "' is NOT in the case's constant/propertyData/components/ --"
+              " re-run `choupo-import` (the installation catalogue is forbidden).");
+    fs::path standard  = !snapshot.empty() ? snapshot
+                       : fs::path(root_) / "standards" / "components" / (name + ".dat");
+    // Third tier (LOWEST precedence): data/local/ (gitignored) holds UNVERIFIED, student-
     // review-pending proposals (estimates / bulk-ingested VLE skeletons).
     // Precedence, lowest -> highest:  proposed  <  standards  <  case-local.
     // A fixed path like the other two -- NO directory walk.  A verified standard
     // ALWAYS shadows a same-named proposal; a proposal is used only when nothing
     // verified exists.
-    fs::path proposed  = fs::path(root_) / "proposed"  / "components" / (name + ".dat");
+    fs::path proposed  = fs::path(root_) / "local"  / "components" / (name + ".dat");
 
     const bool hasCase       = !caseLocal.empty();
     const bool hasStd        = fs::exists(standard);
@@ -154,11 +214,11 @@ Component Database::loadComponent(const std::string& name) const
     // values -- say so unmistakably; and if a verified standard shadowed a proposal
     // of the same name, announce that too.
     if (usingProposed)
-        std::cerr << "[proposed] component '" << name
+        if (announceOnce("proposed:" + name)) std::cerr << "[local] component '" << name
                   << "': loaded from data/proposed/ -- UNVERIFIED; a student must review"
                      " and promote it to data/standards/ before the result is trusted.\n";
     if (hasStd && hasProposed)
-        std::cerr << "[shadowed] component '" << name
+        if (caseLocal.empty() && announceOnce("shadowed:" + name)) std::cerr << "[shadowed] component '" << name
                   << "': a data/proposed/ proposal exists but the verified data/standards/"
                      " entry is used instead.\n";
 
@@ -168,10 +228,11 @@ Component Database::loadComponent(const std::string& name) const
         // LOUD overlay (no silent crutch): a case-local file silently shadowing
         // a curated component is exactly the risk a promoted estimate creates --
         // announce it so it is never an invisible default.
-        std::cerr << "[overlay] component '" << name
-                  << "': case-local " << caseLocal.string()
-                  << " overrides the " << (hasStd ? "standard catalogue" : "data/proposed")
-                  << " entry.\n";
+        if (thermoAnnounce())
+            if (announceOnce("overlay:" + name)) std::cerr << "[overlay] component '" << name
+                      << "': case-local " << caseLocal.string()
+                      << " overrides the " << (hasStd ? "standard catalogue" : "data/proposed")
+                      << " entry.\n";
         dict = Dictionary::fromFile(base.string());
         auto local = Dictionary::fromFile(caseLocal.string());
         const bool isEstimate =
@@ -180,16 +241,70 @@ Component Database::loadComponent(const std::string& name) const
                 .find("ESTIMATE") != std::string::npos;
         for (const auto& k : local->keys())
             dict->insert(k, local->entryValue(k));   // case overrides standard
+
+        // A modern block-form overlay may sit on a legacy flat catalogue base.
+        // Project the local datum onto its flat compatibility key as well, so
+        // the higher-precedence overlay replaces the base in BOTH reader forms.
+        // Component::readFromDict still refuses contradictory duplicate forms
+        // inside a single file; this only resolves a legitimate tier merge.
+        auto projectLocal = [&](const char* block, const char* key,
+                                const char* legacy)
+        {
+            if (!local->found(block)) return;
+            auto b = local->subDict(block);
+            if (b->found(key)) dict->insert(legacy, b->entryValue(key));
+        };
+        projectLocal("identity",   "name",    "name");
+        projectLocal("identity",   "formula", "formula");
+        projectLocal("identity",   "CAS",     "CAS");
+        projectLocal("identity",   "MW",      "MW");
+        projectLocal("critical",   "Tc",      "Tc");
+        projectLocal("critical",   "Pc",      "Pc");
+        projectLocal("critical",   "omega",   "omega");
+        projectLocal("liquidPure", "Tb",      "Tb");
+        projectLocal("liquidPure", "HvapTb",  "HvapTb");
+        projectLocal("liquidPure", "Vliq",    "Vliq");
+        projectLocal("liquidPure", "Psat",    "vaporPressure");
+        projectLocal("liquidPure", "Cp",      "liquidHeatCapacity");
+        projectLocal("gasIdeal",   "Cp",      "idealGasHeatCapacity");
+        projectLocal("solid",      "Cp",      "solidHeatCapacity");
+        projectLocal("transport", "diffusionVolume", "diffusionVolume");
+        projectLocal("transport", "associationFactor", "associationFactor");
+        projectLocal("transport", "liquidViscosity", "liquidViscosity");
+
         // No silent crutch: a Joback ESTIMATE leaves Psat / Vliq / gibbsFormation
         // as declared GAPS (omitted).  If the FROZEN standard backfills them, the
         // merged component is a HYBRID (estimated constants + curated gap data) --
         // announce it per key, never let the estimate look self-sufficient.
         if (isEstimate)
-            for (const char* k : { "vaporPressure", "Vliq", "gibbsFormation" })
-                if (dict->found(k) && !local->found(k))
-                    std::cerr << "[backfill] component '" << name << "'." << k
-                              << ": the ESTIMATE leaves this a GAP, but the FROZEN catalogue is "
-                                 "filling it -- the merged component is a hybrid, not a pure estimate.\n";
+        {
+            auto localHas = [&](const char* legacy, const char* block,
+                                const char* key)
+            {
+                return local->found(legacy)
+                    || (local->found(block)
+                        && local->subDict(block)->found(key));
+            };
+            const char* baseLabel = hasStd ? "FROZEN catalogue"
+                                            : "PROPOSED catalogue";
+            if (dict->found("vaporPressure")
+                && !localHas("vaporPressure", "liquidPure", "Psat"))
+                std::cerr << "[backfill] component '" << name
+                          << "'.vaporPressure: the ESTIMATE leaves this a GAP, but the "
+                          << baseLabel << " is filling it -- the merged component is a hybrid,"
+                             " not a pure estimate.\n";
+            if (dict->found("Vliq")
+                && !localHas("Vliq", "liquidPure", "Vliq"))
+                std::cerr << "[backfill] component '" << name
+                          << "'.Vliq: the ESTIMATE leaves this a GAP, but the "
+                          << baseLabel << " is filling it -- the merged component is a hybrid,"
+                             " not a pure estimate.\n";
+            if (dict->found("gibbsFormation") && !local->found("gibbsFormation"))
+                std::cerr << "[backfill] component '" << name
+                          << "'.gibbsFormation: the ESTIMATE leaves this a GAP, but the "
+                          << baseLabel << " is filling it -- the merged component is a hybrid,"
+                             " not a pure estimate.\n";
+        }
     }
     else
     {
@@ -241,6 +356,47 @@ Component Database::loadComponent(const std::string& name) const
     Component c;
     c.readFromDict(dict);
     return c;
+}
+
+std::string Database::canonicalName(const std::string& token) const
+{
+    // Exact-name ALWAYS wins: a real standard component is never aliased away,
+    // and the lookup stays the O(1) path concat the doctrine fixes.
+    if (fs::exists(fs::path(root_) / "standards" / "components" / (token + ".dat")))
+        return token;
+    // A CASE-LOCAL override named by the token wins too (self-contained credo):
+    // a case carrying its own constant/components/<token>.dat must not be aliased
+    // away to the standard catalogue.  Same fractal cwd-walk as loadComponent.
+    {
+        fs::path p = fs::current_path();
+        for (int up = 0; up < 6; ++up)
+        {
+            if (fs::exists(p / "constant" / "components" / (token + ".dat")))
+                return token;
+            if (!p.has_parent_path()) break;
+            p = p.parent_path();
+        }
+    }
+    // Lazy-load the generated alias index ONCE (a single dict read, never a
+    // directory walk).  An unknown token returns unchanged so the existing
+    // not-found error still fires in loadComponent.
+    if (!aliasLoaded_)
+    {
+        aliasLoaded_ = true;
+        fs::path idx = fs::path(root_) / "standards" / "components" / "ALIASES";
+        if (fs::exists(idx))
+        {
+            auto d = Dictionary::fromFile(idx.string());
+            if (d->found("aliases"))
+            {
+                auto a = d->subDict("aliases");
+                for (const auto& k : a->keys())
+                    aliasIndex_[k] = a->lookupWord(k);
+            }
+        }
+    }
+    auto it = aliasIndex_.find(token);
+    return (it != aliasIndex_.end()) ? it->second : token;
 }
 
 } // namespace Choupo

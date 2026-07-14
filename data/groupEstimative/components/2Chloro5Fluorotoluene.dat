@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-chloro-5-fluorotoluene  (C7H6ClF, CAS 33406-96-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Chloro5Fluorotoluene;
+formula     C7H6ClF;
+CAS         33406-96-1;
+InChIKey    NIOGDCDTKPQEAT-UHFFFAOYSA-N;
+MW          144.573;      // g/mol [origin=calculated method=formula-sum]
+Tc          643.60;      // K   [origin=predictive method=joback]
+Pc          35.814;      // bar [origin=predictive method=joback]
+omega       0.3574;      // -   [origin=predictive method=lee-kesler]
+Tb          433.10;      // K   [origin=predictive method=joback]
+HvapTb      38344.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.2 0.48952 -0.00029092 6.24e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group ACCH3; count 1; } { group ACCl; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-4-fluoranyl-2-methyl-benzene" "1-chloro-4-fluoro-2-methylbenzene" "3-fluoro-6-chlorotoluene" "1-chlor-4-fluor-2-methylbenzol" "6-chloro-3-fluorotoluene" "benzene, 1-chloro-4-fluoro-2-methyl-" "toluene,2-chloro-5-fluoro- (8ci);1-chloro-4-fluoro-2-methylbenzene;6,3-chlorofluorotoluene;" );
+gibbsFormation
+{
+    dHf_298   -186070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     375.03;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-105530.0
+    phase     gas;
+}

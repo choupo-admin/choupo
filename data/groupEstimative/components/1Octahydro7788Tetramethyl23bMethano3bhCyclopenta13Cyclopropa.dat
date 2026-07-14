@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(octahydro-7,7,8,8-tetramethyl-2,3b-methano-3bh-cyclopenta(1,3)cyclopropa(1,2)benzen-4-yl)ethanone  (C17H26O, CAS 59056-72-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Octahydro7788Tetramethyl23bMethano3bhCyclopenta13Cyclopropa;
+formula     C17H26O;
+CAS         59056-72-3;
+InChIKey    HKTIONFMGKWLBV-UHFFFAOYSA-N;
+MW          246.394;      // g/mol [origin=calculated method=formula-sum]
+Tc          883.48;      // K   [origin=predictive method=joback]
+Pc          20.456;      // bar [origin=predictive method=joback]
+omega       0.5927;      // -   [origin=predictive method=lee-kesler]
+Tb          652.07;      // K   [origin=predictive method=joback]
+HvapTb      54131.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-383.2 3.2922 -0.0037737 1.71656e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 3; } { group C; count 4; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH2_ring; count 4; } { group CH_ring; count 3; } { group C_ring; count 4; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethanone, 1-(octahydro-7,7,8,8-tetramethyl-2,3b-methano-3bh-cyclopenta(1,3)cyclopropa(1,2)benzen-4-yl)-" "ethanone, 1-(octahydro-7,7,8,8-tetramethyl-2,3b-methano-3bh-cyclopenta[1,3]cyclopropa[1,2]benzen-4-yl)-" );
+gibbsFormation
+{
+    dHf_298   -209490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     614.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=173350.0
+    phase     gas;
+}

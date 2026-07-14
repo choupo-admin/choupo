@@ -75,6 +75,7 @@ export function CompoundBrowser({
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<RoleFilter>("all");
   const [recent, setRecent] = useState<string[]>(loadRecent);
+  const [showProposed, setShowProposed] = useState(false);
 
   // Adding a component records it in the MRU (the "Recently used" group); the
   // recompute is driven by the parent's selected[] as before.
@@ -241,10 +242,15 @@ export function CompoundBrowser({
           {proposedResults.length > 0 && (
             <Tooltip withArrow multiline w={260}
               label="data/proposed/ — extended catalogue (bulk-ingested / estimated). Usable for screening, but not yet hand-curated: the solver flags it, and you should review its gaps (esp. Cp / formation) before relying on it.">
-              <Text size="xs" fw={700} c="orange.6" mt={8}>PROPOSED — review before relying ({proposedResults.length})</Text>
+              <UnstyledButton mt={8} onClick={() => setShowProposed((v) => !v)}
+                aria-expanded={q.trim().length > 0 || showProposed}>
+                <Text size="xs" fw={700} c="orange.6">
+                  PROPOSED — review before relying ({proposedResults.length}) · {q.trim().length > 0 || showProposed ? "hide" : "show"}
+                </Text>
+              </UnstyledButton>
             </Tooltip>
           )}
-          {proposedResults.map((m) => renderRow(m, "proposed-"))}
+          {(q.trim().length > 0 || showProposed) && proposedResults.map((m) => renderRow(m, "proposed-"))}
           {nothing && (
             <Stack gap={6} align="center" mt="sm">
               <Text size="xs" c="dimmed" ta="center">no match</Text>

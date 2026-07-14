@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: acetophenone-methyl-d3  (C8H5D3O, CAS 17537-31-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H5D3O (delta D+3H-3; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        acetophenoneMethylD3;
+formula     C8H5D3O;
+CAS         17537-31-4;
+InChIKey    KWOLFJPFCHCOCG-FIBGUPNXSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          123.169;      // g/mol [origin=calculated method=formula-sum]
+Tc          685.08;      // K   [origin=predictive method=joback]
+Pc          39.456;      // bar [origin=predictive method=joback]
+omega       0.4145;      // -   [origin=predictive method=lee-kesler]
+Tb          463.19;      // K   [origin=predictive method=joback]
+HvapTb      42424.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-30.93 0.65692 -0.0004239 1.0046e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 5; } { group AC; count 1; } { group CH3CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group CdO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,2-trideuterio-1-phenyl-ethanone" "acetophenone-(methyl-d3)" "acetophenone-" "a," "a," "a-d3" "acetophenone-beta,beta,beta-d3" "acetophenone-alpha,alpha,alpha-d3" "de160" "2,2,2-trideuterio-1-phenylethanone" "aceto-d3-phenone >98.0 atom % d" "acetophenone-.alpha.,.alpha.,.alpha.-d3" );
+gibbsFormation
+{
+    dHf_298   -84500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     387.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-30.0
+    phase     gas;
+}

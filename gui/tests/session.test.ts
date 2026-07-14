@@ -9,6 +9,26 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
+// ---- Heavy-glob cache (suite health, forum #99/#100.1) --------------------
+//  The store's import graph reaches the eager import.meta.glob catalogues
+//  (the WHOLE tutorials corpus + data/standards) -- under vitest each
+//  vi.resetModules() + fresh import re-reads and re-transforms every matched
+//  file: ~5 s and huge sys-time PER TEST (48 s for 6 tests on an idle
+//  machine; the 20 s timeout then trips under any extra load).  The data
+//  modules are PURE (derived constants, no mutable state this suite
+//  exercises), so load them ONCE and re-register the loaded exports as mocks:
+//  the STORE still re-initialises fresh each test (the behaviour under
+//  test); only the corpus re-read is gone.
+import * as _tutorialsMod from "../src/cases/tutorials.js";
+import * as _catalogueMod from "../src/case/catalogue.js";
+import * as _pairsMod from "../src/case/pairsCatalogue.js";
+const mockHeavyDataModules = () => {
+  vi.doMock("../src/cases/tutorials.js", () => _tutorialsMod);
+  vi.doMock("../src/case/catalogue.js", () => _catalogueMod);
+  vi.doMock("../src/case/pairsCatalogue.js", () => _pairsMod);
+};
+
+
 const KEY = "choupo.session.v1";
 
 function makeLocalStorage() {
@@ -25,6 +45,7 @@ let ls: ReturnType<typeof makeLocalStorage>;
 
 beforeEach(() => {
   vi.resetModules();
+  mockHeavyDataModules();
   ls = makeLocalStorage();
   (globalThis as Record<string, unknown>).window = {
     localStorage: ls,
@@ -87,5 +108,30 @@ describe("session restore", () => {
     expect(useStore.getState().tutorialName).toBe(""); // blank, no case open
     expect(useStore.getState().activeWorkspace).toBeNull();
     expect(useStore.getState().agentOpen).toBe(false);
+  });
+
+  it("restores the panel folds (selection card + console) from the session", async () => {
+    ls.setItem(KEY, JSON.stringify({
+      caseRef: null,
+      activeWorkspace: null,
+      agentOpen: true,
+      agentDocked: true,
+      agentCollapsed: true,
+      panels: { property: false, output: true },
+    }));
+    const { useStore } = await import("../src/state/store.js");
+    expect(useStore.getState().agentCollapsed).toBe(true);     // console folded
+    expect(useStore.getState().panels.property).toBe(false);   // card tucked away
+  });
+
+  it("persists the panel folds when toggled (card via togglePanel, console via toggleAgentCollapsed)", async () => {
+    const { useStore } = await import("../src/state/store.js");
+    expect(useStore.getState().agentCollapsed).toBe(false);    // defaults expanded
+    expect(useStore.getState().panels.property).toBe(true);
+    useStore.getState().togglePanel("property");
+    useStore.getState().toggleAgentCollapsed();
+    const blob = JSON.parse(ls.getItem(KEY)!);
+    expect(blob.panels.property).toBe(false);
+    expect(blob.agentCollapsed).toBe(true);
   });
 });

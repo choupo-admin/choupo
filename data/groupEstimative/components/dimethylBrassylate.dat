@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethyl brassylate  (C15H28O4, CAS 1472-87-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimethylBrassylate;
+formula     C15H28O4;
+CAS         1472-87-3;
+InChIKey    WWSBQOYADFGDQE-UHFFFAOYSA-N;
+MW          272.385;      // g/mol [origin=calculated method=formula-sum]
+Tc          830.02;      // K   [origin=predictive method=joback]
+Pc          14.261;      // bar [origin=predictive method=joback]
+omega       0.9598;      // -   [origin=predictive method=lee-kesler]
+Tb          659.24;      // K   [origin=predictive method=joback]
+HvapTb      63798.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (40.071 1.31924 -0.000603 5.31e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 9; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 11; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "dimethyl tridecanedioate" "tridecanedioic acid, dimethyl ester" "brassylic acid dimethyl ester" "tridecanedioic acid, 1,13-dimethyl ester" "m116" "brassylic acid (dimethyl ester), tech" );
+gibbsFormation
+{
+    dHf_298   -987490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     842.85;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-545320.0
+    phase     gas;
+}

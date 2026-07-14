@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # promote_wave1.py -- execute the forum-ratified WAVE 1 promotion: the
-# teaching-staple CoolProp ADD files data/proposed/components/ -> data/standards/
+# teaching-staple CoolProp ADD files data/local/components/ -> data/standards/
 # components/.  Enforces the chair's deterministic gate IN SCRIPT (never trusts
 # the self-anchoring Antoine number).  Promotes ONLY the explicit allowlist.
 #
@@ -25,7 +25,7 @@ import re, sys, shutil, importlib.util
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-PROP = ROOT / 'data/proposed/components'
+PROP = ROOT / 'data/local/components'
 STD  = ROOT / 'data/standards/components'
 
 spec = importlib.util.spec_from_file_location(

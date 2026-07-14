@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hexadecane  (C16H34, CAS 544-76-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        hexadecane;
+formula     C16H34;
+CAS         544-76-3;
+InChIKey    DCAYPVUWAIABOU-UHFFFAOYSA-N;
+MW          226.448;      // g/mol [origin=calculated method=formula-sum]
+Tc          724.47;      // K   [origin=predictive method=joback]
+Pc          13.185;      // bar [origin=predictive method=joback]
+omega       0.7407;      // -   [origin=predictive method=lee-kesler]
+Tb          565.68;      // K   [origin=predictive method=joback]
+HvapTb      51210.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.656 1.52384 -0.0008466 1.792e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 14; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 14; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "cetane" "mpcm 18d" "s 6 (alkane)" "ts 6" "ts paraffin ts 6" "n-cetane" "n-hexadecane" "hexadekan" "cetan" "zetan" "CCRIS 5833" "BRN 1736592" );
+gibbsFormation
+{
+    dHf_298   -373570.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     779.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83840.0
+    phase     gas;
+}

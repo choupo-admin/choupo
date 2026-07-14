@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4,4'-bis(2,5-dimethylstyryl)biphenyl  (C32H30, CAS 72814-85-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44Bis25DimethylstyrylBiphenyl;
+formula     C32H30;
+CAS         72814-85-8;
+InChIKey    AMDSCXLLKXHWOJ-UHFFFAOYSA-N;
+MW          414.592;      // g/mol [origin=calculated method=formula-sum]
+Tc          1340.51;      // K   [origin=predictive method=joback]
+Pc          11.475;      // bar [origin=predictive method=joback]
+omega       0.9022;      // -   [origin=predictive method=lee-kesler]
+Tb          1076.68;      // K   [origin=predictive method=joback]
+HvapTb      99818.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-104.39 2.41128 -0.00160716 4.17e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 2; } { group ACH; count 14; } { group AC; count 6; } { group ACCH3; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH; count 4; } { group dCH_ring; count 14; } { group dC_ring; count 10; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-[4-[4-[2-(2,5-dimethylphenyl)ethenyl]phenyl]phenyl]ethenyl]-1,4-dimethyl-benzene" "1,1'-biphenyl, 4,4'-bis[2-(2,5-dimethylphenyl)ethenyl]-" "1,1'-biphenyl,4,4'-bis[2-(2,5-dimethylphenyl)ethenyl]-" "4,4'-bis(2,5-dimethylstyryl)biphenyl;4,4'-bis(2,5-dimethylstyryl)diphenyl; bdb; bdb (scintillator)" );
+gibbsFormation
+{
+    dHf_298   407930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     926.61;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=770860.0
+    phase     gas;
+}

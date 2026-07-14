@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: heptadecanoic acid  (C17H34O2, CAS 506-12-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        heptadecanoicAcid;
+formula     C17H34O2;
+CAS         506-12-7;
+InChIKey    KEMQGTRYUADPNZ-UHFFFAOYSA-N;
+MW          270.457;      // g/mol [origin=calculated method=formula-sum]
+Tc          911.19;      // K   [origin=predictive method=joback]
+Pc          13.118;      // bar [origin=predictive method=joback]
+omega       1.0466;      // -   [origin=predictive method=lee-kesler]
+Tb          734.07;      // K   [origin=predictive method=joback]
+HvapTb      70600.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-7.965 1.66962 -0.0009736 2.191e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 15; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 15; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-heptadecanoic acid" "margarinic acid" "n-heptadecylic acid" "n-heptadecoic acid" "heptadecylic acid" "fatty acids, c16-18" "margarate" "margarinate" "margaroate" "n-heptadecoate" "n-heptadecylate" "fatty acids, c14-22" );
+gibbsFormation
+{
+    dHf_298   -744480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     871.32;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-251650.0
+    phase     gas;
+}

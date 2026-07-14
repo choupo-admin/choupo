@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: vinyl palmitate  (C18H34O2, CAS 693-38-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        vinylPalmitate;
+formula     C18H34O2;
+CAS         693-38-9;
+InChIKey    UJRIYYLGNDXVTA-UHFFFAOYSA-N;
+MW          282.468;      // g/mol [origin=calculated method=formula-sum]
+Tc          833.43;      // K   [origin=predictive method=joback]
+Pc          11.899;      // bar [origin=predictive method=joback]
+omega       0.8844;      // -   [origin=predictive method=lee-kesler]
+Tb          666.34;      // K   [origin=predictive method=joback]
+HvapTb      62399.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.944 1.63902 -0.0008837 1.633e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 13; } { group CH2=CH; count 1; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 14; } { group dCH2; count 1; } { group dCH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethenyl hexadecanoate" "palmitic acid vinyl ester" "hexadecanoic acid, ethenyl ester" "vinyl palmitate;hexadecanoic acid, ethenyl ester;vinyl hexadecanoate;palmitic acid vinyl ester;palmitic acid vinyl ester (stabilized with mehq);" );
+gibbsFormation
+{
+    dHf_298   -606700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     903.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-121850.0
+    phase     gas;
+}

@@ -52,17 +52,7 @@ variables
     eta_cycle  { compute "generator.W_electric / cooler.Q"; }
 }
 
-streams
-{
-    feedSteam
-    {
-        F             3.6 kmol/h;             // = 1 mol/s
-        T           800.0 K;                   // 527 C, superheated
-        P             5.0 bar;
-        state         superheatedVapour;
-        molarComposition { water 1.0; }
-    }
-}
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 
 units
 (

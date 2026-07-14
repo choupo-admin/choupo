@@ -1,0 +1,77 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: phenol   (Joback group-contribution ESTIMATE)
+  Generated: 2026-07-09 by choupoProps estimateComponent
+  Method:    Joback & Reid (1987); omega by Lee-Kesler (Tb,Tc,Pc).
+
+  READY (active below): EoS (Tc,Pc,omega) + energy balances (Cp_ig)
+    + vapour pressure (Ambrose-Walton corresponding states from Tc,Pc,omega)
+    + liquid molar volume Vliq (Rackett / Yamada-Gunn from Tc,Pc,omega)
+    -> the component is FLASHABLE with no measured data.
+  GAP Joback cannot fill -- see the commented TODO below:
+    * gibbsFormation.s_298 -> Gibbs reactor     (third-law absolute S; Joback gives dGf, not S)
+  CAVEAT: Ambrose-Walton is an ESTIMATE -- a few % for non-polar species,
+    worse for polar / H-bonding / associating ones.  Overlay it on measured
+    Psat before trusting it for design (Psat(Tb) = 0.969829 bar; ~1.013 if self-consistent).
+
+  ESTIMATION HAS ERROR.  Review every value, fill the gaps, then promote:
+      mv constant/components/phenol.estimated.dat  constant/components/phenol.dat
+
+  This is a CASE-LOCAL proposal.  The official data/standards/ catalogue is
+  FROZEN -- committee-managed and audited; never edit it.  Promoting here
+  overrides the component for THIS case only, leaving the catalogue untouched.
+  An estimate is meant for a component the catalogue LACKS.  If 'phenol' is
+  already curated there, prefer the standard -- unless you are deliberately
+  studying the group-contribution error (the engine logs [backfill] if it fills a gap).
+\*---------------------------------------------------------------------------*/
+
+identity
+{
+    name        phenol;
+    // formula  ?;            // TODO: not derivable from groups
+    // CAS      ?;            // TODO: look up + verify identity
+    MW          94.113;        // g/mol (group sum)
+}
+
+critical    // corresponding-states constants of the WHOLE fluid
+{
+    Tc      658.463;        // K     (Joback)
+    Pc      53.2016;        // bar   (Joback; catalogue convention)
+    omega   0.671628;        // [-]   Lee-Kesler from (Tb,Tc,Pc)
+}
+
+gasIdeal    // ideal-gas reference state -- the formation datum
+{
+    // GAP (Gibbs reactor): Choupo needs S_298 (third-law) and Joback
+    // gives dGf_298, NOT S.  Joback estimates (ideal gas, 298 K):
+    //   Hf_298 = -82870 J/mol    dGf_298 = -24770 J/mol
+    // Supply S_298, then uncomment BOTH to enable the Gibbs reactor:
+    // Hf_298   -82870;   // gap -- catalogue backfills
+    // S_298    ?;            // J/(mol K) third-law -- FILL
+    Cp
+    {
+        model         polynomial;
+        // Cp [J/(mol*K)] = a0 + a1*T + a2*T^2 + a3*T^3   -- Cp(298) = 96.6676
+        coefficients  (-31.18   0.5289   -3.642000e-04   9.550000e-08);
+        Trange        (200  1500);
+    }
+}
+
+liquidPure  // pure-liquid (Raoult) reference -- Psat IS f°(T)
+{
+    Tb         455.740000;        // K     normal boiling point (Joback)
+    HvapTb     47905.000000;       // J/mol latent heat at Tb (Joback)
+    Vliq       0.000070;      // m^3/mol Rackett/Yamada-Gunn, 298 K (estimate)
+    // Ambrose-Walton corresponding states from critical{} -- FLASHABLE now;
+    // an ESTIMATE: overlay vs measured Psat (or fit Antoine) before design.
+    Psat { model AmbroseWalton; }
+}
+
+provenance
+{
+    method        "Joback group contribution (Joback & Reid 1987)";
+    omega         "Lee-Kesler correlation from (Tb, Tc, Pc)";
+    vaporPressure "Ambrose-Walton corresponding states from (Tc, Pc, omega)";
+    Vliq          "Rackett / Yamada-Gunn corresponding states from (Tc, Pc, omega) at 298 K";
+    estimateDate  "2026-07-09";
+    status        "ESTIMATE -- only s_298 gap remains; Psat & Vliq by corr.-states; review before use";
+}

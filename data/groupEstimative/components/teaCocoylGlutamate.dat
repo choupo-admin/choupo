@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tea-cocoyl glutamate  (C11H24N2O7, CAS 38732-22-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        teaCocoylGlutamate;
+formula     C11H24N2O7;
+CAS         38732-22-8;
+InChIKey    TUBPSFQENHCYBW-HVDRVSQOSA-N;
+MW          296.32;      // g/mol [origin=calculated method=formula-sum]
+Tc          1371.70;      // K   [origin=predictive method=joback]
+Pc          29.377;      // bar [origin=predictive method=joback]
+omega       1.7202;      // -   [origin=predictive method=lee-kesler]
+Tb          1104.77;      // K   [origin=predictive method=joback]
+HvapTb      137035.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (52.898 1.2379 -0.0005554 3.58e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group OH; count 3; } { group CHNH2; count 1; } { group CH2N; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 8; } { group CH; count 1; } { group OH; count 3; } { group COOH; count 2; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2s)-2-azanylpentanedioic acid;2-[bis(2-hydroxyethyl)amino]ethanol" "triethanolamine glutamate" "triethanolamine cocoyl glutamate" "l-glutamic acid, n-coco acyl derivs., compds. with triethanolamine (1:1)" "n-cocoyl-l-glutamic acid, mono(triethanolamine) salt" "(2s)-2-aminopentanedioic acid; 2-[bis(2-hydroxyethyl)amino]ethanol" "l-glutamic acid, compound with 2,2',2''-nitrilotrisethanol (1:1)" "l-glutamic acid, n-coco acyl derivs., compds. with triethanolamine" "l-glutamic acid, n-coco acyl derivs., compds. with triethanolamine(1:1)" );
+gibbsFormation
+{
+    dHf_298   -1443180.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1009.21;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-986510.0
+    phase     gas;
+}

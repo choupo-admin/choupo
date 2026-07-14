@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: tetradecamethylcycloheptasiloxane  (C14H42O7Si7, CAS 107-50-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C14H42O7Si7 (delta Si+7; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        tetradecamethylcycloheptasiloxane;
+formula     C14H42O7Si7;
+CAS         107-50-6;
+InChIKey    GSANOGQCVHBHIF-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          519.078;      // g/mol [origin=calculated method=formula-sum]
+Tc          970.03;      // K   [origin=predictive method=joback]
+Pc          9.753;      // bar [origin=predictive method=joback]
+omega       0.4275;      // -   [origin=predictive method=lee-kesler]
+Tb          746.86;      // K   [origin=predictive method=joback]
+HvapTb      81296.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (320.47 0.00868 0.0021731 -1.418e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 14; } { group SiO; count 7; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 14; } { group O_ring; count 7; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,2,4,4,6,6,8,8,10,10,12,12,14,14-tetradecamethyl-1,3,5,7,9,11,13-heptaoxa-2,4,6,8,10,12,14-heptasilacyclotetradecane" "2,2,4,4,6,6,8,8,10,10,12,12,14,14-tetradecamethylcycloheptasiloxane" "cycloheptasiloxane,2,2,4,4,6,6,8,8,10,10,12,12,14,14-tetradecamethyl-" "cycloheptasiloxane,tetradecamethyl- (6ci,7ci,8ci,9ci); tetradecamethylcycloheptasiloxane" );
+gibbsFormation
+{
+    dHf_298   -1969130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1259.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1249100.0
+    phase     gas;
+}

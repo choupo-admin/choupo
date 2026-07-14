@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: p-dioxino[2,3-b]-p-dioxin, hexahydro-  (C6H10O4, CAS 4362-05-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pDioxino23BPDioxinHexahydro;
+formula     C6H10O4;
+CAS         4362-05-4;
+InChIKey    XIEQDDLBXUOZOD-UHFFFAOYSA-N;
+MW          146.142;      // g/mol [origin=calculated method=formula-sum]
+Tc          705.90;      // K   [origin=predictive method=joback]
+Pc          46.277;      // bar [origin=predictive method=joback]
+omega       0.4550;      // -   [origin=predictive method=lee-kesler]
+Tb          475.24;      // K   [origin=predictive method=joback]
+HvapTb      47504.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-54.25 0.8252 -0.0005018 1.044e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 2; } { group FCH2O; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group CH_ring; count 2; } { group O_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,3,4a,6,7,8a-hexahydro-[1,4]dioxino[2,3-b][1,4]dioxine" "[1,4]dioxino[2,3-b]-1,4-dioxin, hexahydro-" "(1,4)dioxino(2,3-b)-1,4-dioxin, hexahydro-" "naphthodioxane" "1,5,8-naphthodioxane" "p-dioxino[2, hexahydro-" "xieqddlbxuozod-izlxsqmjsa-" "xieqddlbxuozod-olqvqodusa-" "1,5,8-tetraoxaperhydronaphthalene" "[1,3-b]-1,4-dioxin, hexahydro-" "hexahydro(1,4)dioxino(2,3-b)-1,4-dioxin" "ethanedial,2:1,2-bis(1,2-ethanediyl acetal)" );
+gibbsFormation
+{
+    dHf_298   -574210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     83.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-271740.0
+    phase     gas;
+}

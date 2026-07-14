@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (-)-dimenthyl succinate  (C24H42O4, CAS 115936-72-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dimenthylSuccinate;
+formula     C24H42O4;
+CAS         115936-72-6;
+InChIKey    YZXZAUAIVAZWFN-UHFFFAOYSA-N;
+MW          394.596;      // g/mol [origin=calculated method=formula-sum]
+Tc          1095.98;      // K   [origin=predictive method=joback]
+Pc          9.657;      // bar [origin=predictive method=joback]
+omega       0.8092;      // -   [origin=predictive method=lee-kesler]
+Tb          884.70;      // K   [origin=predictive method=joback]
+HvapTb      82678.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-78.928 2.32432 -0.0010394 6.56e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 6; } { group CH; count 8; } { group CH2COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 6; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(5-methyl-2-propan-2-yl-cyclohexyl) butanedioate" "succinic acid, di-(-)-menthyl ester" "butanedioic acid, bis[5-methyl-2-(1-methylethyl)cyclohexyl] ester" "agn-pc-03vbdg" "bis(5-methyl-2-propan-2-ylcyclohexyl) butanedioate" "di5-methyl-2-(methylethyl)cyclohexyl butane-1,4-dioate" );
+gibbsFormation
+{
+    dHf_298   -1156530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     943.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-456360.0
+    phase     gas;
+}

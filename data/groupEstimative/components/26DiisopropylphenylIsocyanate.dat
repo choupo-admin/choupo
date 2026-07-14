@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,6-diisopropylphenyl isocyanate  (C13H17NO, CAS 28178-42-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        26DiisopropylphenylIsocyanate;
+formula     C13H17NO;
+CAS         28178-42-9;
+InChIKey    FEUFNKALUGDEMQ-UHFFFAOYSA-N;
+MW          203.285;      // g/mol [origin=calculated method=formula-sum]
+Tc          813.95;      // K   [origin=predictive method=joback]
+Pc          23.225;      // bar [origin=predictive method=joback]
+omega       0.6471;      // -   [origin=predictive method=lee-kesler]
+Tb          599.47;      // K   [origin=predictive method=joback]
+HvapTb      56888.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group ACH; count 3; } { group AC; count 1; } { group ACCH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:1
+    joback ( { group CH3; count 4; } { group CH; count 2; } { group dCd; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group dO_oth; count 1; } { group Nd; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-isocyanato-1,3-di(propan-2-yl)benzene" "2-isocyanato-1,3-diisopropylbenzene" "benzene, 2-isocyanato-1,3-bis(1-methylethyl)-" "isocyanic acid 2,6-diisopropylphenyl ester" "isocyanic acid, 2,6-diisopropylphenyl ester" "1,3-bis(1-methylethyl)-2-isocyanatobenzene" "benzene, 1,3-bis(1-methylethyl)-2-isocyanato-" "2,6-bis(methylethyl)benzenisocyanate" "2,6-diisopropylphenylisocyanate" "p370" "isocyanicacid, 2,6-diisopropylphenyl ester (7ci,8ci);2,6-bis(1-methylethyl)phenylisocyanate;2-isocyanato-1,3-diisopropylbenzene;o,o'-diisopropylphenyl isocyanate;" );
+// formation datum unavailable (element entropy missing): dHf_298=-114030.0 dGf_298=None

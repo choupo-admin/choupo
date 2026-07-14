@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-(4-chlorophenyl)piperidin-4-ol  (C11H14ClNO, CAS 39512-49-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        44ChlorophenylPiperidin4Ol;
+formula     C11H14ClNO;
+CAS         39512-49-7;
+InChIKey    LZAYOZUFUAMFLD-UHFFFAOYSA-N;
+MW          211.689;      // g/mol [origin=calculated method=formula-sum]
+Tc          921.62;      // K   [origin=predictive method=joback]
+Pc          37.730;      // bar [origin=predictive method=joback]
+omega       0.9331;      // -   [origin=predictive method=lee-kesler]
+Tb          680.89;      // K   [origin=predictive method=joback]
+HvapTb      70118.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-107.21 1.3518 -0.00114256 4.138e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group C; count 1; } { group ACH; count 4; } { group AC; count 1; } { group OH; count 1; } { group CH2NH; count 1; } { group ACCl; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 4; } { group C_ring; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group Cl; count 1; } { group OH; count 1; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(4-chlorophenyl)-4-hydroxypiperidine" "haloperidol metabolite i" "4-(4-chlorophenyl)-4-piperidinol" "4-(p-chlorophenyl)-4-hydroxypiperidine" "4-(chlorophenyl)-4-hydroxylpiperidine" "4-hydroxy-4-(p-chlorophenyl)piperidine" "4-hydroxy-4-(4-chlorophenyl)piperidine" "4-(4-chlorophenyl)-4-hydroxy piperidine" "4-(para-chlorophenyl)-4-hydroxypiperidine" "4-chlorophenyl-4-hydroxypiperidine" "haloperidolmetabolite" "4-p-chlorophenyl-4-piperidinol" );
+gibbsFormation
+{
+    dHf_298   -105910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     589.0;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=102440.0
+    phase     gas;
+}

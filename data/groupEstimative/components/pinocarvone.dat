@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: pinocarvone  (C10H14O, CAS 30460-92-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        pinocarvone;
+formula     C10H14O;
+CAS         30460-92-5;
+InChIKey    TZDMGBLPGZXHJI-UHFFFAOYSA-N;
+MW          150.221;      // g/mol [origin=calculated method=formula-sum]
+Tc          733.93;      // K   [origin=predictive method=joback]
+Pc          29.959;      // bar [origin=predictive method=joback]
+omega       0.4214;      // -   [origin=predictive method=lee-kesler]
+Tb          508.70;      // K   [origin=predictive method=joback]
+HvapTb      40798.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-97.14 1.22564 -0.001055 4.042e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group C; count 1; } { group CH2=C; count 1; } { group CH2CO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH2; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 2; } { group C_ring; count 1; } { group dC_ring; count 1; } { group CdO_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6,6-dimethyl-4-methylidene-bicyclo[3.1.1]heptan-3-one" "3-nopinenone" "2(10)-pinen-3-one" "(1)-2(10)-pinen-3-one" "bicyclo(3.1.1)heptan-3-one, 6,6-dimethyl-2-methylene-" "bicyclo[3.1.1]heptan-3-one, 6,6-dimethyl-2-methylene-" "alpha-pinocarvone" "pina-2(10)-ene-3-one" "( )-2(10)-pinen-3-one" "2(10)-pinen-3-one, (.+-.)-" "2(10)-pinen-3-one, (.+/-.)-" "6,6-dimethyl-2-methylidene-norpinan-3-one" );
+gibbsFormation
+{
+    dHf_298   -168850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     307.13;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=60010.0
+    phase     gas;
+}

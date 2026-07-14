@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl (e)-3-pyrrolidinocrotonate  (C10H17NO2, CAS 54716-02-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylE3Pyrrolidinocrotonate;
+formula     C10H17NO2;
+CAS         54716-02-8;
+InChIKey    MSOQKPXSIHLODG-CMDGGOBGSA-N;
+MW          183.251;      // g/mol [origin=calculated method=formula-sum]
+Tc          717.25;      // K   [origin=predictive method=joback]
+Pc          26.846;      // bar [origin=predictive method=joback]
+omega       0.6053;      // -   [origin=predictive method=lee-kesler]
+Tb          518.78;      // K   [origin=predictive method=joback]
+HvapTb      47736.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-66.659 1.21064 -0.0008535 2.349e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 4; } { group CH=C; count 1; } { group CH2N; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 4; } { group COO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl (e)-3-pyrrolidin-1-ylbut-2-enoate" "ethyl(2e)-3-(1-pyrrolidinyl)-2-butenoate" "(2e)-3-(1-pyrrolidinyl)-2-butenoic acid ethyl ester" "ethyl (2e)-3-(1-pyrrolidinyl)-2-butenoate" "ethyl 3-(1-pyrrolidinyl)crotonate" "ethyl (2e)-3-pyrrolidinylbut-2-enoate" "ethyl (e)-3-(1-pyrrolidinyl)crotonate" "ethyl (e)-3-(1-pyrrolidinyl)-2-butenoate" "(e)-ethyl 3-(pyrrolidin-1-yl)but-2-enoate" "(e)-3-(1-pyrrolidinyl)-2-butenoic acid ethyl ester" "(e)-3-pyrrolidin-1-yl-but-2-enoic acid ethyl ester" "2-propenoic acid, 2-methyl-3-(1-pyrrolidinyl)-, ethyl ester" );
+gibbsFormation
+{
+    dHf_298   -305070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     574.17;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-38240.0
+    phase     gas;
+}

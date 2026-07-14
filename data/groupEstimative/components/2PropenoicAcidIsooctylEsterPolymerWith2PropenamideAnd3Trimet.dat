@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propenoic acid, isooctyl ester, polymer with 2-propenamide and 3-(trimethoxysilyl)propyl 2-methyl-2-propenoate  (C24H45NO8Si, CAS 95566-34-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C24H45NO8Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        2PropenoicAcidIsooctylEsterPolymerWith2PropenamideAnd3Trimet;
+formula     C24H45NO8Si;
+CAS         95566-34-0;
+InChIKey    PGJAUYTXGRYBEK-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          503.708;      // g/mol [origin=calculated method=formula-sum]
+Tc          1292.51;      // K   [origin=predictive method=joback]
+Pc          7.716;      // bar [origin=predictive method=joback]
+omega       0.7015;      // -   [origin=predictive method=lee-kesler]
+Tb          1052.50;      // K   [origin=predictive method=joback]
+HvapTb      107013.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (234.348 1.34582 0.0003859 -6.0034e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 8; } { group CH; count 1; } { group CH2=CH; count 2; } { group CH2=C; count 1; } { group CH3O; count 3; } { group COO; count 2; } { group Si; count 1; } { group CONH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 8; } { group CH; count 1; } { group dCH2; count 3; } { group dCH; count 2; } { group dC; count 1; } { group O; count 3; } { group CdO; count 1; } { group COO; count 2; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-methylheptyl prop-2-enoate;prop-2-enamide;3-trimethoxysilylpropyl 2-methylprop-2-enoate" );
+gibbsFormation
+{
+    dHf_298   -1622340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1619.87;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-908760.0
+    phase     gas;
+}

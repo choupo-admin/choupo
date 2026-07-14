@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (benzylthio)acetic acid  (C9H10O2S, CAS 103-46-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        benzylthioAceticAcid;
+formula     C9H10O2S;
+CAS         103-46-8;
+InChIKey    AWLVTQRRKPBQEQ-UHFFFAOYSA-N;
+MW          182.237;      // g/mol [origin=calculated method=formula-sum]
+Tc          888.32;      // K   [origin=predictive method=joback]
+Pc          36.955;      // bar [origin=predictive method=joback]
+omega       0.8076;      // -   [origin=predictive method=lee-kesler]
+Tb          646.49;      // K   [origin=predictive method=joback]
+HvapTb      61885.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.998 0.82509 -0.0005294 1.218e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group ACH; count 5; } { group AC; count 1; } { group COOH; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COOH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(phenylmethylsulfanyl)ethanoic acid" "s-benzylthioglycolic acid" "2-(benzylthio)acetic acid" "2-(benzylsulfanyl)acetic acid" "benzylmercaptoacetic acid" "acetic acid, [(phenylmethyl)thio]-" "acetic acid, (benzylthio)-" "(benzylsulfanyl)acetic acid" "2-(phenylmethylthio)acetic acid" "acetic acid, ((phenylmethyl)thio)-" "acetic acid, 2-((phenylmethyl)thio)-" "acetic acid, 2-[(phenylmethyl)thio]-" );
+gibbsFormation
+{
+    dHf_298   -300960.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     514.68;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-173480.0
+    phase     gas;
+}

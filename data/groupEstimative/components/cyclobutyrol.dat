@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclobutyrol  (C10H18O3, CAS 512-16-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclobutyrol;
+formula     C10H18O3;
+CAS         512-16-3;
+InChIKey    NIVFTEMPSCMWDE-UHFFFAOYSA-N;
+MW          186.251;      // g/mol [origin=calculated method=formula-sum]
+Tc          894.99;      // K   [origin=predictive method=joback]
+Pc          33.067;      // bar [origin=predictive method=joback]
+omega       1.1808;      // -   [origin=predictive method=lee-kesler]
+Tb          685.44;      // K   [origin=predictive method=joback]
+HvapTb      70587.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-113.589 1.45852 -0.00124 4.527e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 6; } { group CH; count 1; } { group C; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group CH2_ring; count 5; } { group C_ring; count 1; } { group OH; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-(1-oxidanylcyclohexyl)butanoic acid" "ciclobutirol" "cyclobutyrolum" "cyclobutyral" "hebucol" "1-cyclohexanol-alpha-butyric acid" "alpha-(1-hydroxycyclohexyl)butyric acid" "1-hydroxy-alpha-ethylcyclohexylacetic acid" "alpha-ethyl-1-hydroxycyclohexaneacetic acid" "2-(1-hydroxycyclohexyl)butanoic acid" "cyclobutyrolum [inn-latin]" "(rs)-2-(1-hydroxycyclohexyl)buttersaeure" );
+gibbsFormation
+{
+    dHf_298   -687950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     679.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-430890.0
+    phase     gas;
+}

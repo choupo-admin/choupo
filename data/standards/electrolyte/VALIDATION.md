@@ -1,5 +1,14 @@
 # Electrolyte catalogue — γ± validation (25 °C)
 
+> **DATA MIGRATED 2026-06-30 — Aspen-like layout.** The electrolyte catalogue this
+> document covers was consolidated kind-by-kind into the ratified layout: Pitzer
+> pairs -> `parameters/electrolyte/pitzer/pairs/`, mixing -> `.../pitzer/mixing/`,
+> eNRTL -> `parameters/electrolyte/eNRTL/`, ions -> `components/true/aqueous/`, and
+> minerals/speciation/gasLiquid/ionExchange -> `data/standards/chemistry/`
+> (resins -> `assets/resins/`). The monolith names (`pairs.dat`, `ions.dat`, ...)
+> referenced below describe the HISTORICAL files; **no value changed**, and the
+> per-value provenance now also lives in each per-file record's `source`/`origin`.
+
 Model γ± (Choupo Pitzer kernel, reading `pairs.dat`) vs **cited literature**
 (mean ionic activity coefficient, molality scale). AAD over the listed points.
 Literature gathered by a curation swarm with mandatory citation; model values

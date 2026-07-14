@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  sensitivity01_column_reflux -- meta-control
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Feasibility MAP: the reflux sweep with declared constraints -- every row marked (value, bound, residual, satisfied), nothing filtered; the feasible window between the purity spec and the boilup budget read off the CSV";
+
+verbosity     1;

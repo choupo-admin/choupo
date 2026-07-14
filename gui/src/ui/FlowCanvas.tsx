@@ -50,18 +50,18 @@ import {
   type NodeChange,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { ActionIcon, Box, Button, Chip, Group, Stack, Text, Tooltip, useComputedColorScheme } from "@mantine/core";
-import { IconPlayerPlay, IconPlayerStop } from "@tabler/icons-react";
-import { IconX } from "@tabler/icons-react";
+import { ActionIcon, Badge, Box, Button, Chip, Group, Stack, Text, Tooltip, useComputedColorScheme } from "@mantine/core";
+import { IconPlayerPlay, IconPlayerStop, IconRefresh } from "@tabler/icons-react";
+import { IconChevronLeft, IconChevronRight, IconX } from "@tabler/icons-react";
+import { useReducedMotion } from "@mantine/hooks";
 
 import { flowsheetToGraph } from "../case/toGraph.js";
 import type { DynamicInstant } from "../case/dynamicInstants.js";
 import { collectControllerKnobs } from "../case/controllerKnobs.js";
 import { streamNumberResolver } from "../case/streamNumbering.js";
 import { boundaryForStream } from "../case/modelBoundary.js";
-import { localStreamNames, sliceHasContent, sliceRunResult } from "../case/resultSlice.js";
 import { tutorialByName } from "../cases/tutorials.js";
-import type { JsonDict } from "../dict/index.js";
+import type { StreamSpec } from "../case/types.js";
 import { useStore, hasCaseOpen } from "../state/store.js";
 import { findRunStream, popOutStreamByName } from "./streamPopOut.js";
 import { popOutUnitInternals } from "./unitFocus.js";
@@ -83,6 +83,7 @@ import {
   pressureLabel,
 } from "../state/displayUnits.js";
 import { ErrorBoundary } from "./ErrorBoundary.js";
+import { cardFoldOffset, CARD_BODY_W, CARD_HANDLE_W, CARD_MARGIN, selectionLeafLabel } from "./panelFold.js";
 import { PropertyPanel } from "./PropertyPanel.js";
 import { StreamTerminal } from "./StreamTerminal.js";
 import { TearEdge } from "./TearEdge.js";
@@ -219,9 +220,15 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   const rawFiles = useStore((s) => s.caseFiles.rawFiles);
   const selectNode = useStore((s) => s.selectNode);
   const selectedNodeId = useStore((s) => s.selectedNodeId);
+  // Selection-card fold (one-click slide-away): `panels.property` is the
+  // persisted expanded/folded flag -- see ui/panelFold.ts for the geometry.
+  const cardOpen = useStore((s) => s.panels.property);
+  const togglePanel = useStore((s) => s.togglePanel);
+  const reduceMotion = useReducedMotion();
   const tutorialName = useStore((s) => s.tutorialName);
   const runResult = useStore((s) => s.runResult);
   const runStatus = useStore((s) => s.runStatus);
+  const resetRun = useStore((s) => s.resetRun);
   const scrubIdx = useStore((s) => s.scrubIdx);
   const colorScheme = useStore((s) => s.displayPrefs.colorScheme);
   const colorMode = useStore((s) => s.displayPrefs.colorMode);
@@ -244,8 +251,17 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   const drillableSub = useCallback(
     (nodeId: string): string | null => {
       if (!nodeId.startsWith("unit:")) return null;
-      const sub = `${tutorialName}/${nodeId.slice("unit:".length)}`;
-      return tutorialByName(sub) ? sub : null;
+      const name = nodeId.slice("unit:".length);
+      // A member lives under `unitOperations/<name>/` (a dignified unit op),
+      // `sectors/<name>/` (a real sector), or directly under the case (a legacy
+      // sub-case).  Mirror the engine's resolveMemberBase order.
+      for (const sub of [
+        `${tutorialName}/unitOperations/${name}`,
+        `${tutorialName}/sectors/${name}`,
+        `${tutorialName}/${name}`,
+      ])
+        if (tutorialByName(sub)) return sub;
+      return null;
     },
     [tutorialName],
   );
@@ -253,35 +269,16 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     (nodeId: string) => {
       const sub = drillableSub(nodeId);
       if (!sub) return;
-      let url = `${window.location.pathname}?case=${encodeURIComponent(sub)}`;
-      // Result inheritance: the parent run already converged every internal
-      // stream of this child (namespaced "<child>.x").  Slice the finished
-      // RunResult to the child's scope, stash it (one-shot, consumed at the
-      // new tab's boot) and ride an `&inherit=<key>` so the drilled tab opens
-      // WITH the results -- no pointless re-run.  Re-running there overrides
-      // the inherited numbers normally.
-      if (runResult && runResult.status === "done") {
-        const prefix = nodeId.slice("unit:".length);
-        const subFs = tutorialByName(sub)?.files.flowsheet as JsonDict | undefined;
-        const sliced = sliceRunResult(runResult, prefix, {
-          localStreamNames: localStreamNames(subFs),
-          // A LEAF sub-case draws its one unit as `name ?? "unit"` (toGraph
-          // readLeaf); rename the exact-scope kpi/profile keys to match.
-          leafUnitName: subFs && subFs["type"] !== undefined
-            ? String(subFs["name"] ?? "unit")
-            : undefined,
-        });
-        if (sliceHasContent(sliced)) {
-          try {
-            const key = `choupo.inherit.${prefix}.${Date.now()}`;
-            localStorage.setItem(key, JSON.stringify(sliced));
-            url += `&inherit=${encodeURIComponent(key)}`;
-          } catch { /* localStorage full / blocked -- open unrun */ }
-        }
-      }
+      // Open the unit/sector as its own case.  Its stream STATE lives in its 0/
+      // (the plant run materialised it); the drilled tab reads those values
+      // directly and re-solves from them on Run.  No volatile in-memory
+      // inherit/feeds hand-off -- that was retired by the stream-state
+      // constitution, and it left the drilled tab showing a wrong, half-applied
+      // sliced result until the user pressed Reset (the 0/ state is the truth).
+      const url = `${window.location.pathname}?case=${encodeURIComponent(sub)}`;
       window.open(url, "_blank");
     },
-    [drillableSub, runResult],
+    [drillableSub],
   );
 
   // Recompute graph whenever the case changes.
@@ -572,13 +569,49 @@ function CanvasInner({ flowsheet, scrubInstant }: {
   // declared before either of them.
   const { phaseOf, utilityOf, resultStreamOf, maxFlow, phasesPresent, propRange } = useMemo(() => {
     type Range = { min: number; max: number } | null;
-    if (!runResult)
-      return { phaseOf: null as ((label: string) => PhaseStyle | null) | null,
-               utilityOf: null as ((label: string) => string | null) | null,
-               resultStreamOf: null as ((label: string) => { F: number; F_mass?: number; F_solid_mass?: number; F_solid?: number; T: number; P: number } | null) | null,
-               maxFlow: 0,
-               phasesPresent: new Set<PhaseKind>(),
-               propRange: null as Range };
+    if (!runResult) {
+      // PRE-RUN: style from the authored / 0/ stream state (view.streams) so a
+      // drilled unit (or any migrated case, before a solve) still shows
+      // proportional line width and colour-by-T/P/phase.  Flow is MOLAR here (no
+      // component MW pre-run) -- a faithful RELATIVE thickness; the run replaces
+      // it with the mass flow.
+      const specs = graph.view.streams;
+      const propOf = (s: StreamSpec): number | undefined =>
+        colorMode === "temperature" ? s.T : colorMode === "pressure" ? s.P : undefined;
+      let mx = 0, lo = Infinity, hi = -Infinity;
+      for (const s of Object.values(specs)) {
+        if (s.F > mx) mx = s.F;
+        if (colorMode !== "phase" && s.F > 1e-15) {
+          const v = propOf(s);
+          if (v !== undefined && Number.isFinite(v)) { if (v < lo) lo = v; if (v > hi) hi = v; }
+        }
+      }
+      const rng: Range = (colorMode !== "phase" && lo <= hi) ? { min: lo, max: hi } : null;
+      const styleOf = (label: string): PhaseStyle | null => {
+        const s = specs[label];
+        if (!s) return null;
+        const phase = classifyPhase({ vf: s.vf, F: s.F, F_mass: s.F });
+        let color: string;
+        if (rng) {
+          const v = propOf(s);
+          color = (v !== undefined && s.F > 1e-15)
+            ? colorForValue(v, rng.min, rng.max, colorMap)
+            : phaseColorFor(phase, colorScheme);
+        } else color = phaseColorFor(phase, colorScheme);
+        return { color, phase, totalFlow: s.F };
+      };
+      const present = new Set<PhaseKind>();
+      for (const s of Object.values(specs)) if (s.F > 1e-15) present.add(classifyPhase({ vf: s.vf, F: s.F, F_mass: s.F }));
+      return { phaseOf: styleOf,
+               utilityOf: (() => null) as (label: string) => string | null,
+               resultStreamOf: ((label: string) => {
+                 const s = specs[label];
+                 return s ? { F: s.F, T: s.T, P: s.P } : null;
+               }) as ((label: string) => { F: number; F_mass?: number; F_solid_mass?: number; F_solid?: number; T: number; P: number } | null),
+               maxFlow: mx,
+               phasesPresent: present,
+               propRange: rng };
+    }
     const present = new Set<PhaseKind>();
     let mx = 0;
     // Property range (T or P) is taken over the streams that actually carry
@@ -630,16 +663,23 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     const lookupResult = (label: string) => {
       const s = findRunStream(runResult.streams, label);
       if (!s) return null;
-      // Solid molar flow = Σ over the per-component solid map (kmol/s); paired
-      // with F_solid_mass so the terminal can show the TOTAL (fluid + solid) --
-      // a pure-solid `crystals` product has fluid F = 0.
-      const F_solid = s.solids ? Object.values(s.solids).reduce((a, b) => a + (b ?? 0), 0) : 0;
+      // Solid molar flow: s.solids is per-component MASS [kg/s] (it pairs with
+      // F_solid_mass -- NOT moles), so convert each via its molar mass to the
+      // solid moles [kmol/s] the molar terminal adds to the fluid F.  Summing
+      // the masses as if they were moles made a sugar powder read ~3.5 Mmol/h
+      // (the sucrose kg/h counted as kmol/h).  A pure-solid `crystals` product
+      // (fluid F = 0) still reads its real flow.
+      const solidMw = runResult.componentMolarMass;
+      const F_solid = s.solids
+        ? Object.entries(s.solids).reduce(
+            (a, [c, m]) => a + (solidMw?.[c] ? (m ?? 0) / solidMw[c] : 0), 0)
+        : 0;
       return { F: s.F, F_mass: s.F_mass, F_solid_mass: s.F_solid_mass, F_solid, T: s.T, P: s.P, vf: s.vf };
     };
     return { phaseOf: lookupPhase, utilityOf: lookupUtility,
              resultStreamOf: lookupResult,
              maxFlow: mx, phasesPresent: present, propRange: range };
-  }, [runResult, colorMode, colorScheme, colorMap]);
+  }, [runResult, colorMode, colorScheme, colorMap, graph]);
 
   // Annotate each unit node with `drillable` so UnitNode can show a
   // visual hint (a small external-link mark + a "double-click to open" hint).
@@ -783,8 +823,8 @@ function CanvasInner({ flowsheet, scrubInstant }: {
       graph.edges.map((e) => {
         const isSelected = typeof e.label === "string" && e.label === selectedStreamName;
         const label = typeof e.label === "string" ? e.label : "";
-        const ps = phaseOf && label ? phaseOf(label) : null;
-        const utilityCat = utilityOf && label ? utilityOf(label) : null;
+        const ps = label ? phaseOf(label) : null;
+        const utilityCat = label ? utilityOf(label) : null;
         const isUtility = utilityCat !== null && utilityCat !== "";
         const isEnergy = (e.data as { kind?: string } | undefined)?.kind === "energy";
         const isTear   = (e.data as { kind?: string } | undefined)?.kind === "tear";
@@ -899,8 +939,10 @@ function CanvasInner({ flowsheet, scrubInstant }: {
      runResult, numberOf, scrubOverlay, colorScheme],
   );
 
-  // Keyboard shortcuts.  Esc -> deselect; F -> fit view.  Mounted on window
-  // because React Flow's own keyboard scope is sometimes elsewhere.
+  // Keyboard shortcuts.  Esc -> deselect; F -> fit view; ] -> fold/unfold the
+  // selection card (rhymes with the Explorer's `[` for its LEFT rail).
+  // Mounted on window because React Flow's own keyboard scope is sometimes
+  // elsewhere.
   useEffect(() => {
     const onKey = (ev: KeyboardEvent) => {
       // Ignore when typing in an input/textarea so the user can hit Esc/F
@@ -913,11 +955,13 @@ function CanvasInner({ flowsheet, scrubInstant }: {
         selectNode(null);
       } else if (ev.key === "f" || ev.key === "F") {
         reactFlow.fitView({ padding: 0.25, maxZoom: 1.1, duration: 200 });
+      } else if (ev.key === "]" && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
+        if (selectedNodeId) togglePanel("property");
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [reactFlow, selectNode]);
+  }, [reactFlow, selectNode, selectedNodeId, togglePanel]);
 
   return (
     <div style={{ width: "100%", height: "100%", background: "light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-8))" }}>
@@ -986,20 +1030,37 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             Dispatches the choupo:run/stop events the TopBar orchestrator
             listens for (no global toolbar Run anymore). */}
         <Panel position="top-right">
-          {runStatus === "running" ? (
-            <Button size="xs" color="red" variant="filled"
-              leftSection={<IconPlayerStop size={14} />}
-              onClick={() => window.dispatchEvent(new CustomEvent("choupo:stop"))}>
-              Stop
-            </Button>
-          ) : (
-            <Button size="xs" color="accent" variant="filled"
-              leftSection={<IconPlayerPlay size={14} />}
-              onClick={() => window.dispatchEvent(new CustomEvent("choupo:run"))}
-              title="Run the flowsheet simulation (choupoSolve)">
-              Run flowsheet
-            </Button>
-          )}
+          <Group gap={6}>
+            {runStatus !== "running" && runResult?.status === "done" && (
+              <Badge size="sm" color="teal" variant="light">Latest run loaded</Badge>
+            )}
+            {/* Reset: clear the converged results back to the unrun state.  A
+                run REPLACES results with the new solve; Reset is the explicit
+                way to DISCARD them (e.g. after inspecting a drilled sector's
+                inherited numbers) without launching another solve. */}
+            {runStatus !== "running" && runResult && (
+              <Button size="xs" color="gray" variant="default"
+                leftSection={<IconRefresh size={14} />}
+                onClick={() => resetRun()}
+                title="Clear the results and return to the unrun state">
+                Reset
+              </Button>
+            )}
+            {runStatus === "running" ? (
+              <Button size="xs" color="red" variant="filled"
+                leftSection={<IconPlayerStop size={14} />}
+                onClick={() => window.dispatchEvent(new CustomEvent("choupo:stop"))}>
+                Stop
+              </Button>
+            ) : (
+              <Button size="xs" color="accent" variant="filled"
+                leftSection={<IconPlayerPlay size={14} />}
+                onClick={() => window.dispatchEvent(new CustomEvent("choupo:run"))}
+                title="Run the flowsheet simulation (choupoSolve)">
+                Run flowsheet
+              </Button>
+            )}
+          </Group>
         </Panel>
         {/* Keyboard-shortcut legend in the bottom-right corner. */}
         <Box
@@ -1015,7 +1076,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
           }}
         >
           <Text size="10px" c="dimmed" ff="monospace">
-            F: fit view  ·  Esc: deselect  ·  double-click: drill in
+            F: fit view  ·  Esc: deselect  ·  ]: fold card  ·  double-click: drill in
           </Text>
         </Box>
         {/* Visualisation filters (top-left): show/hide stream classes so a
@@ -1161,50 +1222,155 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             or a click on empty canvas clears the selection and dismisses it.
             Starts at top: 52 --- BELOW the Run/Stop panel (top-right, ~45 px
             tall incl. margin) --- so Run stays visible and clickable while a
-            node is selected (the card must never cover the view's own Run). */}
+            node is selected (the card must never cover the view's own Run).
+
+            One-click slide-away: the container is [fold handle | body] and
+            translates right by body + margin (cardFoldOffset, panelFold.ts)
+            so the body parks off-screen while the handle stays flush at the
+            viewport edge --- the SELECTION IS KEPT (halo stays; X = deselect
+            as before, the handle = just tuck the card).  transform, not
+            width: the card is an overlay, the canvas div never resizes, so
+            React Flow needs no nudge.  The React Flow wrapper's
+            overflow:hidden clips the parked body.  Fold state persists via
+            panels.property (session), so the tucked layout survives reloads
+            and re-selections. */}
         {selectedNodeId && (
           <Box
             style={{
               position: "absolute",
-              right: 12,
+              right: CARD_MARGIN,
               top: 52,
               zIndex: 7,
-              width: 320,
+              width: CARD_HANDLE_W + CARD_BODY_W,
               maxHeight: "calc(100vh - 160px)",
               // Clip to the rounded border so the inner ScrollArea is what
               // scrolls -- without this, content taller than maxHeight paints
               // PAST the card edge instead of scrolling (playground section).
               overflow: "hidden",
               display: "flex",
-              flexDirection: "column",
+              flexDirection: "row",
+              alignItems: "stretch",
               borderRadius: 8,
               border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
               background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))",
               boxShadow: "0 6px 24px rgba(0,0,0,0.25)",
+              transform: `translateX(${cardFoldOffset(!cardOpen)}px)`,
+              transition: reduceMotion ? "none" : "transform 200ms ease",
             }}
           >
-            <ActionIcon
-              variant="subtle"
-              color="gray"
-              size="sm"
-              onClick={() => selectNode(null)}
-              aria-label="Close"
-              style={{ position: "absolute", right: 6, top: 6, zIndex: 1 }}
+            <CardFoldHandle
+              open={cardOpen}
+              label={selectionLeafLabel(selectedNodeId)}
+              onToggle={() => togglePanel("property")}
+            />
+            <Box
+              style={{
+                position: "relative",
+                width: CARD_BODY_W,
+                flexShrink: 0,
+                display: "flex",
+                flexDirection: "column",
+                // Folded: hide the body AFTER the slide (200ms delay) so its
+                // X / links leave the tab order + a11y tree while parked
+                // off-screen; unfolding flips it visible immediately so the
+                // content is seen sliding back in.
+                visibility: cardOpen ? "visible" : "hidden",
+                transition:
+                  !cardOpen && !reduceMotion ? "visibility 0s linear 200ms" : "none",
+              }}
             >
-              <IconX size={15} />
-            </ActionIcon>
-            <Box style={{ flex: 1, minHeight: 0 }}>
-              {/* Contained boundary: a render error in the selected node's
-                  details degrades to a small message INSIDE the card, never
-                  blanking the canvas + app (credo principle 5). */}
-              <ErrorBoundary scope="selection card">
-                <PropertyPanel />
-              </ErrorBoundary>
+              <ActionIcon
+                variant="subtle"
+                color="gray"
+                size="sm"
+                onClick={() => selectNode(null)}
+                aria-label="Close"
+                style={{ position: "absolute", right: 6, top: 6, zIndex: 1 }}
+              >
+                <IconX size={15} />
+              </ActionIcon>
+              <Box style={{ flex: 1, minHeight: 0 }}>
+                {/* Contained boundary: a render error in the selected node's
+                    details degrades to a small message INSIDE the card, never
+                    blanking the canvas + app (credo principle 5). */}
+                <ErrorBoundary scope="selection card">
+                  <PropertyPanel />
+                </ErrorBoundary>
+              </Box>
             </Box>
           </Box>
         )}
       </ReactFlow>
     </div>
+  );
+}
+
+// The selection card's slim fold handle -- the always-visible strip on the
+// card's inner (left) edge.  One click slides the card away to the right /
+// pulls it back (the RailReopenTab idiom from the Property Explorer: whole
+// strip = the click target, chevron + a vertical micro-label saying WHAT is
+// tucked).  It travels WITH the card, so folded it peeks at the viewport edge.
+function CardFoldHandle({ open, label, onToggle }: {
+  open: boolean; label: string; onToggle: () => void;
+}) {
+  const [hover, setHover] = useState(false);
+  return (
+    <Tooltip
+      label={open ? "Tuck the card away ( ] )" : "Show the details card ( ] )"}
+      withArrow
+      position="left"
+    >
+      <Box
+        onClick={onToggle}
+        onPointerEnter={() => setHover(true)}
+        onPointerLeave={() => setHover(false)}
+        role="button"
+        aria-label={open ? "tuck details card away" : "show details card"}
+        aria-expanded={open}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggle(); }
+        }}
+        style={{
+          width: CARD_HANDLE_W,
+          flexShrink: 0,
+          cursor: "pointer",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 8,
+          paddingTop: 10,
+          borderRight: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+          background: hover
+            ? "light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-6))"
+            : "transparent",
+          transition: "background 120ms",
+        }}
+      >
+        {open ? (
+          <IconChevronRight size={15} color="var(--mantine-color-dimmed)" />
+        ) : (
+          <>
+            <IconChevronLeft size={15} color="var(--mantine-color-dimmed)" />
+            <Text
+              size="xs"
+              fw={700}
+              c="dimmed"
+              style={{
+                writingMode: "vertical-rl",
+                letterSpacing: 0.5,
+                userSelect: "none",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                maxHeight: 200,
+              }}
+            >
+              {label}
+            </Text>
+          </>
+        )}
+      </Box>
+    </Tooltip>
   );
 }
 

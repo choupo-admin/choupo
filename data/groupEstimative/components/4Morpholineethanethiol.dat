@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-morpholineethanethiol  (C6H13NOS, CAS 4542-46-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Morpholineethanethiol;
+formula     C6H13NOS;
+CAS         4542-46-5;
+InChIKey    YZVWMFBVTTUSAW-UHFFFAOYSA-N;
+MW          147.236;      // g/mol [origin=calculated method=formula-sum]
+Tc          678.86;      // K   [origin=predictive method=joback]
+Pc          42.831;      // bar [origin=predictive method=joback]
+omega       0.4466;      // -   [origin=predictive method=lee-kesler]
+Tb          459.08;      // K   [origin=predictive method=joback]
+HvapTb      42806.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-47.468 0.8802 -0.0006065 1.622e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group FCH2O; count 1; } { group CH2N; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group CH2_ring; count 4; } { group O_ring; count 1; } { group N; count 1; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-morpholin-4-ylethanethiol" "2-(4-morpholinyl)ethanethiol" "2-morpholinoethanethiol" "morpholin-4-ylethylthiol" "morpholine, 4-mercaptoethyl-" "n-morpholylcysteamin [german]" "4-(2-mercaptoethyl)morpholine" "ethanethiol, morpholino-" "n-morpholylcysteamin" "ethanethiol, 2-morpholino-" );
+gibbsFormation
+{
+    dHf_298   -112340.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     408.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=97950.0
+    phase     gas;
+}

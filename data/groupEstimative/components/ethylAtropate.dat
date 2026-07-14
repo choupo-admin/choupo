@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethyl atropate  (C11H12O2, CAS 22286-82-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        ethylAtropate;
+formula     C11H12O2;
+CAS         22286-82-4;
+InChIKey    BOIWYTYYWPXGAT-UHFFFAOYSA-N;
+MW          176.215;      // g/mol [origin=calculated method=formula-sum]
+Tc          747.80;      // K   [origin=predictive method=joback]
+Pc          27.965;      // bar [origin=predictive method=joback]
+omega       0.5350;      // -   [origin=predictive method=lee-kesler]
+Tb          532.74;      // K   [origin=predictive method=joback]
+HvapTb      49173.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-18.289 0.89502 -0.0005364 1.073e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2=C; count 1; } { group ACH; count 5; } { group AC; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group dCH2; count 1; } { group dC; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethyl 2-phenylprop-2-enoate" "ethyl 2-phenylacrylate" "ethyl " "a-phenylacrylate" "atropic acid ethyl ester" "ethyl methylenephenylacetate" "2-phenylacrylic acid ethyl ester" "a-methylenebenzeneacetic acid ethyl ester" "benzeneacetic acid, a-methylene-, ethyl ester" "benzeneacetic acid, alpha-methylene-, ethyl ester" "benzeneacetic acid, .alpha.-methylene-, ethyl ester" "atropicacid, ethyl ester (6ci,7ci,8ci); 2-phenylacrylic acid ethyl ester; ethyl2-phenylacrylate; ethyl 2-phenylprop-2-enoate; ethyl atropate; ethyl a-phenylacrylate" );
+gibbsFormation
+{
+    dHf_298   -235480.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     520.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-76930.0
+    phase     gas;
+}

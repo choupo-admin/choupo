@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-phenoxyhexyl bromide  (C12H17BrO, CAS 51795-97-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6PhenoxyhexylBromide;
+formula     C12H17BrO;
+CAS         51795-97-2;
+InChIKey    QOLSAZPSEJXYSH-UHFFFAOYSA-N;
+MW          257.171;      // g/mol [origin=calculated method=formula-sum]
+Tc          800.49;      // K   [origin=predictive method=joback]
+Pc          25.328;      // bar [origin=predictive method=joback]
+omega       0.6922;      // -   [origin=predictive method=lee-kesler]
+Tb          589.42;      // K   [origin=predictive method=joback]
+HvapTb      53427.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-8.234 1.0399 -0.0006206 1.364e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 5; } { group ACH; count 5; } { group AC; count 1; } { group CH2O; count 1; } { group Br; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 6; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group Br; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-bromanylhexoxybenzene" "6-bromohexyl phenyl ether" "benzene, ((6-bromohexyl)oxy)-" "benzene, [(6-bromohexyl)oxy]-" "6-bromohexoxybenzene" "1-bromo-6-phenoxyhexane" "benzene,[(6-bromohexyl)oxy]-" "aurora ka-3137;1-bromo-6-phenoxyhexane;6-phenoxyhexyl bromide" );
+gibbsFormation
+{
+    dHf_298   -160370.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     579.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=71890.0
+    phase     gas;
+}

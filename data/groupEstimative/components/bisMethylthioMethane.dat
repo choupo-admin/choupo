@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(methylthio)methane  (C3H8S2, CAS 1618-26-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bisMethylthioMethane;
+formula     C3H8S2;
+CAS         1618-26-4;
+InChIKey    LOCDPORVFVOGCR-UHFFFAOYSA-N;
+MW          108.217;      // g/mol [origin=calculated method=formula-sum]
+Tc          626.82;      // K   [origin=predictive method=joback]
+Pc          46.151;      // bar [origin=predictive method=joback]
+omega       0.2918;      // -   [origin=predictive method=lee-kesler]
+Tb          405.80;      // K   [origin=predictive method=joback]
+HvapTb      35906.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (39.361 0.27762 -5.9e-05 -3.07e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH3S; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group S; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis(methylsulfanyl)methane" "2,4-dithiapentane" "formaldehyde dimethyl mercaptal" "bis(methylmercapto)methane" "methane, bis(methylthio)-" "dimethylthiomethane" "methylenebis(methyl sulfide)" "thioformaldehyde dimethylacetal" "bis[methylmercapto]methane" "methylenebis[methyl sulfide]" "bis-(methylthio)methane" "locdporvfvogcr-uhfffaoysa-" );
+gibbsFormation
+{
+    dHf_298   -21510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     395.65;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=40620.0
+    phase     gas;
+}

@@ -29,6 +29,8 @@ License
 #include "EquipmentSize.H"
 #include "CrystalliserSize.H"
 #include "CycloneSize.H"
+#include "CompressorSize.H"
+#include "VesselSize.H"
 #include "EvaporatorSize.H"
 #include "ShellTubeHX.H"
 #include "SprayDryerSize.H"
@@ -76,6 +78,10 @@ void EquipmentSize::registerBuiltins()
         []{ return std::make_unique<SprayDryerSize>(); });
     registerType("cyclone",
         []{ return std::make_unique<CycloneSize>(); });
+    registerType("compressor",
+        []{ return std::make_unique<CompressorSize>(); });
+    registerType("vessel",
+        []{ return std::make_unique<VesselSize>(); });
 }
 
 } // namespace Choupo

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-propanethiol  (C3H8S, CAS 107-03-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Propanethiol;
+formula     C3H8S;
+CAS         107-03-9;
+InChIKey    SUVIGLJNEAMWEG-UHFFFAOYSA-N;
+MW          76.157;      // g/mol [origin=calculated method=formula-sum]
+Tc          522.20;      // K   [origin=predictive method=joback]
+Pc          48.092;      // bar [origin=predictive method=joback]
+omega       0.2317;      // -   [origin=predictive method=lee-kesler]
+Tb          331.10;      // K   [origin=predictive method=joback]
+HvapTb      29009.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (15.052 0.31612 -0.0001618 3.01e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2SH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group SH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propane-1-thiol" "propanethiol" "propyl mercaptan" "n-propylmercaptan" "n-propyl mercaptan" "1-propylmercaptan" "propylthiol" "n-propylthiol" "1-mercaptopropane" "thiopropyl alcohol" "1-propyl mercaptan" "n-thiopropyl alcohol" );
+gibbsFormation
+{
+    dHf_298   -66770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     335.4;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=3770.0
+    phase     gas;
+}

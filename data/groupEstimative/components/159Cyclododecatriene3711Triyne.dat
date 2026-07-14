@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,5,9-cyclododecatriene-3,7,11-triyne  (C12H6, CAS 6555-54-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        159Cyclododecatriene3711Triyne;
+formula     C12H6;
+CAS         6555-54-0;
+InChIKey    UOUMCHBFMPSEMC-MOLCZBCNSA-N;
+MW          150.18;      // g/mol [origin=calculated method=formula-sum]
+Tc          817.85;      // K   [origin=predictive method=joback]
+Pc          41.947;      // bar [origin=predictive method=joback]
+omega       0.2175;      // -   [origin=predictive method=lee-kesler]
+Tb          522.86;      // K   [origin=predictive method=joback]
+HvapTb      50376.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.55 0.675 -0.00045082 1.1894e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=CH; count 3; } { group C_C; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group tC; count 6; } { group dCH_ring; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(1z,5z,9z)-cyclododeca-1,5,9-trien-3,7,11-triyne" );
+gibbsFormation
+{
+    dHf_298   773890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     438.41;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=780600.0
+    phase     gas;
+}

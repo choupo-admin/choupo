@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: perhexiline maleate  (C23H39NO4, CAS 6724-53-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        perhexilineMaleate;
+formula     C23H39NO4;
+CAS         6724-53-4;
+InChIKey    JDZOTSLZMQDFLG-BTJKTKAUSA-N;
+MW          393.568;      // g/mol [origin=calculated method=formula-sum]
+Tc          1391.66;      // K   [origin=predictive method=joback]
+Pc          14.392;      // bar [origin=predictive method=joback]
+omega       1.2123;      // -   [origin=predictive method=lee-kesler]
+Tb          1129.18;      // K   [origin=predictive method=joback]
+HvapTb      109029.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-163.759 2.463 -0.0012272 1.441e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 14; } { group CH; count 4; } { group CH=CH; count 1; } { group CH2NH; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 1; } { group dCH; count 2; } { group CH2_ring; count 14; } { group CH_ring; count 3; } { group COOH; count 2; } { group NH_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(z)-but-2-enedioic acid;2-(2,2-dicyclohexylethyl)piperidine" "pexid" "2-(2,2-dicyclohexylethyl)piperidine maleate" "perhexiline maleate (usan)" "perhexiline maleate [usan]" "2-(2,2-dicyclohexylethyl)piperidine acid maleate" "perhexiline maleate salt" "2-(2,2-dicyclohexylethyl)piperidinium hydrogen maleate" "2-(2,2-dicyclohexylethyl)piperidine (2z)-but-2-enedioate" "piperidine, 2-(2,2-dicyclohexylethyl)-, maleate (1:1)" "pexsid" "pexsig" );
+gibbsFormation
+{
+    dHf_298   -1017500.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1152.01;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-410960.0
+    phase     gas;
+}

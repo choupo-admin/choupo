@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: floralozone  (C13H18O, CAS 67634-15-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        floralozone;
+formula     C13H18O;
+CAS         67634-15-5;
+InChIKey    JFTSYAALCNQOKO-UHFFFAOYSA-N;
+MW          190.286;      // g/mol [origin=calculated method=formula-sum]
+Tc          787.61;      // K   [origin=predictive method=joback]
+Pc          23.634;      // bar [origin=predictive method=joback]
+omega       0.5895;      // -   [origin=predictive method=lee-kesler]
+Tb          574.13;      // K   [origin=predictive method=joback]
+HvapTb      52894.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-41.608 1.20076 -0.00081236 2.139e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group C; count 1; } { group ACH; count 4; } { group ACCH2; count 2; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group C; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-(4-ethylphenyl)-2,2-dimethyl-propanal" "3-(4-ethylphenyl)-2,2-dimethylpropanal" "ethyl dimethylhydrocinnamaldehyde" "3-(p-ethylphenyl)-2,2-dimethylpropionaldehyde" "2,2-dimethyl-3-(p-ethylphenyl)propanal" "alpha,alpha-dimethyl-p-ethylphenylpropanal" "alpha,alpha-dimethyl-4-ethylbenzenepropanal" "benzenepropanal, 4-ethyl-alpha,alpha-dimethyl-" "benzenepropanal, alpha,alpha-dimethyl-4-ethyl-" "benzenepropanal, 2(or 4)-ethyl-alpha,alpha-dimethyl-" "p-ethyl-.alpha.,.alpha.-dimethyl hydrocinnamic aldehyde" "florazone" );
+gibbsFormation
+{
+    dHf_298   -180920.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     529.56;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=64680.0
+    phase     gas;
+}

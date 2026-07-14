@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: d-isoleucine  (C6H13NO2, CAS 319-78-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        dIsoleucine;
+formula     C6H13NO2;
+CAS         319-78-8;
+InChIKey    AGPKZVBTJJNPAG-RFZPGFLSSA-N;
+MW          131.175;      // g/mol [origin=calculated method=formula-sum]
+Tc          761.79;      // K   [origin=predictive method=joback]
+Pc          37.546;      // bar [origin=predictive method=joback]
+omega       0.8110;      // -   [origin=predictive method=lee-kesler]
+Tb          554.04;      // K   [origin=predictive method=joback]
+HvapTb      55979.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (5.161 0.69834 -0.000425 9.82e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group CHNH2; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group COOH; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(2r,3r)-2-azanyl-3-methyl-pentanoic acid" "(2r,3r)-2-amino-3-methylpentanoic acid" "isoleucine" "dl-2-amino-3-methylpentanoic acid" "dl-isoleucine" "h-d-lle-oh" "d-iso-leucine" "(2r,3r)-2-amino-3-methylvaleric acid" "6b147f4f-bd4e-4fc3-9b73-d1ec1622e02d" "isoleucine,d- (8ci);(r)-isoleucine;(2r,3r)-2-amino-3-methylpentanoic acid;" );
+gibbsFormation
+{
+    dHf_298   -494210.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     475.39;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-282700.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 18-[(2r,3s,4r,5r)-4,5-dihydroxy-2-(hydroxymethyl)-6-methoxyoxan-3-yl]oxyoctadecanoic acid; ethanol  (C27H54O9, CAS 72175-39-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        182r3s4r5r45Dihydroxy2Hydroxymethyl6Methoxyoxan3YlOxyoctadec;
+formula     C27H54O9;
+CAS         72175-39-4;
+InChIKey    XYTHHAXRVHHXKO-JIUYZRCGSA-N;
+MW          522.72;      // g/mol [origin=calculated method=formula-sum]
+Tc          2101.71;      // K   [origin=predictive method=joback]
+Pc          8.595;      // bar [origin=predictive method=joback]
+omega       -0.1882;      // -   [origin=predictive method=lee-kesler]
+Tb          1405.65;      // K   [origin=predictive method=joback]
+HvapTb      168393.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (71.399 2.43614 -0.0008479 -6.14e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 18; } { group CH; count 4; } { group OH; count 4; } { group CH3O; count 1; } { group CH2O; count 1; } { group CH-O; count 1; } { group COOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 19; } { group CH_ring; count 5; } { group OH; count 4; } { group O; count 2; } { group O_ring; count 1; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "ethanol;18-[(2r,3s,4r,5r)-2-(hydroxymethyl)-6-methoxy-4,5-bis(oxidanyl)oxan-3-yl]oxyoctadecanoic acid" "poly(oxy-1,2-ethanediyl), alpha-hydro-omega-hydroxy-, ether with methyl d-glucopyranoside (4:1), octadecanoate (2:3)" "poly(oxy-1,2-ethanediyl), alpha-hydro-omega-hydroxy-, ether with methyl d-glucopyranoside, octadecanoate (8:2:3)" );
+gibbsFormation
+{
+    dHf_298   -2094900.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1343.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1122000.0
+    phase     gas;
+}

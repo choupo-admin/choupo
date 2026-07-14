@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethylene glycol divinyl ether  (C8H14O3, CAS 764-99-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diethyleneGlycolDivinylEther;
+formula     C8H14O3;
+CAS         764-99-8;
+InChIKey    SAMJGBVVQUEMGC-UHFFFAOYSA-N;
+MW          158.197;      // g/mol [origin=calculated method=formula-sum]
+Tc          614.04;      // K   [origin=predictive method=joback]
+Pc          26.218;      // bar [origin=predictive method=joback]
+omega       0.5815;      // -   [origin=predictive method=lee-kesler]
+Tb          443.26;      // K   [origin=predictive method=joback]
+HvapTb      39292.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (66.134 0.5342 -0.0001242 -4.56e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH2=CH; count 2; } { group CH2O; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group dCH2; count 2; } { group dCH; count 2; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethenoxy-2-(2-ethenoxyethoxy)ethane" "divinylcarbitol" "dvedeg [russian]" "ether, bis[2-(vinyloxy)ethyl]" "bis(2-(vinyloxy)ethyl) ether" "bis[2-(vinyloxy)ethyl] ether" "di(ethylene glycol) divinyl ether" "ethene, 1,1'-[oxybis(2,1-ethanediyloxy)]bis-" "3,6,9-trioxaundeca-1,10-diene" "ether, bis(2-vinyloxyethyl)" "1,1'-(oxybis(ethyleneoxy))diethylene" "ethene, 1,1'-(oxybis(2,1-ethanediyloxy))bis-" );
+gibbsFormation
+{
+    dHf_298   -354250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     492.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-122840.0
+    phase     gas;
+}

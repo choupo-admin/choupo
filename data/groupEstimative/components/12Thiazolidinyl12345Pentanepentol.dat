@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-(2-thiazolidinyl)1,2,3,4,5-pentanepentol  (C8H17NO5S, CAS 20702-82-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        12Thiazolidinyl12345Pentanepentol;
+formula     C8H17NO5S;
+CAS         20702-82-3;
+InChIKey    RCHUVONGFCEQNK-UHFFFAOYSA-N;
+MW          239.286;      // g/mol [origin=calculated method=formula-sum]
+Tc          1167.83;      // K   [origin=predictive method=joback]
+Pc          59.629;      // bar [origin=predictive method=joback]
+omega       2.5837;      // -   [origin=predictive method=lee-kesler]
+Tb          953.44;      // K   [origin=predictive method=joback]
+HvapTb      128072.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-6.399 1.09011 -0.0006617 1.464e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 5; } { group OH; count 5; } { group CH2NH; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 4; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group OH; count 5; } { group NH_ring; count 1; } { group S_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(1,3-thiazolidin-2-yl)pentane-1,2,3,4,5-pentol" "1-thiazolidin-2-yl-pentane-1,2,3,4,5-pentaol" "1,2,3,4,5-pentanepentol, 1-(2-thiazolidinyl)-" "2-(1,2,3,4,5-pentahydroxy-n-pentyl)thiazolidine" "d-gluco-1-(2-thiazolidinyl)-1,2,3,4,5-pentanepentol" "pentahydroxy-1,2,3,4,5 pentyl-2 thiazolidine [french]" "1,2,3,4,5-pentanepentol, 1-(2-thiazolidinyl)-, d-gluco-" "pentahydroxy-1,2,3,4,5 pentyl-2 thiazolidine" "1-(1,3-thiazolan-2-yl)pentane-1,2,3,4,5-pentaol" "1-(1,3-thiazolidin-2-yl)pentane-1,2,3,4,5-pentaol" );
+gibbsFormation
+{
+    dHf_298   -847170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     677.46;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-513260.0
+    phase     gas;
+}

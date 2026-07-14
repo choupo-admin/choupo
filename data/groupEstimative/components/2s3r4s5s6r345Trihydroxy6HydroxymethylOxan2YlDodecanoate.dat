@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: [(2s,3r,4s,5s,6r)-3,4,5-trihydroxy-6-(hydroxymethyl)oxan-2-yl] dodecanoate  (C18H34O7, CAS 64395-92-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2s3r4s5s6r345Trihydroxy6HydroxymethylOxan2YlDodecanoate;
+formula     C18H34O7;
+CAS         64395-92-2;
+InChIKey    HABWUWJGNVZVPU-LHKMKVQPSA-N;
+MW          362.463;      // g/mol [origin=calculated method=formula-sum]
+Tc          1344.78;      // K   [origin=predictive method=joback]
+Pc          15.885;      // bar [origin=predictive method=joback]
+omega       1.0247;      // -   [origin=predictive method=lee-kesler]
+Tb          1066.20;      // K   [origin=predictive method=joback]
+HvapTb      133488.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.571 1.80812 -0.0008279 7.32e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group CH; count 4; } { group OH; count 4; } { group CH2COO; count 1; } { group CH-O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 11; } { group CH_ring; count 5; } { group OH; count 4; } { group O_ring; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "[(2s,3r,4s,5s,6r)-6-(hydroxymethyl)-3,4,5-tris(oxidanyl)oxan-2-yl] dodecanoate" "1-oxododecyl-beta-d-glucopyranoside, 99+%;1-oxododecylb-d-glucopyranoside;1-oxo-dodecyl-ss-d-glucopyranoside" );
+gibbsFormation
+{
+    dHf_298   -1500090.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     860.71;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-849480.0
+    phase     gas;
+}

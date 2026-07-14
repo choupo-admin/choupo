@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2,3,5,7-tetramethyloctane  (C12H26, CAS 62199-32-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2357Tetramethyloctane;
+formula     C12H26;
+CAS         62199-32-0;
+InChIKey    AIUMUUQTYGQPMV-UHFFFAOYSA-N;
+MW          170.34;      // g/mol [origin=calculated method=formula-sum]
+Tc          647.06;      // K   [origin=predictive method=joback]
+Pc          18.294;      // bar [origin=predictive method=joback]
+omega       0.4666;      // -   [origin=predictive method=lee-kesler]
+Tb          472.40;      // K   [origin=predictive method=joback]
+HvapTb      40754.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-14.748 1.16752 -0.0006418 1.296e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 2; } { group CH; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+gibbsFormation
+{
+    dHf_298   -312130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     585.33;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=40400.0
+    phase     gas;
+}

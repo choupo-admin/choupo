@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,4,4,10,10,13,13-octamethyl-cyclooctadecane  (C26H52, CAS 23014-57-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        114410101313OctamethylCyclooctadecane;
+formula     C26H52;
+CAS         23014-57-5;
+InChIKey    JNSFDAQIIASDIH-UHFFFAOYSA-N;
+MW          364.702;      // g/mol [origin=calculated method=formula-sum]
+Tc          1104.66;      // K   [origin=predictive method=joback]
+Pc          10.220;      // bar [origin=predictive method=joback]
+omega       0.4722;      // -   [origin=predictive method=lee-kesler]
+Tb          852.22;      // K   [origin=predictive method=joback]
+HvapTb      70432.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-329.95 3.56896 -0.002879 1.0564e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 8; } { group CH2; count 14; } { group C; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 8; } { group CH2_ring; count 14; } { group C_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1,4,4,10,10,13,13-octamethylcyclooctadecane" "cyclooctadecane, 1,1,4,4,10,10,13,13-octamethyl-" );
+gibbsFormation
+{
+    dHf_298   -599630.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1528.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=2200.0
+    phase     gas;
+}

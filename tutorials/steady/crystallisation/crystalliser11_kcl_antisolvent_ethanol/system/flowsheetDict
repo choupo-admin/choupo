@@ -1,0 +1,48 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser11_kcl_antisolvent_ethanol -- ANTISOLVENT (drowning-out) of KCl
+
+      brine  ──┐
+               │
+            [cryst] ──┬──► crystals     (solid KCl product)
+               │      │
+      ethanol ─┘      └──► motherLiquor (saturated supernatant:
+                                         water + ethanol + residual KCl)
+
+  The KCl counterpart of crystalliser06 (NaCl).  KCl is the second salt the
+  catalogue's KCl.dat names as "recovered by ANTISOLVENT (drowning-out with
+  ethanol)"; this case realises it.
+
+  The physics: ethanol's low dielectric (24.3 vs water's 78.5) lowers the
+  mixture permittivity, which RAISES the mean ionic activity gamma_pm (eNRTL
+  mixed-solvent + Born), so the KCl saturation molality m_sat COLLAPSES from its
+  aqueous 4.76 mol/kg and KCl precipitates with NO cooling and NO boil-off.  The
+  saturation is the SAME ion-activity product Ksp = (gamma_pm * m_sat)^2 anchored
+  in pure water, solved with the mixed-solvent gamma_pm at the feed's salt-free
+  ethanol fraction.
+
+  Basis: 100 kmol/h saturated aqueous brine (x_water 0.9210, x_KCl 0.0790;
+  4.76 mol KCl / kg water) + 60.0 kmol/h ethanol -> salt-free x_ethanol ~ 0.39.
+  Self-contained: components live in constant/components/.
+
+  Experimental KCl-water-ethanol reference (the drowning-out anchor): Lopes,
+  Farelo & Ferra, J. Solution Chem. 28 (1999) 117.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        cryst;
+        type        crystalliser;
+        inputs      ( brine  ethanol );         // two feeds, combined internally
+        outputs     ( crystals  motherLiquor ); // two products: solid + saturated liquor
+
+        operation
+        {
+            operatingTemperature 298.15 K;   // isothermal: the antisolvent does the work
+            cakeMoisture         0.10;       // kg mother liquor clinging per kg dry KCl
+            solidsRecovery       1.0;        // all crystals to the cake (set <1 to lose fines)
+        }
+    }
+);

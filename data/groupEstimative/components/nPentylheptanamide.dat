@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-pentylheptanamide  (C12H25NO, CAS 64891-12-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nPentylheptanamide;
+formula     C12H25NO;
+CAS         64891-12-9;
+InChIKey    GUDYPJBECYDZAH-UHFFFAOYSA-N;
+MW          199.338;      // g/mol [origin=calculated method=formula-sum]
+Tc          751.06;      // K   [origin=predictive method=joback]
+Pc          19.003;      // bar [origin=predictive method=joback]
+omega       0.8681;      // -   [origin=predictive method=lee-kesler]
+Tb          578.20;      // K   [origin=predictive method=joback]
+HvapTb      55488.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-1.871 1.19204 -0.0006589 1.3306e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 8; } { group CONHCH2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 9; } { group CdO; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "heptanamide, n-pentyl-" "ai3-35714-aga" );
+gibbsFormation
+{
+    dHf_298   -350120.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     690.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=10630.0
+    phase     gas;
+}

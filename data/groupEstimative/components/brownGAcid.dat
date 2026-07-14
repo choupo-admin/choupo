@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: brown g acid  (C12H10O2S, CAS 93-21-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        brownGAcid;
+formula     C12H10O2S;
+CAS         93-21-0;
+InChIKey    VMZMOCBDKZHRGU-UHFFFAOYSA-N;
+MW          218.27;      // g/mol [origin=calculated method=formula-sum]
+Tc          995.19;      // K   [origin=predictive method=joback]
+Pc          34.480;      // bar [origin=predictive method=joback]
+omega       0.9256;      // -   [origin=predictive method=lee-kesler]
+Tb          739.09;      // K   [origin=predictive method=joback]
+HvapTb      70865.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-34.869 1.04689 -0.00076228 2.137e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 7; } { group AC; count 3; } { group COOH; count 1; } { group CH2S; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group dCH_ring; count 7; } { group dC_ring; count 3; } { group COOH; count 1; } { group S; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-naphthalen-2-ylsulfanylethanoic acid" "(2-naphthylthio)acetic acid" "acetic acid, (2-naphthalenylthio)-" "2-naphthylthioglycolic acid" "thioglycolic acid, 2-naphthyl-" "acetic acid,(2-naphthalenylthio)-" "acetic acid, 2-(2-naphthalenylthio)-" "beta-(naphthylmercapto)acetic acid" "beta-naphthylthioglycolic acid" "(2-naphthylsulfanyl)acetic acid" ".beta.-naphthylthioglycolic acid" "acetic acid, (2-naphthylthio)-" );
+gibbsFormation
+{
+    dHf_298   -183280.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     516.47;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-51200.0
+    phase     gas;
+}

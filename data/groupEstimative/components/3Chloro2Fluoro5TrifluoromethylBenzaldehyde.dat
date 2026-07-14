@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-chloro-2-fluoro-5-(trifluoromethyl)benzaldehyde  (C8H3ClF4O, CAS 261763-02-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H3ClF4O (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        3Chloro2Fluoro5TrifluoromethylBenzaldehyde;
+formula     C8H3ClF4O;
+CAS         261763-02-4;
+InChIKey    MSZTVIFIFJCNRQ-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          226.553;      // g/mol [origin=calculated method=formula-sum]
+Tc          620.46;      // K   [origin=predictive method=joback]
+Pc          29.092;      // bar [origin=predictive method=joback]
+omega       0.4307;      // -   [origin=predictive method=lee-kesler]
+Tb          431.96;      // K   [origin=predictive method=joback]
+HvapTb      35112.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-2.11 0.6943 -0.00065228 2.348e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group AC; count 2; } { group CHO; count 1; } { group ACCl; count 1; } { group ACF; count 1; } { group CF3; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group C; count 1; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group F; count 4; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-chloranyl-2-fluoranyl-5-(trifluoromethyl)benzaldehyde" "5-chloro-6,alpha,alpha,alpha-tetrafluoro-m-tolualdehyde" "2-fluoro-3-chloro-5-trifluoromethylbenzaldehyde;3-chloro-2-fluoro-5-(trifluoromethyl)benzaldehyde;timtec-bb sbb003313;5-chloro-6,a'a" "afaa'a" "afaa'a" "afa-tetrafluoro m-tolualdehyde;" );
+gibbsFormation
+{
+    dHf_298   -738810.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     544.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-644370.0
+    phase     gas;
+}

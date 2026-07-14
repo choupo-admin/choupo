@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: didodecylamine  (C24H51N, CAS 3007-31-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        didodecylamine;
+formula     C24H51N;
+CAS         3007-31-6;
+InChIKey    MJCJUDJQDGGKOX-UHFFFAOYSA-N;
+MW          353.679;      // g/mol [origin=calculated method=formula-sum]
+Tc          978.16;      // K   [origin=predictive method=joback]
+Pc          8.121;      // bar [origin=predictive method=joback]
+omega       0.7779;      // -   [origin=predictive method=lee-kesler]
+Tb          798.89;      // K   [origin=predictive method=joback]
+HvapTb      75454.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-20.138 2.36004 -0.0013304 2.849e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 21; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 22; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n-dodecyldodecan-1-amine" "1-dodecanamine, n-dodecyl-" "dilaurylamine" "di-n-dodecylamine" "didodecyl amine" "n-dodecyl-1-dodecanamine" "didodecylamine practical grade" );
+gibbsFormation
+{
+    dHf_298   -485220.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1131.52;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=240590.0
+    phase     gas;
+}

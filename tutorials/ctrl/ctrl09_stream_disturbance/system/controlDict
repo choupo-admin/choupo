@@ -1,0 +1,27 @@
+/*---------------------------------------------------------------------------*\
+  ctrl09_stream_disturbance / system/controlDict
+
+  WHAT THIS CASE IS: the INLET-FIELD actuator test (design forum
+  #100.4/#101/#103).  A Signal controller steps the inlet's
+  componentMolarFlow.compA while compB's molar flow stays untouched ---
+  and the golden PROVES the derived pair changed by the arithmetic, not
+  merely that the reactor responded:
+
+      before:  nA = 3.5e-5, nB = 1.5e-5  =>  F = 5.0e-5,  z_A = 0.70
+      after :  nA = 5.25e-5 (stepped)    =>  F = 6.75e-5, z_A = 7/9 = 0.7778
+
+  The trajectory carries F_in and z_in_* as first-class columns; the
+  final-state KPIs pin them to the hand-derived values.
+
+  Narrative: system/flowsheetDict header.  Run log: log.choupoCtrl.
+\*---------------------------------------------------------------------------*/
+
+application   choupoCtrl;
+description   "Inlet-field disturbance: componentMolarFlow.compA steps 3.5e-5 -> 5.25e-5 kmol/s; F and z_in change by the DERIVED values (F = 6.75e-5, z_A = 7/9) -- the disturbance never hides from the other components";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         1800;     // s
+deltaT          1.0;      // s
+writeInterval   10;       // s

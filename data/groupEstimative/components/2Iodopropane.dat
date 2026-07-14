@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-iodopropane  (C3H7I, CAS 75-30-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Iodopropane;
+formula     C3H7I;
+CAS         75-30-9;
+InChIKey    FMKOJHQHASLBPH-UHFFFAOYSA-N;
+MW          169.989;      // g/mol [origin=calculated method=formula-sum]
+Tc          572.05;      // K   [origin=predictive method=joback]
+Pc          43.283;      // bar [origin=predictive method=joback]
+omega       0.1845;      // -   [origin=predictive method=lee-kesler]
+Tb          360.94;      // K   [origin=predictive method=joback]
+HvapTb      31257.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (10.17 0.33374 -0.000224 6.39e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group I; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group I; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-iodanylpropane" "isopropyl iodide" "propane, 2-iodo-" "2-propyl iodide" "sec-propyl iodide" "2-iodo-propane" "1-jodpropan" "2-jodpropan" "agn-pc-00px22" "u140" "1-methylethyliodide;2-propyl iodide;isopropyl iodide;sec-propyl iodide;" );
+gibbsFormation
+{
+    dHf_298   -33660.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     318.95;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=30060.0
+    phase     gas;
+}

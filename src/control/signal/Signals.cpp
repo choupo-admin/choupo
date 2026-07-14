@@ -171,4 +171,116 @@ scalar SineSignal::value(scalar t) const
     return mean_ + amplitude_ * std::sin(arg);
 }
 
+// ---- prbs ------------------------------------------------------------------
+
+void PrbsSignal::initialise(const DictPtr& d)
+{
+    mean_      = d->lookupScalar("mean");
+    amplitude_ = d->lookupScalar("amplitude");
+    bitPeriod_ = d->lookupScalar("bitPeriod");
+    tStart_    = d->lookupScalarOrDefault("tStart", 0.0);
+    nReg_      = static_cast<int>(d->lookupScalar("registers"));
+    if (bitPeriod_ <= 0.0)
+        throw std::runtime_error("PrbsSignal: bitPeriod must be > 0");
+    if (nReg_ < 2 || nReg_ > 16)
+        throw std::runtime_error("PrbsSignal: registers must be in [2, 16]"
+            " (period 2^n - 1 = " + std::to_string((1 << 2) - 1) + ".."
+            + std::to_string((1 << 16) - 1) + " bits)");
+
+    // The seed is DECLARED (identification experiments must be exactly
+    // repeatable); zero is the LFSR fixed point and is refused.
+    const unsigned seed =
+        static_cast<unsigned>(d->lookupScalar("seed"));
+    if (seed == 0)
+        throw std::runtime_error("PrbsSignal: seed 0 is the LFSR fixed point"
+            " (the all-zero state never leaves itself) -- declare a nonzero"
+            " seed");
+    if (seed >= (1u << nReg_))
+        throw std::runtime_error("PrbsSignal: seed " + std::to_string(seed)
+            + " does not fit in " + std::to_string(nReg_) + " registers"
+            " (max " + std::to_string((1u << nReg_) - 1) + ")");
+
+    // Taps: declared, or from the canonical maximal-length table
+    // `prbsTaps-1` (primitive polynomials x^n + x^k (+..) + 1 over GF(2)).
+    std::vector<int> taps;
+    std::string tapSource;
+    if (d->found("taps"))
+    {
+        for (scalar v : d->lookupList("taps"))
+            taps.push_back(static_cast<int>(v));
+        tapSource = "declared";
+    }
+    else
+    {
+        static const std::map<int, std::vector<int>> kCanonical = {
+            { 2, {2, 1} },        { 3, {3, 2} },        { 4, {4, 3} },
+            { 5, {5, 3} },        { 6, {6, 5} },        { 7, {7, 6} },
+            { 8, {8, 6, 5, 4} },  { 9, {9, 5} },        {10, {10, 7} },
+            {11, {11, 9} },       {12, {12, 11, 10, 4} },
+            {13, {13, 12, 11, 8} }, {14, {14, 13, 12, 2} },
+            {15, {15, 14} },      {16, {16, 15, 13, 4} } };
+        taps = kCanonical.at(nReg_);
+        tapSource = "canonical table prbsTaps-1";
+    }
+    for (int tp : taps)
+        if (tp < 1 || tp > nReg_)
+            throw std::runtime_error("PrbsSignal: tap position "
+                + std::to_string(tp) + " outside [1, " + std::to_string(nReg_)
+                + "]");
+
+    // Walk the LFSR ONCE from the seed, recording the output bit stream,
+    // and VERIFY the cycle length is exactly 2^n - 1: a non-maximal tap
+    // set is refused aloud, never passed off as a PRBS.
+    const unsigned period = (1u << nReg_) - 1u;
+    bits_.clear();
+    bits_.reserve(period);
+    unsigned state = seed;
+    for (unsigned k = 0; k < period; ++k)
+    {
+        bits_.push_back(static_cast<char>((state >> (nReg_ - 1)) & 1u));
+        unsigned fb = 0;
+        for (int tp : taps) fb ^= (state >> (tp - 1)) & 1u;
+        state = ((state << 1) | fb) & period;   // period == the n-bit mask
+        if (state == seed && k + 1 < period)
+            throw std::runtime_error("PrbsSignal: taps ("
+                + [&]{ std::string s2; for (int tp : taps)
+                       s2 += (s2.empty() ? "" : " ") + std::to_string(tp);
+                       return s2; }()
+                + ") give cycle length " + std::to_string(k + 1)
+                + " != 2^n - 1 = " + std::to_string(period)
+                + " -- a LINEARLY NON-MAXIMAL set; use the canonical table"
+                " (omit `taps`) or a primitive polynomial");
+    }
+    if (state != seed)
+        throw std::runtime_error("PrbsSignal: internal check failed -- the"
+            " LFSR did not return to the seed after 2^n - 1 steps");
+
+    // Glass-box announce: the whole experiment is reproducible from this
+    // line (the #101 contract: the choice is EMITTED, never implicit).
+    std::string tapStr;
+    for (int tp : taps) tapStr += (tapStr.empty() ? "" : " ") + std::to_string(tp);
+    std::string firstBits;
+    for (std::size_t k = 0; k < std::min<std::size_t>(16, bits_.size()); ++k)
+        firstBits += (bits_[k] ? '1' : '0');
+    std::cout << "  Signal[prbs]:  mean=" << mean_
+              << "  amplitude=+/-" << amplitude_
+              << "  bitPeriod=" << bitPeriod_ << " s"
+              << "  registers=" << nReg_
+              << "  seed=" << seed
+              << "  taps=(" << tapStr << ") [" << tapSource << "]"
+              << "\n                 period=" << period << " bits = "
+              << period * bitPeriod_ << " s (VERIFIED maximal)"
+              << "  first bits: " << firstBits
+              << (bits_.size() > 16 ? "..." : "") << "\n";
+}
+
+scalar PrbsSignal::value(scalar t) const
+{
+    if (t < tStart_ || bits_.empty()) return mean_;
+    const auto k = static_cast<std::size_t>(
+        std::floor((t - tStart_) / bitPeriod_))
+        % bits_.size();
+    return mean_ + (bits_[k] ? amplitude_ : -amplitude_);
+}
+
 } // namespace Choupo

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isocitrate  (C6H8O7, CAS 320-77-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isocitrate;
+formula     C6H8O7;
+CAS         320-77-4;
+InChIKey    ODBLHEXUDAPZAU-UHFFFAOYSA-N;
+MW          192.123;      // g/mol [origin=calculated method=formula-sum]
+Tc          1077.45;      // K   [origin=predictive method=joback]
+Pc          49.663;      // bar [origin=predictive method=joback]
+omega       2.0992;      // -   [origin=predictive method=lee-kesler]
+Tb          864.71;      // K   [origin=predictive method=joback]
+HvapTb      96345.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (13.161 0.772 -0.0005572 1.53e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 1; } { group CH; count 2; } { group OH; count 1; } { group COOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 1; } { group CH; count 2; } { group OH; count 1; } { group COOH; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-oxidanylpropane-1,2,3-tricarboxylic acid" "isocitric acid" "1-hydroxypropane-1,2,3-tricarboxylic acid" "i-cit" "1-hydroxytricarballylic acid" "d-isocitrate" "1-hydroxy-1,2,3-propanetricarboxylic acid" "3-carboxy-2,3-dideoxy-1-hydroxypropan-1,2,3-tricarboxylic acid" "isocitric acid(8ci)" "1-hydroxytricarballylate" "isocitric acid (8ci)" "threo-d(s)-iso-citrate" );
+gibbsFormation
+{
+    dHf_298   -1380770.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     580.94;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1173790.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-heptylaniline  (C13H21N, CAS 3007-70-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nHeptylaniline;
+formula     C13H21N;
+CAS         3007-70-3;
+InChIKey    JHXGAYWKTQKNGW-UHFFFAOYSA-N;
+MW          191.318;      // g/mol [origin=calculated method=formula-sum]
+Tc          771.57;      // K   [origin=predictive method=joback]
+Pc          22.208;      // bar [origin=predictive method=joback]
+omega       0.6907;      // -   [origin=predictive method=lee-kesler]
+Tb          573.89;      // K   [origin=predictive method=joback]
+HvapTb      53244.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-44.044 1.23612 -0.0007632 1.795e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 5; } { group ACH; count 5; } { group AC; count 1; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 6; } { group dCH_ring; count 5; } { group dC_ring; count 1; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "benzenamine, n-heptyl-" "aniline, n-heptyl-" "heptyl-phenyl-amine" "heptylamine, n-phenyl-" "1-heptanamine, n-phenyl-" );
+gibbsFormation
+{
+    dHf_298   -21650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     596.63;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=260380.0
+    phase     gas;
+}

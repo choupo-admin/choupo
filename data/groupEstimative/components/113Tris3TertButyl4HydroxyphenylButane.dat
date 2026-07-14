@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1,3-tris(3-tert-butyl-4-hydroxyphenyl)butane  (C34H46O3, CAS 2567-85-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        113Tris3TertButyl4HydroxyphenylButane;
+formula     C34H46O3;
+CAS         2567-85-3;
+InChIKey    UISUNQPJOFOKPB-UHFFFAOYSA-N;
+MW          502.739;      // g/mol [origin=calculated method=formula-sum]
+Tc          1596.25;      // K   [origin=predictive method=joback]
+Pc          11.008;      // bar [origin=predictive method=joback]
+omega       1.0554;      // -   [origin=predictive method=lee-kesler]
+Tb          1303.79;      // K   [origin=predictive method=joback]
+HvapTb      134470.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-190.379 3.6718 -0.00300916 1.0092e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 10; } { group CH2; count 1; } { group C; count 3; } { group ACH; count 9; } { group AC; count 4; } { group ACCH; count 2; } { group ACOH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 10; } { group CH2; count 1; } { group CH; count 2; } { group C; count 3; } { group dCH_ring; count 9; } { group dC_ring; count 9; } { group OH_phenol; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-[4,4-bis(3-tert-butyl-4-oxidanyl-phenyl)butan-2-yl]-2-tert-butyl-phenol" "phenol, 4,4',4''-(1-methyl-1-propanyl-3-ylidene)tris(2-(1,1-dimethylethyl)-" "phenol, 4,4',4''-(1-methyl-1-propanyl-3-ylidene)tris[2-(1,1-dimethylethyl)-" "4-[4,4-bis(3-tert-butyl-4-hydroxyphenyl)butan-2-yl]-2-tert-butylphenol" );
+gibbsFormation
+{
+    dHf_298   -638650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1086.34;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=83520.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isopropoxamine  (C14H23NO3, CAS 61-15-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isopropoxamine;
+formula     C14H23NO3;
+CAS         61-15-4;
+InChIKey    YZXKGCIDSYWQIV-UHFFFAOYSA-N;
+MW          253.342;      // g/mol [origin=calculated method=formula-sum]
+Tc          937.64;      // K   [origin=predictive method=joback]
+Pc          21.315;      // bar [origin=predictive method=joback]
+omega       1.2357;      // -   [origin=predictive method=lee-kesler]
+Tb          742.43;      // K   [origin=predictive method=joback]
+HvapTb      77129.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (34.89 1.1375 -0.00050152 4.03e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH; count 1; } { group ACH; count 3; } { group AC; count 2; } { group ACCH; count 1; } { group OH; count 1; } { group CH3O; count 2; } { group CHNH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 5; } { group CH; count 3; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group O; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(2,5-dimethoxyphenyl)-2-(propan-2-ylamino)propan-1-ol" "isopropylmethoxamine" "n-isopropylmethoxamine" "1-(2,5-dimethoxyphenyl)-2-(isopropylamino)propan-1-ol" "1-(2,5-dimethoxyphenyl)-2-(isopropylamino)-1-propanol" "2,5-dimethoxy-alpha-(1-((1-methylethyl)amino)ethyl)benzenemethanol" "benzenemethanol, 2,5-dimethoxy-alpha-(1-((1-methylethyl)amino)ethyl)-" "benzenemethanol, 2,5-dimethoxy-alpha-(1-((1-methylethyl)amino)ethyl)- (van)" "benzyl alcohol, alpha-(1-(isopropylamino)ethyl)-2,5-dimethoxy- (7ci,8ci)" "dl-erythro-hydroxy(2',5'-dimethoxyphenyl)-2-isopropylaminopropane hydrochloride" "61-15-4 (hydrochloride)" "1-(2,5-dimethoxyphenyl)-2-[(methylethyl)amino]propan-1-ol" );
+gibbsFormation
+{
+    dHf_298   -497740.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     668.09;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-104600.0
+    phase     gas;
+}

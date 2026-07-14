@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-acetyl-6-bromocoumarin  (C11H7BrO3, CAS 2199-93-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Acetyl6Bromocoumarin;
+formula     C11H7BrO3;
+CAS         2199-93-1;
+InChIKey    XFQYOFLFNKCHLG-UHFFFAOYSA-N;
+MW          267.078;      // g/mol [origin=calculated method=formula-sum]
+Tc          916.75;      // K   [origin=predictive method=joback]
+Pc          35.558;      // bar [origin=predictive method=joback]
+omega       0.9026;      // -   [origin=predictive method=lee-kesler]
+Tb          677.45;      // K   [origin=predictive method=joback]
+HvapTb      65272.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-0.44 0.87782 -0.00067206 2.0006e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH=C; count 1; } { group ACH; count 3; } { group AC; count 3; } { group CH3CO; count 1; } { group Br; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 4; } { group Br; count 1; } { group CdO; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-bromanyl-3-ethanoyl-chromen-2-one" "3-acetyl-6-bromo-2h-chromen-2-one" "3-acetyl-6-bromochromen-2-one" "3-acetyl-6-bromo-chromen-2-one" "3-acetyl-6-bromo-2-oxochromene" "3-acetyl-6-bromocoumarin 98%;" "3-acetyl-6-bromo-1-benzopyran-2-one" "2h-1-benzopyran-2-one,3-acetyl-6-bromo-" );
+gibbsFormation
+{
+    dHf_298   -314700.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     483.37;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-189190.0
+    phase     gas;
+}

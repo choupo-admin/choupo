@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-morpholinopropan-2-amine  (C7H16N2O, CAS 50998-05-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1Morpholinopropan2Amine;
+formula     C7H16N2O;
+CAS         50998-05-5;
+InChIKey    SWZKXIPDGAAYKE-UHFFFAOYSA-N;
+MW          144.218;      // g/mol [origin=calculated method=formula-sum]
+Tc          701.93;      // K   [origin=predictive method=joback]
+Pc          37.963;      // bar [origin=predictive method=joback]
+omega       0.5719;      // -   [origin=predictive method=lee-kesler]
+Tb          491.19;      // K   [origin=predictive method=joback]
+HvapTb      48548.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-58.459 1.01572 -0.0006851 1.79e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group FCH2O; count 1; } { group CHNH2; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 1; } { group CH; count 1; } { group CH2_ring; count 4; } { group O_ring; count 1; } { group NH2; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-morpholin-4-ylpropan-2-amine" "1-(morpholin-4-yl)propan-2-amine" "1-methyl-2-morpholin-4-ylethylamine" "1-methyl-2-morpholin-4-yl-ethylamine" "4-(2-aminopropyl)morpholine" "1-morpholin-4-ylprop-2-ylamine" "4-morpholineethanamine,a-methyl-" "1-(4-morpholinyl)-2-propanamine" "4-morpholineethanamine, alpha-methyl-" "4-morpholineethanamine, .alpha.-methyl-" "morpholine,4-(2-aminopropyl)- (6ci,7ci); 1-morpholinopropan-2-amine;2-amino-1-morpholinopropane; n-(2-aminopropyl)morpholine;[1-methyl-2-(morpholin-4-yl)ethyl]amine; a-methyl-4-morpholineethanamine" );
+gibbsFormation
+{
+    dHf_298   -142950.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     427.45;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=140990.0
+    phase     gas;
+}

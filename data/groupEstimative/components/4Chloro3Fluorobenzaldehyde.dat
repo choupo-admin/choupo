@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-chloro-3-fluorobenzaldehyde  (C7H4ClFO, CAS 5527-95-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C7H4ClFO (delta C+1H+1O+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        4Chloro3Fluorobenzaldehyde;
+formula     C7H4ClFO;
+CAS         5527-95-7;
+InChIKey    AZMDWRPTDCIFRD-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          158.556;      // g/mol [origin=calculated method=formula-sum]
+Tc          618.57;      // K   [origin=predictive method=joback]
+Pc          37.777;      // bar [origin=predictive method=joback]
+omega       0.3097;      // -   [origin=predictive method=lee-kesler]
+Tb          409.52;      // K   [origin=predictive method=joback]
+HvapTb      35971.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-9.3 0.4976 -0.00044392 1.591e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 3; } { group AC; count 1; } { group CHO; count 1; } { group ACCl; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 3; } { group dC_ring; count 3; } { group F; count 1; } { group Cl; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-chloranyl-3-fluoranyl-benzaldehyde" "3-fluoro-4-chlorobenzaldehyde" "4-chloro-3-fluorobenz-aldehyde" "5527-95-7 4-chloro-3-fluorobenzaldehyde" "azmdwrptdcifrd-uhfffaoysa-" "wt196" );
+gibbsFormation
+{
+    dHf_298   -109620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     455.89;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-61570.0
+    phase     gas;
+}

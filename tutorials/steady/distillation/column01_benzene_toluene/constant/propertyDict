@@ -1,0 +1,13 @@
+/*---------------------------------------------------------------------------*\
+  column01_benzene_toluene / constant/thermoPackage
+
+  benzene (light key) / toluene (heavy key): two chemically similar
+  aromatics, the textbook near-ideal pair --- Raoult's law (ideal liquid +
+  ideal gas at ~1 atm) is accurate here, which is exactly why this case is
+  the validation column for the Wang-Henke bubble-point method.
+\*---------------------------------------------------------------------------*/
+
+components       ( benzene  toluene );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

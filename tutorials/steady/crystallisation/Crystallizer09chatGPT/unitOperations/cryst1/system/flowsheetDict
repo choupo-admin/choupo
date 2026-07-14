@@ -1,0 +1,13 @@
+/* cryst1 -- cooling crystalliser.  Targets potassium bitartrate (KHT). */
+type        crystalliser;
+operation
+{
+    operatingTemperature 278.15 K;
+    solute               potassiumBitartrate;
+    cakeMoisture         0.10;
+}
+
+// The streams this operation consumes and produces (sequential-modular: a unit
+// is defined by its streams).  The process wires them; here the unit names them.
+inputs   ( feed );
+outputs  ( KHT_cake  liquor1 );

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: grayanotoxin vi  (C20H32O5, CAS 30460-36-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        grayanotoxinVi;
+formula     C20H32O5;
+CAS         30460-36-7;
+InChIKey    QFHZVMRENQIMQT-PUVSMECCSA-N;
+MW          352.471;      // g/mol [origin=calculated method=formula-sum]
+Tc          1410.94;      // K   [origin=predictive method=joback]
+Pc          23.680;      // bar [origin=predictive method=joback]
+omega       1.5752;      // -   [origin=predictive method=lee-kesler]
+Tb          1139.22;      // K   [origin=predictive method=joback]
+HvapTb      138345.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-352.54 3.53218 -0.00362964 1.5555e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 6; } { group C; count 4; } { group CH=C; count 1; } { group OH; count 5; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2_ring; count 4; } { group CH_ring; count 6; } { group C_ring; count 4; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OH; count 5; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(3" "a,6" "a,14s)-grayanotox-15-ene-3,5,6,10,14-pentol" "grayanotox-15-ene-3,5,6,10,14-pentol, (3-beta,6-beta,14r)-" "7,9a-methano-9ah-cyclopenta(b)heptalene-2,4,11,11a-beta,12(1h)-pentol, 2a,3,3a-alpha,4,4a-beta,5,6,7-beta,10,11a-decahydro-1,1,4-beta,8-tetramethyl-" );
+gibbsFormation
+{
+    dHf_298   -965490.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     888.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-419870.0
+    phase     gas;
+}

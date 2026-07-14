@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3-diethoxypropionitrile  (C7H13NO2, CAS 2032-34-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33Diethoxypropionitrile;
+formula     C7H13NO2;
+CAS         2032-34-0;
+InChIKey    WBOXEOCWOCJQNK-UHFFFAOYSA-N;
+MW          143.186;      // g/mol [origin=calculated method=formula-sum]
+Tc          695.38;      // K   [origin=predictive method=joback]
+Pc          26.543;      // bar [origin=predictive method=joback]
+omega       0.6407;      // -   [origin=predictive method=lee-kesler]
+Tb          506.24;      // K   [origin=predictive method=joback]
+HvapTb      46086.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (62.843 0.48314 -0.0001072 -4.43e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group CH2O; count 2; } { group CH2CN; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 3; } { group CH; count 1; } { group O; count 2; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3,3-diethoxypropanenitrile" "cyanoacetaldehyde diethyl acetal" "3,3-diethoxy-propionitrile" "3,3-diethoxy propionitrile" "3,3-diethoxypropiononitrile" "1,1-diethoxy-2-cyanoethane" "cyanoacetaldehyde diethylacetal" "2-cyanoacetaldehyde diethylacetal" "acetaldehyde,cyano-, diethyl acetal (6ci,7ci,8ci);3,3-diethoxypropanenitrile;cyanoacetaldehyde diethylacetal;malonaldehydenitrile diethyl acetal;" );
+gibbsFormation
+{
+    dHf_298   -292650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     447.79;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-71200.0
+    phase     gas;
+}

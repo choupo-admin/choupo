@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: metaproterenol  (C11H17NO3, CAS 586-06-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        metaproterenol;
+formula     C11H17NO3;
+CAS         586-06-1;
+InChIKey    LMOINURANNBYCM-UHFFFAOYSA-N;
+MW          211.261;      // g/mol [origin=calculated method=formula-sum]
+Tc          996.85;      // K   [origin=predictive method=joback]
+Pc          43.056;      // bar [origin=predictive method=joback]
+omega       1.6203;      // -   [origin=predictive method=lee-kesler]
+Tb          780.67;      // K   [origin=predictive method=joback]
+HvapTb      90723.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-58.139 1.40114 -0.00120392 4.307e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group ACH; count 3; } { group ACCH; count 1; } { group OH; count 1; } { group ACOH; count 2; } { group CH2NH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 2; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 2; } { group NH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-[1-oxidanyl-2-(propan-2-ylamino)ethyl]benzene-1,3-diol" "orciprenaline" "alupent" "metaprel" "alotec" "orciprenalina" "orciprenalinum" "astmopent" "metaproterenol polistirex" "metaproterenol sulfate" "orciprenalinum [inn-latin]" "orciprenaline [inn]" );
+gibbsFormation
+{
+    dHf_298   -497780.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     603.49;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-207400.0
+    phase     gas;
+}

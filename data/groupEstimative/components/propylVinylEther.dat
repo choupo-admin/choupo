@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: propyl vinyl ether  (C5H10O, CAS 764-47-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        propylVinylEther;
+formula     C5H10O;
+CAS         764-47-6;
+InChIKey    OVGRCEFMXPHEBL-UHFFFAOYSA-N;
+MW          86.134;      // g/mol [origin=calculated method=formula-sum]
+Tc          500.89;      // K   [origin=predictive method=joback]
+Pc          35.728;      // bar [origin=predictive method=joback]
+omega       0.3077;      // -   [origin=predictive method=lee-kesler]
+Tb          333.10;      // K   [origin=predictive method=joback]
+HvapTb      28464.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (20.852 0.39562 -0.0001601 1.09e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2=CH; count 1; } { group CH2O; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group dCH2; count 1; } { group dCH; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-ethenoxypropane" "propoxyethylene" "propane, 1-(ethenyloxy)-" "1-(vinyloxy)propane" "n-propyl vinyl ether" "thiocyanicacid, 2-propenyl ester (9ci); thiocyanic acid, allyl ester (6ci,7ci,8ci);propene, 3-thiocyanato- (6ci); 1-thiocyano-2-propene; 3-thiocyanatopropene;allyl thiocyanate" );
+gibbsFormation
+{
+    dHf_298   -153320.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     357.44;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-25940.0
+    phase     gas;
+}

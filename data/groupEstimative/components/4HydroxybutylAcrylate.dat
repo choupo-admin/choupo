@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-hydroxybutyl acrylate  (C7H12O3, CAS 2478-10-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4HydroxybutylAcrylate;
+formula     C7H12O3;
+CAS         2478-10-6;
+InChIKey    NDWUBGAGUCISDV-UHFFFAOYSA-N;
+MW          144.17;      // g/mol [origin=calculated method=formula-sum]
+Tc          676.74;      // K   [origin=predictive method=joback]
+Pc          32.616;      // bar [origin=predictive method=joback]
+omega       0.9642;      // -   [origin=predictive method=lee-kesler]
+Tb          506.84;      // K   [origin=predictive method=joback]
+HvapTb      54592.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (24.234 0.628 -0.0003157 4.22e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 4; } { group CH2=CH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group dCH2; count 1; } { group dCH; count 1; } { group OH; count 1; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-oxidanylbutyl prop-2-enoate" "acrylic acid 4-hydroxybutyl ester" "4-hydroxybutyl prop-2-enoate" "2-propenoic acid, 4-hydroxybutyl ester" "hydroxybutyl acrylate" "1,4-butanediol monoacrylate" "4-hydroxybutyl 2-propenoate" "ndwubgagucisdv-uhfffaoysa-" "acrylicacid, 4-hydroxybutyl ester (6ci,7ci,8ci);1,4-butanediol, monoacrylate (8ci);1,4-butanediol acrylate;4-hydroxybutyl acrylate;4hba;butanediolmonoacrylate;hydroxybutyl acrylate;tetramethylene glycol monoacrylate;2-propenoic acid, 4-hydroxybutyl ester;4-hydroxybutyl 2-propenoate;4-hydroxybutyl acrylate;" );
+gibbsFormation
+{
+    dHf_298   -531890.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     526.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-351290.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-aminohexanenitrile; 1,2-dichloroethane  (C8H16Cl2N2, CAS 67924-10-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        6Aminohexanenitrile12Dichloroethane;
+formula     C8H16Cl2N2;
+CAS         67924-10-1;
+InChIKey    UTSHOVDCGPWDAN-UHFFFAOYSA-N;
+MW          211.13;      // g/mol [origin=calculated method=formula-sum]
+Tc          842.85;      // K   [origin=predictive method=joback]
+Pc          22.334;      // bar [origin=predictive method=joback]
+omega       0.7716;      // -   [origin=predictive method=lee-kesler]
+Tb          633.51;      // K   [origin=predictive method=joback]
+HvapTb      63585.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (85.707 0.5679 -4.98e-05 -1.105e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 3; } { group CH2NH2; count 1; } { group CH2CN; count 1; } { group CH2Cl; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 7; } { group Cl; count 2; } { group NH2; count 1; } { group CN; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "6-azanylhexanenitrile;1,2-bis(chloranyl)ethane" "hexanenitrile, 6-amino-, polymer with 1,2-dichloroethane" );
+gibbsFormation
+{
+    dHf_298   -152880.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     699.84;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=87490.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(2,2,2-trifluoroethyl) itaconate  (C9H8F6O4, CAS 104534-96-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bis222TrifluoroethylItaconate;
+formula     C9H8F6O4;
+CAS         104534-96-5;
+InChIKey    IRXUFAGEXMCXHZ-UHFFFAOYSA-N;
+MW          294.147;      // g/mol [origin=calculated method=formula-sum]
+Tc          663.24;      // K   [origin=predictive method=joback]
+Pc          19.631;      // bar [origin=predictive method=joback]
+omega       0.8398;      // -   [origin=predictive method=lee-kesler]
+Tb          507.68;      // K   [origin=predictive method=joback]
+HvapTb      42358.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (30.443 1.0515 -0.0007438 1.783e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH2=C; count 1; } { group CH2COO; count 1; } { group CF3; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 3; } { group C; count 2; } { group dCH2; count 1; } { group dC; count 1; } { group F; count 6; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "bis[2,2,2-tris(fluoranyl)ethyl] 2-methylidenebutanedioate" "butanedioic acid, methylene-, bis(2,2,2-trifluoroethyl) ester" "itaconic acid bis(2,2,2-trifluoroethyl)ester" "bis(2,2,2-trifluoroethyl) 2-methylidenebutanedioate" "1,4-bis(2,2,2-trifluoroethyl) 2-methylidenebutanedioate" "2-methylenebutanedioic acid bis(2,2,2-trifluoroethyl) ester" );
+gibbsFormation
+{
+    dHf_298   -1942170.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     712.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-1679730.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 4-piperidinopiperidine  (C10H20N2, CAS 4897-50-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        4Piperidinopiperidine;
+formula     C10H20N2;
+CAS         4897-50-1;
+InChIKey    QDVBKXJMLILLLB-UHFFFAOYSA-N;
+MW          168.284;      // g/mol [origin=calculated method=formula-sum]
+Tc          762.06;      // K   [origin=predictive method=joback]
+Pc          33.144;      // bar [origin=predictive method=joback]
+omega       0.4702;      // -   [origin=predictive method=lee-kesler]
+Tb          528.89;      // K   [origin=predictive method=joback]
+HvapTb      47650.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-132.0 1.3446 -0.000836 1.896e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group CH; count 1; } { group CH2NH; count 1; } { group CH2N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 9; } { group CH_ring; count 1; } { group NH_ring; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-piperidin-4-ylpiperidine" "1,4'-bipiperidine" "4-piperidino-piperidine" "1,4-bipiperidine" "1,4'-bipiperidin" "4-(1-piperidinyl)piperidine" "[1,4']bipiperidinyl" "1,4'-bipiperidyl" "1-(piperidin-4-yl)piperidine" "4-(piperidin-1-yl)piperidine" "4-piperidylpiperidine" "4-piperidino piperidine" );
+gibbsFormation
+{
+    dHf_298   -9250.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     516.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=300520.0
+    phase     gas;
+}

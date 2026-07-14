@@ -1,0 +1,6 @@
+recordType gasLiquidEquilibrium;
+schemaVersion 1;
+
+gas H2S; reaction "H2S(g) = H+ + HS-"; dissolved "H+ + HS-";
+      logK25 -7.93; dH 9100; analytic ( -45.07 -0.02418 0 17.9205 ); Tc 373.2; Pc 88.2; omega 0.1; source "USGS PHREEQC phreeqc.dat (public domain); lit: H2S solubilities, 0 - 300 C, 1 - 987 atm, Jiang et al., 2020, CG 555, 119816";
+

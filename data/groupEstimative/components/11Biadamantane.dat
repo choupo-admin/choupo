@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,1'-biadamantane  (C20H30, CAS 3732-31-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11Biadamantane;
+formula     C20H30;
+CAS         3732-31-8;
+InChIKey    MPXKIFWZOQVOLN-UHFFFAOYSA-N;
+MW          270.46;      // g/mol [origin=calculated method=formula-sum]
+Tc          945.00;      // K   [origin=predictive method=joback]
+Pc          19.169;      // bar [origin=predictive method=joback]
+omega       0.5559;      // -   [origin=predictive method=lee-kesler]
+Tb          697.32;      // K   [origin=predictive method=joback]
+HvapTb      57016.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-415.09 3.3208 -0.003247 1.3024e-06);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 12; } { group CH; count 6; } { group C; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2_ring; count 12; } { group CH_ring; count 6; } { group C_ring; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(1-adamantyl)adamantane" "1,1'-bi(adamantane)" "ambap3732-31-8" "1-(adamantan-1-yl)adamantane" "1,1-biadamantane;1,1'-biadamantane;1,1'-diadamantyl;" );
+gibbsFormation
+{
+    dHf_298   -41850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     487.64;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=431420.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: lauroylethyleneimine  (C14H27NO, CAS 48163-10-6)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        lauroylethyleneimine;
+formula     C14H27NO;
+CAS         48163-10-6;
+InChIKey    XLOMPIAMFZQSFP-UHFFFAOYSA-N;
+MW          225.376;      // g/mol [origin=calculated method=formula-sum]
+Tc          765.65;      // K   [origin=predictive method=joback]
+Pc          17.909;      // bar [origin=predictive method=joback]
+omega       0.8878;      // -   [origin=predictive method=lee-kesler]
+Tb          593.37;      // K   [origin=predictive method=joback]
+HvapTb      55597.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-64.23 1.61672 -0.0011537 3.4116e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 10; } { group CON_CH2_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 10; } { group CH2_ring; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-(aziridin-1-yl)dodecan-1-one" "aziridine, 1-lauroyl-" );
+gibbsFormation
+{
+    dHf_298   -278040.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     676.28;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=129420.0
+    phase     gas;
+}

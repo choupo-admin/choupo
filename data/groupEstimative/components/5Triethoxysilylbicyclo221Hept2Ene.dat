@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5-triethoxysilylbicyclo[2.2.1]hept-2-ene  (C13H24O3Si, CAS 18401-43-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C13H24O3Si (delta Si+1; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        5Triethoxysilylbicyclo221Hept2Ene;
+formula     C13H24O3Si;
+CAS         18401-43-9;
+InChIKey    HHKDWDAAEFGBAC-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          256.417;      // g/mol [origin=calculated method=formula-sum]
+Tc          771.46;      // K   [origin=predictive method=joback]
+Pc          18.123;      // bar [origin=predictive method=joback]
+omega       0.6251;      // -   [origin=predictive method=lee-kesler]
+Tb          577.94;      // K   [origin=predictive method=joback]
+HvapTb      52037.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (16.503 1.05276 -0.00026148 -9.34e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 3; } { group CH=CH; count 1; } { group CH2O; count 3; } { group Si; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 3; } { group CH2_ring; count 2; } { group CH_ring; count 3; } { group dCH_ring; count 2; } { group O; count 3; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "5-bicyclo[2.2.1]hept-2-enyl(triethoxy)silane" "5-(triethoxysilyl)-2-norbornene" "5-(triethoxysilyl)bicyclo[2.2.1]hept-2-ene" "(bicyclo[2.2.1]hept-5-en-2-yl)triethoxysilane" "silane, bicyclo(2.2.1)hept-5-en-2-yltriethoxy-" "silane, bicyclo[2.2.1]hept-5-en-2-yltriethoxy-" "5-triethoxysilylbicyclo(2.2.1)hept-2-ene" "[bicyclo[2.2.1]hept-5-en-2-yl]triethoxysilane" "bicyclo(2.2.1)hept-2-ene, 5-(triethoxysilyl)-" "bicyclo[2.2.1]hept-2-ene, 5-(triethoxysilyl)-" "bicyclo(2.2.1)hept-5-en-2-yltriethoxysilane" );
+gibbsFormation
+{
+    dHf_298   -643050.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     582.35;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-229530.0
+    phase     gas;
+}

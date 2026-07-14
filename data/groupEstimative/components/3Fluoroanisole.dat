@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3-fluoroanisole  (C7H7FO, CAS 456-49-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        3Fluoroanisole;
+formula     C7H7FO;
+CAS         456-49-5;
+InChIKey    MFJNOXOAIFNSBX-UHFFFAOYSA-N;
+MW          126.13;      // g/mol [origin=calculated method=formula-sum]
+Tc          613.75;      // K   [origin=predictive method=joback]
+Pc          37.362;      // bar [origin=predictive method=joback]
+omega       0.3741;      // -   [origin=predictive method=lee-kesler]
+Tb          413.11;      // K   [origin=predictive method=joback]
+HvapTb      35707.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (8.51 0.47902 -0.00022656 2.35e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 4; } { group AC; count 1; } { group CH3O; count 1; } { group ACF; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group dCH_ring; count 4; } { group dC_ring; count 2; } { group F; count 1; } { group O; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-fluoranyl-3-methoxy-benzene" "m-fluoroanisole" "1-fluoro-3-methoxybenzene" "benzene, 1-fluoro-3-methoxy-" "fr co1[wln]" "2-fluoro-4-methoxybenzene" "agn-pc-04rklw" "1-fluoro-3-methoxy-benzene" "f105" "m-fluoroanisole;benzene, 1-fluoro-3-methoxy-;1-fluoro-3-methoxy-benzene;1-fluoro-3-methoxybenzene;3-fluorophenyl methyl ether;" );
+gibbsFormation
+{
+    dHf_298   -291080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     359.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-188970.0
+    phase     gas;
+}

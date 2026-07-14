@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethyl acetylmalonate  (C9H14O5, CAS 570-08-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        diethylAcetylmalonate;
+formula     C9H14O5;
+CAS         570-08-1;
+InChIKey    SQAUUQRBOCJRCW-UHFFFAOYSA-N;
+MW          202.206;      // g/mol [origin=calculated method=formula-sum]
+Tc          763.72;      // K   [origin=predictive method=joback]
+Pc          24.975;      // bar [origin=predictive method=joback]
+omega       0.8567;      // -   [origin=predictive method=lee-kesler]
+Tb          575.39;      // K   [origin=predictive method=joback]
+HvapTb      56800.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (51.202 0.72716 -0.0002611 -2.784e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 2; } { group CH; count 1; } { group CH3CO; count 1; } { group COO; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 2; } { group CH; count 1; } { group CdO; count 1; } { group COO; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "diethyl 2-ethanoylpropanedioate" "diethyl 2-acetylmalonate" "propanedioic acid, acetyl-, diethyl ester" "acetyl diethyl malonate" "ethyl acetomalonate" "malonic acid, acetyl-, diethyl ester" "c-acetylmalonic ester" "diethyl acetomalonate" "diethyl 2-acetylpropanedioate" "1,3-diethyl 2-acetylpropanedioate" "q718" "propanedioic acid, 2-acetyl-, 1,3-diethyl ester" );
+gibbsFormation
+{
+    dHf_298   -981510.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     626.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-727200.0
+    phase     gas;
+}

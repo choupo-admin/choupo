@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: anthracene-d10  (C14D10, CAS 1719-06-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C14D10 (delta D+10H-10; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        anthraceneD10;
+formula     C14D10;
+CAS         1719-06-8;
+InChIKey    MWPLVEDNUUSJAV-LHNTUAQVSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          188.294;      // g/mol [origin=calculated method=formula-sum]
+Tc          843.46;      // K   [origin=predictive method=joback]
+Pc          32.430;      // bar [origin=predictive method=joback]
+omega       0.4973;      // -   [origin=predictive method=lee-kesler]
+Tb          589.54;      // K   [origin=predictive method=joback]
+HvapTb      52976.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-92.33 1.188 -0.0009754 3.182e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 10; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5,6,7,8,9,10-decadeuterioanthracene" "anthracene-d10-" "anthracene. perdeutero-" "(2h10)anthracene" "perdeuterioanthracene" "anthracene-d10 >98 atom % d" "de740" );
+gibbsFormation
+{
+    dHf_298   274910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     370.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=383080.0
+    phase     gas;
+}

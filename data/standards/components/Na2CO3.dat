@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Sodium carbonate (Na2CO3), SODA ASH (anhydrous).  CAS 497-19-8.
+
+  A NON-VOLATILE crystalline salt: never enters the vapour (K = 0).  Soda-ash
+  causticising, water softening, glass-batch and CO2-capture (carbonate loop)
+  exercises; the carbonate partner to NaHCO3.  Carries the solid-phase
+  formation datum and a real solid heat capacity.
+
+  PRIMARY: Wagman et al., NBS Tables of Chemical Thermodynamic Properties,
+  J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982) -- PUBLIC DOMAIN.
+\*---------------------------------------------------------------------------*/
+
+name        Na2CO3;
+formula     Na2CO3;
+CAS         497-19-8;
+
+MW          105.988;           // kg/kmol  (anhydrous)
+
+role        nonvolatile;       // never goes to the vapour (K = 0)
+
+solid
+{
+    rho_p   2540.0;            // anhydrous soda-ash particle density [kg/m^3]
+}
+
+gibbsFormation
+{
+    dHf_298   -1130680;        // J/mol  [Wagman et al. NBS Tables 1982]
+    s_298     134.98;          // J/(mol*K) [Wagman 1982]
+    phase     solid;
+}
+
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = a0  [J/(mol*K)], constant
+    coefficients  ( 112.3 );           // Cp(298) [Wagman et al. NBS Tables 1982]
+    Trange        ( 298  600 );        // constant-Cp validity flag (near ambient)
+}
+
+provenance
+{
+    gibbsFormation { origin literature; method "Wagman et al. NBS Tables 1982 (anhydrous)"; }
+    solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
+    rho_p { origin literature; method "anhydrous Na2CO3 density ~2.54 g/cm3"; }
+}

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1,2-bis(trimethoxysilyl)ethane  (C8H22O6Si2, CAS 18406-41-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  WARNING: Joback fragmentation INCOMPLETE -- group atoms do not close the
+  formula C8H22O6Si2 (delta Si+2; Joback lacks these groups).  The `joback`
+  block AND every property estimate below are therefore UNRELIABLE for this
+  compound.  Identity and UNIFAC groups are still valid.
+\*---------------------------------------------------------------------------*/
+
+name        12BisTrimethoxysilylEthane;
+formula     C8H22O6Si2;
+CAS         18406-41-2;
+InChIKey    JCGDCINCKDQXDX-UHFFFAOYSA-N;
+jobackIncomplete   true;   // group atoms do not close the formula
+MW          270.428;      // g/mol [origin=calculated method=formula-sum]
+Tc          693.68;      // K   [origin=predictive method=joback]
+Pc          18.452;      // bar [origin=predictive method=joback]
+omega       0.6394;      // -   [origin=predictive method=lee-kesler]
+Tb          519.96;      // K   [origin=predictive method=joback]
+HvapTb      48450.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (230.252 -0.02768 0.0010842 -6.792e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH3O; count 6; } { group Si; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 6; } { group CH2; count 2; } { group O; count 6; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "trimethoxy(2-trimethoxysilylethyl)silane" "hexamethoxydisilylethane" "3,3,6,6-tetramethoxy-2,7-dioxa-3,6-disilaoctane" "2,7-dioxa-3,6-disilaoctane, 3,3,6,6-tetramethoxy-" "1,2-ethylenebis(trimethoxysilane)" "1,4-disilabutane, 1,1,1,4,4,4-hexamethoxy-" "ethylenebis(trimethoxysilane)" "1,2-bis(trimethoxylsilyl)ethane" "1,2-bis(trimethoxysilyl)ethane (btmse)" );
+gibbsFormation
+{
+    dHf_298   -1225010.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     788.23;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-823040.0
+    phase     gas;
+}

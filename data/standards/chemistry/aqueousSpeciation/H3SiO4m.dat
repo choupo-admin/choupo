@@ -1,0 +1,6 @@
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species H3SiO4m; ion "H3SiO4-"; z -1; masters ( { ion H4SiO4; nu 1; } { ion H; nu -1; } );
+      logK25 -9.83; dH 25606.1; analytic ( -302.3724 -0.050698 15669.69 108.18466 -1119669 ); source "USGS PHREEQC phreeqc.dat (public domain)";
+

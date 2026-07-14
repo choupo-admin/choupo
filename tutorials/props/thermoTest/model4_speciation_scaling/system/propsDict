@@ -1,0 +1,50 @@
+/*---------------------------------------------------------------------------*\
+  thermoTest / model4_speciation_scaling
+
+  The SAME system {NaCl, CaSO4, water} in its THIRD role: a MULTI-ION broth.
+  Here we no longer think of "NaCl" or "CaSO4" -- the aqueous speciation engine
+  reasons in the shared ions Na+, Cl-, Ca2+, SO4-2 (plus the neutral ion pair
+  CaSO4aq), and reports SATURATION INDICES  SI = log10(IAP/Ksp)  for every solid
+  the ions can form: gypsum (CaSO4.2H2O) and halite (NaCl).
+
+  Na+ comes from NaCl, Cl- from NaCl, Ca2+/SO4-2 from CaSO4 -- but once dissolved
+  there are no salt boundaries, only ions.  This is why a "salt" cannot carry its
+  own activity model: the ion pool is shared (the species/ tier of the tree).
+
+  MODEL: Pitzer-HMW is MANDATORY here.  The ionic strength is I ~ 3.3 mol/kg
+  (NaCl-dominated); the Davies law is only trustworthy to I ~ 0.5 m, so the
+  `activityModel` is declared explicitly (no silent default) -- with Davies the
+  saturation indices at this I are quantitatively meaningless.
+
+  The brine is NaCl-dominated (3 mol/kg, near seawater) with CaSO4 (0.10 mol/kg)
+  right at gypsum saturation (SI ~ 0).  Charge balances exactly (Na + 2 Ca =
+  Cl + 2 SO4), so pH is pinned at 7.  The scan concentrates the brine
+  (evaporation; r = fraction of water removed): gypsum scales first, at r ~ 0.035
+  (it starts saturated), halite only near r ~ 0.50.  Note m_CaSO4aq ~ 0.005: the
+  neutral ion pair is a real fraction of the calcium -- "dissociation" is partial.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    // -- the mixed brine, speciated: the ion pool + SI of each solid -----------
+    {
+        name        brine;
+        type        speciate;
+        activityModel pitzerHMW;            // MANDATORY at I ~ 3 mol/kg -- Davies is invalid above ~0.5 m
+        totals      { Na 3.0 mol/kg; Cl 3.0 mol/kg; Ca 0.10 mol/kg; SO4 0.10 mol/kg; }
+        pH          7.0;                    // charge already balances -> neutral
+        diagSpecies ( CaSO4aq );            // the neutral ion pair (partial "dissociation")
+        output      { file speciation_brine.csv; }
+    }
+
+    // -- concentrate it (evaporate): watch gypsum scale, then halite ----------
+    {
+        name        concentrate;
+        type        scalingScan;
+        activityModel pitzerHMW;            // MANDATORY at high I (Davies dies above ~0.5 m)
+        totals      { Na 3.0 mol/kg; Cl 3.0 mol/kg; Ca 0.10 mol/kg; SO4 0.10 mol/kg; }
+        pH          7.0;
+        recovery    { from 0; to 0.8; n 16; }
+        output      { file scaling_scan.csv; }
+    }
+);

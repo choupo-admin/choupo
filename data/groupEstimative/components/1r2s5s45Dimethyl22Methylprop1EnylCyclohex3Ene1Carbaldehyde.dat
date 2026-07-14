@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: (1r,2s,5s)-4,5-dimethyl-2-(2-methylprop-1-enyl)cyclohex-3-ene-1-carbaldehyde  (C13H20O, CAS 42507-58-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        1r2s5s45Dimethyl22Methylprop1EnylCyclohex3Ene1Carbaldehyde;
+formula     C13H20O;
+CAS         42507-58-4;
+InChIKey    DBKJZSIBBKOBCN-AVGNSLFASA-N;
+MW          192.302;      // g/mol [origin=calculated method=formula-sum]
+Tc          772.65;      // K   [origin=predictive method=joback]
+Pc          21.139;      // bar [origin=predictive method=joback]
+omega       0.5414;      // -   [origin=predictive method=lee-kesler]
+Tb          564.09;      // K   [origin=predictive method=joback]
+HvapTb      52055.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-43.05 1.18688 -0.00065294 1.231e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 1; } { group CH; count 3; } { group CH=C; count 2; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH; count 1; } { group dC; count 1; } { group CH2_ring; count 1; } { group CH_ring; count 3; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "3-cyclohexene-1-carboxaldehyde, 4,5-dimethyl-2-(2-methyl-1-propen-1-yl)-, (1r,2s,5s)-rel-" "(1alpha,2alpha,5alpha)-4,5-dimethyl-2-(2-methylpropen-1-yl)cyclohex-3-ene-1-carbaldehyde" );
+gibbsFormation
+{
+    dHf_298   -229850.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     511.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=60090.0
+    phase     gas;
+}

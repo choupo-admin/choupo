@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isopropyl isobutyrate  (C7H14O2, CAS 617-50-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isopropylIsobutyrate;
+formula     C7H14O2;
+CAS         617-50-5;
+InChIKey    WVRPFQGZHKZCEB-UHFFFAOYSA-N;
+MW          130.187;      // g/mol [origin=calculated method=formula-sum]
+Tc          597.87;      // K   [origin=predictive method=joback]
+Pc          28.627;      // bar [origin=predictive method=joback]
+omega       0.4341;      // -   [origin=predictive method=lee-kesler]
+Tb          417.10;      // K   [origin=predictive method=joback]
+HvapTb      37807.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (18.57 0.62588 -0.0002688 1.4e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH; count 2; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propan-2-yl 2-methylpropanoate" "isobutyric acid isopropyl ester" "propanoic acid, 2-methyl-, 1-methylethyl ester" "isobutyric acid, isopropyl ester" "isopropyl 2-methylpropanoate" "1-methylethyl 2-methylpropanoate" );
+gibbsFormation
+{
+    dHf_298   -515650.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     460.9;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-307190.0
+    phase     gas;
+}

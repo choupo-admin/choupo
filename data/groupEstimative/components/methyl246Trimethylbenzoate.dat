@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methyl 2,4,6-trimethylbenzoate  (C11H14O2, CAS 2282-84-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        methyl246Trimethylbenzoate;
+formula     C11H14O2;
+CAS         2282-84-0;
+InChIKey    PXLABDTXHJPRRH-UHFFFAOYSA-N;
+MW          178.231;      // g/mol [origin=calculated method=formula-sum]
+Tc          761.06;      // K   [origin=predictive method=joback]
+Pc          25.430;      // bar [origin=predictive method=joback]
+omega       0.5856;      // -   [origin=predictive method=lee-kesler]
+Tb          551.12;      // K   [origin=predictive method=joback]
+HvapTb      51749.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (27.29 0.73668 -0.00031008 1.34e-08);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 1; } { group ACH; count 2; } { group AC; count 1; } { group ACCH3; count 3; } { group COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group dCH_ring; count 2; } { group dC_ring; count 4; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methyl .beta.-isodurilate" "benzoic acid, 2,4,6-trimethyl-, methyl ester" "methyl-2,4,6-trimethyl benzoate" "2,4,6-trimethylbenzoic acid methyl ester" "i507" "2,4,6-trimethyl-benzoic acid methyl ester" "benzoic acid,2,4,6-trimethyl-, methyl ester" "2,4,6-trimethylbenzoicacid methyl ester;methyl 2,4,6-trimethylbenzoate;methyl mesitoate;methyl b-isodurilate;b-isodurilic acid methyl ester;" );
+gibbsFormation
+{
+    dHf_298   -385530.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     510.83;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-185110.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-methyliminodiacetic acid  (C5H9NO4, CAS 4408-64-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        nMethyliminodiaceticAcid;
+formula     C5H9NO4;
+CAS         4408-64-4;
+InChIKey    XWSGEVNYFYKXCP-UHFFFAOYSA-N;
+MW          147.13;      // g/mol [origin=calculated method=formula-sum]
+Tc          821.61;      // K   [origin=predictive method=joback]
+Pc          43.169;      // bar [origin=predictive method=joback]
+omega       1.1592;      // -   [origin=predictive method=lee-kesler]
+Tb          617.46;      // K   [origin=predictive method=joback]
+HvapTb      63095.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-3.148 0.70432 -0.000506 1.417e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 2; } { group CH3N; count 1; } { group COOH; count 2; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 1; } { group CH2; count 2; } { group COOH; count 2; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-[2-hydroxy-2-oxoethyl(methyl)amino]ethanoic acid" "methyliminodiacetic acid" "mida" "methylimidodiacetic acid" "n-methyliminodiaceticacid" "2,2'-(methylazanediyl)diacetic acid" "(methylimino)diacetic acid" "[(carboxymethyl)(methyl)amino]acetic acid" "quadrapure&reg; ida" "quadrapure(tm) ida" "quadrapure(tm) iminodiacetate" "quadrapure&reg; iminodiacetate" );
+gibbsFormation
+{
+    dHf_298   -779540.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     473.1;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-585820.0
+    phase     gas;
+}

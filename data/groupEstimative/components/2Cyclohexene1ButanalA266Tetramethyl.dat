@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-cyclohexene-1-butanal,a,2,6,6-tetramethyl-  (C14H24O, CAS 73398-85-3)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Cyclohexene1ButanalA266Tetramethyl;
+formula     C14H24O;
+CAS         73398-85-3;
+InChIKey    VDBFZEMBBKEKPI-UHFFFAOYSA-N;
+MW          208.345;      // g/mol [origin=calculated method=formula-sum]
+Tc          792.58;      // K   [origin=predictive method=joback]
+Pc          19.894;      // bar [origin=predictive method=joback]
+omega       0.6046;      // -   [origin=predictive method=lee-kesler]
+Tb          587.40;      // K   [origin=predictive method=joback]
+HvapTb      53013.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-87.698 1.58628 -0.00121244 4.115e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 4; } { group CH; count 2; } { group C; count 1; } { group CH=C; count 1; } { group CHO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 2; } { group CH; count 1; } { group CH2_ring; count 2; } { group CH_ring; count 1; } { group C_ring; count 1; } { group dCH_ring; count 1; } { group dC_ring; count 1; } { group OdCH_al; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2-methyl-4-(2,6,6-trimethylcyclohex-2-en-1-yl)butanal" "alpha,2,6,6-tetramethyl-2-cyclohexene-1-butyraldehyde" "2-cyclohexene-1-butanal, alpha,2,6,6-tetramethyl-" "2-cyclohexene-1-butanal, .alpha.,2,6,6-tetramethyl-" "alpha, 2, 6, 6-tetramethyl-2-cyclohexene-1-butyraldehyde;" );
+gibbsFormation
+{
+    dHf_298   -327620.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     663.58;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-3380.0
+    phase     gas;
+}

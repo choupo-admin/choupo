@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: firemaster 695  (C14H4Br10O2, CAS 61262-53-1)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        firemaster695;
+formula     C14H4Br10O2;
+CAS         61262-53-1;
+InChIKey    JJEPQBZQAGCZTH-UHFFFAOYSA-N;
+MW          1003.224;      // g/mol [origin=calculated method=formula-sum]
+Tc          1650.63;      // K   [origin=predictive method=joback]
+Pc          51.461;      // bar [origin=predictive method=joback]
+omega       2.1921;      // -   [origin=predictive method=lee-kesler]
+Tb          1329.52;      // K   [origin=predictive method=joback]
+HvapTb      127100.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (198.252 0.8366 -0.0006218 1.888e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group AC; count 12; } { group CH2O; count 2; } { group Br; count 10; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 2; } { group dC_ring; count 12; } { group Br; count 10; } { group O; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,2,3,4,5-pentakis(bromanyl)-6-[2-[2,3,4,5,6-pentakis(bromanyl)phenoxy]ethoxy]benzene" "decabromodiphenoxyethane" "ethylene bis(pentabromophenoxide)" "1,2-bis(pentabromophenoxy)ethane" "1,1'-[ethane-1,2-diylbis(oxy)]bis(pentabromobenzene)" "1,1'-(ethane-1,2-diylbisoxy)bis(pentabromobenzene)" "1,1'-(1,2-ethanediylbis(oxy))bis(2,3,4,5,6-pentabromobenzene)" "benzene, 1,1'-(1,2-ethanediylbis(oxy))bis(2,3,4,5,6-pentabromo-" "benzene, 1,1'-[1,2-ethanediylbis(oxy)]bis[2,3,4,5,6-pentabromo-" "benzene,1,1'-[1,2-ethanediylbis(oxy)]bis[2,3,4,5,6-pentabromo-" "1,2,3,4,5-pentabromo-6-[2-(2,3,4,5,6-pentabromophenoxy)ethoxy]benzene" "1,2-bis(2,3,4,5,6-pentabromophenoxy)ethane;1,2-bis(pentabromophenoxy)ethane;bis(pentabromophenoxy)ethane;firemaster 695;pyro-chek 77b;" );
+gibbsFormation
+{
+    dHf_298   24930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     959.75;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=128720.0
+    phase     gas;
+}

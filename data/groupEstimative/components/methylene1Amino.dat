@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methylene, 1-amino-  (CH4N, CAS 35430-17-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        methylene1Amino;
+formula     CH4N;
+CAS         35430-17-2;
+InChIKey    XXJGBENTLXFVFI-UHFFFAOYSA-N;
+role        radical;
+MW          30.05;      // g/mol [origin=calculated method=formula-sum]
+Tc          469.32;      // K   [origin=predictive method=joback]
+Pc          64.932;      // bar [origin=predictive method=joback]
+omega       0.2304;      // -   [origin=predictive method=lee-kesler]
+Tb          289.61;      // K   [origin=predictive method=joback]
+HvapTb      27812.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (12.57 0.1307 -5.5e-05 5.4e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group dCH2; count 1; } { group NH2; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methanamine" "aminomethyl" "aminomethyl radical" );
+gibbsFormation
+{
+    dHf_298   36640.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     245.24;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=71720.0
+    phase     gas;
+}

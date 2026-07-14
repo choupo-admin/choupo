@@ -68,6 +68,9 @@ export interface StreamSpec {
   T: number;
   P: number;
   composition: { [component: string]: number };
+  /** Vapour fraction, when the state carries it (0/ files do) -- lets the
+   *  pre-run canvas colour a feed by phase before a solve. */
+  vf?: number;
 }
 
 /** Energy-wire producer port.  Declared on the producing unit.

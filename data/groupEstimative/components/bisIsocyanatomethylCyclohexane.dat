@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: bis(isocyanatomethyl)cyclohexane  (C10H14N2O2, CAS 42170-25-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        bisIsocyanatomethylCyclohexane;
+formula     C10H14N2O2;
+CAS         42170-25-2;
+InChIKey    QXRRAZIZHCWBQY-UHFFFAOYSA-N;
+MW          194.234;      // g/mol [origin=calculated method=formula-sum]
+Tc          803.94;      // K   [origin=predictive method=joback]
+Pc          31.562;      // bar [origin=predictive method=joback]
+omega       0.6863;      // -   [origin=predictive method=lee-kesler]
+Tb          581.53;      // K   [origin=predictive method=joback]
+HvapTb      56196.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+groups
+{
+    unifac ( { group CH2; count 7; } { group C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    // UNRESOLVED unifac subgroup(s) not yet in data/standards/unifac/groups.dat: ?109:2
+    joback ( { group CH2; count 2; } { group dCd; count 2; } { group CH2_ring; count 5; } { group C_ring; count 1; } { group dO_oth; count 2; } { group Nd; count 2; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,1-bis(isocyanatomethyl)cyclohexane" "cyclohexane, bis(isocyanatomethyl)-" );
+// formation datum unavailable (element entropy missing): dHf_298=-190990.0 dGf_298=None

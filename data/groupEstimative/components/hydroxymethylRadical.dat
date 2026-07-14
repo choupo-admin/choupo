@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hydroxymethyl radical  (CH3O, CAS 2597-43-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=radical. Tool: chemicals/thermo/rdkit (MIT/BSD).
+  reactiveIntermediate (radical): KINETICS ONLY -- no VLE, no groups.
+\*---------------------------------------------------------------------------*/
+
+name        hydroxymethylRadical;
+formula     CH3O;
+CAS         2597-43-5;
+InChIKey    CBOIHMRHGLHBPB-UHFFFAOYSA-N;
+role        radical;
+MW          31.034;      // g/mol [origin=calculated method=formula-sum]
+Tc          469.20;      // K   [origin=predictive method=joback]
+Pc          68.755;      // bar [origin=predictive method=joback]
+omega       0.4991;      // -   [origin=predictive method=lee-kesler]
+Tb          309.26;      // K   [origin=predictive method=joback]
+HvapTb      33850.0;      // J/mol [origin=predictive method=joback]
+
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (11.37 0.1028 -4.2e-05 4.2e-09);
+    Trange        (200 1000);
+}
+groups
+{
+    joback ( { group dCH2; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "methanol" "hydroxymethyl" "ch2oh" );
+gibbsFormation
+{
+    dHf_298   -149380.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     244.53;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-131550.0
+    phase     gas;
+}

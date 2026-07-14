@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: eicosane  (C20H42, CAS 112-95-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        eicosane;
+formula     C20H42;
+CAS         112-95-8;
+InChIKey    CBFCDTFDPHXCNY-UHFFFAOYSA-N;
+MW          282.556;      // g/mol [origin=calculated method=formula-sum]
+Tc          817.63;      // K   [origin=predictive method=joback]
+Pc          10.155;      // bar [origin=predictive method=joback]
+omega       0.8086;      // -   [origin=predictive method=lee-kesler]
+Tb          657.20;      // K   [origin=predictive method=joback]
+HvapTb      60114.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-15.292 1.90384 -0.0010642 2.268e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 18; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 18; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "icosane" "MPCM 37" "parafol 20z" "n-eicosane" "n-icosane" "CCRIS 663" "octyldodecane" "ai3-28404" "EC 204-018-1" "eicosane, analytical standard" "nonadecane, methyl-" "eicosane; mpcm 37; nsc 62789; parafol 20z; n-eicosane" );
+gibbsFormation
+{
+    dHf_298   -456130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     935.05;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=117520.0
+    phase     gas;
+}

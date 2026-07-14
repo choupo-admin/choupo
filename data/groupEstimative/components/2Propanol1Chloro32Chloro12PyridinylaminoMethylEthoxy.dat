@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 2-propanol, 1-chloro-3-[2-chloro-1-[(2-pyridinylamino)methyl]ethoxy]-  (C11H16Cl2N2O2, CAS 68901-18-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        2Propanol1Chloro32Chloro12PyridinylaminoMethylEthoxy;
+formula     C11H16Cl2N2O2;
+CAS         68901-18-8;
+InChIKey    JFIKCGBOLQRWNX-UHFFFAOYSA-N;
+MW          279.161;      // g/mol [origin=calculated method=formula-sum]
+Tc          980.86;      // K   [origin=predictive method=joback]
+Pc          27.354;      // bar [origin=predictive method=joback]
+omega       1.3274;      // -   [origin=predictive method=lee-kesler]
+Tb          770.41;      // K   [origin=predictive method=joback]
+HvapTb      82085.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (21.044 1.07606 -0.00063026 1.295e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH; count 1; } { group CH2NH; count 1; } { group C5H4N; count 1; } { group CH2Cl; count 2; } { group C2H4O2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH2; count 4; } { group CH; count 2; } { group dCH_ring; count 4; } { group dC_ring; count 1; } { group Cl; count 2; } { group OH; count 1; } { group O; count 1; } { group NH; count 1; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1-chloranyl-3-[1-chloranyl-3-(pyridin-2-ylamino)propan-2-yl]oxy-propan-2-ol" "1-chloro-3-(1-(chloromethyl)-2-(2-pyridylamino)ethoxy)propan-2-ol" "1-chloro-3-[1-(chloromethyl)-2-(2-pyridylamino)ethoxy]propan-2-ol" "2-propanol, 1-chloro-3-(1-(chloromethyl)-2-(2-pyridinylamino)ethoxy)-" "2-propanol, 1-chloro-3-[1-(chloromethyl)-2-(2-pyridinylamino)ethoxy]-" "1-chloro-3-[1-chloro-3-(pyridin-2-ylamino)propan-2-yl]oxypropan-2-ol" );
+gibbsFormation
+{
+    dHf_298   -274070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     641.36;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=50030.0
+    phase     gas;
+}

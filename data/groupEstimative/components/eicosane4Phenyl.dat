@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: eicosane, 4-phenyl-  (C26H46, CAS 2400-03-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        eicosane4Phenyl;
+formula     C26H46;
+CAS         2400-03-5;
+InChIKey    RFNYELHDUBVQMR-UHFFFAOYSA-N;
+MW          358.654;      // g/mol [origin=calculated method=formula-sum]
+Tc          1009.44;      // K   [origin=predictive method=joback]
+Pc          8.779;      // bar [origin=predictive method=joback]
+omega       0.8006;      // -   [origin=predictive method=lee-kesler]
+Tb          820.72;      // K   [origin=predictive method=joback]
+HvapTb      75358.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-56.333 2.40084 -0.001425 3.232e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 17; } { group ACH; count 5; } { group ACCH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 17; } { group CH; count 1; } { group dCH_ring; count 5; } { group dC_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "icosan-4-ylbenzene" "benzene, (1-propylheptadecyl)-" "4-phenyleicosane" );
+gibbsFormation
+{
+    dHf_298   -348720.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1052.82;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=278010.0
+    phase     gas;
+}

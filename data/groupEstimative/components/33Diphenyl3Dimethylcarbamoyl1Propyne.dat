@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,3-diphenyl-3-dimethylcarbamoyl-1-propyne  (C18H17NO, CAS 56767-15-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        33Diphenyl3Dimethylcarbamoyl1Propyne;
+formula     C18H17NO;
+CAS         56767-15-8;
+InChIKey    QHVZDRXOVUJDMT-UHFFFAOYSA-N;
+MW          263.34;      // g/mol [origin=calculated method=formula-sum]
+Tc          970.46;      // K   [origin=predictive method=joback]
+Pc          23.657;      // bar [origin=predictive method=joback]
+omega       0.6884;      // -   [origin=predictive method=lee-kesler]
+Tb          718.00;      // K   [origin=predictive method=joback]
+HvapTb      67565.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-95.31 1.68384 -0.00127943 3.7265e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group C; count 1; } { group ACH; count 10; } { group AC; count 2; } { group CH_C; count 1; } { group CON_CH3_2; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group C; count 1; } { group tCH; count 1; } { group tC; count 1; } { group dCH_ring; count 10; } { group dC_ring; count 2; } { group CdO; count 1; } { group N; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "n,n-dimethyl-2,2-diphenyl-but-3-ynamide" "n,n-dimethyl-alpha-ethynyl-alpha-phenylbenzeneacetamide" "benzeneacetamide, alpha-ethynyl-n,n-dimethyl-alpha-phenyl-" "benzeneacetamide, n,n-dimethyl-alpha-ethynyl-alpha-phenyl-" "n,n-dimethyl-2,2-diphenylbut-3-ynamide" );
+gibbsFormation
+{
+    dHf_298   296310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     617.7;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=533270.0
+    phase     gas;
+}

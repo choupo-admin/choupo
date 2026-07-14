@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: cyclohexene, 4,4'-(1,2-ethenediyl)bis-  (C14H20, CAS 17527-28-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        cyclohexene4412EthenediylBis;
+formula     C14H20;
+CAS         17527-28-5;
+InChIKey    JLAKTYIHPZLLKX-UHFFFAOYSA-N;
+MW          188.314;      // g/mol [origin=calculated method=formula-sum]
+Tc          800.38;      // K   [origin=predictive method=joback]
+Pc          24.314;      // bar [origin=predictive method=joback]
+omega       0.3908;      // -   [origin=predictive method=lee-kesler]
+Tb          561.50;      // K   [origin=predictive method=joback]
+HvapTb      48158.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-139.67 1.486 -0.00095816 2.304e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH2; count 6; } { group CH; count 2; } { group CH=CH; count 3; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH; count 2; } { group CH2_ring; count 6; } { group CH_ring; count 2; } { group dCH_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "4-(2-cyclohex-3-en-1-ylethenyl)cyclohexene" "4,4'-(vinylene-1,2-diyl)biscyclohexene" "cyclohexene,4,4'-(1,2-ethenediyl)bis-" "4-(2-cyclohex-3-enylvinyl)cyclohex-1-ene" "ethylene,1,2-di-3-cyclohexen-1-yl- (8ci);(e)-1,2-bis(3-cyclohexen-1-yl)ethylene;(z)-1,2-bis(3-cyclohexen-1-yl)ethylene;bce;trans-1,2-bis(3-cyclohexen-1-yl)ethylene;trans-1,2-di-3-cyclohexen-1-ylethylene;4,4'-(e)-ethene-1,2-diyldicyclohexene;" );
+gibbsFormation
+{
+    dHf_298   9130.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     559.02;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=256040.0
+    phase     gas;
+}

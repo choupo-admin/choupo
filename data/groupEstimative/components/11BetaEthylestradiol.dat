@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 11-beta-ethylestradiol  (C20H28O2, CAS 64109-72-4)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        11BetaEthylestradiol;
+formula     C20H28O2;
+CAS         64109-72-4;
+InChIKey    QUXNMGWLKZIPHL-QCUBTISBSA-N;
+MW          300.442;      // g/mol [origin=calculated method=formula-sum]
+Tc          1105.62;      // K   [origin=predictive method=joback]
+Pc          20.755;      // bar [origin=predictive method=joback]
+omega       1.2315;      // -   [origin=predictive method=lee-kesler]
+Tb          876.65;      // K   [origin=predictive method=joback]
+HvapTb      90750.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-231.669 2.59994 -0.00224932 8.218e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 5; } { group CH; count 4; } { group C; count 1; } { group ACH; count 3; } { group ACCH2; count 1; } { group ACCH; count 1; } { group OH; count 1; } { group ACOH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH2_ring; count 5; } { group CH_ring; count 5; } { group C_ring; count 1; } { group dCH_ring; count 3; } { group dC_ring; count 3; } { group OH; count 1; } { group OH_phenol; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "(8s,9s,11s,13s,14s,17s)-11-ethyl-13-methyl-6,7,8,9,11,12,14,15,16,17-decahydrocyclopenta[a]phenanthrene-3,17-diol" "11-beta-ethylestra-1,3,5(10)-triene-3,17-beta-diol" "estra-1,3,5(10)-triene-3,17-beta-diol, 11-beta-ethyl-" );
+gibbsFormation
+{
+    dHf_298   -400310.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     611.31;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=58290.0
+    phase     gas;
+}

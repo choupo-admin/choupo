@@ -131,14 +131,30 @@ const EquipCoeffs cycloneCoeffs {
     true,  2.5e3, 1.0, 0.70, 2001.0
 };
 
+// Centrifugal compressor (+ electric drive) -- Turton table A.1 / A.6.  Size
+// driver = shaft power [kW].  F_BM = 2.7 (direct, incl. drive; F_P = 1 --
+// Turton folds the discharge pressure into the power, not a separate factor).
+// Correlation validity 450-3000 kW; the range is widened here to cover a
+// world-scale syngas compressor, an EXTRAPOLATION the pass flags aloud.
+const EquipCoeffs compressorCoeffs {
+    2.2897, 1.3604, -0.1027,
+    2.70, 0.0,
+    0.0, 0.0, 0.0,
+    450.0, 30000.0,
+    "power",
+    false, 0.0, 1.0, 0.6, 2001.0
+};
+
 const EquipCoeffs& coeffsFor(const std::string& equipType)
 {
     if (equipType == "stirredTank")  return vesselCoeffs;
+    if (equipType == "vessel")       return vesselCoeffs;
     if (equipType == "shellTubeHX")  return hxCoeffs;
     if (equipType == "evaporator")   return evaporatorCoeffs;
     if (equipType == "crystalliser") return crystalliserCoeffs;
     if (equipType == "sprayDryer")   return sprayDryerCoeffs;
     if (equipType == "cyclone")      return cycloneCoeffs;
+    if (equipType == "compressor")   return compressorCoeffs;
     throw std::runtime_error("Guthrie: no cost correlation for equipment '"
         + equipType + "'");
 }
@@ -222,7 +238,7 @@ CostBreakdown Guthrie::cost(const EquipmentSizing& dim, const Material& mat) con
         ? dim.values.at("pressureDesign") : 1.0;
     const scalar P_gauge    = std::max(P_des_bar - 1.0, 0.0);
     scalar F_P = 1.0;
-    if (dim.equipmentType == "stirredTank")
+    if (dim.equipmentType == "stirredTank" || dim.equipmentType == "vessel")
     {
         // Use ASME thin-wall formula; needs D and σ_y of the material.
         const scalar D_m   = dim.values.count("D") ? dim.values.at("D") : 0.0;

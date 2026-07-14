@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 3,7-dimethylocta-2,6-dienyl propanoate  (C13H22O2, CAS 105-90-8)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        37Dimethylocta26DienylPropanoate;
+formula     C13H22O2;
+CAS         105-90-8;
+InChIKey    BYCHQEILESTMQU-UHFFFAOYSA-N;
+MW          210.317;      // g/mol [origin=calculated method=formula-sum]
+Tc          748.43;      // K   [origin=predictive method=joback]
+Pc          18.154;      // bar [origin=predictive method=joback]
+omega       0.6595;      // -   [origin=predictive method=lee-kesler]
+Tb          563.34;      // K   [origin=predictive method=joback]
+HvapTb      52015.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-11.266 1.22388 -0.000761 1.848e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 3; } { group CH=C; count 2; } { group CH2COO; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH2; count 4; } { group dCH; count 2; } { group dC; count 2; } { group COO; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "2,6-octadien-1-ol, 3,7-dimethyl-, propanoate, (e)-" "3,7-dimethylocta-2,6-dien-1-yl propanoate" "2,6-octadien-1-ol, 3,7-dimethyl-, propanoate" "2,6-octadien-1-ol, 3,7-dimethyl-, 1-propanoate" "2,6-octadien-1-ol, 3,7-dimethyl-, 1-propanoate, (2e)-" "2,6-octadien-1-ol, 3,7-dimethyl-, 1-propanoate, (2z)-" "2,6-octadien-1-ol,3,7-dimethyl-, 1-propanoate" "2,6-octadien-1-ol,3,7-dimethyl-, 1-propanoate, (2e)-" "2,6-octadien-1-ol,3,7-dimethyl-, 1-propanoate, (2z)-" "2,6-octadien-1-ol,3,7-dimethyl-, propanoate, (2e)- (9ci);2,6-octadien-1-ol, 3,7-dimethyl-,propanoate, (e)-;2,6-octadien-1-ol, 3,7-dimethyl-, propionate, (e)- (8ci);propionic acid, geranyl ester (6ci);(e)-3,7-dimethyl-2,6-octadien-1-olpropanoate;geraniol propanoate;geraniol propionate;geranyl propanoate;trans-3,7-dimethyl-2,6-octadienyl propionate;" "2,6-octadien-1-ol,3,7-dimethyl-, propanoate, (2z)- (9ci); 2,6-octadien-1-ol, 3,7-dimethyl-,propanoate, (z)-; 2,6-octadien-1-ol, 3,7-dimethyl-, propionate, (z)- (8ci);2,6-octadien-1-ol, 3,7-dimethyl-, propionate, cis- (7ci);(z)-3,7-dimethyl-2,6-octadien-1-ol propanoate; nerol propionate; nerylpropanoate; neryl propionate" );
+gibbsFormation
+{
+    dHf_298   -414070.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     692.19;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-108450.0
+    phase     gas;
+}

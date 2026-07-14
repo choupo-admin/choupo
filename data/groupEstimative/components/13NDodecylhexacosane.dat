@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 13-n-dodecylhexacosane  (C38H78, CAS 55517-73-2)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        13NDodecylhexacosane;
+formula     C38H78;
+CAS         55517-73-2;
+InChIKey    IQPARKNJBHMRSZ-UHFFFAOYSA-N;
+MW          535.042;      // g/mol [origin=calculated method=formula-sum]
+Tc          1389.72;      // K   [origin=predictive method=joback]
+Pc          4.237;      // bar [origin=predictive method=joback]
+omega       -0.1296;      // -   [origin=predictive method=lee-kesler]
+Tb          1068.60;      // K   [origin=predictive method=joback]
+HvapTb      99794.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-33.336 3.61976 -0.0020466 4.405e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 34; } { group CH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 3; } { group CH2; count 34; } { group CH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "13-dodecylhexacosane" "hexacosane, 13-dodecyl-" );
+gibbsFormation
+{
+    dHf_298   -832930.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     1626.66;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=266640.0
+    phase     gas;
+}

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 5,8-dimethylquinoline  (C11H11N, CAS 2623-50-9)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        58Dimethylquinoline;
+formula     C11H11N;
+CAS         2623-50-9;
+InChIKey    VVLZEQKZPNOPNS-UHFFFAOYSA-N;
+MW          157.216;      // g/mol [origin=calculated method=formula-sum]
+Tc          805.48;      // K   [origin=predictive method=joback]
+Pc          33.529;      // bar [origin=predictive method=joback]
+omega       0.4894;      // -   [origin=predictive method=lee-kesler]
+Tb          560.60;      // K   [origin=predictive method=joback]
+HvapTb      51530.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-33.8 0.881 -0.0006177 1.783e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 2; } { group ACCH3; count 2; } { group C5H3N; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group dCH_ring; count 5; } { group dC_ring; count 4; } { group Nd_ring; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "quinoline, 5,8-dimethyl-" );
+gibbsFormation
+{
+    dHf_298   167080.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     369.51;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=318590.0
+    phase     gas;
+}

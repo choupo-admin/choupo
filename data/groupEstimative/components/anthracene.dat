@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: anthracene  (C14H10, CAS 120-12-7)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        anthracene;
+formula     C14H10;
+CAS         120-12-7;
+InChIKey    MWPLVEDNUUSJAV-UHFFFAOYSA-N;
+MW          178.234;      // g/mol [origin=calculated method=formula-sum]
+Tc          843.46;      // K   [origin=predictive method=joback]
+Pc          32.430;      // bar [origin=predictive method=joback]
+omega       0.4973;      // -   [origin=predictive method=lee-kesler]
+Tb          589.54;      // K   [origin=predictive method=joback]
+HvapTb      52976.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-92.33 1.188 -0.0009754 3.182e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group ACH; count 10; } { group AC; count 4; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group dCH_ring; count 10; } { group dC_ring; count 4; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "anthracin" "paranaphthalene" "green oil" "tetra olive n2g" "anthracen" "anthracene, pure" "anthracen [german]" "bis-alkylamino anthracene" "anthracene solution" "anthracene oil (coal tar fraction)" "coal tar pitch volatiles: anthracene" "acene" );
+gibbsFormation
+{
+    dHf_298   274910.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     370.96;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=383080.0
+    phase     gas;
+}

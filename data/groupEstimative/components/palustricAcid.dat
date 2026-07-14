@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: palustric acid  (C20H30O2, CAS 1945-53-5)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        palustricAcid;
+formula     C20H30O2;
+CAS         1945-53-5;
+InChIKey    MLBYBBUZURKHAW-UHFFFAOYSA-N;
+MW          302.458;      // g/mol [origin=calculated method=formula-sum]
+Tc          1097.88;      // K   [origin=predictive method=joback]
+Pc          17.232;      // bar [origin=predictive method=joback]
+omega       0.9346;      // -   [origin=predictive method=lee-kesler]
+Tb          857.58;      // K   [origin=predictive method=joback]
+HvapTb      77757.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (-230.23 2.65858 -0.00240724 9.324e-07);
+    Trange        (200 1000);
+}
+groups
+{
+    unifac ( { group CH3; count 4; } { group CH2; count 7; } { group CH; count 2; } { group C; count 2; } { group CH=C; count 1; } { group COOH; count 1; } { group C=C; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 4; } { group CH; count 1; } { group CH2_ring; count 7; } { group CH_ring; count 1; } { group C_ring; count 2; } { group dCH_ring; count 1; } { group dC_ring; count 3; } { group COOH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "1,4a-dimethyl-7-propan-2-yl-2,3,4,5,6,9,10,10a-octahydrophenanthrene-1-carboxylic acid" "8,13-abietadien-18-oic acid" "1-phenanthrenecarboxylic acid, 1,2,3,4,4a,4b,5,6,10,10a-decahydro-1,4a-dimethyl-7-(1-methylethyl)-, barium salt (2:1), (1r,4ar,4br,10ar)-" "1-phenanthrenecarboxylic acid, 1,2,3,4,4a,4b,5,6,10,10a-decahydro-1,4a-dimethyl-7-(1-methylethyl)-, barium salt, (1r,4ar,4br,10ar)-" "1-phenanthrenecarboxylic acid, 1,2,3,4,4a,4b,5,6,10,10a-decahydro-1,4a-dimethyl-7-(1-methylethyl)-, strontium salt (2:1), (1r,4ar,4br,10ar)-" "1-phenanthrenecarboxylic acid, 1,2,3,4,4a,4b,5,6,10,10a-decahydro-1,4a-dimethyl-7-(1-methylethyl)-, strontium salt, (1r,4ar,4br,10ar)-" "agn-pc-01zh4x" "podocarpa-8, 13-isopropyl-" "abieta-8,13-dien-18-oic acid" "1-phenanthrenecarboxylic acid, 1,2,3,4,4a,5,6,9,10,10a-decahydro-1,4a-dimethyl-7-(1-methylethyl)-, (1r-(1a, 4ab,10aa))-" "podocarpa-8,13-dien-15-oic acid, 13-isopropyl-" "(1r,4as)-1,4a-dimethyl-7-propan-2-yl-2,3,4,5,6,9,10,10a-octahydrophenanthrene-1-carboxylic acid" );
+gibbsFormation
+{
+    dHf_298   -512450.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     853.27;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-87030.0
+    phase     gas;
+}
