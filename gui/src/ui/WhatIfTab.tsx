@@ -244,13 +244,23 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
   const [gridSide, setGridSide] = useState<number | "">(7);
   const [grid, setGrid] = useState<GridData | null>(null);
 
+  // A physically-sensible default sweep window, by DIMENSION (the student can
+  // still edit it): pressure ×[0.5, 2] (a factor of two), temperature ±50°,
+  // anything else ±20%.  Ranges are in DISPLAY units (what the inputs show), so
+  // the factor/offset apply in the unit the student reads.
+  const defaultRangeFor = (k: Knob): { from: number; to: number } => {
+    const cur = knobDisplay(k);
+    if (k.siUnit === "Pa") return { from: Number(formatSig(0.5 * cur)), to: Number(formatSig(2 * cur)) };
+    if (k.siUnit === "K")  return { from: Number(formatSig(cur - 50)),  to: Number(formatSig(cur + 50)) };
+    return { from: Number(formatSig(0.8 * cur)), to: Number(formatSig(1.2 * cur)) };
+  };
+
   const pickKnob = (id: string | null) => {
     setKnobId(id);
     setKnobValue("");
     const k = knobs.find((x) => x.id === id);
     if (!k) { setRange({ from: "", to: "" }); return; }
-    const cur = knobDisplay(k);
-    setRange({ from: Number(formatSig(0.8 * cur)), to: Number(formatSig(1.2 * cur)) });
+    setRange(defaultRangeFor(k));
   };
 
   // The clone with the ONE knob edit applied (op -> operation[key]; var ->
@@ -562,7 +572,12 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
                     .filter((k) => k.kind === "op" && k.id !== knobId)
                     .map((k) => ({ value: k.id, label: k.label }))}
                   value={knobId2}
-                  onChange={(v) => { setKnobId2(v); setGrid(null); }}
+                  onChange={(v) => {
+                    setKnobId2(v);
+                    setGrid(null);
+                    const k2 = knobs.find((x) => x.id === v);
+                    setRange2(k2 ? defaultRangeFor(k2) : { from: "", to: "" });
+                  }}
                   clearable
                   searchable
                 />
