@@ -641,11 +641,12 @@ Data is thus either curated-and-public or yours-and-private: there is no public
 (\S\ref{sec:build-own}).
 
 You populate \file{data/local/} yourself --- for example with the reproducible
-ChemSep~8.3 importer (\file{bin/curate/chemsep_to_choupo.py}), which writes
+ChemSep~8.3 importer (\file{bin/curate/chemsep\_to\_choupo.py}), which writes
 there.  This is why the public repository redistributes \emph{no} third-party
-property values: instead it ships \file{data/references/} \emph{manifests}
-(identity and primary citation, zero numbers) that tell you what exists and
-where to obtain it; you import it into your private \file{data/local/}.
+property values: for coverage beyond the curated standards it ships Choupo's own
+open group-contribution estimates under \file{data/groupEstimative/} (clearly
+flagged as estimates), and you import any measured or third-party data into your
+private \file{data/local/}.
 Imported literature constants and predictive closures stay distinguishable in
 the provenance --- an imported boiling point is not silently upgraded because
 an Ambrose--Walton closure makes the component flashable, and missing heat
