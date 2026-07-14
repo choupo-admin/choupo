@@ -145,11 +145,18 @@ electrolyte::SpeciationInput readAnalysis(const DictPtr& dict)
                     + salt + ".dat for the apparent->ions expansion.");
             auto rec = Database::applyCaseOverlay(
                 salt, Dictionary::fromFile(sp.string()), sp.string()).dict;
-            if (!(rec->found("component")
-                  && rec->subDict("component")->found("speciesMap")))
+            // Prefer the unified component.speciesMap; accept the legacy
+            // top-level dissociatesTo as the ion map (so a not-yet-migrated salt
+            // still expands under composition{}).
+            DictPtr sm;
+            if (rec->found("component")
+                && rec->subDict("component")->found("speciesMap"))
+                sm = rec->subDict("component")->subDict("speciesMap");
+            else if (rec->found("dissociatesTo"))
+                sm = rec->subDict("dissociatesTo");
+            else
                 throw std::runtime_error("composition." + salt + ": components/"
-                    + salt + ".dat has no component.speciesMap.");
-            auto sm = rec->subDict("component")->subDict("speciesMap");
+                    + salt + ".dat has no component.speciesMap nor dissociatesTo.");
             scalar netCharge = 0.0;
             for (const auto& ion : sm->keys())
             {
