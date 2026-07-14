@@ -55,6 +55,7 @@ Description
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitOperation.H"
 
+#include <map>
 #include <string>
 
 namespace Choupo {
@@ -72,9 +73,12 @@ public:
 
     std::vector<ProcessStream> producedStreams() const override { return produced_; }
 
+    std::map<std::string, scalar> kpis() const override { return kpis_; }
+
 private:
     inline static const std::string type_ = "adiabaticFlash";
     std::vector<ProcessStream>      produced_;   // liquid + vapor outlets
+    std::map<std::string, scalar>   kpis_;       // watchable objectives (T_out, V/F, …)
 };
 
 } // namespace Choupo

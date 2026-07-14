@@ -1,5 +1,8 @@
-# Reference KPIs (golden master, auto-recorded by runTests --record).
-# kind   name      key         expected        reltol
+# Reference KPIs (golden master).  kind  name  key  expected  reltol
+# Adiabatic flash, benzene/toluene --- T_out is the RESULT of the energy
+# balance (H_out = H_in, Q = 0); V/F and the phase flows follow.
+kpi     flashAdiab             T_out            368.661803634    1e-6
+kpi     flashAdiab             V_over_F         0.0518811133842  1e-6
 stream  feed                   F                0.0277777777778  1e-4
 stream  liquid                 F                0.0263366357393  1e-4
 stream  vapor                  F                0.00144114203845 1e-4

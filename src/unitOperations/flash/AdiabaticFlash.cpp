@@ -190,6 +190,21 @@ int AdiabaticFlash::solve(const DictPtr& dict,
         produced_.push_back(vap);
     }
 
+    // KPIs -- the watchable objectives (feeds sensitivity/optim/sizing AND the
+    // GUI What-if instrument).  T_out is THE result of an adiabatic flash: the
+    // outlet T falls out of the energy balance, so it is the natural thing to
+    // watch as the student turns the outlet pressure P.
+    kpis_.clear();
+    kpis_["T_out"]     = r.x;                                 // K -- the result
+    kpis_["T_feed"]    = Tfeed;                               // K
+    kpis_["T_drop"]    = Tfeed - r.x;                         // K (flash cooling)
+    kpis_["P"]         = Pout;                                // Pa
+    kpis_["F_in"]      = F;
+    kpis_["V_over_F"]  = lastSol.V_over_F;
+    kpis_["F_liquid"]  = F * (1.0 - lastSol.V_over_F);
+    kpis_["F_vapor"]   = F * lastSol.V_over_F;
+    kpis_["H_residual"] = Hout - Hin;                         // J/mol (~0, adiabatic)
+
     std::cout << "\n========================  Adiabatic Flash Result  ===================\n"
               << "  Converged:     " << (r.converged ? "yes" : "NO") << "\n"
               << "  Outer iter.:   " << r.iterations << "\n"

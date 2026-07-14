@@ -42,8 +42,7 @@ WASM_FLAGS_BASE := \
 	-sINVOKE_RUN=0 \
 	"-sEXPORTED_FUNCTIONS=['_run_case','_malloc','_free']" \
 	"-sEXPORTED_RUNTIME_METHODS=['FS','ccall','cwrap']" \
-	--embed-file data/standards@/data/standards \
-	--embed-file data/proposed@/data/proposed
+	--embed-file data/standards@/data/standards
 
 .PHONY: wasm wasm-gui wasm-steady-props wasm-solve wasm-clean
 
@@ -87,25 +86,25 @@ wasm-solve: $(WASM_SOLVE_JS)
 # so that loading multiple .wasm files into the same worker scope
 # does not clobber the global.  The worker picks the right factory
 # by name based on which .wasm it just fetched.
-$(WASM_SOLVE_JS): $(WASM_SOLVE_SRCS) data/standards data/proposed | $(WASM_DIR)
+$(WASM_SOLVE_JS): $(WASM_SOLVE_SRCS) data/standards | $(WASM_DIR)
 	@printf "  EMXX  %s  (%d sources, %s)\n" $@ $(words $(WASM_SOLVE_SRCS)) $(WASM_MODE)
 	@$(EMXX) $(WASM_FLAGS_BASE) -sEXPORT_NAME=createChoupoSolve \
 		-o $@ $(WASM_SOLVE_SRCS)
 	@printf "  -->   wasm: %s\n" $(@:.js=.wasm)
 
-$(WASM_BATCH_JS): $(WASM_BATCH_SRCS) data/standards data/proposed | $(WASM_DIR)
+$(WASM_BATCH_JS): $(WASM_BATCH_SRCS) data/standards | $(WASM_DIR)
 	@printf "  EMXX  %s  (%d sources, %s)\n" $@ $(words $(WASM_BATCH_SRCS)) $(WASM_MODE)
 	@$(EMXX) $(WASM_FLAGS_BASE) -sEXPORT_NAME=createChoupoBatch \
 		-o $@ $(WASM_BATCH_SRCS)
 	@printf "  -->   wasm: %s\n" $(@:.js=.wasm)
 
-$(WASM_CTRL_JS): $(WASM_CTRL_SRCS) data/standards data/proposed | $(WASM_DIR)
+$(WASM_CTRL_JS): $(WASM_CTRL_SRCS) data/standards | $(WASM_DIR)
 	@printf "  EMXX  %s  (%d sources, %s)\n" $@ $(words $(WASM_CTRL_SRCS)) $(WASM_MODE)
 	@$(EMXX) $(WASM_FLAGS_BASE) -sEXPORT_NAME=createChoupoCtrl \
 		-o $@ $(WASM_CTRL_SRCS)
 	@printf "  -->   wasm: %s\n" $(@:.js=.wasm)
 
-$(WASM_PROPS_JS): $(WASM_PROPS_SRCS) data/standards data/proposed | $(WASM_DIR)
+$(WASM_PROPS_JS): $(WASM_PROPS_SRCS) data/standards | $(WASM_DIR)
 	@printf "  EMXX  %s  (%d sources, %s)\n" $@ $(words $(WASM_PROPS_SRCS)) $(WASM_MODE)
 	@$(EMXX) $(WASM_FLAGS_BASE) -sEXPORT_NAME=createChoupoProps \
 		-o $@ $(WASM_PROPS_SRCS)
