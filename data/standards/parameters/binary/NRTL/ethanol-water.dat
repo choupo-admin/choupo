@@ -28,5 +28,5 @@ parameters
     alpha  0.30;
 }
 
-source "Gmehling et al., Dortmund Data Bank (DDBST) NRTL set";
+source "Gmehling & Onken, DECHEMA Chemistry Data Series Vol. I Part 1, ethanol-water VLE-IG bank";
 origin "data/standards/binaryPairs/NRTL/ethanol-water.dat";
