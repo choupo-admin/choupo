@@ -631,8 +631,6 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         {
             // 2-phase V+L --- pick the larger liquid as the unique L.
             const auto& xL = (bA >= bB) ? xA : xB;
-            const scalar bL = (bA >= bB) ? bA : bB;
-            (void)bL;
             sol.regime     = "two-phase (VL, VLLE attempt found one L β ≈ 0)";
             sol.V_over_F   = bV;
             sol.x          = xL;

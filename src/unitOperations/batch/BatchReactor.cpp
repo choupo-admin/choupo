@@ -302,17 +302,6 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
 
     if (mode_ == Mode::Adiabatic)
     {
-        // Sanity: every reaction needs dH_rxn for the energy balance to
-        // do anything useful.  Warn (don't throw) if all are zero ---
-        // the user might be intentionally testing the integrator on a
-        // thermally neutral case.
-        bool anyHeat = false;
-        for (const auto& r : reactions_) if (std::abs(r.dH) > 1.0e-9) { anyHeat = true; break; }
-        if (!anyHeat)
-        {
-            // Quiet --- the run will simply be isothermal in practice
-            // (no heat release).  Pedagogically harmless.
-        }
         // Each component must carry the thermo the chosen energy basis reads:
         //   liquidDH     -> liquidHeatCapacity (legacy)
         //   gasConstantV -> ideal-gas Cp + formation (h_pure_ig / Cv)

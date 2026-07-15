@@ -115,7 +115,6 @@ ConstantEstimate RiaziDaubert::estimateFromScalars(
     // molar Cp_ig(T[K]) Choupo's heatCapacity{polynomial} consumes directly.
     const double Kw = std::pow(Tb_R, 1.0 / 3.0) / SG;    // Watson K factor
     const double cf = (12.8 - Kw) * (10.0 - Kw) / (10.0 * SG);
-    const double cf2 = cf * cf;
     // Per-mass coefficients in T[degR] (Btu/lb/degF):
     const double Am = -0.33886 + 0.02827 * Kw - 0.26105 * cf + 0.59332 * SG * cf;
     const double Bm = (-(0.9291 - 1.1543 * Kw + 0.0368 * Kw * Kw) * 1.0e-4
@@ -129,7 +128,6 @@ ConstantEstimate RiaziDaubert::estimateFromScalars(
     r.cpb = MW * J_per_cal * Bm * R_per_K;
     r.cpc = MW * J_per_cal * Cm * R_per_K * R_per_K;
     r.cpd = 0.0;            // Kesler-Lee is quadratic in T
-    (void)cf2;
 
     // A petroleum lump carries no group decomposition and no formation
     // chemistry (no stoichiometric reaction) -- Hf/Gf stay zero (gaps in the

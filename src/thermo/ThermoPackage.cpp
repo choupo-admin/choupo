@@ -274,18 +274,6 @@ void ThermoPackage::readFromDict(const DictPtr& dict, const Database& db)
         phases_.push_back(Phase::New(vapDict, names, components_));
     }
 
-    // -----  Legacy convenience pointers (first liquid, first vapor)  ---
-    for (auto& p : phases_)
-    {
-        if (p->typeName() == "liquid" && !activity_)
-        {
-            // Rebuild a stand-alone ActivityModel and EoS so existing code
-            // paths that use activity_/eos_ keep working.
-            // (The Phase owns its own copies; these are independent.)
-            // Workaround: reuse what the user wrote in either syntax.
-        }
-    }
-
     // Re-parse activity/EoS for legacy compatibility (cheap, runs once).
     DictPtr activityRef, eosRef;
     if (dict->found("activityModel"))

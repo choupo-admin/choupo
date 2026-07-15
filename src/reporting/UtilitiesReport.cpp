@@ -121,9 +121,6 @@ void UtilitiesReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
             // re-use ProcessStream::F (kmol/s) × an average MW (only
             // the RATIO matters for the share split, so the absolute
             // calibration drops out).
-            scalar mw_avg = 0.0;
-            for (std::size_t i = 0; i < s.z.size() && i < unit.ins.size(); ++i)
-                (void)i;
             // Pragmatic surrogate: use F itself as the share weight.
             // For a single-utility unit, this is fine.  For two
             // utilities sharing one HX (rare), F-weighting beats a
