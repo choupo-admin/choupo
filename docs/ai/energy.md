@@ -232,7 +232,7 @@ thermally-neutral.
 (settled 2026-06-29, forum).**  A salt that dissolves / crystallises gets its
 **solid formation from the ions**, not a component block:
 `Hf_solid = Σνᵢ·hfAq_i − dH_soln`, where each `hfAq` lives in
-`data/standards/components/true/aqueous/` and `dH_soln` is the component's
+`data/standards/species/aqueous/` and `dH_soln` is the component's
 `electrolyte { dissolutionEnthalpy }` (primary-cited).  Writing the salt a
 component-level `gibbsFormation` block is **forbidden** — it is a second source
 of truth that silently drifts from the ions (*trees never store derivatives*),

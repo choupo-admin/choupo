@@ -678,7 +678,6 @@ int Crystalliser::solveMSMPR(const DictPtr& dict,
     kpis_["crystal_mol"]     = crystal_mol;     // kmol/s
     kpis_["solute_in"]       = solute_in;       // kg/s
     kpis_["liquorFlow"]      = F_liq;           // kmol/s
-    kpis_["Q_removed"]       = Q_removed;       // W
     kpis_["newtonIters"]     = static_cast<scalar>(sr.iterations);
 
     // ---- Report --------------------------------------------------------

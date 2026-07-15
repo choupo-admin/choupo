@@ -274,7 +274,7 @@ If a salt crystalliser reports `Q = 0` / `dH_cryst = 0` and the log warns
 `gibbsFormation` block to the salt's `.dat` (Claude did, in circles, on 2026-06-29
 — don't repeat it).  A salt's solid formation is a DERIVATIVE:
 `Hf_solid = Σνᵢ·hfAq_i − dH_soln`, from the aqueous ions
-(`data/standards/components/true/aqueous/` `hfAq`) **plus** the salt's
+(`data/standards/species/aqueous/` `hfAq`) **plus** the salt's
 `electrolyte { dissolutionEnthalpy }`.  Storing it a second time is the arity-1
 sin (it drifts silently); `bin/curate/check_ion_pins.py` **exits 1** on it.  The
 heat of crystallisation comes from `dissolutionEnthalpy` read straight — make

@@ -77,7 +77,7 @@ The arity test has a sharp corollary: **a number FIXED by an exact identity to
 data already in the tree is a DERIVATIVE, and a tree never stores its
 derivatives.**  The canonical case is a salt's *solid* formation enthalpy —
 `Hf_solid = Σνᵢ·hfAq_i − dH_soln`, pinned by the aqueous ions
-(`components/true/aqueous/` `hfAq`) and the heat of solution (the component's
+(`species/aqueous/` `hfAq`) and the heat of solution (the component's
 `electrolyte { dissolutionEnthalpy }`).  Writing it a *third*, component-level
 `gibbsFormation` literal is the **arity-1 sin in its purest form**: a second
 source of truth that drifts silently from the two primaries that determine it
@@ -111,14 +111,14 @@ is the DEFINITION, not the frequency of use.*
 |---|---|---|---|
 | crystalline ΔH_f, S°, Cp_solid/liquid, Tc, Pc, ω, MW, Vliq | the pure compound + its elements | 1 | `components/<name>.dat` |
 | ΔH_soln (crystal → **aqueous**) | solute **+ water** | 2 | `solution/<solute>-water.dat` |
-| aqueous Hf°, S°(aq), Cp°(aq) at ∞-dilution | ion **+ water** (the solvation state IS water) | 2 | `components/true/aqueous/` |
+| aqueous Hf°, S°(aq), Cp°(aq) at ∞-dilution | ion **+ water** (the solvation state IS water) | 2 | `species/aqueous/` |
 | NRTL/Wilson τ, Henry H, Pitzer β, EOS k_ij | i **+** j | 2 | the relevant pair catalogue |
 
 ### Water's one earned privilege — a TIER, not a slot
 
 Water is ubiquitous enough to earn **one canonical, named, by-name aqueous
 reference tier in the catalogue** — and it already physically exists for ions
-in `data/standards/components/true/aqueous/` (`hfAq / sAq / cpAq` at infinite
+in `data/standards/species/aqueous/` (`hfAq / sAq / cpAq` at infinite
 dilution, H⁺(aq)=0 convention, Wagman/NBS 1982; `NaOH.dat` points at it by
 name).  The privilege is: **water alone gets a dedicated reference tier
 referenced by name — that tier is a catalogue file, never a component slot.**
